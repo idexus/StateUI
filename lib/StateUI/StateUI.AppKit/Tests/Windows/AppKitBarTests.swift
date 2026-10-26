@@ -75,7 +75,7 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(window.subtitle, "", "no line under the title")
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
         XCTAssertFalse(window.titlebarAppearsTransparent)
-        XCTAssertNil((window.contentView as? AppKitWindowContentView)?.barColor)
+        XCTAssertNil((window.contentView as? AppKitWindowContentView)?.barBrush.color)
     }
 
     /// A declared bar color paints the band the title bar and toolbar cover and the window's background, and the
@@ -91,7 +91,7 @@ final class AppKitBarTests: XCTestCase {
         let window = try XCTUnwrap(controller.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         XCTAssertTrue(window.titlebarAppearsTransparent)
-        XCTAssertEqual(content.barColor, NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertEqual(content.barBrush.color, NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
         XCTAssertEqual(controller.titleClusterForTesting.titleColorForTesting, NSColor(
             srgbRed: 246 / 255, green: 244 / 255, blue: 1, alpha: 1))
         XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' color paints the bars alone")

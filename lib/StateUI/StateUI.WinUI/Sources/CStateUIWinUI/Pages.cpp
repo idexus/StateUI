@@ -365,8 +365,8 @@ extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
 
 extern "C" void stateui_winui_title_bar_set(
     StateUIObjectRef handle, char const *title, char const *subtitle, char const *icon, bool back, bool paneToggle,
-    StateUIGround kind, uint32_t argb, float opacity, float tintOpacity, bool hasForeground, uint32_t foreground,
-    int32_t theme
+    StateUIGround kind, uint32_t argb, float opacity, float tintOpacity, StateUIBrush gradient, bool hasForeground,
+    uint32_t foreground, int32_t theme
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
@@ -375,7 +375,7 @@ extern "C" void stateui_winui_title_bar_set(
         if (sourceFile(bar.IconSource()) != pictureName(icon)) bar.IconSource(pictureIconSource(icon));
         bar.IsBackButtonVisible(back);
         bar.IsPaneToggleButtonVisible(paneToggle);
-        if (auto brush = ground(kind, argb, opacity, tintOpacity)) bar.Background(brush);
+        if (auto brush = barGround(kind, argb, opacity, tintOpacity, gradient)) bar.Background(brush);
         else bar.ClearValue(controls::Control::BackgroundProperty());
         if (hasForeground) bar.Foreground(media::SolidColorBrush(color(foreground)));
         else bar.ClearValue(controls::Control::ForegroundProperty());
@@ -650,6 +650,13 @@ xaml::Media::Brush stateui::ground(StateUIGround kind, uint32_t argb, float opac
     return nullptr;
 }
 
+xaml::Media::Brush stateui::barGround(
+    StateUIGround kind, uint32_t argb, float opacity, float tintOpacity, StateUIBrush const &gradient
+) {
+    if (gradient.kind == StateUIBrushKindLinear || gradient.kind == StateUIBrushKindRadial) return brush(gradient);
+    return ground(kind, argb, opacity, tintOpacity);
+}
+
 extern "C" void stateui_winui_split_set_pane_grounds(
     StateUIObjectRef handle, StateUIGround besideKind, uint32_t besideArgb, float besideOpacity, float besideTintOpacity,
     StateUIGround overKind, uint32_t overArgb, float overOpacity, float overTintOpacity
@@ -672,13 +679,13 @@ extern "C" void stateui_winui_split_set_pane_grounds(
 }
 
 extern "C" void stateui_winui_menu_bar_set_colors(
-    StateUIObjectRef handle, bool hasBackground, uint32_t background, bool hasForeground, uint32_t foreground, int32_t theme
+    StateUIObjectRef handle, StateUIBrush background, bool hasForeground, uint32_t foreground, int32_t theme
 ) {
     try {
         // One of the window's bars, painted as the title bar is; its menus' words through the brush their template reads.
         // Design: docs/design/platforms/winui/pages.md#menus
         auto bar = borrow<controls::MenuBar>(handle);
-        if (hasBackground) bar.Background(media::SolidColorBrush(color(background)));
+        if (auto painted = brush(background)) bar.Background(painted);
         else bar.ClearValue(controls::Control::BackgroundProperty());
         if (bar.RequestedTheme() != elementTheme(theme)) bar.RequestedTheme(elementTheme(theme));
         auto brush = hasForeground ? xaml::Media::Brush(media::SolidColorBrush(color(foreground))) : nullptr;

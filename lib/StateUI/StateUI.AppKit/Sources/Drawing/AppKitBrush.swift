@@ -8,7 +8,7 @@ import AppKit
 
 /// A fill drawn by AppKit: the host layer's reading of it (`HostBrush`), its colors in sRGB, painted on a path.
 /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
-struct AppKitBrush {
+struct AppKitBrush: Equatable {
     /// What the tree's value describes.
     let brush: HostBrush
 
@@ -25,14 +25,6 @@ struct AppKitBrush {
     /// Whether it paints anything.
     var paints: Bool {
         brush != .none
-    }
-
-    /// Whether it is a gradient, which a layer's color cannot paint.
-    var isGradient: Bool {
-        switch brush {
-        case .linear, .radial: true
-        case .none, .solid: false
-        }
     }
 
     /// The color a line draws with: its color, or its first stop's.

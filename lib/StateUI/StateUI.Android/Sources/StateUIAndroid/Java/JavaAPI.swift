@@ -517,7 +517,7 @@ enum JavaAPI {
 
     static let bar = Java.findClass("stateui/android/StateUIBar")
     static let newBar = Java.method(bar, "<init>", "(Landroid/content/Context;JI)V")
-    static let showBar = Java.method(bar, "show", "(Ljava/lang/String;Ljava/lang/String;II)V")
+    static let showBar = Java.method(bar, "show", "(Ljava/lang/String;Ljava/lang/String;I)V")
     static let setBarNavigation = Java.method(bar, "setNavigation", "(IILjava/lang/String;)V")
     static let setBarTitleView = Java.method(bar, "setTitleView", "(Landroid/view/View;)V")
     static let setBarMark = Java.method(bar, "setMark", "(Landroid/graphics/Bitmap;)V")

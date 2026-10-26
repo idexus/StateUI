@@ -3,6 +3,9 @@
 
 package stateui.android.test;
 
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -119,5 +122,24 @@ public final class TestBars {
     public static int background(Toolbar bar) {
         Drawable drawn = bar.getBackground();
         return drawn instanceof ColorDrawable ? ((ColorDrawable) drawn).getColor() : 0;
+    }
+
+    /**
+     * The color the bar's background draws at (`x`, `y`), fractions of the bar, as ARGB - drawn alone at the bar's
+     * size; 0 where it has none, or no size.
+     */
+    public static int backgroundAt(Toolbar bar, float x, float y) {
+        Drawable drawn = bar.getBackground();
+        int width = bar.getWidth();
+        int height = bar.getHeight();
+        if (drawn == null || width <= 0 || height <= 0) return 0;
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Rect bounds = drawn.copyBounds();
+        drawn.setBounds(0, 0, width, height);
+        drawn.draw(new Canvas(bitmap));
+        drawn.setBounds(bounds);
+        int color = bitmap.getPixel(Math.round(x * (width - 1)), Math.round(y * (height - 1)));
+        bitmap.recycle();
+        return color;
     }
 }

@@ -59,6 +59,9 @@ final class GTKPageFrame {
 
     /// The style sheet's class painting the header bar, and the tabs' bar with it.
     private var barClass: String?
+
+    /// Whether the bar's gradient was painted before the header bar had a size, to be painted again once it has.
+    private var paintsAgainWhenSized = false
     private(set) var overflowButtons: [GTKButtonView] = []
 
     init(page: GTKView) {
@@ -135,11 +138,15 @@ final class GTKPageFrame {
         self.chrome = chrome
     }
 
-    /// Paints the header bar and what stands on it - in the color written, else light on a dark band and dark on a
-    /// light one (`BandWords`) - as a class of the host's style sheet; nil keeps the platform's.
+    /// Paints the header bar and what stands on it - a color or a gradient, its words in the color written, else
+    /// light on a dark band and dark on a light one (`BandWords`) - as a class of the host's style sheet; nil keeps
+    /// the platform's. A gradient is drawn for the header bar's size as it stands, again once it has one.
+    /// Design: docs/design/platforms/gtk/pages.md#the-bars-look
     private func paintBar(background: HostValue?, foreground: HostValue?) {
+        let size = (width: Double(gtk_widget_get_width(header)), height: Double(gtk_widget_get_height(header)))
+        paintsAgainWhenSized = HostBrush(background).isGradient && (size.width <= 0 || size.height <= 0)
         let painted = GTKStyleSheet.bar(
-            background: GTKBrush(background).firstColor,
+            background: background, over: size,
             foreground: BandWords.color(on: background, written: foreground).flatMap(GTKBrush.rgba))
         for bar in [header] + (tabsBar.map { [$0] } ?? []) {
             if let barClass { gtk_widget_remove_css_class(bar, barClass) }
@@ -266,6 +273,9 @@ final class GTKPageFrame {
     /// behind More (`BarFit`) - again only when that width or the groups changed.
     /// Design: docs/design/platforms/gtk/pages.md#a-bar-with-no-room
     func fit() {
+        if paintsAgainWhenSized, gtk_widget_get_width(header) > 0 {
+            paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
+        }
         let width = room
         guard width > 0, width != fittedWidth else { return }
         fittedWidth = width

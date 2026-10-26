@@ -93,12 +93,12 @@ final class AndroidBarView: AndroidView {
         }
         let tint = content.foreground.flatMap(Self.argb) ?? 0
 
-        if changed(\.title) || changed(\.subtitle) || changed(\.background) || changed(\.foreground) {
+        // A color or a gradient, drawn as a view's background is - fitted to each size the bar is placed at.
+        if changed(\.background) { setBackground(content.background) }
+        if changed(\.title) || changed(\.subtitle) || changed(\.foreground) {
             let title = content.title.flatMap(Java.string)
             let subtitle = content.subtitle.flatMap(Java.string)
-            Java.call(
-                reference, JavaAPI.showBar, .object(title), .object(subtitle),
-                .int(content.background.flatMap(Self.argb) ?? 0), .int(tint))
+            Java.call(reference, JavaAPI.showBar, .object(title), .object(subtitle), .int(tint))
             Java.release(local: title)
             Java.release(local: subtitle)
         }

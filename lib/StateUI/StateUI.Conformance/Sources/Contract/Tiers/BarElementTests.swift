@@ -5,7 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `BarElementContract` on a host: the bar an arrangement declares holds the look the tree gives it, and the look the
-/// tree changes it to - on every element wearing the tier - and the look crosses a sheet a view in it presents.
+/// tree changes it to - a color, a blur, a gradient, on every element wearing the tier - and the look crosses a sheet
+/// a view in it presents.
 @_spi(Host) public enum BarElementTests: ConformanceFamily {
     public static let name = "BarElement"
 
@@ -17,6 +18,10 @@
                 holds(
                     BarElementContract.barBackground, on: element, .blur(.thick), then: .blur(.ultraThin),
                     aspect: "showsABlurOrWhatStandsInForIt"),
+                // A gradient, read back from what the toolkit paints the bar with.
+                holds(
+                    BarElementContract.barBackground, on: element, across(.indigo, .orange),
+                    then: across(.steelBlue, .gold, .firebrick), aspect: "paintsAGradient"),
                 holds(
                     BarElementContract.barForegroundColor, on: element, .white, then: .black,
                     over: [Write(BarElementContract.barBackground, Material.color(.steelBlue))]),
@@ -25,6 +30,13 @@
                 crossesASheet(on: element),
             ]
         }
+    }
+
+    /// A gradient across a bar, from its left edge to its right one through its middle - the one way of saying it
+    /// that a toolkit taking an angle reads back - its colors evenly apart.
+    static func across(_ colors: Color...) -> Material {
+        let stops = colors.enumerated().map { GradientStop($0.element, Double($0.offset) / Double(colors.count - 1)) }
+        return .gradient(.linearGradient(stops, startPoint: Point(0, 0.5), endPoint: Point(1, 0.5)))
     }
 
     /// The bar's color `element` declares crosses a sheet a view in it presents: the stack in the sheet wears it, as

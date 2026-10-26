@@ -101,7 +101,7 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(navigation.frame, content.safeAreaRect)
         XCTAssertTrue(navigation.topViewForTesting === renderer.viewForTesting(id: .manual("home")))
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
-        XCTAssertNil((content as? AppKitWindowContentView)?.barColor)
+        XCTAssertNil((content as? AppKitWindowContentView)?.barBrush.color)
     }
 
     /// A written bar color paints the band the title bar and toolbar cover
@@ -125,7 +125,7 @@ final class AppKitPageTests: XCTestCase {
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         content.layoutSubtreeIfNeeded()
         XCTAssertTrue(window.titlebarAppearsTransparent)
-        XCTAssertEqual(content.barColor, NSColor(
+        XCTAssertEqual(content.barBrush.color, NSColor(
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
         XCTAssertGreaterThan(content.barBand.height, 0)
         XCTAssertEqual(content.barBand, NSRect(
@@ -145,7 +145,7 @@ final class AppKitPageTests: XCTestCase {
         stack.properties[.barBackground] = .nothing
         renderer.applyForTesting(tree(stack))
         XCTAssertFalse(window.titlebarAppearsTransparent)
-        XCTAssertNil(content.barColor)
+        XCTAssertNil(content.barBrush.color)
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
         XCTAssertEqual(window.titleVisibility, .visible)
         XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.title))
@@ -197,11 +197,51 @@ final class AppKitPageTests: XCTestCase {
         let split = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         XCTAssertTrue(window.titlebarAppearsTransparent)
-        XCTAssertEqual(split.detailBarColorForTesting, NSColor(
+        XCTAssertEqual(split.detailBarBrushForTesting.color, NSColor(
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
-        XCTAssertNil(split.sidebarBarColorForTesting)
-        XCTAssertEqual(content.barColor, NSColor(
+        XCTAssertNil(split.sidebarBarBrushForTesting.color)
+        XCTAssertEqual(content.barBrush.color, NSColor(
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1), "the window's band, under the sidebar")
+    }
+
+    /// A gradient written for the bars runs across the window's one band: the
+    /// detail's pane paints its part of it, so where the detail begins it
+    /// shows the color the window's band shows there, not the gradient's start.
+    @MainActor
+    func testABarsGradientRunsAcrossTheWindowsOneBand() throws {
+        let renderer = testRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackground] = Material.gradient(.linearGradient(
+            [GradientStop(.black, 0), GradientStop(.white, 1)], endPoint: Point(1, 0))).propValue
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack)))
+
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        let split = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
+        content.layoutSubtreeIfNeeded()
+        XCTAssertEqual(split.detailBarBrushForTesting, content.barBrush, "one brush, the window's and the detail's")
+
+        let pane = split.detailSurfaceForTesting
+        let band = try XCTUnwrap(content.subviews.lazy.compactMap { $0 as? AppKitBandView }.first)
+        let start = pane.convert(pane.bounds, to: content).minX
+        XCTAssertGreaterThan(start, 0, "the detail stands beside the sidebar")
+        func drawn(_ view: NSView, atX x: CGFloat) throws -> CGFloat {
+            let rep = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
+            view.cacheDisplay(in: view.bounds, to: rep)
+            let scale = CGFloat(rep.pixelsWide) / view.bounds.width
+            return try XCTUnwrap(rep.colorAt(x: Int(x * scale) + 1, y: Int(pane.barBand.midY * scale))).redComponent
+        }
+        XCTAssertEqual(try drawn(pane, atX: 0), try drawn(band, atX: start), accuracy: 0.02,
+                       "the window's gradient where the detail begins, not its start")
+        XCTAssertGreaterThan(try drawn(pane, atX: 0), 0.2)
     }
 
     /// A written bar color paints the bars alone: the window around a
@@ -290,13 +330,13 @@ final class AppKitPageTests: XCTestCase {
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         let color = NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1)
         XCTAssertEqual(window.backgroundColor, .clear, "the material shows around the sidebar")
-        XCTAssertEqual(split.detailBarColorForTesting, color, "the detail's bar wears the color")
-        XCTAssertEqual(content.barColor, color, "the window's band stands under the sidebar's glass")
-        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band beneath it")
+        XCTAssertEqual(split.detailBarBrushForTesting.color, color, "the detail's bar wears the color")
+        XCTAssertEqual(content.barBrush.color, color, "the window's band stands under the sidebar's glass")
+        XCTAssertNil(split.sidebarBarBrushForTesting.color, "the sidebar's glass shows the band beneath it")
         XCTAssertNotNil(content.materialForTesting)
         content.layoutSubtreeIfNeeded()
         let order = content.subviews.map { String(describing: type(of: $0)) }
-        XCTAssertEqual(order.prefix(3), ["AppKitMaterialView", "NSView", "AppKitSplitView"],
+        XCTAssertEqual(order.prefix(3), ["AppKitMaterialView", "AppKitBandView", "AppKitSplitView"],
                        "the material, the band over it, the split view over both")
 
         renderer.applyForTesting(windowTree(flyout(
@@ -304,9 +344,9 @@ final class AppKitPageTests: XCTestCase {
             menu: page("menu", title: "Menu"),
             detail: stack), translucent: false))
         XCTAssertEqual(window.backgroundColor, .windowBackgroundColor)
-        XCTAssertEqual(split.detailBarColorForTesting, color)
-        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band behind it")
-        XCTAssertEqual(content.barColor, color)
+        XCTAssertEqual(split.detailBarBrushForTesting.color, color)
+        XCTAssertNil(split.sidebarBarBrushForTesting.color, "the sidebar's glass shows the band behind it")
+        XCTAssertEqual(content.barBrush.color, color)
         XCTAssertNil(content.materialForTesting)
     }
 
@@ -331,7 +371,7 @@ final class AppKitPageTests: XCTestCase {
         let material = try XCTUnwrap(content.materialForTesting)
         XCTAssertEqual(material.frame, content.bounds)
         XCTAssertTrue(material.subviews.allSatisfy(\.isHidden), "nothing lies over the material")
-        XCTAssertEqual(content.barColor, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255, alpha: 1),
+        XCTAssertEqual(content.barBrush.color, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255, alpha: 1),
                        "the bars' band is painted over the material")
     }
 

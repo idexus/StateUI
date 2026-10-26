@@ -45,6 +45,18 @@ the painted thing's larger side, reaching as far across as down
 the box would stretch the circle into an ellipse on anything not square, so
 such a host is handed each axis's share of that one reach.
 
+## Drawn by CSS
+
+A host painting a box with CSS - the Web's boxes and bars, GTK's header bar -
+takes a line's gradient as CSS does not: CSS takes an angle and stops along
+its own gradient line, not two points. The angle is the direction from the
+first point to the second in the box's pixels, clockwise from up, and each
+stop moves onto CSS's line - the line through the box's middle, long enough
+to reach its corners - where the stripe square to that direction meets it
+(`CSSGradientLine`). Points that meet leave CSS's own line, straight down. The
+angle follows the box's proportions, so such a box writes its gradient again
+as its size changes.
+
 ## Themed stops
 
 A stop's color may be a `Color(light:dark:)` pair. It crosses as both

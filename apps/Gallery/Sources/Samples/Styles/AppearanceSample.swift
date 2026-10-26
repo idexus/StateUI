@@ -106,8 +106,8 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 + "the one this version of the gallery draws on this platform, at every start. "
                 + "\"The platform's own\" leaves a choice "
                 + "unwritten: each platform draws its own, in the user's accent, material "
-                + "and theme. A color paints the bars alone; what the window shows behind "
-                + "the pages is its background. The sidebar stands on one material beside "
+                + "and theme. A color, or the gradient the bars offer, paints the bars alone; "
+                + "what the window shows behind the pages is its background. The sidebar stands on one material beside "
                 + "the page and on another as it slides over it - a phone's drawer.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
@@ -166,10 +166,13 @@ private struct LookColumn: View {
                 .isEnabled(composed)
                 .onClicked { style[keyPath: choice] = .own }
 
-            SurfacePickers(title: "The bars", label: "Bars", theme: name, surface: surface(\.bars))
-            SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
-            SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
-            SurfacePickers(title: "The sidebar over the page", label: "Overlay", theme: name, surface: surface(\.sidebarOverlay))
+            SurfacePickers(title: "The bars", label: "Bars", theme: name, part: .bar, surface: surface(\.bars))
+            SurfacePickers(title: "The window", label: "Window", theme: name, part: .window, surface: surface(\.window))
+            SurfacePickers(
+                title: "The sidebar", label: "Sidebar", theme: name, part: .sidebar, surface: surface(\.sidebar))
+            SurfacePickers(
+                title: "The sidebar over the page", label: "Overlay", theme: name, part: .sidebarOverlay,
+                surface: surface(\.sidebarOverlay))
         }
         .spacing(10)
     }
@@ -181,12 +184,13 @@ private struct SurfacePickers: View {
     let title: String
     let label: String
     let theme: String
+    let part: GallerySurface
     let surface: Binding<SurfaceLook>
 
     var body: some View {
         let surface = self.surface
         let look = surface.wrappedValue
-        let materials = SurfaceMaterial.allCases
+        let materials = SurfaceMaterial.offered(on: part)
         let accents = AccentChoice.allCases
         let blurs = SurfaceLook.blurs
         let id = "appearance.\(theme).\(label.lowercased())"

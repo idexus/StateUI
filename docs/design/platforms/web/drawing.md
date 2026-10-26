@@ -45,12 +45,10 @@ itself; a gradient
 is a CSS gradient written for the box's size in pixels, so the box follows its
 own size with a size observer and writes it again as it changes.
 
-A line's gradient has its two points as fractions of the box, which CSS does
-not take: the angle is the direction from the first point to the second in
-the box's pixels, and each stop is moved onto CSS's gradient line - the line
-through the box's middle long enough to reach its corners - where the stripe
-square to the direction meets it. A point's gradient is a circle around its
-center, as far as the host layer's reach (`HostBrush.reach`).
+A line's gradient stands on CSS's own gradient line as the host layer places
+it ([drawn by CSS](../../types/brushes.md#drawn-by-css)). A point's gradient
+is a circle around its center, as far as the host layer's reach
+(`HostBrush.reach`).
 
 An outline of a gradient is a transparent border with the box's background in
 two layers: the fill cut to the inside (`padding-box`), the outline's gradient

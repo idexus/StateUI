@@ -52,8 +52,10 @@ for - a tab chosen, the sidebar shown:
   window to the system - the taskbar, Alt+Tab; its picture is read from the
   application's pictures by its address. With no split view the chrome's
   title and subtitle are the page's title and the line under it; and
-  the bars' material paints the chrome - a color, or a blur as the in-app
-  acrylic at its thickness, glass at its fallback one - its title and the
+  the bars' material paints the chrome - a color, a gradient over its box as
+  WinUI's gradient brushes take one, in fractions of the box - a point's an
+  ellipse, as the chrome's size is not the host's to know - or a blur as the
+  in-app acrylic at its thickness, glass at its fallback one - its title and the
   actions on it, a
   destructive one excepted, stand
   in the color written for what stands on the bars, else white on a dark

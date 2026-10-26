@@ -90,9 +90,11 @@ extension GTKDriver {
         renderer?.layOut()
         switch property {
         case .barBackground:
-            // The color the header's class paints - a blur's stand-in among them, whose pixels mix with what lies
-            // under it - and the blur it stands in for: GNOME blurs nothing inside a window.
-            return Self.barFill(of: frame.header).map { StandIns.material(painted: $0).propValue }
+            // What the header's class paints - a color, a blur's stand-in among them, whose pixels mix with what lies
+            // under it, read as the blur it stands in for, as GNOME blurs nothing inside a window; or a gradient.
+            return Self.barPaint(
+                of: frame.header, width: Double(gtk_widget_get_width(frame.header)),
+                height: Double(gtk_widget_get_height(frame.header)))?.propValue
         case .barForegroundColor:
             return Self.color(of: frame.header).propValue
         case .subtitle:

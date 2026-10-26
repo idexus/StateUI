@@ -23,6 +23,43 @@ struct UIKitBrush: Equatable {
         brush == .none
     }
 
+    /// The brush drawn as a picture `size` points across - what UIKit takes for a bar's background - its colors in
+    /// sRGB, as StateUI's are; nil for no size or nothing painted.
+    func image(size: CGSize) -> UIImage? {
+        guard size.width > 0, size.height > 0, brush != .none, let sRGB = CGColorSpace(name: CGColorSpace.sRGB) else {
+            return nil
+        }
+        func gradient(_ stops: [HostBrush.Stop]) -> CGGradient? {
+            let colors = stops.compactMap { UIColor(stateUI: $0.color)?.cgColor }
+            return CGGradient(colorsSpace: sRGB, colors: colors as CFArray, locations: stops.map { CGFloat($0.offset) })
+        }
+        let format = UIGraphicsImageRendererFormat.preferred()
+        format.preferredRange = .standard
+        let beyond: CGGradientDrawingOptions = [.drawsBeforeStartLocation, .drawsAfterEndLocation]
+        return UIGraphicsImageRenderer(size: size, format: format).image { drawn in
+            let context = drawn.cgContext
+            switch brush {
+            case .none:
+                break
+            case .solid(let value):
+                context.setFillColor(UIColor(stateUI: value)?.cgColor ?? UIColor.clear.cgColor)
+                context.fill(CGRect(origin: .zero, size: size))
+            case .linear(let from, let to, let stops):
+                guard let gradient = gradient(stops) else { return }
+                context.drawLinearGradient(
+                    gradient, start: CGPoint(x: from.x * size.width, y: from.y * size.height),
+                    end: CGPoint(x: to.x * size.width, y: to.y * size.height), options: beyond)
+            case .radial(let center, let radius, let stops):
+                guard let gradient = gradient(stops) else { return }
+                let middle = CGPoint(x: center.x * size.width, y: center.y * size.height)
+                let reach = HostBrush.reach(of: radius, width: size.width, height: size.height)
+                context.drawRadialGradient(
+                    gradient, startCenter: middle, startRadius: 0, endCenter: middle, endRadius: reach,
+                    options: beyond)
+            }
+        }
+    }
+
     /// The color a line draws with: its color, or its first stop's.
     var lineColor: UIColor? {
         brush.firstColor.flatMap(UIColor.init(stateUI:))

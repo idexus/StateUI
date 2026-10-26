@@ -27,6 +27,9 @@ enum SurfaceMaterial: String, CaseIterable {
     /// The gallery's color.
     case color
 
+    /// The gallery's gradient, violet into orange - offered for the bars.
+    case gradient
+
     /// What the Appearance sample calls it.
     var name: String {
         switch self {
@@ -37,7 +40,13 @@ enum SurfaceMaterial: String, CaseIterable {
         case .glass: return "Glass"
         case .tintedGlass: return "Glass, tinted"
         case .color: return "Color"
+        case .gradient: return "Gradient"
         }
+    }
+
+    /// The materials `surface` offers: the gradient on the bars alone.
+    static func offered(on surface: GallerySurface) -> [SurfaceMaterial] {
+        surface == .bar ? allCases : allCases.filter { $0 != .gradient }
     }
 
     /// Whether the surface shows a blur.
@@ -77,6 +86,7 @@ struct SurfaceLook: Equatable {
         switch material {
         case .platform: return nil
         case .color: return color.carriesThemesWords ? Palette.text : Palette.onBrand
+        case .gradient: return Palette.onBrand
         default: return Palette.text
         }
     }
@@ -93,6 +103,7 @@ struct SurfaceLook: Equatable {
         case .glass: return .glass(.regular)
         case .tintedGlass: return .glass(.regular.tint(color.tint(system: system, for: surface)))
         case .color: return .color(color.color(system: system, for: surface))
+        case .gradient: return .gradient(Palette.identity)
         }
     }
 }

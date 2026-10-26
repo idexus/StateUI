@@ -32,12 +32,12 @@ final class WebTabView: WebDOMView {
         WebRelay.insert(pages.node, into: node, at: 1)
     }
 
-    /// Paints the strip as the bars on its path are painted - their color, their words' (a tab under the pointer
-    /// in the page's), and no blur under a clear one - so it stands as one with the window's bar; the bar's own look
-    /// where nothing is said.
+    /// Paints the strip as the bars on its path are painted - their color or gradient, their words' (a tab under
+    /// the pointer in the page's), and no blur under a clear one - so it stands as one with the window's bar; the
+    /// bar's own look where nothing is said.
     /// Design: docs/design/platforms/web/pages.md#tabs
     func showColors(background: HostValue?, foreground: HostValue?) {
-        strip.style("--stateui-bar-background", WebCSS.fill(background))
+        strip.styleBackground("--stateui-bar-background", background.map { WebBox(fill: $0) })
         strip.style("--stateui-bar-filter", HostBrush(background).isClear ? "none" : nil)
         strip.style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: background, written: foreground)))
     }

@@ -104,10 +104,10 @@ final class AppKitSplitView: AppKitHitTestView {
         detailSurface.needsLayout = true
     }
 
-    /// Paints the part of the detail the window's bars cover in the color
+    /// Paints the part of the detail the window's bars cover with the brush
     /// written for them, or leaves it to the system's material.
-    func setDetailBarColor(_ color: NSColor?) {
-        detailSurface.barColor = color
+    func setDetailBarBrush(_ brush: AppKitBrush) {
+        detailSurface.barBrush = brush
     }
 
     /// Stands the sidebar on the material its split view says for it beside the detail; nil for the system's
@@ -120,8 +120,9 @@ final class AppKitSplitView: AppKitHitTestView {
     var sidebarGroundForTesting: AppKitDecoration { sidebarSurface.ground }
     var sidebarLayerColorForTesting: CGColor? { sidebarSurface.layer?.backgroundColor }
 
-    var detailBarColorForTesting: NSColor? { detailSurface.barColor }
-    var sidebarBarColorForTesting: NSColor? { sidebarSurface.barColor }
+    var detailBarBrushForTesting: AppKitBrush { detailSurface.barBrush }
+    var detailSurfaceForTesting: AppKitPaneView { detailSurface }
+    var sidebarBarBrushForTesting: AppKitBrush { sidebarSurface.barBrush }
 
     var detailRowForTesting: NSView? {
         detailItem.topAlignedAccessoryViewControllers.first?.view

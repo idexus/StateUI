@@ -41,9 +41,10 @@ struct UIKitPageChrome {
         isOn: nil)
     static let closeIdentifier = UIAction.Identifier("stateui.close")
 
-    /// Puts it on `item`, the bar a navigation controller shows for the page - its buttons made again only where
-    /// they say something else than `standing` says, else recolored; `standing` then says what they say.
-    func show(on item: UINavigationItem, buttons standing: inout [[UIKitBarAction.Said]]?) {
+    /// Puts it on `item`, the bar a navigation controller shows for the page, its background `barSize` - its
+    /// buttons made again only where they say something else than `standing` says, else recolored; `standing` then
+    /// says what they say.
+    func show(on item: UINavigationItem, barSize: CGSize, buttons standing: inout [[UIKitBarAction.Said]]?) {
         item.title = title
         if item.subtitle != subtitle { item.subtitle = subtitle }
         // A layout's size follows what it holds; a control is fitted once and keeps the width the bar gives it:
@@ -98,7 +99,7 @@ struct UIKitPageChrome {
             return
         }
         let appearance = UINavigationBarAppearance()
-        appearance.stand(on: barMaterial)
+        appearance.stand(on: barMaterial, size: barSize)
         if let foreground {
             appearance.titleTextAttributes = [.foregroundColor: foreground]
             appearance.largeTitleTextAttributes = [.foregroundColor: foreground]

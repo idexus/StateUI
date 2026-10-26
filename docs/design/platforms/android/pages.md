@@ -32,7 +32,8 @@ tabs pushed onto a stack by their own title, else by the page beneath. A page
 with a title view shows that view instead, across the room between the
 navigation button and the actions. The bar also carries the line under the
 title and the colors the page's path declares, the nearest of each - a blur
-as its color, as Android blurs nothing behind a bar
+as its color, as Android blurs nothing behind a bar, a gradient drawn as a
+view's background is, fitted to each size the bar is placed at
 ([the bar a path declares](../../host/pages.md#the-bar-a-path-declares)) -
 an arrangement changing one refreshes every bar under it. A color that
 travels, and what a page says of the bar from a state - its title, its way

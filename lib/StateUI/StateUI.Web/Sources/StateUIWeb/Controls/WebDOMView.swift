@@ -76,6 +76,11 @@ class WebDOMView {
     private var box = WebBox()
     private var followsSize = false
 
+    /// The CSS variables written as a box's background, by name, and whether the view's size is followed for a
+    /// gradient in one.
+    private var backgrounds: [String: WebBox] = [:]
+    private var backgroundsFollowSize = false
+
     init(tag: String) {
         node = WebRelay.create(tag)
         serial = HostNumbers.next()
@@ -408,6 +413,27 @@ class WebDOMView {
 
     /// The view's box as it stands.
     var paintedBox: WebBox { box }
+
+    /// Writes the CSS variable `name` as `box`'s background over the view - a gradient's for the view's size, again
+    /// as the size changes; nil takes it away.
+    /// Design: docs/design/platforms/web/drawing.md#a-brush-on-a-box
+    func styleBackground(_ name: String, _ box: WebBox?) {
+        backgrounds[name] = box
+        if box?.followsSize == true, !backgroundsFollowSize {
+            backgroundsFollowSize = true
+            followSize { [weak self] in
+                guard let self else { return }
+                for name in backgrounds.keys.sorted() { writeBackground(name) }
+            }
+        }
+        writeBackground(name)
+    }
+
+    private func writeBackground(_ name: String) {
+        guard let box = backgrounds[name] else { return style(name, nil) }
+        let size = box.followsSize ? WebRelay.size(of: node) : LayoutSize(width: 0, height: 0)
+        style(name, box.styles(size: size).first { $0.0 == "background" }?.1 ?? nil)
+    }
 
     private func writeBox() {
         let size = box.followsSize ? WebRelay.size(of: node) : LayoutSize(width: 0, height: 0)

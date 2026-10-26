@@ -150,10 +150,10 @@ extension AppKitDriver {
         let inSheet = element.enclosing(type: .sheet) != nil
         guard let window = inSheet ? try sheet(of: element).window : try controller(of: element).window,
               window.titlebarAppearsTransparent,
-              let band = (window.contentView as? AppKitWindowContentView)?.barColor
+              let band = (window.contentView as? AppKitWindowContentView)?.barBrush
         else { return nil }
-        // The band's color, or the blur it stands in for.
-        return StandIns.material(painted: Self.color(band)).propValue
+        // What paints the band - its color, or the blur it stands in for, or its gradient.
+        return StandIns.material(painted: band.brush)?.propValue
     }
 
     /// The words the host keeps under `key`, as the next launch reads them: a value every scene shares from the

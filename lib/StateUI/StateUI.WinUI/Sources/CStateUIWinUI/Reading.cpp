@@ -62,8 +62,17 @@ namespace {
         return words;
     }
 
-    /// A ground as a test reads it: a color, "acrylic" with its color and luminosity, or nothing for WinUI's own.
+    /// A ground as a test reads it: a color, "acrylic" with its color and luminosity, "linear" with its two points
+    /// and each stop's color at its offset, or nothing for WinUI's own.
     std::string groundText(media::Brush const &own) {
+        if (auto linear = own ? own.try_as<media::LinearGradientBrush>() : nullptr) {
+            auto from = linear.StartPoint();
+            auto to = linear.EndPoint();
+            auto words = "linear " + number(from.X) + " " + number(from.Y) + " " + number(to.X) + " " + number(to.Y);
+            for (auto const &stop : linear.GradientStops())
+                words += " " + color(media::SolidColorBrush(stop.Color())) + "@" + number(stop.Offset());
+            return words;
+        }
         if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
             auto luminosity = acrylic.TintLuminosityOpacity();
             return "acrylic " + color(media::SolidColorBrush(acrylic.TintColor())) + " " +

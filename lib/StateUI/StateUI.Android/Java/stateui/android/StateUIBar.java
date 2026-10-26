@@ -84,11 +84,13 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
         }
     }
 
-    /** The title, the line under it - null for none - and the bar's colors; a color of 0 leaves Android's own. */
-    void show(String title, String subtitle, int background, int foreground) {
+    /**
+     * The title, the line under it - null for none - and the color of what stands on the bar; 0 leaves Android's
+     * own. The host paints the bar's background as a view's.
+     */
+    void show(String title, String subtitle, int foreground) {
         this.title = title;
         this.subtitle = subtitle;
-        if (background != 0) setBackgroundColor(background); else setBackground(null);
         this.foreground = foreground;
         if (foreground != 0) {
             setTitleTextColor(foreground);

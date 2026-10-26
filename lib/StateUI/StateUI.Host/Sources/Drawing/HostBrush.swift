@@ -69,6 +69,14 @@
         max(width, height) * radius
     }
 
+    /// Whether the brush is a gradient, which follows the size of what it paints.
+    public var isGradient: Bool {
+        switch self {
+        case .linear, .radial: true
+        case .none, .solid: false
+        }
+    }
+
     /// Whether the brush is one color nothing of which shows: a clear bar, which shows what is behind it as it is.
     /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
     public var isClear: Bool {

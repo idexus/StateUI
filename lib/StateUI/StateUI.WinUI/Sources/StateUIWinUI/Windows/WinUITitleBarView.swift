@@ -42,9 +42,14 @@ final class WinUITitleBarView: WinUIView {
         let icon = WinUIStrings.lines(WinUIPictures.lines(area?.icon))
         let title = area?.title ?? (chrome.showsTitle ? chrome.title : "")
         let line = area.map(\.subtitle) ?? (chrome.showsTitle ? chrome.subtitle : nil)
-        stateui_winui_title_bar_set(
-            handle, title, line ?? "", icon, chrome.back != nil, chrome.sidebarToggle != nil, ground.kind, ground.argb,
-            ground.opacity, ground.tintOpacity, foreground != nil, foreground ?? 0, theme.rawValue)
+        // A gradient over the bar's box, in the ground's place.
+        let gradient = HostBrush(chrome.background).isGradient ? WinUIBrush(chrome.background) : .none
+        gradient.withRelayBrush(over: LayoutSize(width: 0, height: 0)) { painted in
+            stateui_winui_title_bar_set(
+                handle, title, line ?? "", icon, chrome.back != nil, chrome.sidebarToggle != nil, ground.kind,
+                ground.argb, ground.opacity, ground.tintOpacity, painted, foreground != nil, foreground ?? 0,
+                theme.rawValue)
+        }
 
         menuActions = actions.show(
             leading: chrome.leading, trailing: chrome.trailing, overflow: chrome.overflow, on: handle)

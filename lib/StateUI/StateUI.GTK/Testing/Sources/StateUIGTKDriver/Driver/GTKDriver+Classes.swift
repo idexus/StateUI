@@ -102,10 +102,23 @@ extension GTKDriver {
             .flatMap { color(String($0.dropFirst("stateui-fill-".count))) }
     }
 
-    /// The color a header bar is painted in, as its class paints it; nil on libadwaita's own.
-    static func barFill(of widget: GTKWidget) -> Color? {
-        classes(of: widget).first { $0.hasPrefix("stateui-bar-b") }
-            .flatMap { color(String($0.dropFirst("stateui-bar-b".count))) }
+    /// What a header bar `width` by `height` is painted with, as its class paints it - its color, a blur's stand-in
+    /// among them, or its line's gradient: `-gl`, the angle, each stop `<color>at<percent>` - nil on libadwaita's own.
+    static func barPaint(of widget: GTKWidget, width: Double, height: Double) -> Material? {
+        guard let parts = classes(of: widget).first(where: { $0.hasPrefix("stateui-bar-") })?
+            .dropFirst("stateui-bar-".count).split(separator: "-"), let first = parts.first
+        else { return nil }
+        if first.hasPrefix("b") { return color(String(first.dropFirst())).map { StandIns.material(painted: $0) } }
+        guard first.hasPrefix("gl") else { return nil }
+        let stops: [(color: Color, place: Double)] = parts.dropFirst().filter { $0.contains("at") }.compactMap { part in
+            let halves = part.split(separator: "at")
+            guard halves.count == 2, let color = color(String(halves[0])), let percent = number(halves[1]) else {
+                return nil
+            }
+            return (color, percent / 100)
+        }
+        return StandIns.material(
+            cssAngle: first.count > 2 ? number(first.dropFirst(2)) : nil, stops: stops, width: width, height: height)
     }
 
     /// The color a sheet's dialog stands on, as its class paints it; nil on libadwaita's own.
@@ -126,9 +139,9 @@ extension GTKDriver {
         return found
     }
 
-    /// A number as a class writes it, a point as an underscore.
+    /// A number as a class writes it, a point as an underscore, a minus as `m`.
     private static func number(_ text: Substring) -> Double? {
-        Double(text.replacing("_", with: "."))
+        Double(text.replacing("_", with: ".").replacing("m", with: "-"))
     }
 
     /// A color as a class writes it: red, green, blue and alpha, two hexadecimal digits each.

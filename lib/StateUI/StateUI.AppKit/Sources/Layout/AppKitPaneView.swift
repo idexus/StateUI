@@ -7,7 +7,7 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 /// One pane of a split view. Its page keeps out of the part the window's title
-/// bar and toolbar cover, and a color written for the bars paints that part;
+/// bar and toolbar cover, and the brush written for the bars paints that part;
 /// a sidebar's pane stands on the material its split view says, else on the
 /// system's sidebar.
 ///
@@ -15,9 +15,9 @@ import AppKit
 /// a change inside the page is laid out by the page.
 @MainActor
 final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
-    /// The color the window's bars are written in, painted over `barBand`.
-    var barColor: NSColor? {
-        didSet { if barColor != oldValue { needsDisplay = true } }
+    /// What the window's bars are painted with - a color or a gradient - over `barBand`.
+    var barBrush = AppKitBrush() {
+        didSet { if barBrush != oldValue { needsDisplay = true } }
     }
 
     /// What the pane stands on - a color, a gradient, a blur or glass - drawn as a layout draws its box.
@@ -35,7 +35,7 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
 
     override func layout() {
         super.layout()
-        if barColor != nil { needsDisplay = true }
+        if barBrush.paints { needsDisplay = true }
         layOutReporting(item?.view)
     }
 
@@ -45,9 +45,11 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         ground.draw(in: bounds)
-        guard let barColor else { return }
-        barColor.setFill()
-        barBand.fill()
+        guard barBrush.paints else { return }
+        // Design: docs/design/platforms/appkit/runtime.md#the-bars-band
+        let window = self.window?.contentView.map { convert($0.bounds, from: $0) } ?? bounds
+        let across = NSRect(x: window.minX, y: barBand.minY, width: window.width, height: barBand.height)
+        barBrush.draw(in: NSBezierPath(rect: barBand), bounds: across)
     }
 }
 

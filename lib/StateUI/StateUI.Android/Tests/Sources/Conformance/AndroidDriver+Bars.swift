@@ -17,6 +17,8 @@ extension AndroidDriver {
         while let found = each, found.type != .navigationStack { each = found.parent }
         guard let bar = ((each?.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar else { return nil }
         switch property {
+        case .barBackground where HostBrush(element.barMaterial.painted).isGradient:
+            return gradient(on: bar, asked: element.barMaterial.painted)
         case .barBackground, .barForegroundColor:
             let reading = property == .barBackground ? barBackground : barForeground
             let argb = UInt32(bitPattern: Java.callStaticInt(testBars, reading, .object(bar.reference)))
@@ -29,6 +31,23 @@ extension AndroidDriver {
         default:
             return nil
         }
+    }
+
+    /// The gradient the bar's background draws: `asked`, the line's gradient the tree asks of the bar, where the
+    /// background drawn at the bar's size shows each of its stops' colors where the stop stands - the pixels decide,
+    /// the tree's gradient says where to look; nil where they show another.
+    private static func gradient(on bar: AndroidBarView, asked: HostValue?) -> HostValue? {
+        guard case .linear(let from, let to, let stops) = HostBrush(asked) else { return nil }
+        for stop in stops {
+            guard let wanted = stop.color.color else { return nil }
+            let (x, y) = (from.x + stop.offset * (to.x - from.x), from.y + stop.offset * (to.y - from.y))
+            let argb = UInt32(bitPattern: Java.callStaticInt(
+                testBars, barBackgroundAt, .object(bar.reference), .float(Float(x)), .float(Float(y))))
+            let shown = [argb >> 16 & 0xFF, argb >> 8 & 0xFF, argb & 0xFF].map(Int.init)
+            guard zip(shown, [wanted.red, wanted.green, wanted.blue]).allSatisfy({ abs($0 - Int($1)) <= 3 })
+            else { return nil }
+        }
+        return asked
     }
 
     /// Whether the stack a page stands on shows its bar over it, the line under its title, and the way back there -
@@ -85,5 +104,6 @@ extension AndroidDriver {
     private static let barSubtitle = Java.staticMethod(
         testBars, "subtitle", "(Landroid/widget/Toolbar;)Ljava/lang/String;")
     private static let barBackground = Java.staticMethod(testBars, "background", "(Landroid/widget/Toolbar;)I")
+    private static let barBackgroundAt = Java.staticMethod(testBars, "backgroundAt", "(Landroid/widget/Toolbar;FF)I")
     private static let barForeground = Java.staticMethod(testBars, "foreground", "(Landroid/widget/Toolbar;)I")
 }

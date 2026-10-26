@@ -49,7 +49,8 @@ enum GTKRealization {
             + "identifier before 4.22, and from 4.22 only a GtkBuilder file's id, which no public call sets on a widget "
             + "made in code."),
         .partial(BarElementContract.barBackground,
-            missing: "GNOME blurs nothing inside a window: a blur or glass shows its color."),
+            missing: "GNOME blurs nothing inside a window: a blur or glass shows its color. A gradient across a corner "
+                + "or out from a point keeps the header bar's proportions as it was painted, not as the window resizes."),
         .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A header bar's buttons are libadwaita's own, flat."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The header bar's buttons keep libadwaita's own look."),
         .complete(BarElementContract.barForegroundColor),

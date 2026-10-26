@@ -104,6 +104,19 @@ extension WinUIDriver {
     /// WinUI's own.
     private static func ground(_ read: String) -> HostValue? {
         let words = read.split(separator: " ")
+        // A line's gradient: its two points, then each stop's color at its offset.
+        if words.first == "linear", words.count > 5 {
+            let points = words[1...4].compactMap { Double($0) }
+            let stops = words.dropFirst(5).compactMap { stop -> GradientStop? in
+                let halves = stop.split(separator: "@")
+                guard halves.count == 2, let color = Color(parsing: String(halves[0])), let offset = Double(halves[1])
+                else { return nil }
+                return GradientStop(color, offset)
+            }
+            guard points.count == 4, stops.count == words.count - 5 else { return nil }
+            return Material.gradient(.linearGradient(
+                stops, startPoint: Point(points[0], points[1]), endPoint: Point(points[2], points[3]))).propValue
+        }
         if words.first == "acrylic", words.count == 3, let opacity = Float(words[2]),
            let thickness = Blur.Thickness.allCases.first(where: { abs(WinUIWindow.acrylic($0).opacity - opacity) < 0.005 }) {
             return Material.blur(Blur(thickness)).propValue

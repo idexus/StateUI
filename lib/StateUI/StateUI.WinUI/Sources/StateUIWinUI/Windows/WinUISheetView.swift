@@ -47,8 +47,12 @@ final class WinUISheetView: WinUIView {
         let background = material.painted
         let written = BandWords.color(on: background, written: foreground)?.argb
         let theme: ColorScheme = background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light } ?? .system
-        stateui_winui_sheet_set_bar(
-            handle, band.kind, band.argb, band.opacity, band.tintOpacity, written != nil, written ?? 0, theme.rawValue)
+        let gradient = HostBrush(background).isGradient ? WinUIBrush(background) : .none
+        gradient.withRelayBrush(over: LayoutSize(width: 0, height: 0)) { painted in
+            stateui_winui_sheet_set_bar(
+                handle, band.kind, band.argb, band.opacity, band.tintOpacity, painted, written != nil, written ?? 0,
+                theme.rawValue)
+        }
     }
 
     /// The ground the card stands on now.

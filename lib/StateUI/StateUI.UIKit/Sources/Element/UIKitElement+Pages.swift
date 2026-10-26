@@ -89,9 +89,17 @@ extension UIKitElement {
     func composeChrome() {
         switch type {
         case .page:
-            if let controller { chrome.show(on: controller.navigationItem, buttons: &barButtonsSaid) }
+            if let controller {
+                chrome.show(
+                    on: controller.navigationItem, barSize: UIKitNavigationController.barBackground(of: controller),
+                    buttons: &barButtonsSaid)
+            }
         case .tabView:
-            if let controller { chrome.show(on: controller.navigationItem, buttons: &barButtonsSaid) }
+            if let controller {
+                chrome.show(
+                    on: controller.navigationItem, barSize: UIKitNavigationController.barBackground(of: controller),
+                    buttons: &barButtonsSaid)
+            }
             let tabs = controller as? UIKitTabBarController
             tabs?.showsTheStacksBar = element.showsTheStacksBar
             // A tab bar wears the colors of the bar on its path, which a theme or a state moves on an element above.
@@ -120,6 +128,7 @@ extension UIKitElement {
             navigation.showsBar = { [weak self] shown in
                 self?.arranged.first { $0.controller === shown }?.element.showsTheStacksBar ?? true
             }
+            navigation.onBarResized = { [weak self] in self?.paintBarsGradientAgain() }
             // A page comes in wearing its own bar: UIKit takes the bar's look as the move starts, which a layout in
             // the same turn - a sidebar going - can start before the window's chrome is composed.
             arranged.forEach { $0.composeChrome() }
@@ -132,6 +141,7 @@ extension UIKitElement {
                 },
                 requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
+            tabs.onBarResized = { [weak self] in self?.paintBarsGradientAgain() }
         case .splitView:
             guard let split = controller as? UIKitSplitViewController else { return }
             split.show(sidebar: arranged.first?.controller, detail: arranged.dropFirst().first?.controller)
@@ -158,9 +168,17 @@ extension UIKitElement {
     /// Lets the arrangement's controller say nothing more, as the element leaves the tree.
     func releasePages() {
         (controller as? UIKitNavigationController)?.onPopped = nil
+        (controller as? UIKitNavigationController)?.onBarResized = nil
         (controller as? UIKitTabBarController)?.onSelection = nil
+        (controller as? UIKitTabBarController)?.onBarResized = nil
         (controller as? UIKitSplitViewController)?.onPresentationChanged = nil
         (controller as? UIKitSplitViewController)?.stopSliding()
+    }
+
+    /// The arrangement's bar took another width: a gradient on it is drawn again for the size it stands at now.
+    private func paintBarsGradientAgain() {
+        guard HostBrush(element.barMaterial.painted).isGradient else { return }
+        composeChrome()
     }
 
     /// The user took the stack's top pages away: the host layer tells the path how long it is now.

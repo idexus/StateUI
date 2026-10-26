@@ -25,12 +25,10 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     /// desktop show through it.
     private var material: AppKitMaterialView?
 
-    /// The band the title bar and toolbar cover, painted in `barColor` - over
+    /// The band the title bar and toolbar cover, painted in `barBrush` - over
     /// the material, where the window has one.
-    private lazy var band: NSView = {
-        let band = NSView()
-        band.wantsLayer = true
-        band.isHidden = true
+    private lazy var band: AppKitBandView = {
+        let band = AppKitBandView()
         addSubview(band, positioned: .below, relativeTo: nil)
         return band
     }()
@@ -96,10 +94,10 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     var materialTintForTesting: NSView? { material?.wash }
 
-    /// The color the window's bars are written in, painted over `barBand`.
-    /// Nil leaves the title bar and toolbar the system's material.
-    var barColor: NSColor? {
-        didSet { if barColor != oldValue { needsLayout = true } }
+    /// What the window's bars are painted with - a color or a gradient - over `barBand`.
+    /// Nothing leaves the title bar and toolbar the system's material.
+    var barBrush = AppKitBrush() {
+        didSet { if barBrush != oldValue { needsLayout = true } }
     }
 
     /// The part of the window the title bar and toolbar cover.
@@ -156,8 +154,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
             material.wash.isHidden = materialTint == nil
         }
         band.frame = barBand
-        band.layer?.backgroundColor = barColor?.cgColor
-        band.isHidden = barColor == nil
+        band.brush = barBrush
         if pageSpansTitleBar {
             page?.frame = bounds
         } else {

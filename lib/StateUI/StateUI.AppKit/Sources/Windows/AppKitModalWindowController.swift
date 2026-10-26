@@ -117,9 +117,9 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
     /// stack brings one.
     /// Design: docs/design/platforms/appkit/runtime.md#sheets
     private func showBar(_ chrome: WindowChrome, in window: NSWindow) {
-        let color = element.bringsABar ? chrome.background.flatMap(nsColor) : nil
-        window.titlebarAppearsTransparent = color != nil
-        content.barColor = color
+        let brush = element.bringsABar ? AppKitBrush(chrome.background) : AppKitBrush()
+        window.titlebarAppearsTransparent = brush.paints
+        content.barBrush = brush
         guard element.bringsABar else { return window.toolbar = nil }
         let words = element.appKit.core.chromeWords
         toolbar.apply(AppKitWindowChrome(

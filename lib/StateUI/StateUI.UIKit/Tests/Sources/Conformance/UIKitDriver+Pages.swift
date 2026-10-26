@@ -105,7 +105,7 @@ extension UIKitDriver {
         if let tabs = (element.native as? UIKitElement)?.controller as? UITabBarController {
             let appearance = tabs.tabBar.standardAppearance
             switch property {
-            case .barBackground: return material(of: appearance)
+            case .barBackground: return material(of: appearance, asked: element.barMaterial.painted)
             case .barForegroundColor:
                 let words = appearance.stackedLayoutAppearance.selected.titleTextAttributes[.foregroundColor]
                 return (words as? UIColor).map { color($0).propValue }
@@ -114,7 +114,8 @@ extension UIKitDriver {
         }
         guard let item = (element.visiblePage?.native as? UIKitElement)?.controller?.navigationItem else { return nil }
         switch property {
-        case .barBackground: return item.standardAppearance.flatMap(material(of:))
+        case .barBackground:
+            return item.standardAppearance.flatMap { material(of: $0, asked: element.barMaterial.painted) }
         case .barForegroundColor:
             return (item.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor).map { color($0).propValue }
         case .subtitle: return item.subtitle.map { .string($0) }
@@ -122,14 +123,47 @@ extension UIKitDriver {
         }
     }
 
-    /// What a bar's appearance stands on: UIKit's blur in one of its five thicknesses under its tint, else its color.
-    private static func material(of appearance: UIBarAppearance) -> HostValue? {
+    /// What a bar's appearance stands on: the gradient its picture shows, UIKit's blur in one of its five thicknesses
+    /// under its tint, else its color.
+    private static func material(of appearance: UIBarAppearance, asked: HostValue?) -> HostValue? {
+        if let image = appearance.backgroundImage { return gradient(in: image, asked: asked) }
         let tint = appearance.backgroundColor.map(color)
         guard let effect = appearance.backgroundEffect, let thickness = Blur.Thickness.allCases.first(where: {
             UIBlurEffect(style: UIKitBackdropView.style($0)).isEqual(effect)
         }) else { return tint?.propValue }
         let blur = Blur(thickness)
         return Material.blur(tint.map(blur.tint) ?? blur).propValue
+    }
+
+    /// The gradient a bar's picture shows: `asked`, the line's gradient the tree asks of the bar, where the picture's
+    /// pixels show each of its stops' colors where the stop stands - the pixels decide, the tree's gradient says
+    /// where to look; nil where they show another.
+    private static func gradient(in image: UIImage, asked: HostValue?) -> HostValue? {
+        guard case .linear(let from, let to, let stops) = HostBrush(asked), let picture = image.cgImage,
+              let sRGB = CGColorSpace(name: CGColorSpace.sRGB)
+        else { return nil }
+        let (width, height) = (picture.width, picture.height)
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        let drawn = pixels.withUnsafeMutableBytes { bytes -> Bool in
+            guard let context = CGContext(
+                data: bytes.baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                space: sRGB, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+            else { return false }
+            context.draw(picture, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
+        }
+        guard drawn else { return nil }
+        for stop in stops {
+            guard let wanted = stop.color.color else { return nil }
+            // The rows stand top first in memory.
+            let x = Int(((from.x + stop.offset * (to.x - from.x)) * Double(width - 1)).rounded())
+            let y = Int(((from.y + stop.offset * (to.y - from.y)) * Double(height - 1)).rounded())
+            let at = (y * width + x) * 4
+            let shown = [pixels[at], pixels[at + 1], pixels[at + 2]]
+            guard zip(shown, [wanted.red, wanted.green, wanted.blue]).allSatisfy({ abs(Int($0) - Int($1)) <= 3 })
+            else { return nil }
+        }
+        return asked
     }
 
     /// The user's acts on pages: the way back a stack's bar offers, a tab chosen on the tab bar, an action taken on

@@ -54,6 +54,17 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
         layTheStacksBar(animated: animated)
     }
 
+    /// What runs as the tab bar takes another width - laid out the first time, the device turned, the window resized.
+    var onBarResized: (() -> Void)?
+    private var barWidth: CGFloat = 0
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard tabBar.bounds.width != barWidth else { return }
+        barWidth = tabBar.bounds.width
+        onBarResized?()
+    }
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         guard let stack = uiKitsOwnStack, stack.topViewController !== self else { return }
@@ -100,7 +111,7 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
             return
         }
         let appearance = UITabBarAppearance()
-        appearance.stand(on: material)
+        appearance.stand(on: material, size: tabBar.bounds.size)
         // Words on a painted bar: the color written, else light on a dark bar and dark on a light one.
         // In every layout: stacked, and inline on an iPad and a phone turned.
         if let color = BandWords.color(on: background, written: foreground).flatMap(UIColor.init(stateUI:)) {

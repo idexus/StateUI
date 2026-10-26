@@ -35,10 +35,12 @@ final class WinUIMenuBarView: WinUIView {
         guard painted.map({ $0 != background || $1 != foreground }) ?? true else { return }
 
         painted = (background, foreground)
-        let fill = background?.argb
         let words = BandWords.color(on: background, written: foreground)?.argb
         let theme: ColorScheme = background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light } ?? .system
-        stateui_winui_menu_bar_set_colors(handle, fill != nil, fill ?? 0, words != nil, words ?? 0, theme.rawValue)
+        // A color or a gradient over the bar's box.
+        WinUIBrush(background).withRelayBrush(over: LayoutSize(width: 0, height: 0)) { painted in
+            stateui_winui_menu_bar_set_colors(handle, painted, words != nil, words ?? 0, theme.rawValue)
+        }
     }
 
     override func detach() {

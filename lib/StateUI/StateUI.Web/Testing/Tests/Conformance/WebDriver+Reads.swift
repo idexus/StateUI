@@ -197,7 +197,40 @@ extension WebDriver {
         if let blur, let thickness = Blur.Thickness.allCases.first(where: { WebBox.blur($0) == blur }) {
             return Material.blur(Blur(thickness)).propValue
         }
+        let painted = try WebBrowser.evaluate(
+            "getComputedStyle(e).getPropertyValue('--stateui-bar-background').trim()", on: bar.node) ?? ""
+        if painted.hasPrefix("linear-gradient(") {
+            let size = try numbers("[e.offsetWidth, e.offsetHeight].join(',')", on: bar.node, separator: ",")
+            guard size.count == 2 else { throw DriverCannot("read the size of the bar") }
+            return Self.gradient(painted, width: size[0], height: size[1])?.propValue
+        }
         return try barColor("--stateui-bar-background", over: element)
+    }
+
+    /// A line's gradient as CSS writes it for a box `width` by `height` - its angle, then each stop's color at its
+    /// place on CSS's line - read back to its points in fractions of the box; nil for anything else.
+    static func gradient(_ written: String, width: Double, height: Double) -> Material? {
+        var parts = written.dropFirst("linear-gradient(".count).dropLast()
+            .split(separator: ",", omittingEmptySubsequences: false).map { $0.trimmingPrefix(" ") }
+        var angle: Double?
+        if let first = parts.first, first.hasSuffix("deg"), let degrees = Double(first.dropLast(3)) {
+            angle = degrees
+            parts.removeFirst()
+        }
+        // Each stop: `rgb(r g b / a) place%`.
+        let stops: [(color: Color, place: Double)] = parts.compactMap { part in
+            guard let open = part.firstIndex(of: "("), let close = part.firstIndex(of: ")"),
+                  let place = Double(part[part.index(after: close)...].trimmingPrefix(" ").dropLast())
+            else { return nil }
+            let channels = part[part.index(after: open)..<close].split { " /".contains($0) }.compactMap { Double($0) }
+            guard channels.count == 4 else { return nil }
+            let color = Color(
+                red: Int(channels[0]), green: Int(channels[1]), blue: Int(channels[2]),
+                alpha: Int((channels[3] * 255).rounded()))
+            return (color, place / 100)
+        }
+        guard stops.count == parts.count else { return nil }
+        return StandIns.material(cssAngle: angle, stops: stops, width: width, height: height)
     }
 
     private func barColor(_ variable: String, over element: MountedElement) throws -> HostValue? {

@@ -115,11 +115,17 @@ the page's item in a menu that enables its items by asking, so the element
 it tells answers whether it can be chosen (`validateMenuItem`), as the tree
 says.
 
-## The toolbar
+## The bars' band
 
 The bars' material paints the band the title bar and the toolbar cover - a
-blur as its color, under the toolbar's own glass, as the band is painted - and
-the toolbar's items keep the system's look.
+color or a gradient over the window's whole width, a blur as its color, under
+the toolbar's own glass - and the toolbar's items keep the system's look; the
+band stands hidden where the bars say nothing. Over a split view the detail's
+pane paints its part of the same band, its gradient laid across the window's
+width, so the band under a floating sidebar's glass and the detail's run on
+into one another.
+
+## The toolbar
 
 A window's toolbar holds the chrome its arrangement composes - over a split
 view the system's sidebar button where the split view offers it, the

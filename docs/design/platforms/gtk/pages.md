@@ -69,15 +69,7 @@ every render, and written on the header bar of each page shown:
   offers it (`offersSidebarToggle`);
 - for a tabbed view, its switcher beneath the bar, under the chosen tab's
   page's chrome;
-- the bar's colors: a page's header bar is painted in the colors its path
-  declares, the nearest arrangement's (`barColors`) - a blur as its color, as
-  GNOME blurs nothing inside a window - and what stands on it -
-  the title, the way back, the toggles and the switcher's captions - in its
-  foreground, else light on a dark band and dark on a light one ([words on
-  a painted band](../../host/layout.md#words-on-a-painted-band)), as a class
-  of the host's style sheet ([a widget's own
-  box](drawing.md#a-widgets-own-box)); a bar no arrangement colors keeps
-  the platform's.
+- the bar's look ([the bar's look](#the-bars-look)).
 
 The page the user sees names the window, for the desktop's switcher and dock;
 a page with no title leaves the window's own.
@@ -85,6 +77,23 @@ a page with no title leaves the window's own.
 A bar's button holding a menu is the button a button's menu makes - GTK's
 menu button, libadwaita's split button, or held - and behind the overflow a
 flat menu button opening what it offers there.
+
+## The bar's look
+
+A page's header bar is painted in the colors its path declares, the nearest
+arrangement's (`barColors`) - a blur as its color, as GNOME blurs nothing
+inside a window, a gradient as CSS draws one ([drawn by
+CSS](../../types/brushes.md#drawn-by-css)) - and what stands on it - the
+title, the way back, the toggles and the switcher's captions - in its
+foreground, else light on a dark band and dark on a light one ([words on a
+painted band](../../host/layout.md#words-on-a-painted-band)), as a class of
+the host's style sheet ([a widget's own box](drawing.md#a-widgets-own-box)); a
+bar no arrangement colors keeps the platform's. A gradient's class is written
+for the header bar's size as it stands - again once it has one, where it was
+painted before it was laid out - and not as the user resizes the window: each
+new class loads the whole sheet again. A gradient across or down the bar is
+the same at every size; one across a corner, or out from a point, keeps the
+proportions the bar was painted at, which the register records (☑️).
 
 ## A navigation stack
 

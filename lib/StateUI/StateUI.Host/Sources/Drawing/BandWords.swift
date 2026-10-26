@@ -7,11 +7,17 @@
 /// light one, where the tree writes no color for them.
 /// Design: docs/design/host/layout.md#words-on-a-painted-band
 @_spi(Host) public enum BandWords {
-    /// Whether words on `band` are drawn light: its relative luminance, Rec. 709, below a half. Nil for a value that
-    /// is no color.
+    /// Whether words on `band` are drawn light: its relative luminance, Rec. 709, below a half - a gradient's the
+    /// mean of its stops'. Nil for a value that is neither a color nor a gradient.
     public static func light(on band: HostValue) -> Bool? {
-        guard let color = band.fractions else { return nil }
-        return 0.2126 * color.red + 0.7152 * color.green + 0.0722 * color.blue < 0.5
+        let colors: [HostValue] = switch HostBrush(band) {
+        case .none: []
+        case .solid(let color): [color]
+        case .linear(_, _, let stops), .radial(_, _, let stops): stops.map(\.color)
+        }
+        let luminances = colors.compactMap(\.fractions).map { 0.2126 * $0.red + 0.7152 * $0.green + 0.0722 * $0.blue }
+        guard !luminances.isEmpty else { return nil }
+        return luminances.reduce(0, +) / Double(luminances.count) < 0.5
     }
 
     /// The color of words on `band`: the one the tree writes, `written`, else white on a dark band and black on a

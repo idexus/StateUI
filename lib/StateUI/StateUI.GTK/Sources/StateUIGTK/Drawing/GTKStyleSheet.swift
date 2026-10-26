@@ -57,14 +57,19 @@ enum GTKStyleSheet {
         return "stateui-destructive"
     }
 
-    /// The class painting a bar in `background`, what stands on it in `foreground`; nil where neither is given.
-    static func bar(background: GdkRGBA?, foreground: GdkRGBA?) -> String? {
-        guard background != nil || foreground != nil else { return nil }
+    /// The class painting a bar with `background` - a color, or a gradient as CSS draws it over a bar `size`
+    /// across - what stands on it in `foreground`; nil where neither is given.
+    /// Design: docs/design/platforms/gtk/pages.md#the-bars-look
+    static func bar(
+        background: HostValue?, over size: (width: Double, height: Double), foreground: GdkRGBA?
+    ) -> String? {
+        let painted = paint(background, over: size)
+        guard painted != nil || foreground != nil else { return nil }
         var name = "stateui-bar"
         var body = ""
-        if let background {
-            name += "-b" + hex(background)
-            body += "background: \(css(background)); box-shadow: none; "
+        if let painted {
+            name += painted.name
+            body += "background: \(painted.css); box-shadow: none; "
         }
         if let foreground {
             name += "-f" + hex(foreground)
@@ -72,6 +77,46 @@ enum GTKStyleSheet {
         }
         write(name, body)
         return name
+    }
+
+    /// A brush as a part of a class's name and as CSS over a box `size` across: a color, `-b` and its channels; a
+    /// line's gradient, `-gl`, its angle and each stop's color `at` its place on CSS's line (`CSSGradientLine`); a
+    /// point's gradient, `-gr`, a circle as far as the host layer's reach; nil for nothing.
+    private static func paint(
+        _ value: HostValue?, over size: (width: Double, height: Double)
+    ) -> (name: String, css: String)? {
+        func placed(_ stops: [HostBrush.Stop], at places: [Double]) -> [(color: GdkRGBA, percent: Double)] {
+            zip(stops, places).compactMap { stop, place in
+                GTKBrush.rgba(stop.color).map { ($0, (place * 100_000).rounded() / 1000) }
+            }
+        }
+        func written(_ stops: [(color: GdkRGBA, percent: Double)]) -> (name: String, css: String) {
+            (stops.map { "-" + hex($0.color) + "at" + named($0.percent) }.joined(),
+             stops.map { css($0.color) + " " + css($0.percent) + "%" }.joined(separator: ", "))
+        }
+        switch HostBrush(value) {
+        case .none:
+            return nil
+        case .solid(let color):
+            return GTKBrush.rgba(color).map { ("-b" + hex($0), css($0)) }
+        case .linear(let from, let to, let stops):
+            let line = CSSGradientLine(from: from, to: to, stops: stops, width: size.width, height: size.height)
+            let angle = line.angle.map { ($0 * 1000).rounded() / 1000 }
+            let run = written(placed(stops, at: line.places))
+            return ("-gl" + (angle.map(named) ?? "") + run.name,
+                    "linear-gradient(" + (angle.map { css($0) + "deg, " } ?? "") + run.css + ")")
+        case .radial(let center, let radius, let stops):
+            let reach = (HostBrush.reach(of: radius, width: size.width, height: size.height) * 1000).rounded() / 1000
+            let (x, y) = ((center.x * size.width * 1000).rounded() / 1000, (center.y * size.height * 1000).rounded() / 1000)
+            let run = written(placed(stops, at: stops.map(\.offset)))
+            return ("-gr" + [reach, x, y].map(named).joined(separator: "-") + run.name,
+                    "radial-gradient(circle \(css(max(reach, 0.001)))px at \(css(x))px \(css(y))px, " + run.css + ")")
+        }
+    }
+
+    /// A number as a class's name writes it: a point as an underscore, a minus as `m`.
+    private static func named(_ number: Double) -> String {
+        css(number).replacing(".", with: "_").replacing("-", with: "m")
     }
 
     /// The class drawing a button's box: its fill - a little fainter under the pointer and fainter again pressed,

@@ -41,7 +41,10 @@ menu behind its last button - a picture on the bar, titled More, the word
 UIKit's own menu of what a narrow bar has no room for and VoiceOver say of
 it - whether it offers the way back, and its material and colors - a blur UIKit's
 own effect in its thickness under its tint, glass the system's own bar
-where the tree gives them. The view standing in for the title is fitted to
+where the tree gives them, a gradient the picture UIKit takes for a bar's
+background, drawn as large as the background stands - the bar's width, from
+the top of its stack's view under the status bar to the bar's bottom edge,
+a tab bar's whole size - and drawn again as the bar takes another width. The view standing in for the title is fitted to
 what it holds as it comes, and a layout again at every render; a control -
 a search field - keeps the width the bar gives it, since a fit to its words
 at every render would cut it as the user types and the bar would widen it

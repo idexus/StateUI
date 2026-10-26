@@ -28,6 +28,25 @@ final class UIKitNavigationController: UINavigationController, UINavigationContr
     /// Whether each page shows the bar, as it says.
     var showsBar: (UIViewController) -> Bool = { _ in true }
 
+    /// What runs as the bar takes another width - laid out the first time, the device turned, the window resized.
+    var onBarResized: (() -> Void)?
+    private var barWidth: CGFloat = 0
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard navigationBar.bounds.width != barWidth else { return }
+        barWidth = navigationBar.bounds.width
+        onBarResized?()
+    }
+
+    /// The size of the background of the bar `page` stands under: the bar's width, from the top of the stack's view -
+    /// under the status bar - to the bar's bottom edge; nothing before the bar is laid out.
+    /// Design: docs/design/platforms/uikit/pages.md#the-bar
+    static func barBackground(of page: UIViewController) -> CGSize {
+        guard let bar = page.navigationController?.navigationBar else { return .zero }
+        return CGSize(width: bar.bounds.width, height: bar.frame.maxY)
+    }
+
     init() {
         super.init(nibName: nil, bundle: nil)
         delegate = self

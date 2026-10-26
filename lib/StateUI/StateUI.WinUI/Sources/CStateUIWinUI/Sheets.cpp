@@ -201,15 +201,15 @@ extern "C" void stateui_winui_sheet_set_action_menu(
 }
 
 extern "C" void stateui_winui_sheet_set_bar(
-    StateUIObjectRef handle, StateUIGround kind, uint32_t argb, float opacity, float tintOpacity, bool hasForeground,
-    uint32_t foreground, int32_t theme
+    StateUIObjectRef handle, StateUIGround kind, uint32_t argb, float opacity, float tintOpacity, StateUIBrush gradient,
+    bool hasForeground, uint32_t foreground, int32_t theme
 ) {
     try {
         // The head is the bar's band across the card's top, the title, the buttons and the actions on it in the
         // bar's words' color, and in the theme its band asks for.
         auto sheet = borrow<controls::Grid>(handle);
         auto head = headOf(sheet);
-        if (auto brush = ground(kind, argb, opacity, tintOpacity)) head.Background(brush);
+        if (auto brush = barGround(kind, argb, opacity, tintOpacity, gradient)) head.Background(brush);
         else head.ClearValue(controls::Panel::BackgroundProperty());
         auto words = hasForeground ? media::Brush(media::SolidColorBrush(color(foreground))) : media::Brush{nullptr};
         auto title = head.Children().GetAt(1).as<controls::TextBlock>();

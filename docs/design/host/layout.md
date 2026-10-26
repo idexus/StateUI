@@ -332,8 +332,9 @@ background stands behind everything over it either way.
 
 Words on a band the tree paints - a bar, a row of tabs - take the color the
 tree writes for them; where it writes none, a band is dark where its relative
-luminance, by Rec. 709's weights, is below a half, and its words are white on
-a dark band, black on a light one (`BandWords.color`). Every host decides it alike, whatever
+luminance, by Rec. 709's weights, is below a half - a gradient's band the
+mean of its stops' - and its words are white on a dark band, black on a light
+one (`BandWords.color`). Every host decides it alike, whatever
 its toolkit's own idea of a dark color.
 
 ## A picture

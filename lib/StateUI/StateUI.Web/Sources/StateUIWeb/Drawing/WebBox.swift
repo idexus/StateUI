@@ -37,23 +37,23 @@ struct WebBox: Equatable {
     }
 
     /// Whether the box paints a gradient, which follows its size.
-    var followsSize: Bool { WebBrush.isGradient(fill) || WebBrush.isGradient(stroke) }
+    var followsSize: Bool { HostBrush(fill).isGradient || HostBrush(stroke).isGradient }
 
     /// The box's CSS for a box `size` across.
     func styles(size: LayoutSize) -> [(String, String?)] {
         let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
         // A shape the tree states wins over the look's corners - square ones too; one unsaid leaves them.
         let corners = ("border-radius", shape == nil ? nil : WebCSS.corners(BoxArithmetic.outline(shape)) ?? "0")
-        guard WebBrush.isGradient(stroke), width > 0 else {
+        guard HostBrush(stroke).isGradient, width > 0 else {
             let border = width > 0
                 ? "\(WebCSS.pixels(width)!) solid \(WebCSS.color(HostBrush(stroke).firstColor) ?? "currentColor")"
                 : isDrawn ? borderless : nil
-            let behind = WebBrush.isGradient(fill) ? WebBrush.image(fill, size: size) : WebCSS.fill(fill)
+            let behind = HostBrush(fill).isGradient ? WebBrush.image(fill, size: size) : WebCSS.fill(fill)
             guard let material, let thickness = material.blur else {
                 return [("background", behind), ("border", border), corners]
             }
             // The tint lies over the blur's color, and both over the blur of what lies behind.
-            let over = WebBrush.isGradient(fill) ? behind : behind.map { "linear-gradient(\($0), \($0))" }
+            let over = HostBrush(fill).isGradient ? behind : behind.map { "linear-gradient(\($0), \($0))" }
             let blur = "blur(\(WebCSS.pixels(Self.blur(thickness))!)) saturate(180%)"
             return [
                 ("background", [over, material.standIn.flatMap(WebCSS.color)].compactMap { $0 }.joined(separator: ", ")),

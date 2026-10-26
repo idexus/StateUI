@@ -23,7 +23,7 @@ extension AppKitWindowController {
         let arrangement = presentation.arrangement
         let chrome = WindowChrome(window: element, arrangement: arrangement)
         let titleView = arrangement?.visiblePage?.chromeTitleView?.appKit.view
-        let barColor = chrome.background.flatMap(nsColor)
+        let bar = AppKitBrush(chrome.background)
         let foreground = chrome.foreground.flatMap(nsColor)
         window.title = chrome.title ?? element.appKit.core.applicationName
         window.subtitle = chrome.subtitle ?? ""
@@ -31,9 +31,9 @@ extension AppKitWindowController {
         // title stands in the bar's foreground, and a page may show none:
         // the window keeps its name for the system and hides the one it would
         // draw.
-        window.titleVisibility = titleView == nil && barColor == nil && chrome.showsTitle ? .visible : .hidden
+        window.titleVisibility = titleView == nil && !bar.paints && chrome.showsTitle ? .visible : .hidden
         let paintedTitle: NSView? = chrome.background.flatMap { band in
-            guard titleView == nil, barColor != nil, chrome.showsTitle else { return nil }
+            guard titleView == nil, bar.paints, chrome.showsTitle else { return nil }
             bandTitle.stringValue = window.title
             bandTitle.textColor = Self.foreground(on: band, written: foreground)
             bandTitle.sizeToFit()
@@ -64,14 +64,14 @@ extension AppKitWindowController {
             overflow: chrome.actions.overflow.map(Self.action),
             words: words))
         split?.onSidebarResized = { [weak self] in self?.toolbar.fitAgain() }
-        synchronizeBar(window, color: barColor, split: split)
+        synchronizeBar(window, brush: bar, split: split)
         // A Mac window names no application of itself: the area says what the sidebar's page says, if anything.
         let area = chrome.splitView?.sidebarPage?.titleArea(applicationName: "")
         synchronizeTitleAccessory(
             window,
             area: area?.isEmpty == false ? area : nil,
             foreground: chrome.background.flatMap { band in
-                barColor.map { _ in Self.foreground(on: band, written: foreground) }
+                bar.paints ? Self.foreground(on: band, written: foreground) : nil
             })
         synchronizeTabRow(window, windowTabs(arrangement))
     }
@@ -169,25 +169,25 @@ extension AppKitWindowController {
         return light ? .white : .black
     }
 
-    /// A color written for the bars paints the band the title bar and
-    /// toolbar cover - the window's, under a floating sidebar's glass, and the
-    /// visible content's, a split view's detail - and the title bar lets it
-    /// show. With none written, the band is the system's material.
+    /// A color or a gradient written for the bars paints the band the title
+    /// bar and toolbar cover - the window's, under a floating sidebar's glass,
+    /// and the visible content's, a split view's detail - and the title bar
+    /// lets it show. With none written, the band is the system's material.
     ///
     /// The window's background is the one written for the window alone - the
-    /// bars' color paints the bars - else the system's. Where it is a blur,
+    /// bars' brush paints the bars - else the system's. Where it is a blur,
     /// the window keeps no color: its material, the system's, shows around the
     /// sidebar and under the page, tinted by the blur's tint.
-    private func synchronizeBar(_ window: NSWindow, color: NSColor?, split: AppKitSplitView?) {
-        window.titlebarAppearsTransparent = color != nil
+    private func synchronizeBar(_ window: NSWindow, brush: AppKitBrush, split: AppKitSplitView?) {
+        window.titlebarAppearsTransparent = brush.paints
         let written = traits?.background.paint.flatMap(nsColor)
         let background = backdrop != nil ? NSColor.clear : (written ?? .windowBackgroundColor)
         // A background that lets the desktop through - clear, or a color with an alpha - asks a window that is not opaque.
         window.isOpaque = backdrop == nil && background.alphaComponent >= 1
         if window.backgroundColor != background { window.backgroundColor = background }
         content.materialTint = backdrop != nil ? written : nil
-        content.barColor = color
-        split?.setDetailBarColor(color)
+        content.barBrush = brush
+        split?.setDetailBarBrush(brush)
     }
 
     /// The application's title area, at the trailing edge of the window's

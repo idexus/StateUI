@@ -26,7 +26,7 @@ final class AppKitDecoration {
     /// Whether the view draws the box: an outline, a shape or a gradient with no blur or glass; otherwise the layer
     /// paints its color, or the blur's or glass's surface the box.
     var draws: Bool {
-        surface == nil && (lineWidth > 0 && stroke.lineColor != nil || shape != .rectangle || fill.isGradient)
+        surface == nil && (lineWidth > 0 && stroke.lineColor != nil || shape != .rectangle || fill.brush.isGradient)
     }
 
     /// The color the layer paints where nothing is drawn.
