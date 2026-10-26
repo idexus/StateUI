@@ -89,8 +89,9 @@ over them ([a page's actions](../../host/pages.md#a-pages-actions)). The
 sidebar's shows the title area the sidebar's page names the application with
 (`titleArea(applicationName:)`) - its title, else the application's name,
 the line under it and its picture as the mark before them - in the colors its
-path declares, the actions of the sidebar's part, and at its end the
-sidebar's toggle in Android's menu glyph, which hides the sidebar. A detail
+path declares, the sidebar's toggle in Android's menu glyph, which hides the
+sidebar, and the actions of the sidebar's part after it - Android's toolbar
+stands its menu of actions last. A detail
 that is a page shows its own as a stack's top page does - its title, the line
 under it, the actions of the detail's part and its menus, the sidebar's toggle
 first where the sidebar does not stand beside it; a stack or a tabbed view in
