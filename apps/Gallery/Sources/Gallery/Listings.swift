@@ -635,7 +635,8 @@ enum Listings {
         // Every button the gallery shows wears its violet - a style with no
         // key is every button's - in its platform's shape: a capsule on
         // Apple's platforms and the Web, rounded everywhere else; and
-        // lower on the native desktops, where a pointer presses it.
+        // lower on the native desktops, where a pointer presses it. Held
+        // down, it grows a breath and lights up, under its own motion.
         Style<Button>()
             .textColor(Palette.onAccent)
             .background(Palette.accent)
@@ -652,6 +653,10 @@ enum Listings {
             #else
             .padding(horizontal: 16, vertical: 11)
             #endif
+            .visualState(.pressed) { $0
+                .scale(1.05)
+                .background(Palette.accentLit)
+            }
             .visualState(.disabled) { $0
                 .textColor(Palette.disabled)
                 .background(Palette.outline)
@@ -659,13 +664,16 @@ enum Listings {
 
         // A button's role chooses a style over the one above: it says
         // only what the role changes. The main action keeps the violet;
-        // the way out steps back, and what destroys something is red.
+        // the way out steps back, and what destroys something is red -
+        // each lit in its own color while held down.
         Style<Button>(role: .cancel)
             .textColor(Palette.text)
             .background(Palette.selected)
+            .visualState(.pressed) { $0.background(Palette.selectedLit) }
         Style<Button>(role: .destructive)
             .textColor(Palette.danger)
             .background(Palette.dangerWash)
+            .visualState(.pressed) { $0.background(Palette.dangerWashLit) }
         """#,
         "AppSwitcherSample": #"""
         // Sources/Samples/PhaseLayout/AppSwitcherSample.swift

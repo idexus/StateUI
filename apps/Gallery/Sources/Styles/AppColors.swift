@@ -42,6 +42,12 @@ enum AppColors {
     /// The violet lifted for a dark background.
     static let violetLight = Color(hex: 0xA78BFA)
 
+    /// The brand violet lit a breath, as a button held down shows it.
+    static let violetBright = Color(hex: 0x6B4BDA)
+
+    /// The lifted violet lit a breath, as a button held down shows it in the dark.
+    static let violetPale = Color(hex: 0xB49CFB)
+
     // MARK: Red
 
     /// The red of an action that destroys something.

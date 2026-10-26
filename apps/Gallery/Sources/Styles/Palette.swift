@@ -37,6 +37,9 @@ enum Palette {
     /// What a view marked with the accent stands on: its violet let faintly through.
     static let accentWash = Color(light: Color(hex: 0x512BD4, opacity: 0.08), dark: Color(hex: 0xA78BFA, opacity: 0.14))
 
+    /// The accent lit a breath: a button filled with it, held down.
+    static let accentLit = Color(light: AppColors.violetBright, dark: AppColors.violetPale)
+
     /// Text that reads on `brand` and on the gradient: white in both.
     static let onBrand = AppColors.white
 
@@ -102,6 +105,9 @@ enum Palette {
     /// Behind the thing you are on - the sidebar's current row, a pad held down.
     static let selected = Color(light: Color(hex: 0x000000, opacity: 0.1), dark: Color(hex: 0xFFFFFF, opacity: 0.12))
 
+    /// `selected` a breath stronger: a button standing on it, held down.
+    static let selectedLit = Color(light: Color(hex: 0x000000, opacity: 0.16), dark: Color(hex: 0xFFFFFF, opacity: 0.2))
+
     /// Behind the row under the pointer.
     static let hovered = Color(light: Color(hex: 0x000000, opacity: 0.04), dark: Color(hex: 0xFFFFFF, opacity: 0.06))
 
@@ -114,4 +120,7 @@ enum Palette {
     /// What such an action stands on: its red let faintly through.
     static let dangerWash = Color(light: Color(hex: 0xD92D20, opacity: 0.12), dark: Color(hex: 0xFF8A80, opacity: 0.2))
     // listing: end
+
+    /// `dangerWash` a breath stronger: such an action, held down.
+    static let dangerWashLit = Color(light: Color(hex: 0xD92D20, opacity: 0.2), dark: Color(hex: 0xFF8A80, opacity: 0.3))
 }
