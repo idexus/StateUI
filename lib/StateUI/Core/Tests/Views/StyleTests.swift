@@ -675,8 +675,8 @@ final class StyleTests: XCTestCase {
 
         // A style names its control by an initializer that sets nothing, which a
         // generic composed view has not: an ItemsView is a list OF something, a
-        // LayoutEngine a layout of something.
-        let unnamed: Set<String> = ["ItemsView", "LayoutEngine"]
+        // PhaseLayout a layout of something.
+        let unnamed: Set<String> = ["ItemsView", "PhaseLayout"]
 
         for source in try SourceTree.controlSources() {
             for type in try SourceTree.nodeTypes(in: source).sorted()

@@ -198,14 +198,13 @@ final class AndroidGestureTests: XCTestCase {
             let turn = State(wrappedValue: 0.0)
             let tapped = Received<Int>()
             let host = AndroidRenderer.running {
-                LayoutEngine([0, 1, 2, 3]) { card in
+                PhaseLayout([0, 1, 2, 3], phase: turn.projectedValue) { card in
                     Rectangle()
                         .fill(.red)
                         .onTapped { tapped.values.append(card) }
                 } placements: { _, phase in
                     (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
                 }
-                .phase(turn.projectedValue)
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
                 .motion(.none)
                 .height(100)

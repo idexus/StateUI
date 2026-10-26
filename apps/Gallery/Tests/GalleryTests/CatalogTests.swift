@@ -1579,7 +1579,7 @@ final class CatalogTests: XCTestCase {
 
         // TWO rooms: the page's own, which that height is arithmetic over,
         // and the gallery's, which its cards are placed in.
-        XCTAssertEqual(rooms, ["Grid", "LayoutEngine"],
+        XCTAssertEqual(rooms, ["Grid", "PhaseLayout"],
                        "the page and its run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room
@@ -1828,7 +1828,7 @@ final class CatalogTests: XCTestCase {
 
         let first = renders.render(tree())
         func layout(in patch: HostPatch) -> HostPatch? {
-            patch.type == .layoutEngine ? patch : patch.children.lazy.compactMap(layout).first
+            patch.type == .phaseLayout ? patch : patch.children.lazy.compactMap(layout).first
         }
         let engine = try XCTUnwrap(layout(in: first))
         guard case .replace(let driven)? = engine.driven, let room = driven[.frame] else {

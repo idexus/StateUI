@@ -21,7 +21,7 @@ enum GTKTransitionSurface {
 
     /// What draws its own box in its snapshot - a layout's, a page arrangement's - which moves frame by frame.
     static let drawsItsOwnBox: Set<NodeType> = [
-        .vStack, .hStack, .zStack, .grid, .layoutEngine, .scrollView, .itemsView,
+        .vStack, .hStack, .zStack, .grid, .phaseLayout, .scrollView, .itemsView,
         .tabView, .splitView, .navigationStack,
     ]
 

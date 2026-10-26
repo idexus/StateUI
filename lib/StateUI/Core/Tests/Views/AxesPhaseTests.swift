@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A layout engine's phase of many axes: how it lies on the host's lanes, which axis a hand moves, and where each
+// A phase layout's phase of many axes: how it lies on the host's lanes, which axis a hand moves, and where each
 // axis comes to rest.
 
 import XCTest
@@ -9,7 +9,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// A phase of two axes: how far a ring is turned, and how near it stands.
-private struct Orbit: LayoutPhase {
+private struct Orbit: AxesPhase {
     var turn = 0.0
     var zoom = 1.0
 
@@ -22,7 +22,7 @@ private final class Handed {
 }
 
 @MainActor
-final class LayoutPhaseTests: XCTestCase {
+final class AxesPhaseTests: XCTestCase {
     override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
@@ -46,12 +46,11 @@ final class LayoutPhaseTests: XCTestCase {
         let orbit = State(wrappedValue: Orbit())
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .phase(orbit.projectedValue)
+            PhaseLayout([1], phase: orbit.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                 .node
         }
 
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         orbit.wrappedValue.zoom = 2
         bench.cycle()
@@ -65,15 +64,14 @@ final class LayoutPhaseTests: XCTestCase {
         let orbit = State(wrappedValue: Orbit())
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, phase in
+            PhaseLayout([1], phase: orbit.projectedValue) { Text("\($0)") } placements: { _, phase in
                 handed.phases.append(phase)
                 return [Placement(Rect(0, 0, 10, 10))]
             }
-            .phase(orbit.projectedValue)
             .node
         }
 
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         orbit.wrappedValue = Orbit(turn: 1, zoom: 2)
         bench.cycle()
@@ -107,7 +105,7 @@ final class LayoutPhaseTests: XCTestCase {
         let orbit = State(wrappedValue: Orbit())
         let renders = Renders()
         let tree = handTree(orbit, handed: handed, range: 0...2)
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         orbit.wrappedValue.zoom = 2
         bench.cycle()
@@ -124,7 +122,7 @@ final class LayoutPhaseTests: XCTestCase {
         let orbit = State(wrappedValue: Orbit())
         let renders = Renders()
         let tree = handTree(orbit, range: 0...2)
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         orbit.wrappedValue.zoom = 2
         bench.cycle()
@@ -160,7 +158,7 @@ final class LayoutPhaseTests: XCTestCase {
         let orbit = State(wrappedValue: Orbit(turn: 0, zoom: 1.3))
         let renders = Renders()
         let tree = handTree(orbit, range: 0...2)
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-140, 0))
@@ -177,11 +175,10 @@ final class LayoutPhaseTests: XCTestCase {
         _ orbit: State<Orbit>, handed: Handed? = nil, range: ClosedRange<Double>, snaps: LayoutPlaces = .every(1)
     ) -> () -> Node {
         {
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, phase in
+            PhaseLayout([1], phase: orbit.projectedValue) { Text("\($0)") } placements: { _, phase in
                 handed?.phases.append(phase)
                 return [Placement(Rect(0, 0, 10, 10))]
             }
-            .phase(orbit.projectedValue)
             .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: range, snaps: snaps)
             .node
         }

@@ -11,9 +11,9 @@ Grid.stroke: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-LayoutEngine.lineWidth: ✅
-LayoutEngine.shape: ✅
-LayoutEngine.stroke: ✅
+PhaseLayout.lineWidth: ✅
+PhaseLayout.shape: ✅
+PhaseLayout.stroke: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅

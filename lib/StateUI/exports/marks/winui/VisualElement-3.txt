@@ -22,9 +22,6 @@ Image.accessibilityHint: ✅
 Image.scaleY: ✅
 ItemsView.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 ItemsView.accessibilityActions: – UI Automation offers no action of an application's own words.
-LayoutEngine.height: ✅
-LayoutEngine.layoutDirection: ✓ read layoutDirection of LayoutEngine: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-LayoutEngine.width: ✅
 Line.height: ✅
 Line.layoutDirection: ✓ read layoutDirection of Line: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Line.width: ✅
@@ -34,6 +31,9 @@ Map.accessibilityLabel: 🧩
 Map.scaleX: 🧩
 Path.isAccessibilityHidden: ✅
 Path.isVisible: ✅
+PhaseLayout.height: ✅
+PhaseLayout.layoutDirection: ✓ read layoutDirection of PhaseLayout: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+PhaseLayout.width: ✅
 Picker.height: ✅
 Picker.layoutDirection: ✅
 Picker.width: ✅

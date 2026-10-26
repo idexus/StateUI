@@ -189,7 +189,7 @@ page's natural size for the most width the platform gives a sheet, held
 between the least and the most of that room (`SheetRoom`) - a page taller than
 the most scrolls inside it. A stack, tabs and a split view ask nothing, as
 their pages come and go and a sheet resizing with each would jump; nor does a
-page holding a view that takes the room it is given - a list, a layout engine,
+page holding a view that takes the room it is given - a list, a phase layout,
 a map, a web view (`NodeType.roomTakingTypes`). Those stand at the room's
 standard size, no larger than its most. Each host gives only its room - the
 platform's dialog bounds and the window around the sheet - and its measure of

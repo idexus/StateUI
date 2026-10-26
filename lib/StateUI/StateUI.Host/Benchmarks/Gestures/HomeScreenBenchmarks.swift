@@ -13,7 +13,7 @@ final class HomeScreenBenchmarks: XCTestCase {
     /// new places on the frames.
     func testAHeldIconMovedAcrossTheBoard() throws {
         let bench = Bench(HomeApplication())
-        let board = try bench.element(.layoutEngine)
+        let board = try bench.element(.phaseLayout)
         let cell = Point((bench.room.width - 16) / 4, (bench.room.height - 16) / 5)
 
         bench.hand(.began, on: board, at: Point(8 + cell.x / 2, 8 + cell.y / 2))
@@ -46,12 +46,11 @@ private struct HomeBoard: View {
 
     var body: some View {
         let count = icons.count
-        return LayoutEngine(icons, id: \.self) { icon in
+        return PhaseLayout(icons, id: \.self, phase: $board) { icon in
             HomeTile(name: icon, lifted: lifted == icon)
         } placements: { room, board in
             (0..<count).map { Self.place($0, board, room) }
         }
-        .phase($board)
         .axis(\.self, input: .pages(.horizontal), range: 0...2, keyframes: .every(1), snaps: .every(1))
         .itemDrag(begins: .held)
         .onItemDragged { drag in

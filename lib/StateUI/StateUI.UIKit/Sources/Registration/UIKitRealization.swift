@@ -97,16 +97,16 @@ enum UIKitRealization {
         .partial(VisualElementContract.background, on: ZStackContract.self, missing: Self.ovalGlass),
         .partial(VisualElementContract.background, on: FillContract.self, missing: Self.ovalGlass),
         .partial(VisualElementContract.background, on: SpaceContract.self, missing: Self.ovalGlass),
-        .partial(VisualElementContract.background, on: LayoutEngineContract.self, missing: Self.ovalGlass),
-        .complete(LayoutEngineContract.handAxis),
-        .complete(LayoutEngineContract.handMoved),
-        .complete(LayoutEngineContract.handStepped),
-        .complete(LayoutEngineContract.itemDrag),
-        .complete(LayoutEngineContract.itemMoved),
-        .complete(LayoutEngineContract.magnifies),
-        .complete(LayoutEngineContract.pans),
-        .complete(LayoutEngineContract.rotates),
-        .complete(LayoutEngineContract.pinchMoved),
+        .partial(VisualElementContract.background, on: PhaseLayoutContract.self, missing: Self.ovalGlass),
+        .complete(PhaseLayoutContract.handAxis),
+        .complete(PhaseLayoutContract.handMoved),
+        .complete(PhaseLayoutContract.handStepped),
+        .complete(PhaseLayoutContract.itemDrag),
+        .complete(PhaseLayoutContract.itemMoved),
+        .complete(PhaseLayoutContract.magnifies),
+        .complete(PhaseLayoutContract.pans),
+        .complete(PhaseLayoutContract.rotates),
+        .complete(PhaseLayoutContract.pinchMoved),
         .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
             why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
@@ -202,7 +202,7 @@ enum UIKitRealization {
         .notPlanned(WindowContract.width, reason: Self.sizedBySystem),
         .notPlanned(WindowContract.x, reason: Self.placedBySystem),
         .notPlanned(WindowContract.y, reason: Self.placedBySystem),
-    ] + pickerWords + HostRecord.layoutEngine
+    ] + pickerWords + HostRecord.phaseLayout
 
     /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.
     private static let sizedBySystem =

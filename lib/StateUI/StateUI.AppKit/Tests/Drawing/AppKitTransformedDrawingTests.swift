@@ -17,7 +17,7 @@ final class AppKitTransformedDrawingTests: XCTestCase {
     func testAViewUnderATransformDrawsWhole() throws {
         let renderer = AppKitRenderer.running {
             ZStack {
-                LayoutEngine(["turned", "straight"]) { _ in
+                PhaseLayout(["turned", "straight"], phase: State(wrappedValue: 0.0).projectedValue) { _ in
                     Rectangle()
                         .fill(.red)
                 } placements: { room, _ in

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A layout engine: what its arithmetic is handed, where the run puts each child, how the program and the hand move
+// A phase layout: what its arithmetic is handed, where the run puts each child, how the program and the hand move
 // the phase, and what it says of an answer it cannot use. The gallery's tests hold the hand at full length.
 
 import XCTest
@@ -9,7 +9,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 @MainActor
-final class LayoutEngineTests: XCTestCase {
+final class PhaseLayoutTests: XCTestCase {
     override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
@@ -26,13 +26,13 @@ final class LayoutEngineTests: XCTestCase {
 
     // MARK: - The walk
 
-    /// THE ENGINE NAMES EVERY PART A MIRROR WOULD, in the same order under the same labels: a field added and not
+    /// THE LAYOUT NAMES EVERY PART A MIRROR WOULD, in the same order under the same labels: a field added and not
     /// named would be an input never compared, or a state never kept.
-    func testTheEngineNamesEveryPartAMirrorWould() {
-        let engine = LayoutEngine([1, 2]) { Text("\($0)") } placements: { _, _ in [] }
+    func testTheLayoutNamesEveryPartAMirrorWould() {
+        let layout = PhaseLayout([1, 2], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
             .axis(\.self, input: .scroll(.horizontal), range: 0...1)
 
-        XCTAssertEqual(engine.walkedParts.map(\.label), Mirror(reflecting: engine).children.map { $0.label ?? "" })
+        XCTAssertEqual(layout.walkedParts.map(\.label), Mirror(reflecting: layout).children.map { $0.label ?? "" })
     }
 
     /// A SLOT IS ITS ITEM'S OWN IDENTITY, compared as the value it is and numbered by the layout: two identities
@@ -40,13 +40,13 @@ final class LayoutEngineTests: XCTestCase {
     /// stands, a new one takes a number never given, and naming one spells nothing.
     func testASlotIsItsItemsOwnIdentity() {
         let tags = [Tag(1), Tag(2)]
-        let engine = LayoutEngine(tags, id: \.self) { _ in
+        let layout = PhaseLayout(tags, id: \.self, phase: State(wrappedValue: 0.0).projectedValue) { _ in
             Rectangle()
                 .fill(.red)
         } placements: { _, _ in [] }
         let texts = Renderer.shared.texts
 
-        let slots = engine.run.slots
+        let slots = layout.run.slots
 
         XCTAssertEqual(Set(slots.map(\.identity)).count, 2, "two identities, two slots")
         XCTAssertEqual(Renderer.shared.texts, texts, "no text built")
@@ -76,7 +76,7 @@ final class LayoutEngineTests: XCTestCase {
         let handed = Handed()
 
         _ = bench.laid(Renders(), {
-            LayoutEngine([1, 2]) { Text("\($0)") } placements: { room, phase in
+            PhaseLayout([1, 2], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { room, phase in
                 handed.rooms.append(room)
                 handed.phases.append(phase)
                 return [Placement(Rect(0, 0, 10, 10)), Placement(Rect(20, 0, 10, 10))]
@@ -91,7 +91,7 @@ final class LayoutEngineTests: XCTestCase {
     /// THE VIEWS ALONE, IN THE ITEMS' ORDER: a hand lays nothing over them.
     func testTheRunPlacesTheViewsAlone() {
         let (_, run) = bench.laid(Renders(), {
-            LayoutEngine([1, 2]) { Text("\($0)") } placements: { _, _ in
+            PhaseLayout([1, 2], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in
                 [Placement(Rect(0, 0, 10, 10), zIndex: 5), Placement(Rect(20, 0, 10, 10))]
             }
             .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
@@ -104,10 +104,10 @@ final class LayoutEngineTests: XCTestCase {
     /// THE HAND IS HEARD ON THE ELEMENT ITSELF, over every view, which way it moves the run said to the host.
     func testTheHandIsHeardOnTheElementItself() throws {
         let patch = Renders().render(
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
+            PhaseLayout([1], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                 .axis(\.self, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
                 .node)
-        let layout = try XCTUnwrap(patch.first(.layoutEngine))
+        let layout = try XCTUnwrap(patch.first(.phaseLayout))
 
         XCTAssertNotNil(layout.events?[.handMoved])
         XCTAssertEqual(layout.props[.handAxis], LayoutInput.Axis.vertical.propValue)
@@ -117,7 +117,7 @@ final class LayoutEngineTests: XCTestCase {
     /// AN ANSWER OF THE WRONG LENGTH IS SAID AND MADE TO FIT: one placement a view, the rest at the top left.
     func testAnAnswerOfTheWrongLengthIsSaidAndMadeToFit() {
         let (_, run) = bench.laid(Renders(), {
-            LayoutEngine([1, 2, 3]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(5, 5, 10, 10))] }.node
+            PhaseLayout([1, 2, 3], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(5, 5, 10, 10))] }.node
         })
 
         XCTAssertEqual(run.prefix(3).map(\.bounds), [Rect(5, 5, 10, 10), .zero, .zero])
@@ -132,13 +132,12 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .phase(phase.projectedValue)
+            PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                 .node
         }
 
         let (patch, _) = bench.laid(renders, tree)
-        let worn = try XCTUnwrap(patch.first(.layoutEngine)?.driven?[.phase])
+        let worn = try XCTUnwrap(patch.first(.phaseLayout)?.driven?[.phase])
 
         XCTAssertEqual(worn.mode, .inOut)
         XCTAssertEqual(worn.kind, .property)
@@ -153,11 +152,10 @@ final class LayoutEngineTests: XCTestCase {
     func testAPhaseWorkedOutFromOthersIsSaid() {
         var stored = 0.0
         _ = Renders().render(
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [] }
-                .phase(Binding(get: { stored }, set: { stored = $0 }))
+            PhaseLayout([1], phase: Binding(get: { stored }, set: { stored = $0 })) { Text("\($0)") } placements: { _, _ in [] }
                 .node)
 
-        XCTAssertTrue(hasComplained("A LayoutEngine's phase is a state lent with `$`"))
+        XCTAssertTrue(hasComplained("A PhaseLayout's phase is a state lent with `$`"))
     }
 
     /// WITHOUT A HAND THE PHASE TRAVELS AS THE HOST WALKS IT: a write is where the run goes, and the arithmetic is
@@ -167,16 +165,15 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, phase in
+            PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, phase in
                 handed.phases.append(phase)
                 return [Placement(Rect(phase * 10, 0, 10, 10))]
             }
-            .phase(phase.projectedValue)
             .node
         }
 
         let (patch, _) = bench.laid(renders, tree)
-        let worn = try XCTUnwrap(patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         phase.wrappedValue = 2
         _ = renders.revisit(changed: Renderer.shared.pendingChanges)
@@ -201,7 +198,7 @@ final class LayoutEngineTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node { handTree(phase, handed: handed, range: 0...1, snaps: [0.2, 0.5]) }
 
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-40, 0))
@@ -221,7 +218,7 @@ final class LayoutEngineTests: XCTestCase {
         let handed = Handed()
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, at in
+            PhaseLayout([0, 1, 2], phase: phase.projectedValue) { Text("\($0)") } placements: { room, at in
                 handed.phases.append(at)
                 // The view in front moves half the room's width a unit; the one behind it, a tenth as far.
                 return [
@@ -230,7 +227,6 @@ final class LayoutEngineTests: XCTestCase {
                     Placement(Rect(0, 0, 10, 10), zIndex: 2),
                 ]
             }
-            .phase(phase.projectedValue)
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .node
         }
@@ -248,10 +244,9 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, at in
+            PhaseLayout([0, 1, 2], phase: phase.projectedValue) { Text("\($0)") } placements: { room, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * room.width / 2, 0, 10, 10)) }
             }
-            .phase(phase.projectedValue)
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .node
         }
@@ -273,7 +268,7 @@ final class LayoutEngineTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node { handTree(phase, handed: handed, range: 0...1, snaps: [0.5]) }
 
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         phase.wrappedValue = 1
         bench.cycle()
@@ -348,8 +343,7 @@ final class LayoutEngineTests: XCTestCase {
             let phase = State(wrappedValue: 0.0)
             let renders = Renders()
             func tree() -> Node {
-                LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                    .phase(phase.projectedValue)
+                PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                     .axis(
                         \.self, input: .scroll(.horizontal, pointsPerUnit: 100, throwing: throwing), range: 0...6,
                         snaps: .every(1))
@@ -395,7 +389,7 @@ final class LayoutEngineTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node { handTree(phase, handed: handed, range: 0...1) }
 
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(10, 0))
@@ -423,16 +417,15 @@ final class LayoutEngineTests: XCTestCase {
         let handed = Handed()
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, at in
+            PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 handed.phases.append(at)
                 return [Placement(Rect(0, 0, 10, 10))]
             }
-            .phase(phase.projectedValue)
             .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...7, snaps: .every(1), wraps: true)
             .node
         }
 
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-120, 0))
@@ -447,11 +440,10 @@ final class LayoutEngineTests: XCTestCase {
     private func handTree(
         _ phase: State<Double>, handed: Handed? = nil, range: ClosedRange<Double>, snaps: LayoutPlaces? = .every(1)
     ) -> Node {
-        LayoutEngine([1]) { Text("\($0)") } placements: { _, at in
+        PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             handed?.phases.append(at)
             return [Placement(Rect(0, 0, 10, 10))]
         }
-        .phase(phase.projectedValue)
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: range, snaps: snaps)
         .node
     }
@@ -463,7 +455,7 @@ final class LayoutEngineTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node { handTree(phase, range: 0...1, snaps: [0.2, 0.5]) }
 
-        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, tree).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         bench.step(renders, tree, Point(-1, 0))
         XCTAssertEqual(phase.wrappedValue, 0.2, "a notch moving what is under the hand to the left steps it on")
@@ -486,8 +478,7 @@ final class LayoutEngineTests: XCTestCase {
         let phase = State(wrappedValue: 3.0)
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                .phase(phase.projectedValue)
+            PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                 .axis(
                     \.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1), wraps: true)
                 .node
@@ -536,11 +527,11 @@ final class LayoutEngineTests: XCTestCase {
         var heard: [Int] = []
         let renders = Renders()
         let patch = renders.render(
-            LayoutEngine([7, 8]) { Text("\($0)") } placements: { _, _ in [] }
+            PhaseLayout([7, 8], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
                 .onItemTapped { heard.append($0) }
                 .node)
-        let layout = try XCTUnwrap(patch.first(.layoutEngine))
+        let layout = try XCTUnwrap(patch.first(.phaseLayout))
         let tap = try XCTUnwrap(layout.children[1].events?[.tapped])
 
         XCTAssertTrue(renders.fire(tap))

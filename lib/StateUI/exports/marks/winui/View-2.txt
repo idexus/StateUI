@@ -62,12 +62,6 @@ ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumn: ✅
-LayoutEngine.gridRow: ✅
-LayoutEngine.swipeDirection: ✅
-LayoutEngine.swipeThreshold: ✅
-LayoutEngine.swiped: ✅
 Line.area: ✅
 Line.frameChanged: ✅
 Line.panYChannel: ✅
@@ -87,6 +81,12 @@ Path.dragEnded: ✓ dragAndDrop on Path: the relay's drag reports told by the dr
 Path.dragStarting: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
 Path.dragText: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
 Path.tapped: ✅
+PhaseLayout.frameChanged: ✅
+PhaseLayout.gridColumn: ✅
+PhaseLayout.gridRow: ✅
+PhaseLayout.swipeDirection: ✅
+PhaseLayout.swipeThreshold: ✅
+PhaseLayout.swiped: ✅
 Picker.pointerEntered: ✅
 Picker.pointerExited: ✅
 Picker.pointerMoved: ✅

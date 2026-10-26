@@ -668,7 +668,7 @@ enum Listings {
             .background(Palette.dangerWash)
         """#,
         "AppSwitcherSample": #"""
-        // Sources/Samples/LayoutEngine/AppSwitcherSample.swift
+        // Sources/Samples/PhaseLayout/AppSwitcherSample.swift
         import StateUIFoundation
 
         /// One running app: its name, which is its identity, and its picture -
@@ -704,12 +704,11 @@ enum Listings {
 
             return Grid {
                 Grid {
-                    LayoutEngine(running, id: \.name) { app in
+                    PhaseLayout(running, id: \.name, phase: $turn) { app in
                         AppCard(app: app, index: running.firstIndex(of: app) ?? 0, turn: $turn)
                     } placements: { room, turn in
                         (0..<count).map { place($0, turn, room) }
                     }
-                    .phase($turn)
                     // Thrown as the gallery's home turns its cards: a spring that
                     // carries the hand on and settles.
                     .axis(
@@ -1108,6 +1107,133 @@ enum Listings {
                         try await Task.sleep(for: .milliseconds(800))
                         logged += 1
                     }
+            }
+        }
+        """#,
+        "AxesPhaseSample": #"""
+        // Sources/Samples/PhaseLayout/AxesPhaseSample.swift
+        /// THE PHASE: two numbers, each moved on its own - the turn by the hand,
+        /// the spread by the switch.
+        struct Deal: AxesPhase {
+            /// Which card is at the front.
+            var turn = 2.0
+
+            /// How far the cards are fanned out: 0 a pile, 1 an arc.
+            var spread = 0.0
+
+            static var axes: [WritableKeyPath<Deal, Double>] { [\.turn, \.spread] }
+        }
+
+        /// One card: its name, its color and its icon.
+        struct Card {
+            let name: String
+            let color: Color
+            let icon: Icon
+        }
+
+        /// The cards, dealt in this order.
+        static let cards = [
+            Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
+        ]
+
+        /// Where the run stands on both axes - handed on with `$`, never read in
+        /// the body.
+        @State private var deal = Deal()
+
+        /// The switch's own value: what the body reads.
+        @State private var fanned = false
+
+        var body: some View {
+            Grid {
+                Grid {
+                    cards
+                }
+                .gridRow(0)
+                .clipsContent(true)
+
+                SwitchRow(
+                    "Fan out",
+                    Binding(
+                        get: { fanned },
+                        set: { fanning in
+                            fanned = fanning
+                            // ONE AXIS WRITTEN: the spread travels there, and a
+                            // turn under way goes on as it was.
+                            deal.spread = fanning ? 1 : 0
+                        }))
+                .horizontalAlignment(.center)
+                .gridRow(1)
+            }
+            .rows(.fill, .auto)
+        }
+
+        /// The cards, placed from both axes of the phase.
+        private var cards: some View {
+            PhaseLayout(Array(Self.cards.indices), phase: $deal) { index in
+                face(index)
+            } placements: { room, deal in
+                Self.cards.indices.map { place($0, deal, room) }
+            }
+            // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
+            // no hand, so it is declared no axis.
+            .axis(
+                \.turn, input: .scroll(.horizontal, pointsPerUnit: 90),
+                range: 0...Double(Self.cards.count - 1), snaps: .every(1))
+            .motion(.eased(.milliseconds(600), .cubicOut))
+        }
+
+        /// Where one card stands: between a pile and an arc by the spread, the
+        /// card at the front in the middle either way.
+        private func place(_ index: Int, _ deal: Deal, _ room: Rect) -> Placement {
+            let step = Double(index) - deal.turn
+            let width = min(room.width * 0.36, room.height * 0.5, 150)
+            let height = width * 1.4
+
+            // A PILE leaves each card a few points behind the one in front; an ARC
+            // sets it most of a card along, lower and turned with the curve.
+            let pile = 1 - deal.spread
+            let across = step * (10 * pile + width * 0.75 * deal.spread)
+            let down = abs(step) * (-6 * pile + width * 0.12 * deal.spread)
+
+            return Placement(
+                Rect(room.width / 2 - width / 2 + across, room.height / 2 - height / 2 + down, width, height),
+                transform: .rotate(step * 10 * deal.spread).scale(1 - min(abs(step), 3) * 0.06),
+                zIndex: 100 - Int(min(abs(step), 9) * 10))
+        }
+
+        /// One card's face: its color, its icon on a disc, and its name.
+        private func face(_ index: Int) -> some View {
+            let card = Self.cards[index]
+
+            return ZStack {
+                Rectangle()
+                    .fill(card.color)
+
+                VStack {
+                    ZStack {
+                        Rectangle()
+                            .fill(.white)
+                            .opacity(0.3)
+
+                        Image(.icon(card.icon))
+                            .width(31)
+                            .height(31)
+                            .horizontalAlignment(.center)
+                            .verticalAlignment(.center)
+                    }
+                    .width(56)
+                    .height(56)
+                    .horizontalAlignment(.center)
+
+                    Text(card.name)
+                        .fontWeight(.bold)
+                        .horizontalAlignment(.center)
+                }
+                .verticalAlignment(.center)
             }
         }
         """#,
@@ -1650,7 +1776,7 @@ enum Listings {
         }
         """#,
         "ChangingDeckSample": #"""
-        // Sources/Samples/LayoutEngine/ChangingDeckSample.swift
+        // Sources/Samples/PhaseLayout/ChangingDeckSample.swift
         /// One card: its name, which is its identity, its color and its icon.
         struct Card: Hashable {
             let name: String
@@ -1752,12 +1878,11 @@ enum Listings {
             let fanned = spread
             let count = cards.count
 
-            return LayoutEngine(cards, id: \.name) { card in
+            return PhaseLayout(cards, id: \.name, phase: $turn) { card in
                 face(card, large: !fanned)
             } placements: { room, turn, from in
                 (0..<count).map { fanned ? fan($0, turn, room) : pile($0, turn, from, room) }
             }
-            .phase($turn)
             // The pile is swiped a card at a time, the fan scrolled through.
             .axis(
                 \.self, input: fanned ? .scroll(.horizontal) : .swipe(.horizontal),
@@ -4448,7 +4573,7 @@ enum Listings {
         }
         """#,
         "HomeScreenSample": #"""
-        // Sources/Samples/LayoutEngine/HomeScreenSample.swift
+        // Sources/Samples/PhaseLayout/HomeScreenSample.swift
         /// One icon: its name, which is its identity, its glyph and its color.
         struct HomeIcon: Hashable {
             let name: String
@@ -4540,14 +4665,13 @@ enum Listings {
                     // board is the room however wide it grows. Each board is a
                     // keyframe: the icons are placed once a board, and between
                     // two they go straight - as the arithmetic says they do.
-                    LayoutEngine(icons, id: \.name) { icon in
+                    PhaseLayout(icons, id: \.name, phase: $board) { icon in
                         // A VIEW OF ITS OWN: a new order builds no icon again,
                         // only the one lifted or let go.
                         HomeTile(icon: icon, lifted: lifted == icon.name)
                     } placements: { room, board in
                         (0..<count).map { Self.place($0, board, room, fit) }
                     }
-                    .phase($board)
                     .axis(
                         \.self, input: .pages(.horizontal), range: 0...Double(boards - 1), keyframes: .every(1),
                         snaps: .every(1))
@@ -4579,13 +4703,12 @@ enum Listings {
 
                 // THE DOTS wear the same phase - one state, so one motion: they go
                 // with the hand and with every throw, no body read of it.
-                LayoutEngine(Array(0..<boards)) { _ in
+                PhaseLayout(Array(0..<boards), phase: $board) { _ in
                     Rectangle()
                         .fill(Palette.text)
                 } placements: { room, board in
                     (0..<boards).map { dot($0, of: boards, board, room) }
                 }
-                .phase($board)
                 .motion(Self.turning)
                 .height(16)
                 .gridRow(1)
@@ -5455,10 +5578,10 @@ enum Listings {
         }
         """#,
         "LayoutAxesSample": #"""
-        // Sources/Samples/LayoutEngine/LayoutAxesSample.swift
+        // Sources/Samples/PhaseLayout/LayoutAxesSample.swift
         /// THE PHASE: five strips, each an axis of its own - which card stands in
         /// the middle of the strip.
-        struct Strips: LayoutPhase {
+        struct Strips: AxesPhase {
             var free = 1.5
             var snapping = 1.0
             var limits = 0.0
@@ -5503,12 +5626,11 @@ enum Listings {
             let hand = LayoutInput.scroll(.horizontal)
 
             return Grid {
-                LayoutEngine(Self.parts) { part in
+                PhaseLayout(Self.parts, phase: $strips) { part in
                     view(part)
                 } placements: { room, strips in
                     Self.parts.map { place($0, strips, room) }
                 }
-                .phase($strips)
                 // ...MOVES FIVE STRIPS, each resting its own way: anywhere between
                 // its ends, coming back only from past one...
                 .axis(\.free, input: hand, range: 0...3)
@@ -5598,299 +5720,8 @@ enum Listings {
             }
         }
         """#,
-        "LayoutEngineSample": #"""
-        // Sources/Samples/LayoutEngine/LayoutEngineSample.swift
-        import StateUIFoundation
-
-        /// The cards: the gallery's groups, each its name and its picture as the
-        /// home page shows it.
-        static let cards: [Card] = [
-            Card(name: "Layout", art: "cat_layout.png"),
-            Card(name: "Layout Engine", art: "cat_layoutengine.png"),
-            Card(name: "Styles", art: "cat_styles.png"),
-            Card(name: "Shapes", art: "cat_shapes.png"),
-            Card(name: "Media", art: "cat_media.png"),
-            Card(name: "Navigation", art: "cat_navigation.png"),
-            Card(name: "Date & time", art: "cat_datetime.png"),
-            Card(name: "Fundamentals", art: "cat_fundamentals.png"),
-            Card(name: "Animation", art: "cat_animation.png"),
-            Card(name: "Gestures", art: "cat_gestures.png"),
-        ]
-
-        /// One card's face.
-        struct Card {
-            let name: String
-            let art: String
-        }
-
-        /// What the ring places: every card, and a dot for each at the board's
-        /// foot - one arithmetic for both, so the dots move with the cards.
-        enum Piece: Hashable {
-            case card(Int)
-            case dot(Int)
-        }
-
-        static let pieces = cards.indices.map(Piece.card) + cards.indices.map(Piece.dot)
-
-        /// How big the place a card stands in is - what the ring is worked out
-        /// from - and how big the card is drawn in it.
-        static let width = 176.0
-        static let height = 248.0
-        static let card = 0.8
-
-        /// How far the eye stands from the ring's front, in radii: the nearer it
-        /// stands, the smaller a card at the back is drawn.
-        static let eye = 1.6
-
-        /// How far below the horizon the front card stands, in card heights: the
-        /// higher the eye above the ring, the more of the far cards it sees.
-        static let above = 1.9
-
-        /// How tall the whole ring stands, in card heights: the back card's top to
-        /// the front card's foot.
-        static var ringHeight: Double { above - back * (above - 1) }
-
-        /// How big the card at the back is drawn, against the one at the front.
-        static var back: Double { eye / (eye + 2) }
-
-        /// HOW A THROW GOES ON - any motion: how far a throw carries, and the
-        /// curve it slows on.
-        enum Throwing: CaseIterable, Hashable {
-            case easeOut, glide, spring, bounce, short
-
-            var motion: Motion {
-                switch self {
-                case .easeOut: .eased(.milliseconds(400), .cubicOut)
-                case .glide: .eased(.milliseconds(300), .sineOut)
-                case .spring: .spring(response: .milliseconds(400), damping: 0.8)
-                case .bounce: .eased(.milliseconds(600), .backOut)
-                case .short: .eased(.milliseconds(200), .cubicOut)
-                }
-            }
-
-            var title: String {
-                switch self {
-                case .easeOut: "Ease out"
-                case .glide: "Glide"
-                case .spring: "Spring"
-                case .bounce: "Bounce"
-                case .short: "Short"
-                }
-            }
-        }
-
-        /// Which of them the ring is thrown by.
-        @State private var throwing = Throwing.easeOut
-
-        /// WHICH CARD IS AT THE FRONT - the phase, two-way: `Back` and `Next`
-        /// write it and the ring travels there; the hand names the card it passes
-        /// and the one it comes to rest on. It starts on the middle card, and it
-        /// has no end: a turn on, it is the same card again.
-        @State private var turn = Double(LayoutEngineSample.cards.count / 2)
-
-        /// The device - a phone's cards carry their names alone, smaller.
-        @Environment(\.device) private var device
-
-        var body: some View {
-            // A GRID rather than a stack: the board takes whatever room is left
-            // over, which a stack cannot give a child - and a ring wants it all.
-            Grid {
-                Grid {
-                    // THE CARDS, and what moves them - the whole of the example.
-                    ring
-                }
-                .gridRow(0)
-                // The cards stay ON the board: one turned far out in a small room
-                // is cut at the board's edge rather than painted over the page.
-                .clipsContent(true)
-
-                HStack {
-                    // The ring turns for no build at all: the label says so.
-                    DebugInfoLabel()
-
-                    Button("Back")
-                        .onClicked { move(-1) }
-
-                    Button("Next")
-                        .onClicked { move(1) }
-
-                }
-                .horizontalAlignment(.center)
-                .gridRow(1)
-
-                Picker(Throwing.allCases, selection: $throwing) { $0.title }
-                    .horizontalAlignment(.center)
-                    .gridRow(2)
-            }
-            .rows(.fill, .auto, .auto)
-        }
-
-        /// The ring of cards and its dots, placed by the arithmetic below.
-        private var ring: some View {
-            LayoutEngine(Self.pieces) { piece in
-                switch piece {
-                case .card(let index):
-                    face(Self.cards[index])
-                case .dot:
-                    Rectangle()
-                        .fill(Palette.text)
-                }
-            } placements: { room, phase in
-                // THE WHOLE LAYOUT, run on the display's own frames whenever the
-                // room or the phase has moved, with no view built.
-                Self.cards.indices.map { place($0, phase, room) }
-                    + Self.cards.indices.map { dot($0, phase, room) }
-            }
-            .phase($turn)
-            // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
-            // two fingers and a wheel all turn the ring, carrying the card in
-            // front with them, and let go with speed it goes on to the card
-            // nearest where the throw would end. It rests on a card, never
-            // between two - and comes round, a turn of the range bringing every
-            // card back.
-            .axis(
-                \.self, input: .scroll(.horizontal, throwing: throwing.motion),
-                range: 0...Double(Self.cards.count), snaps: .every(1), wraps: true)
-            // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
-            // over every card, wearing the card's own corners - which is why it is
-            // the application's to give and not the library's to draw.
-            .shade(
-                Rectangle()
-                    .fill(Color(hex: 0x000000)))
-            .motion(.eased(.milliseconds(300), .cubicOut))
-        }
-
-        /// A card either way, from a button: the ring travels there, and the
-        /// arithmetic follows it frame by frame - past the last card to the first.
-        private func move(_ by: Int) {
-            turn += Double(by)
-        }
-
-        /// One card's face - a picture and its name, and nothing at all about where
-        /// the card is or which way it faces. That is the placement's, and keeping
-        /// the two apart is what lets one run of cards be turned into any shape.
-        private func face(_ card: Card) -> some View {
-            let phone = device.info.formFactor == .phone
-
-            return ZStack {
-                Grid {
-                    Image(ImageSource(card.art))
-                        .contentMode(.fill)
-
-                    VStack {
-                        // ONE LINE, whatever the card's width: a caption that
-                        // wrapped would change the picture's height with it.
-                        Text(card.name)
-                            .fontWeight(.bold)
-                            .lineBreak(.tailTruncation)
-
-                        // A phone's small card carries its name alone.
-                        if !phone {
-                            Text("Placed by arithmetic")
-                                .opacity(0.8)
-                                .lineBreak(.tailTruncation)
-                        }
-                    }
-                    // A dark strip under the words, so a caption reads over a
-                    // picture of any color.
-                    .verticalAlignment(.end)
-                }
-                // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
-                // the card is cut at its own room - the Web's reaches two points
-                // past it - so the grid holding it - a layout, with edges to cut
-                // at - cuts it there.
-                .clipsContent(true)
-            }
-            .style(.card)
-            .lineWidth(0)
-        }
-
-        /// How big the cards are in THIS room, as a multiple of the size above -
-        /// what every distance below scales with.
-        ///
-        /// BOTH AXES: the ring spread to either side takes the room's width, and
-        /// the ring seen from above - the back card's top to the front card's foot
-        /// - its height above the dots; the smaller of the two answers, so a
-        /// window grown taller draws a bigger ring and a phone on its side -
-        /// plenty of width, almost no height - is answered by the height.
-        private func fit(in room: Rect) -> Double {
-            max(
-                min(
-                    1.375,
-                    (room.width * 0.4 - 6) / Self.width,
-                    (room.height - 46) / (Self.height * Self.ringHeight)),
-                0.1)
-        }
-
-        /// A RING IN SPACE, turned to `at` - the cards standing upright on a
-        /// circle that lies flat, seen from in front and above, the chosen card
-        /// nearest the eye. The whole of the layout.
-        private func place(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
-            let count = Self.cards.count
-            let fit = fit(in: room)
-            let step = Double(index) - at
-            let angle = step / Double(max(count, 1)) * 2 * .pi
-            let wide = Self.width * fit
-            let tall = Self.height * fit
-
-            // PERSPECTIVE: how big a card is drawn - 1 at the front, under half at
-            // the back - which also says how near the middle it stands and how far
-            // below the horizon its foot is.
-            let drawn = Self.eye / (Self.eye + 1 - cos(angle))
-
-            // The circle as wide as the room lets the cards spread, and the horizon
-            // where the whole ring - the back card's top to the front card's foot -
-            // stands in the middle of the room above the dots.
-            let radius = min(wide * 1.75, (room.width / 2 - 8 - wide * 0.33) / 0.65)
-            let horizon = (room.height - 30 - tall * Self.ringHeight) / 2 - tall * Self.back * (Self.above - 1)
-            let across = room.width / 2 + sin(angle) * radius * drawn
-            let foot = horizon + tall * Self.above * drawn
-
-            // THE CARD AT ITS OWN SIZE, a little smaller than its place, standing
-            // on the ring where its place does.
-            let (cardWide, cardTall) = (wide * Self.card, tall * Self.card)
-
-            return Placement(
-                // Scaled about its middle to how big it is drawn - its words scale
-                // with it rather than wrapping anew.
-                Rect(across - cardWide / 2, foot - cardTall * drawn / 2 - cardTall / 2, cardWide, cardTall),
-                transform: .scale(drawn),
-                // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
-                // layout was given by `.shade(_:)` - nothing at all without one -
-                // and here it is how far back the card stands. A FADE would show
-                // the card behind it, which on a ring is every other card.
-                shade: min((1 - drawn) * 1.1, 0.55),
-                // The nearer card is drawn over the farther one.
-                zIndex: Int(cos(angle) * 1000))
-        }
-
-        /// One dot at the board's foot, saying which card is at the front by a
-        /// fade - over every card.
-        private func dot(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
-            let count = Self.cards.count
-
-            return Placement(
-                Rect(
-                    room.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
-                    room.height - 16,
-                    6,
-                    6),
-                // THE RING COMES ROUND: how far a card is from the front is taken
-                // the short way, a turn on or back.
-                opacity: 0.25 + 0.75 * chosen((Double(index) - at).remainder(dividingBy: Double(count))),
-                zIndex: 2000)
-        }
-
-        /// How much of "the chosen one" a card is: 1 at the front, nothing a card
-        /// away, and part way between while the ring is moving - which is what
-        /// makes the emphasis cross over rather than jump.
-        private func chosen(_ step: Double) -> Double {
-            max(0, 1 - abs(step))
-        }
-
-        """#,
         "LayoutKeyframesSample": #"""
-        // Sources/Samples/LayoutEngine/LayoutKeyframesSample.swift
+        // Sources/Samples/PhaseLayout/LayoutKeyframesSample.swift
         import StateUIFoundation
 
         /// One card: its name, which is its identity, its color and its icon.
@@ -5947,13 +5778,12 @@ enum Listings {
 
         /// The cards: one arithmetic, asked at the keyframes alone.
         private var cards: some View {
-            LayoutEngine(Self.cards, id: \.name) { card in
+            PhaseLayout(Self.cards, id: \.name, phase: $arrangement) { card in
                 face(card)
             } placements: { room, phase in
                 // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
                 [ring(room), grid(room), pile(room)][Int(phase)]
             }
-            .phase($arrangement)
             // THE HAND MOVES THROUGH THE THREE, resting on each.
             .axis(
                 \.self, input: .scroll(.horizontal, pointsPerUnit: 260), range: 0...2, keyframes: .every(1),
@@ -6033,134 +5863,6 @@ enum Listings {
                     }
                     .width(44)
                     .height(44)
-                    .horizontalAlignment(.center)
-
-                    Text(card.name)
-                        .fontWeight(.bold)
-                        .horizontalAlignment(.center)
-                }
-                .verticalAlignment(.center)
-            }
-        }
-        """#,
-        "LayoutPhaseSample": #"""
-        // Sources/Samples/LayoutEngine/LayoutPhaseSample.swift
-        /// THE PHASE: two numbers, each moved on its own - the turn by the hand,
-        /// the spread by the switch.
-        struct Deal: LayoutPhase {
-            /// Which card is at the front.
-            var turn = 2.0
-
-            /// How far the cards are fanned out: 0 a pile, 1 an arc.
-            var spread = 0.0
-
-            static var axes: [WritableKeyPath<Deal, Double>] { [\.turn, \.spread] }
-        }
-
-        /// One card: its name, its color and its icon.
-        struct Card {
-            let name: String
-            let color: Color
-            let icon: Icon
-        }
-
-        /// The cards, dealt in this order.
-        static let cards = [
-            Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
-            Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
-            Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
-            Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
-            Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
-        ]
-
-        /// Where the run stands on both axes - handed on with `$`, never read in
-        /// the body.
-        @State private var deal = Deal()
-
-        /// The switch's own value: what the body reads.
-        @State private var fanned = false
-
-        var body: some View {
-            Grid {
-                Grid {
-                    cards
-                }
-                .gridRow(0)
-                .clipsContent(true)
-
-                SwitchRow(
-                    "Fan out",
-                    Binding(
-                        get: { fanned },
-                        set: { fanning in
-                            fanned = fanning
-                            // ONE AXIS WRITTEN: the spread travels there, and a
-                            // turn under way goes on as it was.
-                            deal.spread = fanning ? 1 : 0
-                        }))
-                .horizontalAlignment(.center)
-                .gridRow(1)
-            }
-            .rows(.fill, .auto)
-        }
-
-        /// The cards, placed from both axes of the phase.
-        private var cards: some View {
-            LayoutEngine(Array(Self.cards.indices)) { index in
-                face(index)
-            } placements: { room, deal in
-                Self.cards.indices.map { place($0, deal, room) }
-            }
-            .phase($deal)
-            // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
-            // no hand, so it is declared no axis.
-            .axis(
-                \.turn, input: .scroll(.horizontal, pointsPerUnit: 90),
-                range: 0...Double(Self.cards.count - 1), snaps: .every(1))
-            .motion(.eased(.milliseconds(600), .cubicOut))
-        }
-
-        /// Where one card stands: between a pile and an arc by the spread, the
-        /// card at the front in the middle either way.
-        private func place(_ index: Int, _ deal: Deal, _ room: Rect) -> Placement {
-            let step = Double(index) - deal.turn
-            let width = min(room.width * 0.36, room.height * 0.5, 150)
-            let height = width * 1.4
-
-            // A PILE leaves each card a few points behind the one in front; an ARC
-            // sets it most of a card along, lower and turned with the curve.
-            let pile = 1 - deal.spread
-            let across = step * (10 * pile + width * 0.75 * deal.spread)
-            let down = abs(step) * (-6 * pile + width * 0.12 * deal.spread)
-
-            return Placement(
-                Rect(room.width / 2 - width / 2 + across, room.height / 2 - height / 2 + down, width, height),
-                transform: .rotate(step * 10 * deal.spread).scale(1 - min(abs(step), 3) * 0.06),
-                zIndex: 100 - Int(min(abs(step), 9) * 10))
-        }
-
-        /// One card's face: its color, its icon on a disc, and its name.
-        private func face(_ index: Int) -> some View {
-            let card = Self.cards[index]
-
-            return ZStack {
-                Rectangle()
-                    .fill(card.color)
-
-                VStack {
-                    ZStack {
-                        Rectangle()
-                            .fill(.white)
-                            .opacity(0.3)
-
-                        Image(.icon(card.icon))
-                            .width(31)
-                            .height(31)
-                            .horizontalAlignment(.center)
-                            .verticalAlignment(.center)
-                    }
-                    .width(56)
-                    .height(56)
                     .horizontalAlignment(.center)
 
                     Text(card.name)
@@ -6274,10 +5976,10 @@ enum Listings {
         }
         """#,
         "LightTableSample": #"""
-        // Sources/Samples/LayoutEngine/LightTableSample.swift
+        // Sources/Samples/PhaseLayout/LightTableSample.swift
         /// THE PHASE: which photo the table is centered on, across and down, how
         /// near it stands, and how far the photos are turned - a turn a unit.
-        struct Table: LayoutPhase {
+        struct Table: AxesPhase {
             var x = 1.0
             var y = 1.0
             var zoom = 0.45
@@ -6331,13 +6033,12 @@ enum Listings {
 
         /// The photos, placed from every axis of the table.
         private var photosOnTheTable: some View {
-            LayoutEngine(Self.photos) { photo in
+            PhaseLayout(Self.photos, phase: $table) { photo in
                 ZStack { Image(ImageSource(photo)).contentMode(.fill) }
                     .clipsContent(true)
             } placements: { room, table in
                 Self.photos.indices.map { place($0, table, room) }
             }
-            .phase($table)
             // ONE FINGER OR TWO MOVE THE TABLE every way - one axis scrolled
             // across, one down - resting on a photo, or, not snapping, anywhere...
             .axis(\.x, input: .scroll(.horizontal), range: 0...2, snaps: snaps ? .every(1) : nil)
@@ -8417,6 +8118,296 @@ enum Listings {
                     .height(48)
             }
         }
+        """#,
+        "PhaseLayoutSample": #"""
+        // Sources/Samples/PhaseLayout/PhaseLayoutSample.swift
+        import StateUIFoundation
+
+        /// The cards: the gallery's groups, each its name and its picture as the
+        /// home page shows it.
+        static let cards: [Card] = [
+            Card(name: "Layout", art: "cat_layout.png"),
+            Card(name: "Phase Layout", art: "cat_phaselayout.png"),
+            Card(name: "Styles", art: "cat_styles.png"),
+            Card(name: "Shapes", art: "cat_shapes.png"),
+            Card(name: "Media", art: "cat_media.png"),
+            Card(name: "Navigation", art: "cat_navigation.png"),
+            Card(name: "Date & time", art: "cat_datetime.png"),
+            Card(name: "Fundamentals", art: "cat_fundamentals.png"),
+            Card(name: "Animation", art: "cat_animation.png"),
+            Card(name: "Gestures", art: "cat_gestures.png"),
+        ]
+
+        /// One card's face.
+        struct Card {
+            let name: String
+            let art: String
+        }
+
+        /// What the ring places: every card, and a dot for each at the board's
+        /// foot - one arithmetic for both, so the dots move with the cards.
+        enum Piece: Hashable {
+            case card(Int)
+            case dot(Int)
+        }
+
+        static let pieces = cards.indices.map(Piece.card) + cards.indices.map(Piece.dot)
+
+        /// How big the place a card stands in is - what the ring is worked out
+        /// from - and how big the card is drawn in it.
+        static let width = 176.0
+        static let height = 248.0
+        static let card = 0.8
+
+        /// How far the eye stands from the ring's front, in radii: the nearer it
+        /// stands, the smaller a card at the back is drawn.
+        static let eye = 1.6
+
+        /// How far below the horizon the front card stands, in card heights: the
+        /// higher the eye above the ring, the more of the far cards it sees.
+        static let above = 1.9
+
+        /// How tall the whole ring stands, in card heights: the back card's top to
+        /// the front card's foot.
+        static var ringHeight: Double { above - back * (above - 1) }
+
+        /// How big the card at the back is drawn, against the one at the front.
+        static var back: Double { eye / (eye + 2) }
+
+        /// HOW A THROW GOES ON - any motion: how far a throw carries, and the
+        /// curve it slows on.
+        enum Throwing: CaseIterable, Hashable {
+            case easeOut, glide, spring, bounce, short
+
+            var motion: Motion {
+                switch self {
+                case .easeOut: .eased(.milliseconds(400), .cubicOut)
+                case .glide: .eased(.milliseconds(300), .sineOut)
+                case .spring: .spring(response: .milliseconds(400), damping: 0.8)
+                case .bounce: .eased(.milliseconds(600), .backOut)
+                case .short: .eased(.milliseconds(200), .cubicOut)
+                }
+            }
+
+            var title: String {
+                switch self {
+                case .easeOut: "Ease out"
+                case .glide: "Glide"
+                case .spring: "Spring"
+                case .bounce: "Bounce"
+                case .short: "Short"
+                }
+            }
+        }
+
+        /// Which of them the ring is thrown by.
+        @State private var throwing = Throwing.easeOut
+
+        /// WHICH CARD IS AT THE FRONT - the phase, two-way: `Back` and `Next`
+        /// write it and the ring travels there; the hand names the card it passes
+        /// and the one it comes to rest on. It starts on the middle card, and it
+        /// has no end: a turn on, it is the same card again.
+        @State private var turn = Double(PhaseLayoutSample.cards.count / 2)
+
+        /// The device - a phone's cards carry their names alone, smaller.
+        @Environment(\.device) private var device
+
+        var body: some View {
+            // A GRID rather than a stack: the board takes whatever room is left
+            // over, which a stack cannot give a child - and a ring wants it all.
+            Grid {
+                Grid {
+                    // THE CARDS, and what moves them - the whole of the example.
+                    ring
+                }
+                .gridRow(0)
+                // The cards stay ON the board: one turned far out in a small room
+                // is cut at the board's edge rather than painted over the page.
+                .clipsContent(true)
+
+                HStack {
+                    // The ring turns for no build at all: the label says so.
+                    DebugInfoLabel()
+
+                    Button("Back")
+                        .onClicked { move(-1) }
+
+                    Button("Next")
+                        .onClicked { move(1) }
+
+                }
+                .horizontalAlignment(.center)
+                .gridRow(1)
+
+                Picker(Throwing.allCases, selection: $throwing) { $0.title }
+                    .horizontalAlignment(.center)
+                    .gridRow(2)
+            }
+            .rows(.fill, .auto, .auto)
+        }
+
+        /// The ring of cards and its dots, placed by the arithmetic below.
+        private var ring: some View {
+            PhaseLayout(Self.pieces, phase: $turn) { piece in
+                switch piece {
+                case .card(let index):
+                    face(Self.cards[index])
+                case .dot:
+                    Rectangle()
+                        .fill(Palette.text)
+                }
+            } placements: { room, phase in
+                // THE WHOLE LAYOUT, run on the display's own frames whenever the
+                // room or the phase has moved, with no view built.
+                Self.cards.indices.map { place($0, phase, room) }
+                    + Self.cards.indices.map { dot($0, phase, room) }
+            }
+            // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
+            // two fingers and a wheel all turn the ring, carrying the card in
+            // front with them, and let go with speed it goes on to the card
+            // nearest where the throw would end. It rests on a card, never
+            // between two - and comes round, a turn of the range bringing every
+            // card back.
+            .axis(
+                \.self, input: .scroll(.horizontal, throwing: throwing.motion),
+                range: 0...Double(Self.cards.count), snaps: .every(1), wraps: true)
+            // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
+            // over every card, wearing the card's own corners - which is why it is
+            // the application's to give and not the library's to draw.
+            .shade(
+                Rectangle()
+                    .fill(Color(hex: 0x000000)))
+            .motion(.eased(.milliseconds(300), .cubicOut))
+        }
+
+        /// A card either way, from a button: the ring travels there, and the
+        /// arithmetic follows it frame by frame - past the last card to the first.
+        private func move(_ by: Int) {
+            turn += Double(by)
+        }
+
+        /// One card's face - a picture and its name, and nothing at all about where
+        /// the card is or which way it faces. That is the placement's, and keeping
+        /// the two apart is what lets one run of cards be turned into any shape.
+        private func face(_ card: Card) -> some View {
+            let phone = device.info.formFactor == .phone
+
+            return ZStack {
+                Grid {
+                    Image(ImageSource(card.art))
+                        .contentMode(.fill)
+
+                    VStack {
+                        // ONE LINE, whatever the card's width: a caption that
+                        // wrapped would change the picture's height with it.
+                        Text(card.name)
+                            .fontWeight(.bold)
+                            .lineBreak(.tailTruncation)
+
+                        // A phone's small card carries its name alone.
+                        if !phone {
+                            Text("Placed by arithmetic")
+                                .opacity(0.8)
+                                .lineBreak(.tailTruncation)
+                        }
+                    }
+                    // A dark strip under the words, so a caption reads over a
+                    // picture of any color.
+                    .verticalAlignment(.end)
+                }
+                // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
+                // the card is cut at its own room - the Web's reaches two points
+                // past it - so the grid holding it - a layout, with edges to cut
+                // at - cuts it there.
+                .clipsContent(true)
+            }
+            .style(.card)
+            .lineWidth(0)
+        }
+
+        /// How big the cards are in THIS room, as a multiple of the size above -
+        /// what every distance below scales with.
+        ///
+        /// BOTH AXES: the ring spread to either side takes the room's width, and
+        /// the ring seen from above - the back card's top to the front card's foot
+        /// - its height above the dots; the smaller of the two answers, so a
+        /// window grown taller draws a bigger ring and a phone on its side -
+        /// plenty of width, almost no height - is answered by the height.
+        private func fit(in room: Rect) -> Double {
+            max(
+                min(
+                    1.375,
+                    (room.width * 0.4 - 6) / Self.width,
+                    (room.height - 46) / (Self.height * Self.ringHeight)),
+                0.1)
+        }
+
+        /// A RING IN SPACE, turned to `at` - the cards standing upright on a
+        /// circle that lies flat, seen from in front and above, the chosen card
+        /// nearest the eye. The whole of the layout.
+        private func place(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
+            let count = Self.cards.count
+            let fit = fit(in: room)
+            let step = Double(index) - at
+            let angle = step / Double(max(count, 1)) * 2 * .pi
+            let wide = Self.width * fit
+            let tall = Self.height * fit
+
+            // PERSPECTIVE: how big a card is drawn - 1 at the front, under half at
+            // the back - which also says how near the middle it stands and how far
+            // below the horizon its foot is.
+            let drawn = Self.eye / (Self.eye + 1 - cos(angle))
+
+            // The circle as wide as the room lets the cards spread, and the horizon
+            // where the whole ring - the back card's top to the front card's foot -
+            // stands in the middle of the room above the dots.
+            let radius = min(wide * 1.75, (room.width / 2 - 8 - wide * 0.33) / 0.65)
+            let horizon = (room.height - 30 - tall * Self.ringHeight) / 2 - tall * Self.back * (Self.above - 1)
+            let across = room.width / 2 + sin(angle) * radius * drawn
+            let foot = horizon + tall * Self.above * drawn
+
+            // THE CARD AT ITS OWN SIZE, a little smaller than its place, standing
+            // on the ring where its place does.
+            let (cardWide, cardTall) = (wide * Self.card, tall * Self.card)
+
+            return Placement(
+                // Scaled about its middle to how big it is drawn - its words scale
+                // with it rather than wrapping anew.
+                Rect(across - cardWide / 2, foot - cardTall * drawn / 2 - cardTall / 2, cardWide, cardTall),
+                transform: .scale(drawn),
+                // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
+                // layout was given by `.shade(_:)` - nothing at all without one -
+                // and here it is how far back the card stands. A FADE would show
+                // the card behind it, which on a ring is every other card.
+                shade: min((1 - drawn) * 1.1, 0.55),
+                // The nearer card is drawn over the farther one.
+                zIndex: Int(cos(angle) * 1000))
+        }
+
+        /// One dot at the board's foot, saying which card is at the front by a
+        /// fade - over every card.
+        private func dot(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
+            let count = Self.cards.count
+
+            return Placement(
+                Rect(
+                    room.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
+                    room.height - 16,
+                    6,
+                    6),
+                // THE RING COMES ROUND: how far a card is from the front is taken
+                // the short way, a turn on or back.
+                opacity: 0.25 + 0.75 * chosen((Double(index) - at).remainder(dividingBy: Double(count))),
+                zIndex: 2000)
+        }
+
+        /// How much of "the chosen one" a card is: 1 at the front, nothing a card
+        /// away, and part way between while the ring is moving - which is what
+        /// makes the emphasis cross over rather than jump.
+        private func chosen(_ step: Double) -> Double {
+            max(0, 1 - abs(step))
+        }
+
         """#,
         "PickList": #"""
         // Sources/Samples/Collections/ChoosingItemsSample.swift
@@ -11931,12 +11922,12 @@ enum Listings {
         }
         """#,
         "TwoFingersSample": #"""
-        // Sources/Samples/LayoutEngine/TwoFingersSample.swift
+        // Sources/Samples/PhaseLayout/TwoFingersSample.swift
         import StateUIFoundation
 
         /// THE PHASE: how far the ring is turned, a card a unit, and how large it
         /// stands.
-        struct Ring: LayoutPhase {
+        struct Ring: AxesPhase {
             var turn = 0.0
             var size = 1.0
 
@@ -11957,13 +11948,12 @@ enum Listings {
             let count = Double(Self.cards.count)
 
             return Grid {
-                LayoutEngine(Self.cards) { art in
+                PhaseLayout(Self.cards, phase: $ring) { art in
                     ZStack { Image(ImageSource(art)).contentMode(.fill) }
                         .clipsContent(true)
                 } placements: { room, ring in
                     Self.cards.indices.map { place($0, ring, room) }
                 }
-                .phase($ring)
                 // TWO FINGERS TURNING turn the ring a card every eighth of a
                 // turn, round and round; SPREADING, they grow it from small to
                 // large, resting at either or at its own size - both at once.

@@ -41,10 +41,6 @@ Image.horizontalAlignment: ✅
 Image.pinchUpdated: ✓ pinch on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.verticalAlignment: ✅
 ItemsView.tapped: ✓ pressDown on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the window's drop routing told the driver's files, no dragging session
-LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the window's drop routing told the driver's files, no dragging session
-LayoutEngine.tapCount: ✓ tap on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.tapped: ✓ tap on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 Line.panYChannel: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Link.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -57,6 +53,10 @@ Map.panTouchCount: ✓ pan on Map: handed to the host's recognizer or handler, n
 Map.panUpdated: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.panXChannel: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 Path.holdDuration: ✅
+PhaseLayout.droppedFileTypes: ✓ dropFiles on PhaseLayout: the window's drop routing told the driver's files, no dragging session
+PhaseLayout.filesDropped: ✓ dropFiles on PhaseLayout: the window's drop routing told the driver's files, no dragging session
+PhaseLayout.tapCount: ✓ tap on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.tapped: ✓ tap on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.area: ✅
 Picker.frameChanged: ✅
 Picker.pointerEntered: ✓ hover on Picker: handed to the host's recognizer or handler, no NSEvent sent

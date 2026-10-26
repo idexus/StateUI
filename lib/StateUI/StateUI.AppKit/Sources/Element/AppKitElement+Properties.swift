@@ -57,9 +57,9 @@ extension AppKitElement {
                 host?.runtime.reducesMotion() ?? false
             })
 
-        case .zStack, .layoutEngine:
+        case .zStack, .phaseLayout:
             let layers = AppKitZStackView()
-            layers.engine = type == .layoutEngine
+            layers.phaseLayout = type == .phaseLayout
             return layers
 
 

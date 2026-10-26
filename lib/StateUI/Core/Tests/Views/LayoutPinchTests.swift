@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Two fingers over a layout engine: a magnification multiplied by how far they spread, a rotation a unit every so
+// Two fingers over a phase layout: a magnification multiplied by how far they spread, a rotation a unit every so
 // many degrees they turn, both at once, each let go onto a target of its own.
 
 import XCTest
@@ -9,7 +9,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// A phase two fingers move: how far a dial is turned, and how near it stands.
-private struct Dial: LayoutPhase {
+private struct Dial: AxesPhase {
     var turn = 0.0
     var zoom = 1.0
 
@@ -33,11 +33,10 @@ final class LayoutPinchTests: XCTestCase {
     /// Four views a dial turns - a unit every 90 degrees, round and round - and spreads, resting at half, whole and
     /// twice its size.
     private func tree(_ dial: State<Dial>, _ handed: Handed, itemDrag: Bool = false) -> Node {
-        var layout = LayoutEngine([0, 1, 2, 3]) { Text("\($0)") } placements: { _, dial in
+        var layout = PhaseLayout([0, 1, 2, 3], phase: dial.projectedValue) { Text("\($0)") } placements: { _, dial in
             handed.dials.append(dial)
             return (0..<4).map { _ in Placement(Rect(0, 0, 40, 40)) }
         }
-        .phase(dial.projectedValue)
         .axis(\.zoom, input: .magnification, range: 0.5...2, snaps: [1])
         .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), wraps: true)
         .motion(.eased(.milliseconds(160), .linear))
@@ -52,7 +51,7 @@ final class LayoutPinchTests: XCTestCase {
     /// THE ELEMENT SAYS WHICH FINGERS IT HEARS, and hears them as one.
     func testTheElementSaysWhichFingersItHears() throws {
         let (dial, handed) = (State(wrappedValue: Dial()), Handed())
-        let layout = try XCTUnwrap(bench.laid(Renders(), { tree(dial, handed) }).patch.first(.layoutEngine))
+        let layout = try XCTUnwrap(bench.laid(Renders(), { tree(dial, handed) }).patch.first(.phaseLayout))
 
         XCTAssertEqual(layout.properties[.magnifies], .bool(true))
         XCTAssertEqual(layout.properties[.rotates], .bool(true))
@@ -165,15 +164,14 @@ final class LayoutPinchTests: XCTestCase {
     /// AN AXIS DECLARED AGAIN TAKES THE OTHER'S PLACE: its input with it.
     func testAnAxisDeclaredAgainTakesTheOthersPlace() throws {
         let (dial, handed) = (State(wrappedValue: Dial()), Handed())
-        let layout = LayoutEngine([0]) { Text("\($0)") } placements: { _, dial in
+        let layout = PhaseLayout([0], phase: dial.projectedValue) { Text("\($0)") } placements: { _, dial in
             handed.dials.append(dial)
             return [Placement(Rect(0, 0, 40, 40))]
         }
-        .phase(dial.projectedValue)
         .axis(\.zoom, input: .scroll(.horizontal), range: 1...2)
         .axis(\.zoom, input: .magnification, range: 1...2)
 
-        let element = try XCTUnwrap(Renders().settled(layout.node).first(.layoutEngine))
+        let element = try XCTUnwrap(Renders().settled(layout.node).first(.phaseLayout))
         XCTAssertNil(element.properties[.handAxis], "the scroll's place taken")
         XCTAssertEqual(element.properties[.magnifies], .bool(true))
     }

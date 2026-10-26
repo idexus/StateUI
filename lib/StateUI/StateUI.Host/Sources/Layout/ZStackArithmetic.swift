@@ -8,14 +8,14 @@
 /// Design: docs/design/host/layout.md#layers
 @_spi(Host) public enum ZStackArithmetic {
     /// The room the children and the padding take for the width offered: as much as the child that needs the
-    /// most, at its natural size - but the padding alone for a layout engine's (`engine`), which has no size of its
+    /// most, at its natural size - but the padding alone for a phase layout's (`phaseLayout`), which has no size of its
     /// own.
-    /// Design: docs/design/host/layout.md#a-layout-engine
+    /// Design: docs/design/host/layout.md#a-phase-layout
     @MainActor
     public static func size<Child: LayoutChild>(
-        of items: [Child], padding: Insets, width offered: Double?, engine: Bool = false
+        of items: [Child], padding: Insets, width offered: Double?, phaseLayout: Bool = false
     ) -> LayoutSize {
-        guard !engine else { return LayoutSize(width: padding.start + padding.end, height: padding.top + padding.bottom) }
+        guard !phaseLayout else { return LayoutSize(width: padding.start + padding.end, height: padding.top + padding.bottom) }
 
         let inner = offered.map { max(0, $0 - padding.start - padding.end) }
         var width = 0.0

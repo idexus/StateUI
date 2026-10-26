@@ -19,13 +19,13 @@ HStack.accessibilityActions: ✅
 Image.opacity: ✅
 Image.rotationX: ✓ read rotationX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
-LayoutEngine.pivotY: ✓ read pivotY of LayoutEngine: the host's own transform, checked against the layer it composed itself
 Line.accessibilityHint: ✅
 Link.isEnabled: ✅
 Link.rotationY: ✓ read rotationY of Link: the host's own transform, checked against the layer it composed itself
 Map.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
 Path.rotationY: ✓ read rotationY of Path: the host's own transform, checked against the layer it composed itself
+PhaseLayout.pivotY: ✓ read pivotY of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Polygon.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Polyline.isVisible: ✅

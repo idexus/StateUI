@@ -151,17 +151,17 @@ enum WinUIRealization {
         .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
             why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
-        .complete(LayoutEngineContract.handAxis),
-        .complete(LayoutEngineContract.handMoved),
-        .notPlanned(LayoutEngineContract.handStepped,
+        .complete(PhaseLayoutContract.handAxis),
+        .complete(PhaseLayoutContract.handMoved),
+        .notPlanned(PhaseLayoutContract.handStepped,
             reason: "A wheel reaches the layout as WinUI's own scroller takes it, "
             + "its tracker's: a notch goes as far as the platform scrolls for it, and the tracker tells no notch."),
-        .complete(LayoutEngineContract.itemDrag),
-        .complete(LayoutEngineContract.itemMoved),
-        .complete(LayoutEngineContract.magnifies),
-        .complete(LayoutEngineContract.pans),
-        .complete(LayoutEngineContract.rotates),
-        .complete(LayoutEngineContract.pinchMoved),
+        .complete(PhaseLayoutContract.itemDrag),
+        .complete(PhaseLayoutContract.itemMoved),
+        .complete(PhaseLayoutContract.magnifies),
+        .complete(PhaseLayoutContract.pans),
+        .complete(PhaseLayoutContract.rotates),
+        .complete(PhaseLayoutContract.pinchMoved),
         .complete(MenuContract.isEnabled),
         .complete(MenuContract.text),
         .complete(MenuBarContract.order),
@@ -267,7 +267,7 @@ enum WinUIRealization {
         .complete(WindowContract.windowValue),
         .complete(WindowContract.x),
         .complete(WindowContract.y),
-    ] + HostRecord.layoutEngine
+    ] + HostRecord.phaseLayout
 
     /// What a split view's pane leaves out of a material.
     static let paneHasNoGlass = "WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness."

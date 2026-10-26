@@ -1,0 +1,12 @@
+# revision 11.1
+PhaseLayout: ✅
+PhaseLayout.handAxis: ✓ sweep on PhaseLayout: the hand handed to the host's entry with its speed, no event
+PhaseLayout.handMoved: ✓ sweep on PhaseLayout: the hand handed to the host's entry with its speed, no event
+PhaseLayout.handStepped: ✓ notch on PhaseLayout: a wheel's notches handed to the host's entry, no event
+PhaseLayout.itemDrag: ✅
+PhaseLayout.itemMoved: ✅
+PhaseLayout.magnifies: ✓ pinch on PhaseLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+PhaseLayout.pans: ✓ sweep on PhaseLayout: the hand handed to the host's entry with its speed, no event
+PhaseLayout.phase: ✅
+PhaseLayout.pinchMoved: ✓ pinch on PhaseLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+PhaseLayout.rotates: ✓ rotate on PhaseLayout: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down

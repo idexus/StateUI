@@ -103,7 +103,7 @@ for both hides it, so the overlay material is never shown.
 ## A child turned in place
 
 A ZStack whose run turns its drawing order - two cards swapping ranks as a
-layout engine's run passes halfway between them - sets its `subviews` in the
+phase layout's run passes halfway between them - sets its `subviews` in the
 new order (`ZStackArithmetic.drawingOrder`), which moves each child it keeps
 without taking it out. A child taken out and added again leaves the window
 for a moment, and AppKit cancels a gesture under way on it: a pointer drag of

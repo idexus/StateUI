@@ -16,8 +16,6 @@ HStack.rotation: ✓ read rotation of HStack: the host's own transform, checked 
 Image.accessibilityHint: ✅
 ItemsView.isEnabled: ✅
 ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own transform, checked against the layer it composed itself
-LayoutEngine.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-LayoutEngine.layoutDirection: ✅
 Line.layoutDirection: ✅
 Link.accessibilityRole: ✅
 Map.maximumHeight: ✅
@@ -26,6 +24,8 @@ Map.minimumHeight: ✅
 Map.minimumWidth: ✅
 Map.scaleX: ✓ read scaleX of Map: the host's own transform, checked against the layer it composed itself
 Path.accessibilityRole: ✅
+PhaseLayout.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+PhaseLayout.layoutDirection: ✅
 Picker.height: ✅
 Picker.scale: ✓ read scale of Picker: the host's own transform, checked against the layer it composed itself
 Picker.width: ✅

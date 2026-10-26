@@ -110,7 +110,7 @@ final class HandHearingTests: XCTestCase {
 
     /// The page's layout, where the tree mounted it.
     private func ring(in runtime: HostRuntime) throws -> MountedElement {
-        try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        try XCTUnwrap(runtime.tree.root?.first(type: .phaseLayout))
     }
 }
 
@@ -130,11 +130,10 @@ private struct HandPage: View {
     @State private var turn = 0.0
 
     var body: some View {
-        LayoutEngine([0, 1, 2, 3, 4]) { Text("\($0)") } placements: { _, phase in
+        PhaseLayout([0, 1, 2, 3, 4], phase: $turn) { Text("\($0)") } placements: { _, phase in
             handed.append(phase)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .phase($turn)
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
         .motion(.eased(.milliseconds(200), .linear))
     }

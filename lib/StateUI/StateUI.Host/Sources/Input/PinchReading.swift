@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 import StateUIFoundation
 
-/// Two fingers over a layout engine, read alike on every host: the pinch and the rotation the platform tells as two
+/// Two fingers over a phase layout, read alike on every host: the pinch and the rotation the platform tells as two
 /// gestures made one stream - begun with the first of them, ended with the last, each move how far the fingers
 /// spread and turned since the last report, and as they lift, how fast, read from their last tenth of a second.
 /// What it answers is the element's `pinchMoved`.

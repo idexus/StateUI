@@ -18,7 +18,7 @@ final class WebConformanceTests: XCTestCase {
     func testCanvas() { conform(CanvasTests.self) }
     func testCapsule() { conform(CapsuleTests.self) }
     func testFill() { conform(FillTests.self) }
-    func testLayoutEngine() { conform(LayoutEngineTests.self) }
+    func testPhaseLayout() { conform(PhaseLayoutTests.self) }
     func testCheckBox() { conform(CheckBoxTests.self) }
     func testColorPicker() { conform(ColorPickerTests.self) }
     func testSpace() { conform(SpaceTests.self) }

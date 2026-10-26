@@ -5,7 +5,7 @@
 // how long the run the user swipes is, and what the one number the scroller
 // sends it does.
 //
-// A GalleryView is a LayoutEngine with the arithmetic of three shapes
+// A GalleryView is a PhaseLayout with the arithmetic of three shapes
 // written, so there is nothing in a host to check it against and everything
 // worth pinning is here.
 
@@ -155,7 +155,7 @@ final class GalleryViewTests: XCTestCase {
 
     /// The layout the cards are placed in.
     private func board(_ patch: HostPatch) -> HostPatch {
-        find(.layoutEngine, in: patch) ?? patch
+        find(.phaseLayout, in: patch) ?? patch
     }
 
     /// The run the gallery's engine wrote, driven the way the host drives it:
@@ -536,7 +536,7 @@ final class GalleryViewTests: XCTestCase {
     private func hand(
         _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, moved: Point = .zero, speed: Point = .zero
     ) {
-        guard let heard = find(.layoutEngine, in: renders.renderFromScratch(tree()))?.events?[.handMoved] else {
+        guard let heard = find(.phaseLayout, in: renders.renderFromScratch(tree()))?.events?[.handMoved] else {
             return XCTFail("the gallery hears no hand")
         }
 
@@ -576,7 +576,7 @@ final class GalleryViewTests: XCTestCase {
         let shown = State(0)
         func tree() -> Node { gallery(5).position(shown.projectedValue).node }
         let showing = laid(renders, tree)
-        let phase = try XCTUnwrap(find(.layoutEngine, in: showing.whole)?.driven?[.phase]?.state)
+        let phase = try XCTUnwrap(find(.phaseLayout, in: showing.whole)?.driven?[.phase]?.state)
 
         hand(renders, tree, .began)
         hand(renders, tree, .changed, moved: Point(-4 * reach, 0))
@@ -609,7 +609,7 @@ final class GalleryViewTests: XCTestCase {
         _ = await settle()
 
         // The host walks the phase from card 1 towards card 3: a frame of the way.
-        let phase = try XCTUnwrap(find(.layoutEngine, in: showing.whole)?.driven?[.phase]?.state)
+        let phase = try XCTUnwrap(find(.phaseLayout, in: showing.whole)?.driven?[.phase]?.state)
         moved(phase, to: 1.4)
         turned += 16
         _ = board.cycle(now: turned, reducesMotion: false)
@@ -624,7 +624,7 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node { gallery(5).node }
         let showing = laid(renders, tree)
-        let phase = try XCTUnwrap(find(.layoutEngine, in: showing.whole)?.driven?[.phase]?.state)
+        let phase = try XCTUnwrap(find(.phaseLayout, in: showing.whole)?.driven?[.phase]?.state)
 
         hand(renders, tree, .began)
         hand(renders, tree, .changed, moved: Point(-1.4 * reach, 0))
@@ -676,7 +676,7 @@ final class GalleryViewTests: XCTestCase {
         var heard: [Int] = []
         let renders = Renders()
         let shown = laid(renders, { self.gallery(5).onItemActivated { heard.append($0) }.node })
-        let cards = try XCTUnwrap(find(.layoutEngine, in: shown.whole)).children.compactMap { $0.events?[.tapped] }
+        let cards = try XCTUnwrap(find(.phaseLayout, in: shown.whole)).children.compactMap { $0.events?[.tapped] }
 
         XCTAssertEqual(cards.count, 5, "every card hears a tap")
 
@@ -790,8 +790,8 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).isSwipeEnabled(false).node }).whole
 
-        XCTAssertNil(find(.layoutEngine, in: showing)?.events?[.handMoved])
-        XCTAssertNotNil(find(.layoutEngine, in: showing))
+        XCTAssertNil(find(.phaseLayout, in: showing)?.events?[.handMoved])
+        XCTAssertNotNil(find(.phaseLayout, in: showing))
     }
 
     /// And one with nothing to show shows what it was given instead.

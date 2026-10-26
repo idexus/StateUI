@@ -18,10 +18,9 @@ final class WebHandTests: XCTestCase {
     /// across stays the page's.
     func testATouchTheLayoutTookIsKeptFromThePage() throws {
         let host = WebRenderer.running {
-            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, phase in
+            PhaseLayout([0, 1, 2], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { room, phase in
                 (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, room.height)) }
             }
-            .phase(State(wrappedValue: 0.0).projectedValue)
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .width(300)
             .height(200)
@@ -39,10 +38,9 @@ final class WebHandTests: XCTestCase {
     /// be.
     func testAHandTheLayoutTookStartsNoDragOfTheBrowsersOwn() throws {
         let host = WebRenderer.running {
-            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, phase in
+            PhaseLayout([0, 1, 2], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { room, phase in
                 (0..<3).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, room.height)) }
             }
-            .phase(State(wrappedValue: 0.0).projectedValue)
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .itemDrag(begins: .held)
             .width(300)
@@ -77,10 +75,9 @@ final class WebHandTests: XCTestCase {
     func testAnAltDragIsTwoFingers() throws {
         let zoom = State(wrappedValue: 1.0)
         let host = WebRenderer.running {
-            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { room, at in
+            PhaseLayout([0, 1, 2], phase: zoom.projectedValue) { Text("\($0)") } placements: { room, at in
                 (0..<3).map { Placement(Rect(Double($0) * 100, 0, 100 * at, room.height)) }
             }
-            .phase(zoom.projectedValue)
             .axis(\.self, input: .magnification, range: 1...3, snaps: [2])
             .width(300)
             .height(200)

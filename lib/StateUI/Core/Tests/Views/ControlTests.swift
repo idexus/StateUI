@@ -348,13 +348,12 @@ final class ControlTests: XCTestCase {
                     .onRefreshRequested {}
                     .node.built),
 
-            // The layout engine as its view writes it: the views, the arithmetic, the
+            // The phase layout as its view writes it: the views, the arithmetic, the
             // phase and the hand over them. A composed view, so the case is its body built.
-            ControlCase("LayoutEngine", sources: ["PlacedStack.swift", "LayoutEngine.swift"],
-                LayoutEngine(["one", "two"]) { Text($0) } placements: { room, phase in
+            ControlCase("PhaseLayout", sources: ["PlacedStack.swift", "PhaseLayout.swift"],
+                PhaseLayout(["one", "two"], phase: turn.projectedValue) { Text($0) } placements: { room, phase in
                     [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
                 }
-                .phase(turn.projectedValue)
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .every(1))
                 .following(chosen.projectedValue)
                 .shade(
@@ -367,12 +366,11 @@ final class ControlTests: XCTestCase {
                 .onItemDismissed(.up, beyond: 80) { _ in }
                 .node.built),
 
-            // A pan and two fingers over the layout engine: a rotation and a magnification, each driving its axis.
-            ControlCase("LayoutEngine", sources: ["PlacedStack.swift", "LayoutEngine.swift"],
-                LayoutEngine(["one", "two"]) { Text($0) } placements: { room, dial in
+            // A pan and two fingers over the phase layout: a rotation and a magnification, each driving its axis.
+            ControlCase("PhaseLayout", sources: ["PlacedStack.swift", "PhaseLayout.swift"],
+                PhaseLayout(["one", "two"], phase: dial.projectedValue) { Text($0) } placements: { room, dial in
                     [Placement(Rect(dial.turn, 0, room.width / 2 * dial.size, room.height)), Placement(.zero)]
                 }
-                .phase(dial.projectedValue)
                 .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .limits)
                 .axis(\.size, input: .magnification, range: 1...2, snaps: .limits)
                 .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .limits)
@@ -877,7 +875,7 @@ final class ControlTests: XCTestCase {
             "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
             "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
             "Views/Collections/GalleryView.swift|throwing:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
-            "Views/Layouts/LayoutEngine.swift|itemDrag:ItemDragStart",
+            "Views/Layouts/PhaseLayout.swift|itemDrag:ItemDragStart",
         ]
         let missing = values
             .filter { value in
@@ -1489,7 +1487,7 @@ final class ControlTests: XCTestCase {
 }
 
 /// A phase a pan and two fingers move: where a layout is panned to, how far it is turned, and how large it stands.
-private struct ControlDial: LayoutPhase {
+private struct ControlDial: AxesPhase {
     var x = 0.0
     var y = 0.0
     var turn = 0.0

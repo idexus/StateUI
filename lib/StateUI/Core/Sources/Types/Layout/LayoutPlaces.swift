@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Places on an axis of a layout engine's phase, beside the ends of its range, which are always among them: where
+/// Places on an axis of a phase layout's phase, beside the ends of its range, which are always among them: where
 /// the axis may come to rest under the user's hand (`snaps:`), and where its layout is worked out (`keyframes:`).
 /// This library's own.
 ///
@@ -10,7 +10,7 @@
 ///     .axis(\.x, input: .scroll(.horizontal), range: 0...3, snaps: .every(1))   // 0, 1, 2, 3
 ///
 /// An axis given no snaps rests wherever its throw ends inside its range.
-/// Design: docs/design/views/layout-engine.md#an-axis
+/// Design: docs/design/views/phase-layout.md#an-axis
 public struct LayoutPlaces: Equatable, Sendable, ExpressibleByArrayLiteral {
     /// The places listed, or a step from the lower end.
     private enum Places: Equatable, Sendable {

@@ -28,8 +28,8 @@
         case "HStack": return dressing.dress(HStack())
         case "Image": return dressing.dress(Image())
         case "ItemsView": return dressing.dress(ItemsView(0..<20) { Text("Item \($0)") }.width(240).height(160))
-        case "LayoutEngine":
-            return dressing.dress(AnyView(LayoutEngine([Int]()) { _ in Space() } placements: { _, _ in [] }))
+        case "PhaseLayout":
+            return dressing.dress(AnyView(PhaseLayout([Int](), phase: State(wrappedValue: 0.0).projectedValue) { _ in Space() } placements: { _, _ in [] }))
         case "Text": return dressing.dress(Text())
         case "Line": return dressing.dress(Line())
         case "Link": return dressing.dress(Link("Swift", destination: "https://www.swift.org"))
@@ -75,15 +75,15 @@
         case "ScrollView": dressing.dress(ScrollView { child })
         case "VStack": dressing.dress(VStack { child })
         case "ZStack": dressing.dress(ZStack { child })
-        case "LayoutEngine": dressing.dress(AnyView(Specimens.engine(holding: child)))
+        case "PhaseLayout": dressing.dress(AnyView(Specimens.phaseLayout(holding: child)))
         default: Text("no layout \(layout) holding a child")
         }
         return AnyView(view)
     }
 
-    /// A layout engine holding `child` across its whole room, as a ZStack holds a child naming no area.
-    public static func engine(holding child: some View) -> some View {
-        LayoutEngine([0]) { _ in child } placements: { room, _ in [Placement(room)] }
+    /// A phase layout holding `child` across its whole room, as a ZStack holds a child naming no area.
+    public static func phaseLayout(holding child: some View) -> some View {
+        PhaseLayout([0], phase: State(wrappedValue: 0.0).projectedValue) { _ in child } placements: { room, _ in [Placement(room)] }
     }
 
     /// A page holding `element`'s specimen wearing `worn` where an application puts one, `beside` it on the page. A

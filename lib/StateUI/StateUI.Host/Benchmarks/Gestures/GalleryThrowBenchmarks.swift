@@ -13,7 +13,7 @@ final class GalleryThrowBenchmarks: XCTestCase {
     /// the middle changing.
     func testACardRunThrownUntilItRests() throws {
         let bench = Bench(GalleryApplication())
-        let run = try bench.element(.layoutEngine)
+        let run = try bench.element(.phaseLayout)
 
         bench.hand(.began, on: run, at: Point(195, 350))
         for _ in 0..<5 {

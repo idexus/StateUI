@@ -1,0 +1,12 @@
+# revision 11.1
+PhaseLayout: ✅
+PhaseLayout.handAxis: ✓ sweep on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.handMoved: ✓ sweep on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.handStepped: ✓ notch on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.itemDrag: ✓ pressDown on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.itemMoved: ✓ pressDown on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.magnifies: ✓ pinch on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.pans: ✓ sweep on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.phase: ✅
+PhaseLayout.pinchMoved: ✓ pinch on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.rotates: ✓ rotate on PhaseLayout: the view's listening handed the recognizer's states, no touch sent

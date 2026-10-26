@@ -60,11 +60,6 @@ Image.swiped: ✅
 ItemsView.area: ✅
 ItemsView.frameChanged: ✅
 ItemsView.panYChannel: ✅
-LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the relay's drop report told the driver's files, no drag WinUI began
-LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the relay's drop report told the driver's files, no drag WinUI began
-LayoutEngine.frameChanged: ✅
-LayoutEngine.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
-LayoutEngine.margin: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Line.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Line.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -88,6 +83,11 @@ Path.gridRow: ✅
 Path.swipeDirection: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
+PhaseLayout.droppedFileTypes: ✓ dropFiles on PhaseLayout: the relay's drop report told the driver's files, no drag WinUI began
+PhaseLayout.filesDropped: ✓ dropFiles on PhaseLayout: the relay's drop report told the driver's files, no drag WinUI began
+PhaseLayout.frameChanged: ✅
+PhaseLayout.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+PhaseLayout.margin: ✅
 Picker.area: ✅
 Picker.frameChanged: ✅
 Picker.panYChannel: ✅

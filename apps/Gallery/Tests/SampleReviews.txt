@@ -7,10 +7,11 @@ AnalogClockSample.swift 6fa4f5693b1a66d7
 AnimatedInputSample.swift 1d4e3ab94a8e6a90
 AnimatedPropertySample.swift 3e32ce6e1efaac36
 AnimationSample.swift c490402644539ae0
-AppSwitcherSample.swift 07c52e1b524a8090
+AppSwitcherSample.swift d62794346672814d
 AppThemeSample.swift e3467cfdec02937b
 AppearanceSample.swift 559432c0b528aaf4
 ApplicationSessionSample.swift 5e888fc7cfd589fc
+AxesPhaseSample.swift 837eb2173aea8077
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
 BoundPropertiesSample.swift 52240d3e367abe61
@@ -20,7 +21,7 @@ ButtonMenuSample.swift d4e17af0531f4452
 ButtonRoleSample.swift 36d33f316a462966
 ButtonSample.swift 07e87a36914e4779
 CanvasSample.swift 52db70adead39b9b
-ChangingDeckSample.swift 76bfb869d9208b68
+ChangingDeckSample.swift 774d8b17495f2909
 CheckBoxSample.swift 70837379658f7ee0
 ChoosingItemsSample.swift 1a8449147a34b6dc
 ClipboardSample.swift 51f030ebe6f9b4dc
@@ -50,7 +51,7 @@ GeometryReaderSample.swift 4e6226814b27d935
 GridSample.swift c82a3d386f4dc2a6
 HTTPRequestSample.swift 78608735f89f533f
 HoldSample.swift 3179a83bed36f2d7
-HomeScreenSample.swift 4e9f7b450d84723e
+HomeScreenSample.swift c96c33b66f45a6c3
 HostTimeSample.swift 809c9fabab553c09
 IconButtonSample.swift 3becb5bca84feb1e
 IconSample.swift b1a55d5d263b6a6e
@@ -63,14 +64,12 @@ ItemActionsSample.swift 33deb2472b783b81
 ItemsViewSample.swift ad7bb28667c10afe
 KeyPressSample.swift 0bc3f571522ec49a
 KeyboardSample.swift 438179d36c0ead1c
-LayoutAxesSample.swift da9dbdca9b7f694c
+LayoutAxesSample.swift e28bb760a1335180
 LayoutDirectionSample.swift 39109bcddac88519
-LayoutEngineSample.swift 19d587ef70dd7a00
-LayoutKeyframesSample.swift 93d6eee154878f66
-LayoutPhaseSample.swift bee69873b6adced2
+LayoutKeyframesSample.swift 30d2e2e79bd3f305
 LifecycleSample.swift ba0a75804664098e
 LifetimeSample.swift 388647e356facd79
-LightTableSample.swift ace8cc68473e6fcc
+LightTableSample.swift 256e89f799950a7c
 LinkSample.swift 422f6cbd2a97bec3
 LinksSample.swift 1311b1b06e3a08cf
 LivingLayoutSample.swift 6962038d81a843fd
@@ -91,6 +90,7 @@ OutlineSample.swift 4ee91e4fde45645c
 PacedStateSample.swift e821a58ecd748f76
 PanSample.swift 8db15bbfd3c2b4b7
 PersistentStateSample.swift 4be06bf5d5e98ef8
+PhaseLayoutSample.swift ccb0e6382ac48a7c
 PickerSample.swift 86c5cbb290e05823
 PinchSample.swift 6aa4a07113d9cf10
 PlatformSupportSample.swift 24107a58da1308fc
@@ -142,7 +142,7 @@ ToolbarSample.swift b7ef65e4ed495dc3
 TooltipSample.swift 2482095fe75dc4cf
 TouchThroughSample.swift 2f49a42898ac5f63
 TransformSample.swift 42f89ce8b8c4c513
-TwoFingersSample.swift 47512444b7046f28
+TwoFingersSample.swift c6d660d566144792
 TwoLayersSample.swift 80cbb745c5e4b044
 VisualStateSample.swift 891a200246efca50
 WebViewSample.swift caa32b2a32e3da7b

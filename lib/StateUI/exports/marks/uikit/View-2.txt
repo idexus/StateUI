@@ -41,10 +41,6 @@ Image.horizontalAlignment: ✅
 Image.pinchUpdated: ✓ pinch on Image: the view's listening handed the recognizer's states, no touch sent
 Image.verticalAlignment: ✅
 ItemsView.tapped: ✓ pressDown on ItemsView: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the drop interaction's handler told the driver's files, no drag session
-LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the drop interaction's handler told the driver's files, no drag session
-LayoutEngine.tapCount: ✓ tap on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.tapped: ✓ tap on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
 Line.panYChannel: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Link.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -57,6 +53,10 @@ Map.panTouchCount: ✓ pan on Map: the view's listening handed the recognizer's 
 Map.panUpdated: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Map.panXChannel: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Path.holdDuration: ✅
+PhaseLayout.droppedFileTypes: ✓ dropFiles on PhaseLayout: the drop interaction's handler told the driver's files, no drag session
+PhaseLayout.filesDropped: ✓ dropFiles on PhaseLayout: the drop interaction's handler told the driver's files, no drag session
+PhaseLayout.tapCount: ✓ tap on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.tapped: ✓ tap on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.area: ✅
 Picker.frameChanged: ✅
 Picker.pointerEntered: ✓ hover on Picker: the view's listening handed the recognizer's states, no touch sent

@@ -431,42 +431,6 @@ ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
-LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.area: ✅
-LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the drop target's signal told the driver's files, no drag GTK began
-LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the drop target's signal told the driver's files, no drag GTK began
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumn: ✅
-LayoutEngine.gridColumnSpan: ✅
-LayoutEngine.gridRow: ✅
-LayoutEngine.gridRowSpan: ✅
-LayoutEngine.held: ✅
-LayoutEngine.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
-LayoutEngine.horizontalAlignment: ✅
-LayoutEngine.margin: ✅
-LayoutEngine.panTouchCount: ✅
-LayoutEngine.panUpdated: ✅
-LayoutEngine.panXChannel: ✅
-LayoutEngine.panYChannel: ✅
-LayoutEngine.pinchUpdated: ✓ pinch on LayoutEngine: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-LayoutEngine.pointerEntered: ✅
-LayoutEngine.pointerExited: ✅
-LayoutEngine.pointerMoved: ✅
-LayoutEngine.pointerPressed: ✅
-LayoutEngine.pointerReleased: ✅
-LayoutEngine.swipeDirection: ✅
-LayoutEngine.swipeThreshold: ✅
-LayoutEngine.swiped: ✅
-LayoutEngine.tapCount: ✅
-LayoutEngine.tapped: ✅
-LayoutEngine.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.area: ✅
 Line.canDrag: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -611,6 +575,42 @@ Path.swiped: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
 Path.verticalAlignment: ✅
+PhaseLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+PhaseLayout.area: ✅
+PhaseLayout.canDrag: ✓ dragAndDrop on PhaseLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+PhaseLayout.dragEnded: ✓ dragAndDrop on PhaseLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+PhaseLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+PhaseLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+PhaseLayout.dragStarting: ✓ dragAndDrop on PhaseLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+PhaseLayout.dragText: ✓ dragAndDrop on PhaseLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+PhaseLayout.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+PhaseLayout.droppedFileTypes: ✓ dropFiles on PhaseLayout: the drop target's signal told the driver's files, no drag GTK began
+PhaseLayout.filesDropped: ✓ dropFiles on PhaseLayout: the drop target's signal told the driver's files, no drag GTK began
+PhaseLayout.frameChanged: ✅
+PhaseLayout.gridColumn: ✅
+PhaseLayout.gridColumnSpan: ✅
+PhaseLayout.gridRow: ✅
+PhaseLayout.gridRowSpan: ✅
+PhaseLayout.held: ✅
+PhaseLayout.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+PhaseLayout.horizontalAlignment: ✅
+PhaseLayout.margin: ✅
+PhaseLayout.panTouchCount: ✅
+PhaseLayout.panUpdated: ✅
+PhaseLayout.panXChannel: ✅
+PhaseLayout.panYChannel: ✅
+PhaseLayout.pinchUpdated: ✓ pinch on PhaseLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+PhaseLayout.pointerEntered: ✅
+PhaseLayout.pointerExited: ✅
+PhaseLayout.pointerMoved: ✅
+PhaseLayout.pointerPressed: ✅
+PhaseLayout.pointerReleased: ✅
+PhaseLayout.swipeDirection: ✅
+PhaseLayout.swipeThreshold: ✅
+PhaseLayout.swiped: ✅
+PhaseLayout.tapCount: ✅
+PhaseLayout.tapped: ✅
+PhaseLayout.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.area: ✅
 Picker.canDrag: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began

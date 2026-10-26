@@ -210,7 +210,7 @@ toolchain the library is built with offers: the standard library's walk of a
 struct's fields by key paths is an interface Apple's SDKs do not ship, so a
 library calling it builds for no iPhone. A library view standing once an item
 of a layout and generic over what it holds names its parts itself
-(`WalkedView`: a layout engine's holder): a mirror of a generic type works
+(`WalkedView`: a phase layout's holder): a mirror of a generic type works
 its fields' types out at every reading. A view held in an optional is named
 on the optional's part (`.header.some(StateUI.Text)`), never on the optional
 itself, whose value says what it holds: the paths stand the same whatever

@@ -19,13 +19,13 @@ HStack.accessibilityLabel: ✅
 HStack.layoutDirection: ✅
 Image.layoutDirection: ✅
 ItemsView.accessibilityRole: ✅
-LayoutEngine.hidesChildrenFromAccessibility: ✅
 Line.style: ✅
 Line.translationY: ✓ read translationY of Line: the host's own transform, checked against the layer it composed itself
 Link.pivotX: ✓ read pivotX of Link: the host's own transform, checked against the layer it composed itself
 Map.accessibilityActionPerformed: ✅
 Map.accessibilityActions: ✅
 Path.pivotX: ✓ read pivotX of Path: the host's own transform, checked against the layer it composed itself
+PhaseLayout.hidesChildrenFromAccessibility: ✅
 Picker.accessibilityValue: ✅
 Polygon.ignoresInput: ✅
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform, checked against the layer it composed itself

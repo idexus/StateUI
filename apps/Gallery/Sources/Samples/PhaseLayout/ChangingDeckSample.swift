@@ -121,12 +121,11 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         let fanned = spread
         let count = cards.count
 
-        return LayoutEngine(cards, id: \.name) { card in
+        return PhaseLayout(cards, id: \.name, phase: $turn) { card in
             face(card, large: !fanned)
         } placements: { room, turn, from in
             (0..<count).map { fanned ? fan($0, turn, room) : pile($0, turn, from, room) }
         }
-        .phase($turn)
         // The pile is swiped a card at a time, the fan scrolled through.
         .axis(
             \.self, input: fanned ? .scroll(.horizontal) : .swipe(.horizontal),

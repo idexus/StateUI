@@ -24,9 +24,6 @@ Image.minimumWidth: ✅
 Image.pivotX: ✅
 ItemsView.rotationX: ✓ read rotationX of ItemsView: the host's own tip, checked against the projection it laid on the element
 ItemsView.style: not realized
-LayoutEngine.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-LayoutEngine.accessibilityActions: – UI Automation offers no action of an application's own words.
-LayoutEngine.isEnabled: ✅
 Line.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Line.accessibilityActions: – UI Automation offers no action of an application's own words.
 Line.isEnabled: ✅
@@ -36,6 +33,9 @@ Map.layoutDirection: 🧩
 Map.width: 🧩
 Path.accessibilityHint: ✅
 Path.scaleY: ✅
+PhaseLayout.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+PhaseLayout.accessibilityActions: – UI Automation offers no action of an application's own words.
+PhaseLayout.isEnabled: ✅
 Picker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Picker.accessibilityActions: – UI Automation offers no action of an application's own words.
 Polygon.isAccessibilityHidden: ✅

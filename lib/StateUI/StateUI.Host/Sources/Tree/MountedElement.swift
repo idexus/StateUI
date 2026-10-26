@@ -18,7 +18,7 @@
     /// The element that holds this one.
     public private(set) weak var parent: MountedElement?
 
-    /// The elements this one holds, in order - a grid's, a ZStack's and a layout engine's in the order they are
+    /// The elements this one holds, in order - a grid's, a ZStack's and a phase layout's in the order they are
     /// drawn, by `zIndex`, ties in the order written.
     public private(set) var children: [MountedElement] = []
 
@@ -438,7 +438,7 @@
     private var zIndex: Double { number(.zIndex) ?? 0 }
 
     /// The layouts whose children can overlap, drawn in `zIndex` order.
-    private static let layered: Set<NodeType> = [.grid, .zStack, .layoutEngine]
+    private static let layered: Set<NodeType> = [.grid, .zStack, .phaseLayout]
 
     /// Detaches every one of `previous` that is no longer a child.
     private func leave(_ previous: [MountedElement]) {

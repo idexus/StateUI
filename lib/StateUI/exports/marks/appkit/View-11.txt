@@ -47,13 +47,6 @@ ItemsView.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's d
 ItemsView.frameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
-LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the drag source and the window's drop routing told by the driver, no dragging session
-LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the drag source and the window's drop routing told by the driver, no dragging session
-LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the drag source and the window's drop routing told by the driver, no dragging session
-LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the drag source and the window's drop routing told by the driver, no dragging session
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumn: ✅
-LayoutEngine.gridRow: ✅
 Line.holdDuration: ✅
 Link.area: ✅
 Link.frameChanged: ✅
@@ -64,6 +57,13 @@ Link.pointerPressed: ✓ hover on Link: handed to the host's recognizer or handl
 Link.pointerReleased: ✓ hover on Link: handed to the host's recognizer or handler, no NSEvent sent
 Map.held: ✓ hold on Map: handed to the host's recognizer or handler, no NSEvent sent
 Path.tapped: ✓ pressDown on Path: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.canDrag: ✓ dragAndDrop on PhaseLayout: the drag source and the window's drop routing told by the driver, no dragging session
+PhaseLayout.dragEnded: ✓ dragAndDrop on PhaseLayout: the drag source and the window's drop routing told by the driver, no dragging session
+PhaseLayout.dragStarting: ✓ dragAndDrop on PhaseLayout: the drag source and the window's drop routing told by the driver, no dragging session
+PhaseLayout.dragText: ✓ dragAndDrop on PhaseLayout: the drag source and the window's drop routing told by the driver, no dragging session
+PhaseLayout.frameChanged: ✅
+PhaseLayout.gridColumn: ✅
+PhaseLayout.gridRow: ✅
 Picker.frameChanged: ✅
 Picker.margin: ✅
 Picker.swipeDirection: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent

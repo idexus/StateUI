@@ -1,13 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What moves an axis of a layout engine's phase under the user's hand. This library's own.
+/// What moves an axis of a phase layout's phase under the user's hand. This library's own.
 ///
-///     LayoutEngine(cards, id: \.name) { … } placements: { room, phase in … }
-///         .phase($turn)
+///     PhaseLayout(cards, id: \.name, phase: $turn) { … } placements: { room, phase in … }
 ///         .axis(\.self, input: .scroll(.horizontal), range: 0...6, snaps: .every(1))
 ///
-/// Design: docs/design/views/layout-engine.md#the-hand
+/// Design: docs/design/views/phase-layout.md#the-hand
 public struct LayoutInput: Equatable, Sendable {
     /// Which way the hand moves the phase.
     public enum Axis: Int32, Equatable, Sendable {
@@ -31,7 +30,7 @@ public struct LayoutInput: Equatable, Sendable {
     }
 
     /// What moves the axis: a hand one way, two fingers spreading or two fingers turning.
-    /// Design: docs/design/views/layout-engine.md#two-fingers
+    /// Design: docs/design/views/phase-layout.md#two-fingers
     enum Gesture: Equatable, Sendable {
         /// A finger or a pointer dragged, a trackpad's two fingers and a wheel along `axis`, so far for a unit,
         /// one snap a hand where it `swipes`.

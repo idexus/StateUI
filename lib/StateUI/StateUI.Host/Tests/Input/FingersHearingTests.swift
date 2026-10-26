@@ -13,7 +13,7 @@ final class FingersHearingTests: XCTestCase {
     /// - goes on moving the run; let go, each rests on its target.
     func testTheHandAndTwoFingersMoveAtOnce() throws {
         let (runtime, clock) = running()
-        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .phaseLayout))
         XCTAssertTrue(dial.hearing.contains(.hand))
         XCTAssertTrue(dial.hearing.contains(.pinches))
         XCTAssertFalse(dial.hearing.contains(.rotations), "no rotation asked for")
@@ -41,7 +41,7 @@ final class FingersHearingTests: XCTestCase {
     /// still: the axis comes onto its target with no lift told.
     func testAWheelTurnedAsAPinchSpreadsTheMagnification() throws {
         let (runtime, clock) = running()
-        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .phaseLayout))
 
         for _ in 0..<8 { dial.hear(.wheelPinch(scale: WheelPinch.notch, at: Point(0.5, 0.5)), in: runtime) }
         frames(runtime, clock, until: 48)
@@ -58,7 +58,7 @@ final class FingersHearingTests: XCTestCase {
     /// middle, they spread the magnification - and the hand stays where it was; let go, the axis rests.
     func testAnAltDragIsTwoFingersMirroredAboutTheMiddle() throws {
         let (runtime, clock) = running()
-        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .phaseLayout))
         XCTAssertTrue(dial.hearsMirroredFingers)
 
         let middle = Point(150, 100)
@@ -89,7 +89,7 @@ final class FingersHearingTests: XCTestCase {
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
         runtime.pump.turn()
-        try? XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        try? XCTUnwrap(runtime.tree.root?.first(type: .phaseLayout))
             .reportFrame([0, 0, 300, 200, 0, 0, 0, 0], in: runtime)
         frames(runtime, clock, until: 16)
         return (runtime, clock)
@@ -97,7 +97,7 @@ final class FingersHearingTests: XCTestCase {
 }
 
 /// A phase a hand turns and two fingers spread.
-private struct Dial: LayoutPhase {
+private struct Dial: AxesPhase {
     var turn = 0.0
     var zoom = 1.0
 
@@ -120,11 +120,10 @@ private struct FingersPage: View {
     @State private var dial = Dial()
 
     var body: some View {
-        LayoutEngine([0, 1, 2, 3, 4]) { Text("\($0)") } placements: { _, dial in
+        PhaseLayout([0, 1, 2, 3, 4], phase: $dial) { Text("\($0)") } placements: { _, dial in
             handed.append(dial)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .phase($dial)
         .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .limits)
         .motion(.eased(.milliseconds(200), .linear))

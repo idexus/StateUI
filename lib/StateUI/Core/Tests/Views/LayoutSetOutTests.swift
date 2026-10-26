@@ -25,12 +25,11 @@ final class LayoutSetOutTests: XCTestCase {
 
     /// One view whose arithmetic notes what it is handed, moved by the hand a hundred points a unit.
     private func tree(_ phase: State<Double>, _ handed: Handed) -> Node {
-        LayoutEngine([1]) { Text("\($0)") } placements: { _, at, from in
+        PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at, from in
             handed.phases.append(at)
             handed.froms.append(from)
             return [Placement(Rect(0, 0, 10, 10))]
         }
-        .phase(phase.projectedValue)
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...6, snaps: .every(1))
         .node
     }
@@ -52,7 +51,7 @@ final class LayoutSetOutTests: XCTestCase {
         let handed = Handed()
         let renders = Renders()
         func built() -> Node { tree(phase, handed) }
-        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         phase.wrappedValue = 3
         _ = renders.revisit(changed: Renderer.shared.pendingChanges)
@@ -120,7 +119,7 @@ final class LayoutSetOutTests: XCTestCase {
         let handed = Handed()
         let renders = Renders()
         func built() -> Node { tree(phase, handed) }
-        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         phase.wrappedValue = 2
         _ = renders.revisit(changed: Renderer.shared.pendingChanges)

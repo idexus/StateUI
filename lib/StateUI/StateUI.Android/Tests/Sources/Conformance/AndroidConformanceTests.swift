@@ -18,7 +18,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testCanvas", testCanvas),
             ("testCapsule", testCapsule),
             ("testFill", testFill),
-            ("testLayoutEngine", testLayoutEngine),
+            ("testPhaseLayout", testPhaseLayout),
             ("testCheckBox", testCheckBox),
             ("testColorPicker", testColorPicker),
             ("testDatePicker", testDatePicker),
@@ -113,7 +113,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testCanvas() throws { try conform(CanvasTests.self) }
     func testCapsule() throws { try conform(CapsuleTests.self) }
     func testFill() throws { try conform(FillTests.self) }
-    func testLayoutEngine() throws { try conform(LayoutEngineTests.self) }
+    func testPhaseLayout() throws { try conform(PhaseLayoutTests.self) }
     func testCheckBox() throws { try conform(CheckBoxTests.self) }
     func testColorPicker() throws { try conform(ColorPickerTests.self) }
     func testSpace() throws { try conform(SpaceTests.self) }

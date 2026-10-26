@@ -19,8 +19,6 @@ HStack.accessibilityAdjusted: ✅
 Image.isEnabled: ✅
 Image.rotationY: ✓ read rotationY of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
-LayoutEngine.isVisible: ✅
-LayoutEngine.rotation: ✓ read rotation of LayoutEngine: the host's own transform, checked against the layer it composed itself
 Line.accessibilityRole: ✅
 Link.height: ✅
 Link.scale: ✓ read scale of Link: the host's own transform, checked against the layer it composed itself
@@ -29,6 +27,8 @@ Map.hidesChildrenFromAccessibility: ✅
 Path.height: ✅
 Path.scale: ✓ read scale of Path: the host's own transform, checked against the layer it composed itself
 Path.width: ✅
+PhaseLayout.isVisible: ✅
+PhaseLayout.rotation: ✓ read rotation of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.isAccessibilityHidden: ✅
 Polygon.accessibilityLabel: ✅
 Polyline.opacity: ✅

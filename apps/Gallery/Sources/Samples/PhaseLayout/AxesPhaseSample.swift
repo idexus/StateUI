@@ -2,15 +2,15 @@ import StateUI
 
 /// A phase of two axes: the hand turns a run of cards while a switch fans
 /// them out, and each axis travels on its own.
-struct LayoutPhaseSample: SampleContent, ExampleContent {
-    static let id = "layoutPhase"
-    static let title = "LayoutPhase"
+struct AxesPhaseSample: SampleContent, ExampleContent {
+    static let id = "axesPhase"
+    static let title = "AxesPhase"
     static let summary = "A phase of two axes - the hand turns the cards while a switch fans them out."
 
-    // listing: LayoutPhaseSample
+    // listing: AxesPhaseSample
     /// THE PHASE: two numbers, each moved on its own - the turn by the hand,
     /// the spread by the switch.
-    struct Deal: LayoutPhase {
+    struct Deal: AxesPhase {
         /// Which card is at the front.
         var turn = 2.0
 
@@ -51,7 +51,7 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
     // And it takes the whole cell: the arc wants the room.
     static let fills = true
 
-    // listing: LayoutPhaseSample
+    // listing: AxesPhaseSample
     var body: some View {
         Grid {
             Grid {
@@ -79,12 +79,11 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
 
     /// The cards, placed from both axes of the phase.
     private var cards: some View {
-        LayoutEngine(Array(Self.cards.indices)) { index in
+        PhaseLayout(Array(Self.cards.indices), phase: $deal) { index in
             face(index)
         } placements: { room, deal in
             Self.cards.indices.map { place($0, deal, room) }
         }
-        .phase($deal)
         // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
         // no hand, so it is declared no axis.
         .axis(
@@ -152,7 +151,7 @@ struct LayoutPhaseSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The phase is a `LayoutPhase` of two axes: `turn`, the card at the front, and "
+            Text("The phase is a `AxesPhase` of two axes: `turn`, the card at the front, and "
                 + "`spread`, how far the pile is fanned out. Swipe to turn the cards, and switch "
                 + "`Fan out` while they still move: each axis travels on its own under the layout's "
                 + "`.motion`, so neither cuts the other short.")

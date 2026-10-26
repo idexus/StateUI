@@ -15,12 +15,12 @@ HStack.isEnabled: ✓ tap on HStack: handed to the host's recognizer or handler,
 HStack.zIndex: ✅
 Image.hidesChildrenFromAccessibility: ✅
 ItemsView.accessibilityLabel: ✅
-LayoutEngine.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Line.ignoresInput: ✅
 Line.scaleY: ✓ read scaleY of Line: the host's own transform, checked against the layer it composed itself
 Link.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Map.accessibilityRole: ✅
 Path.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+PhaseLayout.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Picker.accessibilityHint: ✅
 Polygon.height: ✅
 Polygon.scale: ✓ read scale of Polygon: the host's own transform, checked against the layer it composed itself

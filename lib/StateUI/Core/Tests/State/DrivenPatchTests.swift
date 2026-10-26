@@ -308,14 +308,14 @@ final class DrivenPatchTests: XCTestCase {
     /// The wrapper around each face is the library's own and is always there,
     /// shaded or not - which is what keeps the host's writes off the author's
     /// view. A shaded run wraps two, the shade second.
-    func testALayoutEngineRegistersOnTheLayoutAlone() throws {
+    func testAPhaseLayoutRegistersOnTheLayoutAlone() throws {
         let page = try page(
-            LayoutEngine(["a", "b"]) { Text($0) } placements: { _, _ in [] }
+            PhaseLayout(["a", "b"], phase: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
                 .shade(
                     Rectangle()
                         .fill(.black))
                 .node)
-        let layout = try XCTUnwrap(page.subtree.first { $0.type == .layoutEngine })
+        let layout = try XCTUnwrap(page.subtree.first { $0.type == .phaseLayout })
         let ties = layout.driven?.bindings ?? [:]
 
         XCTAssertEqual(ties[.area]?.kind, .placement)

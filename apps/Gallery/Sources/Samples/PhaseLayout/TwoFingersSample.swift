@@ -13,7 +13,7 @@ struct TwoFingersSample: SampleContent, ExampleContent {
     // listing: TwoFingersSample
     /// THE PHASE: how far the ring is turned, a card a unit, and how large it
     /// stands.
-    struct Ring: LayoutPhase {
+    struct Ring: AxesPhase {
         var turn = 0.0
         var size = 1.0
 
@@ -43,14 +43,13 @@ struct TwoFingersSample: SampleContent, ExampleContent {
         let count = Double(Self.cards.count)
 
         return Grid {
-            LayoutEngine(Self.cards) { art in
+            PhaseLayout(Self.cards, phase: $ring) { art in
                 ZStack { Image(ImageSource(art)).contentMode(.fill) }
                     .shape(.roundedRectangle(14))
                     .clipsContent(true)
             } placements: { room, ring in
                 Self.cards.indices.map { place($0, ring, room) }
             }
-            .phase($ring)
             // TWO FINGERS TURNING turn the ring a card every eighth of a
             // turn, round and round; SPREADING, they grow it from small to
             // large, resting at either or at its own size - both at once.

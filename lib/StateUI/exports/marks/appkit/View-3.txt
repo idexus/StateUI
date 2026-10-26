@@ -41,7 +41,6 @@ Image.pointerMoved: ✓ hover on Image: handed to the host's recognizer or handl
 Image.pointerPressed: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
 Image.pointerReleased: ✓ hover on Image: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.held: ✓ hold on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.tapped: ✓ pressDown on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 Line.frameChanged: ✅
 Line.margin: ✅
 Line.swipeDirection: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -55,6 +54,7 @@ Map.panYChannel: ✓ pan on Map: handed to the host's recognizer or handler, no 
 Path.panTouchCount: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.panUpdated: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.panXChannel: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.tapped: ✓ pressDown on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.canDrag: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.dragEnded: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.dragStarting: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session

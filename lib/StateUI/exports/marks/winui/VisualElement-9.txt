@@ -23,8 +23,6 @@ HStack.isVisible: ✅
 Image.accessibilityHeading: ✅
 ItemsView.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 ItemsView.isEnabled: ✅
-LayoutEngine.accessibilityHeading: ✅
-LayoutEngine.scale: ✅
 Line.accessibilityHeading: ✅
 Line.scale: ✅
 Link.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
@@ -32,6 +30,8 @@ Link.translationX: ✅
 Map.tooltip: 🧩
 Path.frame: ✅
 Path.rotation: ✅
+PhaseLayout.accessibilityHeading: ✅
+PhaseLayout.scale: ✅
 Picker.accessibilityHeading: ✅
 Picker.scale: ✅
 Polygon.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.

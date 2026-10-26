@@ -22,11 +22,6 @@ HStack.translationY: ✅
 Image.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Image.translationX: ✅
 ItemsView.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-LayoutEngine.maximumHeight: ✅
-LayoutEngine.maximumWidth: ✅
-LayoutEngine.minimumHeight: ✅
-LayoutEngine.minimumWidth: ✅
-LayoutEngine.pivotX: ✅
 Line.maximumHeight: ✅
 Line.maximumWidth: ✅
 Line.minimumHeight: ✅
@@ -38,6 +33,11 @@ Map.accessibilityHint: 🧩
 Map.scaleY: 🧩
 Path.hidesChildrenFromAccessibility: ✅
 Path.opacity: ✅
+PhaseLayout.maximumHeight: ✅
+PhaseLayout.maximumWidth: ✅
+PhaseLayout.minimumHeight: ✅
+PhaseLayout.minimumWidth: ✅
+PhaseLayout.pivotX: ✅
 Picker.maximumHeight: ✅
 Picker.maximumWidth: ✅
 Picker.minimumHeight: ✅

@@ -109,7 +109,7 @@ its measure: the run moves its children without the layout measuring again.
 A frame presents what moved on each element touched, deepest first, and says
 what that asks of the elements around it (`FrameImpact`): the element
 arranges its children again where a value moved that is more than its own
-run of places and what is drawn over it - a layout engine's run is put by the
+run of places and what is drawn over it - a phase layout's run is put by the
 element's presentation, each host setting it on its layers view, so a run
 moving every frame builds no child's layout item again; its opacity, its
 drawing and its transform (`drawnOverProperties`) are read by nothing it

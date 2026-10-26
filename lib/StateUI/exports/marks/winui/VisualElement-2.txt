@@ -29,8 +29,6 @@ Image.accessibilityLabel: ✅
 Image.scaleX: ✅
 ItemsView.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 ItemsView.translationY: ✅
-LayoutEngine.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-LayoutEngine.isEnabled: does not apply - read isEnabled of LayoutEngine - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Line.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Line.isEnabled: does not apply - read isEnabled of Line - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Link.ignoresInput: ✅
@@ -38,6 +36,8 @@ Link.pivotY: ✅
 Map.accessibilityHeading: 🧩
 Map.scale: 🧩
 Path.accessibilityHeading: ✅
+PhaseLayout.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+PhaseLayout.isEnabled: does not apply - read isEnabled of PhaseLayout - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Picker.isEnabled: ✅
 Polygon.frame: ✅

@@ -62,12 +62,6 @@ ItemsView.gridRow: ✅
 ItemsView.swipeDirection: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
-LayoutEngine.frameChanged: ✅
-LayoutEngine.horizontalAlignment: ✅
-LayoutEngine.panTouchCount: ✅
-LayoutEngine.panUpdated: ✅
-LayoutEngine.panXChannel: ✅
-LayoutEngine.verticalAlignment: ✅
 Line.droppedFileTypes: ✓ dropFiles on Line: the relay's drop report told the driver's files, no drag WinUI began
 Line.filesDropped: ✓ dropFiles on Line: the relay's drop report told the driver's files, no drag WinUI began
 Line.frameChanged: ✅
@@ -87,6 +81,12 @@ Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
 Path.pinchUpdated: ✓ pinch on Path: the relay's report of the manipulation handed to the host, no touch sent
+PhaseLayout.frameChanged: ✅
+PhaseLayout.horizontalAlignment: ✅
+PhaseLayout.panTouchCount: ✅
+PhaseLayout.panUpdated: ✅
+PhaseLayout.panXChannel: ✅
+PhaseLayout.verticalAlignment: ✅
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridRow: ✅

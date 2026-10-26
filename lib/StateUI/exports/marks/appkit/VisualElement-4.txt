@@ -15,7 +15,6 @@ HStack.style: ✅
 HStack.translationY: ✓ read translationY of HStack: the host's own transform, checked against the layer it composed itself
 Image.isAccessibilityHidden: ✅
 ItemsView.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-LayoutEngine.tooltip: ✅
 Line.maximumHeight: ✅
 Line.maximumWidth: ✅
 Line.minimumHeight: ✅
@@ -24,6 +23,7 @@ Line.scaleX: ✓ read scaleX of Line: the host's own transform, checked against 
 Link.hidesChildrenFromAccessibility: ✅
 Map.accessibilityHint: ✅
 Path.hidesChildrenFromAccessibility: ✅
+PhaseLayout.tooltip: ✅
 Picker.accessibilityLabel: ✅
 Polygon.isEnabled: ✅
 Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform, checked against the layer it composed itself

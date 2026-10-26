@@ -148,7 +148,7 @@ final class DisplayCycleTests: XCTestCase {
     }
 
     /// A STATE AN ELEMENT WEARS HAS ITS CHANNEL from the moment it is worn, whatever its view reads: the host layer
-    /// walks it and tells the core every frame - a layout engine's phase, which no view draws, included.
+    /// walks it and tells the core every frame - a phase layout's phase, which no view draws, included.
     @MainActor
     func testAWornStateOpensItsChannelThoughNoViewReadsIt() throws {
         stateUIUseApp(WornApplication())
@@ -197,11 +197,11 @@ final class DisplayCycleTests: XCTestCase {
     }
 }
 
-/// A layout engine, whose element wears its phase and whose view draws none of it.
+/// A phase layout, whose element wears its phase and whose view draws none of it.
 private struct WornApplication: Application {
     var body: some Scene {
         WindowGroup {
-            LayoutEngine([0]) { _ in
+            PhaseLayout([0], phase: State(wrappedValue: 0.0).projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
             } placements: { _, _ in [] }

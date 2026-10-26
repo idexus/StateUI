@@ -43,7 +43,6 @@ Image.gridRowSpan: ✅
 ItemsView.panTouchCount: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.panUpdated: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.panXChannel: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.holdDuration: ✅
 Line.area: ✅
 Line.frameChanged: ✅
 Line.pointerEntered: ✓ hover on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -61,6 +60,7 @@ Path.margin: ✅
 Path.swipeDirection: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.swipeThreshold: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.swiped: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.holdDuration: ✅
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the window's drop routing told the driver's files, no dragging session
 Picker.filesDropped: ✓ dropFiles on Picker: the window's drop routing told the driver's files, no dragging session
 Picker.tapCount: ✓ tap on Picker: handed to the host's recognizer or handler, no NSEvent sent

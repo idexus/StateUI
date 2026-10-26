@@ -56,10 +56,10 @@ extension UIKitRegistrations {
             fill.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
         }
 
-        // A layout engine stands on the ZStack: its children where its run of placements puts them.
-        registry.add(LayoutEngineContract.self, create: { _ in
+        // A phase layout stands on the ZStack: its children where its run of placements puts them.
+        registry.add(PhaseLayoutContract.self, create: { _ in
             let layout = UIKitZStackView()
-            layout.engine = true
+            layout.phaseLayout = true
             return layout
         }) { layout in
             layout.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }

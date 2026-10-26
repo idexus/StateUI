@@ -19,7 +19,7 @@ which, member by member. A layout paints its box - its background,
 outline and shape - and cuts what it holds to it; a scroller reports where the
 user moved it on the display's frames and moves where its state says; a state's journey moves every control
 tied to it on the display's frames, a property's transition and a layout's
-children animate, an engine's placement run stands and draws a ZStack's
+children animate, a phase layout's placement run stands and draws a ZStack's
 children, and a user who turns Windows' animation effects off sees
 everything arrive at once. Any other control shows
 its name in red where it belongs, so a gap is visible rather than silent.

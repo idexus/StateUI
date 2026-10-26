@@ -170,7 +170,7 @@ turns the nodes into the patch.
   `ItemsView` and `Marker` have none. *Application.*
   ([Controls](../design/views/controls.md);
   [controls and input](../interface/controls-and-input.md), [layout](../interface/layout.md))
-- **The composed layouts** - `GeometryReader` and `LayoutEngine` (`Layouts/`),
+- **The composed layouts** - `GeometryReader` and `PhaseLayout` (`Layouts/`),
   `GalleryView` and `PositionDots` (`Collections/`) - are StateUI's
   composition over measurement, placement and scrolling, which no host builds
   again. *Application.*
@@ -201,7 +201,7 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | Folder | What it holds | Reasons |
 | --- | --- | --- |
 | `Geometry/` | `Point`, `Rect`, `Insets`, `CornerRadius`, `ViewTransform` | [runs of numbers](../design/types/values.md#runs-of-numbers), [transforms](../design/types/transforms.md) |
-| `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeAreaEdges`, `Placement`, `PlacedRun`, `LayoutInput` | [placement](../design/types/placement.md), [layout engine](../design/views/layout-engine.md) |
+| `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeAreaEdges`, `Placement`, `PlacedRun`, `LayoutInput` | [placement](../design/types/placement.md), [phase layout](../design/views/phase-layout.md) |
 | `Color/` | `Color`, `GradientStop`, `Brush`, `Material`, `Blur`, `Glass` | [color and theme](../design/types/color-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
 | `Drawing/` | `ImageSource`, `ContainerShape`, `ContentMode`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
 | `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |

@@ -11,7 +11,6 @@ Grid.accessibilityIdentifier: ✅
 HStack.accessibilityIdentifier: ✅
 Image.accessibilityIdentifier: ✅
 ItemsView.accessibilityIdentifier: ✅
-LayoutEngine.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
 Link.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: 🧩
@@ -19,6 +18,7 @@ MenuItem.accessibilityIdentifier: – An Android menu entry holds no identifier:
 MenuToggle.accessibilityIdentifier: – An Android menu entry holds no identifier: automation finds it by its title.
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
+PhaseLayout.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
 Polygon.accessibilityIdentifier: ✅
 Polyline.accessibilityIdentifier: ✅

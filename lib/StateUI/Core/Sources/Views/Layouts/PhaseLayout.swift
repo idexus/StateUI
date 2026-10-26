@@ -3,13 +3,13 @@
 
 // The center of a layout's motion: the views, the arithmetic that places them on the host's frames, the phase it is
 // worked out from, and the hand that moves the phase.
-// Design: docs/design/views/layout-engine.md
+// Design: docs/design/views/phase-layout.md
 
 /// Views placed by arithmetic of your own, worked out from a phase the user's hand or the program moves.
 ///
 ///     @State private var turn = 0.0
 ///
-///     LayoutEngine(planets, id: \.name) { planet in
+///     PhaseLayout(planets, id: \.name, phase: $turn) { planet in
 ///         Ellipse()
 ///             .fill(planet.color)
 ///     } placements: { room, phase in
@@ -24,20 +24,17 @@
 ///                 48))
 ///         }
 ///     }
-///     .phase($turn)
 ///     .axis(\.self, input: .scroll(.horizontal), range: 0...Double(planets.count - 1), snaps: .every(1))
 ///
-/// The arithmetic runs on the host's frames whenever the room, the phase or a state named in `following(_:)` moves,
+/// The phase is a state of yours, two-way: written by the program, the run travels there; under the user's hand it
+/// is the snap the run passes, and where it comes to rest. The arithmetic runs on the host's frames whenever the room, the phase or a state named in `following(_:)` moves,
 /// with no view built again. It answers one `Placement` per view, in the items' order - where the view goes from
 /// the layout's top left, how it is turned, how opaque, which is drawn over which - and each lands as written:
-/// what moves smoothly is the phase it is worked out from. A phase of several axes is a `LayoutPhase` of your own,
+/// what moves smoothly is the phase it is worked out from. A phase of several axes is an `AxesPhase` of your own,
 /// each axis moved by its own hand or by the program.
-public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: LayoutPhase>: View {
+public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: AxesPhase>: View {
     // State first: boxes are adopted by path, and the views stored below may carry boxes of their own.
     // Design: docs/design/views/composition.md#state-declared-first
-
-    /// The phase, where no binding was lent.
-    @State private var ownPhase = Phase()
 
     /// Where the hand holds each axis it moves, by the axis's place in `axes`, while it does: what the arithmetic is
     /// handed then, the phase itself named only as the hand passes a snap.
@@ -74,8 +71,8 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// Design: docs/design/views/composition.md#items-held-behind-a-class
     private let source: Source
 
-    /// Where the phase is written and read, when an author lent a binding.
-    private var pinned: Binding<Phase>?
+    /// Where the phase is written and read.
+    private let phase: Binding<Phase>
 
     /// The axes the user's hand and fingers move, one declaration an axis.
     private var axes: [Given] = []
@@ -94,28 +91,28 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         var complaint: String? {
             let (low, high) = (range.lowerBound, range.upperBound)
             if !Phase.axes.contains(axis) {
-                return "A LayoutEngine was given an axis its phase's `axes` does not list. The hand moves nothing."
+                return "A PhaseLayout was given an axis its phase's `axes` does not list. The hand moves nothing."
             }
             if !low.isFinite || !high.isFinite {
-                return "A LayoutEngine's axis was given a range with no end. The hand moves nothing."
+                return "A PhaseLayout's axis was given a range with no end. The hand moves nothing."
             }
             if input.gesture == .magnification, low <= 0 {
-                return "A LayoutEngine's magnification was given a range reaching nought, which no spreading of the "
+                return "A PhaseLayout's magnification was given a range reaching nought, which no spreading of the "
                     + "fingers reaches. The fingers move nothing."
             }
             if wraps, input.gesture == .magnification {
-                return "A LayoutEngine's magnification was told to come round, which a size never does: it stops at "
+                return "A PhaseLayout's magnification was told to come round, which a size never does: it stops at "
                     + "the ends of its range."
             }
             if wraps, high <= low {
-                return "A LayoutEngine's axis was told to come round over a range of no length: it stays where it is."
+                return "A PhaseLayout's axis was told to come round over a range of no length: it stays where it is."
             }
             if snaps == nil, case .hand(_, _, swipes: true) = input.gesture {
-                return "A LayoutEngine's swipe moves the run one snap a hand, and its axis was given none: it swipes "
+                return "A PhaseLayout's swipe moves the run one snap a hand, and its axis was given none: it swipes "
                     + "from end to end of its range."
             }
             if wraps, keyframes != nil, let knots = hand?.knots, knots.count < 3 {
-                return "A LayoutEngine's axis comes round with keyframes at its ends alone, which are one place a "
+                return "A PhaseLayout's axis comes round with keyframes at its ends alone, which are one place a "
                     + "turn apart: nothing is blended between them."
             }
             return nil
@@ -145,7 +142,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     private var complaints: [String] {
         let blends = curve != nil && !axes.contains { $0.keyframes != nil }
         return axes.compactMap { $0.complaint } + (blends
-            ? ["A LayoutEngine was given an interpolation and no axis with keyframes: nothing is blended."]
+            ? ["A PhaseLayout was given an interpolation and no axis with keyframes: nothing is blended."]
             : [])
     }
 
@@ -179,15 +176,18 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     ///   - items: what to place, one view each.
     ///   - id: which part of an item is its identity - distinct across the items, and stable while the item means
     ///     the same view, so a view keeps its place and its state when the items change.
+    ///   - phase: the state the arithmetic is worked out from, which the program and the user's hand move.
     ///   - content: the view for one item.
     ///   - placements: where every view goes, given the room - from the layout's top left, at its size - and the
     ///     phase as it stands this frame; one placement per view, in the items' order.
     public init<Content: View>(
         _ items: Items,
         id: KeyPath<Items.Element, ID>,
+        phase: Binding<Phase>,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Phase) -> [Placement]
     ) {
+        self.phase = phase
         source = Source(
             items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: { room, phase, _ in placements(room, phase) },
             readsFrom: false)
@@ -195,24 +195,26 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
 
     /// The same, for items that are their own identity.
     ///
-    ///     LayoutEngine(["Mural", "Ridge"]) { Text($0) } placements: { room, _ in … }
+    ///     PhaseLayout(["Mural", "Ridge"], phase: $turn) { Text($0) } placements: { room, _ in … }
     ///
     /// - Parameters:
     ///   - items: what to place, one view each.
+    ///   - phase: the state the arithmetic is worked out from.
     ///   - content: the view for one item.
     ///   - placements: where every view goes, given the room and the phase.
     public init<Content: View>(
         _ items: Items,
+        phase: Binding<Phase>,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Phase) -> [Placement]
     ) where Items.Element: Hashable, ID == Items.Element {
-        self.init(items, id: \.self, content: content, placements: placements)
+        self.init(items, id: \.self, phase: phase, content: content, placements: placements)
     }
 
     /// A layout whose arithmetic is handed, beside the phase, where the run's motion set out: the phase it stood
     /// at when the hand, a throw or a journey took it away, then each snap the run passes on an axis the hand moves.
     ///
-    ///     LayoutEngine(cards, id: \.name) { card in Face(card) } placements: { room, phase, from in
+    ///     PhaseLayout(cards, id: \.name, phase: $turn) { card in Face(card) } placements: { room, phase, from in
     ///         // The card that stood in front leaves the way the run goes - phase above `from` or below it.
     ///     }
     ///
@@ -222,43 +224,29 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     /// - Parameters:
     ///   - items: what to place, one view each.
     ///   - id: which part of an item is its identity.
+    ///   - phase: the state the arithmetic is worked out from.
     ///   - content: the view for one item.
     ///   - placements: where every view goes, given the room, the phase as it stands this frame and the phase the
     ///     run's motion set out from; one placement per view, in the items' order.
     public init<Content: View>(
         _ items: Items,
         id: KeyPath<Items.Element, ID>,
+        phase: Binding<Phase>,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Phase, Phase) -> [Placement]
     ) {
+        self.phase = phase
         source = Source(items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: placements, readsFrom: true)
     }
 
     /// The same, for items that are their own identity.
     public init<Content: View>(
         _ items: Items,
+        phase: Binding<Phase>,
         @ViewBuilder content: @escaping (Items.Element) -> Content,
         placements: @escaping @MainActor (Rect, Phase, Phase) -> [Placement]
     ) where Items.Element: Hashable, ID == Items.Element {
-        self.init(items, id: \.self, content: content, placements: placements)
-    }
-
-    /// The phase the arithmetic is worked out from, two-way: where the run rests or is going.
-    ///
-    ///     @State private var turn = 0.0
-    ///
-    ///     LayoutEngine(cards, id: \.name) { … } placements: { … }.phase($turn)
-    ///     Button("Next").onClicked { turn += 1 }
-    ///
-    /// Written by the program, the run travels there. Under the user's hand it is the snap the run passes,
-    /// and where it comes to rest; the arithmetic is handed the phase as it stands each frame.
-    ///
-    /// - Parameter state: where the phase is written and read.
-    /// - Returns: the layout, worked out from that phase.
-    public func phase(_ state: Binding<Phase>) -> Self {
-        var copy = self
-        copy.pinned = state
-        return copy
+        self.init(items, id: \.self, phase: phase, content: content, placements: placements)
     }
 
     /// One axis of the phase under the user's hand or fingers: what moves it, how far it runs, where its layout is
@@ -485,11 +473,11 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         let run = self.run
 
         if Phase.axes.isEmpty {
-            complain("A LayoutEngine's phase names no axes: `axes` lists the numbers the hand and the program move.")
+            complain("A PhaseLayout's phase names no axes: `axes` lists the numbers the hand and the program move.")
         }
         for complaint in complaints { complain(complaint) }
-        if let pinned, pinned.followed == nil {
-            complain("A LayoutEngine's phase is a state lent with `$`: a binding worked out from others cannot be "
+        if phase.followed == nil {
+            complain("A PhaseLayout's phase is a state lent with `$`: a binding worked out from others cannot be "
                 + "worn, so the phase would jump where it is sent rather than travel there.")
         }
 
@@ -498,36 +486,36 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
         }
         .modified { element in
             // The hand is heard on the element itself, over every view, which still answers a tap.
-            element.describe(LayoutEngineContract.handAxis, run.ways.count == 1 ? run.ways.first : nil)
+            element.describe(PhaseLayoutContract.handAxis, run.ways.count == 1 ? run.ways.first : nil)
             // What a dismissal asked for ends with the layout.
             if run.dismissal != nil { element.destroying.append { run.states.dismissals.orphan() } }
             if run.moves {
-                element.addHandler(LayoutEngineContract.handMoved) { phase, moved, speed in
+                element.addHandler(PhaseLayoutContract.handMoved) { phase, moved, speed in
                     run.handMoved(phase, moved: moved, speed: speed)
                 }
-                element.addHandler(LayoutEngineContract.handStepped) { notches in run.stepped(notches) }
+                element.addHandler(PhaseLayoutContract.handStepped) { notches in run.stepped(notches) }
             }
             // A pan is heard every way, a hand along the layout one way.
-            element.describe(LayoutEngineContract.pans, run.pans ? true : nil)
+            element.describe(PhaseLayoutContract.pans, run.pans ? true : nil)
             // Two fingers spreading and turning are heard as one, each moving its own axes.
             let magnifies = run.hands.contains { $0.gesture == .magnification }
             let rotates = run.hands.contains { if case .rotation = $0.gesture { true } else { false } }
-            element.describe(LayoutEngineContract.magnifies, magnifies ? true : nil)
-            element.describe(LayoutEngineContract.rotates, rotates ? true : nil)
+            element.describe(PhaseLayoutContract.magnifies, magnifies ? true : nil)
+            element.describe(PhaseLayoutContract.rotates, rotates ? true : nil)
             if magnifies || rotates {
-                element.addHandler(LayoutEngineContract.pinchMoved) { phase, scale, degrees, speed in
+                element.addHandler(PhaseLayoutContract.pinchMoved) { phase, scale, degrees, speed in
                     run.pinch(phase, scale: scale, degrees: degrees, speed: speed)
                 }
             }
-            element.describe(LayoutEngineContract.itemDrag, run.itemStart)
+            element.describe(PhaseLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
-                element.addHandler(LayoutEngineContract.itemMoved) { phase, at, speed, still in
+                element.addHandler(PhaseLayoutContract.itemMoved) { phase, at, speed, still in
                     try run.item(phase, at: at, speed: speed, still: still)
                 }
             }
         }
         .setValue(ViewContract.area.token, on: $placements, mode: .out, kind: .placement)
-        .setValue(LayoutEngineContract.phase.token, on: run.phase, mode: .inOut, kind: .property)
+        .setValue(PhaseLayoutContract.phase.token, on: run.phase, mode: .inOut, kind: .property)
         .motion(law)
         .frame($room)
         .engine([$room.followed, run.phase.followed, $held.followed, $flung.followed, $item.followed] + followed,
@@ -608,7 +596,7 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
             itemStart: itemStart,
             dragged: dragged,
             dismissal: dismissal,
-            phase: pinned ?? $ownPhase,
+            phase: phase,
             states: States(
                 held: _held, flung: _flung, placements: _placements, room: _room, shown: _shown, from: _from,
                 grip: _grip, item: _item, dismissals: dismissalRuns),
@@ -631,16 +619,16 @@ public struct LayoutEngine<Items: RandomAccessCollection, ID: Hashable, Phase: L
     }
 }
 
-extension LayoutEngine: WalkedView {
+extension PhaseLayout: WalkedView {
     /// The parts the walk reads, as a mirror would list them, with no mirror made: a mirror of a generic type works
     /// its fields' types out at every reading, and every render of a layout walks its engine
-    /// (`LayoutEngineTests.testTheEngineNamesEveryPartAMirrorWould` holds the list to the fields).
+    /// (`PhaseLayoutTests.testTheEngineNamesEveryPartAMirrorWould` holds the list to the fields).
     var walkedParts: [(label: String, value: Any)] {
         [
-            ("_ownPhase", _ownPhase), ("_held", _held), ("_flung", _flung), ("_grip", _grip), ("_item", _item),
+            ("_held", _held), ("_flung", _flung), ("_grip", _grip), ("_item", _item),
             ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
             ("_dismissalRuns", _dismissalRuns),
-            ("source", source), ("pinned", pinned as Any), ("axes", axes), ("curve", curve as Any),
+            ("source", source), ("phase", phase), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("mask", mask as Any), ("tapped", tapped as Any),
             ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),
             ("law", law), ("named", named as Any),
@@ -648,49 +636,7 @@ extension LayoutEngine: WalkedView {
     }
 }
 
-extension LayoutEngine where Phase == Double {
-    /// The same, with a phase of one axis: a `Double`.
-    public init<Content: View>(
-        _ items: Items,
-        id: KeyPath<Items.Element, ID>,
-        @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Double) -> [Placement]
-    ) {
-        source = Source(
-            items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: { room, phase, _ in placements(room, phase) },
-            readsFrom: false)
-    }
-
-    /// The same, for items that are their own identity, with a phase of one axis.
-    public init<Content: View>(
-        _ items: Items,
-        @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Double) -> [Placement]
-    ) where Items.Element: Hashable, ID == Items.Element {
-        self.init(items, id: \.self, content: content, placements: placements)
-    }
-
-    /// The same, with a phase of one axis and where the run's motion set out on it.
-    public init<Content: View>(
-        _ items: Items,
-        id: KeyPath<Items.Element, ID>,
-        @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Double, Double) -> [Placement]
-    ) {
-        source = Source(items: items, path: id, view: { content($0).node }, holder: { LayoutItemView(content: content($0)).node }, arithmetic: placements, readsFrom: true)
-    }
-
-    /// The same, for items that are their own identity, with a phase of one axis and where its motion set out.
-    public init<Content: View>(
-        _ items: Items,
-        @ViewBuilder content: @escaping (Items.Element) -> Content,
-        placements: @escaping @MainActor (Rect, Double, Double) -> [Placement]
-    ) where Items.Element: Hashable, ID == Items.Element {
-        self.init(items, id: \.self, content: content, placements: placements)
-    }
-}
-
-/// How many descriptions of layout engines have been made.
+/// How many descriptions of phase layouts have been made.
 @MainActor private var descriptionsMade = 0
 
 /// A throw of the hand going on after it let go, on the hand's axis: from where it let go, to the target nearest
@@ -718,7 +664,7 @@ struct LayoutGrip: Equatable {
 /// What a layout last showed - the description it came from, at what phase, set out from where and in what room,
 /// each view's pose and where it was shown, by identity - and the changes on their way to the poses: what a new
 /// description is measured against.
-struct LayoutShown<Phase: LayoutPhase>: Equatable {
+struct LayoutShown<Phase: AxesPhase>: Equatable {
     var description: Int?
     var phase: Phase?
     var from: Phase?

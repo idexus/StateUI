@@ -59,11 +59,6 @@ ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 ItemsView.verticalAlignment: ✅
-LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-LayoutEngine.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Line.canDrag: ✓ dragAndDrop on Line: the relay's drag reports told by the driver, no drag WinUI began
 Line.dragEnded: ✓ dragAndDrop on Line: the relay's drag reports told by the driver, no drag WinUI began
 Line.dragStarting: ✓ dragAndDrop on Line: the relay's drag reports told by the driver, no drag WinUI began
@@ -83,6 +78,11 @@ Map.pinchUpdated: 🧩
 Path.area: ✅
 Path.frameChanged: ✅
 Path.panYChannel: ✅
+PhaseLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+PhaseLayout.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+PhaseLayout.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+PhaseLayout.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+PhaseLayout.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Picker.frameChanged: ✅
 Picker.horizontalAlignment: ✅
 Picker.panTouchCount: ✅

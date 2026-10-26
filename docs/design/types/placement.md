@@ -1,6 +1,6 @@
 # Placement
 
-A `LayoutEngine` puts each of its views where an application's arithmetic
+A `PhaseLayout` puts each of its views where an application's arithmetic
 says. A `Placement` is that answer for one view, a `PlacedRun` the answer for
 the whole run as the host is handed it, and `PackedPlacement` the same answer
 as the numbers a host reads.
@@ -17,7 +17,7 @@ view's place is, said once for each.
 ## Written onto the placed view
 
 Each field is drawn onto the container the layout wraps the view in, over
-what the view's own properties say. A view inside a `LayoutEngine` is turned,
+what the view's own properties say. A view inside a `PhaseLayout` is turned,
 scaled and faded by its placement, and what the closure that builds it writes
 stays its own: the placement composes with it and never overwrites it.
 

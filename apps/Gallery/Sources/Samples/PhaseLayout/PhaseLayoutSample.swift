@@ -1,4 +1,4 @@
-// listing: LayoutEngineSample
+// listing: PhaseLayoutSample
 import StateUIFoundation
 // listing: end
 import StateUI
@@ -6,17 +6,17 @@ import StateUI
 /// A layout of the author's own: a few lines of arithmetic say where each
 /// card goes and how it is turned, and the host puts every card there on its
 /// own frames.
-struct LayoutEngineSample: SampleContent, ExampleContent {
-    static let id = "layoutEngine"
-    static let title = "LayoutEngine"
-    static let summary = "LayoutEngine puts each view where arithmetic of yours says - here, a ring seen from above."
+struct PhaseLayoutSample: SampleContent, ExampleContent {
+    static let id = "phaseLayout"
+    static let title = "PhaseLayout"
+    static let summary = "PhaseLayout puts each view where arithmetic of yours says - here, a ring seen from above."
 
-    // listing: LayoutEngineSample
+    // listing: PhaseLayoutSample
     /// The cards: the gallery's groups, each its name and its picture as the
     /// home page shows it.
     static let cards: [Card] = [
         Card(name: "Layout", art: "cat_layout.png"),
-        Card(name: "Layout Engine", art: "cat_layoutengine.png"),
+        Card(name: "Phase Layout", art: "cat_phaselayout.png"),
         Card(name: "Styles", art: "cat_styles.png"),
         Card(name: "Shapes", art: "cat_shapes.png"),
         Card(name: "Media", art: "cat_media.png"),
@@ -96,7 +96,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
     /// write it and the ring travels there; the hand names the card it passes
     /// and the one it comes to rest on. It starts on the middle card, and it
     /// has no end: a turn on, it is the same card again.
-    @State private var turn = Double(LayoutEngineSample.cards.count / 2)
+    @State private var turn = Double(PhaseLayoutSample.cards.count / 2)
 
     /// The device - a phone's cards carry their names alone, smaller.
     @Environment(\.device) private var device
@@ -111,7 +111,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
     // placed in whatever it is given.
     static let fills = true
 
-    // listing: LayoutEngineSample
+    // listing: PhaseLayoutSample
     var body: some View {
         // A GRID rather than a stack: the board takes whatever room is left
         // over, which a stack cannot give a child - and a ring wants it all.
@@ -153,7 +153,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
 
     /// The ring of cards and its dots, placed by the arithmetic below.
     private var ring: some View {
-        LayoutEngine(Self.pieces) { piece in
+        PhaseLayout(Self.pieces, phase: $turn) { piece in
             switch piece {
             case .card(let index):
                 face(Self.cards[index])
@@ -168,7 +168,6 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
             Self.cards.indices.map { place($0, phase, room) }
                 + Self.cards.indices.map { dot($0, phase, room) }
         }
-        .phase($turn)
         // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
         // two fingers and a wheel all turn the ring, carrying the card in
         // front with them, and let go with speed it goes on to the card
@@ -328,7 +327,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("`LayoutEngine` builds one view per item from its closure, and its "
+            Text("`PhaseLayout` builds one view per item from its closure, and its "
                 + "arithmetic answers a `Placement` for each - where it goes, and how it is "
                 + "turned, scaled, faded, shaded and stacked - from the room it was given and "
                 + "its phase. That is the whole layout: the ring standing in space, seen from "
@@ -346,7 +345,7 @@ struct LayoutEngineSample: SampleContent, ExampleContent {
                 + "the card nearest where the throw would end, in one movement. It has no "
                 + "end: past the last card is the first again. `Back` and `Next` send it "
                 + "there without the hand - the phase itself travels, under the layout's "
-                + "`.motion`. The phase, `.phase($turn)`, is the card at the front; "
+                + "`.motion`. The phase, `phase: $turn`, is the card at the front; "
                 + "`.axis(\\.self, input: .scroll(…), range:, snaps: .every(1), wraps: true)` gives "
                 + "it to the hand, resting on a card and coming round. The picker changes how a throw goes "
                 + "on - `.scroll(…, throwing:)` takes any motion: eased, its length says how far a "

@@ -107,14 +107,13 @@ struct HomeScreenSample: SampleContent, ExampleContent {
                 // board is the room however wide it grows. Each board is a
                 // keyframe: the icons are placed once a board, and between
                 // two they go straight - as the arithmetic says they do.
-                LayoutEngine(icons, id: \.name) { icon in
+                PhaseLayout(icons, id: \.name, phase: $board) { icon in
                     // A VIEW OF ITS OWN: a new order builds no icon again,
                     // only the one lifted or let go.
                     HomeTile(icon: icon, lifted: lifted == icon.name)
                 } placements: { room, board in
                     (0..<count).map { Self.place($0, board, room, fit) }
                 }
-                .phase($board)
                 .axis(
                     \.self, input: .pages(.horizontal), range: 0...Double(boards - 1), keyframes: .every(1),
                     snaps: .every(1))
@@ -146,14 +145,13 @@ struct HomeScreenSample: SampleContent, ExampleContent {
 
             // THE DOTS wear the same phase - one state, so one motion: they go
             // with the hand and with every throw, no body read of it.
-            LayoutEngine(Array(0..<boards)) { _ in
+            PhaseLayout(Array(0..<boards), phase: $board) { _ in
                 Rectangle()
                     .fill(Palette.text)
                     .cornerRadius(4)
             } placements: { room, board in
                 (0..<boards).map { dot($0, of: boards, board, room) }
             }
-            .phase($board)
             .motion(Self.turning)
             .height(16)
             .gridRow(1)

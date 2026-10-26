@@ -22,13 +22,12 @@ final class UIKitHandTests: XCTestCase {
     func testAFirstMoveLeftToThePageIsNoHold() throws {
         let (clock, told) = (TestClock(), Told())
         let host = UIKitRenderer.running(clock: clock) {
-            LayoutEngine([0, 1, 2]) { _ in
+            PhaseLayout([0, 1, 2], phase: State(wrappedValue: 0.0).projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 80, 80)) }
             }
-            .phase(State(wrappedValue: 0.0).projectedValue)
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .itemDrag(begins: .held)
             .onItemDragged { told.items.append($0.item) }
@@ -36,7 +35,7 @@ final class UIKitHandTests: XCTestCase {
             .height(100)
         }
         defer { host.finish() }
-        let element = try XCTUnwrap(host.runtime.tree.root?.first(type: .layoutEngine))
+        let element = try XCTUnwrap(host.runtime.tree.root?.first(type: .phaseLayout))
         let listening = try XCTUnwrap((element.native as? UIKitElement)?.listening)
 
         // The finger goes down on the first view, as the pan tells it, then moves down two icons' height.

@@ -135,6 +135,8 @@ and this table maps the two.
 | arrangement (layout) | layout pass | a layout placing its children |
 | placement | frame | the rectangle a layout gives a child |
 | shade, rank | dimming overlay, z-order | what a placement run draws over a child, and its order among siblings |
+| phase layout (`PhaseLayout`) | custom layout driven by a value | views placed by the application's own arithmetic on the host's frames, worked out from the room and a phase |
+| phase, axes phase (`AxesPhase`) | animatable layout parameter | the state a phase layout is worked out from: one number an axis, each moved by the user's hand or the program |
 | room | layout boundary | a container its place sizes, which lays out a change inside itself; in a view's own text, the space it is given |
 | seat | layout position | a child's place in a layout while it animates |
 | record, mark (the dictionary) | declaration entry, support status | a host's statement that it realizes a member, and the ✅ or ☑️ it earns |

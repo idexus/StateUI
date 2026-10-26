@@ -16,13 +16,13 @@ HStack.pivotX: ✓ read pivotX of HStack: the host's own transform, checked agai
 Image.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 ItemsView.isVisible: ✅
 ItemsView.rotation: ✓ read rotation of ItemsView: the host's own transform, checked against the layer it composed itself
-LayoutEngine.style: not realized
-LayoutEngine.translationY: ✓ read translationY of LayoutEngine: the host's own transform, checked against the layer it composed itself
 Line.hidesChildrenFromAccessibility: ✅
 Link.accessibilityLabel: ✅
 Map.isEnabled: ✅
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
 Path.accessibilityLabel: ✅
+PhaseLayout.style: not realized
+PhaseLayout.translationY: ✓ read translationY of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.opacity: ✅
 Picker.rotationX: ✓ read rotationX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level

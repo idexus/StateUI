@@ -1,11 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Stands each of its views where a layout engine's arithmetic puts it, one over another - the element a
-/// `LayoutEngine` is.
-public enum LayoutEngineContract: ElementContract {
+/// Stands each of its views where a phase layout's arithmetic puts it, one over another - the element a
+/// `PhaseLayout` is.
+public enum PhaseLayoutContract: ElementContract {
     /// The node type the contract declares.
-    public static let nodeType: NodeType = "LayoutEngine"
+    public static let nodeType: NodeType = "PhaseLayout"
 
     /// StateUI decides its geometry, its arrangement or its composition; a host
     /// draws what was decided.

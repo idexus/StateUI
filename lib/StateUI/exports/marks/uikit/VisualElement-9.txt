@@ -17,13 +17,13 @@ HStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval 
 Image.pivotY: ✓ read pivotY of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.accessibilityActionPerformed: ✅
 ItemsView.accessibilityActions: ✅
-LayoutEngine.layoutDirection: ✅
 Line.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Link.isVisible: ✅
 Link.rotation: ✓ read rotation of Link: the host's own transform, checked against the layer it composed itself
 Map.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Path.isVisible: ✅
 Path.rotation: ✓ read rotation of Path: the host's own transform, checked against the layer it composed itself
+PhaseLayout.layoutDirection: ✅
 Picker.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Polygon.style: ✅
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform, checked against the layer it composed itself

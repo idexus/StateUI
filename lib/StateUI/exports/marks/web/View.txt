@@ -431,42 +431,6 @@ ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
-LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.area: ✅
-LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumn: ✅
-LayoutEngine.gridColumnSpan: ✅
-LayoutEngine.gridRow: ✅
-LayoutEngine.gridRowSpan: ✅
-LayoutEngine.held: ✅
-LayoutEngine.holdDuration: ✓ read holdDuration of LayoutEngine: the relay's own wait: a page holds no hold of the browser's
-LayoutEngine.horizontalAlignment: ✅
-LayoutEngine.margin: ✅
-LayoutEngine.panTouchCount: ✅
-LayoutEngine.panUpdated: ✅
-LayoutEngine.panXChannel: ✅
-LayoutEngine.panYChannel: ✅
-LayoutEngine.pinchUpdated: ✅
-LayoutEngine.pointerEntered: ✅
-LayoutEngine.pointerExited: ✅
-LayoutEngine.pointerMoved: ✅
-LayoutEngine.pointerPressed: ✅
-LayoutEngine.pointerReleased: ✅
-LayoutEngine.swipeDirection: ✅
-LayoutEngine.swipeThreshold: ✅
-LayoutEngine.swiped: ✅
-LayoutEngine.tapCount: ✅
-LayoutEngine.tapped: ✅
-LayoutEngine.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.area: ✅
 Line.canDrag: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -611,6 +575,42 @@ Path.swiped: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
 Path.verticalAlignment: ✅
+PhaseLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+PhaseLayout.area: ✅
+PhaseLayout.canDrag: ✓ dragAndDrop on PhaseLayout: the DOM's drag events dispatched by the driver, no drag the browser began
+PhaseLayout.dragEnded: ✓ dragAndDrop on PhaseLayout: the DOM's drag events dispatched by the driver, no drag the browser began
+PhaseLayout.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+PhaseLayout.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+PhaseLayout.dragStarting: ✓ dragAndDrop on PhaseLayout: the DOM's drag events dispatched by the driver, no drag the browser began
+PhaseLayout.dragText: ✓ dragAndDrop on PhaseLayout: the DOM's drag events dispatched by the driver, no drag the browser began
+PhaseLayout.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+PhaseLayout.droppedFileTypes: ✓ dropFiles on PhaseLayout: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+PhaseLayout.filesDropped: ✓ dropFiles on PhaseLayout: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+PhaseLayout.frameChanged: ✅
+PhaseLayout.gridColumn: ✅
+PhaseLayout.gridColumnSpan: ✅
+PhaseLayout.gridRow: ✅
+PhaseLayout.gridRowSpan: ✅
+PhaseLayout.held: ✅
+PhaseLayout.holdDuration: ✓ read holdDuration of PhaseLayout: the relay's own wait: a page holds no hold of the browser's
+PhaseLayout.horizontalAlignment: ✅
+PhaseLayout.margin: ✅
+PhaseLayout.panTouchCount: ✅
+PhaseLayout.panUpdated: ✅
+PhaseLayout.panXChannel: ✅
+PhaseLayout.panYChannel: ✅
+PhaseLayout.pinchUpdated: ✅
+PhaseLayout.pointerEntered: ✅
+PhaseLayout.pointerExited: ✅
+PhaseLayout.pointerMoved: ✅
+PhaseLayout.pointerPressed: ✅
+PhaseLayout.pointerReleased: ✅
+PhaseLayout.swipeDirection: ✅
+PhaseLayout.swipeThreshold: ✅
+PhaseLayout.swiped: ✅
+PhaseLayout.tapCount: ✅
+PhaseLayout.tapped: ✅
+PhaseLayout.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Picker.area: ✅
 Picker.canDrag: ✓ dragAndDrop on Picker: the DOM's drag events dispatched by the driver, no drag the browser began

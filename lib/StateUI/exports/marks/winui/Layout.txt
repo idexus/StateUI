@@ -5,9 +5,9 @@ Grid.letsInputThrough: not realized
 HStack.clipsContent: ✅
 HStack.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 HStack.letsInputThrough: not realized
-LayoutEngine.clipsContent: ✅
-LayoutEngine.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
-LayoutEngine.letsInputThrough: not realized
+PhaseLayout.clipsContent: ✅
+PhaseLayout.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
+PhaseLayout.letsInputThrough: not realized
 VStack.clipsContent: ✅
 VStack.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 VStack.letsInputThrough: not realized

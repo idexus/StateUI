@@ -44,13 +44,6 @@ ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the window's drop routin
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the window's drop routing told the driver's files, no dragging session
 ItemsView.tapCount: ✓ tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.tapped: ✓ tap on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumnSpan: ✅
-LayoutEngine.gridRowSpan: ✅
 Line.panTouchCount: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.panUpdated: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
 Line.panXChannel: ✓ pan on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -63,6 +56,13 @@ Link.gridColumn: ✅
 Link.gridRow: ✅
 Map.holdDuration: ✅
 Path.held: ✓ hold on Path: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+PhaseLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+PhaseLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+PhaseLayout.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+PhaseLayout.frameChanged: ✅
+PhaseLayout.gridColumnSpan: ✅
+PhaseLayout.gridRowSpan: ✅
 Picker.frameChanged: ✅
 Picker.horizontalAlignment: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: handed to the host's recognizer or handler, no NSEvent sent

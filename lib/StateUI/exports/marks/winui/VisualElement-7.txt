@@ -21,8 +21,6 @@ HStack.tooltip: ✅
 Image.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isVisible: ✅
-LayoutEngine.rotationX: ✓ read rotationX of LayoutEngine: the host's own tip, checked against the projection it laid on the element
-LayoutEngine.style: not realized
 Line.rotationX: ✓ read rotationX of Line: the host's own tip, checked against the projection it laid on the element
 Line.style: ✅
 Link.accessibilityLabel: ✅
@@ -34,6 +32,8 @@ Path.maximumWidth: ✅
 Path.minimumHeight: ✅
 Path.minimumWidth: ✅
 Path.pivotX: ✅
+PhaseLayout.rotationX: ✓ read rotationX of PhaseLayout: the host's own tip, checked against the projection it laid on the element
+PhaseLayout.style: not realized
 Picker.rotationX: ✓ read rotationX of Picker: the host's own tip, checked against the projection it laid on the element
 Picker.style: ✅
 Polygon.accessibilityHint: ✅

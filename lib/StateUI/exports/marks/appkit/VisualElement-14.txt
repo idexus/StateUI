@@ -22,8 +22,6 @@ Image.minimumHeight: ✅
 Image.minimumWidth: ✅
 Image.scaleX: ✓ read scaleX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.hidesChildrenFromAccessibility: ✅
-LayoutEngine.isEnabled: ✅
-LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own transform, checked against the layer it composed itself
 Line.accessibilityActionPerformed: ✅
 Line.accessibilityActions: ✅
 Link.ignoresInput: ✅
@@ -31,6 +29,8 @@ Link.scaleY: ✓ read scaleY of Link: the host's own transform, checked against 
 Map.layoutDirection: ✅
 Path.ignoresInput: ✅
 Path.scaleY: ✓ read scaleY of Path: the host's own transform, checked against the layer it composed itself
+PhaseLayout.isEnabled: ✅
+PhaseLayout.rotationY: ✓ read rotationY of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Polygon.accessibilityRole: ✅
 Polyline.height: ✅

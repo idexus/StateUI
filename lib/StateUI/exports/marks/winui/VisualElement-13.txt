@@ -31,8 +31,6 @@ Image.layoutDirection: ✓ read layoutDirection of Image: the direction the host
 Image.width: ✅
 ItemsView.frame: ✅
 ItemsView.rotation: ✅
-LayoutEngine.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-LayoutEngine.translationY: ✅
 Line.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Line.translationY: ✅
 Link.tooltip: ✅
@@ -40,6 +38,8 @@ Map.background: 🧩
 Map.isEnabled: 🧩
 Path.accessibilityLabel: ✅
 Path.scaleX: ✅
+PhaseLayout.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+PhaseLayout.translationY: ✅
 Picker.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Picker.translationY: ✅
 Polygon.accessibilityHeading: ✅

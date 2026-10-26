@@ -6,7 +6,7 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
+/// A ZStack: its children one over another, each in its area, or where a phase layout's placements put it.
 @MainActor
 final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
@@ -20,10 +20,10 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
-    /// Whether the ZStack stands a layout engine, which has no size of its own.
-    var engine = false
+    /// Whether the ZStack stands a phase layout, which has no size of its own.
+    var phaseLayout = false
 
-    /// The hand over the layout engine it stands, where one moves it: whether it took a scroll event.
+    /// The hand over the phase layout it stands, where one moves it: whether it took a scroll event.
     var hand: ((NSEvent) -> Bool)?
     private var items: [AppKitLayoutItem] = []
     private var drawingOrder: [ObjectIdentifier] = []
@@ -57,7 +57,7 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
     }
 
     private func measuredContentSize(width: CGFloat?) -> NSSize {
-        NSSize(ZStackArithmetic.size(of: items, padding: padding, width: width.map(Double.init), engine: engine))
+        NSSize(ZStackArithmetic.size(of: items, padding: padding, width: width.map(Double.init), phaseLayout: phaseLayout))
     }
 
     override func layout() {

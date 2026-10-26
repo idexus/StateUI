@@ -47,13 +47,6 @@ ItemsView.dragText: ✓ dragAndDrop on ItemsView: the drag source and the window
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridRow: ✅
-LayoutEngine.area: ✅
-LayoutEngine.frameChanged: ✅
-LayoutEngine.pointerEntered: ✓ hover on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.pointerExited: ✓ hover on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.pointerMoved: ✓ hover on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.pointerPressed: ✓ hover on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.pointerReleased: ✓ hover on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 Line.held: ✓ hold on Line: handed to the host's recognizer or handler, no NSEvent sent
 Link.frameChanged: ✅
 Link.horizontalAlignment: ✅
@@ -64,6 +57,13 @@ Path.droppedFileTypes: ✓ dropFiles on Path: the window's drop routing told the
 Path.filesDropped: ✓ dropFiles on Path: the window's drop routing told the driver's files, no dragging session
 Path.tapCount: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.tapped: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.area: ✅
+PhaseLayout.frameChanged: ✅
+PhaseLayout.pointerEntered: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.pointerExited: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.pointerMoved: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.pointerPressed: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.pointerReleased: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.panYChannel: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Polygon.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session

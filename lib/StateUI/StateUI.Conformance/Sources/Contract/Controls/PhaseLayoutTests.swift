@@ -4,21 +4,21 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `LayoutEngineContract` on a host: each view stands where the arithmetic puts it, the arithmetic is handed the room
+/// `PhaseLayoutContract` on a host: each view stands where the arithmetic puts it, the arithmetic is handed the room
 /// the layout was given and handed it again when it changes, the layout takes no size from its views, the phase the
 /// program sends travels there and is awaited - each axis of it on its own - and a scroll comes to rest on a snap
 /// target.
-@_spi(Host) public enum LayoutEngineTests: ConformanceFamily {
-    public static let name = "LayoutEngine"
+@_spi(Host) public enum PhaseLayoutTests: ConformanceFamily {
+    public static let name = "PhaseLayout"
 
     public static var cases: [ConformanceCase] {
         [
-            Aspects.standsAlone("LayoutEngine"),
-            ConformanceCase("eachViewStandsWhereItsArithmeticPutsIt", proves: [Covered(LayoutEngineContract.self)]) { s in
+            Aspects.standsAlone("PhaseLayout"),
+            ConformanceCase("eachViewStandsWhereItsArithmeticPutsIt", proves: [Covered(PhaseLayoutContract.self)]) { s in
                 let (first, second) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
                     VStack {
-                        LayoutEngine([0, 1]) { index in
+                        PhaseLayout([0, 1], phase: State(wrappedValue: 0.0).projectedValue) { index in
                             Rectangle()
                                 .fill(index == 0 ? .red : .blue)
                                 .onEvent(ViewContract.frameChanged) { (index == 0 ? first : second).values.append($0) }
@@ -43,12 +43,12 @@
                 s.expect(second.values.last.map(FrameReport.size), [20, 20], "the second at its own")
                 s.expect(apart(), [30, 10], "and where the second's placement stands it from the first")
             },
-            ConformanceCase("itsArithmeticIsHandedItsRoomAgainWhenItChanges", proves: [Covered(LayoutEngineContract.self)]) { s in
+            ConformanceCase("itsArithmeticIsHandedItsRoomAgainWhenItChanges", proves: [Covered(PhaseLayoutContract.self)]) { s in
                 let rooms = Received<Rect>()
                 let width = State(wrappedValue: 60.0)
                 s.start {
                     VStack {
-                        LayoutEngine([0]) { _ in
+                        PhaseLayout([0], phase: State(wrappedValue: 0.0).projectedValue) { _ in
                             Rectangle()
                                 .fill(.red)
                         } placements: { room, _ in
@@ -68,7 +68,7 @@
                 s.settle { rooms.values.last == Rect(0, 0, 90, 40) }
                 s.expect(rooms.values.last, Rect(0, 0, 90, 40), "and the new room it was given")
             },
-            ConformanceCase("itHasNoSizeOfItsOwn", proves: [Covered(LayoutEngineContract.self)]) { s in
+            ConformanceCase("itHasNoSizeOfItsOwn", proves: [Covered(PhaseLayoutContract.self)]) { s in
                 let (above, below) = (Received<[Double]>(), Received<[Double]>())
                 s.start {
                     VStack {
@@ -77,7 +77,7 @@
                             .width(20)
                             .height(10)
                             .onEvent(ViewContract.frameChanged) { above.values.append($0) }
-                        LayoutEngine([0]) { _ in
+                        PhaseLayout([0], phase: State(wrappedValue: 0.0).projectedValue) { _ in
                             Rectangle()
                                 .fill(.red)
                                 .width(40)
@@ -108,21 +108,20 @@
                 s.expect(apart(), 10, "the view below right under the one above, whatever the layout's view needs")
             },
             ConformanceCase("thePhaseTravelsWhereTheProgramSendsIt", proves: [
-                Covered(LayoutEngineContract.phase),
+                Covered(PhaseLayoutContract.phase),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let clock = TestClock()
                 let phase = State(wrappedValue: 0.0)
                 let (handed, arrived) = (Received<Double>(), Received<Bool>())
                 s.start(clock: clock) {
                     VStack {
-                        LayoutEngine([0]) { _ in
+                        PhaseLayout([0], phase: phase.projectedValue) { _ in
                             Rectangle()
                                 .fill(.red)
                         } placements: { _, phase in
                             handed.values.append(phase)
                             return [Placement(Rect(phase * 10, 0, 20, 20))]
                         }
-                        .phase(phase.projectedValue)
                         .motion(.eased(.milliseconds(400), .linear))
                         .width(100).height(40)
                         Button("Go").onClicked(.ignoreWhileRunning) {
@@ -148,21 +147,20 @@
                 s.expect(arrived.values, [true], "and a move of it awaited until it arrived")
             },
             ConformanceCase("eachAxisOfThePhaseTravelsOnItsOwn", proves: [
-                Covered(LayoutEngineContract.phase),
+                Covered(PhaseLayoutContract.phase),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let clock = TestClock()
                 let phase = State(wrappedValue: Orbit())
                 let (handed, arrived) = (Received<Orbit>(), Received<Bool>())
                 s.start(clock: clock) {
                     VStack {
-                        LayoutEngine([0]) { _ in
+                        PhaseLayout([0], phase: phase.projectedValue) { _ in
                             Rectangle()
                                 .fill(.red)
                         } placements: { _, phase in
                             handed.values.append(phase)
                             return [Placement(Rect(phase.turn * 10, 0, 20 * phase.zoom, 20))]
                         }
-                        .phase(phase.projectedValue)
                         .motion(.eased(.milliseconds(400), .linear))
                         .width(100).height(40)
                         Button("Turn").onClicked(.ignoreWhileRunning) {
@@ -194,7 +192,7 @@
                 s.expect(handed.values.last, Orbit(turn: 4, zoom: 2), "both where they were sent")
             },
             ConformanceCase("theHandMovesTheRunAndRestsItOnTheNearestTarget", proves: [
-                Covered(LayoutEngineContract.handMoved), Covered(LayoutEngineContract.handAxis),
+                Covered(PhaseLayoutContract.handMoved), Covered(PhaseLayoutContract.handAxis),
             ]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)
@@ -206,7 +204,7 @@
                 s.expect(phase.wrappedValue, 1, "the target nearest where the hand let it go")
             },
             ConformanceCase("aThrowGoesOnToTheTargetNearestWhereItWouldEnd", proves: [
-                Covered(LayoutEngineContract.handMoved),
+                Covered(PhaseLayoutContract.handMoved),
             ]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)
@@ -218,7 +216,7 @@
                 s.expect(phase.wrappedValue, 3, "not the nearest to where the hand let go, but to where the throw ends")
             },
             ConformanceCase("aWheelsNotchStepsTheRunToTheNextTarget", proves: [
-                Covered(LayoutEngineContract.handStepped),
+                Covered(PhaseLayoutContract.handStepped),
             ]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)
@@ -232,7 +230,7 @@
                 frames(s, clock, until: 1_600)
                 s.expect(phase.wrappedValue, 3, "a target a notch")
             },
-            ConformanceCase("aHandAcrossItsAxisLeavesTheRun", proves: [Covered(LayoutEngineContract.handAxis)]) { s in
+            ConformanceCase("aHandAcrossItsAxisLeavesTheRun", proves: [Covered(PhaseLayoutContract.handAxis)]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)
 
@@ -242,7 +240,7 @@
                 s.expect(phase.wrappedValue, 0, "a hand moving down is not the run's, which moves across")
             },
             ConformanceCase("aPressHeldTakesTheViewUnderItToTheHand", proves: [
-                Covered(LayoutEngineContract.itemDrag), Covered(LayoutEngineContract.itemMoved),
+                Covered(PhaseLayoutContract.itemDrag), Covered(PhaseLayoutContract.itemMoved),
             ]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
                 let layout = try itemLayout(s, clock: clock, phase: phase, begins: .held, told: told)
@@ -260,7 +258,7 @@
                 s.expect(phase.wrappedValue, 0, "the run stands")
             },
             ConformanceCase("aFirstMoveAcrossTakesTheViewUnderThePress", proves: [
-                Covered(LayoutEngineContract.itemDrag), Covered(LayoutEngineContract.itemMoved),
+                Covered(PhaseLayoutContract.itemDrag), Covered(PhaseLayoutContract.itemMoved),
             ]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
                 let layout = try itemLayout(s, clock: clock, phase: phase, begins: .across, told: told)
@@ -276,7 +274,7 @@
                 s.expect(phase.wrappedValue, 0, "the run stands")
             },
             ConformanceCase("aPanMovesTheRunEveryWayAndRestsOnTheNearestSquare", proves: [
-                Covered(LayoutEngineContract.pans), Covered(LayoutEngineContract.handMoved),
+                Covered(PhaseLayoutContract.pans), Covered(PhaseLayoutContract.handMoved),
             ]) { s in
                 let (clock, square) = (TestClock(), State(wrappedValue: Square()))
                 let layout = try panLayout(s, clock: clock, square: square)
@@ -287,7 +285,7 @@
                 s.expect(square.wrappedValue, Square(x: 1, y: 1), "both axes on the square nearest")
             },
             ConformanceCase("twoFingersSpreadTheMagnification", proves: [
-                Covered(LayoutEngineContract.magnifies), Covered(LayoutEngineContract.pinchMoved),
+                Covered(PhaseLayoutContract.magnifies), Covered(PhaseLayoutContract.pinchMoved),
             ]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 1.0))
                 let layout = try fingersLayout(s, clock: clock, phase: phase, input: .magnification)
@@ -302,7 +300,7 @@
                 s.expect(phase.wrappedValue, 0.5, "and pinched in to a quarter: the smallest")
             },
             ConformanceCase("twoFingersTurnTheRotation", proves: [
-                Covered(LayoutEngineContract.rotates), Covered(LayoutEngineContract.pinchMoved),
+                Covered(PhaseLayoutContract.rotates), Covered(PhaseLayoutContract.pinchMoved),
             ]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 1.0))
                 let layout = try fingersLayout(s, clock: clock, phase: phase, input: .rotation(degreesPerUnit: 90))
@@ -315,7 +313,7 @@
                 frames(s, clock, until: clock.now + 1_000)
                 s.expect(phase.wrappedValue, 0.5, "and back the other way, to the lowest")
             },
-            ConformanceCase("aViewLetGoFarEnoughIsDismissed", proves: [Covered(LayoutEngineContract.itemMoved)]) { s in
+            ConformanceCase("aViewLetGoFarEnoughIsDismissed", proves: [Covered(PhaseLayoutContract.itemMoved)]) { s in
                 let (clock, phase, told) = (TestClock(), State(wrappedValue: 0.0), Received<String>())
                 let layout = try itemLayout(s, clock: clock, phase: phase, begins: .across, told: told, dismissing: true)
 
@@ -342,13 +340,12 @@ private func itemLayout(
 ) throws -> MountedElement {
     s.start(clock: clock) {
         VStack {
-            let layout = LayoutEngine([0, 1, 2]) { _ in
+            let layout = PhaseLayout([0, 1, 2], phase: phase.projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 30, 10, 20, 20)) }
             }
-            .phase(phase.projectedValue)
             .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
             .itemDrag(begins: begins)
             .onItemDragged { told.values.append("\($0.item) at \(Int($0.at.x)),\(Int($0.at.y))") }
@@ -364,11 +361,11 @@ private func itemLayout(
         .verticalAlignment(.start)
     }
     frames(s, clock, until: 64)
-    return try s.element(ofType: .layoutEngine)
+    return try s.element(ofType: .phaseLayout)
 }
 
 /// A phase of two axes: how far a run is turned, and how large it stands.
-private struct Orbit: LayoutPhase {
+private struct Orbit: AxesPhase {
     var turn = 0.0
     var zoom = 1.0
 
@@ -381,13 +378,12 @@ private struct Orbit: LayoutPhase {
 private func handLayout(_ s: Session, clock: TestClock, phase: State<Double>) throws -> MountedElement {
     s.start(clock: clock) {
         VStack {
-            LayoutEngine([0, 1, 2]) { _ in
+            PhaseLayout([0, 1, 2], phase: phase.projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 50 + 40, 0, 20, 20)) }
             }
-            .phase(phase.projectedValue)
             .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...5, snaps: .every(1))
             .motion(.eased(.milliseconds(300), .linear))
             .width(100).height(40)
@@ -396,11 +392,11 @@ private func handLayout(_ s: Session, clock: TestClock, phase: State<Double>) th
         .verticalAlignment(.start)
     }
     frames(s, clock, until: 64)
-    return try s.element(ofType: .layoutEngine)
+    return try s.element(ofType: .phaseLayout)
 }
 
 /// A square of a board: across and down.
-private struct Square: LayoutPhase {
+private struct Square: AxesPhase {
     var x = 0.0
     var y = 0.0
 
@@ -413,13 +409,12 @@ private struct Square: LayoutPhase {
 private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) throws -> MountedElement {
     s.start(clock: clock) {
         VStack {
-            LayoutEngine([0, 1, 2]) { _ in
+            PhaseLayout([0, 1, 2], phase: square.projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
             } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at.x) * 50 + 40, 60 - at.y * 50, 20, 20)) }
             }
-            .phase(square.projectedValue)
             .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
             .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
             .motion(.eased(.milliseconds(300), .linear))
@@ -429,7 +424,7 @@ private func panLayout(_ s: Session, clock: TestClock, square: State<Square>) th
         .verticalAlignment(.start)
     }
     frames(s, clock, until: 64)
-    return try s.element(ofType: .layoutEngine)
+    return try s.element(ofType: .phaseLayout)
 }
 
 /// A layout of three views two fingers move as `input` says, resting on 0.5, 1 and 2 - room for two fingers on
@@ -440,13 +435,12 @@ private func fingersLayout(
 ) throws -> MountedElement {
     s.start(clock: clock) {
         VStack {
-            LayoutEngine([0, 1, 2]) { _ in
+            PhaseLayout([0, 1, 2], phase: phase.projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
             } placements: { _, at in
                 (0..<3).map { Placement(Rect(Double($0) * 80 + 20, 60, 40 * at, 40)) }
             }
-            .phase(phase.projectedValue)
             .axis(\.self, input: input, range: 0.5...2, snaps: [1])
             .motion(.eased(.milliseconds(200), .linear))
             .width(300).height(240)
@@ -455,7 +449,7 @@ private func fingersLayout(
         .verticalAlignment(.start)
     }
     frames(s, clock, until: 64)
-    return try s.element(ofType: .layoutEngine)
+    return try s.element(ofType: .phaseLayout)
 }
 
 /// Display frames until `end`, sixteen milliseconds apart.

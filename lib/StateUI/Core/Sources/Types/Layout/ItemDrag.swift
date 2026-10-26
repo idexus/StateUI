@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// One view the hand holds by itself over a layout engine, as `onItemDragged` is told it: whether the hand takes it,
+/// One view the hand holds by itself over a phase layout, as `onItemDragged` is told it: whether the hand takes it,
 /// moves it or lets it go, the item it shows, where the hand is, the room, and how long the hand has stood still.
 ///
 ///     .onItemDragged { drag in

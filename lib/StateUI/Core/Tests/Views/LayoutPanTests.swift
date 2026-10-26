@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A layout engine panned - two axes scrolled, one across and one down: the hand moves both whichever way it goes,
+// A phase layout panned - two axes scrolled, one across and one down: the hand moves both whichever way it goes,
 // and let go they rest together - beside two fingers spreading another axis at once.
 
 import XCTest
@@ -9,7 +9,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// A board panned across and down, and how large it stands.
-private struct Board: LayoutPhase {
+private struct Board: AxesPhase {
     var x = 0.0
     var y = 0.0
     var zoom = 1.0
@@ -34,11 +34,10 @@ final class LayoutPanTests: XCTestCase {
     /// A board of three by three a hand pans a hundred points a unit, resting on each square, and two fingers spread
     /// as large as twice.
     private func tree(_ board: State<Board>, _ handed: Handed) -> Node {
-        LayoutEngine([0, 1]) { Text("\($0)") } placements: { _, board in
+        PhaseLayout([0, 1], phase: board.projectedValue) { Text("\($0)") } placements: { _, board in
             handed.boards.append(board)
             return [Placement(Rect(-board.x * 100, -board.y * 100, 40, 40)), Placement(.zero)]
         }
-        .phase(board.projectedValue)
         .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
         .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .limits)
@@ -53,7 +52,7 @@ final class LayoutPanTests: XCTestCase {
     /// A PAN IS HEARD EVERY WAY: the element says it pans, and no one way.
     func testAPanIsHeardEveryWay() throws {
         let (board, handed) = (State(wrappedValue: Board()), Handed())
-        let layout = try XCTUnwrap(bench.laid(Renders(), { tree(board, handed) }).patch.first(.layoutEngine))
+        let layout = try XCTUnwrap(bench.laid(Renders(), { tree(board, handed) }).patch.first(.phaseLayout))
 
         XCTAssertEqual(layout.properties[.pans], .bool(true))
         XCTAssertNil(layout.properties[.handAxis])
@@ -100,7 +99,7 @@ final class LayoutPanTests: XCTestCase {
         func built() -> Node { tree(board, handed) }
         let patch = bench.laid(renders, built).patch
 
-        guard let stepped = patch.first(.layoutEngine)?.events?[.handStepped] else {
+        guard let stepped = patch.first(.phaseLayout)?.events?[.handStepped] else {
             return XCTFail("the layout hears no wheel")
         }
         XCTAssertTrue(renders.fire(stepped, with: MemberValues.encode(Point(-1, -2))))
@@ -130,22 +129,21 @@ final class LayoutPanTests: XCTestCase {
     /// AXES SCROLLED ACROSS AND DOWN ARE A PAN, heard every way; scrolled one way alone, a hand along the layout.
     func testAxesScrolledAcrossAndDownAreAPan() throws {
         let (board, handed) = (State(wrappedValue: Board()), Handed())
-        func layout() -> LayoutEngine<[Int], Int, Board> {
-            LayoutEngine([0]) { Text("\($0)") } placements: { _, board in
+        func layout() -> PhaseLayout<[Int], Int, Board> {
+            PhaseLayout([0], phase: board.projectedValue) { Text("\($0)") } placements: { _, board in
                 handed.boards.append(board)
                 return [Placement(Rect(0, 0, 40, 40))]
             }
-            .phase(board.projectedValue)
             .axis(\.x, input: .scroll(.horizontal), range: 0...1, snaps: .limits)
         }
 
         let panned = try XCTUnwrap(Renders().settled(
-            layout().axis(\.y, input: .scroll(.vertical), range: 0...1, snaps: .limits).node).first(.layoutEngine))
+            layout().axis(\.y, input: .scroll(.vertical), range: 0...1, snaps: .limits).node).first(.phaseLayout))
         XCTAssertEqual(panned.properties[.pans], .bool(true))
         XCTAssertNil(panned.properties[.handAxis])
 
         let scrolled = try XCTUnwrap(Renders().settled(
-            layout().axis(\.y, input: .scroll(.horizontal), range: 0...1, snaps: .limits).node).first(.layoutEngine))
+            layout().axis(\.y, input: .scroll(.horizontal), range: 0...1, snaps: .limits).node).first(.phaseLayout))
         XCTAssertNil(scrolled.properties[.pans], "two axes, one way")
         XCTAssertEqual(scrolled.properties[.handAxis], .enumeration(LayoutInput.Axis.horizontal.rawValue))
     }

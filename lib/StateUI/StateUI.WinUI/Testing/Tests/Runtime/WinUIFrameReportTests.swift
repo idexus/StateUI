@@ -68,7 +68,7 @@ final class WinUIFrameReportTests: XCTestCase {
                 SplitView(State(wrappedValue: true).projectedValue) {
                     Text("Menu").title("Menu")
                 } detail: {
-                    LayoutEngine([0]) { _ in
+                    PhaseLayout([0], phase: State(wrappedValue: 0.0).projectedValue) { _ in
                         Rectangle()
                             .fill(.red)
                     } placements: { room, _ in

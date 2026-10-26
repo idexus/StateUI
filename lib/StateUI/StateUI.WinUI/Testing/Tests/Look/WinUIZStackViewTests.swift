@@ -45,7 +45,7 @@ private let green: UInt32 = 0xFF00_8000
 private let blue: UInt32 = 0xFF00_00FF
 
 final class WinUIZStackViewTests: XCTestCase {
-    /// An engine's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
+    /// A phase layout's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
     /// it says, the higher rank drawn over the lower.
     func testAPlacementRunStandsAndDrawsEachChildAsItSays() throws {
         try onUIThread {
@@ -53,7 +53,7 @@ final class WinUIZStackViewTests: XCTestCase {
             let placed = State(wrappedValue: 0.0)
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
-                    LayoutEngine(["back", "front"]) { name in
+                    PhaseLayout(["back", "front"], phase: placed.projectedValue) { name in
                         Rectangle()
                             .fill(name == "back" ? .red : .blue)
                     } placements: { room, phase in
@@ -61,7 +61,6 @@ final class WinUIZStackViewTests: XCTestCase {
                             ? [Placement(room), Placement(room)]
                             : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
-                    .phase(placed.projectedValue)
                     .motion(.none)
                     .height(200)
 

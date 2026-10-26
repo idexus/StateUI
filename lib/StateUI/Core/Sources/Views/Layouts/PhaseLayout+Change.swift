@@ -2,13 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A change of a layout's description at the current phase, traveling from where each view was shown.
-// Design: docs/design/views/layout-engine.md#a-change-at-the-current-phase
+// Design: docs/design/views/phase-layout.md#a-change-at-the-current-phase
 
-extension LayoutEngine.Run {
+extension PhaseLayout.Run {
     /// What the run last showed, a new description - or a new place its motion set out from - measured against it:
     /// worked out where the last frame stood, a view whose pose it changes sets out from where that frame showed it,
     /// and one joining from nothing; a change that changes nothing changes no way.
-    /// Design: docs/design/views/layout-engine.md#a-change-at-the-current-phase
+    /// Design: docs/design/views/phase-layout.md#a-change-at-the-current-phase
     func changed(at now: Double, from: Phase, reducesMotion: Bool) -> LayoutShown<Phase> {
         let motion = resolvedLaw
         var memory = states.shown.wrappedValue

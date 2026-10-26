@@ -47,13 +47,6 @@ ItemsView.dragText: ✓ dragAndDrop on ItemsView: the drag and drop interactions
 ItemsView.frameChanged: ✅
 ItemsView.gridColumn: ✅
 ItemsView.gridRow: ✅
-LayoutEngine.area: ✅
-LayoutEngine.frameChanged: ✅
-LayoutEngine.pointerEntered: ✓ hover on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.pointerExited: ✓ hover on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.pointerMoved: ✓ hover on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.pointerPressed: ✓ hover on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.pointerReleased: ✓ hover on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
 Line.held: ✓ hold on Line: the view's listening handed the recognizer's states, no touch sent
 Link.frameChanged: ✅
 Link.horizontalAlignment: ✅
@@ -64,6 +57,13 @@ Path.droppedFileTypes: ✓ dropFiles on Path: the drop interaction's handler tol
 Path.filesDropped: ✓ dropFiles on Path: the drop interaction's handler told the driver's files, no drag session
 Path.tapCount: ✓ tap on Path: the view's listening handed the recognizer's states, no touch sent
 Path.tapped: ✓ tap on Path: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.area: ✅
+PhaseLayout.frameChanged: ✅
+PhaseLayout.pointerEntered: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.pointerExited: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.pointerMoved: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.pointerPressed: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.pointerReleased: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.panYChannel: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Polygon.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session

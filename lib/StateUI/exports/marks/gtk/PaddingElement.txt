@@ -2,7 +2,7 @@
 Button.padding: ✓ read padding of Button: the class of the host's style sheet the widget wears: GTK reads back no padding
 Grid.padding: ✅
 HStack.padding: ✅
-LayoutEngine.padding: – A layout engine stands its views where its arithmetic says, from its own top left: it takes no padding.
+PhaseLayout.padding: – A phase layout stands its views where its arithmetic says, from its own top left: it takes no padding.
 ScrollView.padding: ✅
 Text.padding: ✓ read padding of Text: the class of the host's style sheet the widget wears: GTK reads back no padding
 VStack.padding: ✅

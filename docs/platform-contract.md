@@ -107,7 +107,6 @@ of its members each meets, and why a cell is empty.
 | [HStack](controls/HStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Image](controls/Image.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ItemsView](controls/ItemsView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [LayoutEngine](controls/LayoutEngine.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Link](controls/Link.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Map](controls/Map.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 | 🧩 |
@@ -121,6 +120,7 @@ of its members each meets, and why a cell is empty.
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [PhaseLayout](controls/PhaseLayout.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Picker](controls/Picker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Polygon](controls/Polygon.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Polyline](controls/Polyline.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -190,7 +190,7 @@ verdict on that host, as for every element.
 `ForEach`, `GeometryReader` and `GalleryView` are StateUI compositions or
 readers rather than additional platform controls. The core implements them
 once; their platform behavior depends only on the rows they use.
-`LayoutEngine` is an element of StateUI's own - its arithmetic, its phase and
+`PhaseLayout` is an element of StateUI's own - its arithmetic, its phase and
 the hand that moves it are the core's - which every host stands on its ZStack,
 and its row below says how far each host carries it.
 
@@ -224,7 +224,7 @@ contract.
 | `MenuSeparator` | a separator `NSMenuItem` | a group break in a `UIMenu` | a group divider in a menu | `MenuFlyoutSeparator` | a section break in a `GMenu` | `role=separator` in an ARIA `menu` |
 | `ToolbarGroup` / `ToolbarButton` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItemGroup` / `UIBarButtonItem` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` in the `TitleBar` | `GtkButton` in an `AdwHeaderBar` | `<button>` in an ARIA `toolbar` |
 | `ToolbarToggle` | an `NSToolbarItem` showing its on picture, prominent while on with none; a checked `NSMenuItem` in the overflow | a `UIBarButtonItem` with `changesSelectionAsPrimaryAction`, `isSelected` while on | a checkable `Toolbar` `MenuItem`, its state on the bar by its on picture | `AppBarToggleButton` in the `TitleBar` | `GtkToggleButton` in an `AdwHeaderBar` | `<button aria-pressed>` in an ARIA `toolbar` |
-| `ZStack` / `LayoutEngine` / `Fill` / `Space` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
+| `ZStack` / `PhaseLayout` / `Fill` / `Space` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | flexbox |
 | `Grid` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid |
 | `ScrollView` | `NSScrollView` | `UIScrollView` | `ScrollView` / `HorizontalScrollView` | `ScrollViewer` | `GtkScrolledWindow` | `overflow: auto` |
@@ -484,11 +484,11 @@ Every control, and every part an application, its windows and its pages are made
 | [HStack](controls/HStack.md) | 83 | 44 ✅ · 1 ☑️ · 36 ✓ | 40 ✅ · 2 ☑️ · 38 ✓ · 1 – | 62 ✅ · 5 ☑️ · 12 ✓ · 1 – | 62 ✅ · 2 ☑️ · 13 ✓ · 5 – | 51 ✅ · 2 ☑️ · 23 ✓ · 7 – | 57 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Image](controls/Image.md) | 76 | 37 ✅ · 2 ☑️ · 36 ✓ | 36 ✅ · 2 ☑️ · 36 ✓ · 1 – | 57 ✅ · 5 ☑️ · 10 ✓ · 1 – | 53 ✅ · 1 ☑️ · 14 ✓ · 7 – | 45 ✅ · 2 ☑️ · 22 ✓ · 6 – | 50 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [ItemsView](controls/ItemsView.md) | 91 | 44 ✅ · 2 ☑️ · 40 ✓ · 4 – | 41 ✅ · 2 ☑️ · 42 ✓ · 5 – | 69 ✅ · 5 ☑️ · 13 ✓ · 2 – | 66 ✅ · 2 ☑️ · 13 ✓ · 9 – | 55 ✅ · 2 ☑️ · 23 ✓ · 9 – | 61 ✅ · 1 ☑️ · 22 ✓ · 6 – |
-| [LayoutEngine](controls/LayoutEngine.md) | 92 | 39 ✅ · 1 ☑️ · 45 ✓ · 1 – | 37 ✅ · 2 ☑️ · 47 ✓ · 2 – | 62 ✅ · 5 ☑️ · 16 ✓ · 2 – | 53 ✅ · 2 ☑️ · 26 ✓ · 9 – | 47 ✅ · 2 ☑️ · 30 ✓ · 8 – | 59 ✅ · 2 ☑️ · 25 ✓ · 4 – |
 | [Line](controls/Line.md) | 84 | 46 ✅ · 2 ☑️ · 36 ✓ | 45 ✅ · 2 ☑️ · 36 ✓ · 1 – | 67 ✅ · 5 ☑️ · 10 ✓ · 1 – | 62 ✅ · 1 ☑️ · 14 ✓ · 7 – | 54 ✅ · 2 ☑️ · 22 ✓ · 6 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Link](controls/Link.md) | 83 | 43 ✅ · 2 ☑️ · 37 ✓ · 1 – | 37 ✅ · 2 ☑️ · 39 ✓ · 5 – | 60 ✅ · 5 ☑️ · 13 ✓ · 4 – | 61 ✅ · 2 ☑️ · 14 ✓ · 6 – | 50 ✅ · 2 ☑️ · 25 ✓ · 6 – | 57 ✅ · 1 ☑️ · 22 ✓ · 3 – |
 | [Map](controls/Map.md) | 81 | 41 ✅ · 2 ☑️ · 37 ✓ · 1 – | 40 ✅ · 2 ☑️ · 37 ✓ · 2 – | 81 🧩 | 81 🧩 | 81 🧩 | 81 🧩 |
 | [Path](controls/Path.md) | 84 | 46 ✅ · 2 ☑️ · 36 ✓ | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 66 ✅ · 6 ☑️ · 10 ✓ · 1 – | 61 ✅ · 2 ☑️ · 14 ✓ · 7 – | 53 ✅ · 3 ☑️ · 22 ✓ · 6 – | 58 ✅ · 2 ☑️ · 21 ✓ · 3 – |
+| [PhaseLayout](controls/PhaseLayout.md) | 92 | 39 ✅ · 1 ☑️ · 45 ✓ · 1 – | 37 ✅ · 2 ☑️ · 47 ✓ · 2 – | 62 ✅ · 5 ☑️ · 16 ✓ · 2 – | 53 ✅ · 2 ☑️ · 26 ✓ · 9 – | 47 ✅ · 2 ☑️ · 30 ✓ · 8 – | 59 ✅ · 2 ☑️ · 25 ✓ · 4 – |
 | [Picker](controls/Picker.md) | 95 | 51 ✅ · 2 ☑️ · 37 ✓ · 2 – | 43 ✅ · 3 ☑️ · 41 ✓ · 5 – | 67 ✅ · 6 ☑️ · 13 ✓ · 4 – | 74 ✅ · 2 ☑️ · 13 ✓ · 6 – | 57 ✅ · 2 ☑️ · 24 ✓ · 12 – | 65 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [Polygon](controls/Polygon.md) | 85 | 47 ✅ · 2 ☑️ · 36 ✓ | 45 ✅ · 3 ☑️ · 36 ✓ · 1 – | 67 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 2 ☑️ · 14 ✓ · 7 – | 54 ✅ · 3 ☑️ · 22 ✓ · 6 – | 59 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Polyline](controls/Polyline.md) | 85 | 47 ✅ · 2 ☑️ · 36 ✓ | 45 ✅ · 3 ☑️ · 36 ✓ · 1 – | 67 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 2 ☑️ · 14 ✓ · 7 – | 54 ✅ · 3 ☑️ · 22 ✓ · 6 – | 59 ✅ · 2 ☑️ · 21 ✓ · 3 – |
@@ -608,7 +608,6 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 9 ✅ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
-| [LayoutEngine](controls/LayoutEngine.md) | `handAxis`, `handMoved`, `handStepped`, `itemDrag`, `itemMoved`, `magnifies`, `pans`, `phase`, `pinchMoved`, `rotates` | 10 | 1 ✅ · 9 ✓ | 1 ✅ · 9 ✓ | 6 ✅ · 4 ✓ | 1 ✅ · 8 ✓ · 1 – | 3 ✅ · 7 ✓ | 5 ✅ · 1 ☑️ · 4 ✓ |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Link](controls/Link.md) | `onClicked` (`clicked`), `destination` | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ |
 | [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
@@ -619,6 +618,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 9 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
+| [PhaseLayout](controls/PhaseLayout.md) | `handAxis`, `handMoved`, `handStepped`, `itemDrag`, `itemMoved`, `magnifies`, `pans`, `phase`, `pinchMoved`, `rotates` | 10 | 1 ✅ · 9 ✓ | 1 ✅ · 9 ✓ | 6 ✅ · 4 ✓ | 1 ✅ · 8 ✓ · 1 – | 3 ✅ · 7 ✓ | 5 ✅ · 1 ☑️ · 4 ✓ |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `presentation`, `selectedIndex`, `selectedIndexChanged` | 8 | 4 ✅ · 1 ✓ | 1 ✅ · 1 ☑️ · 3 ✓ | 3 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ | 4 ✅ · 4 – | 5 ✅ · 3 – |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -663,9 +663,9 @@ realizes the element and each of its members.
 
 `Anchor`, `Application`, `Button`, `ButtonMenu`, `Canvas`, `Capsule`,
 `CheckBox`, `ColorPicker`, `ContextMenu`, `DatePicker`, `Ellipse`, `Fill`,
-`Grid`, `HStack`, `Image`, `ItemsView`, `LayoutEngine`, `Line`, `Link`, `Map`,
-`Marker`, `Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `MenuToggle`,
-`NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`,
+`Grid`, `HStack`, `Image`, `ItemsView`, `Line`, `Link`, `Map`, `Marker`, `Menu`,
+`MenuBar`, `MenuItem`, `MenuSeparator`, `MenuToggle`, `NavigationStack`,
+`Overlay`, `Page`, `Path`, `PhaseLayout`, `Picker`, `Polygon`, `Polyline`,
 `Popover`, `ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`,
 `Separator`, `Sheet`, `Slider`, `Space`, `Spinner`, `SplitView`, `Stepper`,
 `Switch`, `TabView`, `Text`, `TextEditor`, `TextField`, `TextSpan`, `TextSpans`,

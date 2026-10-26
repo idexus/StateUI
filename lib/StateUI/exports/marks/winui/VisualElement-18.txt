@@ -22,8 +22,6 @@ Image.rotationY: ✓ read rotationY of Image: the host's own tip, checked agains
 Image.zIndex: ✅
 ItemsView.accessibilityHint: ✅
 ItemsView.scaleY: ✅
-LayoutEngine.isAccessibilityHidden: ✅
-LayoutEngine.isVisible: ✅
 Line.isAccessibilityHidden: ✅
 Line.isVisible: ✅
 Link.height: ✅
@@ -32,6 +30,8 @@ Link.width: ✅
 Map.rotationX: 🧩
 Map.style: 🧩
 Path.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+PhaseLayout.isAccessibilityHidden: ✅
+PhaseLayout.isVisible: ✅
 Picker.isAccessibilityHidden: ✅
 Picker.isVisible: ✅
 Polygon.maximumHeight: ✅

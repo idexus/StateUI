@@ -60,11 +60,6 @@ ItemsView.filesDropped: ✓ dropFiles on ItemsView: the relay's drop report told
 ItemsView.frameChanged: ✅
 ItemsView.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 ItemsView.margin: ✅
-LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the relay's drag reports told by the driver, no drag WinUI began
-LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the relay's drag reports told by the driver, no drag WinUI began
-LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the relay's drag reports told by the driver, no drag WinUI began
-LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the relay's drag reports told by the driver, no drag WinUI began
-LayoutEngine.tapped: ✓ pressDown on LayoutEngine: the relay's report of the press over the layout handed to the host, no pointer sent
 Line.pointerEntered: ✅
 Line.pointerExited: ✅
 Line.pointerMoved: ✅
@@ -88,6 +83,11 @@ Path.panTouchCount: ✅
 Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.verticalAlignment: ✅
+PhaseLayout.canDrag: ✓ dragAndDrop on PhaseLayout: the relay's drag reports told by the driver, no drag WinUI began
+PhaseLayout.dragEnded: ✓ dragAndDrop on PhaseLayout: the relay's drag reports told by the driver, no drag WinUI began
+PhaseLayout.dragStarting: ✓ dragAndDrop on PhaseLayout: the relay's drag reports told by the driver, no drag WinUI began
+PhaseLayout.dragText: ✓ dragAndDrop on PhaseLayout: the relay's drag reports told by the driver, no drag WinUI began
+PhaseLayout.tapped: ✓ pressDown on PhaseLayout: the relay's report of the press over the layout handed to the host, no pointer sent
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the relay's drop report told the driver's files, no drag WinUI began
 Picker.filesDropped: ✓ dropFiles on Picker: the relay's drop report told the driver's files, no drag WinUI began
 Picker.frameChanged: ✅

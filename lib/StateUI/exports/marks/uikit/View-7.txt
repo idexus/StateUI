@@ -45,7 +45,6 @@ ItemsView.margin: ✅
 ItemsView.swipeDirection: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.swipeThreshold: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.swiped: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.panYChannel: ✓ pan on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Line.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Line.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -70,6 +69,7 @@ Path.pointerExited: ✓ hover on Path: the view's listening handed the recognize
 Path.pointerMoved: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerPressed: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerReleased: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.panYChannel: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.held: ✓ hold on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.frameChanged: ✅
 Polygon.horizontalAlignment: ✅

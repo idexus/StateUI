@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// One view of a layout engine taken by the hand by itself: found under the press, kept to the hand over the others,
+// One view of a phase layout taken by the hand by itself: found under the press, kept to the hand over the others,
 // let go back to its place under the layout's motion or, past a dismissal, flown on out of the room.
-// Design: docs/design/views/layout-engine.md#one-view-in-the-hand
+// Design: docs/design/views/phase-layout.md#one-view-in-the-hand
 
 /// Which ways letting a view go dismisses it, how far the hand must take it first, and what is told of its item.
 struct LayoutDismissal<Item> {
@@ -12,11 +12,11 @@ struct LayoutDismissal<Item> {
     let handler: ValueHandler<Item>
 }
 
-extension LayoutEngine.Run {
+extension PhaseLayout.Run {
     /// The hand holding one view by itself at `phase`, at `point` in the room, letting go at `speed` points a second,
     /// having stood still `still` milliseconds: taken where it presses, told as it moves and stands, let go back or
     /// dismissed.
-    /// Design: docs/design/views/layout-engine.md#one-view-in-the-hand
+    /// Design: docs/design/views/phase-layout.md#one-view-in-the-hand
     func item(_ phase: GesturePhase, at point: Point, speed: Point, still: Double) throws {
         switch phase {
         case .began:

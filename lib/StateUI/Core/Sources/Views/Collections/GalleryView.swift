@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A run of cards the user swipes through, in a shape one word chooses: a layout engine with the arithmetic of a
+// A run of cards the user swipes through, in a shape one word chooses: a phase layout with the arithmetic of a
 // wheel, a fan, a row and a deck, its phase the card in front.
 // Design: docs/design/views/measured-layouts.md#gallery-view
 
@@ -37,7 +37,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// the card's face, beneath the placement the run writes every frame.
     @State private var dipping: ID?
 
-    /// Where the run stands, a card a unit: the engine's phase, which the host
+    /// Where the run stands, a card a unit: the layout's phase, which the host
     /// walks - a position written travels there through it.
     @State private var turn = 0.0
 
@@ -354,7 +354,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // Design: docs/design/views/composition.md#a-watcher-is-a-view-of-its-own
         let asked = { min(max(pin?.wrappedValue ?? showns.wrappedValue, 0), count - 1) }
 
-        var engine = LayoutEngine(items, id: path) { item in
+        var layout = PhaseLayout(items, id: path, phase: turns.projectedValue) { item in
             // The face in a holder of its own, so the press on it is not overwritten by the placement written on
             // the holder every frame. The holder is the card's size: a card the run has not placed yet would fill
             // the room.
@@ -369,7 +369,6 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         } placements: { room, phase, from in
             (0..<count).map { place(Double($0) - phase, setOut: Double($0) == from, count, room, shape) }
         }
-        .phase(turns.projectedValue)
         // A card the hand names is the position at once, in the frame that names it.
         .onNamed { turned in
             let card = min(max(Int(turned.rounded()), 0), count - 1)
@@ -386,11 +385,11 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             let throwing = thrown ?? LayoutInput.scroll(.horizontal).throwing
             let input = shape == .deck
                 ? LayoutInput.swipe(.horizontal, throwing: throwing) : .scroll(.horizontal, throwing: throwing)
-            engine = engine.axis(\.self, input: input, range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+            layout = layout.axis(\.self, input: input, range: 0...Double(max(count - 1, 0)), snaps: .every(1))
         }
 
         // The shade sits beside the press: the card that dips wears none.
-        if let mask { engine = engine.shade(mask) }
+        if let mask { layout = layout.shade(mask) }
 
         // The tap, answered on the card in front: the press shows, and the card is back at its size, before the
         // activation's own work, which usually builds a page.
@@ -409,13 +408,13 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
                 try await activated.run(item[keyPath: path])
             }
             switch activated.gate {
-            case .own(let policy): engine = engine.onItemTapped(policy, tapped)
-            case .shared(let gate): engine = engine.onItemTapped(gate: gate, tapped)
+            case .own(let policy): layout = layout.onItemTapped(policy, tapped)
+            case .shared(let gate): layout = layout.onItemTapped(gate: gate, tapped)
             }
         }
 
         let deck = Grid {
-            engine
+            layout
 
             // The watcher of the position, a view of its own beside the deck, so reading it rebuilds none of the
             // cards: a position written sends the run there.

@@ -44,11 +44,6 @@ ItemsView.frameChanged: ✅
 ItemsView.horizontalAlignment: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.verticalAlignment: ✅
-LayoutEngine.frameChanged: ✅
-LayoutEngine.margin: ✅
-LayoutEngine.swipeDirection: ✓ pan on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.swipeThreshold: ✓ pan on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.swiped: ✓ pan on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 Line.droppedFileTypes: ✓ dropFiles on Line: the window's drop routing told the driver's files, no dragging session
 Line.filesDropped: ✓ dropFiles on Line: the window's drop routing told the driver's files, no dragging session
 Line.tapCount: ✓ tap on Line: handed to the host's recognizer or handler, no NSEvent sent
@@ -68,6 +63,11 @@ Path.dragText: ✓ dragAndDrop on Path: the drag source and the window's drop ro
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
+PhaseLayout.frameChanged: ✅
+PhaseLayout.margin: ✅
+PhaseLayout.swipeDirection: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.swipeThreshold: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.swiped: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.holdDuration: ✅
 Polygon.area: ✅
 Polygon.frameChanged: ✅

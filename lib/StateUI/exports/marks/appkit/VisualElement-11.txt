@@ -19,13 +19,13 @@ HStack.accessibilityActions: ✅
 Image.opacity: ✅
 Image.rotationX: ✓ read rotationX of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.tooltip: ✅
-LayoutEngine.pivotY: ✓ read pivotY of LayoutEngine: the host's own transform, checked against the layer it composed itself
 Line.accessibilityHint: ✅
 Link.isEnabled: ✅
 Link.rotationY: ✓ read rotationY of Link: the host's own transform, checked against the layer it composed itself
 Map.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
 Path.rotationY: ✓ read rotationY of Path: the host's own transform, checked against the layer it composed itself
+PhaseLayout.pivotY: ✓ read pivotY of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 Polygon.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Polyline.isVisible: ✅

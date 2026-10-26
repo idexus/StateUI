@@ -326,7 +326,7 @@ page continues moving under vertical input.
 
 A layout whose views the hand moves without moving its content - a run of
 cards turned by a finger, a wheel or a trackpad, endless if need be - is a
-[layout engine](#a-layout-engine) whose axis the hand scrolls:
+[phase layout](#a-phase-layout) whose axis the hand scrolls:
 `.axis(_:input:range:snaps:)` with `.scroll(_:)`.
 
 ## Repeated content and collections
@@ -502,8 +502,8 @@ The [platform contract](../platform-contract.md) says where each is realized.
 
 ## StateUI-authored layouts
 
-`LayoutEngine` and `GalleryView` are StateUI's own layouts: the core
-implements them once - a `GalleryView` is a `LayoutEngine` with the
+`PhaseLayout` and `GalleryView` are StateUI's own layouts: the core
+implements them once - a `GalleryView` is a `PhaseLayout` with the
 arithmetic of four shapes written - and the Gallery exercises both on every
 host.
 
@@ -551,15 +551,16 @@ front opened - a tap on it - with its identity, as a list's item is, and
 `.onPositionChanged` another card coming to
 the middle; a swipe carries the card in front with it, however big the room
 draws the cards, and `.throwing(_:)` says how one let go with speed goes on, as a
-[layout engine's](#a-layout-engine) input does, and `.itemSize(width:height:)`,
+[phase layout's](#a-phase-layout) input does, and `.itemSize(width:height:)`,
 `.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size - a `.height`, or a `.fill` row of a `Grid`.
 No view is built again while the run moves.
 
-### A layout engine
+### A phase layout
 
-`LayoutEngine` places its views by arithmetic of the application's own,
-worked out from the room and a phase. The arithmetic answers one `Placement`
+`PhaseLayout` places its views by arithmetic of the application's own,
+worked out from the room and a phase - a state of the application's, lent
+with `phase:`. The arithmetic answers one `Placement`
 per view, in the items' order - its bounds from the layout's top left, and a
 transform, an opacity, a shade and a `zIndex` - and runs on the host's frames
 whenever the room or the phase moves, with no view built again. The layout
@@ -568,10 +569,12 @@ its views need, so give it one - a `.height`, or a `.fill` row of a `Grid`:
 
 ```swift
 struct Shelf: View {
+    @State private var turn = 0.0
+
     let names = ["Mural", "Nebula", "Ridge"]
 
     var body: some View {
-        LayoutEngine(names) { name in
+        PhaseLayout(names, phase: $turn) { name in
             Text(name)
         } placements: { room, _ in
             names.indices.map { index in
@@ -585,8 +588,8 @@ struct Shelf: View {
 }
 ```
 
-The phase is where the run rests or is going. Lend it a state with
-`.phase(_:)` and the program moves the run by writing it; declare its axis
+The phase is where the run rests or is going: the program moves the run by
+writing it; declare its axis
 with `.axis(_:input:range:snaps:)` and the hand moves it too - a finger or a
 pointer dragged, a trackpad's two fingers, a wheel - on its own, with no
 scroller under it, carrying the view in front with it across its range and
@@ -600,7 +603,7 @@ struct Carousel: View {
 
     var body: some View {
         VStack {
-            LayoutEngine(names) { name in
+            PhaseLayout(names, phase: $turn) { name in
                 Text(name)
             } placements: { room, phase in
                 names.indices.map { index in
@@ -612,7 +615,6 @@ struct Carousel: View {
                         zIndex: -Int(abs(step) * 10))
                 }
             }
-            .phase($turn)
             .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
             .motion(.spring(response: .milliseconds(240)))
             .height(200)
@@ -647,12 +649,11 @@ struct Drawer: View {
     @State private var open = 0.0
 
     var body: some View {
-        LayoutEngine(["Notes"]) { name in
+        PhaseLayout(["Notes"], phase: $open) { name in
             Text(name)
         } placements: { room, phase in
             [Placement(Rect(0, room.height - 60 - phase * 200, room.width, 260))]
         }
-        .phase($open)
         // Pulled up, it opens; let go, it is open or closed.
         .axis(\.self, input: .scroll(.vertical, pointsPerUnit: 200), range: 0...1, snaps: .limits)
         .height(300)
@@ -689,12 +690,13 @@ new place, under `.motion(_:)`, while the phase goes on as it goes:
 struct Hand: View {
     @State private var names = ["Mural", "Nebula", "Ridge"]
     @State private var fanned = true
+    @State private var turn = 0.0
 
     var body: some View {
         let gap = fanned ? 140.0 : 12.0
 
         VStack {
-            LayoutEngine(names) { name in
+            PhaseLayout(names, phase: $turn) { name in
                 Text(name)
             } placements: { room, _ in
                 names.indices.map { index in
@@ -733,7 +735,7 @@ struct Pile: View {
     let names = ["Mural", "Nebula", "Ridge", "Bloom"]
 
     var body: some View {
-        LayoutEngine(names) { name in
+        PhaseLayout(names, phase: $turn) { name in
             Text(name)
         } placements: { room, phase, from in
             names.indices.map { index in
@@ -749,7 +751,6 @@ struct Pile: View {
                     zIndex: leaving && abs(step) > 0.5 ? -100 : -Int(behind * 10))
             }
         }
-        .phase($turn)
         .axis(\.self, input: .swipe(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
         .height(220)
     }
@@ -778,7 +779,7 @@ struct Boards: View {
 
     var body: some View {
         VStack {
-            LayoutEngine(names) { name in
+            PhaseLayout(names, phase: $board) { name in
                 Text(name)
             } placements: { room, phase in
                 names.indices.map { index in
@@ -790,11 +791,10 @@ struct Boards: View {
                         Rect((Double(page) - phase) * room.width + Double(slot) * width, 0, width, room.height))
                 }
             }
-            .phase($board)
             .axis(\.self, input: .pages(.horizontal), range: 0...1, snaps: .every(1))
             .height(80)
 
-            LayoutEngine([0, 1]) { _ in
+            PhaseLayout([0, 1], phase: $board) { _ in
                 Rectangle()
                     .fill(.gray)
                     .cornerRadius(4)
@@ -805,7 +805,6 @@ struct Boards: View {
                         opacity: 0.3 + 0.7 * max(1 - abs(phase - Double(page)), 0))
                 }
             }
-            .phase($board)
             .height(16)
         }
     }
@@ -829,9 +828,10 @@ settles into its place under `.motion(_:)`:
 ```swift
 struct Board: View {
     @State private var names = ["Mail", "Clock", "Notes", "Music"]
+    @State private var turn = 0.0
 
     var body: some View {
-        LayoutEngine(names) { name in
+        PhaseLayout(names, phase: $turn) { name in
             Text(name)
         } placements: { room, _ in
             names.indices.map { index in
@@ -872,7 +872,7 @@ struct Ring: View {
     let names = ["Mural", "Nebula", "Ridge", "Bloom", "Dune"]
 
     var body: some View {
-        LayoutEngine(names) { name in
+        PhaseLayout(names, phase: $turn) { name in
             Text(name)
         } placements: { room, phase in
             names.indices.map { index in
@@ -883,7 +883,6 @@ struct Ring: View {
                     opacity: 1 - min(abs(step) / 3, 1))
             }
         }
-        .phase($turn)
         .axis(
             \.self, input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(400), damping: 0.8)),
             range: 0...Double(names.count), snaps: .every(1), wraps: true)
@@ -892,12 +891,12 @@ struct Ring: View {
 }
 ```
 
-A phase of several axes is a `LayoutPhase` of your own: a struct of numbers
+A phase of several axes is a `AxesPhase` of your own: a struct of numbers
 listing its axes. Each axis moves on its own - one under the hand, another
 written by the program - and travels under the same `.motion(_:)`:
 
 ```swift
-struct Orbit: LayoutPhase {
+struct Orbit: AxesPhase {
     var turn = 0.0
     var zoom = 1.0
 
@@ -911,7 +910,7 @@ struct Planets: View {
 
     var body: some View {
         VStack {
-            LayoutEngine(names) { name in
+            PhaseLayout(names, phase: $orbit) { name in
                 Text(name)
             } placements: { room, orbit in
                 names.indices.map { index in
@@ -921,7 +920,6 @@ struct Planets: View {
                     return Placement(Rect(room.width / 2 - size / 2 + step * size * 1.5, 0, size, size))
                 }
             }
-            .phase($orbit)
             .axis(\.turn, input: .scroll(.horizontal), range: 0...Double(names.count - 1), snaps: .every(1))
             .motion(.spring(response: .milliseconds(240)))
             .height(160)
@@ -953,7 +951,7 @@ the fingers' middle while they spread and turn:
 import StateUIFoundation
 import StateUI
 
-struct Dial: LayoutPhase {
+struct Dial: AxesPhase {
     var turn = 0.0
     var size = 1.0
 
@@ -966,7 +964,7 @@ struct Compass: View {
     let names = ["North", "East", "South", "West"]
 
     var body: some View {
-        LayoutEngine(names) { name in
+        PhaseLayout(names, phase: $dial) { name in
             Text(name)
         } placements: { room, dial in
             names.indices.map { index in
@@ -980,7 +978,6 @@ struct Compass: View {
                     24))
             }
         }
-        .phase($dial)
         .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), wraps: true)
         .axis(\.size, input: .magnification, range: 0.5...2, snaps: [1])
         .height(240)
@@ -1004,7 +1001,7 @@ pan, a magnification and a rotation move at once - here the zoom resting
 anywhere between half and whole:
 
 ```swift
-struct Sheet: LayoutPhase {
+struct Sheet: AxesPhase {
     var x = 0.0
     var y = 0.0
     var zoom = 1.0
@@ -1018,7 +1015,7 @@ struct Contacts: View {
     let names = ["Ada", "Ben", "Cy", "Di"]
 
     var body: some View {
-        LayoutEngine(names) { name in
+        PhaseLayout(names, phase: $sheet) { name in
             Text(name)
         } placements: { room, sheet in
             names.indices.map { index in
@@ -1032,7 +1029,6 @@ struct Contacts: View {
                     size))
             }
         }
-        .phase($sheet)
         .axis(\.x, input: .scroll(.horizontal), range: 0...1, snaps: .every(1))
         .axis(\.y, input: .scroll(.vertical), range: 0...1, snaps: .every(1))
         .axis(\.zoom, input: .magnification, range: 0.5...1)
@@ -1055,13 +1051,12 @@ struct Arrangements: View {
     let names = ["Ada", "Ben", "Cy", "Di", "Eve"]
 
     var body: some View {
-        LayoutEngine(names) { name in
+        PhaseLayout(names, phase: $arrangement) { name in
             Text(name)
         } placements: { room, phase in
             // Asked at 0, 1 and 2 alone: a row, a column, a pile.
             [row(in: room), column(in: room), pile(in: room)][Int(phase)]
         }
-        .phase($arrangement)
         .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1), snaps: .every(1))
         .interpolation(.catmullRom)
         .height(300)
@@ -1106,7 +1101,7 @@ On an axis nothing bounds - inside a scroller - keep the answer bounded:
 placements that grow with the room grow the room, and the layout never
 settles.
 
-`LayoutEngine` has its own row in the
+`PhaseLayout` has its own row in the
 [Platform contract](../platform-contract.md); `GalleryView` behaves as far as
-the rows it uses - the layout engine and frame reporting - are checked
+the rows it uses - the phase layout and frame reporting - are checked
 there.

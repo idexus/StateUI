@@ -61,10 +61,6 @@ ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the relay's drag reports told
 ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
 ItemsView.dragText: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
 ItemsView.tapped: ✅
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumnSpan: ✅
-LayoutEngine.gridRowSpan: ✅
-LayoutEngine.pinchUpdated: ✓ pinch on LayoutEngine: the relay's report of the manipulation handed to the host, no touch sent
 Line.frameChanged: ✅
 Line.gridColumn: ✅
 Line.gridRow: ✅
@@ -85,6 +81,10 @@ Path.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by t
 Path.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Path.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Path.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+PhaseLayout.frameChanged: ✅
+PhaseLayout.gridColumnSpan: ✅
+PhaseLayout.gridRowSpan: ✅
+PhaseLayout.pinchUpdated: ✓ pinch on PhaseLayout: the relay's report of the manipulation handed to the host, no touch sent
 Picker.canDrag: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragEnded: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragStarting: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began

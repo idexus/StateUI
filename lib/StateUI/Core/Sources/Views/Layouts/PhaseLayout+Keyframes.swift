@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A layout's arithmetic asked at its axes' keyframes alone, the poses between them blended.
-// Design: docs/design/views/layout-engine.md#keyframes
+// Design: docs/design/views/phase-layout.md#keyframes
 
-extension LayoutEngine.Run {
+extension PhaseLayout.Run {
     /// Every view's pose at `phase` in `room`, the motion setting out from `from`: the arithmetic's answer where no
     /// axis has keyframes; else blended from its answers at the keyframes around the phase, each asked once.
-    /// Design: docs/design/views/layout-engine.md#keyframes
+    /// Design: docs/design/views/phase-layout.md#keyframes
     func pose(in room: Rect, at phase: Phase, from: Phase) -> [Placement] {
         // An axis of no length has one keyframe and no line to go on past it: asked where it stands.
         let keyed = hands.filter { ($0.knots?.count ?? 0) > 1 }
@@ -23,7 +23,7 @@ extension LayoutEngine.Run {
 
     /// The pose at `phase`, blended along `axes` one after another; on a keyframe of every one, the arithmetic's own.
     private func pose(
-        in room: Rect, at phase: Phase, from: Phase, blending axes: ArraySlice<LayoutEngine.Hand>
+        in room: Rect, at phase: Phase, from: Phase, blending axes: ArraySlice<PhaseLayout.Hand>
     ) -> [Placement] {
         guard let hand = axes.first else {
             return kept.pose(at: Self.lanes(of: phase)) { fitted(arithmetic(room, phase, from)) }
@@ -50,7 +50,7 @@ extension LayoutEngine.Run {
     }
 }
 
-extension LayoutEngine {
+extension PhaseLayout {
     /// The keyframes a curve reads around a place on an axis: the place - taken into one turn where the axis comes
     /// round - the keyframe before it among them, the keyframe it stands on, if one, and whether it is past an end
     /// of the range, where the end's straight line goes on.
@@ -63,11 +63,11 @@ extension LayoutEngine {
     }
 }
 
-extension LayoutEngine.Hand {
+extension PhaseLayout.Hand {
     /// The keyframes around `value` a curve reaching `reach` either side reads: across the seam, the next or last
     /// turn's, where the axis comes round; past an end, the end's two.
-    /// Design: docs/design/views/layout-engine.md#keyframes
-    func keyframes(around value: Double, reach: Int) -> LayoutEngine.KeyframesAround {
+    /// Design: docs/design/views/phase-layout.md#keyframes
+    func keyframes(around value: Double, reach: Int) -> PhaseLayout.KeyframesAround {
         guard let knots, knots.count > 1 else {
             return .init(knots: [], place: value, segment: 0, exact: value, beyond: false)
         }

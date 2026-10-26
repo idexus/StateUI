@@ -45,7 +45,6 @@ ItemsView.margin: ✅
 ItemsView.swipeDirection: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.swipeThreshold: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.swiped: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.panYChannel: ✓ pan on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Line.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Line.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
@@ -70,6 +69,7 @@ Path.pointerExited: ✓ hover on Path: handed to the host's recognizer or handle
 Path.pointerMoved: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.pointerPressed: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.pointerReleased: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.panYChannel: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.held: ✓ hold on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.frameChanged: ✅
 Polygon.horizontalAlignment: ✅

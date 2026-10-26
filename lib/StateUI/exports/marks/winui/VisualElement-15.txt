@@ -22,8 +22,6 @@ Image.ignoresInput: ✅
 Image.pivotY: ✅
 ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own tip, checked against the projection it laid on the element
 ItemsView.zIndex: ✅
-LayoutEngine.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-LayoutEngine.layoutDirection: ✅
 Line.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Link.isAccessibilityHidden: ✅
 Link.isVisible: ✅
@@ -34,6 +32,8 @@ Map.minimumWidth: 🧩
 Map.pivotX: 🧩
 Path.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Path.translationX: ✅
+PhaseLayout.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+PhaseLayout.layoutDirection: ✅
 Picker.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Polygon.hidesChildrenFromAccessibility: ✅
 Polygon.opacity: ✅

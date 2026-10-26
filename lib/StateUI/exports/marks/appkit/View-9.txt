@@ -47,10 +47,6 @@ ItemsView.pointerExited: ✓ hover on ItemsView: handed to the host's recognizer
 ItemsView.pointerMoved: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.pointerPressed: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.pointerReleased: ✓ hover on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.frameChanged: ✅
-LayoutEngine.horizontalAlignment: ✅
-LayoutEngine.pinchUpdated: ✓ pinch on LayoutEngine: handed to the host's recognizer or handler, no NSEvent sent
-LayoutEngine.verticalAlignment: ✅
 Line.tapped: ✓ pressDown on Line: handed to the host's recognizer or handler, no NSEvent sent
 Link.frameChanged: ✅
 Link.margin: ✅
@@ -68,6 +64,10 @@ Path.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop r
 Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
+PhaseLayout.frameChanged: ✅
+PhaseLayout.horizontalAlignment: ✅
+PhaseLayout.pinchUpdated: ✓ pinch on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
+PhaseLayout.verticalAlignment: ✅
 Picker.panTouchCount: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.panUpdated: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.panXChannel: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent

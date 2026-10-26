@@ -43,7 +43,7 @@ rounded corners; without it nothing is cut, the shape drawn all the same.
 
 ## A placed child
 
-An engine's placement run stands each child of a ZStack at a
+A phase layout's placement run stands each child of a ZStack at a
 rectangle of its own and draws it moved, turned, scaled and faded about its
 center, over whatever the child's own properties say. Android keeps one
 translation, rotation and scale per view, so the host layer composes the two

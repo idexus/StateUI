@@ -11,7 +11,7 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
     // listing: LayoutAxesSample
     /// THE PHASE: five strips, each an axis of its own - which card stands in
     /// the middle of the strip.
-    struct Strips: LayoutPhase {
+    struct Strips: AxesPhase {
         var free = 1.5
         var snapping = 1.0
         var limits = 0.0
@@ -65,12 +65,11 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
         let hand = LayoutInput.scroll(.horizontal)
 
         return Grid {
-            LayoutEngine(Self.parts) { part in
+            PhaseLayout(Self.parts, phase: $strips) { part in
                 view(part)
             } placements: { room, strips in
                 Self.parts.map { place($0, strips, room) }
             }
-            .phase($strips)
             // ...MOVES FIVE STRIPS, each resting its own way: anywhere between
             // its ends, coming back only from past one...
             .axis(\.free, input: hand, range: 0...3)

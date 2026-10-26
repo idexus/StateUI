@@ -27,11 +27,10 @@ final class LayoutApproachTests: XCTestCase {
     private func tree(_ phase: State<Double>, _ handed: Handed, _ motion: Motion = .eased(.milliseconds(320), .linear))
         -> Node
     {
-        LayoutEngine([1]) { Text("\($0)") } placements: { _, at in
+        PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             handed.phases.append(at)
             return [Placement(Rect(0, 0, 10, 10))]
         }
-        .phase(phase.projectedValue)
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
         .motion(motion)
         .node

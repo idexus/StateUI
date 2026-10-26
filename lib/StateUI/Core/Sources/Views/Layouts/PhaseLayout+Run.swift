@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What a layout engine's body hands its engine and its handlers: the arithmetic run on the host's frames, and the
+// What a phase layout's body hands its engine and its handlers: the arithmetic run on the host's frames, and the
 // hands that move the phase and throw it on to where it rests.
-// Design: docs/design/views/layout-engine.md#the-hand
+// Design: docs/design/views/phase-layout.md#the-hand
 
 import StateUIFoundation
 
-extension LayoutEngine {
+extension PhaseLayout {
     /// One axis the hand or the fingers move: its place in the phase's `axes`, by which the hand's hold, its throw
     /// and its grip are kept, the axis, what moves it and how a throw goes on, the ends of its range, where on it the
     /// run may come to rest, lowest first - none for anywhere in the range - how far one turn takes it where it
@@ -75,7 +75,7 @@ extension LayoutEngine {
 
         /// The law the run moves under: its own, or - `.inherited` - the application's, as a host's channel answers
         /// it, so a change and a program's write of the phase travel alike.
-        /// Design: docs/design/views/layout-engine.md#a-change-at-the-current-phase
+        /// Design: docs/design/views/phase-layout.md#a-change-at-the-current-phase
         var resolvedLaw: Motion { law.resolved(against: StandardEnvironment.application.motion) }
 
         /// The run working on `hand`'s axis.
@@ -153,7 +153,7 @@ extension LayoutEngine {
         }
 
         /// The phase as it stands this frame: where the host walks it, each hand's axis where that hand holds it.
-        /// Design: docs/design/views/layout-engine.md#the-phase
+        /// Design: docs/design/views/phase-layout.md#the-phase
         func live() -> Phase {
             holding(phase.journey.walked) ?? phase.journey.value
         }
@@ -191,7 +191,7 @@ extension LayoutEngine {
 
         /// Where the axis in focus comes to rest from `value` once let go: the snap nearest - a turn on or back where
         /// it comes round - or, with none, `value` itself, inside the range of an axis that does not come round.
-        /// Design: docs/design/views/layout-engine.md#coming-to-rest
+        /// Design: docs/design/views/phase-layout.md#coming-to-rest
         func resting(at value: Double) -> Double {
             guard stops.isEmpty else { return nearest(value) }
 
@@ -230,7 +230,7 @@ extension LayoutEngine {
 
         /// Places every view where the arithmetic says - a throw under way carried on to `now` first, a change of
         /// the description on its way from where each view was shown - again next frame while either goes on.
-        /// Design: docs/design/views/layout-engine.md#the-run
+        /// Design: docs/design/views/phase-layout.md#the-run
         func place(at now: Double, reducesMotion: Bool) -> EngineAnswer {
             let flying = hands.reduce(false) { flying, hand in
                 on(hand).fly(at: now, reducesMotion: reducesMotion) || flying
@@ -260,7 +260,7 @@ extension LayoutEngine {
         /// Where the run's motion set out, the run standing at `phase`: there, where nothing moves it - no hand, no
         /// throw, the phase where it is going - and kept while something does, until it passes a target on the
         /// hand's axis: the motion sets out from the last it passed, either way.
-        /// Design: docs/design/views/layout-engine.md#where-a-motion-set-out
+        /// Design: docs/design/views/phase-layout.md#where-a-motion-set-out
         func setOut(at phase: Phase) -> Phase {
             let journey = self.phase.journey
             let resting = states.held.wrappedValue.isEmpty && states.flung.wrappedValue.isEmpty
@@ -290,7 +290,7 @@ extension LayoutEngine {
         /// The throw or the approach under way carried on to `now`: the hand's axis held where its motion has
         /// brought it, and let go once on the target - at once for an approach under less motion. A destination
         /// written meanwhile is the program's, and ends it. Whether it goes on.
-        /// Design: docs/design/views/layout-engine.md#a-throw
+        /// Design: docs/design/views/phase-layout.md#a-throw
         func fly(at now: Double, reducesMotion: Bool) -> Bool {
             guard var fling = flung else { return false }
 
@@ -326,7 +326,7 @@ extension LayoutEngine {
         /// holder lets input through to the layout.
         func wrapped(_ slot: Slot) -> AnyView {
             // With no shade and no tap, the holder is a view of its own: a new order carries every one.
-            // Design: docs/design/views/layout-engine.md#a-view-in-its-holder
+            // Design: docs/design/views/phase-layout.md#a-view-in-its-holder
             if mask == nil, tapped == nil { return AnyView(node: holder(slot.item)) }
 
             let holder = Grid { BuiltViews(nodes: [make(slot.item)] + (mask.map { [$0] } ?? [])) }
@@ -345,7 +345,7 @@ extension LayoutEngine {
         func fitted(_ answered: [Placement]) -> [Placement] {
             guard answered.count != items.count else { return answered }
 
-            complain("A LayoutEngine's placements answered \(answered.count) placements for \(items.count) views. "
+            complain("A PhaseLayout's placements answered \(answered.count) placements for \(items.count) views. "
                 + "One placement a view, in the items' order: the rest stand at the top left, the extra go.")
 
             let missing = max(items.count - answered.count, 0)
@@ -356,7 +356,7 @@ extension LayoutEngine {
 
         /// The hand over the element, along the layout or - a pan - every way: each axis it moves goes with it, and
         /// let go they go on together, each with its part of the speed.
-        /// Design: docs/design/views/layout-engine.md#a-pan
+        /// Design: docs/design/views/phase-layout.md#a-pan
         func handMoved(_ gesture: GesturePhase, moved: Point, speed: Point) {
             let runs = hands.filter { $0.way != nil }.map(on)
 
@@ -375,7 +375,7 @@ extension LayoutEngine {
 
         /// The hand over the element on the axis in focus: it takes the run where it is shown, and moves the axis
         /// with it.
-        /// Design: docs/design/views/layout-engine.md#the-hand
+        /// Design: docs/design/views/phase-layout.md#the-hand
         func hand(_ gesture: GesturePhase, moved: Point) {
             switch gesture {
             case .began:
@@ -437,7 +437,7 @@ extension LayoutEngine {
         /// The axes `lettings` holds let go at once: each named where it comes to rest, then each going on there
         /// from where the hand left it. No journey of the phase: one would send the host walking an axis the hand
         /// held, which nothing named while it held it, from where the host last had it.
-        /// Design: docs/design/views/layout-engine.md#coming-onto-a-target
+        /// Design: docs/design/views/phase-layout.md#coming-onto-a-target
         func letGo(together lettings: [(run: Run, letting: Letting)]) {
             let rests = lettings.map { $0.run.rest(of: $0.letting) }
             for ((run, _), rest) in zip(lettings, rests) {
@@ -452,7 +452,7 @@ extension LayoutEngine {
         /// motion moves a unit; with no snaps, on to where its throw ends, always as the input throws; let go still,
         /// thrown back or slower than that, it approaches the target under that motion over as much of its length
         /// as the way left is of a unit.
-        /// Design: docs/design/views/layout-engine.md#coming-onto-a-target
+        /// Design: docs/design/views/phase-layout.md#coming-onto-a-target
         func goOn(_ letting: Letting, to value: Double) {
             let along = toHand(value)
             let left = along - letting.point
@@ -486,7 +486,7 @@ extension LayoutEngine {
         /// Two fingers over the element, a pinch and a rotation as one: each axis they move goes by its own input - a
         /// magnification by how far they spread, a rotation by how far they turned - and let go, they go on together
         /// to where each would end. A view held by itself keeps the hand.
-        /// Design: docs/design/views/layout-engine.md#two-fingers
+        /// Design: docs/design/views/phase-layout.md#two-fingers
         func pinch(_ gesture: GesturePhase, scale: Double, degrees: Double, speed: Point) {
             guard states.item.wrappedValue == nil else { return }
 
@@ -550,7 +550,7 @@ extension LayoutEngine {
         /// room's length, or as far as the view drawn in front of those the phase moves - the highest, then the one
         /// nearest the middle - goes for one unit there, so the hand carries it with it. A run with nothing moving
         /// takes a room's length a unit; one whose room is not measured yet, none.
-        /// Design: docs/design/views/layout-engine.md#the-hand
+        /// Design: docs/design/views/phase-layout.md#the-hand
         func unit(at value: Double) -> Double? {
             switch travel {
             case .points(let points):
@@ -603,7 +603,7 @@ extension LayoutEngine {
         /// journey's end - to the snap as many on as the notches turned, or, with none, as far as a hand going a
         /// notch's travel for each moves it, under the layout's motion. A swipe's go one snap from where the run
         /// rests, and wait while it goes. A hand holding the run keeps it.
-        /// Design: docs/design/views/layout-engine.md#a-wheels-notch
+        /// Design: docs/design/views/phase-layout.md#a-wheels-notch
         func step(_ notches: Point) {
             let count = Int((-(across ? notches.x : notches.y)).rounded())
             guard count != 0 else { return }
@@ -672,7 +672,7 @@ extension LayoutEngine {
 
         /// How far a swiping hand moves the run on its axis: from the target before the one it took it at to the
         /// one after; nil for a scroll.
-        /// Design: docs/design/views/layout-engine.md#a-swipe
+        /// Design: docs/design/views/phase-layout.md#a-swipe
         var reach: ClosedRange<Double>? {
             guard swipes, let grip else { return nil }
 
@@ -681,7 +681,7 @@ extension LayoutEngine {
 
         /// Where a swipe let go at `held` comes to rest: thrown, the next of its reach's targets that way - where it
         /// took the run or the one beyond; let go still, the nearest of them. Nil for a scroll.
-        /// Design: docs/design/views/layout-engine.md#a-swipe
+        /// Design: docs/design/views/phase-layout.md#a-swipe
         func swiped(from held: Double, thrown: Double) -> Double? {
             guard let reach, let grip else { return nil }
 

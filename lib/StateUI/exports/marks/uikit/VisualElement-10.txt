@@ -17,13 +17,13 @@ HStack.accessibilityValue: ✅
 Image.isVisible: ✅
 Image.rotation: ✓ read rotation of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
-LayoutEngine.pivotX: ✓ read pivotX of LayoutEngine: the host's own transform, checked against the layer it composed itself
 Line.accessibilityLabel: ✅
 Link.opacity: ✅
 Link.rotationX: ✓ read rotationX of Link: the host's own transform, checked against the layer it composed itself
 Map.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Path.opacity: ✅
 Path.rotationX: ✓ read rotationX of Path: the host's own transform, checked against the layer it composed itself
+PhaseLayout.pivotX: ✓ read pivotX of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.tooltip: – UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.
 Polygon.isEnabled: ✓ tap on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polygon.zIndex: ✅

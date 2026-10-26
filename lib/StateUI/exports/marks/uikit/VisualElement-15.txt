@@ -18,15 +18,15 @@ HStack.isAccessibilityHidden: ✅
 Image.ignoresInput: ✅
 Image.scaleY: ✓ read scaleY of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
-LayoutEngine.height: ✅
-LayoutEngine.scale: ✓ read scale of LayoutEngine: the host's own transform, checked against the layer it composed itself
-LayoutEngine.width: ✅
 Line.accessibilityAdjusted: ✅
 Link.frame: ✅
 Link.translationX: ✓ read translationX of Link: the host's own transform, checked against the layer it composed itself
 Map.pivotX: ✓ read pivotX of Map: the host's own transform, checked against the layer it composed itself
 Path.frame: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform, checked against the layer it composed itself
+PhaseLayout.height: ✅
+PhaseLayout.scale: ✓ read scale of PhaseLayout: the host's own transform, checked against the layer it composed itself
+PhaseLayout.width: ✅
 Picker.layoutDirection: ✅
 Polygon.accessibilityValue: ✅
 Polyline.maximumHeight: ✅

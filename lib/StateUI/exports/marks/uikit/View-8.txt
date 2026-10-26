@@ -44,11 +44,6 @@ ItemsView.frameChanged: ✅
 ItemsView.horizontalAlignment: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.verticalAlignment: ✅
-LayoutEngine.frameChanged: ✅
-LayoutEngine.margin: ✅
-LayoutEngine.swipeDirection: ✓ pan on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.swipeThreshold: ✓ pan on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.swiped: ✓ pan on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
 Line.droppedFileTypes: ✓ dropFiles on Line: the drop interaction's handler told the driver's files, no drag session
 Line.filesDropped: ✓ dropFiles on Line: the drop interaction's handler told the driver's files, no drag session
 Line.tapCount: ✓ tap on Line: the view's listening handed the recognizer's states, no touch sent
@@ -68,6 +63,11 @@ Path.dragText: ✓ dragAndDrop on Path: the drag and drop interactions' handlers
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
+PhaseLayout.frameChanged: ✅
+PhaseLayout.margin: ✅
+PhaseLayout.swipeDirection: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.swipeThreshold: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.swiped: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.holdDuration: ✅
 Polygon.area: ✅
 Polygon.frameChanged: ✅

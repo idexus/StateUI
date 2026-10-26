@@ -47,13 +47,6 @@ ItemsView.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' ha
 ItemsView.frameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
-LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the drag and drop interactions' handlers called, no drag session
-LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the drag and drop interactions' handlers called, no drag session
-LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the drag and drop interactions' handlers called, no drag session
-LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the drag and drop interactions' handlers called, no drag session
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumn: ✅
-LayoutEngine.gridRow: ✅
 Line.holdDuration: ✅
 Link.area: ✅
 Link.frameChanged: ✅
@@ -64,6 +57,13 @@ Link.pointerPressed: ✓ hover on Link: the view's listening handed the recogniz
 Link.pointerReleased: ✓ hover on Link: the view's listening handed the recognizer's states, no touch sent
 Map.held: ✓ hold on Map: the view's listening handed the recognizer's states, no touch sent
 Path.tapped: ✓ pressDown on Path: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.canDrag: ✓ dragAndDrop on PhaseLayout: the drag and drop interactions' handlers called, no drag session
+PhaseLayout.dragEnded: ✓ dragAndDrop on PhaseLayout: the drag and drop interactions' handlers called, no drag session
+PhaseLayout.dragStarting: ✓ dragAndDrop on PhaseLayout: the drag and drop interactions' handlers called, no drag session
+PhaseLayout.dragText: ✓ dragAndDrop on PhaseLayout: the drag and drop interactions' handlers called, no drag session
+PhaseLayout.frameChanged: ✅
+PhaseLayout.gridColumn: ✅
+PhaseLayout.gridRow: ✅
 Picker.frameChanged: ✅
 Picker.margin: ✅
 Picker.swipeDirection: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent

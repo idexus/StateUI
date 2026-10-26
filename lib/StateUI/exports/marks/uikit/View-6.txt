@@ -41,9 +41,6 @@ Image.filesDropped: ✓ dropFiles on Image: the drop interaction's handler told 
 Image.tapCount: ✓ tap on Image: the view's listening handed the recognizer's states, no touch sent
 Image.tapped: ✓ tap on Image: the view's listening handed the recognizer's states, no touch sent
 ItemsView.panYChannel: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.panTouchCount: ✓ pan on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.panUpdated: ✓ pan on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.panXChannel: ✓ pan on LayoutEngine: the view's listening handed the recognizer's states, no touch sent
 Line.canDrag: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
 Line.dragEnded: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
 Line.dragStarting: ✓ dragAndDrop on Line: the drag and drop interactions' handlers called, no drag session
@@ -63,6 +60,9 @@ Path.frameChanged: ✅
 Path.horizontalAlignment: ✅
 Path.pinchUpdated: ✓ pinch on Path: the view's listening handed the recognizer's states, no touch sent
 Path.verticalAlignment: ✅
+PhaseLayout.panTouchCount: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.panUpdated: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.panXChannel: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.tapped: ✓ pressDown on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.frameChanged: ✅
 Polygon.margin: ✅

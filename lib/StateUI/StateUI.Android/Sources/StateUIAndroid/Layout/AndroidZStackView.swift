@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
+/// A ZStack: its children one over another, each in its area, or where a phase layout's placements put it.
 /// Design: docs/design/platforms/android/drawing.md#a-placed-child
 @MainActor
 final class AndroidZStackView: AndroidTravelingLayout {
@@ -28,8 +28,8 @@ final class AndroidZStackView: AndroidTravelingLayout {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
-    /// Whether the ZStack stands a layout engine, which has no size of its own.
-    var engine = false
+    /// Whether the ZStack stands a phase layout, which has no size of its own.
+    var phaseLayout = false
 
     @discardableResult
     override func setItems(_ items: [AndroidLayoutItem]) -> Bool {
@@ -38,7 +38,7 @@ final class AndroidZStackView: AndroidTravelingLayout {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width, engine: engine)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, phaseLayout: phaseLayout)
     }
 
     override func arrange(in bounds: Rect) {

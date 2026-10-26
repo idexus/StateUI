@@ -22,8 +22,6 @@ HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass
 Image.tooltip: ✅
 ItemsView.hidesChildrenFromAccessibility: ✅
 ItemsView.opacity: ✅
-LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own tip, checked against the projection it laid on the element
-LayoutEngine.zIndex: ✅
 Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
 Line.zIndex: ✅
 Link.accessibilityHint: ✅
@@ -31,6 +29,8 @@ Link.scaleY: ✅
 Map.accessibilityAdjusted: 🧩
 Path.ignoresInput: ✅
 Path.pivotY: ✅
+PhaseLayout.rotationY: ✓ read rotationY of PhaseLayout: the host's own tip, checked against the projection it laid on the element
+PhaseLayout.zIndex: ✅
 Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
 Picker.zIndex: ✅
 Polygon.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.

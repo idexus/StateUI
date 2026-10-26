@@ -10,7 +10,7 @@ struct LightTableSample: SampleContent, ExampleContent {
     // listing: LightTableSample
     /// THE PHASE: which photo the table is centered on, across and down, how
     /// near it stands, and how far the photos are turned - a turn a unit.
-    struct Table: LayoutPhase {
+    struct Table: AxesPhase {
         var x = 1.0
         var y = 1.0
         var zoom = 0.45
@@ -74,14 +74,13 @@ struct LightTableSample: SampleContent, ExampleContent {
 
     /// The photos, placed from every axis of the table.
     private var photosOnTheTable: some View {
-        LayoutEngine(Self.photos) { photo in
+        PhaseLayout(Self.photos, phase: $table) { photo in
             ZStack { Image(ImageSource(photo)).contentMode(.fill) }
                 .shape(.roundedRectangle(12))
                 .clipsContent(true)
         } placements: { room, table in
             Self.photos.indices.map { place($0, table, room) }
         }
-        .phase($table)
         // ONE FINGER OR TWO MOVE THE TABLE every way - one axis scrolled
         // across, one down - resting on a photo, or, not snapping, anywhere...
         .axis(\.x, input: .scroll(.horizontal), range: 0...2, snaps: snaps ? .every(1) : nil)

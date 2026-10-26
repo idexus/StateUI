@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// Where every view of a layout engine goes: one placement per view, in the
+/// Where every view of a phase layout goes: one placement per view, in the
 /// order the views stand in, as an engine writes it on the host's frames.
 ///
 /// It lands as written: what travels is the phase the placements are worked

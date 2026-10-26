@@ -117,16 +117,16 @@ enum GTKRealization {
         .complete(VisualElementContract.background, on: ZStackContract.self),
         .complete(VisualElementContract.background, on: FillContract.self),
         .complete(VisualElementContract.background, on: SpaceContract.self),
-        .complete(VisualElementContract.background, on: LayoutEngineContract.self),
-        .complete(LayoutEngineContract.handAxis),
-        .complete(LayoutEngineContract.handMoved),
-        .complete(LayoutEngineContract.handStepped),
-        .complete(LayoutEngineContract.itemDrag),
-        .complete(LayoutEngineContract.itemMoved),
-        .complete(LayoutEngineContract.magnifies),
-        .complete(LayoutEngineContract.pans),
-        .complete(LayoutEngineContract.rotates),
-        .complete(LayoutEngineContract.pinchMoved),
+        .complete(VisualElementContract.background, on: PhaseLayoutContract.self),
+        .complete(PhaseLayoutContract.handAxis),
+        .complete(PhaseLayoutContract.handMoved),
+        .complete(PhaseLayoutContract.handStepped),
+        .complete(PhaseLayoutContract.itemDrag),
+        .complete(PhaseLayoutContract.itemMoved),
+        .complete(PhaseLayoutContract.magnifies),
+        .complete(PhaseLayoutContract.pans),
+        .complete(PhaseLayoutContract.rotates),
+        .complete(PhaseLayoutContract.pinchMoved),
         .partial(DatePickerContract.format,
             missing: "GTK writes the long and the short day in the user's own way, and the medium as the short."),
         .partial(DatePickerContract.maximumDate,
@@ -245,7 +245,7 @@ enum GTKRealization {
         .complete(WindowContract.windowValue),
         .notPlanned(WindowContract.x, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
         .notPlanned(WindowContract.y, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
-    ] + HostRecord.layoutEngine
+    ] + HostRecord.phaseLayout
 
     /// What GTK's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {

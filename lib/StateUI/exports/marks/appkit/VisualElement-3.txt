@@ -15,13 +15,13 @@ HStack.frame: ✅
 HStack.translationX: ✓ read translationX of HStack: the host's own transform, checked against the layer it composed itself
 Image.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level
 ItemsView.zIndex: ✅
-LayoutEngine.accessibilityAdjusted: ✅
 Line.height: ✅
 Line.scale: ✓ read scale of Line: the host's own transform, checked against the layer it composed itself
 Line.width: ✅
 Link.isAccessibilityHidden: ✅
 Map.accessibilityLabel: ✅
 Path.isAccessibilityHidden: ✅
+PhaseLayout.accessibilityAdjusted: ✅
 Picker.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Polygon.opacity: ✅
 Polygon.rotationX: ✓ read rotationX of Polygon: the host's own transform, checked against the layer it composed itself

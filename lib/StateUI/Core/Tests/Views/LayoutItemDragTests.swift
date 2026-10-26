@@ -5,7 +5,7 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
-/// One view of a layout engine taken by the hand by itself: the view drawn on top under the press, kept to the hand
+/// One view of a phase layout taken by the hand by itself: the view drawn on top under the press, kept to the hand
 /// over the others whatever its place becomes, let go back to its place under the layout's motion, or - past a
 /// dismissal - flown on out of the room and its item told.
 @MainActor
@@ -34,7 +34,7 @@ final class LayoutItemDragTests: XCTestCase {
             "B": Placement(Rect(50, 0, 100, 100), zIndex: 1),
             "C": Placement(Rect(200, 0, 50, 50), transform: .rotate(45)),
         ]
-        let engine = LayoutEngine(names) { Text($0) } placements: { _, _ in
+        let layout = PhaseLayout(names, phase: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
             names.enumerated().map { index, name in
                 order == nil ? places[name] ?? Placement(.zero) : Placement(Rect(Double(index) * 60, 120, 50, 50))
             }
@@ -44,12 +44,12 @@ final class LayoutItemDragTests: XCTestCase {
         .motion(motion)
         if awaiting {
             // A dismissal that awaits, past any test's end: another while it runs is ignored.
-            return engine.onItemDismissed(.up, beyond: 50, policy: .ignoreWhileRunning) { name in
+            return layout.onItemDismissed(.up, beyond: 50, policy: .ignoreWhileRunning) { name in
                 told.dismissed.append(name)
                 try await Task.sleep(for: .seconds(60))
             }.node
         }
-        return (dismissing ? engine.onItemDismissed(.up, beyond: 50) { told.dismissed.append($0) } : engine).node
+        return (dismissing ? layout.onItemDismissed(.up, beyond: 50) { told.dismissed.append($0) } : layout).node
     }
 
     /// The run shown now.
@@ -185,10 +185,10 @@ final class LayoutItemDragTests: XCTestCase {
     /// and it stays under the hand; the application is told as the hand takes it and as it lets it go.
     func testAHeldViewWearsItsPlacesLookWhereTheHandHoldsIt() {
         let told = Told()
-        let lift = State(wrappedValue: 1.0)
+        let (lift, turn) = (State(wrappedValue: 1.0), State(wrappedValue: 0.0))
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine(["A", "B"]) { Text($0) } placements: { _, _ in
+            PhaseLayout(["A", "B"], phase: turn.projectedValue) { Text($0) } placements: { _, _ in
                 [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), transform: .scale(lift.wrappedValue))]
             }
             .itemDrag(begins: .held)
@@ -226,9 +226,9 @@ final class LayoutItemDragTests: XCTestCase {
     /// THE LAYOUT SAYS HOW THE HAND TAKES ONE OF ITS VIEWS, and hears that hand; one that says nothing hears none.
     func testTheLayoutSaysHowTheHandTakesOneOfItsViews() {
         let renders = Renders()
-        let taking = renders.render(cards(Told())).first(.layoutEngine)
-        let plain = Renders().render(LayoutEngine(["A"]) { Text($0) } placements: { _, _ in [Placement(.zero)] }.node)
-            .first(.layoutEngine)
+        let taking = renders.render(cards(Told())).first(.phaseLayout)
+        let plain = Renders().render(PhaseLayout(["A"], phase: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [Placement(.zero)] }.node)
+            .first(.phaseLayout)
 
         XCTAssertEqual(taking?.props[.itemDrag], ItemDragStart.held.propValue)
         XCTAssertNotNil(taking?.events?[.itemMoved])

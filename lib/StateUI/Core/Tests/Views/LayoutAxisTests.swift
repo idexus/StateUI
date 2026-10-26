@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A layout engine's axis declared whole: its range, where it rests, whether it comes round, and the input that moves
+// A phase layout's axis declared whole: its range, where it rests, whether it comes round, and the input that moves
 // it - one an axis, one input to several.
 
 import XCTest
@@ -10,7 +10,7 @@ import XCTest
 
 /// A table panned across with a sky behind it moving slower, how near it stands and how far it is turned - and a note
 /// that is no axis.
-private struct Table: LayoutPhase {
+private struct Table: AxesPhase {
     var x = 0.0
     var sky = 0.0
     var zoom = 1.0
@@ -37,15 +37,14 @@ final class LayoutAxisTests: XCTestCase {
     /// A layout of one view over `table`, traveling under `motion`, its axes as `declared` says.
     private func tree(
         _ table: State<Table>, _ handed: Handed, motion: Motion = .eased(.milliseconds(160), .linear),
-        _ declared: @escaping (LayoutEngine<[Int], Int, Table>) -> LayoutEngine<[Int], Int, Table>
+        _ declared: @escaping (PhaseLayout<[Int], Int, Table>) -> PhaseLayout<[Int], Int, Table>
     ) -> () -> Node {
         {
             declared(
-                LayoutEngine([0]) { Text("\($0)") } placements: { _, table in
+                PhaseLayout([0], phase: table.projectedValue) { Text("\($0)") } placements: { _, table in
                     handed.tables.append(table)
                     return [Placement(Rect(0, 0, 40, 40))]
                 }
-                .phase(table.projectedValue)
                 .motion(motion)
             )
             .node
@@ -126,7 +125,7 @@ final class LayoutAxisTests: XCTestCase {
             $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3)
                 .axis(\.turn, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...3)
         }
-        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.phaseLayout)?.driven?[.phase]?.state)
 
         // Across, and a little down: thrown across, let go still down.
         bench.hand(renders, built, .began)
@@ -244,7 +243,7 @@ final class LayoutAxisTests: XCTestCase {
             $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
                 .axis(\.sky, input: .scroll(.horizontal, pointsPerUnit: 200), range: 0...3)
         }
-        let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.layoutEngine))
+        let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.phaseLayout))
         XCTAssertEqual(layout.properties[.handAxis], .enumeration(LayoutInput.Axis.horizontal.rawValue))
         XCTAssertNil(layout.properties[.pans])
 
@@ -288,7 +287,7 @@ final class LayoutAxisTests: XCTestCase {
             $0.axis(\.note, input: .scroll(.horizontal), range: 0...1)
         }())
 
-        XCTAssertNil(try XCTUnwrap(patch.first(.layoutEngine)).events?[.handMoved])
+        XCTAssertNil(try XCTUnwrap(patch.first(.phaseLayout)).events?[.handMoved])
         XCTAssertTrue(hasComplained("an axis its phase's `axes` does not list"))
     }
 
@@ -297,7 +296,7 @@ final class LayoutAxisTests: XCTestCase {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
         let patch = Renders().render(tree(table, handed) { $0.axis(\.zoom, input: .magnification, range: 0...2) }())
 
-        XCTAssertNil(try XCTUnwrap(patch.first(.layoutEngine)).properties[.magnifies])
+        XCTAssertNil(try XCTUnwrap(patch.first(.phaseLayout)).properties[.magnifies])
         XCTAssertTrue(hasComplained("a range reaching nought"))
     }
 

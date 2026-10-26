@@ -5,7 +5,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 
-/// The hand over a layout engine, read alike on every host: a press dragged or a trackpad's fingers reported as they
+/// The hand over a phase layout, read alike on every host: a press dragged or a trackpad's fingers reported as they
 /// move, a wheel's notches with no lift, and the speed at the lift where the platform tells none.
 final class HandReadingTests: XCTestCase {
     /// A HAND IS REPORTED AS IT MOVES: its beginning, each move, and its lift with the speed the platform told.

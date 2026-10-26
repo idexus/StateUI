@@ -53,12 +53,11 @@ struct AppSwitcherSample: SampleContent, ExampleContent {
 
         return Grid {
             Grid {
-                LayoutEngine(running, id: \.name) { app in
+                PhaseLayout(running, id: \.name, phase: $turn) { app in
                     AppCard(app: app, index: running.firstIndex(of: app) ?? 0, turn: $turn)
                 } placements: { room, turn in
                     (0..<count).map { place($0, turn, room) }
                 }
-                .phase($turn)
                 // Thrown as the gallery's home turns its cards: a spring that
                 // carries the hand on and settles.
                 .axis(

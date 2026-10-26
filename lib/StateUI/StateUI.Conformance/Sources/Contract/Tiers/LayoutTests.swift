@@ -119,7 +119,7 @@ enum Holding {
         case "Grid": dressing.dress(Grid { held })
         case "HStack": dressing.dress(HStack { held })
         case "ZStack": dressing.dress(ZStack { held })
-        case "LayoutEngine": dressing.dress(AnyView(Specimens.engine(holding: held)))
+        case "PhaseLayout": dressing.dress(AnyView(Specimens.phaseLayout(holding: held)))
         default: dressing.dress(VStack { held })
         }
         return AnyView(layout)

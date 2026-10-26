@@ -195,9 +195,9 @@ natural size is the room its neediest child needs at its natural size: a
 rectangle in points to its far corner, a fraction as much as leaves the child
 its natural size in its share, and anything else its size and margins.
 
-## A layout engine
+## A phase layout
 
-A layout engine has no size of its own: it takes the room its layout gives
+A phase layout has no size of its own: it takes the room its layout gives
 it, whatever its views need, as a shape does - its padding and nothing more.
 Its views stand where arithmetic of that room puts them, so a size taken
 from them, as a ZStack takes its children's, would feed the very room the
@@ -226,7 +226,7 @@ the same on both axes, which is what a run draws.
 
 ## Drawing order
 
-A grid's, a ZStack's and a layout engine's children can overlap, so their
+A grid's, a ZStack's and a phase layout's children can overlap, so their
 order is the order they are drawn in: by `zIndex`, lower first, and children of the same
 `zIndex` in the order the view wrote them. The mounted element keeps
 `children` in that order and remembers the order written, so a sparse change

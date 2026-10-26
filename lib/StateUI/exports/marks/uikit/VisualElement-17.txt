@@ -17,14 +17,14 @@ HStack.background: ☑️ UIKit's glass is shaped by its corners alone: an oval 
 Image.style: ✅
 Image.translationY: ✓ read translationY of Image: the host's own transform, checked against the layer it composed itself
 ItemsView.pivotX: ✓ read pivotX of ItemsView: the host's own transform, checked against the layer it composed itself
-LayoutEngine.ignoresInput: ✅
-LayoutEngine.scaleY: ✓ read scaleY of LayoutEngine: the host's own transform, checked against the layer it composed itself
 Line.accessibilityHeading: does not apply - read a heading's level - UIKit marks a heading, not its level
 Link.zIndex: ✅
 Map.isVisible: ✅
 Map.rotation: ✓ read rotation of Map: the host's own transform, checked against the layer it composed itself
 Path.isEnabled: ✓ tap on Path: the view's listening handed the recognizer's states, no touch sent
 Path.zIndex: ✅
+PhaseLayout.ignoresInput: ✅
+PhaseLayout.scaleY: ✓ read scaleY of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.pivotY: ✓ read pivotY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.accessibilityAdjusted: ✅
 Polyline.frame: ✅

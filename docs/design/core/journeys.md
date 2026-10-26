@@ -143,7 +143,7 @@ say the value and its speed moved, and the host would start over from them
 
 ## One part at once
 
-A layout engine names the target its hand passes on one axis of its phase,
+A phase layout names the target its hand passes on one axis of its phase,
 which another hand or the program may be moving: `Journey.snap(_:to:)`, the
 library's own, puts one part of the value - a key path to one of its numbers -
 where it is at once, as `snap(to:)` does the whole. Its lanes of value,

@@ -18,8 +18,6 @@ Image.height: ✅
 Image.scale: ✓ read scale of Image: the host's own transform, checked against the layer it composed itself
 Image.width: ✅
 ItemsView.isAccessibilityHidden: ✅
-LayoutEngine.opacity: ✅
-LayoutEngine.rotationX: ✓ read rotationX of LayoutEngine: the host's own transform, checked against the layer it composed itself
 Line.accessibilityValue: ✅
 Link.maximumHeight: ✅
 Link.maximumWidth: ✅
@@ -32,6 +30,8 @@ Path.maximumWidth: ✅
 Path.minimumHeight: ✅
 Path.minimumWidth: ✅
 Path.scaleX: ✓ read scaleX of Path: the host's own transform, checked against the layer it composed itself
+PhaseLayout.opacity: ✅
+PhaseLayout.rotationX: ✓ read rotationX of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.hidesChildrenFromAccessibility: ✅
 Polygon.accessibilityHint: ✅
 Polyline.isEnabled: ✅

@@ -188,16 +188,16 @@ enum AndroidRealization {
             reason: "Any Android window may be put away: an activity keeps none from it."),
         .partial(WindowContract.background,
             missing: "An activity is opaque by the theme it starts in: a blur or glass shows its color."),
-        .complete(LayoutEngineContract.handAxis),
-        .complete(LayoutEngineContract.handMoved),
-        .complete(LayoutEngineContract.handStepped),
-        .complete(LayoutEngineContract.itemDrag),
-        .complete(LayoutEngineContract.itemMoved),
-        .complete(LayoutEngineContract.magnifies),
-        .complete(LayoutEngineContract.pans),
-        .complete(LayoutEngineContract.rotates),
-        .complete(LayoutEngineContract.pinchMoved),
-    ] + windowRoom + HostRecord.layoutEngine
+        .complete(PhaseLayoutContract.handAxis),
+        .complete(PhaseLayoutContract.handMoved),
+        .complete(PhaseLayoutContract.handStepped),
+        .complete(PhaseLayoutContract.itemDrag),
+        .complete(PhaseLayoutContract.itemMoved),
+        .complete(PhaseLayoutContract.magnifies),
+        .complete(PhaseLayoutContract.pans),
+        .complete(PhaseLayoutContract.rotates),
+        .complete(PhaseLayoutContract.pinchMoved),
+    ] + windowRoom + HostRecord.phaseLayout
 
     /// What Android leaves out of a blur.
     private static let ownPress = "The control takes its own press - a drawing, a scroll, a thumb, its buttons: "

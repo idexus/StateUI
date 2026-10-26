@@ -76,13 +76,12 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
 
     /// The cards: one arithmetic, asked at the keyframes alone.
     private var cards: some View {
-        LayoutEngine(Self.cards, id: \.name) { card in
+        PhaseLayout(Self.cards, id: \.name, phase: $arrangement) { card in
             face(card)
         } placements: { room, phase in
             // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
             [ring(room), grid(room), pile(room)][Int(phase)]
         }
-        .phase($arrangement)
         // THE HAND MOVES THROUGH THE THREE, resting on each.
         .axis(
             \.self, input: .scroll(.horizontal, pointsPerUnit: 260), range: 0...2, keyframes: .every(1),

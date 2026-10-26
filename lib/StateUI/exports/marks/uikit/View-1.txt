@@ -44,13 +44,6 @@ ItemsView.droppedFileTypes: ✓ dropFiles on ItemsView: the drop interaction's h
 ItemsView.filesDropped: ✓ dropFiles on ItemsView: the drop interaction's handler told the driver's files, no drag session
 ItemsView.tapCount: ✓ tap on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.tapped: ✓ tap on ItemsView: the view's listening handed the recognizer's states, no touch sent
-LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumnSpan: ✅
-LayoutEngine.gridRowSpan: ✅
 Line.panTouchCount: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.panUpdated: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
 Line.panXChannel: ✓ pan on Line: the view's listening handed the recognizer's states, no touch sent
@@ -63,6 +56,13 @@ Link.gridColumn: ✅
 Link.gridRow: ✅
 Map.holdDuration: ✅
 Path.held: ✓ hold on Path: the view's listening handed the recognizer's states, no touch sent
+PhaseLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+PhaseLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+PhaseLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+PhaseLayout.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+PhaseLayout.frameChanged: ✅
+PhaseLayout.gridColumnSpan: ✅
+PhaseLayout.gridRowSpan: ✅
 Picker.frameChanged: ✅
 Picker.horizontalAlignment: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: the view's listening handed the recognizer's states, no touch sent

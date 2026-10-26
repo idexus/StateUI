@@ -61,9 +61,6 @@ ItemsView.frameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: the relay's report of the manipulation handed to the host, no touch sent
-LayoutEngine.area: ✅
-LayoutEngine.frameChanged: ✅
-LayoutEngine.panYChannel: ✅
 Line.frameChanged: ✅
 Line.horizontalAlignment: ✅
 Line.panTouchCount: ✅
@@ -87,6 +84,9 @@ Path.pointerPressed: ✅
 Path.pointerReleased: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
+PhaseLayout.area: ✅
+PhaseLayout.frameChanged: ✅
+PhaseLayout.panYChannel: ✅
 Picker.frameChanged: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRowSpan: ✅

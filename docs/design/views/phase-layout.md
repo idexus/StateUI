@@ -1,13 +1,13 @@
-# Layout engine
+# Phase layout
 
-`LayoutEngine` is the center of a layout's motion: a run of views, the
+`PhaseLayout` is the center of a layout's motion: a run of views, the
 application's arithmetic that places them on the host's frames, the phase the
 arithmetic is worked out from, and the hand that moves the phase. A ring, a
 fan, a wheel of cards, a timeline and a gallery are one layout with different
 arithmetic; `GalleryView` is one with the arithmetic of four shapes written.
 
 ```text
-  LayoutEngine - the element, a host's ZStack, wearing the phase   ◀── the host walks it
+  PhaseLayout - the element, a host's ZStack, wearing the phase   ◀── the host walks it
    │             and hearing the hand over it (handMoved, handAxis) ◀── a finger, a pointer,
    ├── holder ── the author's view [ + the shade, second ]   ◀─┐      a trackpad, a wheel
    └── …                                                       ├─ one run of placements,
@@ -16,18 +16,18 @@ arithmetic; `GalleryView` is one with the arithmetic of four shapes written.
 
 ## The element
 
-The layout is an element of its own, `LayoutEngineContract`, which every host
+The layout is an element of its own, `PhaseLayoutContract`, which every host
 stands on its ZStack: children one over another, each where a run of
 placements on the element's own `area` puts it, or in the whole room until a
 run comes. It is the element an author's modifiers reach - a background, a
 border, a clip - so the node its contract describes is the one the author
 writes on, and its row in the matrix is proven by its own family. It wears
-the phase both ways (`LayoutEngineContract.phase`), so the host layer's
+the phase both ways (`PhaseLayoutContract.phase`), so the host layer's
 channel walks it under the layout's motion and says every frame where it
 stands; no host draws it, and every host records it realized alike.
 
 It has no size of its own: it takes the room its layout gives it, whatever
-its views need (host/layout.md, a layout engine). The views stand where
+its views need (host/layout.md, a phase layout). The views stand where
 arithmetic of that room puts them, so a size taken from them would feed the
 room the arithmetic is worked out from.
 
@@ -170,7 +170,7 @@ shown. The run measuring the hand's unit is handed the `from` of the moment.
 
 ## A phase of many axes
 
-A phase is a `LayoutPhase`: a struct of numbers, its axes listed as key
+A phase is a `AxesPhase`: a struct of numbers, its axes listed as key
 paths, and `Double` the phase of one axis. An axis is a degree of freedom the
 hand or the program moves on its own - how far a ring is turned, how near it
 stands; how many dimensions the layout has is the arithmetic's, which may
@@ -184,9 +184,10 @@ the hand holds where it holds it, a snap passed is named on that axis, and
 another axis traveling under the program goes on beside the hand. A
 `Double` phase's one axis is `\.self`.
 
-The type is inferred from the phase lent, `.phase($orbit)`, which stands in
-the same expression as the arithmetic; a layout lent none takes its own,
-started at `init()`. A phase naming no axes is said.
+The type is inferred from the phase lent, `phase: $orbit`, which stands in
+the same initializer as the arithmetic: every layout is lent its phase, a
+state of the application's - none of its own hidden from the program. A phase
+naming no axes is said.
 
 ## An axis
 

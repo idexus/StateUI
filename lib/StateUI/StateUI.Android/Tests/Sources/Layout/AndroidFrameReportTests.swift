@@ -121,7 +121,7 @@ final class AndroidFrameReportTests: XCTestCase {
     func testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn() {
         onMainActor {
             let host = AndroidRenderer.running {
-                LayoutEngine([0]) { _ in
+                PhaseLayout([0], phase: State(wrappedValue: 0.0).projectedValue) { _ in
                     Rectangle()
                         .fill(.red)
                 } placements: { room, _ in

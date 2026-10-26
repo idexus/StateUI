@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-/// The hand over a layout engine, read alike on every host: a press dragged or a trackpad's fingers reported as they
+/// The hand over a phase layout, read alike on every host: a press dragged or a trackpad's fingers reported as they
 /// move, a wheel's notches with no lift - ended after a pause on the frame clock - and the speed at the lift where
 /// the platform tells none. What it answers is the element's `handMoved`.
 /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
