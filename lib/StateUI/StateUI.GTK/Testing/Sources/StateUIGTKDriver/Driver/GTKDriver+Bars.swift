@@ -40,7 +40,7 @@ extension GTKDriver {
     /// and whether its words stand beside its picture.
     func actionHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         guard let button = try actionButton(of: element) else { return nil }
-        let child = gtk_button_get_child(button.widget.of(GtkButton.self))
+        let child = button.child
         switch property {
         case .text:
             let label = child.flatMap { child in

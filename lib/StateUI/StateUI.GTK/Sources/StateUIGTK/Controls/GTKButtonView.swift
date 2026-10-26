@@ -134,8 +134,9 @@ final class GTKButtonView: GTKView {
     private var position = IconPosition.start
     private var spacing: Double?
 
-    /// What the button shows: its caption's label, its picture, or the two in a box.
-    private var child: GTKWidget? {
+    /// What the button shows: its caption's label, its picture, or the two in a box - asked of the widget its
+    /// opening made.
+    var child: GTKWidget? {
         switch opening {
         case .none, .hold: gtk_button_get_child(widget.of(GtkButton.self))
         case .click: gtk_menu_button_get_child(widget.opaque)
