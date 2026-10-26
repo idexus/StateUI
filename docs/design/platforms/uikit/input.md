@@ -51,9 +51,10 @@ layer lights the view and taps it by its rule
 ([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)).
 A scroller's pan is not let recognize with it: as the scroll begins UIKit fails
 the press, which is told taken away; so is a stack's swipe back. A touch
-catching a scroller that still moves - slowing down from a throw, springing
-back from its edge - is the scroller's, as on every list of iOS: it stops it,
-and the press never begins, the row neither lit nor tapped. A touch begun
+catching a scroller that still moves - slowing down from a throw, or springing
+back from its edge a fraction of a point away, its pan already under way as
+the touch falls - is the scroller's, as on every list of iOS: it stops it, and
+the press never begins, the row neither lit nor tapped. A touch begun
 on a control inside - a button, a field - or on a view hearing its own taps is
 that one's, as UIKit keeps a control's touch from the gestures around it; one
 on the parts of a view that is a control is its own. UIKit's tap recognizer

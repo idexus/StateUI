@@ -35,12 +35,16 @@ final class UIKitPressRecognizer: UIGestureRecognizer {
         tell(.began, first)
     }
 
-    /// Whether a touch on `view` catches a scroller around it that still moves - slowing down from a throw or
-    /// springing back from its edge - as UIKit stops it before any of its content hears the touch.
+    /// Whether a touch on `view` catches a scroller around it that still moves - slowing down from a throw, or
+    /// springing back from its edge, its pan already under way as the touch falls - as UIKit stops it before any of
+    /// its content hears the touch.
     static func catchesAScroll(_ view: UIView?) -> Bool {
         var each = view?.superview
         while let ancestor = each {
-            if let scroller = ancestor as? UIScrollView, scroller.isDecelerating { return true }
+            if let scroller = ancestor as? UIScrollView,
+               scroller.isDecelerating || [.began, .changed].contains(scroller.panGestureRecognizer.state) {
+                return true
+            }
             each = ancestor.superview
         }
         return false
