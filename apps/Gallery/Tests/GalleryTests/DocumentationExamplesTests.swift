@@ -242,7 +242,7 @@ final class DocumentationExamplesTests: XCTestCase {
     }
 
     /// The checkout containing the README and the Gallery package.
-    private static var repository: URL {
+    nonisolated private static var repository: URL {
         URL(fileURLWithPath: #filePath)
             .deletingLastPathComponent()    // GalleryTests
             .deletingLastPathComponent()    // Tests
@@ -263,6 +263,10 @@ final class DocumentationExamplesTests: XCTestCase {
     /// Type-checks one file; the compiler's output where it failed, nil where it passed.
     nonisolated static func typecheck(_ file: URL, module: URL, sdk: String?) -> String? {
         var arguments = ["-typecheck", "-parse-as-library", "-I", module.path, file.path]
+        // The host layer's C module stands in its sources, never in a build: named to the compiler as SwiftPM
+        // names it to a dependent, or `import StateUITesting` misses it off Apple.
+        let hostModuleMap = repository.appendingPathComponent("lib/StateUI/StateUI.Host/CStateUIHost/module.modulemap")
+        arguments += ["-Xcc", "-fmodule-map-file=\(hostModuleMap.path)"]
         if let sdk { arguments += ["-sdk", sdk] }
         // XCRUN ON A MAC, THE TOOL ITSELF EVERYWHERE ELSE. There is no
         // `/usr/bin/env` on Windows and Foundation's `Process` resolves
