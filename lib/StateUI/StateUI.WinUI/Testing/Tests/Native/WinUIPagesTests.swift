@@ -543,6 +543,61 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// An action showing its picture alone stands as narrow as WinUI's compact commands, as a Windows application's
+    /// toolbar keeps its pictures; one showing its words keeps the bar's own width.
+    func testAPictureAloneStandsAsNarrowAsACompactCommand() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").title("Notes").toolbar {
+                    ToolbarButton("Add").icon("test_wide.png")
+                    ToolbarButton("Scan").icon("test_wide.png").showsText(true)
+                }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "actions") == "|Add;Scan|" }
+            XCTAssertEqual(Self.words(bar, "action 0 width"), "40", "the picture alone")
+            XCTAssertNotEqual(Self.words(bar, "action 1 width"), "40", "the picture with its words")
+        }
+    }
+
+    /// Groups stand apart by room alone: the bar draws no line between them, as a Windows application's toolbar.
+    func testGroupsStandApartByRoomAlone() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").title("Notes").toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Save")
+                        ToolbarButton("Add")
+                    }
+                    ToolbarButton("Sort")
+                }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "bar") == "|0,1 2|" }
+            XCTAssertEqual(Self.words(bar, "barLines"), "0")
+        }
+    }
+
+    /// A bar's button opening a menu apart - a split one - or by its click with its arrow rests with no fill and no
+    /// border, as the bar's other buttons, its fill coming under the pointer.
+    func testAMenusButtonOnTheBarRestsAsTheBarsOthers() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").title("Notes").toolbar {
+                    ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save a copy") }
+                    ToolbarButton("Sort").menu { MenuItem("A to Z") }
+                }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "actions") == "|Save;Sort|" }
+            XCTAssertEqual(Self.words(bar, "action 0 subtle"), "1", "the split one")
+            XCTAssertEqual(Self.words(bar, "action 1 subtle"), "1", "the one with its arrow")
+            // Centered on the bar, its words the size of a bar button's label.
+            XCTAssertEqual(["action 0 standing", "action 1 standing"].map { Self.words(bar, $0) }, ["1,1", "1,1"])
+            XCTAssertEqual(["action 0 wordsSize", "action 1 wordsSize"].map { Self.words(bar, $0) }, ["12", "12"])
+        }
+    }
+
     /// The keys a window takes - Alt+Left, the Back key, Escape - show in no tip: its content holds them, and a tip
     /// saying them would stand under the pointer over everything the window shows.
     func testTheKeysAWindowTakesShowInNoTip() throws {

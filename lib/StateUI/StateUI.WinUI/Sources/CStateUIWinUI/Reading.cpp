@@ -370,6 +370,17 @@ namespace {
                 return std::to_string(winrt::unbox_value<int32_t>(button.Tag()));
             }, " ", ",");
         }
+        // How many lines between groups the bar shows: a separator drawing its line.
+        if (what == "barLines") {
+            int32_t shown = 0;
+            for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
+                for (auto const &command : actions.PrimaryCommands())
+                    if (auto line = command.try_as<controls::AppBarSeparator>()) {
+                        auto solid = line.Foreground().try_as<media::SolidColorBrush>();
+                        if (!solid || (solid.Color().A > 0 && solid.Opacity() > 0)) ++shown;
+                    }
+            return number(shown);
+        }
         if (what == "actionWords") {
             std::string colors;
             for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
@@ -392,6 +403,24 @@ namespace {
                 return flag(toggle.IsChecked() && toggle.IsChecked().Value());
             }
             if (held == "menuOpens") return menuOpens(command);
+            if (held == "width") return number(command.as<xaml::FrameworkElement>().Width());
+            // A contained split or drop-down button resting with no fill - its own themes name its rest ground -, how
+            // it stands on the bar (its own and its container's vertical alignment), and its words' size.
+            if (held == "subtle" || held == "standing" || held == "wordsSize") {
+                auto contained = command.try_as<controls::AppBarElementContainer>();
+                if (!contained) return std::nullopt;
+                auto control = contained.Content().as<controls::ContentControl>();
+                if (held == "standing")
+                    return number(static_cast<int32_t>(control.VerticalAlignment())) + ","
+                        + number(static_cast<int32_t>(contained.VerticalContentAlignment()));
+                if (held == "wordsSize") {
+                    for (auto const &child : control.Content().as<controls::StackPanel>().Children())
+                        if (auto words = child.try_as<controls::TextBlock>()) return number(words.FontSize());
+                    return std::string();
+                }
+                auto name = control.try_as<controls::SplitButton>() ? L"SplitButtonBackground" : L"ButtonBackground";
+                return flag(namesThemedBrush(control, name));
+            }
             return ofAction(command, [&](auto const &button) -> std::optional<std::string> {
                 if (held == "icon") return winrt::to_string(iconFile(button.Icon()));
                 if (held == "iconOpacity") return button.Icon() ? std::to_string(button.Icon().Opacity()) : std::string();

@@ -142,6 +142,14 @@ namespace stateui {
     /// The file an icon `pictureIcon` made shows; empty for any other icon, and for none.
     std::wstring iconFile(controls::IconElement const &icon);
 
+    /// Names `brushes` - a name a template reads, a color - in the entry's resources for the light theme and the dark,
+    /// before the entry stands. Design: docs/design/platforms/winui/pages.md#a-bars-buttons
+    void nameThemedBrushes(
+        xaml::FrameworkElement const &entry, std::vector<std::pair<std::wstring, std::wstring>> const &brushes);
+
+    /// Whether the entry's own theme dictionaries name a brush `name`.
+    bool namesThemedBrush(xaml::FrameworkElement const &entry, wchar_t const *name);
+
     /// Marks an entry whose choice destroys something: its words' brushes `names` - at rest, under the pointer and
     /// pressed - take the theme's critical color, light or dark as the entry's own theme is. Written before the
     /// entry stands, as its template reads them then.

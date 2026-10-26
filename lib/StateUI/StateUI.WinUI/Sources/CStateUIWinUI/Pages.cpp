@@ -191,6 +191,65 @@ namespace {
                                                                     : L"NavigationViewDefaultPaneBackground"));
     }
 
+    /// The width a bar's button showing its picture alone stands at: WinUI's compact command's
+    /// (`MediaTransportControlsAppBarButtonWidth`).
+    constexpr double compactWidth = 40;
+
+    /// The size of a bar button's words: an `AppBarButton`'s label's, as its template draws it.
+    constexpr double barWordsSize = 12;
+
+    /// Stands a bar's button showing its picture alone at `compactWidth` on the bar; in the overflow's menu it spans
+    /// the menu, its width the overflow's style's.
+    /// Design: docs/design/platforms/winui/pages.md#a-bars-buttons
+    template <typename Button>
+    void standCompact(Button const &button) {
+        auto stand = [](Button const &button) {
+            if (button.IsInOverflow()) button.ClearValue(xaml::FrameworkElement::WidthProperty());
+            else button.Width(compactWidth);
+        };
+        stand(button);
+        button.RegisterPropertyChangedCallback(Button::IsInOverflowProperty(), guarded("standing a compact button",
+            [stand](xaml::DependencyObject const &sender, xaml::DependencyProperty const &) {
+                stand(sender.as<Button>());
+            }));
+    }
+
+    /// The room between two groups on a bar: WinUI's separator drawing no line there, its room alone standing, and
+    /// its line in the overflow's menu.
+    /// Design: docs/design/platforms/winui/pages.md#a-bars-buttons
+    controls::AppBarSeparator groupGap() {
+        controls::AppBarSeparator gap;
+        auto stand = [](controls::AppBarSeparator const &gap) {
+            if (gap.IsInOverflow()) gap.ClearValue(controls::Control::ForegroundProperty());
+            else gap.Foreground(media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
+        };
+        stand(gap);
+        gap.RegisterPropertyChangedCallback(controls::AppBarSeparator::IsInOverflowProperty(),
+            guarded("standing a group's room", [stand](xaml::DependencyObject const &sender, xaml::DependencyProperty const &) {
+                stand(sender.as<controls::AppBarSeparator>());
+            }));
+        return gap;
+    }
+
+    /// Rests a split or drop-down button on a bar as the bar's own buttons rest: no fill and no border, the theme's
+    /// subtle fills under the pointer and pressed - a split's two parts told apart by those fills alone.
+    /// Design: docs/design/platforms/winui/pages.md#a-bars-buttons
+    void restSubtle(controls::Control const &control, bool splits) {
+        std::wstring prefix = splits ? L"SplitButton" : L"Button", clear = L"Transparent";
+        std::vector<std::pair<std::wstring, std::wstring>> brushes{
+            {prefix + L"Background", clear},
+            {prefix + L"BackgroundPointerOver", L"{ThemeResource SubtleFillColorSecondary}"},
+            {prefix + L"BackgroundPressed", L"{ThemeResource SubtleFillColorTertiary}"},
+            {prefix + L"BackgroundDisabled", clear},
+            {prefix + L"BorderBrush", clear},
+            {prefix + L"BorderBrushPointerOver", clear},
+            {prefix + L"BorderBrushPressed", clear},
+            {prefix + L"BorderBrushDisabled", clear},
+        };
+        if (splits) brushes.emplace_back(L"SplitButtonBorderBrushDivider", clear);
+        nameThemedBrushes(control, brushes);
+    }
+
     /// Dresses the button of the action at `index` - an action's or a setting's: its place in the list, which a press
     /// tells and a reader names it by, its words, whether it can be chosen, its identifier, its picture with its words
     /// beside it only where it says so - else they name it to Narrator and in its tip - and its keys.
@@ -210,6 +269,7 @@ namespace {
             if (!showsWords) {
                 button.LabelPosition(controls::CommandBarLabelPosition::Collapsed);
                 controls::ToolTipService::SetToolTip(button, winrt::box_value(text(words)));
+                standCompact(button);
             }
         }
         if (key != 0) button.KeyboardAccelerators().Append(accelerator(key, modifiers, givesWay));
@@ -253,6 +313,10 @@ namespace {
         }
         control.Content(content);
         control.IsEnabled(enabled);
+        restSubtle(control, splits);
+        // Its words a bar button's size, its box centered on the bar as the bar's other buttons stand.
+        control.FontSize(barWordsSize);
+        control.VerticalAlignment(xaml::VerticalAlignment::Center);
         xaml::Automation::AutomationProperties::SetName(control, text(words));
         if (identifier && *identifier) xaml::Automation::AutomationProperties::SetAutomationId(control, text(identifier));
         if (picture && !showsWords) controls::ToolTipService::SetToolTip(control, winrt::box_value(text(words)));
@@ -262,6 +326,7 @@ namespace {
             markDestructive(control, {name, name + L"PointerOver", name + L"Pressed"});
         }
         controls::AppBarElementContainer contained;
+        contained.VerticalContentAlignment(xaml::VerticalAlignment::Center);
         contained.Tag(winrt::box_value(index));
         contained.IsEnabled(enabled);
         contained.Content(control);
@@ -395,10 +460,10 @@ void stateui::setActions(
             trailing.SecondaryCommands().Append(button);
             continue;
         }
-        // A group stands apart from the one before it at its edge by WinUI's own line between commands.
+        // A group stands apart from the one before it at its edge by the room of WinUI's separator.
         auto commands = (groups[index] < leadingGroups ? leading : trailing).PrimaryCommands();
         if (index > 0 && groups[index - 1] >= 0 && groups[index - 1] != groups[index] && commands.Size() > 0)
-            commands.Append(controls::AppBarSeparator());
+            commands.Append(groupGap());
         commands.Append(button);
     }
     auto shown = leading.PrimaryCommands().Size() > 0 ? xaml::Visibility::Visible : xaml::Visibility::Collapsed;
@@ -551,6 +616,8 @@ void stateui::paintActions(ActionEdges const &edges, media::Brush const &foregro
     for (auto const &actions : {edges.leading, edges.trailing}) {
         paint(actions);
         for (auto const &command : actions.PrimaryCommands()) {
+            // A group's room draws nothing on the bar.
+            if (command.try_as<controls::AppBarSeparator>()) continue;
             auto button = command.try_as<controls::AppBarButton>();
             if (button && isDestructive(button, L"AppBarButtonForeground")) continue;
             // A contained split or drop-down button draws its words in its own color, not its container's.

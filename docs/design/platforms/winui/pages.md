@@ -29,7 +29,7 @@ for - a tab chosen, the sidebar shown:
   on a command bar at the chrome's edge they declare - the leading one in its
   left header, after the way back and the toggle, shown only while it holds
   an action; the trailing one in its right header - each group apart from the
-  one before it by WinUI's own line between commands (`AppBarSeparator`),
+  one before it by room ([a bar's buttons](#a-bars-buttons)),
   a setting WinUI's two-state `AppBarToggleButton`, checked while on,
   and those placed in overflow behind the trailing bar's own "more"; an
   action with a picture - the first of the files its
@@ -95,6 +95,31 @@ click opening the menu with no arrow stays an `AppBarButton` with its
 `AppBarButton` opening what it offers there. Every menu on the bar answers
 through the title bar's one view, so each menu's items are counted on from
 where the menu before it ends.
+
+## A bar's buttons
+
+The bar's buttons stand as a Windows application's toolbar keeps them - its
+pictures narrow, its groups apart by room, every button flat until the
+pointer comes - each through what WinUI exposes publicly:
+
+- a button showing its picture alone stands 40 DIPs wide, WinUI's compact
+  command (`MediaTransportControlsAppBarButtonWidth`), where an
+  `AppBarButton`'s style gives it 68; the width is the button's own value
+  while it stands on the bar and goes as it moves behind "more", where the
+  overflow's style spans the menu (`IsInOverflow`);
+- a group stands apart from the one before it by the room of WinUI's
+  separator, which draws its line only behind "more": on the bar its brush
+  is clear, and the bar's colors never paint it;
+- a split or drop-down button rests as the bar's other buttons rest, with no
+  fill and no border: the brushes its template reads -
+  `SplitButtonBackground`, `ButtonBackground` and their borders, the split's
+  `SplitButtonBorderBrushDivider` - are named in its own resources for the
+  light theme and the dark, clear at rest and the theme's subtle fills under
+  the pointer and pressed, so a split's two parts show as the pointer meets
+  each. The high-contrast theme keeps the system's. It stands centered on the
+  bar - its own alignment and its container's, which a command bar's
+  container sets at the top - its words at a bar button's label's size, 12,
+  where its own style gives a control's 14.
 
 ## A navigation stack
 
