@@ -26,8 +26,24 @@ final class UIKitPressRecognizer: UIGestureRecognizer {
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
         guard touch == nil, let first = touches.first else { return }
+        // A touch catching a scroller that still moves is the scroller's: it stops it, and presses nothing.
+        guard !Self.catchesAScroll(view) else {
+            state = .failed
+            return
+        }
         touch = first
         tell(.began, first)
+    }
+
+    /// Whether a touch on `view` catches a scroller around it that still moves - slowing down from a throw or
+    /// springing back from its edge - as UIKit stops it before any of its content hears the touch.
+    static func catchesAScroll(_ view: UIView?) -> Bool {
+        var each = view?.superview
+        while let ancestor = each {
+            if let scroller = ancestor as? UIScrollView, scroller.isDecelerating { return true }
+            each = ancestor.superview
+        }
+        return false
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent) {
