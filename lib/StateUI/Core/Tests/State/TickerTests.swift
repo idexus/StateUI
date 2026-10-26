@@ -67,8 +67,13 @@ final class TickerTests: XCTestCase {
 
     /// The point of the run token: a second `start()` while the first loop is
     /// mid-sleep must not leave two loops counting the same property up.
+    ///
+    /// One loop sleeps to deadlines an interval apart, so however late it wakes
+    /// a window holds at most one tick more than the intervals in it - one more
+    /// for the read after the window. Three loops would count three times that.
     func testStartingAgainLeavesOneLoopRunning() {
-        let ticker = Ticker(every: .milliseconds(40))
+        let lap = 40, window = 400
+        let ticker = Ticker(every: .milliseconds(lap))
 
         ticker.start()
         ticker.stop()
@@ -79,10 +84,10 @@ final class TickerTests: XCTestCase {
         XCTAssertTrue(drain(until: { ticker.ticks >= 1 }))
 
         let after = ticker.ticks
-        drain(until: { false }, within: 0.05)
+        drain(until: { false }, within: Double(window) / 1000)
 
         XCTAssertLessThanOrEqual(
-            ticker.ticks - after, 1,
+            ticker.ticks - after, window / lap + 2,
             "more than one loop is counting: three starts produced three ticks a lap")
     }
 
