@@ -466,7 +466,6 @@ final class WebLookTests: XCTestCase {
     /// A bar's button moving from the part over the sidebar to the detail's as the sidebar hides slides there from
     /// where it stood, as the sidebar slides.
     func testAButtonMovingBetweenTheBarsPartsSlidesThere() throws {
-        WebBrowser.ask([("width", .number(1280))])
         let shows = State(wrappedValue: true)
         let host = WebRenderer.running {
             SplitView(shows.projectedValue) {
@@ -491,7 +490,6 @@ final class WebLookTests: XCTestCase {
     /// A bar's columns move as its split view's sidebar does: where the sidebar first stands they stand at once, and
     /// as the user hides it the widths of the bar's first and last columns move with it, and nothing else of them.
     func testABarsColumnsMoveAsTheSidebarDoes() throws {
-        WebBrowser.ask([("width", .number(1280))])
         let shows = State(wrappedValue: true)
         let host = WebRenderer.running {
             SplitView(shows.projectedValue) {
