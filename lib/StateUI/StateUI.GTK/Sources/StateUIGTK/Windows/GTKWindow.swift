@@ -130,8 +130,14 @@ final class GTKWindow {
             connectNotify(UnsafeMutableRawPointer(surface), "state", number: viewNumber(data)) { _, _, data in
                 MainActor.assumeIsolated { GTKRenderer.shared?.windowStateChanged(number: viewNumber(data)) }
             }
-            // Laid out at a new size, each page's header bar stands its groups for the room it was given.
-            let laidOut: GTKSizeHandler = { _, _, _, _ in MainActor.assumeIsolated { GTKPageFrame.fitBars() } }
+            // Laid out at a new size, each page's header bar stands its groups for the room it was given, and the
+            // window's sheets take the room it gives.
+            let laidOut: GTKSizeHandler = { _, _, _, data in
+                MainActor.assumeIsolated {
+                    GTKPageFrame.fitBars()
+                    GTKRenderer.shared?.windows.first { $0.window.number == viewNumber(data) }?.fitSheets()
+                }
+            }
             connectSignal(UnsafeMutableRawPointer(surface), "layout", number: viewNumber(data), laidOut)
             // After GTK lays the window out in a frame, what reads a frame says where it stands, and what that
             // changes is laid out again before the frame is drawn: the frame clock repeats its layout for it.

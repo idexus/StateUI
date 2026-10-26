@@ -209,8 +209,10 @@ says it offers none (`show-end-title-buttons`); a tabbed view stands in a frame
 holding its switcher. A sheet asks the dialog for its page's size ([a
 sheet's size](../../host/pages.md#a-sheets-size)) - at least 320 by 180, 560
 by 480 for a page asking none, at most the window less 24 pixels a side, the
-size the window asks for while it is not laid out yet - which libadwaita fits
-to the window, rising from its bottom where the window is narrow. The sheet
+size the window asks for while it is not laid out yet, asked again as the
+window is laid out at a size of its own (a window on X11 with no compositor
+stands smaller than it asked) - which libadwaita fits to the window, rising
+from its bottom where the window is narrow. The sheet
 stands on its window's background ([a page's
 ground](../../host/pages.md#a-pages-ground)): a class of the host's style
 sheet on the dialog lays it over the surface libadwaita paints its `sheet`

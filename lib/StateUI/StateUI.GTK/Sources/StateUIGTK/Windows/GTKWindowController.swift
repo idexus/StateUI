@@ -63,12 +63,19 @@ final class GTKWindowController {
             }
         }
         if let pages = changes.sheets { showSheets(pages, in: runtime) }
+        fitSheets()
+        if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.gtk.view)) }
+    }
+
+    /// Asks each sheet for its page's size in the room the window gives now: after a render, and as the window is
+    /// laid out at a size of its own - one it was not asked for.
+    /// Design: docs/design/platforms/gtk/pages.md#sheets
+    func fitSheets() {
         for (page, sheet) in sheets {
             sheet.stand(at: SheetSize.size(of: page, in: GTKSheet.room(in: window)) { width in
                 page.gtk.layoutItem?.size(offered: width) ?? LayoutSize(width: 0, height: 0)
             })
         }
-        if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.gtk.view)) }
     }
 
     /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
