@@ -117,7 +117,7 @@ of its members each meets, and why a cell is empty.
 | [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
+| [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [PhaseLayout](controls/PhaseLayout.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -131,7 +131,7 @@ of its members each meets, and why a cell is empty.
 | [ScrollView](controls/ScrollView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [SearchField](controls/SearchField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Separator](controls/Separator.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Sheet](controls/Sheet.md) | adaptive | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
+| [Sheet](controls/Sheet.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Slider](controls/Slider.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Space](controls/Space.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Spinner](controls/Spinner.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -152,7 +152,7 @@ of its members each meets, and why a cell is empty.
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [WebView](controls/WebView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
+| [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 <!-- creation:end -->
 
 The AppKit split view uses `NSSplitViewController`.
@@ -479,16 +479,16 @@ Every control, and every part an application, its windows and its pages are made
 | [ColorPicker](controls/ColorPicker.md) | 81 | 42 ✅ · 2 ☑️ · 36 ✓ · 1 – | 36 ✅ · 2 ☑️ · 38 ✓ · 5 – | 81 – | 60 ✅ · 2 ☑️ · 13 ✓ · 6 – | 49 ✅ · 2 ☑️ · 24 ✓ · 6 – | 55 ✅ · 1 ☑️ · 21 ✓ · 4 – |
 | [DatePicker](controls/DatePicker.md) | 93 | 47 ✅ · 2 ☑️ · 37 ✓ · 7 – | 37 ✅ · 1 ☑️ · 38 ✓ · 13 – | 67 ✅ · 5 ☑️ · 15 ✓ · 4 – | 70 ✅ · 4 ☑️ · 13 ✓ · 6 – | 58 ✅ · 3 ☑️ · 26 ✓ · 6 – | 63 ✅ · 1 ☑️ · 21 ✓ · 7 – |
 | [Ellipse](controls/Ellipse.md) | 81 | 43 ✅ · 2 ☑️ · 36 ✓ | 41 ✅ · 3 ☑️ · 36 ✓ · 1 – | 63 ✅ · 6 ☑️ · 10 ✓ · 1 – | 58 ✅ · 2 ☑️ · 14 ✓ · 7 – | 50 ✅ · 3 ☑️ · 22 ✓ · 6 – | 55 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [Fill](controls/Fill.md) | 76 | 39 ✅ · 1 ☑️ · 36 ✓ | 37 ✅ · 2 ☑️ · 36 ✓ · 1 – | 59 ✅ · 5 ☑️ · 10 ✓ · 1 – | 56 ✅ · 2 ☑️ · 14 ✓ · 4 – | 47 ✅ · 2 ☑️ · 21 ✓ · 6 – | 51 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| [Grid](controls/Grid.md) | 86 | 47 ✅ · 1 ☑️ · 36 ✓ | 43 ✅ · 2 ☑️ · 38 ✓ · 1 – | 65 ✅ · 5 ☑️ · 12 ✓ · 1 – | 65 ✅ · 2 ☑️ · 13 ✓ · 5 – | 54 ✅ · 2 ☑️ · 23 ✓ · 7 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| [HStack](controls/HStack.md) | 83 | 44 ✅ · 1 ☑️ · 36 ✓ | 40 ✅ · 2 ☑️ · 38 ✓ · 1 – | 62 ✅ · 5 ☑️ · 12 ✓ · 1 – | 62 ✅ · 2 ☑️ · 13 ✓ · 5 – | 51 ✅ · 2 ☑️ · 23 ✓ · 7 – | 57 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [Fill](controls/Fill.md) | 76 | 39 ✅ · 1 ☑️ · 36 ✓ | 37 ✅ · 2 ☑️ · 36 ✓ · 1 – | 60 ✅ · 5 ☑️ · 10 ✓ · 1 – | 56 ✅ · 2 ☑️ · 14 ✓ · 4 – | 47 ✅ · 2 ☑️ · 21 ✓ · 6 – | 51 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [Grid](controls/Grid.md) | 86 | 47 ✅ · 1 ☑️ · 36 ✓ | 43 ✅ · 2 ☑️ · 38 ✓ · 1 – | 67 ✅ · 5 ☑️ · 12 ✓ · 1 – | 65 ✅ · 2 ☑️ · 13 ✓ · 5 – | 54 ✅ · 2 ☑️ · 23 ✓ · 7 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [HStack](controls/HStack.md) | 83 | 44 ✅ · 1 ☑️ · 36 ✓ | 40 ✅ · 2 ☑️ · 38 ✓ · 1 – | 64 ✅ · 5 ☑️ · 12 ✓ · 1 – | 62 ✅ · 2 ☑️ · 13 ✓ · 5 – | 51 ✅ · 2 ☑️ · 23 ✓ · 7 – | 57 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Image](controls/Image.md) | 76 | 37 ✅ · 2 ☑️ · 36 ✓ | 36 ✅ · 2 ☑️ · 36 ✓ · 1 – | 57 ✅ · 5 ☑️ · 10 ✓ · 1 – | 53 ✅ · 1 ☑️ · 14 ✓ · 7 – | 45 ✅ · 2 ☑️ · 22 ✓ · 6 – | 50 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [ItemsView](controls/ItemsView.md) | 91 | 44 ✅ · 2 ☑️ · 40 ✓ · 4 – | 41 ✅ · 2 ☑️ · 42 ✓ · 5 – | 69 ✅ · 5 ☑️ · 13 ✓ · 2 – | 66 ✅ · 2 ☑️ · 13 ✓ · 9 – | 55 ✅ · 2 ☑️ · 23 ✓ · 9 – | 61 ✅ · 1 ☑️ · 22 ✓ · 6 – |
 | [Line](controls/Line.md) | 84 | 46 ✅ · 2 ☑️ · 36 ✓ | 45 ✅ · 2 ☑️ · 36 ✓ · 1 – | 67 ✅ · 5 ☑️ · 10 ✓ · 1 – | 62 ✅ · 1 ☑️ · 14 ✓ · 7 – | 54 ✅ · 2 ☑️ · 22 ✓ · 6 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Link](controls/Link.md) | 83 | 43 ✅ · 2 ☑️ · 37 ✓ · 1 – | 37 ✅ · 2 ☑️ · 39 ✓ · 5 – | 60 ✅ · 5 ☑️ · 13 ✓ · 4 – | 61 ✅ · 2 ☑️ · 14 ✓ · 6 – | 50 ✅ · 2 ☑️ · 25 ✓ · 6 – | 57 ✅ · 1 ☑️ · 22 ✓ · 3 – |
 | [Map](controls/Map.md) | 81 | 41 ✅ · 2 ☑️ · 37 ✓ · 1 – | 40 ✅ · 2 ☑️ · 37 ✓ · 2 – | 81 🧩 | 81 🧩 | 81 🧩 | 81 🧩 |
 | [Path](controls/Path.md) | 84 | 46 ✅ · 2 ☑️ · 36 ✓ | 44 ✅ · 3 ☑️ · 36 ✓ · 1 – | 66 ✅ · 6 ☑️ · 10 ✓ · 1 – | 61 ✅ · 2 ☑️ · 14 ✓ · 7 – | 53 ✅ · 3 ☑️ · 22 ✓ · 6 – | 58 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [PhaseLayout](controls/PhaseLayout.md) | 92 | 39 ✅ · 1 ☑️ · 45 ✓ · 1 – | 37 ✅ · 2 ☑️ · 47 ✓ · 2 – | 62 ✅ · 5 ☑️ · 16 ✓ · 2 – | 53 ✅ · 2 ☑️ · 26 ✓ · 9 – | 47 ✅ · 2 ☑️ · 30 ✓ · 8 – | 59 ✅ · 2 ☑️ · 25 ✓ · 4 – |
+| [PhaseLayout](controls/PhaseLayout.md) | 92 | 39 ✅ · 1 ☑️ · 45 ✓ · 1 – | 37 ✅ · 2 ☑️ · 47 ✓ · 2 – | 64 ✅ · 5 ☑️ · 16 ✓ · 2 – | 53 ✅ · 2 ☑️ · 26 ✓ · 9 – | 47 ✅ · 2 ☑️ · 30 ✓ · 8 – | 59 ✅ · 2 ☑️ · 25 ✓ · 4 – |
 | [Picker](controls/Picker.md) | 95 | 51 ✅ · 2 ☑️ · 37 ✓ · 2 – | 43 ✅ · 3 ☑️ · 41 ✓ · 5 – | 67 ✅ · 6 ☑️ · 13 ✓ · 4 – | 74 ✅ · 2 ☑️ · 13 ✓ · 6 – | 57 ✅ · 2 ☑️ · 24 ✓ · 12 – | 65 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [Polygon](controls/Polygon.md) | 85 | 47 ✅ · 2 ☑️ · 36 ✓ | 45 ✅ · 3 ☑️ · 36 ✓ · 1 – | 67 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 2 ☑️ · 14 ✓ · 7 – | 54 ✅ · 3 ☑️ · 22 ✓ · 6 – | 59 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Polyline](controls/Polyline.md) | 85 | 47 ✅ · 2 ☑️ · 36 ✓ | 45 ✅ · 3 ☑️ · 36 ✓ · 1 – | 67 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 2 ☑️ · 14 ✓ · 7 – | 54 ✅ · 3 ☑️ · 22 ✓ · 6 – | 59 ✅ · 2 ☑️ · 21 ✓ · 3 – |
@@ -498,7 +498,7 @@ Every control, and every part an application, its windows and its pages are made
 | [SearchField](controls/SearchField.md) | 100 | 55 ✅ · 4 ☑️ · 36 ✓ · 2 – | 58 ✅ · 2 ☑️ · 38 ✓ · 2 – | 79 ✅ · 5 ☑️ · 12 ✓ · 2 – | 73 ✅ · 6 ☑️ · 13 ✓ · 8 – | 65 ✅ · 4 ☑️ · 25 ✓ · 6 – | 75 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Separator](controls/Separator.md) | 73 | 34 ✅ · 2 ☑️ · 36 ✓ · 1 – | 33 ✅ · 2 ☑️ · 36 ✓ · 2 – | 56 ✅ · 5 ☑️ · 10 ✓ · 1 – | 50 ✅ · 2 ☑️ · 14 ✓ · 6 – | 43 ✅ · 2 ☑️ · 22 ✓ · 6 – | 48 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Slider](controls/Slider.md) | 85 | 43 ✅ · 2 ☑️ · 36 ✓ · 2 – | 38 ✅ · 2 ☑️ · 40 ✓ · 5 – | 62 ✅ · 5 ☑️ · 12 ✓ · 5 – | 62 ✅ · 2 ☑️ · 13 ✓ · 6 – | 50 ✅ · 2 ☑️ · 25 ✓ · 8 – | 60 ✅ · 21 ✓ · 4 – |
-| [Space](controls/Space.md) | 76 | 39 ✅ · 1 ☑️ · 36 ✓ | 37 ✅ · 2 ☑️ · 36 ✓ · 1 – | 59 ✅ · 5 ☑️ · 10 ✓ · 1 – | 56 ✅ · 2 ☑️ · 14 ✓ · 4 – | 47 ✅ · 2 ☑️ · 21 ✓ · 6 – | 51 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [Space](controls/Space.md) | 76 | 39 ✅ · 1 ☑️ · 36 ✓ | 37 ✅ · 2 ☑️ · 36 ✓ · 1 – | 60 ✅ · 5 ☑️ · 10 ✓ · 1 – | 56 ✅ · 2 ☑️ · 14 ✓ · 4 – | 47 ✅ · 2 ☑️ · 21 ✓ · 6 – | 51 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Spinner](controls/Spinner.md) | 75 | 34 ✅ · 2 ☑️ · 37 ✓ · 2 – | 35 ✅ · 2 ☑️ · 36 ✓ · 2 – | 58 ✅ · 5 ☑️ · 10 ✓ · 1 – | 51 ✅ · 2 ☑️ · 14 ✓ · 7 – | 45 ✅ · 2 ☑️ · 22 ✓ · 6 – | 50 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Stepper](controls/Stepper.md) | 83 | 44 ✅ · 2 ☑️ · 36 ✓ · 1 – | 38 ✅ · 2 ☑️ · 38 ✓ · 5 – | 60 ✅ · 5 ☑️ · 12 ✓ · 5 – | 61 ✅ · 3 ☑️ · 13 ✓ · 6 – | 51 ✅ · 2 ☑️ · 24 ✓ · 6 – | 58 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Switch](controls/Switch.md) | 84 | 44 ✅ · 2 ☑️ · 36 ✓ · 2 – | 39 ✅ · 2 ☑️ · 38 ✓ · 5 – | 61 ✅ · 5 ☑️ · 12 ✓ · 4 – | 63 ✅ · 2 ☑️ · 13 ✓ · 6 – | 51 ✅ · 2 ☑️ · 24 ✓ · 7 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
@@ -506,13 +506,13 @@ Every control, and every part an application, its windows and its pages are made
 | [TextEditor](controls/TextEditor.md) | 99 | 58 ✅ · 3 ☑️ · 36 ✓ · 2 – | 57 ✅ · 2 ☑️ · 38 ✓ · 2 – | 78 ✅ · 5 ☑️ · 12 ✓ · 2 – | 77 ✅ · 3 ☑️ · 13 ✓ · 6 – | 64 ✅ · 4 ☑️ · 25 ✓ · 6 – | 74 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [TextField](controls/TextField.md) | 102 | 56 ✅ · 4 ☑️ · 36 ✓ · 3 – | 60 ✅ · 2 ☑️ · 38 ✓ · 2 – | 80 ✅ · 5 ☑️ · 12 ✓ · 3 – | 77 ✅ · 5 ☑️ · 13 ✓ · 6 – | 66 ✅ · 4 ☑️ · 25 ✓ · 7 – | 76 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [TimePicker](controls/TimePicker.md) | 91 | 45 ✅ · 2 ☑️ · 37 ✓ · 7 – | 38 ✅ · 1 ☑️ · 38 ✓ · 10 – | 67 ✅ · 5 ☑️ · 13 ✓ · 4 – | 65 ✅ · 3 ☑️ · 13 ✓ · 6 – | 57 ✅ · 2 ☑️ · 25 ✓ · 6 – | 61 ✅ · 1 ☑️ · 21 ✓ · 7 – |
-| [VStack](controls/VStack.md) | 83 | 44 ✅ · 1 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 37 ✓ · 1 – | 63 ✅ · 5 ☑️ · 11 ✓ · 1 – | 62 ✅ · 2 ☑️ · 13 ✓ · 5 – | 52 ✅ · 2 ☑️ · 22 ✓ · 7 – | 57 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [VStack](controls/VStack.md) | 83 | 44 ✅ · 1 ☑️ · 36 ✓ | 41 ✅ · 2 ☑️ · 37 ✓ · 1 – | 65 ✅ · 5 ☑️ · 11 ✓ · 1 – | 62 ✅ · 2 ☑️ · 13 ✓ · 5 – | 52 ✅ · 2 ☑️ · 22 ✓ · 7 – | 57 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 89 | 49 ✅ · 2 ☑️ · 37 ✓ · 1 – | 46 ✅ · 2 ☑️ · 39 ✓ · 2 – | 67 ✅ · 5 ☑️ · 12 ✓ · 4 – | 49 ✅ · 13 ✓ · 26 – | 57 ✅ · 2 ☑️ · 24 ✓ · 6 – | 58 ✅ · 1 ☑️ · 21 ✓ · 6 – |
-| [ZStack](controls/ZStack.md) | 82 | 43 ✅ · 1 ☑️ · 36 ✓ | 39 ✅ · 2 ☑️ · 38 ✓ · 1 – | 61 ✅ · 5 ☑️ · 12 ✓ · 1 – | 61 ✅ · 2 ☑️ · 13 ✓ · 5 – | 50 ✅ · 2 ☑️ · 23 ✓ · 7 – | 56 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1650 | 1553 | 2271 | 2242 | 1907 | 2130 |
+| [ZStack](controls/ZStack.md) | 82 | 43 ✅ · 1 ☑️ · 36 ✓ | 39 ✅ · 2 ☑️ · 38 ✓ · 1 – | 63 ✅ · 5 ☑️ · 12 ✓ · 1 – | 61 ✅ · 2 ☑️ · 13 ✓ · 5 – | 50 ✅ · 2 ☑️ · 23 ✓ · 7 – | 56 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| ✅ |  | 1650 | 1553 | 2283 | 2242 | 1907 | 2130 |
 | ✓ |  | 1358 | 1400 | 403 | 496 | 844 | 762 |
 | – |  | 54 | 106 | 160 | 249 | 238 | 134 |
-| **Met** | 3165 | **3062** | **3059** | **2834** | **2987** | **2989** | **3026** |
+| **Met** | 3165 | **3062** | **3059** | **2846** | **2987** | **2989** | **3026** |
 | 🧩 |  | 0 | 0 | 81 | 81 | 81 | 81 |
 
 ### Application structure
@@ -530,7 +530,7 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
 | [NavigationStack](controls/NavigationStack.md) | 10 | 3 ✅ · 2 ☑️ · 2 ✓ · 2 – | 7 ✅ · 1 ✓ · 2 – | 5 ✅ · 2 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 3 ✅ · 2 ✓ · 4 – | 8 ✅ · 1 ☑️ · 1 ✓ |
-| [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ◐ | ✅ | ✅ | ✅ |
+| [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | 15 | 11 ✅ · 1 ✓ | 14 ✅ · 1 ✓ | 13 ✅ · 1 ✓ · 1 – | 13 ✅ · 1 ✓ · 1 – | 11 ✅ · 1 ✓ · 2 – | 13 ✅ · 1 ✓ |
 | [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |

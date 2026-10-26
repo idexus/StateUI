@@ -41,8 +41,7 @@ See [the dictionary](README.md) for how a mark is given.
 <thead><tr><th>Host</th><th>Created</th><th>Members (0)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td></td><td>pass-through <code>NSView</code> above the page</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td></td><td>pass-through <code>UIView</code> above the page</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">◐</td><td></td><td>top child of a <code>FrameLayout</code></td></tr>
-<tr><td colspan="3">cannot read what reaches Text - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td></td><td>top child of a <code>FrameLayout</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td></td><td>top layer of a root <code>Grid</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td></td><td>custom <code>GtkWidget</code> in the window's <code>GtkOverlay</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td></td><td><code>&lt;div&gt;</code> layered over the page</td></tr></tbody>

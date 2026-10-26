@@ -44,7 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 <thead><tr><th>Host</th><th>Created</th><th>Members (86)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>47 ✅ · 1 ☑️ · 36 ✓</td><td>custom <code>NSView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>43 ✅ · 2 ☑️ · 38 ✓ · 1 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>65 ✅ · 5 ☑️ · 12 ✓ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>67 ✅ · 5 ☑️ · 12 ✓ · 1 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>65 ✅ · 2 ☑️ · 13 ✓ · 5 –</td><td>custom <code>Panel</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>54 ✅ · 2 ☑️ · 23 ✓ · 7 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td>CSS grid</td></tr></tbody>
@@ -97,8 +97,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tbody><tr></tr><tr><td><code>frame</code></td><td>property</td><td><code>Rect</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>height</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>hidesChildrenFromAccessibility</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>ignoresInput</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">Android Views: cannot read what reaches Grid - Android's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>ignoresInput</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isAccessibilityHidden</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>isVisible</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
@@ -215,8 +214,8 @@ What every layout has: the edges it runs under what stands over its page on, and
 <tbody><tr></tr><tr><td rowspan="2"><code>ignoresSafeArea</code></td><td>property</td><td><code>SafeAreaEdges</code></td><td>adaptive</td><td align="center"></td><td align="center">·</td><td align="center"></td><td align="center">–</td><td align="center">–</td><td align="center"></td></tr>
 <tr><td colspan="9">AppKit, Android Views, Web: not realized<br>UIKit: cannot read ignoresSafeArea of Grid - UIKit's view places its children where StateUI's layout says; their frames prove it<br>WinUI 3: A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.<br>GTK 4: A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>clipsContent</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>letsInputThrough</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center"></td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">AppKit: cannot read letsInputThrough of Grid - AppKit's driver has no path for it yet<br>UIKit: cannot read letsInputThrough of Grid - UIKit's driver has no path for it yet<br>Android Views, WinUI 3: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>letsInputThrough</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: cannot read letsInputThrough of Grid - AppKit's driver has no path for it yet<br>UIKit: cannot read letsInputThrough of Grid - UIKit's driver has no path for it yet<br>WinUI 3: not realized</td></tr></tbody>
 </table>
 
 ## From [PaddingElement](tiers/PaddingElement.md)
