@@ -112,7 +112,10 @@ not only its turn: a run worked out before its room was measured - a card half
 a point wide - leaves nothing of itself behind once the next one sizes it. A ZStack draws its children back to front in the run's order
 (`ZStackArithmetic.drawingOrder`) - each child, placed or not, takes its
 z-index from it - so a child the run places never rises over a later one it
-places none of. A child placed in its area again, with no run, takes back
+places none of. A grid, whose children share a cell, draws them back to front
+in their order by the same z-index: the browser draws what stands out of the
+page's flow after what stands in it, so a shape - positioned to hold its
+drawing - would else stand over every later child in its cell. A child placed in its area again, with no run, takes back
 its own opacity: the run's drawn opacity gives way to it, and a placing never
 clears it - a ZStack child at opacity nought, a row's hidden press light,
 would otherwise stand lit each time its row's look changes under the pointer.

@@ -84,6 +84,33 @@ final class WebShapeRoomTests: XCTestCase {
         (WebBrowser.ask([("pixel", .points([Point(x: x, y: y)]))]) ?? "").split(separator: ",").compactMap { Int($0) }
     }
 
+    /// A LATER CHILD DRAWS OVER A SHAPE BEFORE IT: in a grid's one cell the view after the shape stands over it, as a
+    /// layout draws its children in their order - the shape's own drawing standing over its box notwithstanding.
+    func testALaterChildDrawsOverAShapeBeforeIt() throws {
+        let host = WebRenderer.running {
+            Grid {
+                Rectangle()
+                    .fill(.red)
+                    .width(100)
+                    .height(100)
+                Text("Over")
+                    .background(.blue)
+                    .width(100)
+                    .height(100)
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        host.step()
+        let shape = try XCTUnwrap(host.views(WebShapeView.self).first)
+        let box = (try WebBrowser.evaluate("stateui.box(e).join(',')", on: shape.node) ?? "")
+            .split(separator: ",").compactMap { Double($0) }
+        XCTAssertEqual(box.count, 4)
+
+        let middle = pixel(x: box[0] + 80, y: box[1] + 80)
+        XCTAssertGreaterThan(middle[2], middle[0], "the later child's blue over the shape's red: \(middle)")
+    }
+
     func testAShapeFillsTheRoomItsLayoutGivesIt() throws {
         let host = WebRenderer.running { VStack {
             Rectangle()
