@@ -9,7 +9,7 @@ AnimatedPropertySample.swift 3e32ce6e1efaac36
 AnimationSample.swift c490402644539ae0
 AppSwitcherSample.swift 07c52e1b524a8090
 AppThemeSample.swift e3467cfdec02937b
-AppearanceSample.swift a05ff2556ba287f7
+AppearanceSample.swift 559432c0b528aaf4
 ApplicationSessionSample.swift 5e888fc7cfd589fc
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
@@ -72,7 +72,7 @@ LifecycleSample.swift ba0a75804664098e
 LifetimeSample.swift 388647e356facd79
 LightTableSample.swift ace8cc68473e6fcc
 LinkSample.swift 422f6cbd2a97bec3
-LinksSample.swift f8177be521cebf36
+LinksSample.swift 1311b1b06e3a08cf
 LivingLayoutSample.swift 6962038d81a843fd
 LoadingItemsSample.swift 1d396ac70557a258
 LocaleInfoSample.swift 53a7aa3516ee574a
@@ -81,10 +81,10 @@ MainQueueSample.swift 142b7947497fae78
 MapSample.swift 9f441e3325fef845
 MaterialsSample.swift 0074507d1ab40b46
 MenuBarSample.swift feaefec006cc6607
-ModalSample.swift 82ec60ba32fe0c7d
+ModalSample.swift 61e5894faa6da1ba
 MotionSample.swift 37c6f1ae5c962e49
 MultiWindowSample.swift d858e0ed2beae834
-NavigationSample.swift 8452a08a8a1e59c2
+NavigationSample.swift 054dd504a4cdc04b
 NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift dc1582b9377c772d
 OutlineSample.swift 4ee91e4fde45645c
@@ -119,7 +119,7 @@ ShortcutSample.swift 613e9bc5911f4fc5
 SizingSample.swift 505216705d5b9909
 SliderSample.swift de5c388891de8278
 SpinnerSample.swift e38153fa2576bf0f
-SplitViewSample.swift 0a78ac9d40136b16
+SplitViewSample.swift c2eccf5784467c63
 StackLayoutSample.swift 36f89694c3b71b08
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
@@ -127,7 +127,7 @@ StepperSample.swift a1eb96147d1526c6
 StyleSample.swift 08350089bdd9f675
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ae41f144fd9164ad
-TabsSample.swift 63881a16590ae418
+TabsSample.swift a52b44260b6d4c0f
 TapSample.swift ecedf1892e5dde5c
 TaskSleepSample.swift e39db2a57b3c73ab
 TextEditorSample.swift 9cc806f939101a0a
@@ -138,7 +138,7 @@ TextStyleSample.swift 8dfca405610e7360
 TickerSample.swift ecca16670e47a404
 TimePickerSample.swift dd3594dfb194e764
 ToolbarLayersSample.swift 1149577eca98f9e5
-ToolbarSample.swift bd590e6516eced9d
+ToolbarSample.swift b7ef65e4ed495dc3
 TooltipSample.swift 2482095fe75dc4cf
 TouchThroughSample.swift 2f49a42898ac5f63
 TransformSample.swift 42f89ce8b8c4c513
@@ -146,8 +146,8 @@ TwoFingersSample.swift 47512444b7046f28
 TwoLayersSample.swift 80cbb745c5e4b044
 VisualStateSample.swift 891a200246efca50
 WebViewSample.swift caa32b2a32e3da7b
-WindowBarSample.swift b138be77f7b7e105
-WindowOverlaySample.swift d258f33d7e767c8e
+WindowBarSample.swift 0e25573212dd7ebc
+WindowOverlaySample.swift dba0eb0ad9ffc89b
 WindowPhaseSample.swift 17d57d2502b6ba90
-WindowSample.swift cf22f2df6e50abe7
+WindowSample.swift 236586a63e18d694
 ZStackSample.swift 4c2667bc234487b1

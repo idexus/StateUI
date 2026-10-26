@@ -96,12 +96,15 @@ struct MainPage: View {
                 if !nav.showing(.home) {
                     ToolbarButton.home(nav)
                 }
+            }
 
-                if bar.showsSurprise {
-                    ToolbarButton("Surprise me")
-                        .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
-                        .onClicked { nav.surprise(from: catalog, on: device) }
-                }
+            // The menu's own: over the sidebar, and at the detail's start
+            // while the sidebar is hidden.
+            if bar.showsSurprise {
+                ToolbarButton("Surprise me")
+                    .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
+                    .placement(.sidebar)
+                    .onClicked { nav.surprise(from: catalog, on: device) }
             }
         }
         // listing: end

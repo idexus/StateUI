@@ -6853,12 +6853,15 @@ enum Listings {
                 if !nav.showing(.home) {
                     ToolbarButton.home(nav)
                 }
+            }
 
-                if bar.showsSurprise {
-                    ToolbarButton("Surprise me")
-                        .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
-                        .onClicked { nav.surprise(from: catalog, on: device) }
-                }
+            // The menu's own: over the sidebar, and at the detail's start
+            // while the sidebar is hidden.
+            if bar.showsSurprise {
+                ToolbarButton("Surprise me")
+                    .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
+                    .placement(.sidebar)
+                    .onClicked { nav.surprise(from: catalog, on: device) }
             }
         }
         """#,
@@ -11518,6 +11521,13 @@ enum Listings {
         /// Whether the sample's group stands at the bar's start.
         @State private var atStart = false
 
+        /// Whether the sample's group stands in the sidebar's part of the bar.
+        @State private var overSidebar = false
+
+        /// Whether the sample's group hides with the sidebar rather than move to
+        /// the detail's start.
+        @State private var hidesWithSidebar = false
+
         /// Whether Add shows its words beside its picture on the bar.
         @State private var addWords = false
 
@@ -11554,6 +11564,8 @@ enum Listings {
 
                     switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
                     switchRow($atStart, "At the start", id: "toolbar.atStart")
+                    switchRow($overSidebar, "Over the sidebar", id: "toolbar.overSidebar")
+                    switchRow($hidesWithSidebar, "Hidden with the sidebar", id: "toolbar.hidesWithSidebar")
 
                     SectionTitle("A picture and its words")
 
@@ -11566,7 +11578,7 @@ enum Listings {
                 }
                 // The page's actions, declared where their state lives: they follow
                 // it as the body builds - `saved` decides whether Clear can be pressed,
-                // `addWords` Add's words, the two switches where the group stands.
+                // `addWords` Add's words, the four switches where the group stands.
                 .toolbar {
                     ToolbarGroup {
                         // Its click its own, its menu apart: from an arrow of its
@@ -11594,7 +11606,8 @@ enum Listings {
                                 recent.append("file\(added).txt")
                             }
                     }
-                    .placement(at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
+                    .placement(overSidebar ? .sidebar : nil, at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
+                    .hidesWithSidebar(hidesWithSidebar)
 
                     // A menu its click opens, an arrow saying so.
                     ToolbarButton("Sort")

@@ -17,6 +17,13 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// Whether the sample's group stands at the bar's start.
     @State private var atStart = false
 
+    /// Whether the sample's group stands in the sidebar's part of the bar.
+    @State private var overSidebar = false
+
+    /// Whether the sample's group hides with the sidebar rather than move to
+    /// the detail's start.
+    @State private var hidesWithSidebar = false
+
     /// Whether Add shows its words beside its picture on the bar.
     @State private var addWords = false
 
@@ -66,6 +73,8 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
                 switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
                 switchRow($atStart, "At the start", id: "toolbar.atStart")
+                switchRow($overSidebar, "Over the sidebar", id: "toolbar.overSidebar")
+                switchRow($hidesWithSidebar, "Hidden with the sidebar", id: "toolbar.hidesWithSidebar")
 
                 SectionTitle("A picture and its words")
 
@@ -79,7 +88,7 @@ struct ToolbarSample: SampleContent, ExampleContent {
             .spacing(12)
             // The page's actions, declared where their state lives: they follow
             // it as the body builds - `saved` decides whether Clear can be pressed,
-            // `addWords` Add's words, the two switches where the group stands.
+            // `addWords` Add's words, the four switches where the group stands.
             .toolbar {
                 ToolbarGroup {
                     // Its click its own, its menu apart: from an arrow of its
@@ -107,7 +116,8 @@ struct ToolbarSample: SampleContent, ExampleContent {
                             recent.append("file\(added).txt")
                         }
                 }
-                .placement(at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
+                .placement(overSidebar ? .sidebar : nil, at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
+                .hidesWithSidebar(hidesWithSidebar)
 
                 // A menu its click opens, an arrow saying so.
                 ToolbarButton("Sort")
@@ -185,6 +195,11 @@ struct ToolbarSample: SampleContent, ExampleContent {
             Text("The gallery's own actions stand at the edge on every page; the sample's "
                 + "group comes in from the title's side. `order: 1` moves it after them, "
                 + "`.start` takes it to the other edge.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Over the sidebar, the group stands in the sidebar's part of the bar; "
+                + "with the sidebar hidden it moves to the detail's start, or hides with it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
