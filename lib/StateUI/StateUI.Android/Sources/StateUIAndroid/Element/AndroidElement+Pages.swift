@@ -228,7 +228,7 @@ extension AndroidElement {
 
     /// Shows on a split view's sidebar its own bar: the title area its page names the application with - its title,
     /// else the application's name, the line under it and its picture as the mark - in the colors its path declares,
-    /// the actions of the sidebar's part, and at its end the toggle hiding the sidebar, where the split view offers it.
+    /// the toggle hiding the sidebar, where the split view offers it, and the actions of the sidebar's part last.
     /// Design: docs/design/platforms/android/pages.md#a-split-view
     private func refreshSidebarBar() {
         guard let split = view as? AndroidSplitView, let page = element.sidebarPage else { return }

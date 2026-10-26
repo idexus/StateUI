@@ -4,9 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A split view's column: its own bar over its page. The sidebar's - the application's name and mark, its part's
-/// actions, the toggle at its end - stands in the drawer over the detail or beside it, apart from it then by the
-/// theme's line; a detail that is a page stands under a bar of its own, as a stack's top page does.
+/// A split view's column: its own bar over its page. The sidebar's - the application's name and mark, the toggle,
+/// its part's actions - stands in the drawer over the detail or beside it, apart from it then by the theme's line; a detail that is a page stands under a bar of its own, as a stack's top page does.
 /// Design: docs/design/platforms/android/pages.md#a-split-view
 @MainActor
 final class AndroidColumnView: AndroidLayoutView {
