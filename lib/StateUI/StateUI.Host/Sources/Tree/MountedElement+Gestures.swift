@@ -85,6 +85,11 @@ extension MountedElement {
                 now: now)
             gather(heard.reports, in: runtime)
             if handReading.wantsFrames { runtime.handPace.opened(self) }
+            if phase == .began { handTookPresses = false }
+            if heard.taken, !handTookPresses {
+                handTookPresses = true
+                takePresses(in: runtime)
+            }
             return heard.taken
         case .wheel(let moved):
             let heard = handReading.wheel(moved, at: runtime.clock.now(), way: handWay)
@@ -266,6 +271,14 @@ extension MountedElement {
             case .tapped: if Int(number(.tapCount) ?? 1) <= 1 { send(.tapped, [], in: runtime) }
             }
         }
+    }
+
+    /// A hand taking the touch takes every press under way in the layout - its own and those of the views it holds:
+    /// a swipe across them taps none.
+    /// Design: docs/design/host/runtime.md#a-press-as-a-button-takes-it
+    private func takePresses(in runtime: HostRuntime) {
+        if buttonPress.isPressed { pressed(.cancelled, over: false, in: runtime) }
+        for child in children { child.takePresses(in: runtime) }
     }
 
     private func dragged(_ phase: GesturePhase, x: Double, y: Double, in runtime: HostRuntime) {

@@ -96,9 +96,10 @@ final class HandHearingTests: XCTestCase {
         }
     }
 
-    private func running() -> (HostRuntime, HandClock) {
+    private func running(_ application: some Application = HandApplication()) -> (HostRuntime, HandClock) {
         handed = []
-        stateUIUseApp(HandApplication())
+        tapped = 0
+        stateUIUseApp(application)
         let clock = HandClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
@@ -106,6 +107,24 @@ final class HandHearingTests: XCTestCase {
         try? ring(in: runtime).reportFrame([0, 0, 300, 200, 0, 0, 0, 0], in: runtime)
         frames(runtime, clock, until: 16)
         return (runtime, clock)
+    }
+
+    /// A HAND TAKING THE TOUCH TAKES EVERY PRESS UNDER WAY IN THE LAYOUT: a press on it, or on a view it holds, let
+    /// go once the hand moved the run, taps nothing - a swipe across the cards opens none.
+    func testAHandTakingTheTouchTakesThePressesInIt() throws {
+        let (runtime, clock) = running(TappedHandApplication())
+        let ring = try ring(in: runtime)
+        let card = try XCTUnwrap(ring.first(type: .text))
+        let size = LayoutSize(width: 10, height: 10)
+
+        for pressed in [ring, card] { pressed.hear(.press(.began, at: Point(5, 5), size: size, byFinger: true), in: runtime) }
+        ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
+        ring.hear(.hand(.changed, moved: Point(-140, 0), speed: nil), in: runtime)
+        for pressed in [ring, card] { pressed.hear(.press(.ended, at: Point(5, 5), size: size, byFinger: true), in: runtime) }
+        ring.hear(.hand(.ended, moved: .zero, speed: nil), in: runtime)
+        frames(runtime, clock, until: 600)
+
+        XCTAssertEqual(tapped, 0, "the hand took the presses: no tap")
     }
 
     /// The page's layout, where the tree mounted it.
@@ -116,6 +135,9 @@ final class HandHearingTests: XCTestCase {
 
 /// Where the run stood each time its arithmetic was handed the phase.
 @MainActor private var handed: [Double] = []
+
+/// How many taps the layout and its cards heard.
+@MainActor private var tapped = 0
 
 /// A clock the test winds.
 @MainActor
@@ -141,4 +163,21 @@ private struct HandPage: View {
 
 private struct HandApplication: Application {
     var body: some Scene { WindowGroup { HandPage() } }
+}
+
+/// A run of cards a hand moves, the layout and each card hearing a tap.
+private struct TappedHandPage: View {
+    @State private var turn = 0.0
+
+    var body: some View {
+        PhaseLayout([0, 1, 2, 3, 4], phase: $turn) { Text("\($0)").onTapped { tapped += 1 } } placements: { _, _ in
+            (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
+        }
+        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
+        .onItemTapped { _ in tapped += 1 }
+    }
+}
+
+private struct TappedHandApplication: Application {
+    var body: some Scene { WindowGroup { TappedHandPage() } }
 }

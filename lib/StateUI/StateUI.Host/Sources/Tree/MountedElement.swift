@@ -82,6 +82,9 @@
     /// A press on the view as a button takes it, while the view hears taps.
     var buttonPress = ButtonPress()
 
+    /// Whether the hand over the layout took the presses in it, in the touch under way.
+    var handTookPresses = false
+
     /// A press dragged with ⌥/Alt over the element, read as two fingers, while one is under way.
     var mirroredFingers = MirroredFingers()
 
