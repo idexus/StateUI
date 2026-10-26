@@ -110,12 +110,6 @@ ItemsView
   itemActivated()
   realizedChanged()
   selectedItemsChanged()
-PhaseLayout
-  clipsContent
-  letsInputThrough
-  lineWidth
-  shape
-  stroke
 Line
   contentMode
   dash
@@ -145,6 +139,12 @@ Path
   lineJoin
   lineWidth
   miterLimit
+  stroke
+PhaseLayout
+  clipsContent
+  letsInputThrough
+  lineWidth
+  shape
   stroke
 Picker
   fontAttributes
