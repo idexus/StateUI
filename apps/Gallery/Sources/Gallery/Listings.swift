@@ -636,8 +636,8 @@ enum Listings {
         // key is every button's - in its platform's shape: a capsule on
         // Apple's platforms and the Web, rounded everywhere else; and
         // lower on the native desktops, where a pointer presses it. Held
-        // down, it lights up under its own motion - and, but on the native
-        // desktops, grows a breath.
+        // down, it grows a breath and lights up, under its own motion; on
+        // the native desktops it presses as the platform's own button does.
         Style<Button>()
             .textColor(Palette.onAccent)
             .background(Palette.accent)
@@ -654,12 +654,12 @@ enum Listings {
             #else
             .padding(horizontal: 16, vertical: 11)
             #endif
+            #if !(APPKIT || WINUI || GTK)
             .visualState(.pressed) { $0
-                #if !(APPKIT || WINUI || GTK)
                 .scale(1.05)
-                #endif
                 .background(Palette.accentLit)
             }
+            #endif
             .visualState(.disabled) { $0
                 .textColor(Palette.disabled)
                 .background(Palette.outline)
@@ -668,15 +668,20 @@ enum Listings {
         // A button's role chooses a style over the one above: it says
         // only what the role changes. The main action keeps the violet;
         // the way out steps back, and what destroys something is red -
-        // each lit in its own color while held down.
+        // each lit in its own color while held down, but on the native
+        // desktops.
         Style<Button>(role: .cancel)
             .textColor(Palette.text)
             .background(Palette.selected)
+            #if !(APPKIT || WINUI || GTK)
             .visualState(.pressed) { $0.background(Palette.selectedLit) }
+            #endif
         Style<Button>(role: .destructive)
             .textColor(Palette.danger)
             .background(Palette.dangerWash)
+            #if !(APPKIT || WINUI || GTK)
             .visualState(.pressed) { $0.background(Palette.dangerWashLit) }
+            #endif
         """#,
         "AppSwitcherSample": #"""
         // Sources/Samples/PhaseLayout/AppSwitcherSample.swift
