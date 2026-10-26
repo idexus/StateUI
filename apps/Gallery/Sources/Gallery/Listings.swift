@@ -636,7 +636,8 @@ enum Listings {
         // key is every button's - in its platform's shape: a capsule on
         // Apple's platforms and the Web, rounded everywhere else; and
         // lower on the native desktops, where a pointer presses it. Held
-        // down, it grows a breath and lights up, under its own motion.
+        // down, it lights up under its own motion - and, but on the native
+        // desktops, grows a breath.
         Style<Button>()
             .textColor(Palette.onAccent)
             .background(Palette.accent)
@@ -654,7 +655,9 @@ enum Listings {
             .padding(horizontal: 16, vertical: 11)
             #endif
             .visualState(.pressed) { $0
+                #if !(APPKIT || WINUI || GTK)
                 .scale(1.05)
+                #endif
                 .background(Palette.accentLit)
             }
             .visualState(.disabled) { $0
