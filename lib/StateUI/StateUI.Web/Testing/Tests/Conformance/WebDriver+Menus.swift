@@ -85,7 +85,7 @@ extension WebDriver {
     /// a button's - where `button` - with a click where its click opens it, a split button's with a click on its arrow.
     private func open(menuOf element: MountedElement, button: Bool = false) throws {
         if element.type == .window {
-            return try click(try bar(over: element), part: "button:has(> [data-glyph=more])")
+            return try click(try bar(over: element), part: Self.more)
         }
         // A bar's button stands on the bar, a button among views as its own view.
         let node: Int32

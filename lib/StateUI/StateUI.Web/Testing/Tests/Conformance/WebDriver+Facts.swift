@@ -205,16 +205,23 @@ extension WebDriver {
     /// The button of the toolbar item `element` in the menu behind the bar, opened; nil where it stands there not.
     func behindTheBar(_ element: MountedElement) throws -> Int32? {
         let caption = element.value(.text)?.string ?? ""
-        try click(try bar(over: element), part: "button:has(> [data-glyph=more])")
+        let bar = try bar(over: element)
         let script = "((m) => ((b) => b ? stateui.numberOf(b) : null)(m && [...m.children].find((c) => "
             + "[...c.querySelectorAll('span')].pop()?.textContent === \(WebBrowser.quoted(caption)))))"
             + "([...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open')))"
-        guard let node = try WebBrowser.number(script, on: 0) else {
+        // The detail's More, then the sidebar's part's.
+        for more in [Self.more, Self.sidebarMore] {
+            guard try WebBrowser.truth("((b) => b && !b.hidden)(e.querySelector('\(more)'))", on: bar) else { continue }
+            try click(bar, part: more)
+            if let node = try WebBrowser.number(script, on: 0) { return Int32(node) }
             press("Escape")
-            return nil
         }
-        return Int32(node)
+        return nil
     }
+
+    /// The bar's own More, at its end, and the one of its part over the sidebar.
+    static let more = ":scope > .stateui-bar-actions > button:has(> [data-glyph=more])"
+    static let sidebarMore = ".stateui-bar-side button:has(> [data-glyph=more])"
 
     /// What the toolbar item `element` holds, as its button on the bar - or in the menu behind it - shows it.
     func toolbarItemHolds(_ property: Prop, on element: MountedElement) throws -> HostValue?? {
@@ -261,13 +268,11 @@ extension WebDriver {
         guard page.splitBarPart?.part == .sidebar else {
             let leading = try groups(".stateui-bar-start > .stateui-bar-actions")
             let trailing = try groups(":scope > .stateui-bar-actions")
-            let more = ":scope > .stateui-bar-actions > button:has(> [data-glyph=more])"
-            return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page, behind: more))
+            return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page, behind: Self.more))
         }
         let leading = try groups(".stateui-bar-side > .stateui-bar-actions[data-edge=start]")
         let trailing = try groups(".stateui-bar-side > .stateui-bar-actions:not([data-edge])")
-        let more = ".stateui-bar-side button:has(> [data-glyph=more])"
-        return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page, behind: more))
+        return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page, behind: Self.sidebarMore))
     }
 
     /// The actions behind the bar's More found by `more`, as its menu shows them before the page's menus.

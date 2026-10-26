@@ -225,7 +225,7 @@ final class WebLookTests: XCTestCase {
         let left = ["Save", "Add", "Sort", "Favorite", "Inspector", "Home", "Share", "Duplicate"]
             .filter { !standing.contains($0) }
         XCTAssertEqual(left.last, "Duplicate", "a phone's bar has no room for all eight: the last leaves first")
-        try WebBrowser.run("document.querySelector('.stateui-window > .stateui-bar button[aria-label=More]').click()")
+        try WebBrowser.run("document.querySelector('.stateui-window > .stateui-bar > .stateui-bar-actions > button[aria-label=More]').click()")
         let behind = try XCTUnwrap(WebBrowser.evaluate(
             "[...document.querySelectorAll('.stateui-menu')].filter((m) => m.matches(':popover-open'))"
                 + ".map((m) => m.innerText).join('\\n')", on: 0))

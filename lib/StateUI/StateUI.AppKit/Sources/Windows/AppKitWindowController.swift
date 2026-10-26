@@ -137,6 +137,7 @@ final class AppKitWindowController: NSWindowController {
         window.titlebarAppearsTransparent = false
         window.toolbarStyle = .unified
         window.toolbar = toolbar.toolbar
+        toolbar.window = window
         if window.frame != standing { window.setFrame(standing, display: false) }
     }
 

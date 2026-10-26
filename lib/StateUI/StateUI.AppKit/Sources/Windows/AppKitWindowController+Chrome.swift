@@ -63,6 +63,7 @@ extension AppKitWindowController {
             actions: chrome.actions.end.map { $0.map(Self.action) },
             overflow: chrome.actions.overflow.map(Self.action),
             words: words))
+        split?.onSidebarResized = { [weak self] in self?.toolbar.fitAgain() }
         synchronizeBar(window, color: barColor, split: split)
         // A Mac window names no application of itself: the area says what the sidebar's page says, if anything.
         let area = chrome.splitView?.sidebarPage?.titleArea(applicationName: "")

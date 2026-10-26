@@ -125,7 +125,11 @@ A window's toolbar holds the chrome its arrangement composes - over a split
 view the system's sidebar button where the split view offers it, the
 sidebar's part's groups - its start's, then past a flexible space its end's
 and their own More - then the sidebar's tracking separator either way, so the
-detail's items start past the sidebar - a setting's item showing its on picture, prominent while on
+detail's items start past the sidebar. AppKit hides what the sidebar's part
+has no room for and offers no overflow there, so the part fits itself by the
+host layer's rule (`BarFit`): the first groups in reading order stay, the
+others stand behind its More, and it fits again as the sidebar takes another
+width - a setting's item showing its on picture, prominent while on
 where it gives none, its state held by the menu item AppKit shows for it as
 words alone or in the overflow (`menuFormRepresentation`) - each group of
 actions a run of items with a space between it and the next, and the

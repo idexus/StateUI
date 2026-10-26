@@ -75,6 +75,9 @@ struct AppKitWindowChrome {
     var sidebarLeadingActions: [[AppKitToolbarAction]] = []
     var sidebarActions: [[AppKitToolbarAction]] = []
     var sidebarOverflow: [AppKitToolbarAction] = []
+
+    /// How many groups stand in the sidebar's part.
+    var sidebarGroups: Int { sidebarLeadingActions.count + sidebarActions.count }
     var back: AppKitToolbarAction?
     var title: NSView?
     var leadingActions: [[AppKitToolbarAction]] = []
@@ -122,7 +125,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     /// What stands behind the bar's More, group by group, and behind the sidebar's part's.
     private var overflowGroups: [[AppKitToolbarAction]] = []
     private var overflowActions: [AppKitToolbarAction] { overflowGroups.flatMap { $0 } }
-    private var sidebarOverflowActions: [AppKitToolbarAction] = []
+    private var sidebarOverflowGroups: [[AppKitToolbarAction]] = []
+    private var sidebarOverflowActions: [AppKitToolbarAction] { sidebarOverflowGroups.flatMap { $0 } }
 
     /// The window the bar stands in, which a bar fitting itself measures in.
     weak var window: NSWindow?
@@ -150,10 +154,11 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     /// Shows exactly this chrome. Items that stay keep their native item and
     /// view; only what changed is written. A sheet's bar, ending with its close
     /// button, fits itself (`BarFit`): AppKit's own overflow would stand after it.
+    /// The sidebar's part fits itself too: AppKit hides what it has no room for there, with no overflow of its own.
     /// Design: docs/design/platforms/appkit/runtime.md#sheets
     func apply(_ chrome: AppKitWindowChrome) {
         shown = chrome
-        guard chrome.close != nil else { return lay(chrome, behindMore: [chrome.overflow]) }
+        guard chrome.close != nil else { return layFittingTheSidebar(chrome) }
         let standing = BarFit.standing(groups: chrome.leadingActions.count + chrome.actions.count) { trial in
             lay(chrome, keeping: trial.groups)
             return fitsItsWindow
@@ -161,9 +166,10 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         lay(chrome, keeping: standing.groups)
     }
 
-    /// Fits the bar to its window again, as the window resizes.
+    /// Fits the bar to its window again, as the window or its sidebar resizes.
     func fitAgain() {
-        if let shown, shown.close != nil { apply(shown) }
+        guard let shown, shown.close != nil || shown.sidebarGroups > 0 else { return }
+        apply(shown)
     }
 
     /// `chrome` with its first `count` groups in reading order on the bar, the others behind More.
@@ -173,6 +179,41 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         kept.actions = Array(chrome.actions.prefix(max(0, count - chrome.leadingActions.count)))
         let left = Array((chrome.leadingActions + chrome.actions).dropFirst(count))
         lay(kept, behindMore: BarFit.groupsBehind(left: left, placed: chrome.overflow))
+    }
+
+    /// `chrome` with as many of the sidebar's part's groups on the bar as fit before the separator tracking the
+    /// sidebar - the first in reading order - and the others behind the part's own More (`BarFit`).
+    /// Design: docs/design/platforms/appkit/runtime.md#the-toolbar
+    private func layFittingTheSidebar(_ chrome: AppKitWindowChrome) {
+        guard chrome.sidebarGroups > 0 else {
+            return lay(chrome, behindMore: [chrome.overflow], sidebarBehind: [chrome.sidebarOverflow])
+        }
+        let standing = BarFit.standing(groups: chrome.sidebarGroups) { trial in
+            lay(chrome, keepingInTheSidebar: trial.groups)
+            return sidebarFits
+        }
+        lay(chrome, keepingInTheSidebar: standing.groups)
+    }
+
+    /// `chrome` with the first `count` groups of the sidebar's part on the bar, the others behind its More.
+    private func lay(_ chrome: AppKitWindowChrome, keepingInTheSidebar count: Int) {
+        var kept = chrome
+        kept.sidebarLeadingActions = Array(chrome.sidebarLeadingActions.prefix(count))
+        kept.sidebarActions = Array(chrome.sidebarActions.prefix(max(0, count - chrome.sidebarLeadingActions.count)))
+        let left = Array((chrome.sidebarLeadingActions + chrome.sidebarActions).dropFirst(count))
+        lay(kept, behindMore: [chrome.overflow], sidebarBehind: BarFit.groupsBehind(left: left, placed: chrome.sidebarOverflow))
+    }
+
+    /// Whether every item of the sidebar's part stands in sight; true where the bar stands in no window.
+    private var sidebarFits: Bool {
+        guard let window, window.toolbar === toolbar,
+              let separator = identifiers.firstIndex(of: .sidebarTrackingSeparator)
+        else { return true }
+        window.layoutIfNeeded()
+        guard let visible = toolbar.visibleItems else { return true }
+        let spaces: Set<NSToolbarItem.Identifier> = [.space, .flexibleSpace]
+        let shown = Set(visible.map(\.itemIdentifier))
+        return identifiers[..<separator].allSatisfy { spaces.contains($0) || shown.contains($0) }
     }
 
     /// Whether every item of the bar stands in sight in its window, none behind AppKit's own overflow; true where it
@@ -186,9 +227,12 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         return toolbar.items.allSatisfy { spaces.contains($0.itemIdentifier) || shown.contains($0.itemIdentifier) }
     }
 
-    /// Shows `chrome`, `behindMore` behind the bar's More.
-    private func lay(_ chrome: AppKitWindowChrome, behindMore: [[AppKitToolbarAction]]) {
+    /// Shows `chrome`, `behindMore` behind the bar's More and `sidebarBehind` behind the sidebar's part's.
+    private func lay(
+        _ chrome: AppKitWindowChrome, behindMore: [[AppKitToolbarAction]], sidebarBehind: [[AppKitToolbarAction]] = []
+    ) {
         let behind = behindMore.filter { !$0.isEmpty }
+        let sidebarBehind = sidebarBehind.filter { !$0.isEmpty }
         var nextSlots: [ObjectIdentifier: AppKitToolbarSlot] = [:]
         /// A layout stands in the toolbar in its slot, and not at all while it holds nothing.
         func standing(_ view: NSView?) -> NSView? {
@@ -220,11 +264,11 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         if chrome.sidebar != nil {
             if chrome.showsSidebarToggle { nextIdentifiers.append(.toggleSidebar) }
             place(chrome.sidebarLeadingActions)
-            if !chrome.sidebarActions.isEmpty || !chrome.sidebarOverflow.isEmpty {
+            if !chrome.sidebarActions.isEmpty || !sidebarBehind.isEmpty {
                 nextIdentifiers.append(.flexibleSpace)
                 place(chrome.sidebarActions)
             }
-            if !chrome.sidebarOverflow.isEmpty {
+            if !sidebarBehind.isEmpty {
                 if !chrome.sidebarActions.isEmpty { nextIdentifiers.append(.space) }
                 nextIdentifiers.append(Self.sidebarOverflow)
             }
@@ -265,8 +309,8 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
             && behind.map(\.count) == overflowGroups.map(\.count)
             && zip(behind.flatMap { $0 }, overflowActions).allSatisfy { $0.draws(like: $1) }
-            && chrome.sidebarOverflow.count == sidebarOverflowActions.count
-            && zip(chrome.sidebarOverflow, sidebarOverflowActions).allSatisfy { $0.draws(like: $1) }
+            && sidebarBehind.map(\.count) == sidebarOverflowGroups.map(\.count)
+            && zip(sidebarBehind.flatMap { $0 }, sidebarOverflowActions).allSatisfy { $0.draws(like: $1) }
             && chrome.words == words
 
         identifiers = nextIdentifiers
@@ -275,7 +319,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         views = nextViews
         actions = nextActions
         overflowGroups = behind
-        sidebarOverflowActions = chrome.sidebarOverflow
+        sidebarOverflowGroups = sidebarBehind
         words = chrome.words
         toolbar.centeredItemIdentifiers = center == nil ? [] : [Self.center]
 
@@ -358,7 +402,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             menuItem.showsIndicator = false
             menuItem.menu = identifier == Self.overflow
                 ? overflowMenu(overflowGroups, numberedFrom: sidebarOverflowActions.count)
-                : overflowMenu([sidebarOverflowActions], numberedFrom: 0)
+                : overflowMenu(sidebarOverflowGroups, numberedFrom: 0)
             return
         }
 

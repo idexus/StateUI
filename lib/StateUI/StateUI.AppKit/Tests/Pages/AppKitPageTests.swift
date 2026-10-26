@@ -1190,6 +1190,39 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertGreaterThan(more.count, 1, "the groups that do not fit stand behind More")
     }
 
+    /// The sidebar's part of a window's bar fits itself: AppKit hides what has no room before the separator tracking
+    /// the sidebar, with no chevron there, so the groups that do not fit stand behind the part's own More.
+    @MainActor
+    func testTheSidebarsPartPutsWhatHasNoRoomBehindItsMore() throws {
+        let renderer = AppKitRenderer.running {
+            SplitView(State(wrappedValue: true).projectedValue) {
+                Text("Folders").title("Library")
+            } detail: {
+                Text("Books").title("All books")
+            }
+            .toolbar {
+                ToolbarButton("New folder").placement(.sidebar)
+                ToolbarButton("Import").placement(.sidebar)
+                ToolbarButton("Export").placement(.sidebar)
+                ToolbarButton("Share").placement(.sidebar)
+                ToolbarButton("Sort").placement(.sidebar)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = try XCTUnwrap(controller.window)
+        window.layoutIfNeeded()
+        window.displayIfNeeded()
+
+        let chrome = controller.toolbarForTesting
+        let spaces: Set<NSToolbarItem.Identifier> = [.space, .flexibleSpace, .sidebarTrackingSeparator]
+        let visible = (chrome.toolbar.visibleItems ?? []).map(\.itemIdentifier).filter { !spaces.contains($0) }
+        let items = chrome.toolbar.items.map(\.itemIdentifier).filter { !spaces.contains($0) }
+        XCTAssertEqual(visible, items, "AppKit hides none of the sidebar's part")
+        XCTAssertTrue(items.contains(AppKitWindowToolbar.sidebarOverflow), "the part's own More: \(items.map(\.rawValue))")
+        XCTAssertGreaterThan(chrome.sidebarOverflowForTesting.count, 0, "the groups that do not fit stand behind it")
+    }
+
     /// A page that takes its way back away offers none in the window's
     /// toolbar, where the page beneath it offered one.
     @MainActor

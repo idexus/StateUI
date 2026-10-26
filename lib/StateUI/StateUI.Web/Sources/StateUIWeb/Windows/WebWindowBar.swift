@@ -67,6 +67,11 @@ final class WebWindowBar: WebDOMView {
     private var placed: [MountedElement] = []
     private var menus: [MenuEntry] = []
 
+    /// The items of each group over the sidebar, in reading order as `sideGroups` stands, and those placed behind
+    /// the sidebar's part's More.
+    private var sideRuns: [[MountedElement]] = []
+    private var sidePlaced: [MountedElement] = []
+
     init() {
         super.init(tag: "header")
         attribute("class", "stateui-bar")
@@ -112,6 +117,7 @@ final class WebWindowBar: WebDOMView {
         // fits.
         followSize { [weak self] in self?.fit() }
         start.followSize { [weak self] in self?.fit() }
+        side.followSize { [weak self] in self?.fit() }
     }
 
     /// The look of the bar's buttons `style` asks for, as the bar's `data-toolbar-style` says it; nil for glass.
@@ -162,18 +168,20 @@ final class WebWindowBar: WebDOMView {
         // An item keeps its button wherever it stands, moving from one part to the other.
         var kept: [ObjectIdentifier: WebBarButton] = [:]
         var pool = sideGroups + groups
-        let side = chrome.sidebarActions
-        sideGroups = place(side.start, on: sideLeading, from: &pool, keeping: &kept)
-            + place(side.end, on: sideTrailing, from: &pool, keeping: &kept)
+        let sidebar = chrome.sidebarActions
+        sideGroups = place(sidebar.start, on: sideLeading, from: &pool, keeping: &kept)
+            + place(sidebar.end, on: sideTrailing, from: &pool, keeping: &kept)
         let ending = chrome.actions.end
         groups = place(chrome.actions.start, on: leading, from: &pool, keeping: &kept)
             + place(ending, on: trailing, from: &pool, keeping: &kept)
         for (key, button) in buttons where kept[key] == nil { button.release() }
         for gone in pool { gone.release() }
         buttons = kept
-        sideBehind = BarFit.behind(left: [], placed: side.overflow)
-        sideMore.setShown(!sideBehind.isEmpty)
-        WebRelay.insert(sideMore.node, into: sideTrailing.node, at: side.end.count)
+        sideRuns = sidebar.start + sidebar.end
+        sidePlaced = sidebar.overflow
+        // With actions of its own, the part over the sidebar stands its name beside them rather than over them.
+        attribute("data-side-acts", sideRuns.isEmpty && sidePlaced.isEmpty ? nil : "")
+        WebRelay.insert(sideMore.node, into: sideTrailing.node, at: sidebar.end.count)
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
         runs = chrome.actions.start + ending
         placed = chrome.actions.overflow
@@ -214,6 +222,12 @@ final class WebWindowBar: WebDOMView {
     /// More (`BarFit`); a title left less room than a few letters stands hidden, as an ellipsis alone says nothing.
     /// Design: docs/design/platforms/web/pages.md#a-bar-with-no-room
     private func fit() {
+        // The part over the sidebar first: what it holds past its edges would crowd the detail's.
+        let sideStanding = BarFit.standing(groups: sideGroups.count) { trial in
+            standSide(trial.groups)
+            return !WebRelay.crowded(side.node)
+        }
+        standSide(sideStanding.groups)
         title.attribute("data-squeezed", nil)
         let standing = BarFit.standing(groups: groups.count) { trial in
             stand(trial)
@@ -232,6 +246,13 @@ final class WebWindowBar: WebDOMView {
         if !behind.isEmpty, !menus.isEmpty { behind.append(.separator) }
         behind += menus
         more.setShown(!behind.isEmpty)
+    }
+
+    /// The first `count` groups over the sidebar shown, the others' items behind the sidebar's part's More.
+    private func standSide(_ count: Int) {
+        for (index, group) in sideGroups.enumerated() { group.setShown(index < count) }
+        sideBehind = BarFit.behind(left: Array(sideRuns.dropFirst(count)), placed: sidePlaced)
+        sideMore.setShown(!sideBehind.isEmpty)
     }
 
     /// The least room a title stands in: a few letters and an ellipsis, which say what the page is.

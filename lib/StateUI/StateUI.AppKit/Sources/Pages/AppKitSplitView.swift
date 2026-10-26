@@ -20,6 +20,12 @@ import AppKit
 final class AppKitSplitView: AppKitHitTestView {
     var onPresentationChanged: ((Bool) -> Void)?
 
+    /// What the window does as the shown sidebar takes another width: its bar's part over it fits itself again.
+    var onSidebarResized: (() -> Void)?
+
+    /// The shown sidebar's width as last laid out.
+    private var sidebarWidth: CGFloat = 0
+
     /// The native split view controller the window's toolbar toggles.
     let splitController = NSSplitViewController()
 
@@ -198,6 +204,11 @@ final class AppKitSplitView: AppKitHitTestView {
 
     @objc private func splitViewResized(_ notification: Notification) {
         guard !ProgramWrite.isWriting else { return }
+        let width = splitController.splitView.subviews.first?.frame.width ?? 0
+        if !sidebarItem.isCollapsed, width != sidebarWidth {
+            sidebarWidth = width
+            onSidebarResized?()
+        }
         let presented = !sidebarItem.isCollapsed
         guard presented != lastEffectivePresentation else { return }
 

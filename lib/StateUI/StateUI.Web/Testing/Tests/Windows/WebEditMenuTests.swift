@@ -46,7 +46,7 @@ final class WebEditMenuTests: XCTestCase {
 
     /// The bar's More opened, its Edit menu, and the entry captioned `caption` clicked.
     private func choose(_ caption: String, _ host: WebRenderer) throws {
-        try click("document.querySelector('button[aria-label=\"More\"]')", host)
+        try click("document.querySelector('.stateui-bar > .stateui-bar-actions > button[aria-label=\"More\"]')", host)
         try click(
             "[...document.querySelectorAll('.stateui-menu:popover-open [aria-haspopup=menu]')]"
                 + ".find((b) => b.textContent === 'Edit')", host)

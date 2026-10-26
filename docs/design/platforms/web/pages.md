@@ -41,8 +41,12 @@ view's columns: over the sidebar the title area its page names the
 application with - its title, else the application's name, and the line
 under it - centered, the sidebar's part's actions - its start's at its
 leading edge, its end's and their own More before the toggle - and the toggle
-at the sidebar's edge; over the detail the rest, its title centered over the
-detail. An item moving between the parts keeps its button. With the sidebar hidden, or over
+at the sidebar's edge; with actions of its own the part stands the name at its
+start rather than centered over them, and fits itself before the detail's
+does (`BarFit`), the groups it has no room for behind its More. Over the
+detail the rest, its title centered over the detail. An item moving between
+the parts keeps its button. Over a drawer the part is as wide as what it
+holds, under the drawer while it is open. With the sidebar hidden, or over
 the detail as a drawer, the name stands in the sidebar alone, and the title
 is centered over the whole bar; a page's title the same as the name is not
 said twice. Without a split view the bar names the page alone. The parts follow
