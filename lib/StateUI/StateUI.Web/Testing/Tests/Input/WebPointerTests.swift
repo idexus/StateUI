@@ -101,6 +101,45 @@ final class WebPointerTests: XCTestCase {
         XCTAssertEqual(taps, 3, "a click no pointer made taps")
     }
 
+    /// A SCROLL UNDER A PRESS TAKES IT: a row the finger pressed and the list scrolled under it taps nothing as the
+    /// finger lets go over it, as iOS's WebKit tells the page no cancel of the press.
+    func testAScrollUnderAPressTakesIt() throws {
+        WebRenderer.shared?.leave()
+        var taps = 0
+        let host = WebRenderer.running {
+            ScrollView {
+                VStack {
+                    ZStack { Text("Row") }
+                        .width(200).height(40)
+                        .onTapped { taps += 1 }
+                        .id("row")
+                    Space().height(2000)
+                }
+            }
+        }
+        host.step()
+        let row = try XCTUnwrap((host.runtime.tree.root?.first(id: .manual("row"))?.native as? WebElement)?.view)
+
+        try WebBrowser.run("""
+            const box = e.getBoundingClientRect();
+            const at = { pointerId: 8, pointerType: 'touch', isPrimary: true, button: 0,
+              clientX: box.left + 100, clientY: box.top + 20, bubbles: true };
+            e.dispatchEvent(new PointerEvent('pointerdown', at));
+            // The finger goes up 50 points and the list with it: the row stays under the finger.
+            const moved = { ...at, clientY: at.clientY - 50 };
+            e.dispatchEvent(new PointerEvent('pointermove', moved));
+            let scroller = e.parentElement;
+            while (scroller && !(scroller.scrollHeight > scroller.clientHeight)) scroller = scroller.parentElement;
+            scroller.scrollTop = 50;
+            scroller.dispatchEvent(new Event('scroll'));
+            e.dispatchEvent(new PointerEvent('pointerup', moved));
+            """, on: row.node)
+        for _ in 0..<3 { host.step() }
+
+        XCTAssertEqual(taps, 0, "the list scrolled under the press: no tap")
+        host.leave()
+    }
+
     /// A list's item is tapped by the same press: let go away from it, nothing opens.
     func testAnItemIsTappedByThePress() throws {
         WebRenderer.shared?.leave()

@@ -23,7 +23,9 @@ layer's rule ([a press as a button takes it](../../host/runtime.md#a-press-as-a-
 the relay follows a press on an element that hears taps from `pointerdown`,
 the pointer the element's (`setPointerCapture`) until `pointerup`, and the
 browser taking it - `pointercancel`, a layout capturing the pointer - is the
-press taken away. A press begun on a control inside - a button, a field, a
+press taken away. So is a scroll of what holds the element while it is
+pressed: iOS's WebKit scrolls a list under a finger and tells the page no
+cancel, the row riding along under the finger to its lift. A press begun on a control inside - a button, a field, a
 view hearing its own taps - is that control's. The element's `click` taps
 only where no pointer made it - the keyboard's, a screen reader's - or where
 the element counts a run of taps, as the page counts its clicks. A list's
