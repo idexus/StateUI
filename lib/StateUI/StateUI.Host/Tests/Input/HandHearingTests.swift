@@ -127,6 +127,24 @@ final class HandHearingTests: XCTestCase {
         XCTAssertEqual(tapped, 0, "the hand took the presses: no tap")
     }
 
+    /// A TAP UNDER A STILL HAND IS A TAP: the hand over the layout hears the press go down and stand still, and the
+    /// card's press let go over it taps.
+    func testAStillHandLeavesAPressItsTap() throws {
+        let (runtime, clock) = running(TappedHandApplication())
+        let ring = try ring(in: runtime)
+        let card = try XCTUnwrap(ring.first(type: .text))
+        let size = LayoutSize(width: 10, height: 10)
+
+        card.hear(.press(.began, at: Point(5, 5), size: size, byFinger: true), in: runtime)
+        ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
+        ring.hear(.hand(.changed, moved: .zero, speed: nil), in: runtime)
+        ring.hear(.hand(.ended, moved: .zero, speed: nil), in: runtime)
+        card.hear(.press(.ended, at: Point(5, 5), size: size, byFinger: true), in: runtime)
+        frames(runtime, clock, until: 600)
+
+        XCTAssertEqual(tapped, 1, "the hand moved nothing: the card's press taps")
+    }
+
     /// The page's layout, where the tree mounted it.
     private func ring(in runtime: HostRuntime) throws -> MountedElement {
         try XCTUnwrap(runtime.tree.root?.first(type: .phaseLayout))

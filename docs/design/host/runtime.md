@@ -444,8 +444,10 @@ visual state - while it stands over the view, puts it out as it leaves and
 lights it again as it comes back; let go over the view it taps, let go away
 it taps nothing. A scroll that takes the touch, the view's own drag and a hold
 take the press: the view goes out and nothing taps. So does a hand over a
-layout as it takes the touch - the layout's own press and those of every view
-it holds, once a touch: a swipe across a run of cards opens none. A finger stands over a
+layout once it moves the run or holds a view (`HandReading.claimed`,
+`holdsItem`) - the layout's own press and those of every view it holds, once
+a touch: a swipe across a run of cards opens none, and a press standing still
+under the hand taps. A finger stands over a
 view a finger's breadth beyond its edge (`ButtonPress.fingerBreadth`), a
 mouse or a pen within it. A host tells the press's phases where it stands -
 its toolkit's own press, the platform taking it away as `cancelled` - and the

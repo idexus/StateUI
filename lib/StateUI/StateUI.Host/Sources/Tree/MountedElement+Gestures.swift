@@ -86,7 +86,8 @@ extension MountedElement {
             gather(heard.reports, in: runtime)
             if handReading.wantsFrames { runtime.handPace.opened(self) }
             if phase == .began { handTookPresses = false }
-            if heard.taken, !handTookPresses {
+            // The hand has the touch once it moves the run or holds a view: a press standing still is a tap.
+            if handReading.claimed == true || handReading.holdsItem, !handTookPresses {
                 handTookPresses = true
                 takePresses(in: runtime)
             }
