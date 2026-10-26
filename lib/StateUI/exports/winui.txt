@@ -45,6 +45,10 @@ CheckBox
   textColor
   tint
   toggled()
+ColorPicker
+  choosesOpacity
+  color
+  colorChanged()
 DatePicker
   date
   fontAttributes
@@ -104,11 +108,6 @@ ItemsView
   itemActivated()
   realizedChanged()
   selectedItemsChanged()
-PhaseLayout
-  clipsContent
-  lineWidth
-  shape
-  stroke
 Line
   contentMode
   dash
@@ -138,6 +137,11 @@ Path
   lineJoin
   lineWidth
   miterLimit
+  stroke
+PhaseLayout
+  clipsContent
+  lineWidth
+  shape
   stroke
 Picker
   fontAttributes

@@ -12,6 +12,8 @@ final class WinUILinkView: WinUIView, WinUIWordsView {
     /// What a click does: the host layer opens the link's address.
     var onClicked: (() -> Void)?
 
+    override var takesDirection: Bool { true }
+
     init() {
         super.init { number in stateui_winui_button_make(number, .link) }
         stateui_winui_button_set_content(handle, "", "", 0, -1, 0, false, false)

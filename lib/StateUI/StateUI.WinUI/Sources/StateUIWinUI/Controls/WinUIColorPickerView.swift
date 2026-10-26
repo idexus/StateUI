@@ -13,6 +13,8 @@ final class WinUIColorPickerView: WinUIView {
     /// What the picker does as the user chooses a color.
     var onChosen: ((Color) -> Void)?
 
+    override var takesDirection: Bool { true }
+
     init() {
         super.init { number in stateui_winui_color_make(number) }
     }
