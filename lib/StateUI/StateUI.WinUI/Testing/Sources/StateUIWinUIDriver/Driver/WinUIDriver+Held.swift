@@ -576,6 +576,7 @@ extension WinUIDriver {
         case "showsText": return (try action("wordsShown") == "1").propValue
         case "accessibilityIdentifier": return .string(try action("identifier"))
         case "keyboardShortcut": return Self.shortcut(try action("shortcut"))
+        case "showsMenuArrow": return (try action("menuOpens") == "arrow").propValue
         default: return nil
         }
     }

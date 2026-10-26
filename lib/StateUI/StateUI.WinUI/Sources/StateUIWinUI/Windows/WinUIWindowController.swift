@@ -202,7 +202,8 @@ final class WinUIWindowController {
         let opening = ButtonMenu.opening(of: item)
         guard opening != .none else { return nil }
         return WinUIToolbarMenu(
-            opening: opening, entries: ButtonMenu.entries(of: item), inOverflow: ButtonMenu.inOverflow(item))
+            opening: opening, showsArrow: ButtonMenu.showsArrow(item), entries: ButtonMenu.entries(of: item),
+            inOverflow: ButtonMenu.inOverflow(item))
     }
 
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window and no heading

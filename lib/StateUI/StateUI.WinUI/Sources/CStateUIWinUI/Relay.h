@@ -313,7 +313,7 @@ namespace stateui {
         ActionEdges const &edges, xaml::FrameworkElement const &owner, int64_t view, char const *const *texts,
         char const *const *identifiers, char const *const *icons, bool const *words, bool const *destructive,
         int32_t const *groups, int32_t leadingGroups, bool const *enabled, int32_t const *keys,
-        int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t count);
+        int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t const *openings, int32_t count);
 
     /// Gives the action at `place` on `edges` its menu, as `stateui_winui_title_bar_set_action_menu` says.
     void setActionMenu(

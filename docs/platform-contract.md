@@ -540,14 +540,14 @@ Every control, and every part an application, its windows and its pages are made
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarButton](controls/ToolbarButton.md) | 10 | 5 ✅ · 2 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 8 ✅ · 1 ☑️ · 1 – | 8 ✅ · 1 ✓ · 1 – | 10 ✅ |
+| [ToolbarButton](controls/ToolbarButton.md) | 10 | 5 ✅ · 2 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 10 ✅ | 8 ✅ · 1 ✓ · 1 – | 10 ✅ |
 | [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 5 ✅ | 5 ✅ | 4 ✅ · 1 ☑️ | 5 ✅ | 5 ✅ | 5 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 107 | 110 | 88 | 132 | 100 | 122 |
+| ✅ |  | 107 | 110 | 88 | 134 | 100 | 122 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
-| – |  | 11 | 17 | 28 | 10 | 29 | 15 |
-| **Met** | 164 | **145** | **152** | **140** | **151** | **151** | **151** |
+| – |  | 11 | 17 | 28 | 9 | 29 | 15 |
+| **Met** | 164 | **145** | **152** | **140** | **152** | **151** | **151** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 

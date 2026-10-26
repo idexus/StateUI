@@ -265,14 +265,66 @@ namespace {
         return nullptr;
     }
 
-    /// What `said` answers of the action `command` - an action's button or a setting's two-state one; nothing for any
-    /// other command.
+    /// An action standing in a container - a split or a drop-down button - read as a bar's button is: its words,
+    /// picture, whether its words show, whether it can be chosen, its place, its colors and its shortcut.
+    struct ContainedAction {
+        controls::AppBarElementContainer container;
+
+        controls::Control control() const { return container.Content().as<controls::Control>(); }
+        winrt::hstring Label() const { return xaml::Automation::AutomationProperties::GetName(control()); }
+        bool IsEnabled() const { return container.IsEnabled(); }
+        IInspectable Tag() const { return container.Tag(); }
+        xaml::Media::Brush Foreground() const { return control().Foreground(); }
+        auto KeyboardAccelerators() const { return control().KeyboardAccelerators(); }
+        operator xaml::DependencyObject() const { return control(); }
+
+        /// The picture before its words; null for none.
+        controls::IconElement Icon() const {
+            for (auto const &child : shown().Children())
+                if (auto icon = child.try_as<controls::IconElement>()) return icon;
+            return nullptr;
+        }
+
+        /// Whether its words stand beside its picture, as a bar's button says it.
+        controls::CommandBarLabelPosition LabelPosition() const {
+            for (auto const &child : shown().Children())
+                if (child.try_as<controls::TextBlock>()) return controls::CommandBarLabelPosition::Default;
+            return controls::CommandBarLabelPosition::Collapsed;
+        }
+
+        controls::StackPanel shown() const {
+            return control().as<controls::ContentControl>().Content().as<controls::StackPanel>();
+        }
+    };
+
+    /// Whether choosing the action destroys something: its words in the critical color its control's style reads.
+    bool destroys(xaml::FrameworkElement const &button) { return isDestructive(button, L"AppBarButtonForeground"); }
+    bool destroys(ContainedAction const &action) {
+        auto control = action.control();
+        auto name = control.try_as<controls::SplitButton>() ? L"SplitButtonForeground" : L"ButtonForeground";
+        return isDestructive(control, name);
+    }
+
+    /// What `said` answers of the action `command` - an action's button, a setting's two-state one, or a contained
+    /// split or drop-down button; nothing for any other command.
     template <typename Said>
     auto ofAction(controls::ICommandBarElement const &command, Said said)
         -> std::optional<decltype(said(controls::AppBarButton{nullptr}))> {
         if (auto button = command.try_as<controls::AppBarButton>()) return said(button);
         if (auto toggle = command.try_as<controls::AppBarToggleButton>()) return said(toggle);
+        if (auto contained = command.try_as<controls::AppBarElementContainer>()) return said(ContainedAction{contained});
         return std::nullopt;
+    }
+
+    /// How the menu of the action `command` opens: by a split button's arrow ("split"), a drop-down button's click
+    /// showing its chevron ("arrow"), a bar button's click ("click") or held ("held"); empty for none.
+    std::string menuOpens(controls::ICommandBarElement const &command) {
+        if (auto contained = command.try_as<controls::AppBarElementContainer>())
+            return contained.Content().try_as<controls::SplitButton>() ? "split" : "arrow";
+        auto button = command.try_as<controls::AppBarButton>();
+        if (!button) return "";
+        if (button.Flyout()) return "click";
+        return button.ContextFlyout() ? "held" : "";
     }
 
     /// The actions at the leading edge, "|", those at the trailing edge, "|", those behind "more" - each by `said`,
@@ -339,11 +391,12 @@ namespace {
                 if (!toggle) return std::nullopt;
                 return flag(toggle.IsChecked() && toggle.IsChecked().Value());
             }
+            if (held == "menuOpens") return menuOpens(command);
             return ofAction(command, [&](auto const &button) -> std::optional<std::string> {
                 if (held == "icon") return winrt::to_string(iconFile(button.Icon()));
                 if (held == "iconOpacity") return button.Icon() ? std::to_string(button.Icon().Opacity()) : std::string();
                 if (held == "wordsShown") return flag(button.LabelPosition() != controls::CommandBarLabelPosition::Collapsed);
-                if (held == "destructive") return flag(isDestructive(button, L"AppBarButtonForeground"));
+                if (held == "destructive") return flag(destroys(button));
                 if (held == "identifier") return narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
                 if (held == "shortcut") {
                     if (button.KeyboardAccelerators().Size() == 0) return std::string();

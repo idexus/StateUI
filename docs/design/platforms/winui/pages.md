@@ -84,11 +84,17 @@ The title view's place is a content control, which Tab stops at by default
 though it shows nothing of its own: it is no stop, so Tab walks the chrome's
 buttons and what the place holds, and never lands where nothing shows.
 
-A bar's button holding a menu is an `AppBarButton`: its click opens its
-`Flyout` where it has no click of its own, else its `ContextFlyout` opens as it
-is held - a command bar's button has no arrow part, so one that splits stands
-as held. Every menu on the bar answers through the title bar's one view, so
-each menu's items are counted on from where the menu before it ends.
+A bar's button holding a menu stands as WinUI's control for how the menu
+opens. A command bar's `AppBarButton` has no arrow part and shows no chevron,
+so a split one is a `SplitButton` - its click its own, its arrow the menu's -
+and one whose click opens the menu with its arrow a `DropDownButton`, each in
+the `AppBarElementContainer` a command bar holds any control in, told by its
+place as a bar's button is and showing its picture and words as one does. A
+click opening the menu with no arrow stays an `AppBarButton` with its
+`Flyout`, and a held menu its `ContextFlyout`; behind "more", every one is an
+`AppBarButton` opening what it offers there. Every menu on the bar answers
+through the title bar's one view, so each menu's items are counted on from
+where the menu before it ends.
 
 ## A navigation stack
 

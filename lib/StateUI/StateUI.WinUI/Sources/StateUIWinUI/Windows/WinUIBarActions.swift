@@ -59,15 +59,17 @@ struct WinUIBarActions {
                         handle, titles, identifiers, icons, actions.map(\.showsWords), actions.map(\.isDestructive),
                         places, leading, actions.map(\.isEnabled), spelled.map(\.key), spelled.map(\.modifiers),
                         actions.map { $0.shortcut.map(KeyboardShortcuts.givesWayToTyping) ?? false },
-                        actions.map { $0.isOn.map { $0 ? 1 : 0 } ?? -1 }, Int32(actions.count))
+                        actions.map { $0.isOn.map { $0 ? 1 : 0 } ?? -1 },
+                        zip(actions, places).map { action, place in action.menu?.standing(behind: place < 0) ?? 0 },
+                        Int32(actions.count))
                 }
             }
         }
     }
 
     /// The menus the actions' buttons open, each with its action's place, whether it is held, and its items told from
-    /// where the items of those before it end: on the bar, its menu - held where it splits or is held, as a command
-    /// bar's button has no arrow part; behind "more", what it offers there, its click opening it.
+    /// where the items of those before it end: on the bar, its menu - a split button's arrow's, a click's, or held;
+    /// behind "more", what it offers there, its click opening it.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
     private static func menus(
         of actions: [WinUIToolbarAction], places: [Int32]
@@ -78,7 +80,7 @@ struct WinUIBarActions {
             let behind = places[place] < 0
             let menu = WinUIMenu(entries: behind ? opened.inOverflow : opened.entries)
             defer { first += Int32(menu.actions.count) }
-            return (Int32(place), !behind && opened.opening != .click, first, menu)
+            return (Int32(place), !behind && opened.opening == .hold, first, menu)
         }
     }
 

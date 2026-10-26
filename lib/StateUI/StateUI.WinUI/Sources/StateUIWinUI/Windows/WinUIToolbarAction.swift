@@ -33,20 +33,36 @@ struct WinUIToolbarAction {
     }
 }
 
-/// The menu a bar's button opens: how it opens, its entries, and what it offers behind the bar's "more"
-/// (`ButtonMenu`).
+/// The menu a bar's button opens: how it opens, whether an arrow says its click opens it, its entries, and what it
+/// offers behind the bar's "more" (`ButtonMenu`).
 @MainActor
 struct WinUIToolbarMenu {
     let opening: ButtonMenuOpening
+    var showsArrow = true
     let entries: [MenuEntry]
     let inOverflow: [MenuEntry]
 
     /// Everything the menu shows: a bar draws its buttons again where it says something else.
     struct Said: Equatable {
         let opening: ButtonMenuOpening
+        let showsArrow: Bool
         let entries: [MenuEntry.Said]
         let inOverflow: [MenuEntry.Said]
     }
 
-    var said: Said { Said(opening: opening, entries: entries.map(\.said), inOverflow: inOverflow.map(\.said)) }
+    var said: Said {
+        Said(opening: opening, showsArrow: showsArrow, entries: entries.map(\.said), inOverflow: inOverflow.map(\.said))
+    }
+
+    /// The control a button holding this menu stands as on the bar, as the relay numbers it: WinUI's bar button for
+    /// a click without an arrow and for a held menu, a split button for a split, a drop-down button for a click with
+    /// its arrow; behind "more", the bar's button.
+    func standing(behind: Bool) -> Int32 {
+        guard !behind else { return 0 }
+        switch opening {
+        case .arrow: return 1
+        case .click where showsArrow: return 2
+        default: return 0
+        }
+    }
 }

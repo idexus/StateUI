@@ -820,7 +820,7 @@ void stateui_winui_sheet_set_actions(StateUIObjectRef sheet, char const *const *
                                      char const *const *icons, bool const *words, bool const *destructive,
                                      int32_t const *groups, int32_t leadingGroups, bool const *enabled,
                                      int32_t const *keys, int32_t const *modifiers, bool const *givesWay,
-                                     int32_t const *states, int32_t count);
+                                     int32_t const *states, int32_t const *openings, int32_t count);
 void stateui_winui_sheet_set_action_menu(StateUIObjectRef sheet, int32_t place, bool held, int32_t first,
                                          int32_t const *kinds, char const *const *titles, bool const *enabled,
                                          char const *const *identifiers, char const *const *icons,
@@ -1203,14 +1203,15 @@ void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char c
 /// by (empty for none), the files its picture may stand in - each ended by a line feed, empty for none - whether its
 /// words stand beside its picture, whether choosing it destroys something, its group's place - the first
 /// `leadingGroups` at the bar's leading edge, the others at its trailing edge, -1 behind "more" - whether it
-/// can be chosen, its shortcut's key and modifiers (`stateui_winui_set_shortcut`), key 0 for none, and a setting's
-/// state - 1 on, 0 off, -1 for an action - which makes its button a two-state one. A group stands apart from the one
-/// before it; a press tells the action's place in the list.
+/// can be chosen, its shortcut's key and modifiers (`stateui_winui_set_shortcut`), key 0 for none, a setting's
+/// state - 1 on, 0 off, -1 for an action - which makes its button a two-state one, and how a menu it holds opens:
+/// 0 from WinUI's bar button, 1 by a split button's arrow, its click its own, 2 by a drop-down button's click, its
+/// chevron showing. A group stands apart from the one before it; a press tells the action's place in the list.
 void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts,
                                          char const *const *identifiers, char const *const *icons, bool const *words,
                                          bool const *destructive, int32_t const *groups, int32_t leadingGroups,
                                          bool const *enabled, int32_t const *keys, int32_t const *modifiers,
-                                         bool const *givesWay, int32_t const *states, int32_t count);
+                                         bool const *givesWay, int32_t const *states, int32_t const *openings, int32_t count);
 
 /// The menu of the title bar's action at `place`, written as a context menu is (`stateui_winui_set_context_menu`), its
 /// items' choices told from `first` on: the flyout its click opens, or - `held` - its context menu, press and hold or
@@ -1260,7 +1261,7 @@ void stateui_winui_split_set_actions(StateUIObjectRef split, char const *const *
                                      char const *const *icons, bool const *words, bool const *destructive,
                                      int32_t const *groups, int32_t leadingGroups, bool const *enabled,
                                      int32_t const *keys, int32_t const *modifiers, bool const *givesWay,
-                                     int32_t const *states, int32_t count);
+                                     int32_t const *states, int32_t const *openings, int32_t count);
 void stateui_winui_split_set_action_menu(StateUIObjectRef split, int32_t place, bool held, int32_t first,
                                          int32_t const *kinds, char const *const *titles, bool const *enabled,
                                          char const *const *identifiers, char const *const *icons,

@@ -143,14 +143,19 @@ namespace {
         return element.ContextFlyout().try_as<controls::MenuFlyout>();
     }
 
-    /// The button of a bar's action at `place` - at either edge or behind "more"; null for none.
-    controls::AppBarButton actionButton(ActionEdges const &edges, int32_t place) {
+    /// The control of a bar's action at `place` - its button, or the split or drop-down button its container holds -
+    /// at either edge or behind "more"; null for none.
+    xaml::FrameworkElement actionButton(ActionEdges const &edges, int32_t place) {
         for (auto const &commands :
              {edges.leading.PrimaryCommands(), edges.trailing.PrimaryCommands(), edges.trailing.SecondaryCommands()})
-            for (auto const &command : commands)
+            for (auto const &command : commands) {
+                if (auto contained = command.try_as<controls::AppBarElementContainer>();
+                    contained && winrt::unbox_value_or<int32_t>(contained.Tag(), -1) == place)
+                    return contained.Content().as<xaml::FrameworkElement>();
                 if (auto button = command.try_as<controls::AppBarButton>();
                     button && winrt::unbox_value_or<int32_t>(button.Tag(), -1) == place)
                     return button;
+            }
         return nullptr;
     }
 
@@ -237,9 +242,11 @@ void stateui::setActionMenu(
         writer.write(kinds[index], titles[index], enabled[index], identifiers[index], icons[index],
                      destructive[index], keys[index], modifiers[index], givesWay[index]);
     }
-    // Held, it is the button's context menu - press and hold, or the mouse's other button - as a held button's.
-    if (held) button.ContextFlyout(flyout);
-    else button.Flyout(flyout);
+    // A split button's arrow opens it; held, it is the button's context menu - press and hold, or the mouse's other
+    // button - as a held button's; else the button's click opens it.
+    if (auto split = button.try_as<controls::SplitButton>()) split.Flyout(flyout);
+    else if (held) button.ContextFlyout(flyout);
+    else button.as<controls::Button>().Flyout(flyout);
 }
 
 extern "C" int32_t stateui_winui_title_bar_action_menu(StateUIObjectRef handle, int32_t place, char *utf8, int32_t capacity) {

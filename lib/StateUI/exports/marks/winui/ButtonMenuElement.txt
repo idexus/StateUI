@@ -1,5 +1,5 @@
 # revision 1.1
 Button.menuKind: ✅
 Button.showsMenuArrow: ✅
-ToolbarButton.menuKind: ☑️ A WinUI command bar's button has no arrow part: a split one opens its menu held.
-ToolbarButton.showsMenuArrow: – A WinUI command bar's button shows no arrow: its flyout opens from its click.
+ToolbarButton.menuKind: ✅
+ToolbarButton.showsMenuArrow: ✅

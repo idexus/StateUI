@@ -217,6 +217,56 @@ namespace {
             callbacks.chosen(view, index);
         }));
     }
+
+    /// An action whose menu opens apart from its click - a split button's arrow - or by its click with WinUI's
+    /// chevron - a drop-down button's - in the container a command bar holds any control in, told by its place as a
+    /// bar's button is: its picture, and its words where they show, as a bar's button shows them.
+    /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
+    controls::AppBarElementContainer containedAction(
+        bool splits, xaml::FrameworkElement const &owner, int64_t view, int32_t index, char const *words,
+        char const *identifier, char const *icon, bool showsWords, bool destructive, bool enabled, int32_t key,
+        int32_t modifiers, bool givesWay
+    ) {
+        controls::StackPanel content;
+        content.Orientation(controls::Orientation::Horizontal);
+        content.Spacing(8);
+        auto picture = pictureIcon(icon);
+        if (picture) {
+            if (!enabled && picture.try_as<controls::ImageIcon>()) picture.Opacity(disabledShare(owner));
+            content.Children().Append(picture);
+        }
+        if (!picture || showsWords) {
+            controls::TextBlock label;
+            label.Text(text(words));
+            content.Children().Append(label);
+        }
+        controls::ContentControl control{nullptr};
+        if (splits) {
+            controls::SplitButton split;
+            split.Click(guarded("handling Click",
+                [view, index](controls::SplitButton const &, controls::SplitButtonClickEventArgs const &) {
+                callbacks.chosen(view, index);
+            }));
+            control = split;
+        } else {
+            control = controls::DropDownButton();
+        }
+        control.Content(content);
+        control.IsEnabled(enabled);
+        xaml::Automation::AutomationProperties::SetName(control, text(words));
+        if (identifier && *identifier) xaml::Automation::AutomationProperties::SetAutomationId(control, text(identifier));
+        if (picture && !showsWords) controls::ToolTipService::SetToolTip(control, winrt::box_value(text(words)));
+        if (key != 0) control.KeyboardAccelerators().Append(accelerator(key, modifiers, givesWay));
+        if (destructive) {
+            std::wstring name = splits ? L"SplitButtonForeground" : L"ButtonForeground";
+            markDestructive(control, {name, name + L"PointerOver", name + L"Pressed"});
+        }
+        controls::AppBarElementContainer contained;
+        contained.Tag(winrt::box_value(index));
+        contained.IsEnabled(enabled);
+        contained.Content(control);
+        return contained;
+    }
 }
 
 extern "C" StateUIObjectRef stateui_winui_title_bar_make(int64_t view) {
@@ -295,12 +345,13 @@ extern "C" int32_t stateui_winui_title_bar_theme(StateUIObjectRef handle) {
 extern "C" void stateui_winui_title_bar_set_actions(
     StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
     bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
-    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t count
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t const *states,
+    int32_t const *openings, int32_t count
 ) {
     try {
         auto bar = borrow<controls::TitleBar>(handle);
         setActions(actionEdges(bar), bar, winrt::unbox_value<int64_t>(bar.Tag()), texts, identifiers, icons, words,
-                   destructive, groups, leadingGroups, enabled, keys, modifiers, givesWay, states, count);
+                   destructive, groups, leadingGroups, enabled, keys, modifiers, givesWay, states, openings, count);
         paintActions(bar);
     } catch (...) {
         report("setting a title bar's actions");
@@ -311,7 +362,7 @@ void stateui::setActions(
     ActionEdges const &edges, xaml::FrameworkElement const &owner, int64_t view, char const *const *texts,
     char const *const *identifiers, char const *const *icons, bool const *words, bool const *destructive,
     int32_t const *groups, int32_t leadingGroups, bool const *enabled, int32_t const *keys, int32_t const *modifiers,
-    bool const *givesWay, int32_t const *states, int32_t count
+    bool const *givesWay, int32_t const *states, int32_t const *openings, int32_t count
 ) {
     auto leading = edges.leading, trailing = edges.trailing;
     for (auto const &actions : {leading, trailing}) {
@@ -327,6 +378,10 @@ void stateui::setActions(
             dressAction(toggle, owner, view, index, texts[index], identifiers[index], icons[index], words[index],
                         enabled[index], keys[index], modifiers[index], givesWay[index]);
             button = toggle;
+        } else if (openings[index] != 0) {
+            button = containedAction(openings[index] == 1, owner, view, index, texts[index], identifiers[index],
+                                     icons[index], words[index], destructive[index], enabled[index], keys[index],
+                                     modifiers[index], givesWay[index]);
         } else {
             controls::AppBarButton action;
             dressAction(action, owner, view, index, texts[index], identifiers[index], icons[index], words[index],
@@ -421,12 +476,14 @@ extern "C" void stateui_winui_split_set(
 extern "C" void stateui_winui_split_set_actions(
     StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
     bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
-    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t count
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t const *states,
+    int32_t const *openings, int32_t count
 ) {
     try {
         auto head = paneHead(borrow<controls::SplitView>(handle));
         setActions(headEdges(head), head, winrt::unbox_value<int64_t>(head.Tag()), texts, identifiers, icons,
-                   words, destructive, groups, leadingGroups, enabled, keys, modifiers, givesWay, states, count);
+                   words, destructive, groups, leadingGroups, enabled, keys, modifiers, givesWay, states, openings,
+                   count);
         showPaneHead(head);
     } catch (...) {
         report("setting a split view's sidebar actions");
@@ -496,6 +553,13 @@ void stateui::paintActions(ActionEdges const &edges, media::Brush const &foregro
         for (auto const &command : actions.PrimaryCommands()) {
             auto button = command.try_as<controls::AppBarButton>();
             if (button && isDestructive(button, L"AppBarButtonForeground")) continue;
+            // A contained split or drop-down button draws its words in its own color, not its container's.
+            if (auto contained = command.try_as<controls::AppBarElementContainer>()) {
+                auto control = contained.Content().as<controls::Control>();
+                auto name = control.try_as<controls::SplitButton>() ? L"SplitButtonForeground" : L"ButtonForeground";
+                if (!isDestructive(control, name)) paint(control);
+                continue;
+            }
             if (auto control = command.try_as<controls::Control>()) paint(control);
         }
     }
