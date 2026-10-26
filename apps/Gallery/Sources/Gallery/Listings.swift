@@ -654,7 +654,7 @@ enum Listings {
             #else
             .padding(horizontal: 16, vertical: 11)
             #endif
-            #if !(APPKIT || WINUI || GTK)
+            #if UIKIT || ANDROID || WEB
             .visualState(.pressed) { $0
                 .scale(1.05)
                 .background(Palette.accentLit)
@@ -673,13 +673,13 @@ enum Listings {
         Style<Button>(role: .cancel)
             .textColor(Palette.text)
             .background(Palette.selected)
-            #if !(APPKIT || WINUI || GTK)
+            #if UIKIT || ANDROID || WEB
             .visualState(.pressed) { $0.background(Palette.selectedLit) }
             #endif
         Style<Button>(role: .destructive)
             .textColor(Palette.danger)
             .background(Palette.dangerWash)
-            #if !(APPKIT || WINUI || GTK)
+            #if UIKIT || ANDROID || WEB
             .visualState(.pressed) { $0.background(Palette.dangerWashLit) }
             #endif
         """#,
