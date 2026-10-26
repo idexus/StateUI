@@ -424,6 +424,11 @@ first frame anyone sees is always the value itself. Nothing is written for a
 value with no half way (text, a flag, an enumeration member) or when the
 motion resolves to none.
 
+A value taken away - a visual state left, whose scale the control never
+stated - carries the same transition beside its clearing, by the value it was:
+the host knows where the property rests and travels it back there, as it
+traveled out from there ([standing values](../host/tree.md#standing-values)).
+
 A size somebody measures is never animated. Where an element reports its own
 frame, or the layout it stands in is measured, a size comes from a report, and
 animating it would lay the page out at sizes nobody chose, growing from

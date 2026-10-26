@@ -542,7 +542,9 @@ extension Differ {
         let measured = sizesArrive || node.reportsFrame
 
         if !describeAll, !replace, previous != nil, plan != nil || travels.kind != .none {
-            for (property, value) in patch.properties
+            // A value taken away travels by the value it was, back to where its host rests it.
+            let taken = patch.clearedProperties.compactMap { property in rendered?.props[property].map { (property, $0) } }
+            for (property, value) in patch.properties.map({ ($0.key, $0.value) }) + taken
             where value.moves && property.facts.travels
                 && patch.transitions[property] == nil {
                 if measured, !property.facts.moves.isDisjoint(with: [.width, .height]) { continue }

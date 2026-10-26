@@ -318,7 +318,7 @@
                 mount: mount,
                 property: property,
                 standing: applying.standing[property],
-                target: resolvedValue(property),
+                target: resolvedValue(property) ?? identity(of: property),
                 motion: hasDrivenPresentation || !native.animates(property)
                     ? nil
                     : patch.transitions[property]?.motion)
@@ -803,19 +803,29 @@
                 return .numbers(Array(repeating: 0, count: radii.count))
             }
             return nil
+        default:
+            return identity(of: property)
+        }
+    }
+
+    /// What a transform the tree states none of stands at, on every host: no turn, no shift, a scale of one. A
+    /// transform taken away travels back there, as it traveled out from there.
+    /// Design: docs/design/host/tree.md#standing-values
+    private func identity(of property: Prop) -> HostValue? {
+        switch property {
         case .rotation, .translationX, .translationY:
-            return .number(0)
+            .number(0)
         case .scale:
-            return .number(1)
+            .number(1)
         case .scaleX, .scaleY:
-            return .number(resolvedValue(.scale)?.number ?? 1)
+            .number(resolvedValue(.scale)?.number ?? 1)
         case .geometryTransform:
-            return .values([
+            .values([
                 .number(1), .number(0), .number(0),
                 .number(1), .number(0), .number(0),
             ])
         default:
-            return nil
+            nil
         }
     }
 

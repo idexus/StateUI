@@ -87,6 +87,13 @@ then the bound or described value. Where none exists but the toolkit animates
 the property, the property's resting value is the start: no margin, no turn,
 a scale of one, a corner radius of the target's shape.
 
+A transform the tree stops stating - a pressed state's scale as the press
+lets go - travels back to the identity under its motion, as it traveled out
+from it, and stands untold once there: no turn, no shift and a scale of one are
+what every host draws for a transform it is told none of. Nothing else taken
+away travels: a margin, a padding or a line's width untold is the platform's
+own, which no resting value names.
+
 ## Leaving
 
 An element leaves by every road out of the tree - dropped from an arrangement,

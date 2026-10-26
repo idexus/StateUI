@@ -299,6 +299,30 @@ final class MotionTests: XCTestCase {
         XCTAssertNil(still.render(button(false, still: true)).transitions["background"], "and at once under none")
     }
 
+    /// A VISUAL STATE LEFT TAKES ITS VALUES AWAY UNDER THE SAME MOTION: a value
+    /// only the state stated - a scale while held down - is taken away with a
+    /// motion beside it, for the host to travel it back to its rest; under
+    /// `.motion(.none)` it goes at once.
+    func testAValueAStateTakesAwayTravelsBack() {
+        func button(_ enabled: Bool, still: Bool) -> Node {
+            let base = Button("Save")
+                .isEnabled(enabled)
+                .visualState(.disabled) { $0.scale(0.9) }
+
+            return (still ? base.motion(.none) : base).id("b").node
+        }
+
+        let traveling = Renders()
+        traveling.render(button(false, still: false))
+        let left = traveling.render(button(true, still: false))
+        XCTAssertEqual(left.clearedProperties, [.scale], "the state's scale taken away")
+        XCTAssertEqual(left.transitions[.scale]?.motion, .standard, "under the control's motion")
+
+        let still = Renders()
+        still.render(button(false, still: true))
+        XCTAssertNil(still.render(button(true, still: true)).transitions[.scale], "and at once under none")
+    }
+
     // ---- Which values a motion is about --------------------------------------
 
     /// A motion may name WHICH values it is about, and the rest keep whatever
