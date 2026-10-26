@@ -99,8 +99,6 @@ enum GTKEnvironment {
 
     private static var watching = false
 
-    /// Whether libadwaita offers the user an accent to choose - from 1.6 on, once its style manager stands: before
-    /// it, GTK knows no class to look in.
     /// Whether the user chooses the desktop's accent: libadwaita 1.6 on, where the system supports one.
     static var userChoosesAccent: Bool {
         guard offersAccent else { return false }
@@ -112,23 +110,21 @@ enum GTKEnvironment {
         return g_value_get_boolean(&supports) != 0
     }
 
+    /// Whether libadwaita offers an accent - from 1.6 on: its style manager's class, which stands once the manager
+    /// does, holds one.
     static var offersAccent: Bool {
+        _ = adw_style_manager_get_default()
         let styles = g_type_class_peek(adw_style_manager_get_type())?.assumingMemoryBound(to: GObjectClass.self)
         return styles.map { g_object_class_find_property($0, "accent-color") != nil } ?? false
     }
 
-    /// A label of libadwaita's `accent` class, never shown, whose color is the accent the desktop draws.
-    private static var accentProbe: UnsafeMutablePointer<GtkWidget>?
-
-    /// The accent the desktop draws in, as libadwaita's `accent` class colors words.
+    /// The accent the desktop draws in, as libadwaita's `accent` class colors words: a label of that class, never
+    /// shown, made for each reading - one kept stands in no window, where a change of the rules never reaches it.
     static var accent: Color {
-        let probe = accentProbe ?? {
-            let label = gtk_label_new(nil)!
-            g_object_ref_sink(label)
-            gtk_widget_add_css_class(label, "accent")
-            accentProbe = label
-            return label
-        }()
+        let probe = gtk_label_new(nil)!
+        g_object_ref_sink(probe)
+        defer { g_object_unref(probe) }
+        gtk_widget_add_css_class(probe, "accent")
         var rgba = GdkRGBA()
         gtk_widget_get_color(probe, &rgba)
         return Color(fractions: (Double(rgba.red), Double(rgba.green), Double(rgba.blue), Double(rgba.alpha)))

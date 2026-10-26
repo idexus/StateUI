@@ -67,6 +67,23 @@ final class GTKRendererTests: XCTestCase {
         }
     }
 
+    /// The accent read is the one drawn now: an accent the application gives is read at once, and libadwaita's own
+    /// again once taken away - however many times it was read before.
+    func testTheAccentReadIsTheOneDrawnNow() throws {
+        try onUIThread {
+            _ = GTKRenderer.running { Text("Accent") }
+            try XCTSkipUnless(GTKEnvironment.offersAccent, "this libadwaita takes no accent of the application's")
+            let own = GTKEnvironment.accent
+            let brick = try XCTUnwrap(GTKBrush.rgba(Color.firebrick.propValue))
+            GTKStyleSheet.accent(brick, variables: true)
+            defer { GTKStyleSheet.accent(nil, variables: true) }
+            XCTAssertEqual(GTKEnvironment.accent, .firebrick, "the application's")
+
+            GTKStyleSheet.accent(nil, variables: true)
+            XCTAssertEqual(GTKEnvironment.accent, own, "libadwaita's own again")
+        }
+    }
+
     /// A page's controls are GTK's, shown in a window: the words it describes are the words GTK holds.
     func testThePageShowsItsControlsInAWindow() {
         onUIThread {

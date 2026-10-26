@@ -12,6 +12,9 @@
 set -euo pipefail
 
 repository_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# Every machine meets one desktop: a user who chose the accent, as GNOME's from 47 on - a machine with no desktop's
+# settings stands so too (docs/design/platforms/gtk/runtime.md, The suite's desktop).
+export ADW_DEBUG_ACCENT_COLOR=blue
 # The foundation's own tests on Linux - its C library and its thread numbers, the Glibc branches no other machine
 # runs - before the host's own, in a run of them whole.
 if [[ $# -eq 0 ]]; then
