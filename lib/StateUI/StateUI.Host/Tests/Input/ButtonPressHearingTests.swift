@@ -53,13 +53,41 @@ final class ButtonPressHearingTests: XCTestCase {
         XCTAssertEqual(states.last, "Normal")
     }
 
+    /// A FINGER'S PRESS IN A SCROLLER LIGHTS THE ROW ONLY ONCE IT HAS STOOD A MOMENT, as it may still begin a scroll:
+    /// a scroll taking it before lights nothing; a mouse's press lights the row at once.
+    func testAFingersPressInAScrollerWaitsToLightTheRow() throws {
+        let (runtime, row) = try running(ScrolledRowApplication())
+        let now = runtime.clock.now()
+
+        row.hear(.press(.began, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        settle(runtime)
+        XCTAssertEqual(states, [], "not lit at once")
+        runtime.handPace.pace(now: now + ButtonPress.scrollerWait, in: runtime)
+        settle(runtime)
+        XCTAssertEqual(states, ["Pressed"], "lit once it stood")
+        row.hear(.press(.ended, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        settle(runtime)
+        XCTAssertEqual(taps, 1)
+
+        states = []
+        row.hear(.press(.began, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        row.hear(.press(.cancelled, at: Point(50, 20), size: size, byFinger: true), in: runtime)
+        runtime.handPace.pace(now: now + 1, in: runtime)
+        settle(runtime)
+        XCTAssertEqual(states, [], "a scroll took it before it lit")
+
+        row.hear(.press(.began, at: Point(50, 20), size: size, byFinger: false), in: runtime)
+        settle(runtime)
+        XCTAssertEqual(states, ["Pressed"], "a mouse's press lights at once")
+    }
+
     private func settle(_ runtime: HostRuntime) {
         for _ in 0..<5 { runtime.pump.turn() }
     }
 
-    private func running() throws -> (HostRuntime, MountedElement) {
+    private func running(_ application: some Application = RowApplication()) throws -> (HostRuntime, MountedElement) {
         (taps, held, states) = (0, 0, [])
-        stateUIUseApp(RowApplication())
+        stateUIUseApp(application)
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -70,6 +98,21 @@ final class ButtonPressHearingTests: XCTestCase {
 @MainActor private var taps = 0
 @MainActor private var held = 0
 @MainActor private var states: [String] = []
+
+/// The row standing in a scroller.
+private struct ScrolledRowApplication: Application {
+    var body: some Scene {
+        WindowGroup {
+            ScrollView {
+                ZStack { Text("Row") }
+                    .onTapped { @MainActor in taps += 1 }
+                    .visualState(.pressed) { $0.background(.green) }
+                    .onVisualStateChanged { @MainActor state in states.append(state.name) }
+                    .id("row")
+            }
+        }
+    }
+}
 
 private struct RowApplication: Application {
     var body: some Scene {

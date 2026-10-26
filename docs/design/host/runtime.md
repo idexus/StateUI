@@ -447,7 +447,12 @@ take the press: the view goes out and nothing taps. So does a hand over a
 layout once it moves the run or holds a view (`HandReading.claimed`,
 `holdsItem`) - the layout's own press and those of every view it holds, once
 a touch: a swipe across a run of cards opens none, and a press standing still
-under the hand taps. A finger stands over a
+under the hand taps. A finger's press on a view standing in what it may still
+begin to scroll - a scroller, a collection, a layout a hand moves - lights the
+view only once it has stood a moment (`ButtonPress.scrollerWait`, iOS's wait
+before a list's row hears a touch), paced by the frames: a scroll beginning
+before lights nothing, and a quick tap lights the view as it lets go and taps.
+A mouse's or a pen's press lights it at once. A finger stands over a
 view a finger's breadth beyond its edge (`ButtonPress.fingerBreadth`), a
 mouse or a pen within it. A host tells the press's phases where it stands -
 its toolkit's own press, the platform taking it away as `cancelled` - and the

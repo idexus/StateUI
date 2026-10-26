@@ -38,6 +38,29 @@ final class ButtonPressTests: XCTestCase {
         XCTAssertEqual(press.step(.ended, over: true), [], "no press stands")
     }
 
+    /// A finger's press in a scroller lights the view only once it has stood a moment (`scrollerWait`), as iOS keeps
+    /// a touch from a list's rows while it may still begin a scroll.
+    func testAPressInAScrollerLightsOnlyAfterTheWait() {
+        var press = ButtonPress()
+        XCTAssertEqual(press.step(.began, over: true, waits: true, at: 0), [], "not lit at once")
+        XCTAssertEqual(press.paced(now: 0.1), [], "still waiting")
+        XCTAssertEqual(press.paced(now: ButtonPress.scrollerWait), [.lit], "lit after the wait")
+        XCTAssertEqual(press.step(.ended, over: true), [.out, .tapped])
+    }
+
+    func testAScrollTakingAWaitingPressLightsNothing() {
+        var press = ButtonPress()
+        _ = press.step(.began, over: true, waits: true, at: 0)
+        XCTAssertEqual(press.step(.cancelled, over: true), [], "a scroll took it before it was lit")
+        XCTAssertEqual(press.paced(now: 1), [], "nothing waits")
+    }
+
+    func testAQuickTapInAScrollerLightsAsItTaps() {
+        var press = ButtonPress()
+        _ = press.step(.began, over: true, waits: true, at: 0)
+        XCTAssertEqual(press.step(.ended, over: true), [.lit, .out, .tapped], "lit as it lets go, and tapped")
+    }
+
     func testAFingerStandsOverAViewALittleBeyondItsEdge() {
         let size = LayoutSize(width: 100, height: 40)
         XCTAssertTrue(ButtonPress.isOver(Point(x: 50, y: 48), in: size, byFinger: true), "a finger's breadth")

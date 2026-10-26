@@ -4,7 +4,8 @@
 @_spi(Host) import StateUI
 
 /// The hands over layouts a frame has business with: the wheels open, let go by the frames that find them still - a
-/// wheel tells no lift - and the hands' reports since the last frame, said at its start.
+/// wheel tells no lift - the hands' reports since the last frame, said at its start, and the presses waiting to
+/// light their views.
 /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
 @_spi(Host) @MainActor public final class HandPace {
     /// The elements whose wheel is open or whose hand's reports wait, by their mount.
@@ -36,7 +37,7 @@
 
             element.paced(now: now, in: runtime)
             if !element.handReading.wantsFrames, element.handOutbox.isEmpty, element.pinchOutbox.isEmpty,
-               !element.wheelPinch.isOpen {
+               !element.wheelPinch.isOpen, !element.buttonPress.isWaiting {
                 open[mount] = nil
             }
         }

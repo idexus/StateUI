@@ -43,7 +43,8 @@ extension MountedElement {
         }
         switch input {
         case .press(let phase, let point, let size, let byFinger):
-            pressed(phase, over: ButtonPress.isOver(point, in: size, byFinger: byFinger), in: runtime)
+            let over = ButtonPress.isOver(point, in: size, byFinger: byFinger)
+            pressed(phase, over: over, waits: byFinger && standsInAScroller, in: runtime)
         case .tap(let run):
             let count = max(1, Int(number(.tapCount) ?? 1))
             if run == 0 || run % count == 0 { send(.tapped, [], in: runtime) }
@@ -196,6 +197,7 @@ extension MountedElement {
     /// A frame at `now` found the element's wheel open or its hand's reports waiting: the wheel let go where it has
     /// stood still long enough, then what the hand said since the last frame said at once.
     func paced(now: Double, in runtime: HostRuntime) {
+        tell(buttonPress.paced(now: now), in: runtime)
         for each in wheelPinch.paced(now: now) { hear(each, in: runtime) }
         gather(handReading.paced(at: now), in: runtime)
         let reports = handOutbox
@@ -264,14 +266,31 @@ extension MountedElement {
     /// A press on the view as a button takes it: its pressed state lit and put out, and a tap where it lets go over
     /// the view - a single one; a run of taps keeps the platform's own count.
     /// Design: docs/design/host/runtime.md#a-press-as-a-button-takes-it
-    private func pressed(_ phase: GesturePhase, over: Bool, in runtime: HostRuntime) {
-        for said in buttonPress.step(phase, over: over) {
+    private func pressed(_ phase: GesturePhase, over: Bool, waits: Bool = false, in runtime: HostRuntime) {
+        tell(buttonPress.step(phase, over: over, waits: waits, at: runtime.clock.now()), in: runtime)
+        if buttonPress.isWaiting { runtime.handPace.opened(self) }
+    }
+
+    /// What a press said of the view, as its events.
+    private func tell(_ saids: [ButtonPress.Said], in runtime: HostRuntime) {
+        for said in saids {
             switch said {
             case .lit: send(.pressed, [], in: runtime)
             case .out: send(.released, [], in: runtime)
             case .tapped: if Int(number(.tapCount) ?? 1) <= 1 { send(.tapped, [], in: runtime) }
             }
         }
+    }
+
+    /// Whether the view stands in what a finger's press may still begin to scroll: a scroller, a collection, a
+    /// layout a hand moves.
+    private var standsInAScroller: Bool {
+        var each = parent
+        while let element = each {
+            if [.scrollView, .itemsView].contains(element.type) || element.hearing.contains(.hand) { return true }
+            each = element.parent
+        }
+        return false
     }
 
     /// A hand taking the touch takes every press under way in the layout - its own and those of the views it holds:
