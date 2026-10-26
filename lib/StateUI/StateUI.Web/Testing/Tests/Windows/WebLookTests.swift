@@ -267,6 +267,27 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(seen.count, 1, "one standing, frame after frame: \(seen)")
     }
 
+    /// A held button selects no words: a finger held on a button - the page's, the bar's, a tab's - presses it, and
+    /// the browser's selection never takes its words.
+    func testAHeldButtonSelectsNoWords() throws {
+        let host = WebRenderer.running {
+            TabView([0, 1]) { tab in
+                VStack { Button("Reset") }
+                    .title("Tab \(tab)")
+                    .toolbar { ToolbarButton("Share") }
+            }
+        }
+        let count = "document.querySelectorAll('.stateui-window button').length"
+        host.settle { (try? WebBrowser.number(count, on: 0)) ?? 0 >= 4 }
+        let selectable = """
+            [...document.querySelectorAll('.stateui-window button')]
+              .filter((b) => getComputedStyle(b).userSelect !== 'none')
+              .map((b) => b.innerText.trim() || b.getAttribute('aria-label')).join(',')
+            """
+
+        XCTAssertEqual(try WebBrowser.evaluate(selectable, on: 0) ?? "", "", "buttons whose words a hold selects")
+    }
+
     /// On a touch screen a button the user tapped is not left lit: what lights a button under the pointer waits for a
     /// pointer that hovers, which a finger is not - the browser holds the tapped one hovered till the next tap.
     func testATappedButtonIsNotLeftLitOnATouchScreen() throws {

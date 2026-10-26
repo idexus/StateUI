@@ -47,6 +47,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 *, *::before, *::after { box-sizing: border-box; }
+/* A button is pressed, never read: a finger held on one selects none of its words, nor offers their callout. */
+button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 /* The width the layout gives a view is its own: a child does not take it. */
 @property --stateui-width { syntax: "*"; inherits: false; }
 [hidden] { display: none !important; }

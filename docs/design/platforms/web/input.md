@@ -62,6 +62,11 @@ where the press moves as far as a drag or lifts. A web view's document of the
 page's site is heard too. The held press's click is taken before any view
 hears it, so a press held is no tap.
 
+A finger held on a button selects none of its words: a button is pressed,
+never read, so every button the page stands - the page's, the bar's, a tab's
+- stands out of the browser's selection and its callout, as a view hearing
+taps does.
+
 ## A press dragged and a pinch
 
 A view that hears a press dragged or a pinch takes the pointers pressed on it
