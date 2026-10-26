@@ -93,6 +93,13 @@ whatever room the tree gives it beside the picture. What the tree leaves
 unsaid is a plain configuration's own: an empty fill there is the tint's, so a
 button whose style leaves takes the plain box again, never an empty one.
 
+The box reaches UIKit whole, its radius with it, in one configuration given
+only when it differs. UIKit rounds its box from the last configuration it was
+given, and takes a highlight off in an animation of its own: a box given
+first with a fresh background's own corners - 17 points on a phone - and its
+radius after, frame by frame as its color travels, has the highlight's end
+move its corners from 17 back to the capsule's.
+
 A role draws where the tree draws nothing of its own ([a button's
 role](../../host/layout.md#a-buttons-role)): the main action wears UIKit's
 filled configuration, the tint behind white words - the configuration worn

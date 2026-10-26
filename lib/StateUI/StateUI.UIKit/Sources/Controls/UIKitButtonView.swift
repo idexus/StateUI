@@ -120,10 +120,12 @@ final class UIKitButtonView: UIButton {
                 box.strokeColor = line
             }
         }
-        configuration?.background = box
         boxShape = shape == nil ? nil : outlined
-        configuration?.cornerStyle = boxShape == nil ? own.cornerStyle : .fixed
-        roundCorners()
+        guard var next = configuration else { return }
+        next.background = box
+        next.cornerStyle = boxShape == nil ? own.cornerStyle : .fixed
+        if let radius = cornerRadius() { next.background.cornerRadius = radius }
+        if next != configuration { configuration = next }
     }
 
     /// Wears UIKit's filled configuration or its plain one, keeping all the button set on the other.
@@ -152,9 +154,13 @@ final class UIKitButtonView: UIButton {
 
     /// Rounds the box's corners as its outline says in the button's bounds.
     private func roundCorners() {
-        guard let boxShape else { return }
-        let radius = CGFloat(BoxArithmetic.cornerRadius(of: boxShape, width: bounds.width, height: bounds.height))
-        if configuration?.background.cornerRadius != radius { configuration?.background.cornerRadius = radius }
+        guard let radius = cornerRadius(), configuration?.background.cornerRadius != radius else { return }
+        configuration?.background.cornerRadius = radius
+    }
+
+    /// The box's corners as its outline says in the button's bounds; nil where the tree gives it no outline.
+    private func cornerRadius() -> CGFloat? {
+        boxShape.map { CGFloat(BoxArithmetic.cornerRadius(of: $0, width: bounds.width, height: bounds.height)) }
     }
 
     /// The room between the button's edge and what it shows.
