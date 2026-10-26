@@ -16,6 +16,9 @@ final class WebSplitView: WebDOMView {
     /// Whether the sidebar shows on screen.
     private(set) var isPresented = false
 
+    /// Whether the sidebar's last change moved it: the first room's decision and the tree's first word stand at once.
+    private(set) var moves = false
+
     /// The user showed or hid the sidebar.
     var onPresentationChanged: (Bool) -> Void = { _ in }
 
@@ -43,7 +46,10 @@ final class WebSplitView: WebDOMView {
 
     /// Shows the sidebar or hides it, as the tree or the user says; `moves` false for a change that stands at once.
     func present(_ presented: Bool, moves: Bool = true) {
-        if presented != isPresented { attribute("data-moves", moves ? "" : nil) }
+        if presented != isPresented {
+            self.moves = moves
+            attribute("data-moves", moves ? "" : nil)
+        }
         isPresented = presented
         attribute("data-sidebar", presented ? "shown" : "hidden")
     }

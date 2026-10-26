@@ -72,6 +72,11 @@ left less than a few letters' room - 72 pixels - stands hidden
 again as the window's width changes, and as the part before the title moves
 with a split view's sidebar.
 
+A standing tried is measured as it stands at once, so nothing it changes
+moves: a bar whose columns moved to a standing would be measured on its way
+there, find another, and stand the two in turn, frame after frame. Only the
+widths of its first and last columns move, with the sidebar.
+
 ## The safe area
 
 The page is drawn under a phone's status bar, notch and home indicator
@@ -274,10 +279,12 @@ as one column, the bar's title part over the detail on the window's.
 Beside the detail the sidebar moves in and out: its column opens or closes
 while the sidebar slides with the column's edge, both on one timing, and the
 bar's parts travel with them - the toggle to the bar's edge, the title to its
-middle, the name fading - its column widths stated in pixels in both states,
-so the browser moves them between the two. The first room's decision, and
-the tree's first word, stand at once: what the user first sees is the page
-itself (`data-moves`). Where the user asks for less motion nothing moves.
+middle, the name fading - the widths of its first and last columns stated in
+pixels in both states and registered as lengths, so the browser moves them
+between the two, the columns between following. The first room's decision, and
+the tree's first word, stand at once, the bar's parts with them: what the user
+first sees is the page itself (`data-moves`, the split view's and the bar's).
+Where the user asks for less motion nothing moves.
 
 ## Tabs
 

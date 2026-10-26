@@ -232,6 +232,41 @@ final class WebLookTests: XCTestCase {
         for action in left { XCTAssertTrue(behind.contains(action), "\(action) behind More: \(behind)") }
     }
 
+    /// A bar holds still once it stands: on a phone beside a hidden sidebar, its actions crowding its title, it
+    /// stands one way frame after frame - what it tries in deciding moves nothing it measures next.
+    func testACrowdedBarHoldsStill() throws {
+        WebBrowser.ask([("density", .number(3)), ("width", .number(430))])
+        defer { WebBrowser.ask([("density", .number(1))]) }
+        let host = WebRenderer.running {
+            SplitView(State(wrappedValue: false).projectedValue) {
+                Text("Samples").title("Gallery")
+            } detail: {
+                Text("Shortcut").title("Keyboard shortcut").toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Mark")
+                        ToolbarButton("Code")
+                    }
+                    ToolbarButton("Share")
+                }
+            }
+        }
+        let standing = """
+            (() => {
+              const bar = document.querySelector('.stateui-window > .stateui-bar');
+              const shown = [...bar.querySelectorAll('.stateui-bar-group')].filter((g) => !g.closest('[hidden]'));
+              return (bar.hasAttribute('data-crowded') ? 'crowded, ' : 'centered, ') + shown.length + ' groups';
+            })()
+            """
+        host.settle { (try? WebBrowser.evaluate(standing, on: 0)) != nil }
+        var seen: [String] = []
+        for _ in 0..<40 {
+            WebBrowser.pause()
+            if let now = try WebBrowser.evaluate(standing, on: 0), now != seen.last { seen.append(now) }
+        }
+
+        XCTAssertEqual(seen.count, 1, "one standing, frame after frame: \(seen)")
+    }
+
     /// On a touch screen a button the user tapped is not left lit: what lights a button under the pointer waits for a
     /// pointer that hovers, which a finger is not - the browser holds the tapped one hovered till the next tap.
     func testATappedButtonIsNotLeftLitOnATouchScreen() throws {
@@ -345,7 +380,7 @@ final class WebLookTests: XCTestCase {
                   && a.marks.every(m => b.marks.includes(m));
               };
               const glides = ["transform", "translate", "width", "height", "opacity", "padding", "margin", "inset",
-                              "grid-template-columns", "top", "left", "right", "bottom"];
+                              "grid-template-columns", "top", "left", "right", "bottom", "--"];
               const moves = (style) => {
                 const transition = style.transitionProperty || style.getPropertyValue("transition");
                 return (style.animationName && style.animationName !== "none" && style.animationIterationCount !== "infinite")
@@ -430,6 +465,29 @@ final class WebLookTests: XCTestCase {
         host.settle { found(".stateui-bar-start") }
         let sliding = "document.querySelector('.stateui-bar-start .stateui-bar-group button').getAnimations().length"
         XCTAssertEqual(try WebBrowser.number(sliding, on: 0), 1, "at the detail's start, sliding there")
+    }
+
+    /// A bar's columns move as its split view's sidebar does: where the sidebar first stands they stand at once, and
+    /// as the user hides it the widths of the bar's first and last columns move with it, and nothing else of them.
+    func testABarsColumnsMoveAsTheSidebarDoes() throws {
+        WebBrowser.ask([("width", .number(1280))])
+        let shows = State(wrappedValue: true)
+        let host = WebRenderer.running {
+            SplitView(shows.projectedValue) {
+                Text("Folders").title("Library")
+            } detail: {
+                Text("Books").title("All books")
+            }
+        }
+        let bar = "document.querySelector('.stateui-window > .stateui-bar')"
+        let moving = "\(bar).getAnimations().map((a) => a.transitionProperty).sort().join(',')"
+        let sidebar = { try? WebBrowser.evaluate("\(bar)?.dataset.sidebar", on: 0) }
+        host.settle { sidebar() == "shown" }
+        XCTAssertEqual(try WebBrowser.evaluate(moving, on: 0) ?? "", "", "where the sidebar first stands, at once")
+
+        shows.wrappedValue = false
+        host.settle { sidebar() == "hidden" }
+        XCTAssertEqual(try WebBrowser.evaluate(moving, on: 0), "--stateui-bar-first,--stateui-bar-last", "as it hides")
     }
 
     /// One computed style of the first element `selector` finds on the page.

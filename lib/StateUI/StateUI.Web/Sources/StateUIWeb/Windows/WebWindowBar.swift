@@ -136,6 +136,8 @@ final class WebWindowBar: WebDOMView {
     /// the split view the toggle serves shows its sidebar, nil where there is none.
     func show(_ chrome: WindowChrome, title shown: String, sidebar: Bool?, split: WebSplitView? = nil) {
         attribute("data-sidebar", sidebar.map { $0 ? "shown" : "hidden" })
+        // Its parts move as the sidebar does, and stand at once where it does.
+        attribute("data-moves", split?.moves == true ? "" : nil)
         // The part over a sidebar beside the page stands on the sidebar's own ground, as one column with it.
         for name in ["--stateui-sidebar-ground", "--stateui-sidebar-filter"] { style(name, split?.styled(name)) }
         toggle.setShown(chrome.showsSidebarToggle)
