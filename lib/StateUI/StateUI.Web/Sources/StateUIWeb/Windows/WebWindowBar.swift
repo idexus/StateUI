@@ -72,6 +72,9 @@ final class WebWindowBar: WebDOMView {
     private var sideRuns: [[MountedElement]] = []
     private var sidePlaced: [MountedElement] = []
 
+    /// The items standing over the sidebar, by identity: one moving to the other part slides there.
+    private var sideItems: Set<ObjectIdentifier> = []
+
     init() {
         super.init(tag: "header")
         attribute("class", "stateui-bar")
@@ -165,7 +168,8 @@ final class WebWindowBar: WebDOMView {
         attribute("data-toolbar-style", Self.look(of: chrome.toolbarStyle))
         style("--stateui-bar-button", WebCSS.fill(chrome.buttonBackground))
 
-        // An item keeps its button wherever it stands, moving from one part to the other.
+        // An item keeps its button wherever it stands, moving from one part to the other - from where it stood.
+        let stood = buttons.mapValues { WebRelay.box(of: $0.node) }
         var kept: [ObjectIdentifier: WebBarButton] = [:]
         var pool = sideGroups + groups
         let sidebar = chrome.sidebarActions
@@ -177,6 +181,13 @@ final class WebWindowBar: WebDOMView {
         for (key, button) in buttons where kept[key] == nil { button.release() }
         for gone in pool { gone.release() }
         buttons = kept
+        let overSidebar = Set((sidebar.start + sidebar.end).joined().map(ObjectIdentifier.init))
+        for (key, button) in kept where sideItems.contains(key) != overSidebar.contains(key) {
+            let box = WebRelay.box(of: button.node)
+            guard let was = stood[key], was.width > 0, box.width > 0 else { continue }
+            WebRelay.slide(button.node, from: was.x - box.x, was.y - box.y)
+        }
+        sideItems = overSidebar
         sideRuns = sidebar.start + sidebar.end
         sidePlaced = sidebar.overflow
         // With actions of its own, the part over the sidebar stands its name beside them rather than over them.

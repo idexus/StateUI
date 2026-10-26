@@ -432,6 +432,11 @@ enum WebRelay {
         stateui_web_crowded(element) != 0
     }
 
+    /// Moves the element from `dx`, `dy` points off its place to it, on the sidebar's slide.
+    static func slide(_ element: Int32, from dx: Double, _ dy: Double) {
+        stateui_web_slide_from(element, dx, dy)
+    }
+
     /// The element's box on the page, from the page's top left.
     static func box(of element: Int32) -> Rect {
         let read = numbers(4) { stateui_web_read_box(element, $0) }

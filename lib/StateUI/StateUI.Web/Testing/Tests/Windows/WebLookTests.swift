@@ -407,6 +407,31 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(try look("body", "overscrollBehaviorY"), "none", "the body")
     }
 
+    /// A bar's button moving from the part over the sidebar to the detail's as the sidebar hides slides there from
+    /// where it stood, as the sidebar slides.
+    func testAButtonMovingBetweenTheBarsPartsSlidesThere() throws {
+        WebBrowser.ask([("width", .number(1280))])
+        let shows = State(wrappedValue: true)
+        let host = WebRenderer.running {
+            SplitView(shows.projectedValue) {
+                Text("Folders").title("Library")
+            } detail: {
+                Text("Books").title("All books")
+            }
+            .toolbar { ToolbarButton("Add").placement(.sidebar) }
+        }
+        let found = { (part: String) in
+            (try? WebBrowser.truth("!!document.querySelector('\(part) .stateui-bar-group button')", on: 0)) == true
+        }
+        host.settle { found(".stateui-bar-side") }
+        XCTAssertTrue(found(".stateui-bar-side"), "over the sidebar")
+
+        shows.wrappedValue = false
+        host.settle { found(".stateui-bar-start") }
+        let sliding = "document.querySelector('.stateui-bar-start .stateui-bar-group button').getAnimations().length"
+        XCTAssertEqual(try WebBrowser.number(sliding, on: 0), 1, "at the detail's start, sliding there")
+    }
+
     /// One computed style of the first element `selector` finds on the page.
     private func look(_ selector: String, _ property: String) throws -> String? {
         try WebBrowser.evaluate("getComputedStyle(document.querySelector('\(selector)')).\(property)", on: 0)

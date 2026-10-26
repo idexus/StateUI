@@ -184,6 +184,9 @@ STATEUI_WEB(is_laid_out) int32_t stateui_web_is_laid_out(int32_t element);
 STATEUI_WEB(stands_over) int32_t stateui_web_stands_over(int32_t element);
 /// 1 where a bar's buttons and title stand over one another or beyond its edges, else 0.
 STATEUI_WEB(crowded) int32_t stateui_web_crowded(int32_t element);
+/// Moves the element from `dx`, `dy` points off its place to it, as the sidebar slides; nothing where the user asks
+/// for less motion.
+STATEUI_WEB(slide_from) void stateui_web_slide_from(int32_t element, double dx, double dy);
 
 /// Writes the element's box on the page - x, y, width and height from the page's top left - into `into`.
 STATEUI_WEB(read_box) void stateui_web_read_box(int32_t element, double *into);
