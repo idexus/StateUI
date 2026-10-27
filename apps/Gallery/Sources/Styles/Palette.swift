@@ -102,8 +102,11 @@ enum Palette {
     static let outline = Color(light: Color(hex: 0x000000, opacity: 0.12), dark: Color(hex: 0xFFFFFF, opacity: 0.12))
     // listing: end
 
-    /// Behind the thing you are on - the sidebar's current row, a pad held down.
+    /// Behind the thing you are on - a pad held down, a place a drag is over.
     static let selected = Color(light: Color(hex: 0x000000, opacity: 0.1), dark: Color(hex: 0xFFFFFF, opacity: 0.12))
+
+    /// Behind the sidebar's current row: lighter than `selected` in the light.
+    static let chosen = Color(light: Color(hex: 0x000000, opacity: 0.05), dark: Color(hex: 0xFFFFFF, opacity: 0.12))
 
     /// `selected` a breath stronger: a button standing on it, held down.
     static let selectedLit = Color(light: Color(hex: 0x000000, opacity: 0.16), dark: Color(hex: 0xFFFFFF, opacity: 0.2))

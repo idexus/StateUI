@@ -124,7 +124,7 @@ StackLayoutSample.swift 36f89694c3b71b08
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
-StyleSample.swift f02b7dcbb9e52cd7
+StyleSample.swift c8d352eec01447ec
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ae41f144fd9164ad
 TabsSample.swift f34e2e00c6015b47

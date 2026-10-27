@@ -86,7 +86,7 @@ struct MenuRow: View {
         .style(.menuRow)
         .spacing(touch ? 14 : 10)
         .padding(horizontal: touch ? 18 : 10, vertical: touch ? 13 : 8)
-        .background(chosen ? Palette.selected : .transparent)
+        .background(chosen ? Palette.chosen : .transparent)
         // A row of the menu is a stack with a tap on it, which no platform
         // reads as a control: the picture and the caption are two views, and
         // nothing says they act together. Handle.swift has the rule.
