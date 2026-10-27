@@ -70,7 +70,10 @@ icons most of its patch. Once the call's changes are all in, each layout the
 call arranged is read again, and the host layer's motion takes each child
 from where it stood to where it now stands. Each read is one call to the
 page, of the children's places in their layout from its own layout -
-`offsetLeft`, `offsetTop` and their size, which no transform moves.
+`offsetLeft`, `offsetTop` and their size, which no transform moves. The size
+is the computed one, a fraction of a pixel included: `offsetWidth` rounds to
+a whole pixel, and words a place bound for 82 when they need 82.1 break onto
+a second line for the last frames of its travel.
 
 A child is drawn where its place stands on the way: moved from where the
 browser lays it out by a translation before its own transform, and sized as
