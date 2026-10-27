@@ -364,6 +364,86 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(lit, ["glass": "lit", "plain": "lit", "rounded": "lit"])
     }
 
+    /// A button on a bar that cannot be chosen lights under no pointer and no press, whatever the bar's style - as a
+    /// menu's entry that cannot be chosen.
+    func testADisabledBarButtonLightsUnderNoPointer() throws {
+        let style = State(wrappedValue: ToolbarStyle.glass)
+        let host = WebRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").title("Notes").toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Add")
+                        ToolbarButton("Edit").isEnabled(false)
+                    }
+                }
+            } destination: { _ in Text("Pushed") }
+            .toolbarStyle(style.wrappedValue)
+        }
+        let edit = "[...document.querySelectorAll('.stateui-window > .stateui-bar .stateui-bar-group button')]"
+            + ".find((b) => b.innerText.trim() === 'Edit')"
+        let bar = "document.querySelector('.stateui-window > .stateui-bar')"
+        host.settle { (try? WebBrowser.truth("!!\(edit)", on: 0)) == true }
+        try WebBrowser.run("document.querySelectorAll('dialog[open]').forEach((d) => d.close())")
+        let middle = try XCTUnwrap(WebBrowser.evaluate(
+            "(() => { const r = \(edit).getBoundingClientRect(); return (r.left + r.width / 2) + ',' + (r.top + r.height / 2); })()",
+            on: 0)).split(separator: ",").compactMap { Double($0) }
+        let ground = { try WebBrowser.evaluate("(\(edit).style.transition = 'none', getComputedStyle(\(edit)).backgroundColor)", on: 0) }
+        let mouse = { (kind: String, x: Double, y: Double) -> Void in
+            WebBrowser.ask([
+                ("mouse", .words(kind)), ("x", .number(x)), ("y", .number(y)), ("count", .number(1)),
+                ("held", .truth(kind == "mousePressed")), ("deltaY", .number(0)), ("modifiers", .number(0)),
+                ("button", .words("left")),
+            ])
+        }
+        var lit: [String: String] = [:]
+        for look in [ToolbarStyle.glass, .plain, .rounded] {
+            style.wrappedValue = look
+            host.settle { (try? WebBrowser.evaluate("\(bar).dataset.toolbarStyle ?? 'glass'", on: 0)) == "\(look)" }
+            mouse("mouseMoved", 0, 0)
+            let rest = try ground()
+            mouse("mouseMoved", middle[0], middle[1])
+            host.settle { (try? WebBrowser.truth("\(edit).matches(':hover')", on: 0)) == true }
+            let over = try ground()
+            mouse("mousePressed", middle[0], middle[1])
+            let pressed = try ground()
+            mouse("mouseReleased", middle[0], middle[1])
+            lit["\(look)"] = over == rest && pressed == rest ? "unlit" : "lit"
+        }
+
+        XCTAssertEqual(lit, ["glass": "unlit", "plain": "unlit", "rounded": "unlit"])
+    }
+
+    /// A setting standing on keeps its tint under the pointer on glass: the light a pointer brings a bar's button
+    /// gives way to the tint saying it is on.
+    func testASettingStandingOnKeepsItsTintUnderThePointer() throws {
+        let host = WebRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").title("Notes").toolbar { ToolbarToggle("Pin", isOn: true) }
+            } destination: { _ in Text("Pushed") }
+            .toolbarStyle(.glass)
+        }
+        let pin = "[...document.querySelectorAll('.stateui-window > .stateui-bar button')]"
+            + ".find((b) => b.innerText.trim() === 'Pin')"
+        host.settle { (try? WebBrowser.truth("!!\(pin) && \(pin).getAttribute('aria-pressed') === 'true'", on: 0)) == true }
+        try WebBrowser.run("document.querySelectorAll('dialog[open]').forEach((d) => d.close())")
+        let middle = try XCTUnwrap(WebBrowser.evaluate(
+            "(() => { const r = \(pin).getBoundingClientRect(); return (r.left + r.width / 2) + ',' + (r.top + r.height / 2); })()",
+            on: 0)).split(separator: ",").compactMap { Double($0) }
+        let ground = { try WebBrowser.evaluate("(\(pin).style.transition = 'none', getComputedStyle(\(pin)).backgroundColor)", on: 0) }
+        let move = { (x: Double, y: Double) -> Void in
+            WebBrowser.ask([
+                ("mouse", .words("mouseMoved")), ("x", .number(x)), ("y", .number(y)), ("count", .number(1)),
+                ("held", .truth(false)), ("deltaY", .number(0)), ("modifiers", .number(0)), ("button", .words("left")),
+            ])
+        }
+        move(0, 0)
+        let tint = try ground()
+        move(middle[0], middle[1])
+        host.settle { (try? WebBrowser.truth("\(pin).matches(':hover')", on: 0)) == true }
+
+        XCTAssertEqual(try ground(), tint)
+    }
+
     /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its
     /// bottom edge. A bar of a color blurs behind its whole paint instead.
     func testAClearBarSoftensWhatScrollsUnderIt() throws {

@@ -295,14 +295,15 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 }
 .stateui-bar-actions:not(:has(> :not([hidden]))) { display: none; }
 .stateui-bar-group button { background: transparent; box-shadow: none; }
-/* Lit under a pointer that hovers - a finger hovers nowhere, and a browser keeps the button it tapped hovered. */
+/* Lit under a pointer that hovers - a finger hovers nowhere, and a browser keeps the button it tapped hovered - and
+   pressed, where it can be chosen; `:where` keeps a setting standing on its tint under the pointer. */
 @media (hover: hover) {
-  .stateui-bar button:hover {
+  .stateui-bar button:hover:where(:not(:disabled)) {
     background: light-dark(color-mix(in srgb, currentColor 14%, transparent),
       color-mix(in srgb, currentColor 20%, transparent));
   }
 }
-.stateui-bar button:active {
+.stateui-bar button:active:where(:not(:disabled)) {
   background: light-dark(color-mix(in srgb, currentColor 21%, transparent),
     color-mix(in srgb, currentColor 27%, transparent));
 }
@@ -321,11 +322,11 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   border-radius: 6px;
 }
 @media (hover: hover) {
-  .stateui-bar[data-toolbar-style="plain"] button:hover {
+  .stateui-bar[data-toolbar-style="plain"] button:hover:where(:not(:disabled)) {
     background: color-mix(in srgb, currentColor 10%, transparent);
   }
 }
-.stateui-bar[data-toolbar-style="plain"] button:active {
+.stateui-bar[data-toolbar-style="plain"] button:active:where(:not(:disabled)) {
   background: color-mix(in srgb, currentColor 16%, transparent);
 }
 /* Rounded buttons: a flat rounded rectangle behind each, a group of them sharing one. */
