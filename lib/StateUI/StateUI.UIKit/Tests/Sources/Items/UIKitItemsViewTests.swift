@@ -139,6 +139,42 @@ final class UIKitItemsViewTests: XCTestCase {
         XCTAssertEqual(headers(), ["Today", "Yesterday"])
     }
 
+    /// A change to the entries waiting for a turn as the collection asks for a cell in its own layout - a scroll
+    /// bringing a row near the end of those built - waits for the cell: the turn the cell's entry asks for renders
+    /// it, but the snapshot stands only once the cell is the collection's. Applied inside the request, UIKit ends the
+    /// application with "Expected dequeued view to be returned to the collection view".
+    @MainActor
+    func testEntriesChangedWhileTheCollectionAsksForACellWaitForTheCell() throws {
+        let numbers = State(wrappedValue: Array(0..<1_000))
+        let host = UIKitRenderer.running {
+            ItemsView(numbers.wrappedValue) { Text("Row \($0)").fontSize(14).padding(10) }
+                .width(300).height(500)
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        let collection = items.collection
+        host.settle {
+            collection.visibleCells.count > 5
+                && collection.visibleCells.allSatisfy { ($0 as? UIKitItemCell)?.holding.shown != nil }
+        }
+
+        let renders = host.runtime.core.tally.renders
+        numbers.wrappedValue = [999] + Array(0..<999)
+        collection.setContentOffset(CGPoint(x: 0, y: 600), animated: false)
+        collection.layoutIfNeeded()
+        XCTAssertGreaterThan(host.runtime.core.tally.renders, renders, "the cells asked for rendered the tree")
+        XCTAssertEqual(items.appliedWhileAskingForTesting, 0, "no snapshot while the collection asked for a cell")
+        host.settle { collection.visibleCells.contains { ($0 as? UIKitItemCell)?.holding.shown != nil } }
+        collection.setContentOffset(.zero, animated: false)
+        host.settle {
+            collection.layoutIfNeeded()
+            return (collection.cellForItem(at: IndexPath(item: 0, section: 0)) as? UIKitItemCell)?.holding.identity == "999"
+        }
+
+        let first = collection.cellForItem(at: IndexPath(item: 0, section: 0)) as? UIKitItemCell
+        XCTAssertEqual(first?.holding.identity, "999", "the change stands once the cell is returned")
+    }
+
     /// Every row moved one place down travels from where it stood to its new place, never above where it stood, and
     /// the list's header stands throughout: the layout keeps what it measured as the entries change.
     @MainActor

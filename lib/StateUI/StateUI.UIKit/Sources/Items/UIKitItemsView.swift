@@ -61,6 +61,9 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
 
     /// The entries, the layout, how many may be chosen and which are.
     func apply(layout: ItemsLayout, mode: SelectionMode) {
+        // UIKit takes no snapshot while it asks for a view: a change rendered meanwhile stands once it has the view.
+        // Design: docs/design/platforms/uikit/items.md#a-cell-asked-for
+        guard !asking else { return wait(applying: (layout, mode)) }
         let changes = cells.takeEntries()
         let framed = (header: cells.entries.header != nil, footer: cells.entries.footer != nil)
         if layout != self.layout || framed != self.framed {
@@ -94,6 +97,7 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
             self.groupsFramed = groupsFramed
             collection.collectionViewLayout.invalidateLayout()
         }
+        if asking { appliedWhileAskingForTesting += 1 }
         source.apply(snapshot, animatingDifferences: !changes.isEmpty && !reducesMotion())
     }
 
@@ -151,8 +155,32 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
     /// Holds the entry of `identity` in a cell, as the host layer keeps one cell an entry.
     private func hold(_ identity: String, in holding: UIKitItemHolding) {
         holding.across = layout.isAcross
+        asking = true
         cells.hold(identity, in: holding)
+        asking = false
     }
+
+    /// Whether the collection is asking for a cell or a supplement now, its entry built for it as it waits.
+    private var asking = false
+
+    /// What a change rendered while the collection asked for a view brings, done once it has the view: the layout
+    /// and choice to apply, and whether the item scrolled to stands again.
+    private var waiting: (applying: (layout: ItemsLayout, mode: SelectionMode)?, settles: Bool)?
+
+    private func wait(applying: (layout: ItemsLayout, mode: SelectionMode)? = nil, settles: Bool = false) {
+        if waiting == nil { Task { @MainActor [weak self] in self?.doWaiting() } }
+        waiting = (applying ?? waiting?.applying, settles || waiting?.settles == true)
+    }
+
+    private func doWaiting() {
+        guard let waiting else { return }
+        self.waiting = nil
+        if let applying = waiting.applying { apply(layout: applying.layout, mode: applying.mode) }
+        if waiting.settles { settle() }
+    }
+
+    /// The snapshots applied while the collection asked for a view; read by a test.
+    private(set) var appliedWhileAskingForTesting = 0
 
     /// The identity of the header or footer of `kind` at `indexPath`.
     private func supplement(_ kind: String, at indexPath: IndexPath) -> String? {
@@ -260,6 +288,7 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
     /// cells measured - and so after every pass that brings cells their entries, while the host layer holds it.
     /// Design: docs/design/platforms/uikit/items.md#scrolling-to-an-item
     private func settle() {
+        guard !asking else { return wait(settles: true) }
         guard !gliding, let target = cells.scrollTarget else { return }
         stand(target, animated: false)
         collection.layoutIfNeeded()

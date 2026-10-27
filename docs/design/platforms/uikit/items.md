@@ -70,6 +70,19 @@ list cell's look. The list cell's own colors are the system background at
 rest and a gray when chosen, which a page of another color shows as
 blocks.
 
+## A cell asked for
+
+The collection asks for a cell in its own layout pass - a scroll, a row
+coming into view as others move - and the cell's entry is built as it waits
+([a cell before its entry](../../host/items.md#a-cell-before-its-entry)):
+the turn that builds it renders everything waiting, a change to the list's
+own entries among them. UIKit takes no snapshot then - one applied before
+the cell it dequeued is returned ends the application, "Expected dequeued
+view to be returned to the collection view" - nor a layout flushed: what that
+turn brings the list - its entries, its layout, the item scrolled to standing
+again - waits, and stands in a job of its own once the collection has the
+cell (`UIKitItemsView.wait`). The cell's own entry is not held back.
+
 ## One cell an entry
 
 The cell provider, `willDisplay` and `didEndDisplaying` - of an item and of a
