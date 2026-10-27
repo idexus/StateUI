@@ -39,11 +39,11 @@ A page's title stands with the line under it the page says (`barSubtitle`).
 Beside a sidebar shown, the bar stands in two parts as wide as the split
 view's columns: over the sidebar the title area its page names the
 application with - its title, else the application's name, and the line
-under it - centered, the sidebar's part's actions - its start's at its
-leading edge, its end's and their own More before the toggle - and the toggle
-at the sidebar's edge; with actions of its own the part stands the name at its
-start rather than centered over them, and fits itself before the detail's
-does (`BarFit`), the groups it has no room for behind its More. Over the
+under it - at its start, in line with the rows under it, the sidebar's
+part's actions - its start's at its leading edge, its end's and their own
+More before the toggle - and the toggle at the sidebar's edge; the name gives
+way before them, cut short with an ellipsis, and the part fits itself before
+the detail's does (`BarFit`), the groups it has no room for behind its More. Over the
 detail the rest, its title centered over the detail. An item moving between the parts keeps its button and slides there from
 where it stood, on the sidebar's slide - at once where the user asks for less
 motion. Over a drawer the part is as wide as what it

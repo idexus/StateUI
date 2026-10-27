@@ -245,13 +245,14 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
     -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
   }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-start { padding-inline-start: 10px; }
-  /* With actions of its own the part over the sidebar stands its name at its start, giving way before them. */
-  .stateui-bar[data-sidebar="shown"][data-side-acts] .stateui-bar-brand {
+  /* The part over the sidebar stands its name at its start, in line with the rows under it, giving way before its
+     actions and its toggle. */
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-brand {
     position: static;
     flex: 1 1 auto;
     justify-content: flex-start;
   }
-  .stateui-bar[data-side-acts] .stateui-bar-name { overflow: hidden; text-overflow: ellipsis; }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-name { overflow: hidden; text-overflow: ellipsis; }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-title[data-repeats] { visibility: hidden; }
 }
 

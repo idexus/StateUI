@@ -466,6 +466,28 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(try height("Sort"), 42, accuracy: 0.5, "the bar's own height where it says none")
     }
 
+    /// The application's name over a sidebar beside the page stands at the start of its part, in line with the rows
+    /// under it, the toggle at the part's end.
+    func testTheApplicationsNameStandsAtTheStartOverTheSidebar() throws {
+        let host = WebRenderer.running {
+            SplitView(State(wrappedValue: true).projectedValue) {
+                Text("Samples").title("Gallery")
+            } detail: {
+                Text("Detail").title("Page")
+            }
+        }
+        let bar = "document.querySelector('.stateui-window > .stateui-bar')"
+        let name = "\(bar).querySelector('.stateui-bar-name')"
+        let side = "\(bar).querySelector('.stateui-bar-side')"
+        host.settle {
+            (try? WebBrowser.truth("\(bar).dataset.sidebar === 'shown' && \(name).textContent === 'Gallery'", on: 0)) == true
+        }
+        let start = try XCTUnwrap(WebBrowser.number(
+            "\(name).getBoundingClientRect().left - \(side).getBoundingClientRect().left", on: 0))
+
+        XCTAssertEqual(start, 12, accuracy: 1, "at the part's start, past its room")
+    }
+
     /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its
     /// bottom edge. A bar of a color blurs behind its whole paint instead.
     func testAClearBarSoftensWhatScrollsUnderIt() throws {
