@@ -83,7 +83,8 @@ final class AndroidMenusTests: XCTestCase {
             Java.call(popup.reference, JavaAPI.showPopupMenu)
             // The menu comes in as the window's animations let it: its rows read once each shows its words.
             var rows = TestMenus.shownRows(popup)
-            for _ in 0..<150 where rows == "(no menu)" || rows.contains("(none)") {
+            for _ in 0..<150 {
+                guard rows == "(no menu)" || rows.contains("(none)") else { break }
                 TestWindow.run(for: 20)
                 rows = TestMenus.shownRows(popup)
             }
