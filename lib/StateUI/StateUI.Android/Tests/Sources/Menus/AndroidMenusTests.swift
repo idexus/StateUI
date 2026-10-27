@@ -81,8 +81,14 @@ final class AndroidMenusTests: XCTestCase {
                 ])
             }
             Java.call(popup.reference, JavaAPI.showPopupMenu)
-            TestWindow.run(for: 300)
-            XCTAssertEqual(TestMenus.shownRows(popup), "Duplicate, File, Remove")
+            // The menu comes in as the window's animations let it: its rows read once each shows its words.
+            var rows = TestMenus.shownRows(popup)
+            for _ in 0..<150 where rows == "(no menu)" || rows.contains("(none)") {
+                TestWindow.run(for: 20)
+                rows = TestMenus.shownRows(popup)
+            }
+            Java.call(popup.reference, TestMenus.dismiss)
+            XCTAssertEqual(rows, "Duplicate, File, Remove")
         }
     }
 }
@@ -107,6 +113,8 @@ enum TestMenus {
     private static let overWindow = Java.staticMethod(
         owner, "over", "(Landroid/app/Activity;)Landroid/widget/PopupMenu;")
     private static let rowsShown = Java.staticMethod(owner, "shownRows", "(Landroid/widget/PopupMenu;)Ljava/lang/String;")
+    /// Takes a shown menu away.
+    static let dismiss = Java.method(JavaAPI.popupMenu, "dismiss", "()V")
 
     /// A menu popping up over the activity's window, empty until a test writes it.
     static func over(_ activity: JavaObject) -> JavaObject {
@@ -114,7 +122,7 @@ enum TestMenus {
     }
 
     /// The words each row of the shown menu shows within the row, ", " between rows, "(none)" for a row showing
-    /// none; the menu goes.
+    /// none, "(no menu)" where none shows a row.
     static func shownRows(_ popup: JavaObject) -> String {
         Java.frame { Java.callStaticObject(owner, rowsShown, .object(popup.reference)).map { Java.text($0) } ?? "" }
     }

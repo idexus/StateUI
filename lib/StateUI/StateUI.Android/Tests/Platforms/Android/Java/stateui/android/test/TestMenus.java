@@ -58,7 +58,7 @@ public final class TestMenus {
 
     /**
      * The words each row of the menu showing in a window of its own shows within the row, as the user reads them -
-     * ", " between rows, "(none)" for a row showing none, "(no menu)" where none shows - after which the menu goes.
+     * ", " between rows, "(none)" for a row showing none, "(no menu)" where none shows a row.
      */
     public static String shownRows(PopupMenu shown) throws ReflectiveOperationException {
         ListView rows = null;
@@ -66,13 +66,12 @@ public final class TestMenus {
             ListView found = listIn(window);
             if (found != null) rows = found;
         }
-        if (rows == null) return "(no menu)";
+        if (rows == null || rows.getChildCount() == 0) return "(no menu)";
         List<String> words = new ArrayList<>();
         for (int index = 0; index < rows.getChildCount(); index++) {
             String row = wordsShown(rows.getChildAt(index));
             words.add(row.isEmpty() ? "(none)" : row);
         }
-        shown.dismiss();
         return String.join(", ", words);
     }
 
