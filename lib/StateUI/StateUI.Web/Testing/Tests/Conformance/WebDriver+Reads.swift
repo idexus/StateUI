@@ -137,14 +137,6 @@ extension WebDriver {
             return .some(try WebBrowser.evaluate("e.stateuiHold", on: view.node).flatMap(Double.init).map { .number($0) })
         case (.page, .subtitle): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
         case (_, .barBackground): return .some(try barMaterial(over: element))
-        case (_, .barButtonBackgroundColor): return .some(try barColor("--stateui-bar-button", over: element))
-        case (_, .barButtonFontWeight):
-            // The weight a button standing on the bar is drawn at.
-            let weight = try WebBrowser.number(
-                "parseFloat(getComputedStyle(e.querySelector('.stateui-bar-actions button')).fontWeight)",
-                on: standingBar(over: element).node)
-            guard let weight else { return nil }
-            return .some(FontWeight(nearest: weight).propValue)
         case (_, .toolbarStyle):
             // The bar's buttons on glass where it says no look of its own.
             let look = try WebBrowser.evaluate("e.dataset.toolbarStyle ?? ''", on: standingBar(over: element).node) ?? ""
@@ -305,7 +297,7 @@ extension WebDriver {
     }
 
     /// The words of `e` and the look the browser's style resolves for them.
-    private func wordsHolds(_ property: Prop, _ e: Int32) throws -> HostValue?? {
+    func wordsHolds(_ property: Prop, _ e: Int32) throws -> HostValue?? {
         let style = "getComputedStyle(e)"
         switch property {
         case .text: return .some(try WebBrowser.evaluate("e.textContent", on: e)?.propValue)
@@ -498,7 +490,7 @@ extension WebDriver {
     // MARK: - Boxes
 
     /// What a box StateUI draws holds: its fill, its outline and its shape, as the page draws them.
-    private func boxHolds(_ property: Prop, _ view: WebDOMView) throws -> HostValue?? {
+    func boxHolds(_ property: Prop, _ view: WebDOMView) throws -> HostValue?? {
         let e = view.node
         let style = "getComputedStyle(e)"
         switch property {

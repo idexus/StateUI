@@ -32,10 +32,7 @@ enum AppKitRealization {
             reason: "The user's accent stands on the Mac: StateUI does not override it with the application's."),
         .partial(BarElementContract.barBackground,
             missing: "The bars' band is painted under the toolbar's own material: a blur or glass shows its color."),
-        .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A toolbar item stands in the Mac's own look, with no background of the application's."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The toolbar's items keep the Mac's own look."),
-        .notPlanned(BarElementContract.barButtonFontWeight,
-            reason: "A toolbar item draws its own title, in the Mac's font: AppKit offers no weight for it."),
         .partial(BarElementContract.barForegroundColor,
             missing: "Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color."),
         .complete(DecorableTextElementContract.textDecorations),
@@ -282,6 +279,7 @@ enum AppKitRealization {
         .notPlanned(ButtonContract.iconSpacing,
             reason: "AppKit's button stands its picture at its own gap from the words: it takes no other."),
     ] + dayPickers + HostRecord.phaseLayout
+        + BarItemLook.notPlanned(reason: "The Mac's toolbar draws its items in the Mac's own look.")
 
     /// Why a progress indicator and a switch take no color of their own.
     private static let accentColored = "AppKit draws it in the accent color the user chooses: it takes none of its own."

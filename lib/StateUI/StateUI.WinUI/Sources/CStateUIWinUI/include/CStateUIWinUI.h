@@ -1218,9 +1218,6 @@ void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const
                                          bool const *givesWay, int32_t const *states, int32_t const *openings,
                                          int32_t const *capsules, int32_t count);
 
-/// The weight of the words of the title bar's actions standing on it, 100 to 900; 0 gives them WinUI's own.
-void stateui_winui_title_bar_weigh_actions(StateUIObjectRef bar, int32_t weight);
-
 /// The menu of the title bar's action at `place`, written as a context menu is (`stateui_winui_set_context_menu`), its
 /// items' choices told from `first` on: the flyout its click opens, or - `held` - its context menu, press and hold or
 /// the mouse's other button opening it.

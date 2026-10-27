@@ -606,6 +606,26 @@ enum Listings {
             }
         }
         """#,
+        "AppStyles.bars": #"""
+        // Sources/Styles/AppStyles.swift
+        // Where the host draws the bars' buttons itself - the Web - each
+        // group stands in a light rounded box in a fine outline, a button
+        // standing alone in one of its own; its buttons' words semibold,
+        // each a shade darker under the pointer and pressed.
+        Style<ToolbarGroup>()
+            .stroke(Color(light: Color(hex: 0xB8BEC6), dark: Color(hex: 0x4A515C)))
+            .lineWidth(1)
+            .visualState(.pointerOver) { $0.stroke(Color(light: Color(hex: 0x8E96A0), dark: Color(hex: 0x6B7380))) }
+
+        Style<ToolbarButton>()
+            .fontWeight(.semibold)
+            .visualState(.pointerOver) { $0.background(Color(light: .black, dark: .white).opacity(0.06)) }
+            .visualState(.pressed) { $0.background(Color(light: .black, dark: .white).opacity(0.12)) }
+
+        Style<ToolbarToggle>()
+            .fontWeight(.semibold)
+            .visualState(.pointerOver) { $0.background(Color(light: .black, dark: .white).opacity(0.06)) }
+        """#,
         "AppStyles.sample": #"""
         // Sources/Styles/AppStyles.swift
         // A page's own name for itself. Tight tracking, because a large
@@ -877,11 +897,6 @@ enum Listings {
             ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
         ]
 
-        /// The weights the words on the bars' buttons may take, the platform's first.
-        private static let weights: [(name: String, weight: FontWeight?)] = [
-            ("The platform's", nil), ("Regular", .regular), ("Medium", .medium), ("Semibold", .semibold), ("Bold", .bold),
-        ]
-
         /// The accents the application may hold, the platform's first.
         private static let accents: [(name: String, color: Color?)] =
             [("The platform's", nil)] + AccentChoice.own.map { ($0.name, $0.color(system: .accent, for: .bar)) }
@@ -908,20 +923,20 @@ enum Listings {
                     get: { accents.firstIndex { $0.color == application.accentColor } ?? 0 },
                     set: { application.accentColor = accents[$0].color })) { accents[$0].name }
 
-                // The bars' buttons: their words' weight wherever the platform's
-                // button takes one, and on the Web, which draws them itself, how
-                // they stand.
-                SectionTitle("The bars' buttons")
-                Picker(Array(Self.weights.indices), selection: Binding(
-                    get: { Self.weights.firstIndex { $0.weight == style.barButtonWeight } ?? 0 },
-                    set: { style.barButtonWeight = Self.weights[$0].weight })) { Self.weights[$0].name }
                 #if WEB
+                // The bars' buttons, which the Web draws itself.
+                SectionTitle("The bars' buttons")
                 Picker(Self.toolbarStyles.map(\.style), selection: Binding(
                     get: { style.toolbarStyle }, set: { style.toolbarStyle = $0 })) { chosen in
                     Self.toolbarStyles.first { $0.style == chosen }?.name ?? ""
                 }
-                Switch(Binding(get: { style.tintsBarButtons }, set: { style.tintsBarButtons = $0 }))
-                    .text("On the accent's tint")
+                // The application's own look for them: a style for every group and
+                // every button on a bar, its states included (AppStyles.bars).
+                Switch(Binding(get: { style.barsInOwnLook }, set: { owns in
+                    style.barsInOwnLook = owns
+                    application.styles = AppStyles.sheet(barsInOwnLook: owns)
+                }))
+                    .text("In the gallery's own look")
                 #endif
 
                 // A look for each theme: the gallery wears the one of the theme in
@@ -3962,11 +3977,9 @@ enum Listings {
             /// on the Web, the gallery's own look for them.
             @State var toolbarStyle = SessionStyle.ownToolbarStyle
 
-            /// Whether the bars' buttons stand on the accent's tint.
-            @State var tintsBarButtons = false
-
-            /// The weight of the words on the bars' buttons; nil for the platform's own.
-            @State var barButtonWeight: FontWeight?
+            /// Whether the bars' buttons stand in the gallery's own look, where the
+            /// host draws them itself (`AppStyles.sheet(barsInOwnLook:)`).
+            @State var barsInOwnLook = false
 
             /// The gallery's own look for the bars' buttons: glass on the Web, the
             /// platform's own elsewhere.

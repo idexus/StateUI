@@ -139,11 +139,6 @@ publicly:
   `SubtleFillColorTertiary` pressed; 2 of its width stay clear on each side,
   as an `AppBarButton` insets its fill (`AppBarButtonInnerBorderMargin`).
 
-The weight the path gives the bar's buttons' words is each control's own
-`FontWeight`, written after every showing of the actions: a button's style
-names a weight of its own, which one inherited from the command bar would
-not outweigh.
-
 ## A navigation stack
 
 A navigation stack shows its top page across its whole frame; the pages below

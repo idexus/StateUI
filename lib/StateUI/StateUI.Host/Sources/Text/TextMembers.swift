@@ -58,6 +58,21 @@
         return look(of: values)
     }
 
+    /// The look the font and the color give the words, each member as `value` reads it - an element no registry
+    /// realizes, a bar's item drawn by its host.
+    public static func look(reading value: (Prop) -> HostValue?) -> TextLook {
+        var look = TextLook()
+        look.style = value(.textStyle).flatMap(TextStyle.init(propValue:))
+        look.size = value(.fontSize)?.number
+        look.weight = value(.fontWeight).flatMap(FontWeight.init(propValue:))
+        look.attributes = value(.fontAttributes).flatMap(FontAttributes.init(propValue:)) ?? .none
+        look.attributesGiven = value(.fontAttributes) != nil
+        look.family = value(.fontFamily)?.name
+        look.color = value(.textColor)
+        look.scales = value(.isFontAutoScalingEnabled)?.bool ?? true
+        return look
+    }
+
     /// The look the font and the color give the words, whether or not they changed.
     public static func look<Realized>(of values: ElementValues<Realized>) -> TextLook {
         var look = TextLook()

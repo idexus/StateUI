@@ -524,12 +524,12 @@ enum JavaAPI {
     static let setBarAfterNavigation = Java.method(bar, "setAfterNavigation", "(IILjava/lang/String;)V")
     static let setBarEndToggle = Java.method(bar, "setEndToggle", "(ILjava/lang/String;)V")
     static let setBarActions = Java.method(
-        bar, "setActions", "([I[Ljava/lang/String;[Landroid/graphics/Bitmap;I)V")
+        bar, "setActions", "([I[Ljava/lang/String;[Landroid/graphics/Bitmap;)V")
 
     static let menus = Java.findClass("stateui/android/StateUIMenus")
     static let fillMenu = Java.staticMethod(
         menus, "fill",
-        "(Landroid/content/Context;Landroid/view/Menu;J[I[Ljava/lang/String;[Landroid/graphics/Bitmap;II)V")
+        "(Landroid/content/Context;Landroid/view/Menu;J[I[Ljava/lang/String;[Landroid/graphics/Bitmap;I)V")
     static let popUpMenu = Java.staticMethod(menus, "popUp", "(Landroid/view/View;)Landroid/widget/PopupMenu;")
     static let popupMenu = Java.findClass("android/widget/PopupMenu")
     static let popupMenuItems = Java.method(popupMenu, "getMenu", "()Landroid/view/Menu;")

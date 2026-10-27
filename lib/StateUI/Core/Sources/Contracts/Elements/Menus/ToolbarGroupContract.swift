@@ -10,6 +10,9 @@ public enum ToolbarGroupContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
+    /// Where its host draws the bar itself, the background its items share is the application's to say.
+    public static let tiers: [any Contract.Type] = [BarItemElementContract.self, BorderElementContract.self]
+
     /// Whether it hides with its split view's sidebar rather than move over the detail while the sidebar is not shown.
     public static let hidesWithSidebar = ElementProperty<Self, Bool>(
         "hidesWithSidebar", layer: .stateUI, travels: false, cleared: false, unsaid: false)

@@ -1,0 +1,13 @@
+# revision 1.1
+ToolbarButton.background: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.pointerEntered: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.pointerExited: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.style: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarGroup.background: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarGroup.pointerEntered: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarGroup.pointerExited: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarGroup.style: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.background: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.pointerEntered: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.pointerExited: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.style: – The Mac's toolbar draws its items in the Mac's own look.

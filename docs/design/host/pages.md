@@ -322,6 +322,21 @@ the group's size. None behind "more" stands on a capsule. The host draws its
 parts: WinUI's buttons ([a bar's
 buttons](../platforms/winui/pages.md#a-bars-buttons)).
 
+## A bar's items in the application's look
+
+A bar's items - a `ToolbarButton`, a `ToolbarToggle`, a `ToolbarGroup` - wear
+the look of a control where a host draws its bar itself: their own tiers,
+`BarItemElement` (a style, a background, the pointer over it) and
+`BarButtonElement` (a press), and on each item the box and the words they
+share with controls - `BorderElement`, `TextColorElement` and `FontElement`.
+Which members those are is said once (`BarItemLook`): a host judges them all
+alike, realized where it draws the bar (the Web), not planned where the bar is
+the platform's own. The style and the states are resolved by StateUI before
+the patch, as a control's are; a host shows the values an item holds and tells
+its element the pointer and the press. Every group on the bar wears the group
+style - a lone item's own too - so a button standing alone stands in the same
+box a declared group gives its buttons.
+
 ## The menus of a path
 
 The menu bar a page's window shows is composed from the menu bars its path
@@ -340,7 +355,7 @@ others of that id leave; a section left with nothing is none. A menu whose
 ## The bar a path declares
 
 What an arrangement declares of the bar - its look: its material, its words'
-color, its buttons' background, style and words' weight - is a value on the arrangement
+color, its buttons' background and style - is a value on the arrangement
 (`BarElement`), not a
 declaration: each value of a page's bar is the nearest on its path, its own
 arrangement included (`barValue`), so a stack further in paints its own bar.

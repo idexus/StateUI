@@ -132,6 +132,8 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testFocusElement() { conform(FocusElementTests.self) }
     @MainActor func testRefreshElement() { conform(RefreshElementTests.self) }
     @MainActor func testBarElement() { conform(BarElementTests.self) }
+    @MainActor func testBarItemElement() { conform(BarItemElementTests.self) }
+    @MainActor func testBarButtonElement() { conform(BarButtonElementTests.self) }
     @MainActor func testMenuItemElement() { conform(MenuItemElementTests.self) }
     @MainActor func testActionElement() { conform(ActionElementTests.self) }
     @MainActor func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }

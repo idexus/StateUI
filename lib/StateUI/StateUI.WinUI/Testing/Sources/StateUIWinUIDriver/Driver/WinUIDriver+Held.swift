@@ -455,9 +455,6 @@ extension WinUIDriver {
             // The bar's ground: a color, or the in-app acrylic a blur is.
             if name == "barBackground" { return Self.ground(try read(bar, "background")) }
             return try Self.color(read(bar, "foreground")).map { $0.propValue }
-        // The weight the words of an action standing on the window's title bar are drawn at.
-        case ("barButtonFontWeight", _):
-            return Double(try read(window().titleBar, "actionWeight")).map { FontWeight(nearest: $0).propValue }
         // The line under a page's title: its heading's where the chrome names the application, else the title bar's.
         case ("subtitle", _) where element.type == .page:
             if let heading = renderer?.views(WinUILayoutView.self).lazy.compactMap(\.heading).first {

@@ -125,6 +125,10 @@ final class WebDriver: HostDriver {
         if [.toolbarButton, .toolbarToggle].contains(element.type), let value = try toolbarItemHolds(property, on: element) {
             return value
         }
+        if element.type == .toolbarGroup, [.background, .stroke, .lineWidth, .shape].contains(property),
+           let group = try barView(of: element), let value = try boxHolds(property, group) {
+            return value
+        }
         if element.type == .textSpan, let value = try spanHolds(property, on: element) { return value }
         if let value = try structureHolds(property, on: element) { return value }
         let view = try self.view(of: element, reading: property)

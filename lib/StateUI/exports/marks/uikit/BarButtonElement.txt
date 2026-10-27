@@ -1,0 +1,5 @@
+# revision 1.1
+ToolbarButton.pressed: – A bar's items stand in the system's own look.
+ToolbarButton.released: – A bar's items stand in the system's own look.
+ToolbarToggle.pressed: – A bar's items stand in the system's own look.
+ToolbarToggle.released: – A bar's items stand in the system's own look.

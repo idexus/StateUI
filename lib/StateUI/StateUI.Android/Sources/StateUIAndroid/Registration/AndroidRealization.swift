@@ -33,9 +33,7 @@ enum AndroidRealization {
         .partial(VisualElementContract.background,
             missing: "Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it."),
         .partial(BarElementContract.barBackground, missing: Self.blursNothing),
-        .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A toolbar's action is Android's own, with no background of the application's."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The toolbar's actions keep Android's own look."),
-        .complete(BarElementContract.barButtonFontWeight),
         .partial(BarElementContract.barForegroundColor,
             missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words."),
         .complete(ButtonContract.keyboardShortcut),
@@ -200,6 +198,7 @@ enum AndroidRealization {
         .complete(PhaseLayoutContract.rotates),
         .complete(PhaseLayoutContract.pinchMoved),
     ] + windowRoom + HostRecord.phaseLayout
+        + BarItemLook.notPlanned(reason: "A toolbar's actions stand in Android's own look.")
 
     /// What Android leaves out of a blur.
     private static let ownPress = "The control takes its own press - a drawing, a scroll, a thumb, its buttons: "

@@ -37,6 +37,11 @@ public enum ToolbarBuilder {
         ToolbarContent(groups: [expression.node])
     }
 
+    /// Groups, in order.
+    public static func buildExpression(_ expression: [ToolbarGroup]) -> ToolbarContent {
+        ToolbarContent(groups: expression.map(\.node))
+    }
+
     /// The statements of the closure, in the order they are written.
     public static func buildBlock(_ components: ToolbarContent...) -> ToolbarContent {
         ToolbarContent(groups: components.flatMap(\.groups))

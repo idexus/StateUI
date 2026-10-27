@@ -5,19 +5,20 @@
 // and its target's own properties.
 // Design: docs/design/views/tiers.md#two-halves
 
-extension StyleBag: VisualElementProperties {}
+extension StyleBag: VisualElementProperties where Target: VisualElement {}
+extension StyleBag: BarItemElement where Target: BarItemElement {}
 extension StyleBag: ViewProperties where Target: View {}
 extension StyleBag: LayoutProperties where Target: Layout {}
 extension StyleBag: StackProperties where Target: Stack {}
 extension StyleBag: ShapeProperties where Target: Shape {}
 extension StyleBag: FilledShapeProperties where Target: FilledShape {}
 extension StyleBag: CorneredShapeProperties where Target: CorneredShape {}
-extension StyleBag: PaddingElement where Target: PaddingElement {}
+extension StyleBag: PaddingElement where Target: PaddingElement & VisualElement {}
 extension StyleBag: TextColorElement where Target: TextColorElement {}
 extension StyleBag: TextualElement where Target: TextualElement {}
 extension StyleBag: FontElement where Target: FontElement {}
 extension StyleBag: TintElement where Target: TintElement {}
-extension StyleBag: TextAlignmentElement where Target: TextAlignmentElement {}
+extension StyleBag: TextAlignmentElement where Target: TextAlignmentElement & VisualElement {}
 extension StyleBag: LineHeightElement where Target: LineHeightElement {}
 extension StyleBag: TrackingElement where Target: TrackingElement {}
 extension StyleBag: DecorableTextElement where Target: DecorableTextElement {}

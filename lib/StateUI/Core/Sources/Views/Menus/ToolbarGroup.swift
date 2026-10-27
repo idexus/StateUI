@@ -15,13 +15,35 @@
 /// Behind the overflow menu a group is a section of it. An item in a group
 /// stands where its group does: its own `.placement` is left out and said.
 @MainActor
-public struct ToolbarGroup {
+public struct ToolbarGroup: BarItemElement, BorderElement {
     /// The group's node.
-    var node: Node
+    public var node: Node
 
     /// A group of `items`, in reading order.
     public init(@ToolbarGroupBuilder _ items: () -> ToolbarGroupContent) {
         node = Node(contract: ToolbarGroupContract.self, children: items().items)
+    }
+
+    /// A group with nothing in it - what a `Style<ToolbarGroup>` is written for.
+    public init() {
+        node = Node(contract: ToolbarGroupContract.self)
+    }
+
+    /// Who this group is among the others of its declaration, so a group inserted before it is matched to itself
+    /// rather than to whichever stood there.
+    ///
+    /// - Parameter value: distinct among the declaration's groups and items, and the same value across renders.
+    public func id(_ value: some Hashable) -> Self {
+        var copy = self
+        copy.node.identify(value)
+        return copy
+    }
+
+    /// A copy with one thing changed: what every modifier of the group is built from.
+    public func modified(_ change: (inout Node) -> Void) -> Self {
+        var copy = self
+        change(&copy.node)
+        return copy
     }
 
     /// Where the group stands, each part of it only where said: the part of

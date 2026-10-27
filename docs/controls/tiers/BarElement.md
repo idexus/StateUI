@@ -29,7 +29,5 @@ How each of them realizes these members is on its own page.
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
 | `barBackground` | property | `Material` | adaptive |
-| `barButtonBackgroundColor` | property | `Color` | adaptive |
-| `barButtonFontWeight` | property | `FontWeight` | adaptive |
 | `barForegroundColor` | property | `Color` | adaptive |
 | `toolbarStyle` | property | `ToolbarStyle` | adaptive |

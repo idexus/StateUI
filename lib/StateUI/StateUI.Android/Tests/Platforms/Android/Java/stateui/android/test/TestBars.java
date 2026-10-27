@@ -8,13 +8,10 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.style.TypefaceSpan;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ActionMenuView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -116,28 +113,6 @@ public final class TestBars {
             View child = bar.getChildAt(index);
             if (child instanceof TextView && TextUtils.equals(((TextView) child).getText(), title)) {
                 return ((TextView) child).getCurrentTextColor();
-            }
-        }
-        return 0;
-    }
-
-    /**
-     * The weight its first action standing on the bar draws its words at - the weight of the typeface its words wear,
-     * else of its own; 0 where no action stands on the bar.
-     */
-    public static int actionWeight(Toolbar bar) {
-        for (int index = 0; index < bar.getChildCount(); index++) {
-            if (!(bar.getChildAt(index) instanceof ActionMenuView)) continue;
-            ActionMenuView actions = (ActionMenuView) bar.getChildAt(index);
-            for (int place = 0; place < actions.getChildCount(); place++) {
-                if (!(actions.getChildAt(place) instanceof TextView)) continue;
-                TextView action = (TextView) actions.getChildAt(place);
-                CharSequence words = action.getText();
-                if (words instanceof Spanned) {
-                    TypefaceSpan[] worn = ((Spanned) words).getSpans(0, words.length(), TypefaceSpan.class);
-                    if (worn.length > 0 && worn[0].getTypeface() != null) return worn[0].getTypeface().getWeight();
-                }
-                return action.getTypeface() == null ? 400 : action.getTypeface().getWeight();
             }
         }
         return 0;

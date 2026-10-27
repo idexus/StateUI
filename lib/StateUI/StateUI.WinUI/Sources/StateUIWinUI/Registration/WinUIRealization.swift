@@ -66,9 +66,7 @@ enum WinUIRealization {
         .partial(BarElementContract.barBackground,
             missing: "WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient "
                 + "out from a point is drawn over the bar's box as an ellipse."),
-        .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "An app bar button is WinUI's own, with no background of the application's."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep WinUI's own look."),
-        .complete(BarElementContract.barButtonFontWeight),
         .complete(BarElementContract.barForegroundColor),
         .complete(MenuToggleContract.isOn),
         .complete(MenuToggleContract.toggled),
@@ -269,6 +267,7 @@ enum WinUIRealization {
         .complete(WindowContract.x),
         .complete(WindowContract.y),
     ] + HostRecord.phaseLayout
+        + BarItemLook.notPlanned(reason: "The title bar's commands stand in WinUI's own look.")
 
     /// What a split view's pane leaves out of a material.
     static let paneHasNoGlass = "WinUI has no glass: a pane of glass shows the in-app acrylic at its fallback thickness."

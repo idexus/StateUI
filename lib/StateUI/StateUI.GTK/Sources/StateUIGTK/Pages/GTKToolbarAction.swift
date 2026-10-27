@@ -109,9 +109,6 @@ struct GTKPageChrome {
     var barBackground: HostValue?
     var barForeground: HostValue?
 
-    /// The weight of the words on the header bar's buttons; nil for libadwaita's own.
-    var buttonWeight: FontWeight?
-
     /// The split view's sidebar, where this page's header bar offers its toggle - the detail's: whether it shows,
     /// and what turns it.
     var sidebar: (shows: Bool, toggle: () -> Void)?

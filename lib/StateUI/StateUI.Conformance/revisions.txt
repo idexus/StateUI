@@ -25,7 +25,7 @@ MenuItem 4
 Window 9
 Scene 3
 Overlay 5
-BarElement 12
+BarElement 13
 NavigationStack 3
 uikit WebView 2
 android WebView 3
@@ -36,7 +36,7 @@ appkit Button 2
 uikit Button 2
 winui Button 3
 MenuItemElement 6
-FontElement 4
+FontElement 5
 winui MenuItemElement 2
 winui PageElement 2
 DatePicker 5
@@ -48,7 +48,7 @@ PageElement 4
 View 16
 VisualElement 22
 Shape 5
-BorderElement 12
+BorderElement 13
 TextInput 7
 Application 12
 TextSpan 4
@@ -60,7 +60,7 @@ KeyboardElement 6
 LineHeightElement 2
 TextAlignmentElement 2
 Text 4
-TextColorElement 3
+TextColorElement 4
 TintElement 3
 ContextMenu 3
 winui VisualElement 2

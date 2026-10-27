@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-extension VisualElement where Self: StyleTarget {
+extension StyleTarget {
     /// What changes while this control is in a state - the same thing a style
     /// says, said about one control.
     ///

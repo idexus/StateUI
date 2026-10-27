@@ -1,0 +1,13 @@
+# revision 1.1
+ToolbarButton.background: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.pointerEntered: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.pointerExited: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.style: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.background: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.pointerEntered: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.pointerExited: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.style: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.background: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.pointerEntered: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.pointerExited: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.style: – A header bar's buttons stand in libadwaita's own look.

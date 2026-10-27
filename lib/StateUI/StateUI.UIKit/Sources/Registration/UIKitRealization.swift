@@ -28,9 +28,7 @@ enum UIKitRealization {
     static let records: [HostRecord] = [
         // MARK: Tiers - a member every wearer realizes alike
         .complete(BarElementContract.barBackground),
-        .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A bar button stands in the system's glass, which takes no color of the application's."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep iOS's own look."),
-        .complete(BarElementContract.barButtonFontWeight),
         .complete(BarElementContract.barForegroundColor),
         .complete(ButtonContract.keyboardShortcut),
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),
@@ -206,6 +204,7 @@ enum UIKitRealization {
         .notPlanned(WindowContract.x, reason: Self.placedBySystem),
         .notPlanned(WindowContract.y, reason: Self.placedBySystem),
     ] + pickerWords + HostRecord.phaseLayout
+        + BarItemLook.notPlanned(reason: "A bar's items stand in the system's own look.")
 
     /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.
     private static let sizedBySystem =

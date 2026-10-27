@@ -283,10 +283,10 @@ final class StateUIBar extends Toolbar implements View.OnClickListener {
     }
 
     /** The visible page's actions, in the order they show, as `StateUIMenus` writes a menu's entries. */
-    void setActions(int[] entries, String[] texts, Bitmap[] pictures, int weight) {
+    void setActions(int[] entries, String[] texts, Bitmap[] pictures) {
         Menu menu = getMenu();
         menu.clear();
-        StateUIMenus.fill(getContext(), menu, view, entries, texts, pictures, foreground, weight);
+        StateUIMenus.fill(getContext(), menu, view, entries, texts, pictures, foreground);
     }
 
     @Override

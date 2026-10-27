@@ -35,8 +35,6 @@ enum WebRealization {
             reason: "A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own."),
         .partial(BarElementContract.barBackground,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
-        .complete(BarElementContract.barButtonBackgroundColor),
-        .complete(BarElementContract.barButtonFontWeight),
         .complete(BarElementContract.toolbarStyle),
         .complete(BarElementContract.barForegroundColor),
         .complete(MenuBarContract.order),
@@ -183,7 +181,7 @@ enum WebRealization {
         .notPlanned(WindowContract.y, reason: "A page places no browser window: the system does."),
         .notPlanned(ColorPickerContract.choosesOpacity,
             reason: "The browser's color input chooses no opacity: every color it gives is opaque."),
-    ] + pickerOpening + dayFields + HostRecord.phaseLayout
+    ] + pickerOpening + dayFields + HostRecord.phaseLayout + BarItemLook.realized
 
     /// A day's and a time's field: left to right, whatever the direction around them.
     private static let dayFields: [HostRecord] = ([DatePickerContract.self, TimePickerContract.self] as [any ElementContract.Type]).map {

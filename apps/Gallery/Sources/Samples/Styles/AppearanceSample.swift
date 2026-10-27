@@ -20,7 +20,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
     static let summary = "What the bars, the window and the sidebar are made of, and the theme: "
         + "the platform's own, or yours."
 
-    static var code: String { Listings.joined("AppearanceSample", "MainPage.look", "Gallery.Looks") }
+    static var code: String { Listings.joined("AppearanceSample", "MainPage.look", "Gallery.Looks", "AppStyles.bars") }
 
     // listing: AppearanceSample
     /// The themes the application may hold, in the order they are offered.
@@ -31,11 +31,6 @@ struct AppearanceSample: SampleContent, ExampleContent {
     /// How the bars' buttons may stand, in the order they are offered.
     private static let toolbarStyles: [(name: String, style: ToolbarStyle)] = [
         ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
-    ]
-
-    /// The weights the words on the bars' buttons may take, the platform's first.
-    private static let weights: [(name: String, weight: FontWeight?)] = [
-        ("The platform's", nil), ("Regular", .regular), ("Medium", .medium), ("Semibold", .semibold), ("Bold", .bold),
     ]
 
     /// The accents the application may hold, the platform's first.
@@ -68,25 +63,23 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("appearance.accent")
                 .accessibilityLabel("Accent")
 
-            // The bars' buttons: their words' weight wherever the platform's
-            // button takes one, and on the Web, which draws them itself, how
-            // they stand.
-            SectionTitle("The bars' buttons")
-            Picker(Array(Self.weights.indices), selection: Binding(
-                get: { Self.weights.firstIndex { $0.weight == style.barButtonWeight } ?? 0 },
-                set: { style.barButtonWeight = Self.weights[$0].weight })) { Self.weights[$0].name }
-                .accessibilityIdentifier("appearance.barButtonWeight")
-                .accessibilityLabel("Weight")
             #if WEB
+            // The bars' buttons, which the Web draws itself.
+            SectionTitle("The bars' buttons")
             Picker(Self.toolbarStyles.map(\.style), selection: Binding(
                 get: { style.toolbarStyle }, set: { style.toolbarStyle = $0 })) { chosen in
                 Self.toolbarStyles.first { $0.style == chosen }?.name ?? ""
             }
                 .accessibilityIdentifier("appearance.toolbarStyle")
                 .accessibilityLabel("Buttons")
-            Switch(Binding(get: { style.tintsBarButtons }, set: { style.tintsBarButtons = $0 }))
-                .text("On the accent's tint")
-                .accessibilityIdentifier("appearance.tintsBarButtons")
+            // The application's own look for them: a style for every group and
+            // every button on a bar, its states included (AppStyles.bars).
+            Switch(Binding(get: { style.barsInOwnLook }, set: { owns in
+                style.barsInOwnLook = owns
+                application.styles = AppStyles.sheet(barsInOwnLook: owns)
+            }))
+                .text("In the gallery's own look")
+                .accessibilityIdentifier("appearance.barsInOwnLook")
             #endif
 
             // A look for each theme: the gallery wears the one of the theme in
@@ -136,8 +129,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
             Text("An accent of the application's own draws the controls where the user chooses none for the "
                 + "system - the Web, the iPhone and the iPad, GNOME before 47; elsewhere the user's stands. "
-                + "The bars' buttons - on glass, plain or rounded - are the Web's own to draw; the weight of "
-                + "their words is every platform's but the Mac's, whose toolbar draws its own.")
+                + "The bars' buttons - on glass, plain or rounded - are the Web's own to draw.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

@@ -51,7 +51,16 @@ enum Styled {
             dimmed(VStack.self)
             dimmed(WebView.self)
             dimmed(ZStack.self)
+            onSteelBlue(ToolbarButton.self)
+            onSteelBlue(ToolbarToggle.self)
+            onSteelBlue(ToolbarGroup.self)
         }
+    }
+
+    /// The style for a bar's item `Target`, on a background of steel blue.
+    static func onSteelBlue<Target: StyleTarget & BarItemElement>(_ target: Target.Type) -> [AnyStyle] {
+        StyleBuilder.buildExpression(
+            Style(StyleKey<Target>(key(Target().node.type.name))).setValue(BarItemElementContract.background, Material.color(.steelBlue)))
     }
 
     /// The style for `Target`, dimming it to half its opacity.
@@ -70,5 +79,15 @@ struct StyledPage: View {
     var body: some View {
         let (inner, application) = (self.inner, self.application)
         return VStack { AnyView(inner) }.onCreated { application.styles = Styled.sheet }
+    }
+}
+
+/// Nothing to see, standing beside a page's words: it gives its application `Styled.sheet` as it is made.
+struct WearsStyledSheet: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return Space().onCreated { application.styles = Styled.sheet }
     }
 }

@@ -49,7 +49,7 @@ extension WebDriver {
             }
             return
         }
-        let view = try self.view(of: element, act)
+        let view = try barView(of: element) ?? self.view(of: element, act)
         let e = view.node
         switch (act, view) {
         case (.toggle, is WebSplitView): try click(try bar(over: element), part: "button:has(> [data-glyph=sidebar])")

@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 Button.fontAttributes: ✅
 Button.fontFamily: ✅
 Button.fontSize: ✅
@@ -53,3 +53,15 @@ TimePicker.fontSize: ✅
 TimePicker.fontWeight: ✅
 TimePicker.isFontAutoScalingEnabled: ✅
 TimePicker.textStyle: ✅
+ToolbarButton.fontAttributes: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.fontFamily: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.fontSize: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.fontWeight: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.isFontAutoScalingEnabled: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.textStyle: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.fontAttributes: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.fontFamily: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.fontSize: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.fontWeight: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.isFontAutoScalingEnabled: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.textStyle: – A header bar's buttons stand in libadwaita's own look.

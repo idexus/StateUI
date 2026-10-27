@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 4.1
 Button.textColor: ✅
 CheckBox.textColor: ✅
 DatePicker.textColor: – UIKit's date picker draws its words in its own font and color: it takes neither.
@@ -11,3 +11,5 @@ TextEditor.textColor: ✅
 TextField.textColor: ✅
 TextSpan.textColor: ✅
 TimePicker.textColor: – UIKit's date picker draws its words in its own font and color: it takes neither.
+ToolbarButton.textColor: – A bar's items stand in the system's own look.
+ToolbarToggle.textColor: – A bar's items stand in the system's own look.

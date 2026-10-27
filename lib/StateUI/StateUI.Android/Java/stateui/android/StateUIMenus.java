@@ -6,13 +6,11 @@ package stateui.android;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.TypefaceSpan;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -59,12 +57,9 @@ final class StateUIMenus {
      * Adds the entries to `menu`: a submenu's entries follow it up to its END, and a separator starts a new
      * group, a line drawn between groups. `pictures` may be null; the picture of an item that cannot be chosen
      * is dimmed as the theme dims what is disabled, which Android does not do for a menu's picture. A bar's
-     * actions standing on it take `bar`, the bar's words' color, for their pictures, and `weight`, a font's weight
-     * from 400 to 700, for their words; 0 leaves either as drawn.
+     * actions standing on it take `bar`, the bar's words' color, for their pictures; 0 leaves them as drawn.
      */
-    static void fill(
-            Context context, Menu menu, long view, int[] entries, String[] texts, Bitmap[] pictures, int bar,
-            int weight) {
+    static void fill(Context context, Menu menu, long view, int[] entries, String[] texts, Bitmap[] pictures, int bar) {
         int error = errorColor(context);
         int dimmed = Math.round(255 * StateUIViews.disabledAlpha(context));
         ArrayDeque<Menu> outerMenus = new ArrayDeque<>();
@@ -78,9 +73,7 @@ final class StateUIMenus {
         for (int entry : entries) {
             switch (entry & KIND) {
                 case ITEM: {
-                    int itsWeight = (entry & ON_BAR) != 0 ? weight : 0;
-                    CharSequence shown = words(texts[text], entry, error, itsWeight);
-                    MenuItem added = current.add(group, item + 1, Menu.NONE, shown);
+                    MenuItem added = current.add(group, item + 1, Menu.NONE, words(texts[text], entry, error));
                     Bitmap picture = pictures == null ? null : pictures[text];
                     text++;
                     showPicture(context, added, picture, entry, error, dimmed, bar);
@@ -104,9 +97,7 @@ final class StateUIMenus {
                     // A submenu standing for an item - a bar's button opening it - is counted among the items.
                     boolean counted = (entry & COUNTED) != 0;
                     int id = counted ? ++item : Menu.NONE;
-                    int itsWeight = (entry & ON_BAR) != 0 ? weight : 0;
-                    CharSequence shown = words(texts[text], entry, error, itsWeight);
-                    SubMenu inner = current.addSubMenu(group, id, Menu.NONE, shown);
+                    SubMenu inner = current.addSubMenu(group, id, Menu.NONE, words(texts[text], entry, error));
                     Bitmap picture = pictures == null ? null : pictures[text];
                     text++;
                     MenuItem head = inner.getItem();
@@ -173,16 +164,11 @@ final class StateUIMenus {
      * The entry's words, in the theme's error color where it is destructive and can be chosen: one that cannot
      * keeps the platform's disabled color, which a color of its own would hide.
      */
-    private static CharSequence words(String text, int entry, int error, int weight) {
-        boolean red = (entry & DESTRUCTIVE) != 0 && (entry & DISABLED) == 0;
-        if (!red && weight == 0) return text;
-        SpannableString shown = new SpannableString(text);
-        if (red) shown.setSpan(new ForegroundColorSpan(error), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        if (weight != 0) {
-            shown.setSpan(new TypefaceSpan(Typeface.create(Typeface.DEFAULT, weight, false)), 0, text.length(),
-                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        }
-        return shown;
+    private static CharSequence words(String text, int entry, int error) {
+        if ((entry & DESTRUCTIVE) == 0 || (entry & DISABLED) != 0) return text;
+        SpannableString colored = new SpannableString(text);
+        colored.setSpan(new ForegroundColorSpan(error), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return colored;
     }
 
     /**

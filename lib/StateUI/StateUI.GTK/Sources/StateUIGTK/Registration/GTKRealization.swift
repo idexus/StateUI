@@ -51,9 +51,7 @@ enum GTKRealization {
         .partial(BarElementContract.barBackground,
             missing: "GNOME blurs nothing inside a window: a blur or glass shows its color. A gradient across a corner "
                 + "or out from a point keeps the header bar's proportions as it was painted, not as the window resizes."),
-        .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A header bar's buttons are libadwaita's own, flat."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The header bar's buttons keep libadwaita's own look."),
-        .complete(BarElementContract.barButtonFontWeight),
         .complete(BarElementContract.barForegroundColor),
         .complete(MenuBarContract.order),
         .complete(MenuContract.isEnabled),
@@ -250,6 +248,7 @@ enum GTKRealization {
         .notPlanned(WindowContract.x, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
         .notPlanned(WindowContract.y, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
     ] + HostRecord.phaseLayout
+        + BarItemLook.notPlanned(reason: "A header bar's buttons stand in libadwaita's own look.")
 
     /// What GTK's registry says it realizes: the export's content.
     @MainActor static var declaration: HostDeclaration {

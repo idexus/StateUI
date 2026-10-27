@@ -9,8 +9,12 @@ public enum ToolbarToggleContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// A setting on the bar is an item a user chooses.
-    public static let tiers: [any Contract.Type] = [MenuItemElementContract.self, TextAndIconElementContract.self]
+    /// A setting on the bar is an item a user chooses; where its host draws the bar itself, its look is the
+    /// application's to say.
+    public static let tiers: [any Contract.Type] = [
+        MenuItemElementContract.self, TextAndIconElementContract.self, BarButtonElementContract.self,
+        BorderElementContract.self, TextColorElementContract.self, FontElementContract.self,
+    ]
 
     /// Whether it stands on.
     public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)

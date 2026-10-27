@@ -90,25 +90,25 @@ The scene, the window and the page an application is made of, the arrangements a
 | [MenuItem](MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
 | [MenuSeparator](MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
-| [NavigationStack](NavigationStack.md) | 11 | 3 ✅ · 2 ☑️ · 2 ✓ · 3 – | 8 ✅ · 1 ✓ · 2 – | 6 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 4 ✅ · 2 ✓ · 4 – | 9 ✅ · 1 ☑️ · 1 ✓ |
+| [NavigationStack](NavigationStack.md) | 9 | 3 ✅ · 2 ☑️ · 2 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 5 ✅ · 2 ☑️ · 1 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 1 – | 3 ✅ · 2 ✓ · 3 – | 7 ✅ · 1 ☑️ · 1 ✓ |
 | [Overlay](Overlay.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Page](Page.md) | 15 | 11 ✅ · 1 ✓ | 14 ✅ · 1 ✓ | 13 ✅ · 1 ✓ · 1 – | 13 ✅ · 1 ✓ · 1 – | 11 ✅ · 1 ✓ · 2 – | 13 ✅ · 1 ✓ |
 | [Popover](Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](SplitView.md) | 16 | 8 ✅ · 2 ☑️ · 1 ✓ · 4 – | 11 ✅ · 3 ✓ · 2 – | 6 ✅ · 3 ☑️ · 5 ✓ · 2 – | 10 ✅ · 3 ☑️ · 1 ✓ · 2 – | 7 ✅ · 1 ☑️ · 3 ✓ · 4 – | 12 ✅ · 3 ☑️ · 1 ✓ |
-| [TabView](TabView.md) | 12 | 4 ✅ · 2 ☑️ · 2 ✓ · 3 – | 9 ✅ · 1 ✓ · 2 – | 7 ✅ · 2 ☑️ · 1 ✓ · 2 – | 8 ✅ · 1 ☑️ · 1 ✓ · 2 – | 5 ✅ · 1 ☑️ · 1 ✓ · 4 – | 10 ✅ · 1 ☑️ · 1 ✓ |
+| [SplitView](SplitView.md) | 14 | 8 ✅ · 2 ☑️ · 1 ✓ · 2 – | 10 ✅ · 3 ✓ · 1 – | 5 ✅ · 3 ☑️ · 5 ✓ · 1 – | 9 ✅ · 3 ☑️ · 1 ✓ · 1 – | 6 ✅ · 1 ☑️ · 3 ✓ · 3 – | 10 ✅ · 3 ☑️ · 1 ✓ |
+| [TabView](TabView.md) | 10 | 4 ✅ · 2 ☑️ · 2 ✓ · 1 – | 8 ✅ · 1 ✓ · 1 – | 6 ✅ · 2 ☑️ · 1 ✓ · 1 – | 7 ✅ · 1 ☑️ · 1 ✓ · 1 – | 4 ✅ · 1 ☑️ · 1 ✓ · 3 – | 8 ✅ · 1 ☑️ · 1 ✓ |
 | [TextSpan](TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarButton](ToolbarButton.md) | 10 | 5 ✅ · 2 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 10 ✅ | 8 ✅ · 1 ✓ · 1 – | 10 ✅ |
-| [ToolbarGroup](ToolbarGroup.md) | 6 | 5 ✅ · 1 – | 5 ✅ · 1 – | 4 ✅ · 1 ☑️ · 1 – | 6 ✅ | 5 ✅ · 1 – | 5 ✅ · 1 – |
-| [ToolbarToggle](ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
+| [ToolbarButton](ToolbarButton.md) | 26 | 5 ✅ · 2 ✓ · 17 – | 6 ✅ · 1 ☑️ · 1 ✓ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 10 ✅ · 16 – | 8 ✅ · 1 ✓ · 17 – | 26 ✅ |
+| [ToolbarGroup](ToolbarGroup.md) | 13 | 5 ✅ · 8 – | 5 ✅ · 8 – | 4 ✅ · 1 ☑️ · 8 – | 6 ✅ · 7 – | 5 ✅ · 8 – | 12 ✅ · 1 – |
+| [ToolbarToggle](ToolbarToggle.md) | 25 | 7 ✅ · 17 – | 8 ✅ · 17 – | 6 ✅ · 1 ☑️ · 17 – | 9 ✅ · 16 – | 8 ✅ · 17 – | 25 ✅ |
 | [Window](Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 107 | 113 | 92 | 138 | 103 | 125 |
+| ✅ |  | 107 | 110 | 89 | 135 | 100 | 158 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
-| – |  | 15 | 18 | 29 | 9 | 30 | 16 |
-| **Met** | 168 | **149** | **156** | **145** | **156** | **155** | **155** |
+| – |  | 48 | 54 | 65 | 45 | 66 | 16 |
+| **Met** | 201 | **182** | **189** | **178** | **189** | **188** | **188** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 
@@ -141,6 +141,8 @@ Members many elements share, declared once.
 - [FocusElement](tiers/FocusElement.md) - An element that takes the keyboard focus itself - a field, a button, a list - and so holds the keyboard.
 - [RefreshElement](tiers/RefreshElement.md) - An element the user pulls to refresh what it shows - a scroller, a list.
 - [BarElement](tiers/BarElement.md) - What an arrangement declares of the bar while it stands on the visible path: its look.
+- [BarItemElement](tiers/BarItemElement.md) - What an item standing on a bar - a button, a setting or a group of them - shows of its own where its host draws the bar itself: the keyed style it wears, what its surface is made of, and the pointer over it its visual states follow.
+- [BarButtonElement](tiers/BarButtonElement.md) - A button on a bar - an action or a setting: the press its visual states follow, beside the pointer over it every item on a bar reports.
 - [MenuItemElement](tiers/MenuItemElement.md) - What every item a user chooses from says - a menu's entry, a toolbar's item, an action or a setting: a caption, a picture, whether it can be chosen, and the keys that choose it.
 - [ActionElement](tiers/ActionElement.md) - What an item that acts has - a menu's entry, a toolbar's button: what choosing it does, and how the platform marks it.
 - [ButtonMenuElement](tiers/ButtonMenuElement.md) - What a button that holds a menu has - a button's, a toolbar button's: how its menu opens, and whether the arrow saying so shows.

@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 Button.fontAttributes: ✅
 Button.fontFamily: ✅
 Button.fontSize: ✅
@@ -53,3 +53,15 @@ TimePicker.fontSize: ✅
 TimePicker.fontWeight: ✅
 TimePicker.isFontAutoScalingEnabled: ✅
 TimePicker.textStyle: ✅
+ToolbarButton.fontAttributes: ✅
+ToolbarButton.fontFamily: ✅
+ToolbarButton.fontSize: ✅
+ToolbarButton.fontWeight: ✅
+ToolbarButton.isFontAutoScalingEnabled: ✅
+ToolbarButton.textStyle: ✅
+ToolbarToggle.fontAttributes: ✅
+ToolbarToggle.fontFamily: ✅
+ToolbarToggle.fontSize: ✅
+ToolbarToggle.fontWeight: ✅
+ToolbarToggle.isFontAutoScalingEnabled: ✅
+ToolbarToggle.textStyle: ✅

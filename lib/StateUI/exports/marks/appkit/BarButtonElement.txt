@@ -1,0 +1,5 @@
+# revision 1.1
+ToolbarButton.pressed: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.released: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.pressed: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.released: – The Mac's toolbar draws its items in the Mac's own look.

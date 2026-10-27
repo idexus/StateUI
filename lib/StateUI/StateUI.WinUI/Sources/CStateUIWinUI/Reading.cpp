@@ -373,16 +373,6 @@ namespace {
         return element;
     }
 
-    /// The text block under `root` showing `words`, as the control's template lays it out; null for none.
-    controls::TextBlock shownWords(xaml::DependencyObject const &root, winrt::hstring const &words) {
-        for (int32_t index = 0; index < media::VisualTreeHelper::GetChildrenCount(root); ++index) {
-            auto child = media::VisualTreeHelper::GetChild(root, index);
-            if (auto text = child.try_as<controls::TextBlock>(); text && text.Text() == words) return text;
-            if (auto found = shownWords(child, words)) return found;
-        }
-        return nullptr;
-    }
-
     /// How the menu of the action's control `element` opens: by a split button's arrow ("split"), a drop-down
     /// button's click showing its chevron ("arrow"), a button's click ("click") or held ("held"); empty for none.
     std::string menuOpens(IInspectable const &element) {
@@ -444,18 +434,6 @@ namespace {
                         if (!solid || (solid.Color().A > 0 && solid.Opacity() > 0)) ++shown;
                     }
             return number(shown);
-        }
-        // The weight the words of the first action standing on the bar are drawn at: the text its button shows.
-        if (what == "actionWeight") {
-            std::optional<std::string> weight;
-            for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
-                eachAction(actions.PrimaryCommands(), [&](IInspectable const &element, bool) {
-                    auto label = ofAction(element, [](auto const &button) { return button.Label(); });
-                    if (weight || !label) return;
-                    auto words = shownWords(element.as<xaml::DependencyObject>(), *label);
-                    weight = words ? number(static_cast<int32_t>(words.FontWeight().Weight)) : std::string();
-                });
-            return weight.value_or(std::string());
         }
         if (what == "actionWords") {
             std::string colors;

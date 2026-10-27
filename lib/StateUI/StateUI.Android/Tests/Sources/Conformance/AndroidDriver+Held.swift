@@ -14,7 +14,7 @@ import CStateUIAndroid
 extension AndroidDriver {
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type) { return try itemHolds(property, element) }
-        if [.barBackground, .barForegroundColor, .barButtonFontWeight].contains(property) {
+        if [.barBackground, .barForegroundColor].contains(property) {
             return Self.barHolds(property, of: element)
         }
         if element.type == .page,

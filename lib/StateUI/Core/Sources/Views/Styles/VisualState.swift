@@ -46,6 +46,33 @@ extension VisualState where Target: VisualElement {
     public static var pressed: Self { Self(VisualStateName.pressed) }
 }
 
+/// The states every item on a bar has - a button, a setting, a group of them.
+extension VisualState where Target: BarItemElement {
+    /// The ordinary state - what an item is in when none of its other states holds, written or not.
+    public static var normal: Self { Self(VisualStateName.normal) }
+
+    /// While `isEnabled` is false.
+    public static var disabled: Self { Self(VisualStateName.disabled) }
+
+    /// While a mouse or pen is over the item - over a group, over any of its buttons. Never on a touch-only device.
+    public static var pointerOver: Self { Self(VisualStateName.pointerOver) }
+}
+
+/// A button on a bar is pressed.
+extension VisualState where Target: BarButtonElement {
+    /// While the button is held down, by a finger, a pointer or a key.
+    public static var pressed: Self { Self(VisualStateName.pressed) }
+}
+
+/// A setting on a bar says which way it is.
+extension VisualState where Target == ToolbarToggle {
+    /// While `isOn` is true.
+    public static var on: Self { Self(VisualStateName.on) }
+
+    /// While `isOn` is false.
+    public static var off: Self { Self(VisualStateName.off) }
+}
+
 /// The state of a control taking the focus.
 extension VisualState where Target: FocusElement {
     /// While the control has the keyboard focus, or what stands in it does.

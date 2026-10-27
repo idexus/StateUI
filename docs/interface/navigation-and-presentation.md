@@ -626,9 +626,9 @@ look. What the window shows around the bars is its own background
 Where the host draws the bar's buttons itself - the Web - `toolbarStyle` says
 how they stand: `.glass`, each on a round glass; `.plain`, no background until
 the pointer is over one; `.rounded`, a flat rounded rectangle; or the
-platform's own, `.system`, unless said - plain on the Web.
-`barButtonBackgroundColor` is the color behind them. Both are found along the
-path as the bar's colors are, and native bars keep their platform's buttons:
+platform's own, `.system`, unless said - plain on the Web. It is found along
+the path as the bar's colors are, and native bars keep their platform's
+buttons:
 
 ```swift
 struct NotesPage: View {
@@ -641,29 +641,56 @@ struct NotesPage: View {
             Text("Note")
         }
         .toolbarStyle(.rounded)
-        .barButtonBackgroundColor(Color(hex: 0xD5E0E4))
     }
 }
 ```
 
-The weight of the words on the bar's buttons is every platform's to draw but
-the Mac's, whose toolbar items draw their own titles: `barButtonFontWeight`
-gives it - `.regular`, `.medium`, `.semibold` or `.bold` - and nil, as
-unsaid, the platform's own, even under an arrangement around it that gives
-one. It is found along the path as the bar's colors are:
+There, too, a bar's items take the look the application gives them, written
+as a control's is: a `ToolbarButton`, a `ToolbarToggle` and a `ToolbarGroup`
+say their `background`, their outline's `shape`, `stroke` and `lineWidth`, and
+a button its words' `textColor` and font - on the item itself, or in a
+`Style` for every item of its kind or by its key. What an item says stands
+over the `toolbarStyle`, and what it leaves unsaid stays as that look has it.
+Its visual states follow the pointer over it - a group's too - and a button's
+the press; a setting has `.on` and `.off`. A group style dresses every group
+on the bar - an item standing alone stands in a group of its own - and the
+bar's own buttons - the way back, the sidebar's toggle, More - stand as an
+item alone does, in the group style's box under the style every
+`ToolbarButton` wears. Native bars keep their platform's look:
 
 ```swift
-struct InboxPage: View {
-    @State private var path: [Int] = []
+@MainActor
+enum BarStyles {
+    static var sheet: StyleSheet {
+        StyleSheet {
+            Style<ToolbarGroup>()
+                .background(.white)
+                .shape(.roundedRectangle(12))
+                .stroke(.gray)
+                .lineWidth(1)
+                .visualState(.pointerOver) { $0.stroke(.cornflowerBlue) }
 
-    var body: some View {
-        NavigationStack($path) {
-            Text("Inbox")
-                .toolbar { ToolbarButton("Archive") }
-        } destination: { _ in
-            Text("Message")
+            Style<ToolbarButton>()
+                .fontWeight(.semibold)
+                .shape(.roundedRectangle(12))
+                .visualState(.pointerOver) { $0.background(Color(hex: 0xEEF1F4)) }
+                .visualState(.pressed) { $0.background(Color(hex: 0xDDE3E8)) }
         }
-        .barButtonFontWeight(.semibold)
+    }
+}
+
+struct InboxPage: View {
+    var body: some View {
+        Text("Inbox")
+            .toolbar {
+                ToolbarGroup {
+                    ToolbarButton("Archive")
+                    ToolbarButton("Move")
+                }
+                ToolbarButton("Sign out")
+                    .stroke(.gray)
+                    .visualState(.pointerOver) { $0.stroke(.firebrick) }
+            }
     }
 }
 ```

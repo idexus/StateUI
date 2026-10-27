@@ -1,4 +1,4 @@
-# revision 12.1
+# revision 13.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
@@ -20,6 +20,15 @@ ScrollView.stroke: ✅
 Space.lineWidth: ✅
 Space.shape: ✅
 Space.stroke: ✅
+ToolbarButton.lineWidth: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.shape: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.stroke: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.lineWidth: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.shape: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.stroke: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.lineWidth: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.shape: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.stroke: – The title bar's commands stand in WinUI's own look.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅

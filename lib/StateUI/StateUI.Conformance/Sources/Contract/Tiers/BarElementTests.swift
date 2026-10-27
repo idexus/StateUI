@@ -25,11 +25,6 @@
                 holds(
                     BarElementContract.barForegroundColor, on: element, .white, then: .black,
                     over: [Write(BarElementContract.barBackground, Material.color(.steelBlue))]),
-                holds(BarElementContract.barButtonBackgroundColor, on: element, .steelBlue, then: .firebrick),
-                // Read off a button standing on the bar.
-                Aspects.holds(
-                    BarElementContract.barButtonFontWeight, on: element, FontWeight.bold, then: .regular,
-                    page: { declaring($0, $1, beside: $2, acting: true) }, late: true),
                 holds(BarElementContract.toolbarStyle, on: element, .glass, then: .rounded),
                 crossesASheet(on: element),
             ]
@@ -81,27 +76,27 @@
         over others: [any Worn] = [], aspect: String = "holdsWhatTheTreeGivesAndChanges"
     ) -> ConformanceCase {
         Aspects.holds(
-            member, on: element, first, then: second, with: others, page: { declaring($0, $1, beside: $2) }, late: true,
+            member, on: element, first, then: second, with: others, page: declaring(_:_:beside:), late: true,
             aspect: aspect)
     }
 
     /// A page where `element` wears `worn` around a bar every host draws - a split view's detail, a tabbed view's
     /// first tab are a stack of one page - `beside` the page's words, its title standing on
-    /// the bar in the bar's colors, and a button standing on the bar where `acting`.
+    /// the bar in the bar's colors.
     @MainActor
-    static func declaring(_ element: String, _ worn: [any Worn], beside: [any View], acting: Bool = false) -> AnyView {
+    static func declaring(_ element: String, _ worn: [any Worn], beside: [any View]) -> AnyView {
         // Chosen by name, so held as `any View` and handed on as its node.
-        AnyView(chosen(element, worn, beside: beside, acting: acting))
+        AnyView(chosen(element, worn, beside: beside))
     }
 
-    /// The page `declaring(_:_:beside:acting:)` shows, chosen by name.
+    /// The page `declaring(_:_:beside:)` shows, chosen by name.
     @MainActor
-    private static func chosen(_ element: String, _ worn: [any Worn], beside: [any View], acting: Bool) -> any View {
+    private static func chosen(_ element: String, _ worn: [any Worn], beside: [any View]) -> any View {
         let dressing = Dressing(worn)
         let others: [any View] = beside
         let stack = {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                page(Beside([Text("Page")] + others), acting: acting)
+                VStack { Beside([Text("Page")] + others) }.title("Page")
             } destination: { _ in Text("Pushed") }
         }
         switch element {
@@ -121,17 +116,6 @@
             })
         default:
             return Specimens.page(element, worn, beside: beside)
-        }
-    }
-
-    /// The stack's page: its words, titled, and a button on its bar where `acting`.
-    @MainActor
-    @ViewBuilder
-    private static func page(_ words: Beside, acting: Bool) -> some View {
-        if acting {
-            VStack { words }.title("Page").toolbar { ToolbarButton("Act") }
-        } else {
-            VStack { words }.title("Page")
         }
     }
 }

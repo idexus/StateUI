@@ -1,4 +1,4 @@
-# revision 4.1
+# revision 5.1
 Button.fontAttributes: ✅
 Button.fontFamily: ✅
 Button.fontSize: ✅
@@ -53,3 +53,15 @@ TimePicker.fontSize: – UIKit's date picker draws its words in its own font and
 TimePicker.fontWeight: – UIKit's date picker draws its words in its own font and color: it takes neither.
 TimePicker.isFontAutoScalingEnabled: – UIKit's date picker draws its words in its own font, which follows the user's text size always.
 TimePicker.textStyle: – UIKit's date picker draws its words in its own font and color: it takes neither.
+ToolbarButton.fontAttributes: – A bar's items stand in the system's own look.
+ToolbarButton.fontFamily: – A bar's items stand in the system's own look.
+ToolbarButton.fontSize: – A bar's items stand in the system's own look.
+ToolbarButton.fontWeight: – A bar's items stand in the system's own look.
+ToolbarButton.isFontAutoScalingEnabled: – A bar's items stand in the system's own look.
+ToolbarButton.textStyle: – A bar's items stand in the system's own look.
+ToolbarToggle.fontAttributes: – A bar's items stand in the system's own look.
+ToolbarToggle.fontFamily: – A bar's items stand in the system's own look.
+ToolbarToggle.fontSize: – A bar's items stand in the system's own look.
+ToolbarToggle.fontWeight: – A bar's items stand in the system's own look.
+ToolbarToggle.isFontAutoScalingEnabled: – A bar's items stand in the system's own look.
+ToolbarToggle.textStyle: – A bar's items stand in the system's own look.

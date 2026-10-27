@@ -129,9 +129,8 @@ final class GTKPageFrame {
             adw_header_bar_set_show_end_title_buttons(header.opaque, chrome.offersClose ? 1 : 0)
         }
         if chrome.tabs !== self.chrome.tabs { showTabs(chrome.tabs) }
-        if chrome.barBackground != self.chrome.barBackground || chrome.barForeground != self.chrome.barForeground
-            || chrome.buttonWeight != self.chrome.buttonWeight {
-            paintBar(background: chrome.barBackground, foreground: chrome.barForeground, weight: chrome.buttonWeight)
+        if chrome.barBackground != self.chrome.barBackground || chrome.barForeground != self.chrome.barForeground {
+            paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
         }
         showActions(leading: chrome.leading, trailing: chrome.trailing, overflow: chrome.overflow)
         showMainMenu(chrome.mainMenu)
@@ -143,13 +142,12 @@ final class GTKPageFrame {
     /// light on a dark band and dark on a light one (`BandWords`) - as a class of the host's style sheet; nil keeps
     /// the platform's. A gradient is drawn for the header bar's size as it stands, again once it has one.
     /// Design: docs/design/platforms/gtk/pages.md#the-bars-look
-    private func paintBar(background: HostValue?, foreground: HostValue?, weight: FontWeight?) {
+    private func paintBar(background: HostValue?, foreground: HostValue?) {
         let size = (width: Double(gtk_widget_get_width(header)), height: Double(gtk_widget_get_height(header)))
         paintsAgainWhenSized = HostBrush(background).isGradient && (size.width <= 0 || size.height <= 0)
         let painted = GTKStyleSheet.bar(
             background: background, over: size,
-            foreground: BandWords.color(on: background, written: foreground).flatMap(GTKBrush.rgba),
-            buttonWeight: weight)
+            foreground: BandWords.color(on: background, written: foreground).flatMap(GTKBrush.rgba))
         for bar in [header] + (tabsBar.map { [$0] } ?? []) {
             if let barClass { gtk_widget_remove_css_class(bar, barClass) }
             if let painted { gtk_widget_add_css_class(bar, painted) }
@@ -276,7 +274,7 @@ final class GTKPageFrame {
     /// Design: docs/design/platforms/gtk/pages.md#a-bar-with-no-room
     func fit() {
         if paintsAgainWhenSized, gtk_widget_get_width(header) > 0 {
-            paintBar(background: chrome.barBackground, foreground: chrome.barForeground, weight: chrome.buttonWeight)
+            paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
         }
         let width = room
         guard width > 0, width != fittedWidth else { return }

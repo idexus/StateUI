@@ -177,11 +177,27 @@ properties of every node in the tree, styled or not.
 
 ## What can be styled
 
-Every control in `Views/` but the ItemsView is a `StyleTarget`, the list
-kept in one place - `StyleTarget.swift` - so it can be read at a glance and a
-test can insist on it. A style target is any control that can be made with
-nothing set, and each of them can: the initializer taking the value that
-gives a control its purpose is one of several, never the only one.
+Every control in `Views/` but the ItemsView is a `StyleTarget`, and so is
+every item on a bar - a `ToolbarButton`, a `ToolbarToggle`, a
+`ToolbarGroup` - the list kept in one place - `StyleTarget.swift` - so it can
+be read at a glance and a test can insist on it. A style target is anything
+carrying properties that can be made with nothing set, and each of them can:
+the initializer taking the value that gives a control its purpose is one of
+several, never the only one. A style offers what its target can say of
+itself - a view's `VisualElement` half, a bar item's `BarItemElement` and the
+tiers it shares with controls - and a state only what its target enters: a
+bar item is pointed at, a button on a bar is pressed, a setting is on or off.
+
+## A bar's own buttons
+
+The way back, a split view's sidebar toggle, More and a sheet's close are
+buttons a host adds to its bar, no element of the tree. Where a host draws its
+bar itself each stands as a lone item does: in the box the style every
+`ToolbarGroup` wears gives it - its background and outline - under the style
+every `ToolbarButton` wears, states included. The host asks
+`BarOwnButtons.look` as the user moves over one or presses it, and the answer
+is the two styles laid out as the differ lays out an element's - the same
+order of states, the button's over the group's, the theme picked.
 
 An ItemsView is none. It exists only with its items, and it is generic: a
 style would have to name one kind of list while it styled every list, and

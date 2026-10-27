@@ -1,4 +1,4 @@
-# revision 12.1
+# revision 13.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
@@ -20,6 +20,15 @@ ScrollView.stroke: ✅
 Space.lineWidth: ✅
 Space.shape: ✅
 Space.stroke: ✅
+ToolbarButton.lineWidth: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.shape: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.stroke: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.lineWidth: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.shape: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.stroke: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.lineWidth: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.shape: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.stroke: – A header bar's buttons stand in libadwaita's own look.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅

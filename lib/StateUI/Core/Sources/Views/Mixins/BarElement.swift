@@ -54,27 +54,10 @@ extension BarElement {
         twin(BarElementContract.barBackground, by: state)
     }
 
-    /// The color behind the bar's buttons - a glass or a rounded one, and a
-    /// plain one under the pointer - where the host draws them a background:
-    /// the Web. Native bars keep their platform's own.
-    ///
-    ///     .barButtonBackgroundColor(Color(light: Color(hex: 0xD5E0E4), dark: Color(hex: 0x272D39)))
-    public func barButtonBackgroundColor(_ value: Color) -> Modified {
-        setValue(BarElementContract.barButtonBackgroundColor, value)
-    }
-
-    /// The weight of the words on the bar's buttons, where the platform's
-    /// bar button takes one; nil - and unsaid - each platform's own, nil
-    /// even under an arrangement around it that says one.
-    ///
-    ///     .barButtonFontWeight(.bold)
-    public func barButtonFontWeight(_ value: FontWeight?) -> Modified {
-        setValue(BarElementContract.barButtonFontWeight.token, value.propValue)
-    }
-
     /// How the bar's buttons stand where the host draws them itself - the
     /// Web: `.glass`, `.plain`, `.rounded`, or the platform's own,
-    /// `.system`, unless said. Native bars keep their platform's buttons.
+    /// `.system`, unless said - the look a `Style<ToolbarButton>` writes
+    /// over. Native bars keep their platform's buttons.
     ///
     ///     .toolbarStyle(.plain)
     public func toolbarStyle(_ value: ToolbarStyle) -> Modified {

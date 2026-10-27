@@ -32,6 +32,8 @@
         FocusElementContract.self,
         RefreshElementContract.self,
         BarElementContract.self,
+        BarItemElementContract.self,
+        BarButtonElementContract.self,
         MenuItemElementContract.self,
         ActionElementContract.self,
         ButtonMenuElementContract.self,

@@ -36,8 +36,11 @@ final class WebWindowBar: WebDOMView {
     private(set) var buttons: [ObjectIdentifier: WebBarButton] = [:]
 
     /// The groups of actions shown over the detail, each a run of buttons standing together, and over the sidebar.
-    private var groups: [WebDOMView] = []
-    private var sideGroups: [WebDOMView] = []
+    private var groups: [WebBarGroup] = []
+    private var sideGroups: [WebBarGroup] = []
+
+    /// Every group of actions standing on the bar, over the sidebar first.
+    var shownGroups: [WebBarGroup] { sideGroups + groups }
 
     /// The shape drawn on each button of the bar's own, let go of with the bar.
     private var glyphs: [WebDOMView] = []
@@ -75,6 +78,9 @@ final class WebWindowBar: WebDOMView {
     /// The items standing over the sidebar, by identity: one moving to the other part slides there.
     private var sideItems: Set<ObjectIdentifier> = []
 
+    /// What the user is doing to each of the bar's own buttons - a press, the pointer over it - by the button.
+    private var ownStates: [ObjectIdentifier: (pressed: Bool, over: Bool)] = [:]
+
     init() {
         super.init(tag: "header")
         attribute("class", "stateui-bar")
@@ -102,6 +108,7 @@ final class WebWindowBar: WebDOMView {
             WebMenu(sideBehind).show(under: sideMore)
         }
         closer.setShown(false)
+        for button in [toggle, back, closer, more, sideMore] { followUser(button) }
         toggle.listen("click") { [weak self] in self?.onToggle() }
         back.listen("click") { [weak self] in self?.onBack() }
         closer.listen("click") { [weak self] in self?.onClose?() }
@@ -169,8 +176,7 @@ final class WebWindowBar: WebDOMView {
         style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
         // The buttons on glass unless said otherwise: the Web's own look for them, `.system`, is plain.
         attribute("data-toolbar-style", Self.look(of: chrome.toolbarStyle))
-        style("--stateui-bar-button", WebCSS.fill(chrome.buttonBackground))
-        style("--stateui-bar-button-weight", chrome.buttonFontWeight.map { String($0.number) })
+        for button in [toggle, back, closer, more, sideMore] { showOwnLook(button) }
 
         // An item keeps its button wherever it stands, moving from one part to the other - from where it stood.
         let stood = buttons.mapValues { WebRelay.box(of: $0.node) }
@@ -211,13 +217,12 @@ final class WebWindowBar: WebDOMView {
     /// Stands `runs` on `edge`, each a group of buttons - a group of `pool` taken before one is made, an item's
     /// button the one standing for it - each item's button joining `kept`; the groups standing.
     private func place(
-        _ runs: [[MountedElement]], on edge: WebDOMView, from pool: inout [WebDOMView],
+        _ runs: [[MountedElement]], on edge: WebDOMView, from pool: inout [WebBarGroup],
         keeping kept: inout [ObjectIdentifier: WebBarButton]
-    ) -> [WebDOMView] {
+    ) -> [WebBarGroup] {
         runs.enumerated().map { place, items in
-            let group = pool.isEmpty ? WebDOMView(tag: "div") : pool.removeFirst()
-            group.attribute("class", "stateui-bar-group")
-            group.attribute("role", "group")
+            let group = pool.isEmpty ? WebBarGroup() : pool.removeFirst()
+            group.show(items.first?.parent)
             WebRelay.insert(group.node, into: edge.node, at: place)
             for (index, item) in items.enumerated() {
                 // A button opens its item's menu one way for good: an item opening it another way is another.
@@ -285,6 +290,33 @@ final class WebWindowBar: WebDOMView {
         title.setShown(view != nil || !shown.isEmpty)
         title.attribute("data-repeats", view == nil && shown == name && said == nil ? "" : nil)
         title.attribute("data-holds-view", view == nil ? nil : "")
+    }
+
+    /// Follows what the user does to one of the bar's own buttons - the pointer over it, a press - and shows it
+    /// in the look the application's style for every toolbar button gives that state (`BarOwnButtons`). A finger
+    /// hovers over nothing.
+    /// Design: docs/design/platforms/web/pages.md#a-bars-items-in-the-applications-look
+    private func followUser(_ button: WebDOMView) {
+        let key = ObjectIdentifier(button)
+        let moves: [(String, (inout (pressed: Bool, over: Bool)) -> Void)] = [
+            ("pointerenter", { $0.over = true }), ("pointerleave", { $0 = (false, false) }),
+            ("pointerdown", { $0.pressed = true }), ("pointerup", { $0.pressed = false }),
+            ("pointercancel", { $0.pressed = false }),
+        ]
+        for (said, move) in moves {
+            button.listen(said) { [weak self, weak button] in
+                guard let self, let button, said != "pointerenter" || WebRelay.eventPointer.kind != .touch else { return }
+                move(&ownStates[key, default: (false, false)])
+                showOwnLook(button)
+            }
+        }
+    }
+
+    /// One of the bar's own buttons in the look its user's state gives it.
+    private func showOwnLook(_ button: WebDOMView) {
+        let state = ownStates[ObjectIdentifier(button)] ?? (false, false)
+        let look = BarOwnButtons.look(pressed: state.pressed, pointerOver: state.over)
+        button.showBarLook { look[$0] }
     }
 
     private func glyph(_ button: WebDOMView, _ glyph: String, label: String) {

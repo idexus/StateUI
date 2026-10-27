@@ -38,6 +38,11 @@ final class WebBarButton: WebDOMView {
             guard item.type == .menu else { return element.choose() }
             WebMenu(MenuEntry.entries(of: item)).show(under: self)
         }
+        // The pointer over the button and a press on it, which its item's states follow.
+        for (said, event) in [("pointerenter", Event.pointerEntered), ("pointerleave", .pointerExited),
+                              ("pointerdown", .pressed), ("pointerup", .released), ("pointercancel", .released)] {
+            listen(said) { [weak self] in (self?.item?.native as? WebElement)?.hearOnBar(event) }
+        }
     }
 
     func show(_ item: MountedElement) {
@@ -59,6 +64,7 @@ final class WebBarButton: WebDOMView {
         // A setting is a two-state button: pressed while on.
         attribute("aria-pressed", item.type == .toolbarToggle ? (entry.isOn == true ? "true" : "false") : nil)
         attribute("aria-keyshortcuts", entry.keyboardShortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })
+        showBarLook { item.value($0) }
     }
 
     override func release() {

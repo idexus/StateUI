@@ -815,7 +815,7 @@ final class ControlTests: XCTestCase {
             "rows", "shape", "geometryTransform", "transform", "motion", "id",
             "assign", "area",
             // Tiers no view wears.
-            "barBackground", "barButtonBackgroundColor", "barButtonFontWeight", "barForegroundColor", "toolbarStyle",
+            "barBackground", "barForegroundColor", "toolbarStyle",
             "isScrollEnabled",
             "isZoomEnabled", "showsTraffic", "showsUserLocation", "title",
             "mapType", "ignoresSafeArea",

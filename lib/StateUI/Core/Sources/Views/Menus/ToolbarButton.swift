@@ -34,7 +34,8 @@
 /// it has no `.onClicked`, else from an arrow of its own or held. Standing
 /// alone it says where it stands with `.placement`; in a `ToolbarGroup` it
 /// stands where its group does.
-public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement, ButtonMenuElement, TextAndIconElement {
+public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement, ButtonMenuElement, TextAndIconElement,
+    BarButtonElement, BorderElement, TextColorElement, FontElement {
     /// The node this item describes.
     public var node: Node
 
@@ -46,6 +47,11 @@ public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement, 
     public init(_ text: String) {
         node = Node(contract: ToolbarButtonContract.self)
         node.write(MenuItemElementContract.text, text)
+    }
+
+    /// An item with nothing set - what a `Style<ToolbarButton>` is written for.
+    public init() {
+        node = Node(contract: ToolbarButtonContract.self)
     }
 
     /// Who this item is among the others of its declaration, so an item

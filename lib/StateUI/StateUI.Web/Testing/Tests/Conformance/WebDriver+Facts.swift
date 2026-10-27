@@ -241,10 +241,23 @@ extension WebDriver {
             case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier ?? null", on: e)?.propValue)
             case .icon: return .some(try picture("e.querySelector('img')", on: e))
             case .keyboardShortcut: return .some(try shortcut(on: e))
+            // The look the application gives it: its box, and its words.
+            case .background, .stroke, .lineWidth, .shape: return try boxHolds(property, button)
+            case .textColor, .fontSize, .fontWeight, .fontFamily, .fontAttributes, .textStyle, .isFontAutoScalingEnabled:
+                return try wordsHolds(property, e)
             default: return nil
             }
         }
         return nil
+    }
+
+    /// The button standing for the bar's item `element`, or the group for its group; nil for any other element.
+    func barView(of element: MountedElement) throws -> WebDOMView? {
+        switch element.type {
+        case .toolbarButton, .toolbarToggle: return try barButtons().first { $0.item === element }
+        case .toolbarGroup: return renderer?.roster.controllers.first?.window.bar.shownGroups.first { $0.group === element }
+        default: return nil
+        }
     }
 
     /// The bar as the user meets it: each edge's groups of actions, then those behind the bar's More.

@@ -71,16 +71,6 @@ extension MountedElement {
         HostMaterial(barValue(.barBackground))
     }
 
-    /// The color behind this element's bar's buttons, found as its bar's colors; nil for the host's own.
-    public var barButtonBackground: HostValue? {
-        barValue(.barButtonBackgroundColor)
-    }
-
-    /// The weight of the words on this element's bar's buttons, found as its bar's colors; nil for the platform's own.
-    public var barButtonFontWeight: FontWeight? {
-        barValue(.barButtonFontWeight)?.enumeration.flatMap(FontWeight.init(rawValue:))
-    }
-
     /// How this element's bar's buttons stand, found as its bar's colors; `.system` where none is declared.
     public var toolbarStyle: ToolbarStyle {
         barValue(.toolbarStyle)?.enumeration.flatMap(ToolbarStyle.init(rawValue:)) ?? .system

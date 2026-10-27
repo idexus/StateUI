@@ -115,6 +115,24 @@ final class LibraryContractTests: XCTestCase {
         XCTAssertEqual(wrong, [])
     }
 
+    /// Every tier the sources declare stands on the library's list: a host's register, the dictionary and the
+    /// conformance families find a tier there, and one missing from it is a member no register can name.
+    func testEveryTierTheSourcesDeclareIsOnTheLibrarysList() throws {
+        let listed = Set(LibraryContracts.tiers.map { "\($0)" })
+        let pattern = try NSRegularExpression(pattern: #"public enum (\w+Contract): Contract \{"#)
+        var missing: [String] = []
+
+        for source in try SourceTree.allSources() where source.path.hasPrefix("Contracts/") {
+            let range = NSRange(source.text.startIndex..., in: source.text)
+            for match in pattern.matches(in: source.text, range: range) {
+                let name = String(source.text[Range(match.range(at: 1), in: source.text)!])
+                if !listed.contains(name) { missing.append(name) }
+            }
+        }
+
+        XCTAssertEqual(missing, [])
+    }
+
     /// An element contract's node type is its own name - `TextContract`
     /// declares "Text" - so the name a host resolves is the contract's, and
     /// nothing is left to look up.

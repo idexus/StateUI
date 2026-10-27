@@ -60,6 +60,32 @@ in words, and the browser's tab shows the site's own icon.
 The page is one window: an application's second window has no place of its
 own in it.
 
+## A bar's items in the application's look
+
+What the application says of a bar's item - its `background`, its outline's
+`shape`, `stroke` and `lineWidth`, its words' color and font - stands on the
+item's own element as inline style over the stylesheet's look for the bar's
+buttons (`toolbarStyle`): a button's box and words (`showBarLook`, the same
+box a control draws, `WebBox`, and the words a text draws, `WebCSS.font`), a
+group's box on its group's element (`WebBarGroup`). What it leaves unsaid
+stays as the stylesheet has it, so an outline alone keeps the stylesheet's
+fill and its light under the pointer; a background said replaces both, and
+the item's own `.pointerOver` state says how it lights.
+
+The states are StateUI's: the button and the group tell the item's element the
+pointer coming and going and a press beginning and ending - a finger hovering
+over nothing ([the host layer's rule](../../host/runtime.md#a-finger-hovers-over-nothing))
+- where it declares a state that follows them, and the differ describes the
+item again in that state's values.
+
+A lone item's own group is a group like any other, and wears the group style.
+The bar's own buttons - the toggle, the way back, More, a sheet's close -
+stand as a lone item does, in the group style's box under the style every
+`ToolbarButton` wears, asked of StateUI in the state the user puts each in
+(`BarOwnButtons`). The words of the bar's
+buttons stand at a size in `rem`, so the user's own text size scales them as
+it does every word the page shows.
+
 ## A bar with no room
 
 The bar measures itself ([a bar with no room](../../host/pages.md#a-bar-with-no-room)):

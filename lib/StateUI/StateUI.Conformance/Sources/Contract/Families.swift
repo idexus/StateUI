@@ -93,6 +93,8 @@
         FocusElementTests.self,
         RefreshElementTests.self,
         BarElementTests.self,
+        BarItemElementTests.self,
+        BarButtonElementTests.self,
         MenuItemElementTests.self,
         ActionElementTests.self,
         ButtonMenuElementTests.self,

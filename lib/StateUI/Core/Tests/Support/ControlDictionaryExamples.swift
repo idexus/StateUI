@@ -819,6 +819,29 @@ extension ControlDictionary {
             }
             """#),
 
+        (BarItemElementContract.self, #"""
+            Text("Inbox")
+                .toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Archive")
+                        ToolbarButton("Move")
+                    }
+                    .background(.white)
+                    .shape(.roundedRectangle(12))
+                    .stroke(.gray)
+                    .visualState(.pointerOver) { $0.stroke(.cornflowerBlue) }
+                }
+            """#),
+
+        (BarButtonElementContract.self, #"""
+            Text("Inbox")
+                .toolbar {
+                    ToolbarButton("Sign out")
+                        .shape(.roundedRectangle(12))
+                        .visualState(.pressed) { $0.background(.lightGray) }
+                }
+            """#),
+
         (ActionElementContract.self, #"""
             @State var deleted = false
 

@@ -4,9 +4,9 @@
 // A control a style can be written for, and every control that is one.
 // Design: docs/design/views/styles.md#what-can-be-styled
 
-/// A control a style can be written for: one with an initializer that sets
-/// nothing, from which the style takes its node type.
-public protocol StyleTarget: VisualElement {
+/// A control a style can be written for - a view, or an item on a bar: one with an initializer that sets nothing,
+/// from which the style takes its node type.
+public protocol StyleTarget: PropertyContainer {
     /// A control with nothing set. Where a style reads its target's type.
     init()
 }
@@ -58,3 +58,6 @@ extension Polyline: StyleTarget {}
 extension Canvas: StyleTarget {}
 extension WebView: StyleTarget {}
 extension Map: StyleTarget {}
+extension ToolbarButton: StyleTarget {}
+extension ToolbarToggle: StyleTarget {}
+extension ToolbarGroup: StyleTarget {}

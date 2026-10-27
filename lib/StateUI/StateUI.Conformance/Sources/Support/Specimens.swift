@@ -121,6 +121,12 @@
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarButton("Save")).id(dressing.id)] }
             } destination: { _ in Text("Pushed") }
+        case "ToolbarGroup":
+            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                DeclaringPage(beside: others, key: "\(worn)", groups: {
+                    [dressing.wear(ToolbarGroup { ToolbarButton("Add"); ToolbarButton("Edit") }).id(dressing.id)]
+                })
+            } destination: { _ in Text("Pushed") }
         case "NavigationStack":
             return dressing.wear(NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 VStack { Beside([Text("Root")] + others) }
@@ -192,24 +198,31 @@ public struct DeclaringPage: View {
     /// Its settings, after its items.
     let toggles: @MainActor () -> [ToolbarToggle]
 
-    /// A page declaring `items`, `toggles` and `title`, `beside` its words.
+    /// Its groups, after its settings.
+    let groups: @MainActor () -> [ToolbarGroup]
+
+    /// A page declaring `items`, `toggles`, `groups` and `title`, `beside` its words.
     public init(
         beside: [any View] = [], key: String = "", title: (any View)? = nil,
         _ items: @escaping @MainActor () -> [ToolbarButton] = { [] },
-        toggles: @escaping @MainActor () -> [ToolbarToggle] = { [] }
+        toggles: @escaping @MainActor () -> [ToolbarToggle] = { [] },
+        groups: @escaping @MainActor () -> [ToolbarGroup] = { [] }
     ) {
         self.beside = beside
         self.key = key
         self.title = title
         self.toggles = toggles
         self.items = items
+        self.groups = groups
     }
 
     public var body: some View {
-        let (items, toggles, words) = (self.items, self.toggles, VStack { Beside([Text("Page")] + beside) })
+        let (items, toggles, groups) = (self.items, self.toggles, self.groups)
+        let words = VStack { Beside([Text("Page")] + beside) }
         let declared = words.toolbar {
             items()
             toggles()
+            groups()
         }
         guard let title else { return declared }
         return declared.titleView { AnyView(title) }

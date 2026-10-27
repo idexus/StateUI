@@ -267,16 +267,17 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   box-shadow: var(--stateui-glass-edge);
   color: inherit;
   font: inherit;
-  font-size: 15px;
-  font-weight: var(--stateui-bar-button-weight, 550);
+  /* The user's own text size scales them, as it does every word the page shows. */
+  font-size: 0.9375rem;
+  font-weight: 550;
   white-space: nowrap;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
 .stateui-bar {
   /* Light, a breath over a grouped list's ground; dark, a step clearer. */
-  --stateui-glass: var(--stateui-bar-button, light-dark(color-mix(in srgb, currentColor 7%, transparent),
-    color-mix(in srgb, currentColor 13%, transparent)));
+  --stateui-glass: light-dark(color-mix(in srgb, currentColor 7%, transparent),
+    color-mix(in srgb, currentColor 13%, transparent));
   --stateui-glass-edge: inset 0 0.5px 0 color-mix(in srgb, white 28%, transparent), 0 1px 4px rgb(0 0 0 / 0.08);
 }
 /* The actions at an edge of the bar: each group of them together on a glass of its own, apart from the next. */
@@ -318,11 +319,11 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 }
 @media (hover: hover) {
   .stateui-bar[data-toolbar-style="plain"] button:hover {
-    background: var(--stateui-bar-button, color-mix(in srgb, currentColor 10%, transparent));
+    background: color-mix(in srgb, currentColor 10%, transparent);
   }
 }
 .stateui-bar[data-toolbar-style="plain"] button:active {
-  background: var(--stateui-bar-button, color-mix(in srgb, currentColor 16%, transparent));
+  background: color-mix(in srgb, currentColor 16%, transparent);
 }
 /* Rounded buttons: a flat rounded rectangle behind each, a group of them sharing one. */
 .stateui-bar[data-toolbar-style="rounded"] :is(button, .stateui-bar-group, .stateui-bar-actions > button) {

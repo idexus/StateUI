@@ -1,16 +1,10 @@
-# revision 12.1
+# revision 13.1
 NavigationStack.barBackground: ✅
-NavigationStack.barButtonBackgroundColor: – A bar button stands in the system's glass, which takes no color of the application's.
-NavigationStack.barButtonFontWeight: ✅
 NavigationStack.barForegroundColor: ✅
 NavigationStack.toolbarStyle: – The bar's buttons keep iOS's own look.
 SplitView.barBackground: ✅
-SplitView.barButtonBackgroundColor: – A bar button stands in the system's glass, which takes no color of the application's.
-SplitView.barButtonFontWeight: ✅
 SplitView.barForegroundColor: ✅
 SplitView.toolbarStyle: – The bar's buttons keep iOS's own look.
 TabView.barBackground: ✅
-TabView.barButtonBackgroundColor: – A bar button stands in the system's glass, which takes no color of the application's.
-TabView.barButtonFontWeight: ✅
 TabView.barForegroundColor: ✅
 TabView.toolbarStyle: – The bar's buttons keep iOS's own look.

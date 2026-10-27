@@ -12,7 +12,8 @@
 /// Its words are always its name - to assistive technology, in its tip and
 /// in the overflow, where it stands checked or not. An item that acts is a
 /// `ToolbarButton`.
-public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElement {
+public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElement, BarButtonElement, BorderElement,
+    TextColorElement, FontElement {
     /// The node this item describes.
     public var node: Node
 
@@ -25,6 +26,11 @@ public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElem
         node = Node(contract: ToolbarToggleContract.self)
         node.write(MenuItemElementContract.text, text)
         node.write(ToolbarToggleContract.isOn, isOn)
+    }
+
+    /// An item with nothing set - what a `Style<ToolbarToggle>` is written for.
+    public init() {
+        node = Node(contract: ToolbarToggleContract.self)
     }
 
     /// An item captioned `text`, standing on as the state holds; choosing it

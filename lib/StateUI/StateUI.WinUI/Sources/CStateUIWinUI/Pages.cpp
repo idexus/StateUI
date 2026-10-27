@@ -517,24 +517,6 @@ std::wstring stateui::composedForeground(controls::Control const &control) {
     return L"ButtonForeground";
 }
 
-extern "C" void stateui_winui_title_bar_weigh_actions(StateUIObjectRef handle, int32_t weight) {
-    try {
-        auto weigh = [weight](controls::Control const &control) {
-            if (weight > 0) control.FontWeight(winrt::Windows::UI::Text::FontWeight{static_cast<uint16_t>(weight)});
-            else control.ClearValue(controls::Control::FontWeightProperty());
-        };
-        auto edges = actionEdges(borrow<controls::TitleBar>(handle));
-        for (auto const &actions : {edges.leading, edges.trailing}) {
-            // Each action's control on the bar draws its own words.
-            for (auto const &command : actions.PrimaryCommands())
-                if (auto contained = command.try_as<controls::AppBarElementContainer>())
-                    for (auto const &control : composedActions(contained)) weigh(control);
-        }
-    } catch (...) {
-        report("weighing a title bar's actions");
-    }
-}
-
 void stateui::setActions(
     ActionEdges const &edges, xaml::FrameworkElement const &owner, int64_t view, char const *const *texts,
     char const *const *identifiers, char const *const *icons, bool const *words, bool const *destructive,

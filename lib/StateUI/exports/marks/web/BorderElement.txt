@@ -1,4 +1,4 @@
-# revision 12.1
+# revision 13.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
@@ -20,6 +20,15 @@ ScrollView.stroke: ✅
 Space.lineWidth: ✅
 Space.shape: ✅
 Space.stroke: ✅
+ToolbarButton.lineWidth: ✅
+ToolbarButton.shape: ✅
+ToolbarButton.stroke: ✅
+ToolbarGroup.lineWidth: ✅
+ToolbarGroup.shape: ✅
+ToolbarGroup.stroke: ✅
+ToolbarToggle.lineWidth: ✅
+ToolbarToggle.shape: ✅
+ToolbarToggle.stroke: ✅
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅
