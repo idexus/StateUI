@@ -50,6 +50,10 @@ final class ContractPayloadTests: XCTestCase {
         check(PageElementContract.linkOpened, [.string("notes://note/7")])
         check(TextInputContract.textChanged, [.string("typed")])
         check(ActionElementContract.clicked)
+        check(BarItemElementContract.pointerEntered)
+        check(BarItemElementContract.pointerExited)
+        check(BarButtonElementContract.pressed)
+        check(BarButtonElementContract.released)
 
         // The elements.
         check(ButtonContract.clicked)

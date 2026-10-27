@@ -32,6 +32,7 @@ private struct BarredPage: View {
                 .placement(at: .overflow)
                 .hidesWithSidebar(true)
                 .isEnabled(false)
+                .spacing(2)
 
                 ToolbarButton("Undo")
                     .id("undo")
