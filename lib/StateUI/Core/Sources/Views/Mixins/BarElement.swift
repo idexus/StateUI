@@ -63,6 +63,15 @@ extension BarElement {
         setValue(BarElementContract.barButtonBackgroundColor, value)
     }
 
+    /// The weight of the words on the bar's buttons, where the platform's
+    /// bar button takes one; nil - and unsaid - each platform's own, nil
+    /// even under an arrangement around it that says one.
+    ///
+    ///     .barButtonFontWeight(.bold)
+    public func barButtonFontWeight(_ value: FontWeight?) -> Modified {
+        setValue(BarElementContract.barButtonFontWeight.token, value.propValue)
+    }
+
     /// How the bar's buttons stand where the host draws them itself - the
     /// Web: `.glass`, `.plain`, `.rounded`, or the platform's own,
     /// `.system`, unless said. Native bars keep their platform's buttons.

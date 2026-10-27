@@ -35,6 +35,7 @@ enum AndroidRealization {
         .partial(BarElementContract.barBackground, missing: Self.blursNothing),
         .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A toolbar's action is Android's own, with no background of the application's."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The toolbar's actions keep Android's own look."),
+        .complete(BarElementContract.barButtonFontWeight),
         .partial(BarElementContract.barForegroundColor,
             missing: "The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words."),
         .complete(ButtonContract.keyboardShortcut),

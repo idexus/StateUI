@@ -162,6 +162,7 @@ final class WinUIWindowController {
         chrome.background = composed.background
         chrome.material = composed.material
         chrome.foreground = composed.foreground
+        chrome.buttonWeight = composed.buttonFontWeight
         // WinUI keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
         chrome.menuBar = WinUIMenu(
             menus: composed.menus.editing(CoreLink().editWords, redo: KeyboardShortcut("y")).menus)

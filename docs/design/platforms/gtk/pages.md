@@ -94,6 +94,10 @@ painted before it was laid out - and not as the user resizes the window: each
 new class loads the whole sheet again. A gradient across or down the bar is
 the same at every size; one across a corner, or out from a point, keeps the
 proportions the bar was painted at, which the register records (☑️).
+The weight the path gives the bar's buttons' words joins the class as a rule
+for the buttons of a header bar alone (`headerbar.<class> button`): the
+switcher's bar wears the same class, and its captions keep libadwaita's
+weight.
 
 ## A navigation stack
 

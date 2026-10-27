@@ -68,6 +68,7 @@ enum WinUIRealization {
                 + "out from a point is drawn over the bar's box as an ellipse."),
         .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "An app bar button is WinUI's own, with no background of the application's."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep WinUI's own look."),
+        .complete(BarElementContract.barButtonFontWeight),
         .complete(BarElementContract.barForegroundColor),
         .complete(MenuToggleContract.isOn),
         .complete(MenuToggleContract.toggled),

@@ -170,6 +170,7 @@ final class WebWindowBar: WebDOMView {
         // The buttons on glass unless said otherwise: the Web's own look for them, `.system`, is plain.
         attribute("data-toolbar-style", Self.look(of: chrome.toolbarStyle))
         style("--stateui-bar-button", WebCSS.fill(chrome.buttonBackground))
+        style("--stateui-bar-button-weight", chrome.buttonFontWeight.map { String($0.number) })
 
         // An item keeps its button wherever it stands, moving from one part to the other - from where it stood.
         let stood = buttons.mapValues { WebRelay.box(of: $0.node) }

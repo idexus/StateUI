@@ -328,7 +328,7 @@ others of that id leave; a section left with nothing is none. A menu whose
 ## The bar a path declares
 
 What an arrangement declares of the bar - its look: its material, its words'
-color, its buttons' background and style - is a value on the arrangement
+color, its buttons' background, style and words' weight - is a value on the arrangement
 (`BarElement`), not a
 declaration: each value of a page's bar is the nearest on its path, its own
 arrangement included (`barValue`), so a stack further in paints its own bar.

@@ -138,6 +138,13 @@ extension WebDriver {
         case (.page, .subtitle): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
         case (_, .barBackground): return .some(try barMaterial(over: element))
         case (_, .barButtonBackgroundColor): return .some(try barColor("--stateui-bar-button", over: element))
+        case (_, .barButtonFontWeight):
+            // The weight a button standing on the bar is drawn at.
+            let weight = try WebBrowser.number(
+                "parseFloat(getComputedStyle(e.querySelector('.stateui-bar-actions button')).fontWeight)",
+                on: standingBar(over: element).node)
+            guard let weight else { return nil }
+            return .some(FontWeight(nearest: weight).propValue)
         case (_, .toolbarStyle):
             // The bar's buttons on glass where it says no look of its own.
             let look = try WebBrowser.evaluate("e.dataset.toolbarStyle ?? ''", on: standingBar(over: element).node) ?? ""

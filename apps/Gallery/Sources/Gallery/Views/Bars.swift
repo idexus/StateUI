@@ -18,9 +18,9 @@ extension BarElement where Modified == Self {
     }
 
     /// The bars' buttons standing as `style` says, on the accent's tint where
-    /// `tinted`.
-    func barButtons(_ style: ToolbarStyle, tinted: Bool) -> Self {
-        let styled = toolbarStyle(style)
+    /// `tinted`, their words at `weight` - nil for the platform's own.
+    func barButtons(_ style: ToolbarStyle, tinted: Bool, weight: FontWeight?) -> Self {
+        let styled = toolbarStyle(style).barButtonFontWeight(weight)
         return tinted ? styled.barButtonBackgroundColor(Color.accent.opacity(0.25)) : styled
     }
 }

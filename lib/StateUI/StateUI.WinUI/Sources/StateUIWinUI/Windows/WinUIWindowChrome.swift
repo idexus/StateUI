@@ -25,6 +25,8 @@ struct WinUIWindowChrome {
     var background: HostValue?
     var material = HostMaterial(nil)
     var foreground: HostValue?
+    /// The weight of the words of the actions on the bar; nil for WinUI's own.
+    var buttonWeight: FontWeight?
     var menuBar = WinUIMenu()
     var sheet: (back: () -> Void, dismiss: () -> Void)?
     var escape: (() -> Bool)?

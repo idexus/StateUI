@@ -55,7 +55,7 @@ extension UIKitDriver {
             default: break
             }
         }
-        if [.barBackground, .barForegroundColor].contains(property)
+        if [.barBackground, .barForegroundColor, .barButtonFontWeight].contains(property)
             || property == .subtitle && element.type == .page {
             return Self.barHolds(property, of: element)
         }
@@ -118,6 +118,12 @@ extension UIKitDriver {
             return item.standardAppearance.flatMap { material(of: $0, asked: element.barMaterial.painted) }
         case .barForegroundColor:
             return (item.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor).map { color($0).propValue }
+        case .barButtonFontWeight:
+            // The weight a button standing on the bar draws its words at.
+            let button = (item.leadingItemGroups + item.trailingItemGroups).flatMap(\.barButtonItems).first
+            let font = button?.titleTextAttributes(for: .normal)?[.font] as? UIFont
+            let traits = font?.fontDescriptor.object(forKey: .traits) as? [UIFontDescriptor.TraitKey: Any]
+            return (traits?[.weight] as? CGFloat).map { FontWeight(uiKit: UIFont.Weight($0)).propValue }
         case .subtitle: return item.subtitle.map { .string($0) }
         default: return nil
         }

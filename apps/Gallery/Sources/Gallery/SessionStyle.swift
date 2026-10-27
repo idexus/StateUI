@@ -140,6 +140,9 @@ final class SessionStyle {
     /// Whether the bars' buttons stand on the accent's tint.
     @State var tintsBarButtons = false
 
+    /// The weight of the words on the bars' buttons; nil for the platform's own.
+    @State var barButtonWeight: FontWeight?
+
     /// The gallery's own look for the bars' buttons: glass on the Web, the
     /// platform's own elsewhere.
     static var ownToolbarStyle: ToolbarStyle {

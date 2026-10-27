@@ -30,6 +30,7 @@ enum UIKitRealization {
         .complete(BarElementContract.barBackground),
         .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A bar button stands in the system's glass, which takes no color of the application's."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep iOS's own look."),
+        .complete(BarElementContract.barButtonFontWeight),
         .complete(BarElementContract.barForegroundColor),
         .complete(ButtonContract.keyboardShortcut),
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),

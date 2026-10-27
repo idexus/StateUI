@@ -53,6 +53,7 @@ final class WinUITitleBarView: WinUIView {
 
         menuActions = actions.show(
             leading: chrome.leading, trailing: chrome.trailing, overflow: chrome.overflow, on: handle)
+        stateui_winui_title_bar_weigh_actions(handle, chrome.buttonWeight.map { Int32($0.number) } ?? 0)
 
         if previous.center !== chrome.center { stateui_winui_title_bar_set_title_view(handle, chrome.center?.handle) }
     }

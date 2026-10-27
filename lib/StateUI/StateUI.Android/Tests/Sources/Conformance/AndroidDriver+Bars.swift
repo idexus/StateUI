@@ -28,6 +28,9 @@ extension AndroidDriver {
                 alpha: Int(argb >> 24))
             // The bar's color, or the blur it stands in for: Android blurs nothing behind a bar.
             return property == .barBackground ? StandIns.material(painted: painted).propValue : painted.propValue
+        case .barButtonFontWeight:
+            let weight = Java.callStaticInt(testBars, barActionWeight, .object(bar.reference))
+            return weight == 0 ? nil : FontWeight(nearest: Double(weight)).propValue
         default:
             return nil
         }
@@ -106,4 +109,5 @@ extension AndroidDriver {
     private static let barBackground = Java.staticMethod(testBars, "background", "(Landroid/widget/Toolbar;)I")
     private static let barBackgroundAt = Java.staticMethod(testBars, "backgroundAt", "(Landroid/widget/Toolbar;FF)I")
     private static let barForeground = Java.staticMethod(testBars, "foreground", "(Landroid/widget/Toolbar;)I")
+    private static let barActionWeight = Java.staticMethod(testBars, "actionWeight", "(Landroid/widget/Toolbar;)I")
 }

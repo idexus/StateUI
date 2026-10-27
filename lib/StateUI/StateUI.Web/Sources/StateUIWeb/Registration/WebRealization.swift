@@ -36,6 +36,7 @@ enum WebRealization {
         .partial(BarElementContract.barBackground,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .complete(BarElementContract.barButtonBackgroundColor),
+        .complete(BarElementContract.barButtonFontWeight),
         .complete(BarElementContract.toolbarStyle),
         .complete(BarElementContract.barForegroundColor),
         .complete(MenuBarContract.order),

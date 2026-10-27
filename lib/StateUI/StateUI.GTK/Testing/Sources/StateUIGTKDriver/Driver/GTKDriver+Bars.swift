@@ -97,6 +97,15 @@ extension GTKDriver {
                 height: Double(gtk_widget_get_height(frame.header)))?.propValue
         case .barForegroundColor:
             return Self.color(of: frame.header).propValue
+        case .barButtonFontWeight:
+            // The weight the words of a button standing on the header bar are drawn at.
+            guard let button = frame.buttons.first,
+                  let label = GTKTestHost.descendants(of: button.widget).first(where: {
+                      GTKTestHost.holds($0, gtk_label_get_type())
+                  }),
+                  let description = pango_context_get_font_description(gtk_widget_get_pango_context(label))
+            else { return nil }
+            return FontWeight(nearest: Double(pango_font_description_get_weight(description).rawValue)).propValue
         case .subtitle:
             guard let heading = adw_header_bar_get_title_widget(frame.header.opaque),
                   GTKTestHost.holds(heading, adw_window_title_get_type()),

@@ -65,6 +65,11 @@ where the button has no click of its own, else holding it does - UIKit's bar
 offers no arrow part, so a split stands as held. The menu carries its
 element's identifier, as an action does.
 
+The weight the path gives the bar's buttons' words is each bar button's own
+title font, at the size UIKit's bar buttons stand at: written on the buttons,
+not on the bar's appearance, which a bar no arrangement paints keeps UIKit's
+own - an appearance of the bar's would take its edge's clearness away.
+
 ## Pictures on the bars
 
 A picture on a bar - an action's - stands 20 points tall, as a symbol stands

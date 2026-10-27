@@ -889,6 +889,7 @@ final class PagesTests: XCTestCase {
                     node("menu", .page),
                     node("stack", .navigationStack, [
                         .barBackground: .string("stack"), .barButtonBackgroundColor: .string("stack's buttons"),
+                        .barButtonFontWeight: FontWeight.bold.propValue,
                     ], children: [node("detail", .page, [.title: .string("Detail")], children: [
                         presenting(node("sheet", .page)),
                     ])]),
@@ -902,18 +903,39 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(chrome.background, .string("stack"))
         XCTAssertEqual(chrome.foreground, .string("split"))
         XCTAssertEqual(chrome.buttonBackground, .string("stack's buttons"))
+        XCTAssertEqual(chrome.buttonFontWeight, .bold)
         XCTAssertEqual(chrome.toolbarStyle, .rounded, "the buttons' look is the window's page's")
 
         let menu = try XCTUnwrap(root.first(id: .manual("menu")))
         XCTAssertEqual(menu.barColors.foreground, .string("split"), "the sidebar wears its split view's bar")
         XCTAssertNil(menu.barColors.background, "and nothing from around the split view")
         XCTAssertEqual(menu.toolbarStyle, .system, "nor the buttons' look")
+        XCTAssertNil(menu.barButtonFontWeight, "nor their words' weight")
 
         let sheet = try XCTUnwrap(root.first(id: .manual("sheet")))
         XCTAssertEqual(sheet.barColors.background, .string("stack"), "a sheet wears the presenting view's look")
         XCTAssertEqual(sheet.barColors.foreground, .string("split"))
         XCTAssertEqual(sheet.toolbarStyle, .rounded, "its buttons' look too")
         XCTAssertEqual(sheet.barButtonBackground, .string("stack's buttons"))
+    }
+
+    /// The weight of a bar's buttons said as nothing - nil - is the platform's own, the nearest declaration standing
+    /// even under an arrangement around it that says one.
+    func testABarsButtonsWeightSaidAsNothingIsThePlatformsOwn() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("outer", .navigationStack, [.barButtonFontWeight: FontWeight.bold.propValue], children: [
+                node("split", .splitView, children: [
+                    node("menu", .page),
+                    node("stack", .navigationStack, [.barButtonFontWeight: .nothing], children: [
+                        node("detail", .page),
+                    ]),
+                ]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+
+        XCTAssertNil(try XCTUnwrap(root.first(id: .manual("detail"))).barButtonFontWeight, "the platform's own")
+        XCTAssertNil(WindowChrome(window: root, arrangement: root.first(id: .manual("outer"))).buttonFontWeight)
     }
 
     /// A page says what its bar says of it, and nothing climbs: the chrome shows the line under the title of the page

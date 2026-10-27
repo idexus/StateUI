@@ -1,13 +1,16 @@
-# revision 11.1
+# revision 12.1
 NavigationStack.barBackground: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 NavigationStack.barButtonBackgroundColor: ✅
+NavigationStack.barButtonFontWeight: ✅
 NavigationStack.barForegroundColor: ✅
 NavigationStack.toolbarStyle: ✅
 SplitView.barBackground: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 SplitView.barButtonBackgroundColor: ✅
+SplitView.barButtonFontWeight: ✅
 SplitView.barForegroundColor: ✅
 SplitView.toolbarStyle: ✅
 TabView.barBackground: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 TabView.barButtonBackgroundColor: ✅
+TabView.barButtonFontWeight: ✅
 TabView.barForegroundColor: ✅
 TabView.toolbarStyle: ✅

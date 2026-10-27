@@ -123,6 +123,11 @@ pointer comes - each through what WinUI exposes publicly:
   container sets at the top - its words at a bar button's label's size, 12,
   where its own style gives a control's 14.
 
+The weight the path gives the bar's buttons' words is each button's own
+`FontWeight` - a contained button's too - written after every showing of the
+actions: a button's style names a weight of its own, which one inherited from
+the command bar would not outweigh, and its label takes the button's.
+
 ## A navigation stack
 
 A navigation stack shows its top page across its whole frame; the pages below

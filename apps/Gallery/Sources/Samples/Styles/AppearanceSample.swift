@@ -33,6 +33,11 @@ struct AppearanceSample: SampleContent, ExampleContent {
         ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
     ]
 
+    /// The weights the words on the bars' buttons may take, the platform's first.
+    private static let weights: [(name: String, weight: FontWeight?)] = [
+        ("The platform's", nil), ("Regular", .regular), ("Medium", .medium), ("Semibold", .semibold), ("Bold", .bold),
+    ]
+
     /// The accents the application may hold, the platform's first.
     private static let accents: [(name: String, color: Color?)] =
         [("The platform's", nil)] + AccentChoice.own.map { ($0.name, $0.color(system: .accent, for: .bar)) }
@@ -63,9 +68,16 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("appearance.accent")
                 .accessibilityLabel("Accent")
 
-            #if WEB
-            // The bars' buttons, which the Web draws itself.
+            // The bars' buttons: their words' weight wherever the platform's
+            // button takes one, and on the Web, which draws them itself, how
+            // they stand.
             SectionTitle("The bars' buttons")
+            Picker(Array(Self.weights.indices), selection: Binding(
+                get: { Self.weights.firstIndex { $0.weight == style.barButtonWeight } ?? 0 },
+                set: { style.barButtonWeight = Self.weights[$0].weight })) { Self.weights[$0].name }
+                .accessibilityIdentifier("appearance.barButtonWeight")
+                .accessibilityLabel("Weight")
+            #if WEB
             Picker(Self.toolbarStyles.map(\.style), selection: Binding(
                 get: { style.toolbarStyle }, set: { style.toolbarStyle = $0 })) { chosen in
                 Self.toolbarStyles.first { $0.style == chosen }?.name ?? ""
@@ -124,7 +136,8 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
             Text("An accent of the application's own draws the controls where the user chooses none for the "
                 + "system - the Web, the iPhone and the iPad, GNOME before 47; elsewhere the user's stands. "
-                + "The bars' buttons - on glass, plain or rounded - are the Web's own to draw.")
+                + "The bars' buttons - on glass, plain or rounded - are the Web's own to draw; the weight of "
+                + "their words is every platform's but the Mac's, whose toolbar draws its own.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

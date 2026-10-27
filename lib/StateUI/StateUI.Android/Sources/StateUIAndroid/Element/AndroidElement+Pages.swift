@@ -57,7 +57,7 @@ extension AndroidElement {
     }
 
     /// What an arrangement declares of the bars under it.
-    static let barValues: Set<Prop> = [.barBackground, .barForegroundColor]
+    static let barValues: Set<Prop> = [.barBackground, .barForegroundColor, .barButtonFontWeight]
 
     /// Shows on a tabbed view's row its tabs' titles and pictures, and the tab the tree chose.
     private func refreshTabs() {
@@ -135,6 +135,7 @@ extension AndroidElement {
         let colors = page?.barColors ?? element.barColors
 
         var content = AndroidBarView.Content()
+        content.buttonWeight = (page ?? element).barButtonFontWeight
         // A page showing no title leaves the bar's place for it empty; the window keeps its name.
         let titled = element.titledPage
         content.title = titled?.value(.showsTitle)?.bool == false ? nil : titled?.value(.title)?.string ?? ""
@@ -236,6 +237,7 @@ extension AndroidElement {
         let colors = page.barColors
 
         var content = AndroidBarView.Content()
+        content.buttonWeight = page.barButtonFontWeight
         content.title = area.title ?? ""
         content.subtitle = area.subtitle
         content.mark = area.icon
@@ -260,6 +262,7 @@ extension AndroidElement {
         let colors = page.barColors
 
         var content = AndroidBarView.Content()
+        content.buttonWeight = page.barButtonFontWeight
         let titled = page.value(.showsTitle)?.bool != false
         content.title = titled ? page.value(.title)?.string ?? "" : nil
         content.subtitle = titled ? page.barSubtitle : nil

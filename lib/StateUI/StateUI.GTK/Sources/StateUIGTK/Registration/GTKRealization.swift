@@ -53,6 +53,7 @@ enum GTKRealization {
                 + "or out from a point keeps the header bar's proportions as it was painted, not as the window resizes."),
         .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A header bar's buttons are libadwaita's own, flat."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The header bar's buttons keep libadwaita's own look."),
+        .complete(BarElementContract.barButtonFontWeight),
         .complete(BarElementContract.barForegroundColor),
         .complete(MenuBarContract.order),
         .complete(MenuContract.isEnabled),

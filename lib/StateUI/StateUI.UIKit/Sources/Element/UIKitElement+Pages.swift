@@ -54,6 +54,7 @@ extension UIKitElement {
         chrome.backButtonTitle = value(.backButtonTitle)?.string
         (chrome.barBackground, chrome.barForeground) = element.barColors
         chrome.barMaterial = element.barMaterial
+        chrome.buttonWeight = element.barButtonFontWeight
         let actions = element.chromeActions
         chrome.leadingActions = actions.start.map { $0.map(Self.action) }
         chrome.actions = actions.end.map { $0.map(Self.action) }

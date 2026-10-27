@@ -40,7 +40,7 @@ enum AndroidMenu {
         encoded(entries) { kinds, texts, pictures in
             Java.callStatic(
                 JavaAPI.menus, JavaAPI.fillMenu, .object(AndroidRenderer.context), .object(menu),
-                .long(view.number), .object(kinds), .object(texts), .object(pictures), .int(0))
+                .long(view.number), .object(kinds), .object(texts), .object(pictures), .int(0), .int(0))
         }
     }
 

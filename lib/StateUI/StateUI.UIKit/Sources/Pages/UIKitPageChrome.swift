@@ -23,6 +23,8 @@ struct UIKitPageChrome {
     var barBackground: HostValue?
     var barMaterial = HostMaterial(nil)
     var barForeground: HostValue?
+    /// The weight of the words on the bar's buttons; nil for UIKit's own.
+    var buttonWeight: FontWeight?
     var leadingActions: [[UIKitBarAction]] = []
     var actions: [[UIKitBarAction]] = []
     var overflow: [UIKitBarAction] = []
@@ -92,6 +94,10 @@ struct UIKitPageChrome {
             item.trailingItemGroups.dropFirst(actions.count).flatMap(\.barButtonItems).forEach {
                 $0.tintColor = foreground
             }
+        }
+        let weighed = buttonWeight.map { UIFont.systemFont(ofSize: UIFont.labelFontSize, weight: $0.uiKit) }
+        for button in (item.leadingItemGroups + item.trailingItemGroups).flatMap(\.barButtonItems) {
+            button.setTitleTextAttributes(weighed.map { [.font: $0] }, for: .normal)
         }
 
         guard painted else {

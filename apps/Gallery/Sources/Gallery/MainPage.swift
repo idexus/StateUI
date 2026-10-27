@@ -112,7 +112,7 @@ struct MainPage: View {
         .barLook(
             light: style.look(dark: false).bars, dark: style.look(dark: true).bars,
             system: application.info.accentColor)
-        .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons)
+        .barButtons(style.toolbarStyle, tinted: style.tintsBarButtons, weight: style.barButtonWeight)
         // listing: MainPage.links
         // A link the application is asked to open, given to this window: the
         // window shows the sample it names - its own navigation, as every

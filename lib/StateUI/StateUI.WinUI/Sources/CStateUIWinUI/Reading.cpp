@@ -325,6 +325,16 @@ namespace {
         return std::nullopt;
     }
 
+    /// The text block under `root` showing `words`, as the control's template lays it out; null for none.
+    controls::TextBlock shownWords(xaml::DependencyObject const &root, winrt::hstring const &words) {
+        for (int32_t index = 0; index < media::VisualTreeHelper::GetChildrenCount(root); ++index) {
+            auto child = media::VisualTreeHelper::GetChild(root, index);
+            if (auto text = child.try_as<controls::TextBlock>(); text && text.Text() == words) return text;
+            if (auto found = shownWords(child, words)) return found;
+        }
+        return nullptr;
+    }
+
     /// How the menu of the action `command` opens: by a split button's arrow ("split"), a drop-down button's click
     /// showing its chevron ("arrow"), a bar button's click ("click") or held ("held"); empty for none.
     std::string menuOpens(controls::ICommandBarElement const &command) {
@@ -389,6 +399,17 @@ namespace {
                         if (!solid || (solid.Color().A > 0 && solid.Opacity() > 0)) ++shown;
                     }
             return number(shown);
+        }
+        // The weight the words of the first action standing on the bar are drawn at: the text its button shows.
+        if (what == "actionWeight") {
+            for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
+                for (auto const &command : actions.PrimaryCommands()) {
+                    auto label = ofAction(command, [](auto const &button) { return button.Label(); });
+                    if (!label) continue;
+                    auto words = shownWords(command.as<xaml::DependencyObject>(), *label);
+                    return words ? number(static_cast<int32_t>(words.FontWeight().Weight)) : std::string();
+                }
+            return std::string();
         }
         if (what == "actionWords") {
             std::string colors;

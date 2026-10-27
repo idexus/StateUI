@@ -1,13 +1,16 @@
-# revision 11.1
+# revision 12.1
 NavigationStack.barBackground: ☑️ WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient out from a point is drawn over the bar's box as an ellipse.
 NavigationStack.barButtonBackgroundColor: – An app bar button is WinUI's own, with no background of the application's.
+NavigationStack.barButtonFontWeight: ✅
 NavigationStack.barForegroundColor: ✅
 NavigationStack.toolbarStyle: – The bar's buttons keep WinUI's own look.
 SplitView.barBackground: ☑️ WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient out from a point is drawn over the bar's box as an ellipse.
 SplitView.barButtonBackgroundColor: – An app bar button is WinUI's own, with no background of the application's.
+SplitView.barButtonFontWeight: ✅
 SplitView.barForegroundColor: ✅
 SplitView.toolbarStyle: – The bar's buttons keep WinUI's own look.
 TabView.barBackground: ☑️ WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient out from a point is drawn over the bar's box as an ellipse.
 TabView.barButtonBackgroundColor: – An app bar button is WinUI's own, with no background of the application's.
+TabView.barButtonFontWeight: ✅
 TabView.barForegroundColor: ✅
 TabView.toolbarStyle: – The bar's buttons keep WinUI's own look.

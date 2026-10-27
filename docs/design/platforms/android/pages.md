@@ -82,6 +82,12 @@ hold of its own. Android numbers the items in the order the menu is written,
 so each item's place is given in that order: an action, the entries of a menu
 it opens there, and the overflow's menus after every action.
 
+The weight the path gives the bar's buttons' words is a typeface span over
+the words of each item standing on the bar - an action, a menu it opens there
+- and of none behind the overflow, whose rows are a menu's, not the bar's
+buttons. A change of it on an arrangement shows the bars under it again, as
+their colors do (`barValues`).
+
 ## A split view
 
 Each column stands under a bar of its own, Android's toolbar as a stack's

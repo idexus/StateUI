@@ -645,6 +645,28 @@ struct NotesPage: View {
 }
 ```
 
+The weight of the words on the bar's buttons is every platform's to draw but
+the Mac's, whose toolbar items draw their own titles: `barButtonFontWeight`
+gives it - `.regular`, `.medium`, `.semibold` or `.bold` - and nil, as
+unsaid, the platform's own, even under an arrangement around it that gives
+one. It is found along the path as the bar's colors are:
+
+```swift
+struct InboxPage: View {
+    @State private var path: [Int] = []
+
+    var body: some View {
+        NavigationStack($path) {
+            Text("Inbox")
+                .toolbar { ToolbarButton("Archive") }
+        } destination: { _ in
+            Text("Message")
+        }
+        .barButtonFontWeight(.semibold)
+    }
+}
+```
+
 ## Menu bars and context menus
 
 A page's menus are declared like its actions, with `.menuBar { }` on the

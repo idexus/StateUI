@@ -58,13 +58,15 @@ enum GTKStyleSheet {
     }
 
     /// The class painting a bar with `background` - a color, or a gradient as CSS draws it over a bar `size`
-    /// across - what stands on it in `foreground`; nil where neither is given.
+    /// across - what stands on it in `foreground`, and a header bar's buttons' words at `buttonWeight`; nil where
+    /// none is given.
     /// Design: docs/design/platforms/gtk/pages.md#the-bars-look
     static func bar(
-        background: HostValue?, over size: (width: Double, height: Double), foreground: GdkRGBA?
+        background: HostValue?, over size: (width: Double, height: Double), foreground: GdkRGBA?,
+        buttonWeight: FontWeight? = nil
     ) -> String? {
         let painted = paint(background, over: size)
-        guard painted != nil || foreground != nil else { return nil }
+        guard painted != nil || foreground != nil || buttonWeight != nil else { return nil }
         var name = "stateui-bar"
         var body = ""
         if let painted {
@@ -75,7 +77,9 @@ enum GTKStyleSheet {
             name += "-f" + hex(foreground)
             body += "color: \(css(foreground)); "
         }
-        write(name, body)
+        if let buttonWeight { name += "-w\(buttonWeight.number)" }
+        let buttons = buttonWeight.map { "headerbar.\(name) button { font-weight: \($0.number); }\n" }
+        write(name, body, states: buttons ?? "")
         return name
     }
 

@@ -15,6 +15,10 @@ public enum BarElementContract: Contract {
     public static let barButtonBackgroundColor = ElementProperty<Self, Color>(
         "barButtonBackgroundColor", layer: .adaptive)
 
+    /// The weight of the words on the bar's buttons, where the platform's
+    /// button takes one.
+    public static let barButtonFontWeight = ElementProperty<Self, FontWeight>("barButtonFontWeight", layer: .adaptive)
+
     /// The color of what stands on the bar: the title and the native
     /// affordances.
     public static let barForegroundColor = ElementProperty<Self, Color>("barForegroundColor", layer: .adaptive)
@@ -24,6 +28,6 @@ public enum BarElementContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        barBackground, barButtonBackgroundColor, barForegroundColor, toolbarStyle,
+        barBackground, barButtonBackgroundColor, barButtonFontWeight, barForegroundColor, toolbarStyle,
     ]
 }

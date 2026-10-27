@@ -423,6 +423,27 @@ extern "C" void stateui_winui_title_bar_set_actions(
     }
 }
 
+extern "C" void stateui_winui_title_bar_weigh_actions(StateUIObjectRef handle, int32_t weight) {
+    try {
+        auto weigh = [weight](controls::Control const &control) {
+            if (weight > 0) control.FontWeight(winrt::Windows::UI::Text::FontWeight{static_cast<uint16_t>(weight)});
+            else control.ClearValue(controls::Control::FontWeightProperty());
+        };
+        auto edges = actionEdges(borrow<controls::TitleBar>(handle));
+        for (auto const &actions : {edges.leading, edges.trailing}) {
+            for (auto const &command : actions.PrimaryCommands()) {
+                // A contained split or drop-down button draws its own words.
+                if (auto contained = command.try_as<controls::AppBarElementContainer>())
+                    weigh(contained.Content().as<controls::Control>());
+                else if (auto control = command.try_as<controls::Control>())
+                    weigh(control);
+            }
+        }
+    } catch (...) {
+        report("weighing a title bar's actions");
+    }
+}
+
 void stateui::setActions(
     ActionEdges const &edges, xaml::FrameworkElement const &owner, int64_t view, char const *const *texts,
     char const *const *identifiers, char const *const *icons, bool const *words, bool const *destructive,

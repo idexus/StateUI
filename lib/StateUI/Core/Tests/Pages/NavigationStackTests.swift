@@ -177,6 +177,17 @@ final class NavigationStackTests: XCTestCase {
                      "and not on the page under it")
     }
 
+    /// A bar's buttons' weight said as nil is written as nothing - the host reads the platform's own - where an
+    /// unsaid one is not written at all.
+    func testABarsButtonsWeightOfNilIsWrittenAsNothing() throws {
+        let path = State<[Route]>([])
+        let token = BarElementContract.barButtonFontWeight.token
+
+        XCTAssertEqual(stack(path.projectedValue).barButtonFontWeight(nil).node.built.props[token], .nothing)
+        XCTAssertEqual(stack(path.projectedValue).barButtonFontWeight(.bold).node.built.props[token], .enumeration(3))
+        XCTAssertNil(stack(path.projectedValue).node.built.props[token])
+    }
+
     /// The same promise `testEveryModifierIsExercised` makes a control: a
     /// modifier no message carries is one the host can leave out with nothing
     /// failing. The bar tier has no case in ControlTests - this is its cover.
@@ -187,6 +198,7 @@ final class NavigationStackTests: XCTestCase {
             stack(path.projectedValue)
                 .barBackground(.black)
                 .barButtonBackgroundColor(.gray)
+                .barButtonFontWeight(.bold)
                 .barForegroundColor(.white)
                 .toolbarStyle(.plain)
                 .node

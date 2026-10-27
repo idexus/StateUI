@@ -50,6 +50,10 @@
     /// The color behind the bars' buttons: the nearest declared on the visible page's path.
     public var buttonBackground: HostValue?
 
+    /// The weight of the words on the bars' buttons: the nearest declared on the visible page's path; nil for the
+    /// platform's own.
+    public var buttonFontWeight: FontWeight?
+
     /// How the bars' buttons stand: the nearest declared on the visible page's path, `.system` where none is.
     public var toolbarStyle = ToolbarStyle.system
 
@@ -80,6 +84,7 @@
         (background, foreground) = page?.barColors ?? (nil, nil)
         material = page?.barMaterial ?? HostMaterial(nil)
         buttonBackground = page?.barButtonBackground
+        buttonFontWeight = page?.barButtonFontWeight
         toolbarStyle = page?.toolbarStyle ?? .system
         if let page { menus = page.chromeMenus }
         splitView = arrangement?.type == .splitView ? arrangement : nil

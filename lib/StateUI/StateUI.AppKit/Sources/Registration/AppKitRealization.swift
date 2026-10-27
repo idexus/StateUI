@@ -34,6 +34,8 @@ enum AppKitRealization {
             missing: "The bars' band is painted under the toolbar's own material: a blur or glass shows its color."),
         .notPlanned(BarElementContract.barButtonBackgroundColor, reason: "A toolbar item stands in the Mac's own look, with no background of the application's."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The toolbar's items keep the Mac's own look."),
+        .notPlanned(BarElementContract.barButtonFontWeight,
+            reason: "A toolbar item draws its own title, in the Mac's font: AppKit offers no weight for it."),
         .partial(BarElementContract.barForegroundColor,
             missing: "Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color."),
         .complete(DecorableTextElementContract.textDecorations),

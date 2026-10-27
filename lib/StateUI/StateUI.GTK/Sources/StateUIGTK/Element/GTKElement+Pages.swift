@@ -44,6 +44,7 @@ extension GTKElement {
             chrome.showsBar = value(.showsNavigationBar)?.bool != false
             chrome.offersBack = value(.showsBackButton)?.bool != false
             (chrome.barBackground, chrome.barForeground) = element.barColors
+            chrome.buttonWeight = element.barButtonFontWeight
             return chrome
         }
 
@@ -56,6 +57,7 @@ extension GTKElement {
         chrome.offersBack = value(.showsBackButton)?.bool != false
         chrome.offersClose = element.enclosing(type: .sheet) == nil || element.offersItsSheetsClose
         (chrome.barBackground, chrome.barForeground) = element.barColors
+        chrome.buttonWeight = element.barButtonFontWeight
 
         let actions = element.chromeActions
         chrome.leading = actions.start.map { $0.map(GTKToolbarAction.init) }
