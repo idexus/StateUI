@@ -39,7 +39,8 @@ A page's title stands with the line under it the page says (`barSubtitle`).
 Beside a sidebar shown, the bar stands in two parts as wide as the split
 view's columns: over the sidebar the title area its page names the
 application with - its title, else the application's name, and the line
-under it - at its start, in line with the rows under it, the sidebar's
+under it - at its start, in line with the icons of the rows under it (20
+from the edge), the sidebar's
 part's actions - its start's at its leading edge, its end's and their own
 More before the toggle - and the toggle at the sidebar's edge; the name gives
 way before them, cut short with an ellipsis, and the part fits itself before

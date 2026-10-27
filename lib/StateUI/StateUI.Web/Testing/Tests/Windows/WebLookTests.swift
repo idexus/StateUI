@@ -466,8 +466,8 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(try height("Sort"), 42, accuracy: 0.5, "the bar's own height where it says none")
     }
 
-    /// The application's name over a sidebar beside the page stands at the start of its part, in line with the rows
-    /// under it, the toggle at the part's end.
+    /// The application's name over a sidebar beside the page stands at the start of its part, in line with the
+    /// content of the rows under it - 20 from the edge - the toggle at the part's end.
     func testTheApplicationsNameStandsAtTheStartOverTheSidebar() throws {
         let host = WebRenderer.running {
             SplitView(State(wrappedValue: true).projectedValue) {
@@ -485,7 +485,7 @@ final class WebLookTests: XCTestCase {
         let start = try XCTUnwrap(WebBrowser.number(
             "\(name).getBoundingClientRect().left - \(side).getBoundingClientRect().left", on: 0))
 
-        XCTAssertEqual(start, 12, accuracy: 1, "at the part's start, past its room")
+        XCTAssertEqual(start, 20, accuracy: 1, "in line with a row's content")
     }
 
     /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its
