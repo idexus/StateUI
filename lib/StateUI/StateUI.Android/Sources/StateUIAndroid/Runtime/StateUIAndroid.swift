@@ -57,9 +57,10 @@ enum JavaNatives {
             env, _, activity, root, density in
             JavaNatives.start(env: env!, activity: activity!, root: root!, density: Double(density))
         }
-        let phase: @convention(c) (Environment, jclass?, jint) -> Void = { _, _, phase in
+        let phase: @convention(c) (Environment, jclass?, jint, jboolean) -> Void = { _, _, phase, madeAgain in
             MainActor.assumeIsolated {
-                AndroidRenderer.shared?.setPhase(ApplicationPhase(rawValue: phase) ?? .active)
+                AndroidRenderer.shared?.setPhase(
+                    ApplicationPhase(rawValue: phase) ?? .active, beingMadeAgain: madeAgain != 0)
             }
         }
         let insets: @convention(c) (Environment, jclass?, jint, jint, jint, jint, jint) -> Void = {
@@ -411,7 +412,7 @@ enum JavaNatives {
 
         let natives: [(String, String, UnsafeMutableRawPointer)] = [
             ("start", "(Landroid/app/Activity;Landroid/widget/FrameLayout;F)V", unsafeBitCast(start, to: UnsafeMutableRawPointer.self)),
-            ("phase", "(I)V", unsafeBitCast(phase, to: UnsafeMutableRawPointer.self)),
+            ("phase", "(IZ)V", unsafeBitCast(phase, to: UnsafeMutableRawPointer.self)),
             ("configured", "()V", unsafeBitCast(configured, to: UnsafeMutableRawPointer.self)),
             ("insets", "(IIIII)V", unsafeBitCast(insets, to: UnsafeMutableRawPointer.self)),
             ("back", "()Z", unsafeBitCast(back, to: UnsafeMutableRawPointer.self)),

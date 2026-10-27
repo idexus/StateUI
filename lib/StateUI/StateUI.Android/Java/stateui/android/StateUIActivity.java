@@ -80,19 +80,19 @@ public class StateUIActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        StateUIHost.phase(StateUIHost.ACTIVE);
+        StateUIHost.phase(StateUIHost.ACTIVE, false);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        StateUIHost.phase(StateUIHost.INACTIVE);
+        StateUIHost.phase(StateUIHost.INACTIVE, isChangingConfigurations());
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        StateUIHost.phase(StateUIHost.BACKGROUND);
+        StateUIHost.phase(StateUIHost.BACKGROUND, isChangingConfigurations());
     }
 
     /**

@@ -20,6 +20,15 @@ struct CounterPage: View {
     }
 }
 
+/// A page showing its window's phase.
+struct WindowPhasePage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        Text("\(window.phase)")
+    }
+}
+
 /// A page showing what its scene keeps, which a click changes.
 struct KeptSectionPage: View {
     @State(sceneKey: SceneKey<Int>("android.section")) private var section = 0
@@ -72,6 +81,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAClickRendersWhatItsHandlerChanged", testAClickRendersWhatItsHandlerChanged),
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
+            ("testAnActivityMadeAgainLeavesItsWindowsPhaseAlone", testAnActivityMadeAgainLeavesItsWindowsPhaseAlone),
             ("testANewDensityMakesTheWindowAgainInIt", testANewDensityMakesTheWindowAgainInIt),
             ("testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent", testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent),
             ("testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext", testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext),
@@ -131,6 +141,33 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertEqual(second.runtime.tree.root?.children.filter { $0.type == .scene }.count, 1)
             XCTAssertEqual(second.views(AndroidTextView.self).map(\.text), ["count 1"])
             XCTAssertEqual(Java.callInt(second.root.reference, TestJava.getChildCount), 1)
+        }
+    }
+
+    /// An activity Android makes again for a new configuration - a theme the application or the system chose -
+    /// pauses and stops on its way, and its window hears nothing of it: the next resumes at once. An activity that
+    /// stops for good leaves its window stopped.
+    func testAnActivityMadeAgainLeavesItsWindowsPhaseAlone() throws {
+        try onMainActor {
+            let first = AndroidRenderer.running { WindowPhasePage() }
+            first.setPhase(.active)
+            let shown = { (host: AndroidRenderer) -> [String] in
+                host.runtime.pump.turn()
+                TestWindow.run(for: 20)
+                return host.views(AndroidTextView.self).map(\.text)
+            }
+            XCTAssertEqual(shown(first), ["activated"])
+
+            first.setPhase(.inactive, beingMadeAgain: true)
+            first.setPhase(.background, beingMadeAgain: true)
+            XCTAssertEqual(shown(first), ["activated"], "the window stands as it stood")
+            let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
+            second.setPhase(.active)
+            XCTAssertEqual(shown(second), ["activated"], "and stands so in the next")
+
+            second.setPhase(.inactive)
+            second.setPhase(.background)
+            XCTAssertEqual(shown(second), ["stopped"], "stopped for good")
         }
     }
 

@@ -28,8 +28,8 @@ final class StateUIHost {
     /** The user asked to go back; whether the host went. */
     static native boolean back();
 
-    /** The activity's lifecycle moved the application's phase. */
-    static native void phase(int phase);
+    /** The activity's lifecycle moved the application's phase - or only on its way to being made again. */
+    static native void phase(int phase, boolean beingMadeAgain);
 
     /** A frame of the display began at {@code time}, in nanoseconds of the monotonic clock. */
     static native void frame(long time);

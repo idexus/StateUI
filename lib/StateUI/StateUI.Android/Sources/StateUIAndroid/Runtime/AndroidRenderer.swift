@@ -212,9 +212,11 @@ final class AndroidRenderer {
 
     /// The activity's lifecycle moved: its one window stands activated in front of the user (onResume), off the
     /// screen once stopped (onStop), and neither between; the host layer settles what that means for the
-    /// application, its scene and its window, each rendered before the next.
+    /// application, its scene and its window, each rendered before the next. An activity paused and stopped only
+    /// to be made again for a new configuration moves nothing: the next resumes at once.
     /// Design: docs/design/platforms/android/runtime.md#the-activitys-lifecycle
-    func setPhase(_ phase: ApplicationPhase) {
+    func setPhase(_ phase: ApplicationPhase, beingMadeAgain: Bool = false) {
+        guard !beingMadeAgain else { return }
         actToolkit.phaseTurned(phase)
         guard let window = runtime.tree.root?.first(type: .window) else {
             runtime.core.setApplicationPhase(phase)

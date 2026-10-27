@@ -145,7 +145,10 @@ rendered before the next is heard, and a window shown again after it stopped
 resumed on its way to active. The window hears it was made as the host layer
 shows it, once; and it is going, and its scene that it closed, only when the
 activity finishes, not when Android makes the activity again for a new
-configuration. The window's title - the visible page's that names it, else
+configuration. Nor does it hear the pause and the stop the activity goes
+through on that way (`isChangingConfigurations`): the next resumes at once,
+and a window heard stopped would end what an application ends there - a
+shared terminal's session, at every change of theme. The window's title - the visible page's that names it, else
 the window's own, as the host layer's chrome says it - is the activity's, and
 the label its task shows among the recent ones.
 
