@@ -39,13 +39,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [BarElement](tiers/
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (14)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>8 ✅ · 2 ☑️ · 1 ✓ · 2 –</td><td><code>NSSplitViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>10 ✅ · 3 ✓ · 1 –</td><td><code>UISplitViewController</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 3 ☑️ · 5 ✓ · 1 –</td><td>custom <code>ViewGroup</code>: a drawer where narrow, beside where wide</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅ · 3 ☑️ · 1 ✓ · 1 –</td><td><code>SplitView</code>, the sidebar in its pane: beside the detail from 1008 DIPs, over it where narrower</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 3 ✓ · 3 –</td><td><code>AdwOverlaySplitView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>10 ✅ · 3 ☑️ · 1 ✓</td><td><code>&lt;aside&gt;</code> in a CSS grid: beside the detail from 900px wide, a drawer over it where narrower</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (15)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>8 ✅ · 2 ☑️ · 1 ✓ · 3 –</td><td><code>NSSplitViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>10 ✅ · 3 ✓ · 2 –</td><td><code>UISplitViewController</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>5 ✅ · 3 ☑️ · 5 ✓ · 2 –</td><td>custom <code>ViewGroup</code>: a drawer where narrow, beside where wide</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅ · 3 ☑️ · 1 ✓ · 2 –</td><td><code>SplitView</code>, the sidebar in its pane: beside the detail from 1008 DIPs, over it where narrower</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 3 ✓ · 4 –</td><td><code>AdwOverlaySplitView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>11 ✅ · 3 ☑️ · 1 ✓</td><td><code>&lt;aside&gt;</code> in a CSS grid: beside the detail from 900px wide, a drawer over it where narrower</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Navigation/SplitViewContract.swift`.
@@ -90,6 +90,8 @@ What an arrangement declares of the bar while it stands on the visible path: its
 <tr><td colspan="9">AppKit: Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color.<br>Android Views: The actions' words take the bar's light or dark theme, as Android's own bars do; the title, the line under it, the navigation button and the pictures take the color itself - on a tab row, the chosen tab's words.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>toolbarStyle</code></td><td>property</td><td><code>ToolbarStyle</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: The toolbar's items keep the Mac's own look.<br>UIKit: The bar's buttons keep iOS's own look.<br>Android Views: The toolbar's actions keep Android's own look.<br>WinUI 3: The bar's buttons keep WinUI's own look.<br>GTK 4: The header bar's buttons keep libadwaita's own look.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>toolbarSpacing</code></td><td>property</td><td><code>Double</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.<br>UIKit: A bar's items stand in the system's own look.<br>Android Views: A toolbar's actions stand in Android's own look.<br>WinUI 3: The title bar's commands stand in WinUI's own look.<br>GTK 4: A header bar's buttons stand in libadwaita's own look.</td></tr></tbody>
 </table>
 
 ## From [PageElement](tiers/PageElement.md)

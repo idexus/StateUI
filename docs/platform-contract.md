@@ -529,25 +529,25 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuItem](controls/MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
-| [NavigationStack](controls/NavigationStack.md) | 9 | 3 ✅ · 2 ☑️ · 2 ✓ · 1 – | 7 ✅ · 1 ✓ · 1 – | 5 ✅ · 2 ☑️ · 1 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 1 – | 3 ✅ · 2 ✓ · 3 – | 7 ✅ · 1 ☑️ · 1 ✓ |
+| [NavigationStack](controls/NavigationStack.md) | 10 | 3 ✅ · 2 ☑️ · 2 ✓ · 2 – | 7 ✅ · 1 ✓ · 2 – | 5 ✅ · 2 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 3 ✅ · 2 ✓ · 4 – | 8 ✅ · 1 ☑️ · 1 ✓ |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | 15 | 11 ✅ · 1 ✓ | 14 ✅ · 1 ✓ | 13 ✅ · 1 ✓ · 1 – | 13 ✅ · 1 ✓ · 1 – | 11 ✅ · 1 ✓ · 2 – | 13 ✅ · 1 ✓ |
 | [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](controls/SplitView.md) | 14 | 8 ✅ · 2 ☑️ · 1 ✓ · 2 – | 10 ✅ · 3 ✓ · 1 – | 5 ✅ · 3 ☑️ · 5 ✓ · 1 – | 9 ✅ · 3 ☑️ · 1 ✓ · 1 – | 6 ✅ · 1 ☑️ · 3 ✓ · 3 – | 10 ✅ · 3 ☑️ · 1 ✓ |
-| [TabView](controls/TabView.md) | 10 | 4 ✅ · 2 ☑️ · 2 ✓ · 1 – | 8 ✅ · 1 ✓ · 1 – | 6 ✅ · 2 ☑️ · 1 ✓ · 1 – | 7 ✅ · 1 ☑️ · 1 ✓ · 1 – | 4 ✅ · 1 ☑️ · 1 ✓ · 3 – | 8 ✅ · 1 ☑️ · 1 ✓ |
+| [SplitView](controls/SplitView.md) | 15 | 8 ✅ · 2 ☑️ · 1 ✓ · 3 – | 10 ✅ · 3 ✓ · 2 – | 5 ✅ · 3 ☑️ · 5 ✓ · 2 – | 9 ✅ · 3 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 3 ✓ · 4 – | 11 ✅ · 3 ☑️ · 1 ✓ |
+| [TabView](controls/TabView.md) | 11 | 4 ✅ · 2 ☑️ · 2 ✓ · 2 – | 8 ✅ · 1 ✓ · 2 – | 6 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 4 ✅ · 1 ☑️ · 1 ✓ · 4 – | 9 ✅ · 1 ☑️ · 1 ✓ |
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarButton](controls/ToolbarButton.md) | 26 | 5 ✅ · 2 ✓ · 17 – | 6 ✅ · 1 ☑️ · 1 ✓ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 10 ✅ · 16 – | 8 ✅ · 1 ✓ · 17 – | 26 ✅ |
-| [ToolbarGroup](controls/ToolbarGroup.md) | 13 | 5 ✅ · 8 – | 5 ✅ · 8 – | 4 ✅ · 1 ☑️ · 8 – | 6 ✅ · 7 – | 5 ✅ · 8 – | 12 ✅ · 1 – |
-| [ToolbarToggle](controls/ToolbarToggle.md) | 25 | 7 ✅ · 17 – | 8 ✅ · 17 – | 6 ✅ · 1 ☑️ · 17 – | 9 ✅ · 16 – | 8 ✅ · 17 – | 25 ✅ |
+| [ToolbarButton](controls/ToolbarButton.md) | 27 | 5 ✅ · 2 ✓ · 18 – | 6 ✅ · 1 ☑️ · 1 ✓ · 19 – | 6 ✅ · 1 ☑️ · 19 – | 10 ✅ · 17 – | 8 ✅ · 1 ✓ · 18 – | 27 ✅ |
+| [ToolbarGroup](controls/ToolbarGroup.md) | 15 | 5 ✅ · 10 – | 5 ✅ · 10 – | 4 ✅ · 1 ☑️ · 10 – | 6 ✅ · 9 – | 5 ✅ · 10 – | 14 ✅ · 1 – |
+| [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 107 | 110 | 89 | 135 | 100 | 158 |
+| ✅ |  | 107 | 110 | 89 | 135 | 100 | 165 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
-| – |  | 48 | 54 | 65 | 45 | 66 | 16 |
-| **Met** | 201 | **182** | **189** | **178** | **189** | **188** | **188** |
+| – |  | 55 | 61 | 72 | 52 | 73 | 16 |
+| **Met** | 208 | **189** | **196** | **185** | **196** | **195** | **195** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -589,7 +589,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [KeyboardElement](controls/tiers/KeyboardElement.md) | `keyPressed`, `keysTaken` | 2 |
 | [FocusElement](controls/tiers/FocusElement.md) | `isFocusedChanged` | 1 |
 | [RefreshElement](controls/tiers/RefreshElement.md) | `isRefreshEnabled`, `isRefreshing`, `onRefreshRequested` (`refreshRequested`) | 3 |
-| [BarElement](controls/tiers/BarElement.md) | `barBackground`, `barForegroundColor`, `toolbarStyle` | 3 |
+| [BarElement](controls/tiers/BarElement.md) | `barBackground`, `barForegroundColor`, `toolbarStyle`, `toolbarSpacing` | 4 |
 | [BarItemElement](controls/tiers/BarItemElement.md) | `style`, `background`, `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`) | 4 |
 | [BarButtonElement](controls/tiers/BarButtonElement.md) | `onPressed` (`pressed`), `onReleased` (`released`) | 2 |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `icon`, `isEnabled`, `keyboardShortcut`, `text` | 4 |
@@ -642,7 +642,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 1 ☑️ · 1 – | 4 ✅ | 3 ✅ · 1 – | 1 ✅ · 2 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ |
 | [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ · 4 – | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ | 2 ✅ · 3 – |
-| [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position`, `standsAlone` | 6 | 5 ✅ · 1 – | 5 ✅ · 1 – | 4 ✅ · 1 ☑️ · 1 – | 6 ✅ | 5 ✅ · 1 – | 5 ✅ · 1 – |
+| [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position`, `spacing`, `standsAlone` | 7 | 5 ✅ · 2 – | 5 ✅ · 2 – | 4 ✅ · 1 ☑️ · 2 – | 6 ✅ · 1 – | 5 ✅ · 2 – | 6 ✅ · 1 – |
 | [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `onToggled` (`toggled`) | 3 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
 | [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
@@ -712,10 +712,11 @@ realizes the element and each of its members.
 `sidebarOverlays`, `source`, `spacing`, `standsAlone`, `step`, `stroke`,
 `style`, `submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`,
 `tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textStyle`,
-`time`, `tint`, `title`, `toolbarStyle`, `tooltip`, `tracking`, `translationX`,
-`translationY`, `type`, `userAgent`, `value`, `verticalAlignment`,
-`verticalScrollIndicator`, `verticalTextAlignment`, `width`, `windowType`,
-`windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
+`time`, `tint`, `title`, `toolbarSpacing`, `toolbarStyle`, `tooltip`,
+`tracking`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
+`verticalAlignment`, `verticalScrollIndicator`, `verticalTextAlignment`,
+`width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
+`zIndex`.
 
 ### Events
 

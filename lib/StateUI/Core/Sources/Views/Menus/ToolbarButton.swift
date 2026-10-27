@@ -35,7 +35,7 @@
 /// alone it says where it stands with `.placement`; in a `ToolbarGroup` it
 /// stands where its group does.
 public struct ToolbarButton: PlacedToolbarItem, MenuItemElement, ActionElement, ButtonMenuElement, TextAndIconElement,
-    BarButtonElement, BorderElement, TextColorElement, FontElement {
+    BarButtonElement, BorderElement, TextColorElement, FontElement, PaddingElement {
     /// The node this item describes.
     public var node: Node
 

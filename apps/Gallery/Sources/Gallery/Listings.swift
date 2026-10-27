@@ -609,9 +609,10 @@ enum Listings {
         "AppStyles.bars": #"""
         // Sources/Styles/AppStyles.swift
         // Where the host draws the bars' buttons itself - the Web - each
-        // group stands in a light rounded box in a fine outline, a button
-        // standing alone in one of its own; its buttons' words semibold,
-        // each a shade darker under the pointer and pressed.
+        // group stands in a light rounded box in a fine outline, its buttons
+        // inset from it, a button standing alone in one of its own; its
+        // buttons' words semibold, each a shade darker under the pointer and
+        // pressed.
         Style<ToolbarGroup>()
             .stroke(Color(light: Color(hex: 0xB8BEC6), dark: Color(hex: 0x4A515C)))
             .lineWidth(1)

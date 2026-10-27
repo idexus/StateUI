@@ -1,9 +1,12 @@
-# revision 2.1
+# revision 3.1
 Button.padding: ✅
 Grid.padding: ✅
 HStack.padding: ✅
 PhaseLayout.padding: – A phase layout stands its views where its arithmetic says, from its own top left: it takes no padding.
 ScrollView.padding: ✅
 Text.padding: ✅
+ToolbarButton.padding: ✅
+ToolbarGroup.padding: ✅
+ToolbarToggle.padding: ✅
 VStack.padding: ✅
 ZStack.padding: ✅

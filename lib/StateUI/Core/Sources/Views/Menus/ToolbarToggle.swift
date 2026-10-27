@@ -13,7 +13,7 @@
 /// in the overflow, where it stands checked or not. An item that acts is a
 /// `ToolbarButton`.
 public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElement, BarButtonElement, BorderElement,
-    TextColorElement, FontElement {
+    TextColorElement, FontElement, PaddingElement {
     /// The node this item describes.
     public var node: Node
 

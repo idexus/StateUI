@@ -647,9 +647,11 @@ struct NotesPage: View {
 
 There, too, a bar's items take the look the application gives them, written
 as a control's is: a `ToolbarButton`, a `ToolbarToggle` and a `ToolbarGroup`
-say their `background`, their outline's `shape`, `stroke` and `lineWidth`, and
-a button its words' `textColor` and font - on the item itself, or in a
-`Style` for every item of its kind or by its key. What an item says stands
+say their `background`, their outline's `shape`, `stroke` and `lineWidth` and
+the room inside them, `padding` - a button its words' `textColor` and font, a
+group the room between its buttons, `spacing` - on the item itself, or in a
+`Style` for every item of its kind or by its key. `toolbarSpacing`, beside
+`toolbarStyle`, is the room between the bar's groups. What an item says stands
 over the `toolbarStyle`, and what it leaves unsaid stays as that look has it.
 Its visual states follow the pointer over it - a group's too - and a button's
 the press; a setting has `.on` and `.off`. A group style dresses every group
@@ -668,11 +670,14 @@ enum BarStyles {
                 .shape(.roundedRectangle(12))
                 .stroke(.gray)
                 .lineWidth(1)
+                .padding(3)
+                .spacing(2)
                 .visualState(.pointerOver) { $0.stroke(.cornflowerBlue) }
 
             Style<ToolbarButton>()
                 .fontWeight(.semibold)
-                .shape(.roundedRectangle(12))
+                .shape(.roundedRectangle(9))
+                .padding(horizontal: 12, vertical: 0)
                 .visualState(.pointerOver) { $0.background(Color(hex: 0xEEF1F4)) }
                 .visualState(.pressed) { $0.background(Color(hex: 0xDDE3E8)) }
         }

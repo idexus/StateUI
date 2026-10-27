@@ -63,11 +63,14 @@ own in it.
 ## A bar's items in the application's look
 
 What the application says of a bar's item - its `background`, its outline's
-`shape`, `stroke` and `lineWidth`, its words' color and font - stands on the
-item's own element as inline style over the stylesheet's look for the bar's
-buttons (`toolbarStyle`): a button's box and words (`showBarLook`, the same
-box a control draws, `WebBox`, and the words a text draws, `WebCSS.font`), a
-group's box on its group's element (`WebBarGroup`). What it leaves unsaid
+`shape`, `stroke` and `lineWidth`, the room inside it (`padding`), its words'
+color and font - stands on the item's own element as inline style over the
+stylesheet's look for the bar's buttons (`toolbarStyle`): a button's box and
+words (`showBarLook`, the same box a control draws, `WebBox`, and the words a
+text draws, `WebCSS.font`), a group's box on its group's element
+(`WebBarGroup`), with the room between its buttons its `gap`. The room
+between the bar's groups and its own buttons is the bar's
+`--stateui-bar-spacing` (`toolbarSpacing`), else the stylesheet's. What it leaves unsaid
 stays as the stylesheet has it, so an outline alone keeps the stylesheet's
 fill and its light under the pointer; a background said replaces both, and
 the item's own `.pointerOver` state says how it lights.

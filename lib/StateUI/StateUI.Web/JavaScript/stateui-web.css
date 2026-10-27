@@ -156,7 +156,10 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   mask-image: linear-gradient(to bottom, #000 35%, transparent);
   -webkit-mask-image: linear-gradient(to bottom, #000 35%, transparent);
 }
-.stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
+/* The room between the bar's parts, its own buttons and its groups: the application's (toolbarSpacing), else these. */
+.stateui-bar-lead, .stateui-bar-side, .stateui-bar-start {
+  display: flex; align-items: center; gap: var(--stateui-bar-spacing, 10px); min-width: 0;
+}
 .stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
 /* A view a page declares in place of its title stands where the title would, at its own size. */
 .stateui-bar-title[data-holds-view] { display: grid; justify-items: center; overflow: visible; font-weight: inherit; font-size: inherit; }
@@ -281,7 +284,7 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   --stateui-glass-edge: inset 0 0.5px 0 color-mix(in srgb, white 28%, transparent), 0 1px 4px rgb(0 0 0 / 0.08);
 }
 /* The actions at an edge of the bar: each group of them together on a glass of its own, apart from the next. */
-.stateui-bar-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.stateui-bar-actions { display: flex; align-items: center; gap: var(--stateui-bar-spacing, 8px); min-width: 0; }
 .stateui-bar-group, .stateui-bar-actions > button {
   display: flex;
   align-items: center;

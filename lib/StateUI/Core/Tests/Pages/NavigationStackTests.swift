@@ -188,6 +188,7 @@ final class NavigationStackTests: XCTestCase {
                 .barBackground(.black)
                 .barForegroundColor(.white)
                 .toolbarStyle(.plain)
+                .toolbarSpacing(12)
                 .node
                 .built
                 .props

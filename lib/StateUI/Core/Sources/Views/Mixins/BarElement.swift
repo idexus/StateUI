@@ -64,6 +64,15 @@ extension BarElement {
         setValue(BarElementContract.toolbarStyle, value)
     }
 
+    /// The room between the bar's groups - an item standing alone is a
+    /// group of its own - and its own buttons, where the host draws the bar
+    /// itself: the Web. Native bars keep their platform's room.
+    ///
+    ///     .toolbarSpacing(12)
+    public func toolbarSpacing(_ value: Double) -> Modified {
+        setValue(BarElementContract.toolbarSpacing, value)
+    }
+
     /// The color of what stands on the bar: the title and the native
     /// navigation and toolbar affordances. Destructive actions keep the
     /// platform's warning color.

@@ -13,7 +13,7 @@ extension StyleBag: StackProperties where Target: Stack {}
 extension StyleBag: ShapeProperties where Target: Shape {}
 extension StyleBag: FilledShapeProperties where Target: FilledShape {}
 extension StyleBag: CorneredShapeProperties where Target: CorneredShape {}
-extension StyleBag: PaddingElement where Target: PaddingElement & VisualElement {}
+extension StyleBag: PaddingElement where Target: PaddingElement {}
 extension StyleBag: TextColorElement where Target: TextColorElement {}
 extension StyleBag: TextualElement where Target: TextualElement {}
 extension StyleBag: FontElement where Target: FontElement {}
@@ -56,3 +56,4 @@ extension StyleBag: StepperProperties where Target == Stepper {}
 extension StyleBag: SwitchProperties where Target == Switch {}
 extension StyleBag: TimePickerProperties where Target == TimePicker {}
 extension StyleBag: WebViewProperties where Target == WebView {}
+extension StyleBag: ToolbarGroupProperties where Target == ToolbarGroup {}

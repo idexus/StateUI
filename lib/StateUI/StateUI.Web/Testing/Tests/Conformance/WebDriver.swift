@@ -125,9 +125,13 @@ final class WebDriver: HostDriver {
         if [.toolbarButton, .toolbarToggle].contains(element.type), let value = try toolbarItemHolds(property, on: element) {
             return value
         }
-        if element.type == .toolbarGroup, [.background, .stroke, .lineWidth, .shape].contains(property),
-           let group = try barView(of: element), let value = try boxHolds(property, group) {
-            return value
+        if element.type == .toolbarGroup, let group = try barView(of: element) {
+            switch property {
+            case .background, .stroke, .lineWidth, .shape: if let value = try boxHolds(property, group) { return value }
+            case .padding: if let value = try wordsHolds(property, group.node) { return value }
+            case .spacing: return try WebBrowser.number("parseFloat(getComputedStyle(e).columnGap) || 0", on: group.node)?.propValue
+            default: break
+            }
         }
         if element.type == .textSpan, let value = try spanHolds(property, on: element) { return value }
         if let value = try structureHolds(property, on: element) { return value }

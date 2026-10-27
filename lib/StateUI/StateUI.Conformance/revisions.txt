@@ -18,14 +18,14 @@ appkit TextInput 3
 android TextInput 2
 ToolbarButton 6
 ToolbarToggle 2
-ToolbarGroup 6
+ToolbarGroup 7
 TitleView 3
 MenuBar 3
 MenuItem 4
 Window 9
 Scene 3
 Overlay 5
-BarElement 13
+BarElement 14
 NavigationStack 3
 uikit WebView 2
 android WebView 3
@@ -72,7 +72,7 @@ Polyline 3
 FilledShape 3
 AutomationElement 8
 Layout 2
-PaddingElement 2
+PaddingElement 3
 PhaseLayout 11
 FocusElement 5
 ScrollView 4

@@ -17,6 +17,9 @@ public enum BarElementContract: Contract {
     /// How the bar's buttons stand, where the host draws them itself.
     public static let toolbarStyle = ElementProperty<Self, ToolbarStyle>("toolbarStyle", layer: .adaptive)
 
+    /// The room between the bar's groups and its own buttons, where the host draws the bar itself.
+    public static let toolbarSpacing = ElementProperty<Self, Double>("toolbarSpacing", layer: .adaptive)
+
     /// The tier's own members.
-    public static let members: [any ContractMember] = [barBackground, barForegroundColor, toolbarStyle]
+    public static let members: [any ContractMember] = [barBackground, barForegroundColor, toolbarStyle, toolbarSpacing]
 }

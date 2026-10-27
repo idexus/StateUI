@@ -14,6 +14,7 @@ public enum ToolbarToggleContract: ElementContract {
     public static let tiers: [any Contract.Type] = [
         MenuItemElementContract.self, TextAndIconElementContract.self, BarButtonElementContract.self,
         BorderElementContract.self, TextColorElementContract.self, FontElementContract.self,
+        PaddingElementContract.self,
     ]
 
     /// Whether it stands on.

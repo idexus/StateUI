@@ -22,7 +22,7 @@ Text("\(count) items")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [BorderElement](tiers/BorderElement.md) · [BarItemElement](tiers/BarItemElement.md) · [BarButtonElement](tiers/BarButtonElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [ActionElement](tiers/ActionElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [BarItemElement](tiers/BarItemElement.md) · [BarButtonElement](tiers/BarButtonElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [ActionElement](tiers/ActionElement.md) · [ButtonMenuElement](tiers/ButtonMenuElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -41,14 +41,14 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [TextColorElement](
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (26)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">✓</td><td>5 ✅ · 2 ✓ · 17 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr>
+<thead><tr><th>Host</th><th>Created</th><th>Members (27)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">✓</td><td>5 ✅ · 2 ✓ · 18 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr>
 <tr><td colspan="3">only through the host's own: activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 1 ✓ · 18 –</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 18 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅ · 16 –</td><td>a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>, a group's on a capsule; <code>AppBarButton</code> behind More</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 1 ✓ · 17 –</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>26 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 1 ✓ · 19 –</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 19 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅ · 17 –</td><td>a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>, a group's on a capsule; <code>AppBarButton</code> behind More</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 1 ✓ · 18 –</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>27 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarButtonContract.swift`.
@@ -94,6 +94,16 @@ The font text is drawn in: its step of the platform's type ramp, its family, its
 <tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.<br>UIKit: A bar's items stand in the system's own look.<br>Android Views: A toolbar's actions stand in Android's own look.<br>WinUI 3: The title bar's commands stand in WinUI's own look.<br>GTK 4: A header bar's buttons stand in libadwaita's own look.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.<br>UIKit: A bar's items stand in the system's own look.<br>Android Views: A toolbar's actions stand in Android's own look.<br>WinUI 3: The title bar's commands stand in WinUI's own look.<br>GTK 4: A header bar's buttons stand in libadwaita's own look.</td></tr></tbody>
+</table>
+
+## From [PaddingElement](tiers/PaddingElement.md)
+
+The space kept inside an element, around what it holds.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>padding</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.<br>UIKit: A bar's items stand in the system's own look.<br>Android Views: A toolbar's actions stand in Android's own look.<br>WinUI 3: The title bar's commands stand in WinUI's own look.<br>GTK 4: A header bar's buttons stand in libadwaita's own look.</td></tr></tbody>
 </table>
 

@@ -243,7 +243,8 @@ extension WebDriver {
             case .keyboardShortcut: return .some(try shortcut(on: e))
             // The look the application gives it: its box, and its words.
             case .background, .stroke, .lineWidth, .shape: return try boxHolds(property, button)
-            case .textColor, .fontSize, .fontWeight, .fontFamily, .fontAttributes, .textStyle, .isFontAutoScalingEnabled:
+            case .textColor, .fontSize, .fontWeight, .fontFamily, .fontAttributes, .textStyle, .isFontAutoScalingEnabled,
+                 .padding:
                 return try wordsHolds(property, e)
             default: return nil
             }

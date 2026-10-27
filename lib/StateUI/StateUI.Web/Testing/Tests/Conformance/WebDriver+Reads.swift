@@ -137,6 +137,11 @@ extension WebDriver {
             return .some(try WebBrowser.evaluate("e.stateuiHold", on: view.node).flatMap(Double.init).map { .number($0) })
         case (.page, .subtitle): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
         case (_, .barBackground): return .some(try barMaterial(over: element))
+        case (_, .toolbarSpacing):
+            // The room between the groups at the bar's end.
+            return .some(try WebBrowser.number(
+                "parseFloat(getComputedStyle(e.querySelector('.stateui-bar-actions')).columnGap)",
+                on: standingBar(over: element).node)?.propValue)
         case (_, .toolbarStyle):
             // The bar's buttons on glass where it says no look of its own.
             let look = try WebBrowser.evaluate("e.dataset.toolbarStyle ?? ''", on: standingBar(over: element).node) ?? ""

@@ -50,6 +50,9 @@
     /// How the bars' buttons stand: the nearest declared on the visible page's path, `.system` where none is.
     public var toolbarStyle = ToolbarStyle.system
 
+    /// The room between the bars' groups: the nearest declared on the visible page's path; nil for the host's own.
+    public var toolbarSpacing: Double?
+
     /// The menus the visible page's path declares, composed.
     public var menus = ChromeMenus()
 
@@ -77,6 +80,7 @@
         (background, foreground) = page?.barColors ?? (nil, nil)
         material = page?.barMaterial ?? HostMaterial(nil)
         toolbarStyle = page?.toolbarStyle ?? .system
+        toolbarSpacing = page?.toolbarSpacing
         if let page { menus = page.chromeMenus }
         splitView = arrangement?.type == .splitView ? arrangement : nil
         showsSidebarToggle = splitView?.offersSidebarToggle ?? false

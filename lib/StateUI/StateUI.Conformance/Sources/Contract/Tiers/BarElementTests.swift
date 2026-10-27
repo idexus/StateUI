@@ -26,6 +26,7 @@
                     BarElementContract.barForegroundColor, on: element, .white, then: .black,
                     over: [Write(BarElementContract.barBackground, Material.color(.steelBlue))]),
                 holds(BarElementContract.toolbarStyle, on: element, .glass, then: .rounded),
+                holds(BarElementContract.toolbarSpacing, on: element, 6, then: 14),
                 crossesASheet(on: element),
             ]
         }

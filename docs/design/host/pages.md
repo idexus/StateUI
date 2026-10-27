@@ -327,8 +327,10 @@ buttons](../platforms/winui/pages.md#a-bars-buttons)).
 A bar's items - a `ToolbarButton`, a `ToolbarToggle`, a `ToolbarGroup` - wear
 the look of a control where a host draws its bar itself: their own tiers,
 `BarItemElement` (a style, a background, the pointer over it) and
-`BarButtonElement` (a press), and on each item the box and the words they
-share with controls - `BorderElement`, `TextColorElement` and `FontElement`.
+`BarButtonElement` (a press), the room between a group's buttons
+(`spacing`) and between the bar's groups (`toolbarSpacing`), and on each item
+the box and the words they share with controls - `BorderElement`,
+`PaddingElement`, `TextColorElement` and `FontElement`.
 Which members those are is said once (`BarItemLook`): a host judges them all
 alike, realized where it draws the bar (the Web), not planned where the bar is
 the platform's own. The style and the states are resolved by StateUI before

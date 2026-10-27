@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The space a control keeps inside itself, around its content: worn by
-/// every layout, and by the controls that pad their content - Text, Button
-/// and ScrollView among them.
-public protocol PaddingElement: VisualElementProperties {}
+/// every layout, by the controls that pad their content - Text, Button
+/// and ScrollView among them - and by the items on a bar.
+public protocol PaddingElement: PropertyContainer {}
 
 extension PaddingElement {
     /// The space kept inside the view, between its edge and its content.

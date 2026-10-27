@@ -115,6 +115,7 @@ extension NodeType {
     static let background = VisualElementContract.background.token
     static let barBackground = BarElementContract.barBackground.token
     static let toolbarStyle = BarElementContract.toolbarStyle.token
+    static let toolbarSpacing = BarElementContract.toolbarSpacing.token
     static let canDrag = ViewContract.canDrag.token
     static let tracking = TrackingElementContract.tracking.token
     static let selectedItems = ItemsViewContract.selectedItems.token

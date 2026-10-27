@@ -1,8 +1,9 @@
-# revision 6.1
+# revision 7.1
 ToolbarGroup: ✅
 ToolbarGroup.hidesWithSidebar: ✅
 ToolbarGroup.isEnabled: ✅
 ToolbarGroup.order: ✅
 ToolbarGroup.part: ✅
 ToolbarGroup.position: ✅
+ToolbarGroup.spacing: – The title bar's commands stand in WinUI's own look.
 ToolbarGroup.standsAlone: ✅

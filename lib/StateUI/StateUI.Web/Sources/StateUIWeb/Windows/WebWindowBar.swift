@@ -176,6 +176,7 @@ final class WebWindowBar: WebDOMView {
         style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
         // The buttons on glass unless said otherwise: the Web's own look for them, `.system`, is plain.
         attribute("data-toolbar-style", Self.look(of: chrome.toolbarStyle))
+        style("--stateui-bar-spacing", WebCSS.pixels(chrome.toolbarSpacing))
         for button in [toggle, back, closer, more, sideMore] { showOwnLook(button) }
 
         // An item keeps its button wherever it stands, moving from one part to the other - from where it stood.

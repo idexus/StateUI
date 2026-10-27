@@ -1,9 +1,12 @@
-# revision 2.1
+# revision 3.1
 Button.padding: ✅
 Grid.padding: ✅
 HStack.padding: ✅
 PhaseLayout.padding: – A phase layout stands its views where its arithmetic says, from its own top left: it takes no padding.
 ScrollView.padding: ✅
 Text.padding: ✅
+ToolbarButton.padding: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.padding: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.padding: – The title bar's commands stand in WinUI's own look.
 VStack.padding: ✅
 ZStack.padding: ✅

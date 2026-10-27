@@ -4,8 +4,9 @@
 @_spi(Host) import StateUI
 
 /// The members of the look a bar's items wear where a host draws the bar itself: the tiers only they wear -
-/// `BarItemElement`'s and `BarButtonElement`'s - and, on each item, the box and the words its tiers shared with
-/// controls say - `BorderElement`'s, `TextColorElement`'s and `FontElement`'s. A host judges them all alike.
+/// `BarItemElement`'s and `BarButtonElement`'s - the room between the bar's groups and inside a group, and, on each
+/// item, the box and the words its tiers shared with controls say - `BorderElement`'s, `PaddingElement`'s,
+/// `TextColorElement`'s and `FontElement`'s. A host judges them all alike.
 /// Design: docs/design/host/pages.md#a-bars-items-in-the-applications-look
 @_spi(Host) public enum BarItemLook {
     /// Each member, on every item wearing it, realized in full.
@@ -24,11 +25,13 @@
         tier: (any ContractMember) -> HostRecord, item: (any ContractMember, any Contract.Type) -> HostRecord
     ) -> [HostRecord] {
         let own = BarItemElementContract.members + BarButtonElementContract.members
-        let box = BorderElementContract.members
+            + [BarElementContract.toolbarSpacing as any ContractMember]
+        let box = BorderElementContract.members + PaddingElementContract.members
         let words = TextColorElementContract.members + FontElementContract.members
         let buttons: [any Contract.Type] = [ToolbarButtonContract.self, ToolbarToggleContract.self]
         let items: [any Contract.Type] = buttons + [ToolbarGroupContract.self]
         return own.map(tier)
+            + [item(ToolbarGroupContract.spacing, ToolbarGroupContract.self)]
             + items.flatMap { element in box.map { item($0, element) } }
             + buttons.flatMap { element in words.map { item($0, element) } }
     }

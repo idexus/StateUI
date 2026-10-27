@@ -1,10 +1,13 @@
-# revision 13.1
+# revision 14.1
 NavigationStack.barBackground: ✅
 NavigationStack.barForegroundColor: ✅
+NavigationStack.toolbarSpacing: – A bar's items stand in the system's own look.
 NavigationStack.toolbarStyle: – The bar's buttons keep iOS's own look.
 SplitView.barBackground: ✅
 SplitView.barForegroundColor: ✅
+SplitView.toolbarSpacing: – A bar's items stand in the system's own look.
 SplitView.toolbarStyle: – The bar's buttons keep iOS's own look.
 TabView.barBackground: ✅
 TabView.barForegroundColor: ✅
+TabView.toolbarSpacing: – A bar's items stand in the system's own look.
 TabView.toolbarStyle: – The bar's buttons keep iOS's own look.

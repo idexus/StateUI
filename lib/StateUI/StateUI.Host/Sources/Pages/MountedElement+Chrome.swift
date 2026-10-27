@@ -76,6 +76,11 @@ extension MountedElement {
         barValue(.toolbarStyle)?.enumeration.flatMap(ToolbarStyle.init(rawValue:)) ?? .system
     }
 
+    /// The room between this element's bar's groups, found as its bar's colors; nil for the host's own.
+    public var toolbarSpacing: Double? {
+        barValue(.toolbarSpacing)?.number
+    }
+
 
     /// The tabbed views this arrangement of pages shows, itself first where it is one, through its pages and the
     /// arrangements in them: each wears the colors of the bar on its path, so a window's chrome shown again paints

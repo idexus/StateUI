@@ -16,7 +16,7 @@ Text("Draft")
 
 Layer: `structure`. It carries structure or protocol data rather than configuring a visual platform object.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [BorderElement](tiers/BorderElement.md) · [BarItemElement](tiers/BarItemElement.md) · [BarButtonElement](tiers/BarButtonElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [PaddingElement](tiers/PaddingElement.md) · [BorderElement](tiers/BorderElement.md) · [BarItemElement](tiers/BarItemElement.md) · [BarButtonElement](tiers/BarButtonElement.md) · [MenuItemElement](tiers/MenuItemElement.md) · [TextAndIconElement](tiers/TextAndIconElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -35,13 +35,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [TextColorElement](
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (25)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 17 –</td><td>an <code>NSToolbarItem</code> showing its on picture, prominent while on with none; a checked <code>NSMenuItem</code> in the overflow</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 17 –</td><td>a <code>UIBarButtonItem</code> with <code>changesSelectionAsPrimaryAction</code>, <code>isSelected</code> while on</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 17 –</td><td>a checkable <code>Toolbar</code> <code>MenuItem</code>, its state on the bar by its on picture</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅ · 16 –</td><td>a <code>ToggleButton</code> in a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>; <code>AppBarToggleButton</code> behind More</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 17 –</td><td><code>GtkToggleButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>25 ✅</td><td><code>&lt;button aria-pressed&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (26)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>7 ✅ · 18 –</td><td>an <code>NSToolbarItem</code> showing its on picture, prominent while on with none; a checked <code>NSMenuItem</code> in the overflow</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>8 ✅ · 18 –</td><td>a <code>UIBarButtonItem</code> with <code>changesSelectionAsPrimaryAction</code>, <code>isSelected</code> while on</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 18 –</td><td>a checkable <code>Toolbar</code> <code>MenuItem</code>, its state on the bar by its on picture</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>9 ✅ · 17 –</td><td>a <code>ToggleButton</code> in a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>; <code>AppBarToggleButton</code> behind More</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 18 –</td><td><code>GtkToggleButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>26 ✅</td><td><code>&lt;button aria-pressed&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarToggleContract.swift`.
@@ -93,6 +93,16 @@ The font text is drawn in: its step of the platform's type ramp, its family, its
 <tbody><tr></tr><tr><td rowspan="2"><code>fontFamily</code></td><td>property</td><td><code>Name</code></td><td>native</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.<br>UIKit: A bar's items stand in the system's own look.<br>Android Views: A toolbar's actions stand in Android's own look.<br>WinUI 3: The title bar's commands stand in WinUI's own look.<br>GTK 4: A header bar's buttons stand in libadwaita's own look.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>fontSize</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.<br>UIKit: A bar's items stand in the system's own look.<br>Android Views: A toolbar's actions stand in Android's own look.<br>WinUI 3: The title bar's commands stand in WinUI's own look.<br>GTK 4: A header bar's buttons stand in libadwaita's own look.</td></tr></tbody>
+</table>
+
+## From [PaddingElement](tiers/PaddingElement.md)
+
+The space kept inside an element, around what it holds.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>padding</code></td><td>property</td><td><code>Insets</code></td><td>native</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.<br>UIKit: A bar's items stand in the system's own look.<br>Android Views: A toolbar's actions stand in Android's own look.<br>WinUI 3: The title bar's commands stand in WinUI's own look.<br>GTK 4: A header bar's buttons stand in libadwaita's own look.</td></tr></tbody>
 </table>
 

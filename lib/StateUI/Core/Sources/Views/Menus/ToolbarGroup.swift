@@ -15,7 +15,7 @@
 /// Behind the overflow menu a group is a section of it. An item in a group
 /// stands where its group does: its own `.placement` is left out and said.
 @MainActor
-public struct ToolbarGroup: BarItemElement, BorderElement {
+public struct ToolbarGroup: BarItemElement, BorderElement, PaddingElement, ToolbarGroupProperties {
     /// The group's node.
     public var node: Node
 
@@ -72,4 +72,15 @@ public struct ToolbarGroup: BarItemElement, BorderElement {
         copy.node.write(ToolbarGroupContract.isEnabled, value)
         return copy
     }
+}
+
+/// What a group of a bar's actions says of itself - on the group, or in a `Style<ToolbarGroup>`.
+public protocol ToolbarGroupProperties: PropertyContainer {}
+
+extension ToolbarGroupProperties {
+    /// The room between the group's items, where the host draws the bar itself - the Web; native bars keep their
+    /// platform's room.
+    ///
+    ///     ToolbarGroup { … }.spacing(2).padding(3)
+    public func spacing(_ value: Double) -> Modified { setValue(ToolbarGroupContract.spacing, value) }
 }

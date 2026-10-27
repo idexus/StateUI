@@ -9,9 +9,7 @@ Button("Save")
     .padding(horizontal: 18, vertical: 10)
 ```
 
-Wears: [VisualElement](VisualElement.md)
-
-Worn by: [Button](../Button.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [PhaseLayout](../PhaseLayout.md) · [ScrollView](../ScrollView.md) · [Text](../Text.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
+Worn by: [Button](../Button.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [PhaseLayout](../PhaseLayout.md) · [ScrollView](../ScrollView.md) · [Text](../Text.md) · [ToolbarButton](../ToolbarButton.md) · [ToolbarGroup](../ToolbarGroup.md) · [ToolbarToggle](../ToolbarToggle.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/PaddingElementContract.swift`.
 

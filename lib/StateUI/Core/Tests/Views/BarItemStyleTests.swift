@@ -104,4 +104,20 @@ final class BarItemStyleTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(render(Renders(), lone, styles: sheet)).props["background"],
                        Material.color(Color(hex: 0x008000)).propValue)
     }
+
+    /// A group's style says the room between its buttons and inside it, and a button's the room inside it.
+    func testAStyleSaysTheRoomOfAGroupAndAButton() throws {
+        let sheet = StyleSheet {
+            Style<ToolbarGroup>().spacing(2).padding(3)
+            Style<ToolbarButton>().padding(horizontal: 12, vertical: 0)
+        }
+        var group = ToolbarGroup { ToolbarButton("Add") }.node
+        group.identify("c")
+
+        let shown = try XCTUnwrap(render(Renders(), group, styles: sheet))
+        let button = try XCTUnwrap(render(Renders(), ToolbarButton("Save").id("c").node, styles: sheet))
+        XCTAssertEqual(shown.props["spacing"], .number(2))
+        XCTAssertEqual(shown.props["padding"], Insets(3).propValue)
+        XCTAssertEqual(button.props["padding"], Insets(horizontal: 12, vertical: 0).propValue)
+    }
 }

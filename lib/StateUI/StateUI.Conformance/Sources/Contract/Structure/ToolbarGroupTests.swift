@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `ToolbarGroupContract` on a host: a page's groups stand on its own bar while it is shown - a pushed page's
-/// alone - a group's items together, by their order and at their position, out of reach with a disabled group, a
-/// lone item's own group told from one its author declared; a split view's stand in the part of its bar they name
+/// alone - a group's items together, by their order and at their position, out of reach with a disabled group, the
+/// room between them its own, a lone item's own group told from one its author declared; a split view's stand in the part of its bar they name
 /// over the page shown there, move to the other part as their part changes, and while the sidebar is not shown stand
 /// at the detail's start or hide with it.
 @_spi(Host) public enum ToolbarGroupTests: ConformanceFamily {
@@ -94,6 +94,7 @@
                 s.expect(try alone("share"), true, "a lone item's own")
                 s.expect(try alone("bold"), false, "one its author declared, of one too")
             },
+            Aspects.holds(ToolbarGroupContract.spacing, on: "ToolbarGroup", 4, then: 12),
             ConformanceCase("groupsStandByTheirOrder", proves: [Covered(ToolbarGroupContract.order)]) { s in
                 s.start {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {

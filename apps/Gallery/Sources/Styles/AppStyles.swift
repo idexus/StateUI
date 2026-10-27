@@ -267,25 +267,28 @@ enum AppStyles {
     private static var barStyles: [AnyStyle] {
         // listing: AppStyles.bars
         // Where the host draws the bars' buttons itself - the Web - each
-        // group stands in a light rounded box in a fine outline, a button
-        // standing alone in one of its own; its buttons' words semibold,
-        // each a shade darker under the pointer and pressed.
+        // group stands in a light rounded box in a fine outline, its buttons
+        // inset from it, a button standing alone in one of its own; its
+        // buttons' words semibold, each a shade darker under the pointer and
+        // pressed.
         Style<ToolbarGroup>()
             .background(Color(light: Color(hex: 0xF4F6F8), dark: Color(hex: 0x2A2F37)))
             .shape(.roundedRectangle(12))
             .stroke(Color(light: Color(hex: 0xB8BEC6), dark: Color(hex: 0x4A515C)))
             .lineWidth(1)
+            .padding(3)
+            .spacing(2)
             .visualState(.pointerOver) { $0.stroke(Color(light: Color(hex: 0x8E96A0), dark: Color(hex: 0x6B7380))) }
 
         Style<ToolbarButton>()
             .fontWeight(.semibold)
-            .shape(.roundedRectangle(12))
+            .shape(.roundedRectangle(9))
             .visualState(.pointerOver) { $0.background(Color(light: .black, dark: .white).opacity(0.06)) }
             .visualState(.pressed) { $0.background(Color(light: .black, dark: .white).opacity(0.12)) }
 
         Style<ToolbarToggle>()
             .fontWeight(.semibold)
-            .shape(.roundedRectangle(12))
+            .shape(.roundedRectangle(9))
             .visualState(.pointerOver) { $0.background(Color(light: .black, dark: .white).opacity(0.06)) }
         // listing: end
     }

@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// One group of the bar's actions standing together - a lone item's own too: the look the application gives the
-/// group it stands for, and the pointer over it told to that group.
+/// group it stands for, the room between its buttons, and the pointer over it told to that group.
 /// Design: docs/design/platforms/web/pages.md#a-bars-items-in-the-applications-look
 @MainActor
 final class WebBarGroup: WebDOMView {
@@ -25,5 +25,6 @@ final class WebBarGroup: WebDOMView {
     func show(_ group: MountedElement?) {
         self.group = group
         showBarLook { group?.value($0) }
+        style("gap", WebCSS.pixels(group?.value(.spacing)?.number))
     }
 }

@@ -1,8 +1,9 @@
-# revision 6.1
+# revision 7.1
 ToolbarGroup: ✅
 ToolbarGroup.hidesWithSidebar: ✅
 ToolbarGroup.isEnabled: ✅
 ToolbarGroup.order: ✅
 ToolbarGroup.part: ✅
 ToolbarGroup.position: ✅
+ToolbarGroup.spacing: – A bar's items stand in the system's own look.
 ToolbarGroup.standsAlone: – UIKit's bar draws every group on a glass of its own, a lone item's too.

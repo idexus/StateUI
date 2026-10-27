@@ -1,8 +1,9 @@
-# revision 6.1
+# revision 7.1
 ToolbarGroup: ✅
 ToolbarGroup.hidesWithSidebar: ✅
 ToolbarGroup.isEnabled: ✅
 ToolbarGroup.order: ✅
 ToolbarGroup.part: ✅
 ToolbarGroup.position: ☑️ Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions.
+ToolbarGroup.spacing: – A toolbar's actions stand in Android's own look.
 ToolbarGroup.standsAlone: – Android's bar draws its actions with no background behind a group.
