@@ -18,15 +18,14 @@ extension WebDOMView: PlacedView {
         }
     }
 
-    /// Draws the view where its place stands: moved from its slot, and - but for a view laying out words, which
-    /// keeps the size it is bound for - at the size the place passes through.
+    /// Draws the view where its place stands: moved from its slot, at the size the place passes through.
     func writePlace() {
         guard let traveling, let slot else {
             clearSizeOverride()
             travelOffset = nil
             return writeTransform()
         }
-        let sized = !(self is WebWordsView) && (traveling.width != slot.width || traveling.height != slot.height)
+        let sized = traveling.width != slot.width || traveling.height != slot.height
         if sized {
             override(width: traveling.width, height: traveling.height, slot: slot)
         } else {

@@ -449,6 +449,12 @@ enum WebRelay {
         return LayoutSize(width: read[0], height: read[1])
     }
 
+    /// The room the element's words take as they stand: their lines' extent, with its padding and border.
+    static func natural(of element: Int32) -> LayoutSize {
+        let read = numbers(2) { stateui_web_read_natural(element, $0) }
+        return LayoutSize(width: read[0], height: read[1])
+    }
+
     /// Where each child stands in its layout, before any transform, by `(layout, child)` pairs; nil for a child laid
     /// out nowhere, and a layout's own size for a pair of it with itself.
     static func places(_ pairs: [(layout: Int32, child: Int32)]) -> [Rect?] {

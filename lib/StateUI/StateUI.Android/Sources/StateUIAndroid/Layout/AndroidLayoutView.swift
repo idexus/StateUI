@@ -186,7 +186,7 @@ class AndroidLayoutView: AndroidView {
     }
 
     /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
-    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#words-at-their-destination
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#a-layout-bound-for-a-size
     private(set) var arrangementRoom: LayoutSize?
 
     override func travels(to destination: Rect?) {

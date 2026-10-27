@@ -18,6 +18,8 @@ class AndroidTravelingLayout: AndroidLayoutView {
 
     /// Stands `item` at `place`, or on its way there.
     func place(_ item: AndroidLayoutItem, at place: Rect) {
-        places.place(item.view, mount: item.mount, at: place, values: item.values, fadeIn: item.fadeIn)
+        places.place(
+            item.view, mount: item.mount, at: place, values: item.values, natural: { item.size(offered: nil) },
+            fadeIn: item.fadeIn)
     }
 }

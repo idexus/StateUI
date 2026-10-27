@@ -74,6 +74,48 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(midway, label.frame.width, accuracy: 0.5, "its words at the width it is bound for")
     }
 
+    /// A button whose room widens around words that already fit grows its box the whole way - a button taking a
+    /// wider cell, midway between the width it stood at and the one it lands at.
+    @MainActor
+    func testAButtonTakingAWiderRoomGrowsTheWholeWay() throws {
+        var now = 0.0
+        let renderer = testRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        func row(filling: Bool) -> HostPatch {
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+            var button = HostPatch(id: .manual("details"), type: .button)
+            let alignment = filling ? Alignment.fill : Alignment.center
+            button.properties = [.text: .string("Details"), .horizontalAlignment: .enumeration(alignment.rawValue)]
+            stack.children = .arranged([button])
+            return stack
+        }
+        renderer.applyForTesting(row(filling: false))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
+        let button = try XCTUnwrap(renderer.viewForTesting(id: .manual("details")))
+        native.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        native.layoutSubtreeIfNeeded()
+        let start = button.frame.width
+
+        renderer.applyForTesting(row(filling: true))
+        native.layoutSubtreeIfNeeded()
+        now = 100
+        renderer.advanceAnimationsForTesting()
+        native.layoutSubtreeIfNeeded()
+        let midway = button.frame.width
+        now = 200
+        renderer.advanceAnimationsForTesting()
+        native.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(button.frame.width, 300, accuracy: 0.5, "it lands filling the stack")
+        XCTAssertEqual(midway, (start + 300) / 2, accuracy: 1, "halfway, its box halfway: started at \(start)")
+    }
+
     /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
     /// stack lays its children out there, its own place traveling around them.
     @MainActor

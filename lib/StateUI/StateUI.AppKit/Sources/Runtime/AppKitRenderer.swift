@@ -228,20 +228,18 @@ final class AppKitRenderer {
     }
 }
 
-/// An element's view, placed by the layout motion of the layout it stands in - a label at the size its place
-/// travels to, its words standing there meanwhile.
+/// An element's view, placed by the layout motion of the layout it stands in - a layout's children at the size its
+/// place travels to.
 extension AppKitElement: PlacedView {
     var placedFrame: Rect {
         get { view?.frame.placed ?? Rect(0, 0, 0, 0) }
         set {
-            let size = wordsRoom ?? newValue
-            view?.frame = NSRect(x: newValue.x, y: newValue.y, width: size.width, height: size.height)
+            view?.frame = NSRect(placed: newValue)
             isPlaced = true
         }
     }
 
     func travels(to destination: Rect?) {
-        if NodeType.wordsTypes.contains(type) { wordsRoom = destination }
         (view as? AppKitTravelingLayout)?.arrangementRoom = destination.map { NSSize(width: $0.width, height: $0.height) }
     }
 }

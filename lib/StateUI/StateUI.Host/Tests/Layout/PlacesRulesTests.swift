@@ -73,15 +73,21 @@ final class PlacesRulesTests: XCTestCase {
         values.width = 10
 
         places.begin(width: 100)
-        places.place(child, mount: 1, at: Rect(x: 0, y: 0, width: 10, height: 10), values: values, fadeIn: nil)
+        places.place(
+            child, mount: 1, at: Rect(x: 0, y: 0, width: 10, height: 10), values: values, natural: { .zero },
+            fadeIn: nil)
         XCTAssertEqual(child.placedFrame, Rect(x: 0, y: 0, width: 10, height: 10), "no motion: at once")
 
         places.layoutMotion = motion
         places.begin(width: 100)
-        places.place(child, mount: 1, at: Rect(x: 0, y: 0, width: 10, height: 10), values: values, fadeIn: nil)
+        places.place(
+            child, mount: 1, at: Rect(x: 0, y: 0, width: 10, height: 10), values: values, natural: { .zero },
+            fadeIn: nil)
         places.patchArrived()
         places.begin(width: 100)
-        places.place(child, mount: 1, at: Rect(x: 50, y: 0, width: 10, height: 10), values: values, fadeIn: nil)
+        places.place(
+            child, mount: 1, at: Rect(x: 50, y: 0, width: 10, height: 10), values: values, natural: { .zero },
+            fadeIn: nil)
         XCTAssertTrue(animator.isMoving, "a patch's new place travels")
         XCTAssertEqual(child.placedFrame.x, 0, "and the child sets out from where it stood")
     }

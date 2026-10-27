@@ -164,7 +164,9 @@ class WebLayoutView: WebDOMView {
     /// Stands the child at `index` at `slot`, where the browser laid it out, or on its way there.
     func place(_ child: WebDOMView, at index: Int, slot: Rect) {
         let traveler = index < travelers.count ? travelers[index] : (mount: 0, fadeIn: nil)
-        places.place(child, mount: traveler.mount, at: slot, values: values(at: index), fadeIn: traveler.fadeIn)
+        places.place(
+            child, mount: traveler.mount, at: slot, values: values(at: index),
+            natural: { WebRelay.natural(of: child.node) }, fadeIn: traveler.fadeIn)
     }
 
     private func placeAll() {

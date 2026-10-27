@@ -194,6 +194,10 @@ STATEUI_WEB(read_box) void stateui_web_read_box(int32_t element, double *into);
 /// Writes the element's size in its layout, before any transform, into `into`: width, height.
 STATEUI_WEB(read_size) void stateui_web_read_size(int32_t element, double *into);
 
+/// Writes the room the element's words take as they stand into `into`: their lines' width and height, its padding
+/// and border around them.
+STATEUI_WEB(read_natural) void stateui_web_read_natural(int32_t element, double *into);
+
 /// Where each child of `count` pairs `(layout, child)` stands in its layout, before any transform: four numbers a
 /// child - from the layout's top left, then its size - and four NaN for one the page lays out nowhere; a pair whose
 /// child is its layout reads the layout's own size.

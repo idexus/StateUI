@@ -29,9 +29,9 @@
         .toolbarGroup, .titleView, .menuBar, .contextMenu, .buttonMenu, .overlay, .popover, .sheet,
     ]
 
-    /// The elements that lay words out in their room - a label, a button: one whose place travels stands at the size
-    /// it is bound for, its words there meanwhile (`PlacedView.travels(to:)`).
-    /// Design: docs/design/host/motion.md#words-at-their-destination
+    /// The elements that lay words out in their room - a label, a button: one whose place travels stands no narrower
+    /// than its words need where it is bound (`LayoutValues.laysOutWords`).
+    /// Design: docs/design/host/motion.md#words-on-the-way
     public static let wordsTypes: Set<NodeType> = [.text, .button]
 }
 

@@ -446,9 +446,6 @@ class AndroidView {
     /// Where the view's place travels (`PlacedView`); nothing of most views' follows it.
     func travels(to destination: Rect?) {}
 
-    /// The room the view's words stand in while its place travels; nil where they stand in its place.
-    var wordsRoom: Rect? { nil }
-
     /// The size the view was last placed at, in pixels; nil before its first place.
     var placedSize: (width: Int32, height: Int32)? {
         laidOut.map { ($0.right - $0.left, $0.bottom - $0.top) }
@@ -506,7 +503,7 @@ extension AndroidView {
 
 extension AndroidView: PlacedView {
     /// Where the view stands in its parent, in points - where the host last laid it out, or else where Android
-    /// has it; set, it is measured and placed there, at its words' room while its place travels.
+    /// has it; set, it is measured and placed there.
     var placedFrame: Rect {
         get {
             let frame = laidOut ?? (
@@ -517,8 +514,7 @@ extension AndroidView: PlacedView {
                 width: Double(frame.right - frame.left) / density, height: Double(frame.bottom - frame.top) / density)
         }
         set {
-            let room = wordsRoom ?? newValue
-            layout(Rect(x: newValue.x, y: newValue.y, width: room.width, height: room.height))
+            layout(newValue)
         }
     }
 }

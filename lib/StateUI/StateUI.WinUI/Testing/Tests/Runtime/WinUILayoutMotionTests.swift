@@ -186,9 +186,9 @@ final class WinUILayoutMotionTests: XCTestCase {
         }
     }
 
-    /// A label whose width travels lays its words out at the width it is bound for: they keep the one line they fit
-    /// there, never breaking at the widths its place passes through, and show whole.
-    func testATextsWordsStandAtTheWidthItTravelsTo() throws {
+    /// A label whose words lengthen stands at the width they need from the start: they keep the one line they fit
+    /// where it is bound, never breaking at the widths its place passes through, and show whole.
+    func testATextsWordsStandAtTheWidthTheyNeed() throws {
         try onUIThread {
             let clock = TestClock()
             let host = WinUIRenderer.running(clock: clock) { LengtheningPage() }
@@ -206,8 +206,7 @@ final class WinUILayoutMotionTests: XCTestCase {
             clock.now += 200
             host.frame()
             let bound = label.laidOutFrame
-            XCTAssertLessThan(place.width, bound.width - 1, "its place on its way")
-            XCTAssertEqual(words.width, bound.width, accuracy: 0.5, "its words at the width it is bound for")
+            XCTAssertEqual(words.width, bound.width, accuracy: 0.5, "midway, its words at the width they need")
             XCTAssertEqual(words.height, bound.height, accuracy: 0.5, "on the one line they fit there")
             XCTAssertEqual(end, [0xFFFF_0000], "shown whole, to the end of its box")
         }

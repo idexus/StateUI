@@ -16,7 +16,6 @@ child that joins a standing layout fades in, and a change of visibility is
 crossed - faded out before the layout closes over it, faded in as it opens.
 A view fades by its drawing (`UIKitViewDrawing`): its own opacity, times
 the one its placing layout draws it with, and whether UIKit shows it. A
-label whose place travels stands at the size it is bound for, its corner
-traveling: UIKit breaks its words at its bounds, so at the widths the place
-passes through words that fit the destination on one line would stand on
-two ([words at their destination](../../host/motion.md#words-at-their-destination)).
+label or a button whose place travels stands at the frame the host layer
+gives it, never narrower than its words need: UIKit breaks words at the
+bounds ([words on the way](../../host/motion.md#words-on-the-way)).

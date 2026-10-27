@@ -79,6 +79,39 @@ final class UIKitMotionTests: XCTestCase {
         XCTAssertEqual(midway, button.bounds.width, accuracy: 0.5, "its words at the width it is bound for")
     }
 
+    /// A button whose room widens around words that already fit grows its box the whole way - a button taking a
+    /// wider cell, midway between the width it stood at and the one it lands at.
+    @MainActor
+    func testAButtonTakingAWiderRoomGrowsTheWholeWay() throws {
+        let clock = TestClock()
+        let filling = State(wrappedValue: false)
+        let host = UIKitRenderer.running(clock: clock) {
+            VStack {
+                Button("Details").horizontalAlignment(filling.wrappedValue ? .fill : .center).id("button")
+            }
+            .motion(.eased(.milliseconds(200), .linear))
+            .width(300)
+            .verticalAlignment(.start)
+        }
+        defer { host.finish() }
+        let button = try XCTUnwrap(Self.view(of: "button", in: host))
+        let start = button.bounds.width
+
+        filling.wrappedValue = true
+        host.runtime.pump.turn()
+        host.layOut()
+        clock.now = 100
+        host.frame()
+        host.layOut()
+        let midway = button.bounds.width
+        clock.now = 200
+        host.frame()
+        host.layOut()
+
+        XCTAssertEqual(button.bounds.width, 300, accuracy: 0.5, "it lands filling the stack")
+        XCTAssertEqual(midway, (start + 300) / 2, accuracy: 1, "halfway, its box halfway: started at \(start)")
+    }
+
     /// A rectangle whose fill and width change under a motion stands halfway at half its time, and lands - the
     /// Gallery's Motion sample.
     @MainActor

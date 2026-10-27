@@ -89,7 +89,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     func arrange(in bounds: Rect) {}
 
     /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
-    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#words-at-their-destination
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#a-layout-bound-for-a-size
     var arrangementRoom: CGSize? {
         didSet { if arrangementRoom != oldValue { setNeedsLayout() } }
     }
@@ -126,7 +126,9 @@ class UIKitLayoutView: UIView, UIKitSteppable {
             item.view.frame = CGRect(x: place.x, y: place.y, width: place.width, height: place.height)
             return
         }
-        places.place(placed, mount: item.mount, at: place, values: item.values, fadeIn: item.fadeIn)
+        places.place(
+            placed, mount: item.mount, at: place, values: item.values, natural: { item.size(offered: nil) },
+            fadeIn: item.fadeIn)
     }
 }
 #endif

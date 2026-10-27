@@ -716,6 +716,7 @@
         values.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
         values.area = value(.area).flatMap(Area.init(propValue:))
         values.grows = type == .space
+        values.laysOutWords = NodeType.wordsTypes.contains(type)
         return values
     }
 

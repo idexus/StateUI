@@ -8,9 +8,9 @@
     /// The rectangle the view stands at.
     var placedFrame: Rect { get set }
 
-    /// Where the view's place travels, told as it sets out, and nil once it stands: a view laying out words lays
-    /// them out at that size while its place travels, never at the sizes it passes through.
-    /// Design: docs/design/host/motion.md#words-at-their-destination
+    /// Where the view's place travels, told as it sets out, and nil once it stands: a layout lays its children out
+    /// at that size while its place travels, never at the sizes it passes through.
+    /// Design: docs/design/host/motion.md#a-layout-bound-for-a-size
     func travels(to destination: Rect?)
 }
 
@@ -45,6 +45,14 @@ extension PlacedView {
     private struct Seat {
         weak var view: (any PlacedView)?
         var standing: Rect?
+        var destination = Rect(x: 0, y: 0, width: 0, height: 0)
+        /// The natural size of the words a traveling child lays out; nil for one laying out none.
+        var words: LayoutSize?
+
+        /// Where the child stands while its place passes `standing`.
+        func frame(_ standing: Rect) -> Rect {
+            words.map { LayoutMotion.room(standing, destination: destination, words: $0) } ?? standing
+        }
     }
 
     private let animator: Animator
@@ -81,12 +89,15 @@ extension PlacedView {
         return law.animates && !reducesMotion() ? law : nil
     }
 
-    /// Stands `view` at `target`, or on its way there; `stated` are the sides it sizes itself.
+    /// Stands `view` at `target`, or on its way there; `stated` are the sides it sizes itself, and a view laying out
+    /// `words` is measured by `natural` as its place sets out.
     public func place(
         _ view: any PlacedView,
         mount: UInt64,
         at target: Rect,
         stated: MotionLanes,
+        words: Bool,
+        natural: () -> LayoutSize,
         fadeIn: ((Motion) -> Void)?,
         in arrangement: Arrangement
     ) {
@@ -110,7 +121,7 @@ extension PlacedView {
 
         // The same place asked for again keeps its animation rather than starting it over.
         if let running, running.destination == destination {
-            if let standing = seat.standing { view.placedFrame = standing }
+            if let standing = seat.standing { view.placedFrame = seat.frame(standing) }
             return
         }
 
@@ -142,8 +153,10 @@ extension PlacedView {
         let standing = Self.rect(start)
         animator.start(animation, for: key)
         seats[mount]?.standing = standing
+        seats[mount]?.destination = target
+        seats[mount]?.words = words ? natural() : nil
         view.travels(to: target)
-        view.placedFrame = standing
+        view.placedFrame = seats[mount]?.frame(standing) ?? standing
         onStart()
     }
 
@@ -154,8 +167,11 @@ extension PlacedView {
 
             let standing = Self.rect(step.value)
             seats[mount]?.standing = step.rested ? nil : standing
-            if step.rested { seats[mount]?.view?.travels(to: nil) }
-            seats[mount]?.view?.placedFrame = standing
+            if step.rested {
+                seats[mount]?.words = nil
+                seats[mount]?.view?.travels(to: nil)
+            }
+            seats[mount]?.view?.placedFrame = seats[mount]?.frame(standing) ?? standing
         }
     }
 
@@ -168,8 +184,21 @@ extension PlacedView {
     private func arrive(_ view: any PlacedView, at target: Rect, mount: UInt64) {
         animator.halt(.placed(mount))
         seats[mount]?.standing = nil
+        seats[mount]?.words = nil
         view.travels(to: nil)
         view.placedFrame = target
+    }
+
+    /// Where a child laying out words of the natural size `words` stands while its place passes `standing` on its
+    /// way to `destination`: no narrower than its words need there - their natural size, or the destination's where
+    /// they wrap in it. Design: docs/design/host/motion.md#words-on-the-way
+    nonisolated static func room(_ standing: Rect, destination: Rect, words: LayoutSize) -> Rect {
+        let needs = words.width > destination.width
+            ? LayoutSize(width: destination.width, height: destination.height)
+            : LayoutSize(width: words.width, height: min(words.height, destination.height))
+        return Rect(
+            x: standing.x, y: standing.y,
+            width: max(standing.width, needs.width), height: max(standing.height, needs.height))
     }
 
     private static func isReal(_ rect: Rect) -> Bool {

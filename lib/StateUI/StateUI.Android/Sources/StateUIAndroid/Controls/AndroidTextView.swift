@@ -9,17 +9,6 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-labels-words
 @MainActor
 final class AndroidTextView: AndroidTextualView {
-
-    /// Where the label's place travels: its words stand at that size meanwhile.
-    /// Design: docs/design/host/motion.md#words-at-their-destination
-    private var bound: Rect?
-
-    override func travels(to destination: Rect?) {
-        bound = destination
-    }
-
-    override var wordsRoom: Rect? { bound }
-
     /// A `TextView` in the theme's primary words color, which its own text appearance leaves secondary.
     /// Design: docs/design/platforms/android/controls.md#a-labels-words
     init() {

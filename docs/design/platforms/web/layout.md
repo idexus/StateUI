@@ -76,9 +76,11 @@ A child is drawn where its place stands on the way: moved from where the
 browser lays it out by a translation before its own transform, and sized as
 the place passes through, its end margins making up the rest of its slot -
 so the room it takes in its layout is its slot's from the first frame, and
-everything around it stands where it is going. A view laying out words keeps
-the size it is bound for and only moves. At rest the view's own CSS stands
-again.
+everything around it stands where it is going. A view laying out words
+stands no narrower than they need, as the page reads them - their lines'
+extent within its padding and border
+([words on the way](../../host/motion.md#words-on-the-way)). At rest the
+view's own CSS stands again.
 
 The trap: the place a child sets out from must be read before anything
 moves it. Read after the call's changes, every child already stands at its

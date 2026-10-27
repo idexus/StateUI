@@ -43,7 +43,7 @@ class AppKitTravelingLayout: AppKitHitTestView, AppKitDirectedLayout {
     }
 
     /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
-    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#words-at-their-destination
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#a-layout-bound-for-a-size
     var arrangementRoom: NSSize? {
         didSet { if arrangementRoom != oldValue { needsLayout = true } }
     }
@@ -64,7 +64,9 @@ class AppKitTravelingLayout: AppKitHitTestView, AppKitDirectedLayout {
             item.view.frame = frame
             return
         }
-        places.place(placed, mount: item.mount, at: frame.placed, values: item.values, fadeIn: item.fadeIn)
+        places.place(
+            placed, mount: item.mount, at: frame.placed, values: item.values,
+            natural: { item.size(offered: nil) }, fadeIn: item.fadeIn)
     }
 }
 

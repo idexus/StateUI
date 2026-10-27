@@ -45,9 +45,9 @@ private struct SaidPage: View {
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
 @MainActor
 final class GTKLayoutMotionTests: XCTestCase {
-    /// A label whose width travels lays its words out at the width it is bound for: they keep the one line they fit
-    /// there, never breaking at the widths its place passes through.
-    func testATextsWordsStandAtTheWidthItTravelsTo() throws {
+    /// A label whose words lengthen stands at the width they need from the start: they keep the one line they fit
+    /// where it is bound, never breaking at the widths its place passes through.
+    func testATextsWordsStandAtTheWidthTheyNeed() throws {
         try onUIThread {
             let clock = TestClock()
             let host = GTKRenderer.running(clock: clock) { LengtheningPage() }
@@ -61,8 +61,7 @@ final class GTKLayoutMotionTests: XCTestCase {
 
             var natural: Int32 = 0
             gtk_widget_measure(label.widget, GTK_ORIENTATION_HORIZONTAL, -1, nil, &natural, nil, nil)
-            XCTAssertLessThan(label.placedFrame.width, Double(natural) - 1, "its place on its way")
-            XCTAssertEqual(gtk_widget_get_width(label.widget), natural, "its words at the width it is bound for")
+            XCTAssertEqual(gtk_widget_get_width(label.widget), natural, "midway, its words at the width they need")
         }
     }
 

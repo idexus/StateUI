@@ -69,6 +69,10 @@
     /// Whether the child grows along its stack into the room the others leave - a space.
     public var grows = false
 
+    /// Whether the child lays out words - a label, a button (`NodeType.wordsTypes`): its place travels no narrower
+    /// than they need.
+    public var laysOutWords = false
+
     /// Values with every part at its default.
     public init() {}
 

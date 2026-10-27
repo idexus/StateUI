@@ -132,19 +132,29 @@ the toolkit last stood. A split leaving the tree takes its slide with it:
 the tree tells the runtime the element left, and the slide stops where it
 stands, telling nothing more, whatever host showed it.
 
-## Words at their destination
+## Words on the way
+
+A child that lays out words - a label, a button (`NodeType.wordsTypes`,
+`LayoutValues.laysOutWords`) - travels its size as any child does, but never
+stands narrower than its words need where it is bound: their natural size,
+measured with no width offered as its place sets out, or the destination's
+size where they wrap there (`LayoutMotion.room`). A button a wider cell takes
+grows the whole way; a caption made bold stands at its new width from the
+start, so its words never break onto a second line; words that wrap where
+they are bound stand at the destination's width and height until the place
+is wider. The host stands the view at the frame the host layer gives it.
+
+The trap is a view laying out words held at its whole destination while its
+place travels: a label shows nothing of it, but a button's box is what the
+eye follows, and it jumps to its end while only its corner travels.
+
+## A layout bound for a size
 
 A child whose place travels is told where it is bound as it sets out
 (`PlacedView.travels(to:)`), and that it is bound nowhere once it lands or
-arrives. A view that lays out words - a label, a button
-(`NodeType.wordsTypes`) - lays them out at the size it is bound for, its
-place traveling around them: at the widths the place passes through, words
-that fit the destination on one line would break onto two for as long as
-the place travels, and the rows below would jump down and back. A layout
-bound for a size lays its children out at that size, its own box traveling
-around them: a label filling it would otherwise break at the widths the
-layout passes through. Every other view stands at each size it passes
-through.
+arrives. A layout bound for a size lays its children out at that size, its
+own box traveling around them: a label filling it would otherwise break at
+the widths the layout passes through.
 
 ## Showing and hiding
 
