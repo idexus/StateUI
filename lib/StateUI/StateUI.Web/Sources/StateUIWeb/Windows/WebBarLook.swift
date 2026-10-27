@@ -7,14 +7,17 @@
 extension WebDOMView {
     /// Shows what the application says of a bar's button or group over the bar's own look: its box - what fills it,
     /// its outline, its shape, the room inside it - and its words' font and color, each as `value` reads it; what it
-    /// leaves unsaid stands as the bar's look has it.
+    /// leaves unsaid stands as the bar's look has it. A button saying its room is its content and that room, as a
+    /// control is, rather than the bar's own least size.
     /// Design: docs/design/platforms/web/pages.md#a-bars-items-in-the-applications-look
     func showBarLook(_ value: (Prop) -> HostValue?) {
         let material = HostMaterial(value(.background))
         setBox(WebBox(
             fill: material.paint, stroke: value(.stroke), lineWidth: value(.lineWidth)?.number, shape: value(.shape),
             material: material.blur == nil ? nil : material))
-        setPadding(value(.padding).flatMap(Insets.init(propValue:)))
+        let padding = value(.padding).flatMap(Insets.init(propValue:))
+        setPadding(padding)
+        for least in ["min-height", "min-width"] { style(least, padding == nil ? nil : "0") }
         for (name, said) in WebCSS.font(TextMembers.look(reading: value)) { style(name, said) }
     }
 }

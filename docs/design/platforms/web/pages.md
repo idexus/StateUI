@@ -73,7 +73,10 @@ between the bar's groups and its own buttons is the bar's
 `--stateui-bar-spacing` (`toolbarSpacing`), else the stylesheet's. What it leaves unsaid
 stays as the stylesheet has it, so an outline alone keeps the stylesheet's
 fill and its light under the pointer; a background said replaces both, and
-the item's own `.pointerOver` state says how it lights.
+the item's own `.pointerOver` state says how it lights. A button saying the
+room inside it is as large as its picture and words and that room, as a
+control is: the stylesheet's least size for a bar's button (42) stands only
+where it says none.
 
 The states are StateUI's: the button and the group tell the item's element the
 pointer coming and going and a press beginning and ending - a finger hovering

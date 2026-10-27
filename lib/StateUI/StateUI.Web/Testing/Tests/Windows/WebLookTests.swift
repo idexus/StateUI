@@ -444,6 +444,28 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(try ground(), tint)
     }
 
+    /// A bar's button saying the room inside it is as tall as its words and that room, as a control is - lower than
+    /// the bar's own buttons stand where it says none.
+    func testABarButtonSayingItsRoomIsAsTallAsItsWordsAndRoom() throws {
+        let host = WebRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").title("Notes").toolbar {
+                    ToolbarButton("Save").padding(horizontal: 10, vertical: 4)
+                    ToolbarButton("Sort")
+                }
+            } destination: { _ in Text("Pushed") }
+        }
+        let button = { (words: String) in
+            "[...document.querySelectorAll('.stateui-window > .stateui-bar button')].find((b) => b.innerText.trim() === '\(words)')"
+        }
+        host.settle { (try? WebBrowser.truth("!!\(button("Save")) && !!\(button("Sort"))", on: 0)) == true }
+        let height = { (words: String) in try WebBrowser.number("\(button(words)).getBoundingClientRect().height", on: 0) ?? 0 }
+        let words = try WebBrowser.number("\(button("Save")).querySelector('span').getBoundingClientRect().height", on: 0) ?? 0
+
+        XCTAssertEqual(try height("Save"), words + 8, accuracy: 1, "its words and the room it says")
+        XCTAssertEqual(try height("Sort"), 42, accuracy: 0.5, "the bar's own height where it says none")
+    }
+
     /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its
     /// bottom edge. A bar of a color blurs behind its whole paint instead.
     func testAClearBarSoftensWhatScrollsUnderIt() throws {
