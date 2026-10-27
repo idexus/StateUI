@@ -132,9 +132,12 @@ A patch that changes a child somewhere below an element names the element too,
 and it is applied with nothing of its own changed. Whether its children are
 arranged again is the host layer's word (`childrenNeedArranging`): a new
 arrangement, a child made anew or drawn by the element, a page's own values -
-its title on a tab - and a child's place, size or drawing order changed
-(`arrangedProperties` and the z-index) ask it; a change inside a child that
-stands where it stood does not. A toolkit measuring its own views is told a
+its title on a tab - and a child's place, size or drawing order changed, or
+anything its measure reads - its words - ask it (every property but
+`unmeasuredProperties`); a change only drawn, or inside a child, does not. The
+trap is a child's words taken for a change in its place: they size it anew, and
+a layout not arranged again lets it jump to its new size where its siblings
+would travel. A toolkit measuring its own views is told a
 size by the element whose size changed (`measuredUpward`), not by its parents.
 A host whose arranging costs - the Web's places every child again - leaves its
 children as they stand where the word is no.

@@ -917,7 +917,8 @@ final class MountedTreeTests: XCTestCase {
     }
 
     /// A PATCH SAYS WHETHER THE ELEMENT ARRANGES ITS CHILDREN AGAIN: a new arrangement, a child made anew or drawn by
-    /// the element, a child's place or size changed - not a change inside a child that stands where it stood.
+    /// the element, a child's place or size changed, or anything its measure reads - its words - and not a change
+    /// only drawn or inside a child.
     @MainActor
     func testAPatchSaysWhetherTheElementArrangesItsChildrenAgain() throws {
         let (tree, _) = Self.tree(viewless: ["drawn"])
@@ -934,7 +935,8 @@ final class MountedTreeTests: XCTestCase {
             return stack.childrenNeedArranging
         }
 
-        XCTAssertFalse(changed("a") { $0.properties[.text] = .string("words") }, "a child's words, in its place")
+        XCTAssertTrue(changed("a") { $0.properties[.text] = .string("words") }, "a child's words, which size it")
+        XCTAssertFalse(changed("a") { $0.properties[.opacity] = .number(0.5) }, "a child's opacity, drawn in its place")
         XCTAssertTrue(changed("a") { $0.properties[.width] = .number(80) }, "a child's size")
         XCTAssertTrue(changed("a") { $0.properties[.margin] = .numbers([1, 2, 3, 4]) }, "a child's place")
         XCTAssertTrue(changed("drawn") { $0.properties[.text] = .string("words") }, "a child the element draws")

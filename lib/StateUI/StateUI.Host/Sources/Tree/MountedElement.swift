@@ -277,12 +277,10 @@
         }
         let child = children.first { $0.id == childPatch.id } ?? slots.first { $0.id == childPatch.id }
         guard let child, child.native.presentsView else { return true }
-        return !Self.arrangingProperties.isDisjoint(with: childPatch.properties.keys)
-            || !Self.arrangingProperties.isDisjoint(with: childPatch.clearedProperties)
+        // What its measure reads may size it anew - its words - as its place, size and drawing order move it.
+        return childPatch.properties.keys.contains { !Self.unmeasuredProperties.contains($0) }
+            || childPatch.clearedProperties.contains { !Self.unmeasuredProperties.contains($0) }
     }
-
-    /// What of a child moves it among its siblings: its place and size, and its drawing order.
-    private static let arrangingProperties = arrangedProperties.union([.zIndex])
 
     /// A child the patch names among those it has, applied - or made again where it is replaced.
     private func applied(_ childPatch: HostPatch, tree: MountedTree) {
