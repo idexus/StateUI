@@ -204,6 +204,8 @@ enum AppKitRealization {
         .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
+        .notPlanned(ToolbarGroupContract.standsAlone,
+            reason: "The Mac's toolbar draws every group on a glass of its own, a lone item's too."),
         .complete(WindowContract.activated),
         .partial(WindowContract.background, missing: "A window's glass is drawn as the blur as clear as it is."),
         .complete(WindowContract.created),

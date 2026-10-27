@@ -261,31 +261,56 @@ namespace {
         return std::nullopt;
     }
 
+    /// Each action a bar's commands hold, in order - those on a capsule in turn - each told whether a group's room
+    /// stands before it: its button behind "more", its container standing alone, or its control on a capsule.
+    template <typename Commands, typename Each>
+    void eachAction(Commands const &commands, Each each) {
+        bool parted = false;
+        for (auto const &command : commands) {
+            if (command.template try_as<controls::AppBarSeparator>()) {
+                parted = true;
+                continue;
+            }
+            auto contained = command.template try_as<controls::AppBarElementContainer>();
+            if (contained && capsuleRow(contained)) {
+                for (auto const &control : composedActions(contained)) {
+                    each(IInspectable(control), parted);
+                    parted = false;
+                }
+                continue;
+            }
+            each(IInspectable(command), parted);
+            parted = false;
+        }
+    }
+
     /// The page's action at `place` in the list the chrome was given, at either edge or behind "more".
-    controls::ICommandBarElement action(controls::TitleBar const &bar, int32_t place) {
+    IInspectable action(controls::TitleBar const &bar, int32_t place) {
+        IInspectable found{nullptr};
         for (auto const &commands :
              {leadingActions(bar).PrimaryCommands(), trailingActions(bar).PrimaryCommands(),
               trailingActions(bar).SecondaryCommands()})
-            for (auto const &command : commands)
-                if (auto element = command.try_as<xaml::FrameworkElement>();
-                    element && !command.try_as<controls::AppBarSeparator>()
-                    && winrt::unbox_value_or<int32_t>(element.Tag(), -1) == place)
-                    return command;
-        return nullptr;
+            eachAction(commands, [&](IInspectable const &element, bool) {
+                auto framework = element.try_as<xaml::FrameworkElement>();
+                if (!found && framework && winrt::unbox_value_or<int32_t>(framework.Tag(), -1) == place) found = element;
+            });
+        return found;
     }
 
-    /// An action standing in a container - a split or a drop-down button - read as a bar's button is: its words,
-    /// picture, whether its words show, whether it can be chosen, its place, its colors and its shortcut.
-    struct ContainedAction {
-        controls::AppBarElementContainer container;
+    /// An action's control on the bar - in its container standing alone (`holder`), or on a capsule, its own
+    /// holder - read as a bar's button is: its words, picture, whether its words show, whether it can be chosen, its
+    /// place, its colors and its shortcut.
+    struct ActionControl {
+        controls::Control holder;
+        controls::Control own;
 
-        controls::Control control() const { return container.Content().as<controls::Control>(); }
-        winrt::hstring Label() const { return xaml::Automation::AutomationProperties::GetName(control()); }
-        bool IsEnabled() const { return container.IsEnabled(); }
-        IInspectable Tag() const { return container.Tag(); }
-        xaml::Media::Brush Foreground() const { return control().Foreground(); }
-        auto KeyboardAccelerators() const { return control().KeyboardAccelerators(); }
-        operator xaml::DependencyObject() const { return control(); }
+        controls::Control control() const { return own; }
+        winrt::hstring Label() const { return xaml::Automation::AutomationProperties::GetName(own); }
+        bool IsEnabled() const { return holder.IsEnabled(); }
+        IInspectable Tag() const { return holder.Tag(); }
+        xaml::Media::Brush Foreground() const { return own.Foreground(); }
+        auto KeyboardAccelerators() const { return own.KeyboardAccelerators(); }
+        operator xaml::DependencyObject() const { return own; }
 
         /// The picture before its words; null for none.
         controls::IconElement Icon() const {
@@ -302,27 +327,50 @@ namespace {
         }
 
         controls::StackPanel shown() const {
-            return control().as<controls::ContentControl>().Content().as<controls::StackPanel>();
+            return own.as<controls::ContentControl>().Content().as<controls::StackPanel>();
         }
     };
 
     /// Whether choosing the action destroys something: its words in the critical color its control's style reads.
     bool destroys(xaml::FrameworkElement const &button) { return isDestructive(button, L"AppBarButtonForeground"); }
-    bool destroys(ContainedAction const &action) {
-        auto control = action.control();
-        auto name = control.try_as<controls::SplitButton>() ? L"SplitButtonForeground" : L"ButtonForeground";
-        return isDestructive(control, name);
+    bool destroys(ActionControl const &action) {
+        return isDestructive(action.control(), composedForeground(action.control()).c_str());
     }
 
-    /// What `said` answers of the action `command` - an action's button, a setting's two-state one, or a contained
-    /// split or drop-down button; nothing for any other command.
+    /// What `said` answers of the action `element` - an action's or a setting's button behind "more", or its
+    /// control on the bar; nothing for anything else.
     template <typename Said>
-    auto ofAction(controls::ICommandBarElement const &command, Said said)
+    auto ofAction(IInspectable const &element, Said said)
         -> std::optional<decltype(said(controls::AppBarButton{nullptr}))> {
-        if (auto button = command.try_as<controls::AppBarButton>()) return said(button);
-        if (auto toggle = command.try_as<controls::AppBarToggleButton>()) return said(toggle);
-        if (auto contained = command.try_as<controls::AppBarElementContainer>()) return said(ContainedAction{contained});
+        if (auto button = element.try_as<controls::AppBarButton>()) return said(button);
+        if (auto toggle = element.try_as<controls::AppBarToggleButton>()) return said(toggle);
+        if (auto contained = element.try_as<controls::AppBarElementContainer>()) {
+            if (capsuleRow(contained)) return std::nullopt;
+            return said(ActionControl{contained, contained.Content().as<controls::Control>()});
+        }
+        if (auto control = element.try_as<controls::Control>();
+            control && winrt::unbox_value_or<int32_t>(control.Tag(), -1) >= 0)
+            return said(ActionControl{control, control});
         return std::nullopt;
+    }
+
+    /// The control of the action `element` on the bar - in its container or on a capsule - and how its holder
+    /// stands on the bar; null for a button behind "more".
+    std::pair<controls::ContentControl, xaml::VerticalAlignment> composed(IInspectable const &element) {
+        if (auto contained = element.try_as<controls::AppBarElementContainer>())
+            return {contained.Content().try_as<controls::ContentControl>(), contained.VerticalContentAlignment()};
+        if (element.try_as<controls::AppBarButton>() || element.try_as<controls::AppBarToggleButton>()) return {nullptr, {}};
+        auto control = element.try_as<controls::ContentControl>();
+        auto row = control ? control.Parent().try_as<controls::StackPanel>() : nullptr;
+        auto ground = row ? row.Parent().try_as<controls::Border>() : nullptr;
+        if (!ground) return {nullptr, {}};
+        return {control, ground.VerticalAlignment()};
+    }
+
+    /// The control standing for the action `element`: what a container holds, else the element itself.
+    IInspectable own(IInspectable const &element) {
+        if (auto contained = element.try_as<controls::AppBarElementContainer>()) return contained.Content();
+        return element;
     }
 
     /// The text block under `root` showing `words`, as the control's template lays it out; null for none.
@@ -335,12 +383,12 @@ namespace {
         return nullptr;
     }
 
-    /// How the menu of the action `command` opens: by a split button's arrow ("split"), a drop-down button's click
-    /// showing its chevron ("arrow"), a bar button's click ("click") or held ("held"); empty for none.
-    std::string menuOpens(controls::ICommandBarElement const &command) {
-        if (auto contained = command.try_as<controls::AppBarElementContainer>())
-            return contained.Content().try_as<controls::SplitButton>() ? "split" : "arrow";
-        auto button = command.try_as<controls::AppBarButton>();
+    /// How the menu of the action's control `element` opens: by a split button's arrow ("split"), a drop-down
+    /// button's click showing its chevron ("arrow"), a button's click ("click") or held ("held"); empty for none.
+    std::string menuOpens(IInspectable const &element) {
+        if (element.try_as<controls::SplitButton>()) return "split";
+        if (element.try_as<controls::DropDownButton>()) return "arrow";
+        auto button = element.try_as<controls::Button>();
         if (!button) return "";
         if (button.Flyout()) return "click";
         return button.ContextFlyout() ? "held" : "";
@@ -353,19 +401,16 @@ namespace {
         auto listed = [&](auto const &commands) {
             std::string words;
             bool parted = false;
-            for (auto const &command : commands) {
-                if (command.template try_as<controls::AppBarSeparator>()) {
-                    parted = true;
-                    continue;
-                }
-                auto shown = ofAction(command, [&](auto const &button) {
+            eachAction(commands, [&](IInspectable const &element, bool partedBefore) {
+                parted = parted || partedBefore;
+                auto shown = ofAction(element, [&](auto const &button) {
                     return std::string(button.IsEnabled() ? "" : "!") + said(button);
                 });
-                if (!shown) continue;
+                if (!shown) return;
                 if (!words.empty()) words += parted ? apart : among;
                 parted = false;
                 words += *shown;
-            }
+            });
             return words;
         };
         return listed(edges.leading.PrimaryCommands()) + "|" + listed(edges.trailing.PrimaryCommands()) + "|"
@@ -402,21 +447,23 @@ namespace {
         }
         // The weight the words of the first action standing on the bar are drawn at: the text its button shows.
         if (what == "actionWeight") {
+            std::optional<std::string> weight;
             for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
-                for (auto const &command : actions.PrimaryCommands()) {
-                    auto label = ofAction(command, [](auto const &button) { return button.Label(); });
-                    if (!label) continue;
-                    auto words = shownWords(command.as<xaml::DependencyObject>(), *label);
-                    return words ? number(static_cast<int32_t>(words.FontWeight().Weight)) : std::string();
-                }
-            return std::string();
+                eachAction(actions.PrimaryCommands(), [&](IInspectable const &element, bool) {
+                    auto label = ofAction(element, [](auto const &button) { return button.Label(); });
+                    if (weight || !label) return;
+                    auto words = shownWords(element.as<xaml::DependencyObject>(), *label);
+                    weight = words ? number(static_cast<int32_t>(words.FontWeight().Weight)) : std::string();
+                });
+            return weight.value_or(std::string());
         }
         if (what == "actionWords") {
             std::string colors;
             for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
-                for (auto const &command : actions.PrimaryCommands())
-                    if (auto foreground = ofAction(command, [](auto const &button) { return color(button.Foreground()); }))
+                eachAction(actions.PrimaryCommands(), [&](IInspectable const &element, bool) {
+                    if (auto foreground = ofAction(element, [](auto const &button) { return color(button.Foreground()); }))
                         colors += (colors.empty() ? "" : ";") + *foreground;
+                });
             return colors;
         }
         if (what.starts_with("action ")) {
@@ -428,28 +475,40 @@ namespace {
             auto held = rest.substr(space + 1);
             // A setting's state: whether its two-state button stands checked; an action has none.
             if (held == "checked") {
-                auto toggle = command.try_as<controls::AppBarToggleButton>();
+                auto toggle = own(command).try_as<controls::Primitives::ToggleButton>();
                 if (!toggle) return std::nullopt;
                 return flag(toggle.IsChecked() && toggle.IsChecked().Value());
             }
-            if (held == "menuOpens") return menuOpens(command);
-            if (held == "width") return number(command.as<xaml::FrameworkElement>().Width());
-            // A contained split or drop-down button resting with no fill - its own themes name its rest ground -, how
-            // it stands on the bar (its own and its container's vertical alignment), and its words' size.
-            if (held == "subtle" || held == "standing" || held == "wordsSize") {
-                auto contained = command.try_as<controls::AppBarElementContainer>();
-                if (!contained) return std::nullopt;
-                auto control = contained.Content().as<controls::ContentControl>();
+            if (held == "menuOpens") return menuOpens(own(command));
+            if (held == "width") return number(own(command).as<xaml::FrameworkElement>().Width());
+            // A control standing for the action on the bar: on a capsule of how many ("on <count>") or alone
+            // ("bare"); the height and the corners of the fill the pointer brings ("hover"); whether it rests with
+            // no fill - its own themes name its rest ground -; how it stands on the bar (its own and its holder's
+            // vertical alignment); its words' size; and how tall its picture is drawn.
+            if (held == "capsule" || held == "hover" || held == "subtle" || held == "standing" || held == "wordsSize"
+                || held == "pictureHeight") {
+                auto [control, holding] = composed(command);
+                if (!control) return std::nullopt;
+                if (held == "capsule") {
+                    auto row = control.Parent().try_as<controls::StackPanel>();
+                    return row ? "on " + number(static_cast<int32_t>(row.Children().Size())) : std::string("bare");
+                }
+                if (held == "hover") return number(control.Height()) + "," + number(control.CornerRadius().TopLeft);
                 if (held == "standing")
                     return number(static_cast<int32_t>(control.VerticalAlignment())) + ","
-                        + number(static_cast<int32_t>(contained.VerticalContentAlignment()));
-                if (held == "wordsSize") {
-                    for (auto const &child : control.Content().as<controls::StackPanel>().Children())
-                        if (auto words = child.try_as<controls::TextBlock>()) return number(words.FontSize());
+                        + number(static_cast<int32_t>(holding));
+                if (held == "wordsSize" || held == "pictureHeight") {
+                    for (auto const &child : control.Content().as<controls::StackPanel>().Children()) {
+                        auto words = child.try_as<controls::TextBlock>();
+                        if (words && held == "wordsSize") return number(words.FontSize());
+                        auto picture = child.try_as<controls::IconElement>();
+                        if (picture && held == "pictureHeight") return number(picture.ActualHeight());
+                    }
                     return std::string();
                 }
-                auto name = control.try_as<controls::SplitButton>() ? L"SplitButtonBackground" : L"ButtonBackground";
-                return flag(namesThemedBrush(control, name));
+                auto name = composedForeground(control);
+                name.replace(name.size() - 10, 10, L"Background");
+                return flag(namesThemedBrush(control, name.c_str()));
             }
             return ofAction(command, [&](auto const &button) -> std::optional<std::string> {
                 if (held == "icon") return winrt::to_string(iconFile(button.Icon()));

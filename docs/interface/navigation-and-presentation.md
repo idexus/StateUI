@@ -477,10 +477,11 @@ Each item says where it stands with `.placement` - at the bar's `.start`, its
 `.end`, unsaid, or behind its `.overflow` menu - and an `order` among the
 others there, lower first; at the same order a page's views further out stand
 at the edge and those further in nearer the title. A `ToolbarGroup` stands its
-items together on one background where the platform groups a bar's actions, as
-macOS and iOS draw them on one piece of glass, and behind the overflow it is a
-section of the menu; an item standing alone is a group of one, and an item in
-a group stands where its group does:
+items together on one background where the platform groups a bar's actions -
+macOS and iOS on one piece of glass, WinUI on one capsule, which a group of
+one keeps - and behind the overflow it is a section of the menu. An item
+declared alone stands in a group of its own, bare on WinUI, and an item in a
+group stands where its group does:
 
 ```swift quote
 VStack { … }

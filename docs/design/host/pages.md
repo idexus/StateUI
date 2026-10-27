@@ -310,6 +310,18 @@ stand in its tip. A host puts the words on again where
 changed: the words, the picture and `showsText` are its registration's to
 show, and asked of what is left over they never name the button.
 
+## A bar's capsules
+
+Where a host draws a capsule behind its bar's buttons, which buttons stand on
+one is decided once (`BarCapsule.places(of:)`): the buttons of a group its
+author declares stand on one capsule - its first at the start, its last at
+the end, any between in the middle, one alone on the whole of it. A button
+declared alone stands bare: StateUI stands it in a group of its own, which
+says so (`ToolbarGroupContract.standsAlone`), and no host reads that from
+the group's size. None behind "more" stands on a capsule. The host draws its
+parts: WinUI's buttons ([a bar's
+buttons](../platforms/winui/pages.md#a-bars-buttons)).
+
 ## The menus of a path
 
 The menu bar a page's window shows is composed from the menu bars its path

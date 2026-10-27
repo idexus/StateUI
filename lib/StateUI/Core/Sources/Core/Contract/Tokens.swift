@@ -250,6 +250,7 @@ extension NodeType {
     static let selectedIndex = PickerContract.selectedIndex.token
     static let selectionLength = TextInputContract.selectionLength.token
     static let hidesWithSidebar = ToolbarGroupContract.hidesWithSidebar.token
+    static let standsAlone = ToolbarGroupContract.standsAlone.token
     static let source = ImageContract.source.token
     static let spacing = StackContract.spacing.token
     static let stroke = ShapeContract.stroke.token

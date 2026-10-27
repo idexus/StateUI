@@ -180,6 +180,8 @@ enum UIKitRealization {
         .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
+        .notPlanned(ToolbarGroupContract.standsAlone,
+            reason: "UIKit's bar draws every group on a glass of its own, a lone item's too."),
         .notPlanned(VisualElementContract.tooltip,
             reason: "UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none."),
         .complete(WindowContract.activated),

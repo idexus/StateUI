@@ -29,6 +29,10 @@ extension WinUIDriver {
         case .toolbarButton, .toolbarToggle:
             if let held = try actionHolds(property.name, element) { return held }
             throw cannot
+        case .toolbarGroup where property.name == "standsAlone":
+            // A lone item's own stands bare on the bar; a group its author declared, on a capsule.
+            guard let first = element.children.first, let place = try actionPlace(of: first) else { throw cannot }
+            return (try read(window(of: first).titleBar, "action \(place) capsule") == "bare").propValue
         case .window:
             if let held = try windowHolds(property.name, element) { return held }
             throw cannot

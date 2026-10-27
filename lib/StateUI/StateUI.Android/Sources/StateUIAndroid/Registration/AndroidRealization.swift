@@ -168,6 +168,8 @@ enum AndroidRealization {
         .complete(ToolbarGroupContract.isEnabled),
         .partial(ToolbarGroupContract.position,
             missing: "Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions."),
+        .notPlanned(ToolbarGroupContract.standsAlone,
+            reason: "Android's bar draws its actions with no background behind a group."),
         .notPlanned(ApplicationContract.useAccentColor,
             reason: "Android draws its controls in the theme's accent, set before the activity starts - from 12 the user's."),
         .complete(ApplicationContract.useColorScheme),

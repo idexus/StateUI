@@ -120,6 +120,8 @@ enum WebRealization {
         .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
+        .notPlanned(ToolbarGroupContract.standsAlone,
+            reason: "The bar draws every group on a glass of its own, a lone item's too."),
         .complete(SceneContract.activated),
         .complete(SceneContract.deactivated),
         .complete(SceneContract.stopped),

@@ -220,6 +220,7 @@ enum WinUIRealization {
         .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
+        .complete(ToolbarGroupContract.standsAlone),
         .complete(TextAndIconElementContract.showsText, on: ToolbarButtonContract.self),
         .complete(ToolbarToggleContract.isOn),
         .complete(ToolbarToggleContract.onIcon),

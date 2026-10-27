@@ -543,8 +543,9 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
-    /// An action showing its picture alone stands as narrow as WinUI's compact commands, as a Windows application's
-    /// toolbar keeps its pictures; one showing its words keeps the bar's own width.
+    /// An action showing its picture alone stands in the width of WinUI's compact commands, as a Windows
+    /// application's toolbar keeps its pictures - 2 of it clear on each side of its fill -; one showing its words
+    /// stands as wide as they are.
     func testAPictureAloneStandsAsNarrowAsACompactCommand() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
@@ -555,8 +556,8 @@ final class WinUIPagesTests: XCTestCase {
             }
             let bar = try XCTUnwrap(host.window).titleBar
             host.settle { Self.words(bar, "actions") == "|Add;Scan|" }
-            XCTAssertEqual(Self.words(bar, "action 0 width"), "40", "the picture alone")
-            XCTAssertNotEqual(Self.words(bar, "action 1 width"), "40", "the picture with its words")
+            XCTAssertEqual(Self.words(bar, "action 0 width"), "36", "the picture alone")
+            XCTAssertNotEqual(Self.words(bar, "action 1 width"), "36", "the picture with its words")
         }
     }
 
@@ -575,6 +576,34 @@ final class WinUIPagesTests: XCTestCase {
             let bar = try XCTUnwrap(host.window).titleBar
             host.settle { Self.words(bar, "bar") == "|0,1 2|" }
             XCTAssertEqual(Self.words(bar, "barLines"), "0")
+        }
+    }
+
+    /// The buttons of a group its author declared stand on one capsule, a group of one too, each filled under the
+    /// pointer as a capsule of its own; a button declared alone stands bare, filled under the pointer as a rounded
+    /// rectangle as high as a capsule - its words beside its picture or not. Each draws its picture as tall as a
+    /// bar button's, 16.
+    func testADeclaredGroupStandsOnACapsule() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").title("Notes").toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Save").icon("test_wide.png")
+                        ToolbarButton("Add").icon("test_wide.png")
+                    }
+                    ToolbarGroup {
+                        ToolbarButton("Share").icon("test_wide.png")
+                    }
+                    ToolbarButton("Sort").icon("test_wide.png")
+                    ToolbarButton("Scan").icon("test_wide.png").showsText(true)
+                }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "actions") == "|Save;Add;Share;Sort;Scan|" }
+            XCTAssertEqual((0..<5).map { Self.words(bar, "action \($0) capsule") }, ["on 2", "on 2", "on 1", "bare", "bare"])
+            XCTAssertEqual((0..<5).map { Self.words(bar, "action \($0) hover") }, ["32,16", "32,16", "32,16", "32,8", "32,8"])
+            host.settle { Self.words(bar, "action 0 pictureHeight") != "0" }
+            XCTAssertEqual((0..<5).map { Self.words(bar, "action \($0) pictureHeight") }, Array(repeating: "16", count: 5))
         }
     }
 

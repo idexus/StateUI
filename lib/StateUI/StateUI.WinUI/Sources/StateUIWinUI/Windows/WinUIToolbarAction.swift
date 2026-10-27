@@ -24,12 +24,14 @@ struct WinUIToolbarAction {
     var isOn: Bool? = nil
     /// The menu its button opens; nil for an action holding none.
     var menu: WinUIToolbarMenu? = nil
+    /// Whether it stands in a lone item's own group, not one its author declared (`ToolbarGroupContract.standsAlone`).
+    var standsAlone = true
 
     /// Whether two actions draw the same button. What an action performs is taken again on every composition.
     func draws(like other: WinUIToolbarAction) -> Bool {
         title == other.title && isEnabled == other.isEnabled && identifier == other.identifier && icon == other.icon
             && isDestructive == other.isDestructive && showsWords == other.showsWords && shortcut == other.shortcut
-            && isOn == other.isOn && menu?.said == other.menu?.said
+            && isOn == other.isOn && menu?.said == other.menu?.said && standsAlone == other.standsAlone
     }
 }
 

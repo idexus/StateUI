@@ -24,10 +24,15 @@ public enum ToolbarGroupContract: ElementContract {
     /// The part of its split view's bar it stands in; unsaid, the part of the page or split view declaring it.
     public static let part = ElementProperty<Self, ToolbarPart>("part", layer: .stateUI, travels: false, cleared: false)
 
+    /// Whether it is the group of its own a lone item stands in, not one its author declared: written by StateUI
+    /// alone, read by a host drawing a group a background, which draws none behind a lone item.
+    public static let standsAlone = ElementProperty<Self, Bool>(
+        "standsAlone", layer: .stateUI, travels: false, cleared: false, unsaid: false)
+
     /// Where on the bar it stands: at an edge, or behind the overflow menu.
     public static let position = ElementProperty<Self, ToolbarPosition>(
         "position", layer: .adaptive, travels: false, cleared: false, unsaid: .end)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [hidesWithSidebar, isEnabled, order, part, position]
+    public static let members: [any ContractMember] = [hidesWithSidebar, isEnabled, order, part, position, standsAlone]
 }

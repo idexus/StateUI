@@ -820,7 +820,8 @@ void stateui_winui_sheet_set_actions(StateUIObjectRef sheet, char const *const *
                                      char const *const *icons, bool const *words, bool const *destructive,
                                      int32_t const *groups, int32_t leadingGroups, bool const *enabled,
                                      int32_t const *keys, int32_t const *modifiers, bool const *givesWay,
-                                     int32_t const *states, int32_t const *openings, int32_t count);
+                                     int32_t const *states, int32_t const *openings,
+                                         int32_t const *capsules, int32_t count);
 void stateui_winui_sheet_set_action_menu(StateUIObjectRef sheet, int32_t place, bool held, int32_t first,
                                          int32_t const *kinds, char const *const *titles, bool const *enabled,
                                          char const *const *identifiers, char const *const *icons,
@@ -1208,12 +1209,14 @@ void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char c
 /// can be chosen, its shortcut's key and modifiers (`stateui_winui_set_shortcut`), key 0 for none, a setting's
 /// state - 1 on, 0 off, -1 for an action - which makes its button a two-state one, and how a menu it holds opens:
 /// 0 from WinUI's bar button, 1 by a split button's arrow, its click its own, 2 by a drop-down button's click, its
-/// chevron showing. A group stands apart from the one before it; a press tells the action's place in the list.
+/// chevron showing; and its place on a capsule behind the bar's buttons (`StateUIBarCapsule`: 0 none, 1 a whole one, 2
+/// its group's start, 3 middle, 4 end). A group stands apart from the one before it; a press tells the action's place.
 void stateui_winui_title_bar_set_actions(StateUIObjectRef bar, char const *const *texts,
                                          char const *const *identifiers, char const *const *icons, bool const *words,
                                          bool const *destructive, int32_t const *groups, int32_t leadingGroups,
                                          bool const *enabled, int32_t const *keys, int32_t const *modifiers,
-                                         bool const *givesWay, int32_t const *states, int32_t const *openings, int32_t count);
+                                         bool const *givesWay, int32_t const *states, int32_t const *openings,
+                                         int32_t const *capsules, int32_t count);
 
 /// The weight of the words of the title bar's actions standing on it, 100 to 900; 0 gives them WinUI's own.
 void stateui_winui_title_bar_weigh_actions(StateUIObjectRef bar, int32_t weight);
@@ -1266,7 +1269,8 @@ void stateui_winui_split_set_actions(StateUIObjectRef split, char const *const *
                                      char const *const *icons, bool const *words, bool const *destructive,
                                      int32_t const *groups, int32_t leadingGroups, bool const *enabled,
                                      int32_t const *keys, int32_t const *modifiers, bool const *givesWay,
-                                     int32_t const *states, int32_t const *openings, int32_t count);
+                                     int32_t const *states, int32_t const *openings,
+                                         int32_t const *capsules, int32_t count);
 void stateui_winui_split_set_action_menu(StateUIObjectRef split, int32_t place, bool held, int32_t first,
                                          int32_t const *kinds, char const *const *titles, bool const *enabled,
                                          char const *const *identifiers, char const *const *icons,

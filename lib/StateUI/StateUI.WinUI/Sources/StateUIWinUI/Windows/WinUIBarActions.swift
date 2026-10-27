@@ -51,6 +51,14 @@ struct WinUIBarActions {
         case .sheet: stateui_winui_sheet_set_actions
         case .pane: stateui_winui_split_set_actions
         }
+        // Each button's place on a capsule, its group's on the bar; none behind "more".
+        // Design: docs/design/platforms/winui/pages.md#a-bars-buttons
+        let capsules = Dictionary(grouping: actions.indices.filter { places[$0] >= 0 }) { places[$0] }
+            .reduce(into: [Int32](repeating: BarCapsule.none.rawValue, count: actions.count)) { capsules, group in
+                let indices = group.value.sorted()
+                let standing = BarCapsule.places(count: indices.count, standsAlone: actions[indices[0]].standsAlone)
+                for (index, place) in zip(indices, standing) { capsules[index] = place.rawValue }
+            }
         WinUIStrings.withCStrings(actions.map(\.title)) { titles in
             WinUIStrings.withCStrings(actions.map { $0.identifier ?? "" }) { identifiers in
                 WinUIStrings.withCStrings(actions.map { WinUIStrings.lines($0.icon) }) { icons in
@@ -61,7 +69,7 @@ struct WinUIBarActions {
                         actions.map { $0.shortcut.map(KeyboardShortcuts.givesWayToTyping) ?? false },
                         actions.map { $0.isOn.map { $0 ? 1 : 0 } ?? -1 },
                         zip(actions, places).map { action, place in action.menu?.standing(behind: place < 0) ?? 0 },
-                        Int32(actions.count))
+                        capsules, Int32(actions.count))
                 }
             }
         }

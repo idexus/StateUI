@@ -30,12 +30,12 @@ for - a tab chosen, the sidebar shown:
   left header, after the way back and the toggle, shown only while it holds
   an action; the trailing one in its right header - each group apart from the
   one before it by room ([a bar's buttons](#a-bars-buttons)),
-  a setting WinUI's two-state `AppBarToggleButton`, checked while on,
+  a setting a two-state button, checked while on,
   and those placed in overflow behind the trailing bar's own "more"; an
   action with a picture - the first of the files its
   name stands for that the application's pictures hold
   ([pictures](controls.md#pictures)) - shows its words at the picture's
-  right where it `showsText`, the command bar's own place for them, and
+  right where it `showsText`, as a command bar places them, and
   otherwise the picture alone, its words naming it to Narrator and in its
   tip (`MountedElement.showsActionWords`); a destructive one stands in the theme's critical color
   ([a destructive entry](#a-destructive-entry)); one that cannot be chosen
@@ -87,46 +87,62 @@ though it shows nothing of its own: it is no stop, so Tab walks the chrome's
 buttons and what the place holds, and never lands where nothing shows.
 
 A bar's button holding a menu stands as WinUI's control for how the menu
-opens. A command bar's `AppBarButton` has no arrow part and shows no chevron,
-so a split one is a `SplitButton` - its click its own, its arrow the menu's -
-and one whose click opens the menu with its arrow a `DropDownButton`, each in
-the `AppBarElementContainer` a command bar holds any control in, told by its
-place as a bar's button is and showing its picture and words as one does. A
-click opening the menu with no arrow stays an `AppBarButton` with its
-`Flyout`, and a held menu its `ContextFlyout`; behind "more", every one is an
-`AppBarButton` opening what it offers there. Every menu on the bar answers
+opens: a split one is a `SplitButton` - its click its own, its arrow the
+menu's - and one whose click opens the menu with its arrow a
+`DropDownButton`. A click opening the menu with no arrow is a `Button` with
+its `Flyout`, and a held menu its `ContextFlyout`; behind "more", every one is
+an `AppBarButton` opening what it offers there. Every menu on the bar answers
 through the title bar's one view, so each menu's items are counted on from
 where the menu before it ends.
 
 ## A bar's buttons
 
 The bar's buttons stand as a Windows application's toolbar keeps them - its
-pictures narrow, its groups apart by room, every button flat until the
-pointer comes - each through what WinUI exposes publicly:
+pictures narrow, its groups apart by room, a declared group on a capsule,
+every button clear until the pointer comes - each through what WinUI exposes
+publicly:
 
-- a button showing its picture alone stands 40 DIPs wide, WinUI's compact
-  command (`MediaTransportControlsAppBarButtonWidth`), where an
-  `AppBarButton`'s style gives it 68; the width is the button's own value
-  while it stands on the bar and goes as it moves behind "more", where the
-  overflow's style spans the menu (`IsInOverflow`);
+- every action on the bar is a control of its own in the
+  `AppBarElementContainer` a command bar holds any control in - a
+  `ToggleButton` for a setting, a `SplitButton` or `DropDownButton` for a
+  menu ([the window's chrome](#the-windows-chrome)), else a `Button` - told
+  by its place as a bar's button is, its picture and its words in a row.
+  WinUI's `AppBarButton` fills under the pointer as its template insets its
+  inner border, 36 high, and a two-state one reads that inset as a static
+  resource no element can name again: a fill 32 high is asked of a control's
+  own `Height`. Behind "more", every one is an `AppBarButton` or an
+  `AppBarToggleButton`, as the overflow's menu draws them;
+- each stands 32 DIPs high, centered on the bar - its own alignment and its
+  container's, which a command bar's container sets at the top - its words
+  at a bar button's label's size, 12, where its own style gives a control's
+  14; its fill comes from the brushes its template reads (`ButtonBackground`,
+  `ToggleButtonBackground`, `SplitButtonBackground`, their states, their
+  borders and a split's `SplitButtonBorderBrushDivider`), named in its own
+  resources for the light theme and the dark: clear at rest and with no
+  border, so a split's two parts show as the pointer meets each. The
+  high-contrast theme keeps the system's;
+- a button showing its picture alone stands in 40 DIPs, WinUI's compact
+  command (`MediaTransportControlsAppBarButtonWidth`);
 - a group stands apart from the one before it by the room of WinUI's
   separator, which draws its line only behind "more": on the bar its brush
   is clear, and the bar's colors never paint it;
-- a split or drop-down button rests as the bar's other buttons rest, with no
-  fill and no border: the brushes its template reads -
-  `SplitButtonBackground`, `ButtonBackground` and their borders, the split's
-  `SplitButtonBorderBrushDivider` - are named in its own resources for the
-  light theme and the dark, clear at rest and the theme's subtle fills under
-  the pointer and pressed, so a split's two parts show as the pointer meets
-  each. The high-contrast theme keeps the system's. It stands centered on the
-  bar - its own alignment and its container's, which a command bar's
-  container sets at the top - its words at a bar button's label's size, 12,
-  where its own style gives a control's 14.
+- the buttons of a group its author declares - a group of one too - stand on
+  one capsule ([a bar's capsules](../../host/pages.md#a-bars-capsules)): a
+  `Border` 32 high, its corners 16, filled with the theme's
+  `SubtleFillColorSecondary`, holding them in a row with no room between.
+  Each fills as a capsule of its own - its corners 16 - in
+  `ControlAltFillColorQuarternary` under the pointer and
+  `ControlAltFillColorTertiary` pressed, one tone deeper than the capsule;
+- a button declared alone stands bare, and fills as a rounded rectangle -
+  its corners 8, the theme's `OverlayCornerRadius` - in the fills of WinUI's
+  bar buttons, `SubtleFillColorSecondary` under the pointer and
+  `SubtleFillColorTertiary` pressed; 2 of its width stay clear on each side,
+  as an `AppBarButton` insets its fill (`AppBarButtonInnerBorderMargin`).
 
-The weight the path gives the bar's buttons' words is each button's own
-`FontWeight` - a contained button's too - written after every showing of the
-actions: a button's style names a weight of its own, which one inherited from
-the command bar would not outweigh, and its label takes the button's.
+The weight the path gives the bar's buttons' words is each control's own
+`FontWeight`, written after every showing of the actions: a button's style
+names a weight of its own, which one inherited from the command bar would
+not outweigh.
 
 ## A navigation stack
 
@@ -396,7 +412,8 @@ A menu's item or a bar's action whose choice destroys something says so in
 the theme's critical color, the one Windows gives an error. Its words'
 brushes - at rest, under the pointer and pressed - are named again in the
 entry's own resources, as lightweight styling names them
-(`MenuFlyoutItemForeground`, `AppBarButtonForeground` and their states); one
+(`MenuFlyoutItemForeground`, `AppBarButtonForeground`, a bar control's
+`ButtonForeground` and their states); one
 out of reach keeps the theme's dimmed words. Each brush takes its color
 from the theme resource `SystemFillColorCritical`, in a theme dictionary for
 the light theme and one for the dark, so it follows the entry's own theme: a

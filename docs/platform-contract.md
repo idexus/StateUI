@@ -222,8 +222,8 @@ contract.
 | `ButtonMenu` | `NSComboButton`, unified or split | `UIButton.menu`, opened by a tap or held | `PopupMenu` at the button, opened by a click or held | `DropDownButton`, `SplitButton` | `GtkMenuButton`, `AdwSplitButton` | `aria-haspopup` button opening an ARIA `menu`, or held for it |
 | `Separator` | an `NSBox` separator | a hairline `UIView` in the separator color | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
 | `MenuSeparator` | a separator `NSMenuItem` | a group break in a `UIMenu` | a group divider in a menu | `MenuFlyoutSeparator` | a section break in a `GMenu` | `role=separator` in an ARIA `menu` |
-| `ToolbarGroup` / `ToolbarButton` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItemGroup` / `UIBarButtonItem` | `Toolbar` `MenuItem` | `CommandBar` `AppBarButton` in the `TitleBar` | `GtkButton` in an `AdwHeaderBar` | `<button>` in an ARIA `toolbar` |
-| `ToolbarToggle` | an `NSToolbarItem` showing its on picture, prominent while on with none; a checked `NSMenuItem` in the overflow | a `UIBarButtonItem` with `changesSelectionAsPrimaryAction`, `isSelected` while on | a checkable `Toolbar` `MenuItem`, its state on the bar by its on picture | `AppBarToggleButton` in the `TitleBar` | `GtkToggleButton` in an `AdwHeaderBar` | `<button aria-pressed>` in an ARIA `toolbar` |
+| `ToolbarGroup` / `ToolbarButton` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItemGroup` / `UIBarButtonItem` | `Toolbar` `MenuItem` | a `CommandBar`'s `AppBarElementContainer` in the `TitleBar`, a group's on a capsule; `AppBarButton` behind More | `GtkButton` in an `AdwHeaderBar` | `<button>` in an ARIA `toolbar` |
+| `ToolbarToggle` | an `NSToolbarItem` showing its on picture, prominent while on with none; a checked `NSMenuItem` in the overflow | a `UIBarButtonItem` with `changesSelectionAsPrimaryAction`, `isSelected` while on | a checkable `Toolbar` `MenuItem`, its state on the bar by its on picture | a `ToggleButton` in a `CommandBar`'s `AppBarElementContainer` in the `TitleBar`; `AppBarToggleButton` behind More | `GtkToggleButton` in an `AdwHeaderBar` | `<button aria-pressed>` in an ARIA `toolbar` |
 | `ZStack` / `PhaseLayout` / `Fill` / `Space` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | flexbox |
 | `Grid` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid |
@@ -541,13 +541,13 @@ Every control, and every part an application, its windows and its pages are made
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarButton](controls/ToolbarButton.md) | 10 | 5 ✅ · 2 ✓ · 1 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 2 – | 10 ✅ | 8 ✅ · 1 ✓ · 1 – | 10 ✅ |
-| [ToolbarGroup](controls/ToolbarGroup.md) | 5 | 5 ✅ | 5 ✅ | 4 ✅ · 1 ☑️ | 5 ✅ | 5 ✅ | 5 ✅ |
+| [ToolbarGroup](controls/ToolbarGroup.md) | 6 | 5 ✅ · 1 – | 5 ✅ · 1 – | 4 ✅ · 1 ☑️ · 1 – | 6 ✅ | 5 ✅ · 1 – | 5 ✅ · 1 – |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 9 | 7 ✅ · 1 – | 8 ✅ · 1 – | 6 ✅ · 1 ☑️ · 1 – | 9 ✅ | 8 ✅ · 1 – | 9 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 107 | 113 | 92 | 137 | 103 | 125 |
+| ✅ |  | 107 | 113 | 92 | 138 | 103 | 125 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
-| – |  | 14 | 17 | 28 | 9 | 29 | 15 |
-| **Met** | 167 | **148** | **155** | **144** | **155** | **154** | **154** |
+| – |  | 15 | 18 | 29 | 9 | 30 | 16 |
+| **Met** | 168 | **149** | **156** | **145** | **156** | **155** | **155** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -640,7 +640,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 1 ☑️ · 1 – | 4 ✅ | 3 ✅ · 1 – | 1 ✅ · 2 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ |
 | [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ · 4 – | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ | 2 ✅ · 3 – |
-| [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position` | 5 | 5 ✅ | 5 ✅ | 4 ✅ · 1 ☑️ | 5 ✅ | 5 ✅ | 5 ✅ |
+| [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position`, `standsAlone` | 6 | 5 ✅ · 1 – | 5 ✅ · 1 – | 4 ✅ · 1 ☑️ · 1 – | 6 ✅ | 5 ✅ · 1 – | 5 ✅ · 1 – |
 | [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `onToggled` (`toggled`) | 3 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
 | [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
@@ -707,13 +707,13 @@ realizes the element and each of its members.
 `showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
 `showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
 `showsUserLocation`, `sidebarBackground`, `sidebarOverlayBackground`,
-`sidebarOverlays`, `source`, `spacing`, `step`, `stroke`, `style`,
-`submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`, `tapCount`,
-`text`, `textCase`, `textColor`, `textDecorations`, `textStyle`, `time`, `tint`,
-`title`, `toolbarStyle`, `tooltip`, `tracking`, `translationX`, `translationY`,
-`type`, `userAgent`, `value`, `verticalAlignment`, `verticalScrollIndicator`,
-`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `x`, `x1`, `x2`,
-`y`, `y1`, `y2`, `zIndex`.
+`sidebarOverlays`, `source`, `spacing`, `standsAlone`, `step`, `stroke`,
+`style`, `submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`,
+`tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textStyle`,
+`time`, `tint`, `title`, `toolbarStyle`, `tooltip`, `tracking`, `translationX`,
+`translationY`, `type`, `userAgent`, `value`, `verticalAlignment`,
+`verticalScrollIndicator`, `verticalTextAlignment`, `width`, `windowType`,
+`windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 

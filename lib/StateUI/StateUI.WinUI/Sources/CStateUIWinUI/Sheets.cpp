@@ -172,14 +172,14 @@ extern "C" void stateui_winui_sheet_set_actions(
     StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
     bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
     int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t const *states,
-    int32_t const *openings, int32_t count
+    int32_t const *openings, int32_t const *capsules, int32_t count
 ) {
     try {
         auto sheet = borrow<controls::Grid>(handle);
         auto head = headOf(sheet);
         setActions(sheetActionEdges(sheet), head, winrt::unbox_value<int64_t>(head.Tag()), texts, identifiers, icons,
                    words, destructive, groups, leadingGroups, enabled, keys, modifiers, givesWay, states, openings,
-                   count);
+                   capsules, count);
         showHead(head);
     } catch (...) {
         report("setting a sheet's actions");

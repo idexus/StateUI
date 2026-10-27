@@ -219,6 +219,8 @@ enum GTKRealization {
         .complete(ToolbarGroupContract.hidesWithSidebar),
         .complete(ToolbarGroupContract.isEnabled),
         .complete(ToolbarGroupContract.position),
+        .notPlanned(ToolbarGroupContract.standsAlone,
+            reason: "A header bar draws its buttons flat: no background stands behind a group."),
         .complete(WindowContract.activated),
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),

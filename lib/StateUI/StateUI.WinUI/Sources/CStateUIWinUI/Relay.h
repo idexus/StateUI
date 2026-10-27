@@ -319,13 +319,25 @@ namespace stateui {
         return actions;
     }
 
+    /// The row of actions on the capsule a bar's container holds; null where it holds none.
+    controls::StackPanel capsuleRow(controls::AppBarElementContainer const &contained);
+
+    /// The controls a bar's container holds for its actions: the one of an action standing alone, or each action
+    /// standing on the capsule it holds.
+    std::vector<controls::Control> composedActions(controls::AppBarElementContainer const &contained);
+
+    /// The name of the brush the words of an action's control on the bar take: a split button's, a two-state
+    /// button's or another button's.
+    std::wstring composedForeground(controls::Control const &control);
+
     /// Puts `count` actions on `edges`, as `stateui_winui_title_bar_set_actions` says; `owner` is the element whose
     /// theme fades a disabled picture, `view` the one a press is told to.
     void setActions(
         ActionEdges const &edges, xaml::FrameworkElement const &owner, int64_t view, char const *const *texts,
         char const *const *identifiers, char const *const *icons, bool const *words, bool const *destructive,
         int32_t const *groups, int32_t leadingGroups, bool const *enabled, int32_t const *keys,
-        int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t const *openings, int32_t count);
+        int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t const *openings,
+        int32_t const *capsules, int32_t count);
 
     /// Gives the action at `place` on `edges` its menu, as `stateui_winui_title_bar_set_action_menu` says.
     void setActionMenu(

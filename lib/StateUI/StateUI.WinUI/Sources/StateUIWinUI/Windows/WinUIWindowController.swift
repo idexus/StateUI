@@ -195,7 +195,8 @@ final class WinUIWindowController {
             icon: WinUIPictures.lines(entry.icon), isDestructive: entry.isDestructive,
             showsWords: item.showsActionWords, shortcut: entry.keyboardShortcut, mount: item.mount,
             perform: { [weak item] in item?.winUI.choose() },
-            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil, menu: menu(of: item))
+            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil, menu: menu(of: item),
+            standsAlone: item.parent?.value(.standsAlone)?.bool == true)
     }
 
     /// The menu a bar's button opens, read as a button's is (`ButtonMenu`); nil for one holding none.

@@ -21,6 +21,7 @@ extension ToolbarItem {
     /// The group of its own the item stands in alone.
     var standingAlone: Node {
         var group = (self as? any PlacedToolbarItem)?.alone ?? Node(contract: ToolbarGroupContract.self)
+        group.write(ToolbarGroupContract.standsAlone, true)
         group.children = [node]
         return group
     }

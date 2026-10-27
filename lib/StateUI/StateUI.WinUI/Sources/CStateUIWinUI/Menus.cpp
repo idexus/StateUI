@@ -149,9 +149,13 @@ namespace {
         for (auto const &commands :
              {edges.leading.PrimaryCommands(), edges.trailing.PrimaryCommands(), edges.trailing.SecondaryCommands()})
             for (auto const &command : commands) {
-                if (auto contained = command.try_as<controls::AppBarElementContainer>();
-                    contained && winrt::unbox_value_or<int32_t>(contained.Tag(), -1) == place)
-                    return contained.Content().as<xaml::FrameworkElement>();
+                if (auto contained = command.try_as<controls::AppBarElementContainer>()) {
+                    // An action standing alone by its container's place; one on a capsule by its own.
+                    if (winrt::unbox_value_or<int32_t>(contained.Tag(), -1) == place)
+                        return contained.Content().as<xaml::FrameworkElement>();
+                    for (auto const &control : composedActions(contained))
+                        if (winrt::unbox_value_or<int32_t>(control.Tag(), -1) == place) return control;
+                }
                 if (auto button = command.try_as<controls::AppBarButton>();
                     button && winrt::unbox_value_or<int32_t>(button.Tag(), -1) == place)
                     return button;

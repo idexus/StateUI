@@ -671,7 +671,7 @@ final class PageTests: XCTestCase {
         let group = content.children[1]
         XCTAssertEqual(group.props, [
             "hidesWithSidebar": .bool(true), "order": .number(2), "part": ToolbarPart.sidebar.propValue,
-            "position": ToolbarPosition.overflow.propValue,
+            "position": ToolbarPosition.overflow.propValue, "standsAlone": .bool(true),
         ])
         let item = try XCTUnwrap(group.children.first)
         XCTAssertEqual(item.props, [
