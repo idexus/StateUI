@@ -1739,6 +1739,30 @@ enum Listings {
             }
         }
         """#,
+        "ButtonRow": #"""
+        // Sources/Samples/Layout/GridSample.swift
+        @State private var second = true
+
+        var body: some View {
+            VStack {
+                // Two columns of one share each. Alone, the first button spans
+                // both and asks its width of them, so its row stays a button tall.
+                Grid {
+                    Button("Details")
+                        .gridColumnSpan(second ? 1 : 2)
+
+                    if second {
+                        Button("Undo")
+                            .gridColumn(1)
+                    }
+                }
+                .columns(.fill, .fill)
+
+                SwitchRow("Second button", $second)
+                    .horizontalAlignment(.center)
+            }
+        }
+        """#,
         "ButtonSample": #"""
         // Sources/Samples/BasicInput/ButtonSample.swift
         @State private var counter = 0

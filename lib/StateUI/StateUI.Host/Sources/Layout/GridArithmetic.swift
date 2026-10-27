@@ -115,8 +115,9 @@
         definitions + Array(repeating: .proportional(1), count: max(0, count - definitions.count))
     }
 
-    /// Each track's size: fixed as stated, automatic as its largest one-track child, proportional by share.
-    /// A row measures each child at the width of the `columns` it stands in, where they are known.
+    /// Each track's size: fixed as stated, automatic as its children ask, proportional by share. A child spanning
+    /// tracks asks of them what they lack together. A row measures each child at the width of the `columns` it
+    /// stands in, where they are known.
     /// Design: docs/design/host/layout.md#tracks
     @MainActor
     private static func trackSizes<Child: LayoutChild>(
@@ -144,14 +145,29 @@
                 : measured.width + margin.start + margin.end
         }
 
-        func track(_ item: Child) -> (index: Int, span: Int) {
-            vertical ? (item.values.row, item.values.rowSpan) : (item.values.column, item.values.columnSpan)
+        func share(_ index: Int) -> Double? {
+            if case .proportional(let share) = definitions[index] { return max(share, 0) }
+            return nil
         }
 
-        for item in items where item.isShown {
-            let (index, span) = track(item)
-            guard span == 1, index >= 0, index < count, definitions[index] == .auto else { continue }
-            sizes[index] = max(sizes[index], extent(item))
+        func lack(_ item: Child, in tracks: Range<Int>) -> Double {
+            extent(item) - tracks.reduce(0) { $0 + sizes[$1] } - spacing * Double(tracks.count - 1)
+        }
+
+        let shown = items.enumerated().filter { $0.element.isShown }.map { order, item in
+            let index = vertical ? item.values.row : item.values.column
+            let first = min(max(index, 0), count - 1)
+            let span = max(vertical ? item.values.rowSpan : item.values.columnSpan, 1)
+            return (item: item, tracks: first..<min(first + span, count), order: order)
+        }
+
+        // Fewest tracks first, a child with no proportional track shares its lack alike among its automatic ones.
+        for (item, tracks, _) in shown.sorted(by: { ($0.tracks.count, $0.order) < ($1.tracks.count, $1.order) }) {
+            let automatic = tracks.filter { definitions[$0] == .auto }
+            guard !automatic.isEmpty, !tracks.contains(where: { share($0) != nil }) else { continue }
+            let lacking = lack(item, in: tracks)
+            guard lacking > 0 else { continue }
+            for index in automatic { sizes[index] += lacking / Double(automatic.count) }
         }
 
         let fixed = sizes.reduce(0, +) + spacing * Double(max(count - 1, 0))
@@ -159,13 +175,13 @@
             if case .proportional(let share) = definition { return weight + max(share, 0.000_001) }
             return weight
         }
-        // With no room given, the remainder is the least whose shares hold each track's largest one-track child.
+        // With no room given, the remainder is the least whose shares hold every child spanning a proportional track.
         var remainder = max(0, (available ?? fixed) - fixed)
         if available == nil {
-            remainder = (0..<count).reduce(0.0) { least, index in
-                guard case .proportional(let share) = definitions[index], share > 0 else { return least }
-                let largest = items.filter { track($0) == (index, 1) && $0.isShown }.map(extent).max() ?? 0
-                return max(least, largest * starWeight / share)
+            remainder = shown.reduce(0.0) { least, child in
+                let shares = child.tracks.reduce(0.0) { $0 + (share($1) ?? 0) }
+                guard shares > 0 else { return least }
+                return max(least, lack(child.item, in: child.tracks) * starWeight / shares)
             }
         }
 

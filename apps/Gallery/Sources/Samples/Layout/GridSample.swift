@@ -7,7 +7,7 @@ struct GridSample: SampleContent {
     static let summary = "Rows and columns, with each child's place written on the child."
 
     var examples: [Example] {
-        [Example(GridPlacement())]
+        [Example(GridPlacement()), Example(ButtonRow())]
     }
 }
 
@@ -96,3 +96,39 @@ private struct GridCell: View {
     }
 }
 // listing: end
+
+/// Two buttons sharing a row alike, and the first across both columns when
+/// the second is hidden.
+private struct ButtonRow: ExampleContent {
+    // listing: ButtonRow
+    @State private var second = true
+
+    var body: some View {
+        VStack {
+            // Two columns of one share each. Alone, the first button spans
+            // both and asks its width of them, so its row stays a button tall.
+            Grid {
+                Button("Details")
+                    .gridColumnSpan(second ? 1 : 2)
+
+                if second {
+                    Button("Undo")
+                        .gridColumn(1)
+                }
+            }
+            .columns(.fill, .fill)
+            .columnSpacing(10)
+
+            SwitchRow("Second button", $second)
+                .horizontalAlignment(.center)
+        }
+        .spacing(12)
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("Turn the second button off: the first spans both columns at a button's height.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
+    }
+}

@@ -218,8 +218,9 @@ Rows or columns alike are written once, with their count:
 `.columns(.fill(count: 4))` four equal columns. Each spelling takes `count:`.
 
 A grid's own width, where its room does not decide it, is the least at which
-each proportional track holds its content at its share: shares stand as
-written, and words that fit in their column stand on one line.
+every child fits its cell - a child spanning several tracks asks its room of
+all of them - with each proportional track at its share: shares stand as
+written, and words that fit in their cell stand on one line.
 
 An omitted row or column is zero. An omitted span is one. Several children may
 occupy the same cell; they overlap and `zIndex` decides drawing order.

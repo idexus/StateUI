@@ -259,6 +259,47 @@ final class LayoutArithmeticTests: XCTestCase {
         }
     }
 
+    /// A child spanning tracks asks its room of the tracks it spans: a grid measured with no room and placed at
+    /// its size holds every child at least at its natural size - across proportional, automatic, and fixed and
+    /// proportional columns, and down proportional rows.
+    @MainActor
+    func testAChildSpanningTracksAsksItsRoomOfThem() {
+        func spanning(columns span: Int = 1, rows rowSpan: Int = 1, width: Double, height: Double) -> Child {
+            var child = Child(width: width, height: height)
+            child.wraps = true
+            child.values.columnSpan = span
+            child.values.rowSpan = rowSpan
+            return child
+        }
+        var one = Child(width: 30, height: 20)
+        one.values.row = 1
+        let grids: [(name: String, items: [Child], rows: [GridLength], columns: [GridLength])] = [
+            ("across proportional columns", [spanning(columns: 2, width: 100, height: 20)], [], [.fill, .proportional(3)]),
+            ("across automatic columns", [spanning(columns: 2, width: 100, height: 20), one], [.auto, .auto], [.auto, .auto]),
+            ("across a fixed and a proportional column", [spanning(columns: 2, width: 100, height: 20)], [], [.fixed(40), .fill]),
+            ("down proportional rows", [spanning(rows: 2, width: 30, height: 80), one], [.fill, .fill], [.auto, .auto]),
+        ]
+
+        for grid in grids {
+            let size = GridArithmetic.size(
+                of: grid.items, rows: grid.rows, columns: grid.columns,
+                rowSpacing: 10, columnSpacing: 14, padding: Insets(0))
+            let places = GridArithmetic.places(
+                of: grid.items, rows: grid.rows, columns: grid.columns, rowSpacing: 10, columnSpacing: 14,
+                padding: Insets(0), in: Rect(0, 0, size.width, size.height), direction: .leftToRight)
+            for (child, place) in zip(grid.items, places) {
+                XCTAssertGreaterThanOrEqual(place?.width ?? 0, child.natural.width, grid.name)
+                XCTAssertGreaterThanOrEqual(place?.height ?? 0, child.natural.height, grid.name)
+            }
+        }
+
+        let alone = [spanning(columns: 2, width: 100, height: 20)]
+        let size = GridArithmetic.size(
+            of: alone, rows: [], columns: [.fill, .fill], rowSpacing: 0, columnSpacing: 14, padding: Insets(0),
+            width: 360)
+        XCTAssertEqual(size, LayoutSize(width: 100, height: 20), "one line, measured at its own width")
+    }
+
     /// A ZStack stands each child in its area - the room within the padding, a rectangle in points, or one
     /// in fractions of the room - by the child's own alignments; a hidden one has no place.
     @MainActor
