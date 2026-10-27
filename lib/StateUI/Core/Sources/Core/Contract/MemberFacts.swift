@@ -32,6 +32,9 @@ struct MemberFacts: Equatable {
     /// The value the library writes itself where an author says nothing; nil where it writes none.
     var unsaid: PropValue?
 
+    /// Whether StateUI alone writes it: no value of it is the application's description.
+    var writtenByStateUI = false
+
     /// What an application's own property says: it travels, it is cleared, no motion, nothing remade.
     static let undeclared = MemberFacts(kind: .property, layer: nil, travels: true, cleared: true, moves: [])
 }
@@ -52,7 +55,7 @@ extension ElementProperty: PropertyMember {
     var facts: MemberFacts {
         MemberFacts(
             kind: .property, layer: layer, travels: travels, cleared: cleared, moves: moves, remakes: remakes,
-            unsaid: unsaid)
+            unsaid: unsaid, writtenByStateUI: writtenByStateUI)
     }
 
     var valueType: any HostRepresentable.Type { Value.self }

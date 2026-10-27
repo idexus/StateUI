@@ -32,7 +32,7 @@ public enum ToolbarGroupContract: ElementContract {
     /// Whether it is the group of its own a lone item stands in, not one its author declared: written by StateUI
     /// alone, read by a host drawing a group a background, which draws none behind a lone item.
     public static let standsAlone = ElementProperty<Self, Bool>(
-        "standsAlone", layer: .stateUI, travels: false, cleared: false, unsaid: false)
+        "standsAlone", layer: .stateUI, travels: false, cleared: false, unsaid: false, writtenByStateUI: true)
 
     /// The room between its items, where its host draws the bar itself.
     public static let spacing = ElementProperty<Self, Double>("spacing", layer: .adaptive, moves: .spacing)

@@ -261,6 +261,8 @@ will, with the register's reason (`HostRealizations.unhonored`): a tint
 written on a control a platform draws in the user's accent compiles and does
 nothing, and this is where its author hears why. A member the register says
 nothing of, or realizes in part, goes by, and so does a member holding its
-`unsaid` value: the library wrote it, its author having said nothing. The register is built when first
+`unsaid` value: the library wrote it, its author having said nothing - and a
+mark only the library writes (`writtenByStateUI`, a lone toolbar item's
+`standsAlone`), whatever it holds. The register is built when first
 asked, and the host layer keeps it while the host tells the same realization
 at each start (`CoreLink.setRealization`).

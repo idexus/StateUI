@@ -529,9 +529,10 @@ extension Differ {
 
         #if DEBUG
         // A member the host's register says it does not realize on this element is said once - not one the library
-        // wrote itself, its author having said nothing.
+        // wrote itself, its author having said nothing, nor a mark only the library writes.
         // Design: docs/design/core/contracts.md#unrealized-names
-        for key in patch.properties.keys.sorted() where patch.properties[key] != key.facts.unsaid {
+        for key in patch.properties.keys.sorted()
+        where patch.properties[key] != key.facts.unsaid && !key.facts.writtenByStateUI {
             if let unhonored = HostRealizations.unhonored(key.key, on: node.type) { complain(unhonored) }
         }
         #endif

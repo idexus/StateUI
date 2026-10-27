@@ -34,6 +34,9 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     /// The value the library writes itself where an author says nothing; nil where it writes none.
     let unsaid: PropValue?
 
+    /// Whether StateUI alone writes it - a mark it sets on what it builds, which no application says.
+    let writtenByStateUI: Bool
+
     /// A property declared in `Owner`.
     ///
     /// - Parameters:
@@ -48,6 +51,8 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
     ///   - unsaid: the value the library writes itself where an author says
     ///     nothing - for a member no default answers for, which is written
     ///     always; nil where it writes none.
+    ///   - writtenByStateUI: whether StateUI alone writes it, a mark no
+    ///     application says.
     public init(
         _ name: String,
         layer: ElementLayer = .provider,
@@ -55,7 +60,8 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
         cleared: Bool = true,
         moves: MotionValues = [],
         remakes: Bool = false,
-        unsaid: Value? = nil
+        unsaid: Value? = nil,
+        writtenByStateUI: Bool = false
     ) {
         self.name = name
         self.layer = layer
@@ -64,6 +70,7 @@ public struct ElementProperty<Owner: Contract, Value: HostRepresentable>: Contra
         self.moves = moves
         self.remakes = remakes
         self.unsaid = unsaid?.propValue
+        self.writtenByStateUI = writtenByStateUI
         token = Prop(name)
         owner = KeyName(Owner.name)
     }

@@ -141,11 +141,12 @@ final class HostRealizationTests: XCTestCase {
     }
 
     /// What the library writes itself where its author says nothing - a group's position, whether a window floats or
-    /// hides - is no description: a host leaving those members unrealized says nothing of them. What the author
-    /// says is said.
+    /// hides, the mark on a lone item's own group - is no description: a host leaving those members unrealized says
+    /// nothing of them. What the author says is said.
     func testWhatTheAuthorLeftUnsaidIsNeverSaid() {
         HostBoundary.setRegister(HostRegister(records: [
             .notPlanned(ToolbarGroupContract.position, reason: "the bar has no leading edge."),
+            .notPlanned(ToolbarGroupContract.standsAlone, reason: "every group stands alike."),
             .notPlanned(WindowContract.floatsOnTop, reason: "no window floats."),
             .notPlanned(WindowContract.hidesWhenInactive, reason: "no window hides."),
         ]))
@@ -155,7 +156,7 @@ final class HostRealizationTests: XCTestCase {
 
         _ = Renderer.shared.renderHost(baseline: 0)
 
-        for member in ["ToolbarGroup.position", "Window.floatsOnTop", "Window.hidesWhenInactive"] {
+        for member in ["ToolbarGroup.position", "ToolbarGroup.standsAlone", "Window.floatsOnTop", "Window.hidesWhenInactive"] {
             XCTAssertFalse(hasComplained("`\(member)`"), "\(member) said, its author having said nothing")
         }
 
