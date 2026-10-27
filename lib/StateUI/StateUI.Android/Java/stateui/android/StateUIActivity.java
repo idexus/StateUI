@@ -30,6 +30,8 @@ public class StateUIActivity extends Activity {
     private boolean handlesBack;
     /** What {@link StateUIEnvironment#watch} started, stopped as the activity goes. */
     private Object[] environmentWatch;
+    /** Whether the activity was made in the night theme: another night makes it again, its controls drawn in it. */
+    private boolean madeAtNight;
 
     /** Before Android 12, the activity is made in the night mode the application holds. */
     @Override
@@ -40,8 +42,8 @@ public class StateUIActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle state) {
-        StateUIEnvironment.followSystemOnce(this);
-        setTheme(StateUIEnvironment.night(this)
+        madeAtNight = StateUIEnvironment.night(this);
+        setTheme(madeAtNight
                 ? android.R.style.Theme_DeviceDefault_NoActionBar
                 : android.R.style.Theme_DeviceDefault_Light_NoActionBar);
         super.onCreate(state);
@@ -54,6 +56,7 @@ public class StateUIActivity extends Activity {
         StateUIViews.edgeToEdge(this, root, !StateUIEnvironment.night(this));
 
         StateUIHost.start(this, root, getResources().getDisplayMetrics().density);
+        StateUIEnvironment.settleNightMode(this);
         environmentWatch = StateUIEnvironment.watch(this);
         // A link the activity was started for - not again when it is made anew for a new configuration.
         if (state == null) openLink(getIntent());
@@ -112,13 +115,18 @@ public class StateUIActivity extends Activity {
     }
 
     /**
-     * The display turned or resized: the host reads it again - once the activity shows the night mode the application
-     * holds, which a change of the system's takes from one that takes it itself before Android 12.
+     * The display turned or resized: the host reads it again. Another night - a manifest that takes a change of the
+     * night mode itself - makes the activity again, as one that does not is: its native controls take a theme only
+     * as they are made.
      */
     @Override
     public void onConfigurationChanged(Configuration configuration) {
         super.onConfigurationChanged(configuration);
-        if (!StateUIEnvironment.showNightMode(this)) StateUIHost.configured();
+        if (StateUIEnvironment.night(this) != madeAtNight) {
+            recreate();
+            return;
+        }
+        StateUIHost.configured();
     }
 
     /** A document picker's result reaches the files it was asked for; any other the activity's own. */

@@ -11,6 +11,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -308,29 +309,26 @@ final class StateUIEnvironment {
         return value.resourceId != 0 ? context.getColor(value.resourceId) : value.data;
     }
 
-    /** Whether the application's night mode was given back to the system as this process began. */
-    private static boolean followsSystem;
-
-    /**
-     * Gives the application's night mode back to the system once a process, as it begins: the system keeps the
-     * mode an application set, and an application holds a theme only while it says so.
-     */
-    static void followSystemOnce(Context context) {
-        if (followsSystem) return;
-        followsSystem = true;
-        useNightMode(context, 0);
-    }
-
     /** The application's own night mode before Android 12 - 1 light, 2 dark, 0 the system's - which the host keeps. */
     private static int heldNightMode;
+    /** Whether this process read the night mode kept from the last, and whether its application said one since. */
+    private static boolean keptNightModeRead, nightModeSaid, nightModeSettled;
 
     /**
-     * Shows the application in a theme - 1 light, 2 dark, 0 the system's - as its own night mode, which every
-     * activity of it takes: from Android 12 the system's own, before it the host's.
+     * Shows the application in the theme it says - 1 light, 2 dark, 0 the system's - as its own night mode, which
+     * every activity of it takes and its next start begins in: from Android 12 the system keeps it, before it the
+     * host.
      */
     static void useNightMode(Context context, int scheme) {
+        nightModeSaid = true;
+        applyNightMode(context, scheme);
+    }
+
+    private static void applyNightMode(Context context, int scheme) {
         if (Build.VERSION.SDK_INT < 31) {
             heldNightMode = scheme;
+            SharedPreferences kept = context.getSharedPreferences("stateui.host", Context.MODE_PRIVATE);
+            kept.edit().putInt("nightMode", scheme).apply();
             if (context instanceof Activity) showNightMode((Activity) context);
             return;
         }
@@ -340,27 +338,44 @@ final class StateUIEnvironment {
             : scheme == 1 ? UiModeManager.MODE_NIGHT_NO : UiModeManager.MODE_NIGHT_AUTO);
     }
 
-    /** Before Android 12, an activity being made takes the night mode the application holds, before any resource. */
+    /**
+     * Once the application's first render is over: where it said no theme, the night mode its last run held is given
+     * back to the system - an application holds a theme while it says so, and its first activity was made in it.
+     */
+    static void settleNightMode(Context context) {
+        if (nightModeSettled) return;
+        nightModeSettled = true;
+        if (!nightModeSaid) applyNightMode(context, 0);
+    }
+
+    /**
+     * Before Android 12, an activity being made takes the night mode the application holds - at the process's first,
+     * the one its last run held - before any resource.
+     */
     static void holdNightMode(Activity activity) {
-        if (Build.VERSION.SDK_INT >= 31 || heldNightMode == 0) return;
+        if (Build.VERSION.SDK_INT >= 31) return;
+        if (!keptNightModeRead) {
+            keptNightModeRead = true;
+            heldNightMode = activity.getSharedPreferences("stateui.host", Context.MODE_PRIVATE).getInt("nightMode", 0);
+        }
+        if (heldNightMode == 0) return;
         Configuration held = new Configuration();
         held.uiMode = heldNightMode == 2 ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO;
         activity.applyOverrideConfiguration(held);
     }
 
     /**
-     * Before Android 12, shows an activity in the night mode the application holds: told the new configuration where
-     * it takes a change of the night mode itself, made anew otherwise - as the system does from 12. True where it
-     * showed another.
+     * Before Android 12, shows an activity in the night mode the application holds: made anew - a StateUI activity
+     * always, its native controls drawn in the new theme - or told the new configuration where its manifest takes a
+     * change of the night mode itself, as the system does from 12.
      */
     @SuppressWarnings("deprecation")
-    static boolean showNightMode(Activity activity) {
-        if (Build.VERSION.SDK_INT >= 31) return false;
+    private static void showNightMode(Activity activity) {
         boolean dark = heldNightMode == 0 ? night(Resources.getSystem().getConfiguration()) : heldNightMode == 2;
-        if (night(activity) == dark) return false;
-        if (!takesNightModeItself(activity)) {
+        if (night(activity) == dark) return;
+        if (activity instanceof StateUIActivity || !takesNightModeItself(activity)) {
             activity.recreate();
-            return true;
+            return;
         }
         Resources resources = activity.getResources();
         Configuration shown = new Configuration(resources.getConfiguration());
@@ -368,7 +383,6 @@ final class StateUIEnvironment {
             | (dark ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO);
         resources.updateConfiguration(shown, resources.getDisplayMetrics());
         activity.onConfigurationChanged(shown);
-        return true;
     }
 
     /** Whether the activity's manifest says it takes a change of the night mode itself. */

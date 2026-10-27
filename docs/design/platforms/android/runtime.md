@@ -112,9 +112,18 @@ From Android 12 the system holds it (`UiModeManager.setApplicationNightMode`)
 and makes every activity again in it. Before 12 the host holds it as the
 system would: an activity is made with its configuration's night overridden
 (`applyOverrideConfiguration`, as its base context is attached, before any
-resource is read), and a change makes the activity again - or, where its
-manifest says it takes a change of the night mode itself, tells it the new
-configuration, and keeps the held one when the system's changes.
+resource is read), and a change makes the activity again. A StateUI activity
+is made again at any other night, its manifest's `uiMode` or not: a native
+control takes its theme only as it is made. An activity of another kind
+whose manifest takes the change itself - the test runner's, whose instance
+the runner holds - is told the new configuration instead.
+
+The theme outlives the process: from 12 the system keeps it, before 12 the
+host (its own preferences, `stateui.host`), so the next start's first
+activity is made in it - an application says its theme as it starts, after
+`onCreate`, and the activity would otherwise be made in the system's and at
+once again. Once the first render is over, an application that said none
+gets the system's back: it holds a theme only while it says so.
 
 The user's locale, the battery and the network are read with them and again
 whenever one changes: the activity watches the zone, the clock, the battery,
