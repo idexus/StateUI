@@ -320,6 +320,50 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(try lit(), ground, "and leaves it unlit")
     }
 
+    /// A grouped button lights under a pointer that hovers, whatever the bar's style: its group's ground at rest, its
+    /// own light over it - as a button standing alone lights.
+    func testAGroupedButtonLightsUnderThePointerInEveryStyle() throws {
+        let style = State(wrappedValue: ToolbarStyle.glass)
+        let host = WebRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").title("Notes").toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Add")
+                        ToolbarButton("Edit")
+                    }
+                }
+            } destination: { _ in Text("Pushed") }
+            .toolbarStyle(style.wrappedValue)
+        }
+        let add = "[...document.querySelectorAll('.stateui-window > .stateui-bar .stateui-bar-group button')]"
+            + ".find((b) => b.innerText.trim() === 'Add')"
+        let bar = "document.querySelector('.stateui-window > .stateui-bar')"
+        host.settle { (try? WebBrowser.truth("!!\(add)", on: 0)) == true }
+        try WebBrowser.run("document.querySelectorAll('dialog[open]').forEach((d) => d.close())")
+        let middle = try XCTUnwrap(WebBrowser.evaluate(
+            "(() => { const r = \(add).getBoundingClientRect(); return (r.left + r.width / 2) + ',' + (r.top + r.height / 2); })()",
+            on: 0)).split(separator: ",").compactMap { Double($0) }
+        let ground = { try WebBrowser.evaluate("(\(add).style.transition = 'none', getComputedStyle(\(add)).backgroundColor)", on: 0) }
+        let move = { (x: Double, y: Double) -> Void in
+            WebBrowser.ask([
+                ("mouse", .words("mouseMoved")), ("x", .number(x)), ("y", .number(y)), ("count", .number(1)),
+                ("held", .truth(false)), ("deltaY", .number(0)), ("modifiers", .number(0)), ("button", .words("left")),
+            ])
+        }
+        var lit: [String: String] = [:]
+        for look in [ToolbarStyle.glass, .plain, .rounded] {
+            style.wrappedValue = look
+            host.settle { (try? WebBrowser.evaluate("\(bar).dataset.toolbarStyle ?? 'glass'", on: 0)) == "\(look)" }
+            move(0, 0)
+            let rest = try ground()
+            move(middle[0], middle[1])
+            host.settle { (try? WebBrowser.truth("\(add).matches(':hover')", on: 0)) == true }
+            lit["\(look)"] = try ground() != rest ? "lit" : "unlit"
+        }
+
+        XCTAssertEqual(lit, ["glass": "lit", "plain": "lit", "rounded": "lit"])
+    }
+
     /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its
     /// bottom edge. A bar of a color blurs behind its whole paint instead.
     func testAClearBarSoftensWhatScrollsUnderIt() throws {

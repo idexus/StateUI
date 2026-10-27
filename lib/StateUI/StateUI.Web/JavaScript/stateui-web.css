@@ -329,7 +329,6 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   border-radius: 8px;
   box-shadow: none;
 }
-.stateui-bar[data-toolbar-style="rounded"] .stateui-bar-group button { background: transparent; }
 .stateui-bar[data-toolbar-style] button:focus-visible { box-shadow: var(--stateui-focus); }
 .stateui-glyph {
   display: block;
