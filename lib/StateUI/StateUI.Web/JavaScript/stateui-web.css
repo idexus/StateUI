@@ -274,7 +274,9 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   transition: background-color 0.15s ease;
 }
 .stateui-bar {
-  --stateui-glass: var(--stateui-bar-button, color-mix(in srgb, currentColor 13%, transparent));
+  /* Light, a breath over a grouped list's ground; dark, a step clearer. */
+  --stateui-glass: var(--stateui-bar-button, light-dark(color-mix(in srgb, currentColor 7%, transparent),
+    color-mix(in srgb, currentColor 13%, transparent)));
   --stateui-glass-edge: inset 0 0.5px 0 color-mix(in srgb, white 28%, transparent), 0 1px 4px rgb(0 0 0 / 0.08);
 }
 /* The actions at an edge of the bar: each group of them together on a glass of its own, apart from the next. */
@@ -291,9 +293,15 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 .stateui-bar-group button { background: transparent; box-shadow: none; }
 /* Lit under a pointer that hovers - a finger hovers nowhere, and a browser keeps the button it tapped hovered. */
 @media (hover: hover) {
-  .stateui-bar button:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
+  .stateui-bar button:hover {
+    background: light-dark(color-mix(in srgb, currentColor 14%, transparent),
+      color-mix(in srgb, currentColor 20%, transparent));
+  }
 }
-.stateui-bar button:active { background: color-mix(in srgb, currentColor 27%, transparent); }
+.stateui-bar button:active {
+  background: light-dark(color-mix(in srgb, currentColor 21%, transparent),
+    color-mix(in srgb, currentColor 27%, transparent));
+}
 .stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 .stateui-bar button:disabled { opacity: 0.4; cursor: default; }
 /* A setting on the bar standing on: tinted in the accent, as a two-state button pressed. */
@@ -332,17 +340,17 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   mask: var(--stateui-glyph) center / contain no-repeat;
 }
 .stateui-glyph[data-glyph="sidebar"] {
-  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='M9 4v16'/%3E%3C/svg%3E");
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='M9 4v16'/%3E%3C/svg%3E");
 }
 .stateui-glyph[data-glyph="back"] {
-  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
 }
 [dir="rtl"] .stateui-glyph[data-glyph="back"] { transform: scaleX(-1); }
 .stateui-glyph[data-glyph="more"] {
   --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='5' cy='12' r='1.9'/%3E%3Ccircle cx='12' cy='12' r='1.9'/%3E%3Ccircle cx='19' cy='12' r='1.9'/%3E%3C/svg%3E");
 }
 .stateui-glyph[data-glyph="close"] {
-  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
 }
 
 /* A menu: a popover over everything, an entry a row, a submenu its own popover beside it. */
