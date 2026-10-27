@@ -109,9 +109,10 @@ enum AppStyles {
             // Every button the gallery shows wears its violet - a style with no
             // key is every button's - in its platform's shape: a capsule on
             // Apple's platforms and the Web, rounded everywhere else; and
-            // lower on the native desktops, where a pointer presses it. Held
-            // down, it grows a breath and lights up, under its own motion; on
-            // the native desktops it presses as the platform's own button does.
+            // lower on the desktops and the Web, where a pointer presses it.
+            // Held down on a phone or a tablet, it grows a breath and lights
+            // up, under its own motion; elsewhere it presses as the
+            // platform's own button does.
             Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
@@ -121,14 +122,14 @@ enum AppStyles {
                 #else
                 .shape(.roundedRectangle(10))
                 #endif
-                #if APPKIT || WINUI || GTK
+                #if APPKIT || WINUI || GTK || WEB
                 .padding(horizontal: 16, vertical: 6)
-                #elseif UIKIT || WEB
+                #elseif UIKIT
                 .padding(horizontal: 22, vertical: 10)
                 #else
                 .padding(horizontal: 16, vertical: 11)
                 #endif
-                #if UIKIT || ANDROID || WEB
+                #if UIKIT || ANDROID
                 .visualState(.pressed) { $0
                     .scale(1.05)
                     .background(Palette.accentLit)
@@ -142,18 +143,18 @@ enum AppStyles {
             // A button's role chooses a style over the one above: it says
             // only what the role changes. The main action keeps the violet;
             // the way out steps back, and what destroys something is red -
-            // each lit in its own color while held down, but on the native
-            // desktops.
+            // each lit in its own color while held down on a phone or a
+            // tablet.
             Style<Button>(role: .cancel)
                 .textColor(Palette.text)
                 .background(Palette.selected)
-                #if UIKIT || ANDROID || WEB
+                #if UIKIT || ANDROID
                 .visualState(.pressed) { $0.background(Palette.selectedLit) }
                 #endif
             Style<Button>(role: .destructive)
                 .textColor(Palette.danger)
                 .background(Palette.dangerWash)
-                #if UIKIT || ANDROID || WEB
+                #if UIKIT || ANDROID
                 .visualState(.pressed) { $0.background(Palette.dangerWashLit) }
                 #endif
             // listing: end
