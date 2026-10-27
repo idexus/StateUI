@@ -137,7 +137,7 @@ TextSpanSample.swift d8a6a8c6c203ffa9
 TextStyleSample.swift 8dfca405610e7360
 TickerSample.swift ecca16670e47a404
 TimePickerSample.swift dd3594dfb194e764
-ToolbarLayersSample.swift 1149577eca98f9e5
+ToolbarLayersSample.swift 4b02c24858d329d1
 ToolbarSample.swift b7ef65e4ed495dc3
 TooltipSample.swift 2482095fe75dc4cf
 TouchThroughSample.swift 2f49a42898ac5f63

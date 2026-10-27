@@ -11543,13 +11543,15 @@ enum Listings {
                     Text("Go back and this page's actions leave with it.")
                 }
                 .toolbar {
-                    ToolbarButton("Share")
-                        .id("layer.share")
-                        .onClicked { shared += 1 }
+                    ToolbarGroup {
+                        ToolbarButton("Share")
+                            .id("layer.share")
+                            .onClicked { shared += 1 }
 
-                    ToolbarButton("Deeper")
-                        .id("layer.deeper")
-                        .onClicked { path.append(.layer(depth + 1)) }
+                        ToolbarButton("Deeper")
+                            .id("layer.deeper")
+                            .onClicked { path.append(.layer(depth + 1)) }
+                    }
                 }
                 .galleryPage("Layer \(depth)")
             }
