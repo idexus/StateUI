@@ -10,13 +10,13 @@
     /// On none: it stands bare.
     case none = 0
     /// On the whole of one: the one button of its group.
-    case whole
+    case whole = 1
     /// At its start: its group's first.
-    case start
+    case start = 2
     /// In its middle: between its group's first and last.
-    case middle
+    case middle = 3
     /// At its end: its group's last.
-    case end
+    case end = 4
 
     /// Each button's place of a group of `count` on the bar: every button of a group its author declared stands on
     /// one capsule - one alone on the whole of it - and a lone item's own group, `standsAlone`, stands bare.
