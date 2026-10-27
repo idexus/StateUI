@@ -609,9 +609,11 @@ Native tab selectors keep their selected and unselected states, legible over a
 written background. Leaving the background unwritten preserves the platform's
 material. A blur is the platform's own where its bars blur - iOS, iPadOS,
 WinUI's acrylic, the Web's backdrop filter - and its color elsewhere; glass is
-the platform's own bar where it has one. A gradient runs across the whole
-bar, its points fractions of it - on AppKit across the window's band, one
-gradient beneath a floating sidebar's glass and over the detail - and words
+the platform's own bar where it has one. A gradient runs across each bar the
+platform draws, its points fractions of that bar: in a split view one across
+the window where one bar spans it - AppKit's band, beneath a floating
+sidebar's glass and over the detail, and WinUI's title bar - and one in each
+pane where each pane has a bar of its own, on the iPad and GTK. Words
 with no color written stand light on a dark gradient and dark on a light one,
 by its colors on the whole. A written material stands where the
 bars stand and nowhere else - on AppKit the band the title bar and toolbar
