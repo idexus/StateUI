@@ -11,9 +11,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.icu.util.LocaleData;
@@ -266,8 +268,11 @@ final class StateUIEnvironment {
 
     /** Whether the system's theme is dark. */
     static boolean night(Context context) {
-        int mode = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        return mode == Configuration.UI_MODE_NIGHT_YES;
+        return night(context.getResources().getConfiguration());
+    }
+
+    private static boolean night(Configuration configuration) {
+        return (configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
     /** The local time of day: hour, minute, second and millisecond. */
@@ -316,16 +321,64 @@ final class StateUIEnvironment {
         useNightMode(context, 0);
     }
 
+    /** The application's own night mode before Android 12 - 1 light, 2 dark, 0 the system's - which the host keeps. */
+    private static int heldNightMode;
+
     /**
      * Shows the application in a theme - 1 light, 2 dark, 0 the system's - as its own night mode, which every
-     * activity of it takes; from Android 12, before which an application shows the system's.
+     * activity of it takes: from Android 12 the system's own, before it the host's.
      */
     static void useNightMode(Context context, int scheme) {
-        if (Build.VERSION.SDK_INT < 31) return;
+        if (Build.VERSION.SDK_INT < 31) {
+            heldNightMode = scheme;
+            if (context instanceof Activity) showNightMode((Activity) context);
+            return;
+        }
         UiModeManager modes = context.getSystemService(UiModeManager.class);
         if (modes == null) return;
         modes.setApplicationNightMode(scheme == 2 ? UiModeManager.MODE_NIGHT_YES
             : scheme == 1 ? UiModeManager.MODE_NIGHT_NO : UiModeManager.MODE_NIGHT_AUTO);
+    }
+
+    /** Before Android 12, an activity being made takes the night mode the application holds, before any resource. */
+    static void holdNightMode(Activity activity) {
+        if (Build.VERSION.SDK_INT >= 31 || heldNightMode == 0) return;
+        Configuration held = new Configuration();
+        held.uiMode = heldNightMode == 2 ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO;
+        activity.applyOverrideConfiguration(held);
+    }
+
+    /**
+     * Before Android 12, shows an activity in the night mode the application holds: told the new configuration where
+     * it takes a change of the night mode itself, made anew otherwise - as the system does from 12. True where it
+     * showed another.
+     */
+    @SuppressWarnings("deprecation")
+    static boolean showNightMode(Activity activity) {
+        if (Build.VERSION.SDK_INT >= 31) return false;
+        boolean dark = heldNightMode == 0 ? night(Resources.getSystem().getConfiguration()) : heldNightMode == 2;
+        if (night(activity) == dark) return false;
+        if (!takesNightModeItself(activity)) {
+            activity.recreate();
+            return true;
+        }
+        Resources resources = activity.getResources();
+        Configuration shown = new Configuration(resources.getConfiguration());
+        shown.uiMode = (shown.uiMode & ~Configuration.UI_MODE_NIGHT_MASK)
+            | (dark ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO);
+        resources.updateConfiguration(shown, resources.getDisplayMetrics());
+        activity.onConfigurationChanged(shown);
+        return true;
+    }
+
+    /** Whether the activity's manifest says it takes a change of the night mode itself. */
+    private static boolean takesNightModeItself(Activity activity) {
+        try {
+            ActivityInfo info = activity.getPackageManager().getActivityInfo(activity.getComponentName(), 0);
+            return (info.configChanges & ActivityInfo.CONFIG_UI_MODE) != 0;
+        } catch (PackageManager.NameNotFoundException missing) {
+            return false;
+        }
     }
 
     /**

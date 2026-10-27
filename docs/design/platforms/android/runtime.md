@@ -107,6 +107,15 @@ system's dark or light theme is read with them, and the activity is made in
 the matching one: a change of theme makes Android create the activity again,
 and the new one takes the scene over, its controls drawn in the new theme.
 
+The application's own theme (`application.colorScheme`) is its night mode.
+From Android 12 the system holds it (`UiModeManager.setApplicationNightMode`)
+and makes every activity again in it. Before 12 the host holds it as the
+system would: an activity is made with its configuration's night overridden
+(`applyOverrideConfiguration`, as its base context is attached, before any
+resource is read), and a change makes the activity again - or, where its
+manifest says it takes a change of the night mode itself, tells it the new
+configuration, and keeps the held one when the system's changes.
+
 The user's locale, the battery and the network are read with them and again
 whenever one changes: the activity watches the zone, the clock, the battery,
 its saver and the default network from its creation to its destruction, each

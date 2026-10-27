@@ -169,8 +169,7 @@ enum AndroidRealization {
             missing: "Android's bar has no leading edge beside its navigation button: a leading group stands first among the actions."),
         .notPlanned(ApplicationContract.useAccentColor,
             reason: "Android draws its controls in the theme's accent, set before the activity starts - from 12 the user's."),
-        .partial(ApplicationContract.useColorScheme, missing: "Before Android 12 an application holds no night mode "
-            + "of its own: it shows the system's."),
+        .complete(ApplicationContract.useColorScheme),
         .complete(WindowContract.activated),
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),

@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -29,6 +30,13 @@ public class StateUIActivity extends Activity {
     private boolean handlesBack;
     /** What {@link StateUIEnvironment#watch} started, stopped as the activity goes. */
     private Object[] environmentWatch;
+
+    /** Before Android 12, the activity is made in the night mode the application holds. */
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        StateUIEnvironment.holdNightMode(this);
+    }
 
     @Override
     protected void onCreate(Bundle state) {
@@ -103,11 +111,14 @@ public class StateUIActivity extends Activity {
         super.onDestroy();
     }
 
-    /** The display turned or resized: the host reads it again. */
+    /**
+     * The display turned or resized: the host reads it again - once the activity shows the night mode the application
+     * holds, which a change of the system's takes from one that takes it itself before Android 12.
+     */
     @Override
     public void onConfigurationChanged(Configuration configuration) {
         super.onConfigurationChanged(configuration);
-        StateUIHost.configured();
+        if (!StateUIEnvironment.showNightMode(this)) StateUIHost.configured();
     }
 
     /** A document picker's result reaches the files it was asked for; any other the activity's own. */

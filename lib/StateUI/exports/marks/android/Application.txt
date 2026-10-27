@@ -21,6 +21,6 @@ Application.saveFile: ✓ read a file dialog: the picker the relay holds, which 
 Application.sendRequest: ✅
 Application.share: ✓ read a share sheet: what the host holds of a chooser a test never shows
 Application.useAccentColor: – Android draws its controls in the theme's accent, set before the activity starts - from 12 the user's.
-Application.useColorScheme: ☑️ Before Android 12 an application holds no night mode of its own: it shows the system's.
+Application.useColorScheme: ✅
 Application.utcOffset: ✅
 Application.writeClipboard: ✅
