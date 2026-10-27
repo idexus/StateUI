@@ -224,11 +224,12 @@ final class AndroidRenderer {
     }
 
     /// The activity is finishing - Back, or the application finished it: the user closed its window, which hears it
-    /// is going, and its scene that the window closed.
+    /// is going, and its scene that the window closed; then what waited over it is answered as dismissed, once the
+    /// window went, as every host answers what stood over a window gone.
+    /// Design: docs/design/host/runtime.md#questions-for-the-user
     func destroying() {
+        if let window = runtime.tree.root?.first(type: .window) { runtime.userClosed(window) }
         Self.endActs()
-        guard let window = runtime.tree.root?.first(type: .window) else { return }
-        runtime.userClosed(window)
     }
 
     /// Answers every question and picker still waiting as dismissed: the activity they were asked over finished,

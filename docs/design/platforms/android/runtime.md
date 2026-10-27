@@ -178,7 +178,11 @@ takes its dialogs away unanswered, and the next asks the question showing
 again; the document picker stands in an activity of its own, which answers
 the next. An activity finishing answers every question and picker still
 waiting as dismissed (`HostActPerformer.dismissAll`), so the process's next
-activity finds none before what it asks. A ticket
+activity finds none before what it asks - once its window closed, as every
+host answers what stood over a window gone: the caller's run went with the
+window, so it hears the answer and changes nothing, every time. Answered
+first, the resumed caller raced the window's going, and wrote or did not by
+the threads' timing. A ticket
 is one number across the process, and an answer from a dialog that went
 answers nothing.
 

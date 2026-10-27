@@ -73,7 +73,7 @@ final class AndroidRendererTests: XCTestCase {
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
             ("testANewDensityMakesTheWindowAgainInIt", testANewDensityMakesTheWindowAgainInIt),
-            ("testAQuestionWaitingAsTheActivityFinishesIsDismissed", testAQuestionWaitingAsTheActivityFinishesIsDismissed),
+            ("testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent", testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent),
             ("testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext", testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext),
             ("testTheDeviceIsCalledWhatItsUserNamedIt", testTheDeviceIsCalledWhatItsUserNamedIt),
             ("testAnActivityAfterBackShowsANewScene", testAnActivityAfterBackShowsANewScene),
@@ -179,38 +179,45 @@ final class AndroidRendererTests: XCTestCase {
 
     @MainActor private static let leaveAll = Java.staticMethod(AndroidDriver.dialogs, "leaveAll", "()V")
 
-    /// A question waiting as Back finishes the activity is answered as dismissed: the next activity of the process
-    /// finds nothing waiting before what it asks.
-    func testAQuestionWaitingAsTheActivityFinishesIsDismissed() throws {
+    /// A question waiting as Back finishes the activity is answered as dismissed once its window went, every time:
+    /// its handler hears it, a write of its run is refused, and the next activity of the process finds nothing
+    /// waiting before what it asks.
+    func testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent() throws {
         try onMainActor {
-            let answers = Received<Bool>()
-            let thrown = Received<String>()
+            let heard = Heard()
+            let written = Received<Bool>()
             let host = AndroidRenderer.running {
                 Button("Ask").onClicked(.ignoreWhileRunning) {
                     do {
-                        answers.values.append(
-                            try await WindowSession().confirm("Sure?", message: "", accept: "Yes", cancel: "No"))
+                        let answer = try await WindowSession()
+                            .confirm("Sure?", message: "", accept: "Yes", cancel: "No")
+                        heard.words.append("\(answer)")
+                        written.values.append(answer)
                     } catch {
-                        thrown.values.append("\(error)")
+                        heard.words.append("threw \(error)")
                     }
                 }
             }
-            let said = Said.shared.everySaid.count
             let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
             button.click()
             host.settle { Self.asked() != nil }
             XCTAssertEqual(Self.asked(), "Sure?", "the question shows")
-            let stood = host.views(AndroidButtonView.self).first === button
+            let said = Said.shared.everySaid.count
 
             host.destroying()
-            host.settle { !answers.values.isEmpty || !thrown.values.isEmpty }
+            host.settle { !heard.words.isEmpty }
 
-            XCTAssertEqual(
-                answers.values, [false],
-                "answered as dismissed; the handler threw \(thrown.values); the button stood until Back: \(stood); "
-                    + Self.waiting(saidSince: said))
+            XCTAssertEqual(heard.words, ["false"], "answered as dismissed; " + Self.waiting(saidSince: said))
+            XCTAssertEqual(written.values, [], "its run went with the window")
+            let refused = Said.shared.everySaid.dropFirst(said).contains { $0.contains("superseded") }
+            XCTAssertTrue(refused, "its write refused; " + Self.waiting(saidSince: said))
             Java.callStatic(AndroidDriver.dialogs, AndroidDriver.dismissAll)
         }
+    }
+
+    /// What a handler heard, kept by reference rather than in a state: a run its element outlived writes no state.
+    private final class Heard: @unchecked Sendable {
+        var words: [String] = []
     }
 
     /// What still waits in the core - replies, handlers resumed and not run, jobs - and what it said since `first`:
