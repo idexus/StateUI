@@ -72,7 +72,7 @@ LifetimeSample.swift 388647e356facd79
 LightTableSample.swift 256e89f799950a7c
 LinkSample.swift 422f6cbd2a97bec3
 LinksSample.swift 1311b1b06e3a08cf
-LivingLayoutSample.swift 6962038d81a843fd
+LivingLayoutSample.swift 9027b77224ed6a31
 LoadingItemsSample.swift 1d396ac70557a258
 LocaleInfoSample.swift 53a7aa3516ee574a
 LocalizationSample.swift 1636a0f168875c65

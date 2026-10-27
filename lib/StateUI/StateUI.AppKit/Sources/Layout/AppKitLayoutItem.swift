@@ -48,6 +48,8 @@ struct AppKitLayoutItem: LayoutChild {
     /// the offer, its stated sizes and bounds applied (`LayoutValues.offer`, `sized`).
     /// Design: docs/design/host/layout.md#a-child-measured
     func fittingSize(width available: CGFloat? = nil) -> NSSize {
+        // A view holding new words back is measured at their size.
+        if let held = placed?.heldWords { return NSSize(held) }
         let offer = values.offer(available.map { Double($0) }).map { CGFloat($0) }
         let measured: NSSize
         if let measurable = view as? AppKitWidthConstrainedMeasuring {

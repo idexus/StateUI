@@ -24,6 +24,8 @@ struct WinUILayoutItem: LayoutChild {
 
     /// The view's size for the width offered it, margin taken out (`LayoutValues.offer`, `sized`).
     func size(offered width: Double?) -> LayoutSize {
+        // A view holding new words back is measured at their size.
+        if let held = view.heldWords { return held }
         let offer = values.offer(width)
         // A layout of StateUI's is measured at the width it stands at; its size for any width is the arithmetic's.
         // Design: docs/design/platforms/winui/layout.md#measured-every-pass

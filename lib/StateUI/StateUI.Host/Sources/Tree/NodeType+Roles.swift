@@ -29,10 +29,10 @@
         .toolbarGroup, .titleView, .menuBar, .contextMenu, .buttonMenu, .overlay, .popover, .sheet,
     ]
 
-    /// The elements that lay words out in their room - a label, a button: one whose place travels stands no narrower
-    /// than its words need where it is bound (`LayoutValues.laysOutWords`).
+    /// The elements that lay words out in their room, and how - a label's bare, a button's in its box: one whose place
+    /// travels stands no narrower than its words need where it is bound (`LayoutValues.words`).
     /// Design: docs/design/host/motion.md#words-on-the-way
-    public static let wordsTypes: Set<NodeType> = [.text, .button]
+    public static let laidOutWords: [NodeType: LaidOutWords] = [.text: .bare, .button: .boxed]
 }
 
 @_spi(Host) extension MountedElement {

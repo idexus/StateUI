@@ -37,6 +37,28 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     /// How long a held button waits before it opens its menu, in seconds.
     private static let holdDelay = 0.5
 
+    /// The words the tree gives, those shown before them, and those shown now.
+    private var words = NSAttributedString()
+    private var formerWords: NSAttributedString?
+    private var shownWords: NSAttributedString?
+
+    /// The size of new words the button holds back while its box grows to hold them, its former ones shown; nil
+    /// shows the tree's and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet {
+            if heldWords == nil { formerWords = nil }
+            showWords()
+        }
+    }
+
+    private func showWords() {
+        let shown = heldWords == nil ? words : formerWords ?? words
+        guard shown !== shownWords else { return }
+        shownWords = shown
+        title = shown.string
+        attributedTitle = shown
+    }
+
     /// A button opening its menu as `opening` says, showing the arrow after its words where its click opens it and
     /// `showsArrow`.
     init(menu opening: ButtonMenuOpening = .none, showsArrow: Bool = false) {
@@ -95,14 +117,21 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         lineBreakMode: NSLineBreakMode,
         enabled: Bool
     ) {
-        title = text
         self.image = Self.picture(image, in: textColor)
         self.font = font
         isEnabled = enabled
         cell?.lineBreakMode = lineBreakMode
-        attributedTitle = NSAttributedString(
-            string: text,
-            attributes: [.font: font, .foregroundColor: textColor, .kern: tracking])
+        let former = words
+        words = NSAttributedString(
+            string: text, attributes: [.font: font, .foregroundColor: textColor, .kern: tracking])
+        // New words while some are held back show at once.
+        if text != former.string, heldWords != nil {
+            heldWords = nil
+        } else {
+            if text != former.string { formerWords = former }
+            shownWords = nil
+            showWords()
+        }
         arrow?.tint(textColor)
         self.imagePosition = image == nil ? .noImage : imagePosition
         self.imageScaling = imageScaling

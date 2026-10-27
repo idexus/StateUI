@@ -242,6 +242,11 @@ extension AppKitElement: PlacedView {
     func travels(to destination: Rect?) {
         (view as? AppKitTravelingLayout)?.arrangementRoom = destination.map { NSSize(width: $0.width, height: $0.height) }
     }
+
+    var heldWords: LayoutSize? {
+        get { (view as? AppKitButtonView)?.heldWords }
+        set { (view as? AppKitButtonView)?.heldWords = newValue }
+    }
 }
 
 /// A picture as the key of a renderer's images.

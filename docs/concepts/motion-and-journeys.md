@@ -214,7 +214,9 @@ says nothing, the application's. A room that moves with no patch behind it - a
 window resized, a sidebar dragged - is followed exactly, and so is a layout
 whose own width changed: a child gliding after the user's hand is late on
 every frame. A layout's first arrangement arrives. A size a child states for
-itself arrives while its place still travels. Where a frame under the layout is
+itself arrives while its place still travels. A label or a button travels no
+narrower than its words need, and a button whose new words need more room
+than its box keeps showing its former words until the box holds the new ones. Where a frame under the layout is
 read - an `onFrameChanged` handler, a driven frame - every child arrives,
 because each step of a walk would report a room nobody chose. A child that
 joins a layout already standing fades in under the same law, unless a state

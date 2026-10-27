@@ -21,6 +21,17 @@
     public static let zero = LayoutSize(width: 0, height: 0)
 }
 
+/// How a child lays out words, which its place travels no narrower than they need.
+/// Design: docs/design/host/motion.md#words-on-the-way
+@_spi(Host) public enum LaidOutWords: Equatable, Sendable {
+    /// No words.
+    case none
+    /// Words that are all the child draws - a label.
+    case bare
+    /// Words in a box of their own - a button, which keeps the words it shows until its box holds new ones.
+    case boxed
+}
+
 /// What a layout reads of one child: its margin, alignments, stated sizes and place in a grid or a ZStack.
 /// Design: docs/design/host/layout.md#the-layout-arithmetic
 @_spi(Host) public struct LayoutValues: Equatable, Sendable {
@@ -69,9 +80,8 @@
     /// Whether the child grows along its stack into the room the others leave - a space.
     public var grows = false
 
-    /// Whether the child lays out words - a label, a button (`NodeType.wordsTypes`): its place travels no narrower
-    /// than they need.
-    public var laysOutWords = false
+    /// How the child lays out words (`NodeType.laidOutWords`): its place travels no narrower than they need.
+    public var words = LaidOutWords.none
 
     /// Values with every part at its default.
     public init() {}

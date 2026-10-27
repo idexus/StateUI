@@ -29,6 +29,7 @@ final class AndroidLayoutMotionTests: XCTestCase {
     static var allTests: [(String, (AndroidLayoutMotionTests) -> () throws -> Void)] {
         [
             ("testATextsWordsStandAtTheWidthItTravelsTo", testATextsWordsStandAtTheWidthItTravelsTo),
+            ("testAButtonsGrownWordsShowOnceItsBoxHoldsThem", testAButtonsGrownWordsShowOnceItsBoxHoldsThem),
             ("testALabelInAStackThatTravelsKeepsItsWordsOnOneLine", testALabelInAStackThatTravelsKeepsItsWordsOnOneLine),
             ("testAChildAPatchMovesTravelsToItsNewPlace", testAChildAPatchMovesTravelsToItsNewPlace),
             ("testAChildThatJoinsAStandingStackFadesIn", testAChildThatJoinsAStandingStackFadesIn),
@@ -82,6 +83,43 @@ final class AndroidLayoutMotionTests: XCTestCase {
 
             XCTAssertGreaterThan(label.frame.width, start + 2, "the caption grew")
             XCTAssertEqual(midway, label.frame.width, "its words at the width it is bound for")
+        }
+    }
+
+    /// A button whose new words need more than its box keeps showing its former words while the box grows, and
+    /// shows the new ones as it lands.
+    func testAButtonsGrownWordsShowOnceItsBoxHoldsThem() throws {
+        try onMainActor {
+            func row(_ words: String) -> HostPatch {
+                var stack = HostPatch(id: .manual("stack"), type: .vStack)
+                stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+                var button = HostPatch(id: .manual("toggle"), type: .button)
+                button.properties = [
+                    .text: .string(words), .horizontalAlignment: .enumeration(Alignment.center.rawValue),
+                ]
+                stack.children = .arranged([button])
+                return stack
+            }
+            let clock = TestClock()
+            let host = AndroidRenderer.bare(clock: clock)
+            host.apply(row("On"))
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")))
+            let button = try XCTUnwrap(host.view(id: .manual("toggle")) as? AndroidButtonView)
+            layout.layOut(width: 600, height: 400)
+            let start = button.frame.width
+
+            host.apply(row("Switched off"))
+            layout.layOut(width: 600, height: 400)
+            clock.now = 100
+            host.frame()
+            let (midway, saidMidway) = (button.frame.width, button.text)
+            clock.now = 200
+            host.frame()
+
+            XCTAssertEqual(saidMidway, "On", "midway, its former words")
+            XCTAssertEqual(midway, (start + button.frame.width) / 2, accuracy: 1, "in a box halfway grown")
+            XCTAssertEqual(button.text, "Switched off", "and the new ones as it lands")
+            XCTAssertGreaterThan(button.frame.width, start + 10)
         }
     }
 

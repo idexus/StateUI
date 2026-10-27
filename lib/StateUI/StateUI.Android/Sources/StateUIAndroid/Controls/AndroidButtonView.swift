@@ -34,6 +34,10 @@ final class AndroidButtonView: AndroidTextualView {
     private var words = ""
     private var showsWords = true
 
+    /// The words shown before the tree's last ones, and those written last.
+    private var formerWords: String?
+    private var written: String?
+
     /// What the icon was last shown as, so an unchanged one is not sent again.
     private var shownIcon: Icon.Shown?
 
@@ -249,15 +253,32 @@ final class AndroidButtonView: AndroidTextualView {
         showIcon(room: placedSize)
     }
 
-    /// The words decide where the icon goes: beside them, or alone in the middle.
+    /// The words decide where the icon goes: beside them, or alone in the middle. New ones while some are held back
+    /// show at once.
     override func setText(_ text: String) {
+        let former = words
         words = text
+        if text != former, heldWords != nil { return heldWords = nil }
+        if text != former { formerWords = former }
         showWords()
     }
 
+    /// The former words while new ones are held back, else the tree's.
+    /// Design: docs/design/host/motion.md#words-on-the-way
+    override func holdWords(_ holding: Bool) {
+        if !holding { formerWords = nil }
+        if inSight != written { showWords() }
+    }
+
     /// The words in sight where they show, else none.
+    private var inSight: String {
+        guard showsWords else { return "" }
+        return heldWords == nil ? words : formerWords ?? words
+    }
+
     private func showWords() {
-        let shown = showsWords ? words : ""
+        let shown = inSight
+        written = shown
         super.setText(shown)
         hasWords = !shown.isEmpty
         showIcon(room: placedSize)

@@ -55,15 +55,35 @@ final class UIKitButtonView: UIButton {
     private var words = ""
     private var showsWords = true
 
-    /// The button's words.
+    /// The words shown before the tree's last ones.
+    private var formerWords: String?
+
+    /// The size of new words the button holds back while its box grows to hold them, its former ones shown; nil
+    /// shows the tree's and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet {
+            if heldWords == nil { formerWords = nil }
+            showWords()
+        }
+    }
+
+    /// The button's words; new ones while some are held back show at once.
     func setText(_ text: String) {
+        let former = words
         words = text
-        showWords()
+        if text != former, heldWords != nil {
+            heldWords = nil
+        } else {
+            if text != former { formerWords = former }
+            showWords()
+        }
         showLook()
     }
 
     private func showWords() {
-        configuration?.title = words.isEmpty || !showsWords ? nil : words
+        let shown = heldWords == nil ? words : formerWords ?? words
+        let title = shown.isEmpty || !showsWords ? nil : shown
+        if configuration?.title != title { configuration?.title = title }
     }
 
     /// Whether the words stand in sight.

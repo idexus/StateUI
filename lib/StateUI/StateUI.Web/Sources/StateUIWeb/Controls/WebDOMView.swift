@@ -56,6 +56,15 @@ class WebDOMView {
     /// Where the view is drawn while its place travels; nil at its slot.
     var traveling: Rect?
 
+    /// The size of new words the view holds back while its box grows to hold them (`PlacedView`), its former ones
+    /// shown; nil shows its own and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet { holdWords(heldWords != nil) }
+    }
+
+    /// Shows the words held back, or the view's own; most views hold none.
+    func holdWords(_ holding: Bool) {}
+
     /// The place a layout's run last stood the view at; nil while no run places it.
     var placedByRun: HostPlacement?
 

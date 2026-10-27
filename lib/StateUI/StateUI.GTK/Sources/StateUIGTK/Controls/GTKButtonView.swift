@@ -219,8 +219,22 @@ final class GTKButtonView: GTKView {
     /// Whether the button shows its caption beside its picture.
     private var wordsInSight: Bool { !caption.isEmpty && showsWords }
 
-    /// The caption.
+    /// The caption shown before the tree's last one.
+    private var formerCaption: String?
+
+    /// The caption; a new one while one is held back shows at once.
     func setText(_ text: String) {
+        let former = caption
+        if text != former, heldWords != nil {
+            heldWords = nil
+        } else if text != former {
+            formerCaption = former
+        }
+        writeCaption(text)
+        showCaption()
+    }
+
+    private func writeCaption(_ text: String) {
         let hadWords = wordsInSight
         caption = text
         guard picture != nil else {
@@ -229,6 +243,19 @@ final class GTKButtonView: GTKView {
         }
         if hadWords != wordsInSight { return compose() }
         if let label = captionLabel { gtk_label_set_text(label, text) }
+    }
+
+    override func holdWords(_ holding: Bool) {
+        if !holding { formerCaption = nil }
+        showCaption()
+    }
+
+    /// The caption held back's former one while the box grows, else the tree's.
+    /// Design: docs/design/host/motion.md#words-on-the-way
+    private func showCaption() {
+        let shown = heldWords == nil ? caption : formerCaption ?? caption
+        guard let label = captionLabel, String(cString: gtk_label_get_text(label)) != shown else { return }
+        gtk_label_set_text(label, shown)
     }
 
     /// Changes how the caption's words look.

@@ -446,6 +446,15 @@ class AndroidView {
     /// Where the view's place travels (`PlacedView`); nothing of most views' follows it.
     func travels(to destination: Rect?) {}
 
+    /// The size of new words the view holds back while its box grows to hold them (`PlacedView`), its former ones
+    /// shown; nil shows its own and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet { holdWords(heldWords != nil) }
+    }
+
+    /// Shows the words held back, or the view's own; most views hold none.
+    func holdWords(_ holding: Bool) {}
+
     /// The size the view was last placed at, in pixels; nil before its first place.
     var placedSize: (width: Int32, height: Int32)? {
         laidOut.map { ($0.right - $0.left, $0.bottom - $0.top) }

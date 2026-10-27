@@ -207,6 +207,15 @@ class GTKView {
     /// Where the view's place travels (`PlacedView`); nothing of most views' follows it.
     func travels(to destination: Rect?) {}
 
+    /// The size of new words the view holds back while its box grows to hold them (`PlacedView`), its former ones
+    /// shown; nil shows its own and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet { holdWords(heldWords != nil) }
+    }
+
+    /// Shows the words held back, or the view's own; most views hold none.
+    func holdWords(_ holding: Bool) {}
+
     /// The widget's size for the room offered, in logical pixels; nil offers any. Its natural width, no wider
     /// than offered nor narrower than its least, and its natural height for that width.
     /// Design: docs/design/platforms/gtk/layout.md#measuring-a-widget

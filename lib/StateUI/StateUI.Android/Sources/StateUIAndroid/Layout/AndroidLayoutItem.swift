@@ -25,6 +25,7 @@ struct AndroidLayoutItem: LayoutChild {
     /// The view's size for the width offered it, as the host layer measures a child (`LayoutValues.offer`,
     /// `sized`): a stated width, within its room, is the width it is measured at, so words wrap to it.
     func size(offered width: Double?) -> LayoutSize {
+        if let held = view.heldWords { return held }
         let widthSpec = values.offer(width).map {
             ViewConstants.spec(values.width == nil ? ViewConstants.atMost : ViewConstants.exactly, view.pixels($0))
         } ?? ViewConstants.unspecified

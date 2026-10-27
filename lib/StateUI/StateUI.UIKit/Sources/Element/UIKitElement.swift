@@ -163,6 +163,11 @@ extension UIKitElement: PlacedView {
         }
     }
 
+    var heldWords: LayoutSize? {
+        get { (view as? UIKitButtonView)?.heldWords }
+        set { (view as? UIKitButtonView)?.heldWords = newValue }
+    }
+
     func travels(to destination: Rect?) {
         (view as? UIKitLayoutView)?.arrangementRoom = destination.map { CGSize(width: $0.width, height: $0.height) }
     }

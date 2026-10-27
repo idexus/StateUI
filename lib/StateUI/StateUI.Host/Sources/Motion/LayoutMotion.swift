@@ -12,11 +12,22 @@
     /// at that size while its place travels, never at the sizes it passes through.
     /// Design: docs/design/host/motion.md#a-layout-bound-for-a-size
     func travels(to destination: Rect?)
+
+    /// The size of the new words a view laying out words in a box of its own holds back while its box grows to hold
+    /// them, and nil once it shows them: meanwhile it shows the words it showed before, and is measured at this size.
+    /// Set nil as it stands, it forgets its former words. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? { get set }
 }
 
 extension PlacedView {
     /// Nothing of the view's own follows where its place travels.
     public func travels(to destination: Rect?) {}
+
+    /// A view laying out no words in a box holds none back.
+    public var heldWords: LayoutSize? {
+        get { nil }
+        set {}
+    }
 }
 
 /// How one arrangement of a layout places its children.
@@ -48,10 +59,13 @@ extension PlacedView {
         var destination = Rect(x: 0, y: 0, width: 0, height: 0)
         /// The natural size of the words a traveling child lays out; nil for one laying out none.
         var words: LayoutSize?
+        /// Whether the child holds its new words back, its box growing with its former ones.
+        var holds = false
 
         /// Where the child stands while its place passes `standing`.
         func frame(_ standing: Rect) -> Rect {
-            words.map { LayoutMotion.room(standing, destination: destination, words: $0) } ?? standing
+            guard let words, !holds else { return standing }
+            return LayoutMotion.room(standing, destination: destination, words: words)
         }
     }
 
@@ -96,7 +110,7 @@ extension PlacedView {
         mount: UInt64,
         at target: Rect,
         stated: MotionLanes,
-        words: Bool,
+        words: LaidOutWords,
         natural: () -> LayoutSize,
         fadeIn: ((Motion) -> Void)?,
         in arrangement: Arrangement
@@ -109,6 +123,7 @@ extension PlacedView {
         // A child with no seat yet is already where it belongs; one joining a standing layout fades in.
         guard let seat = seats[mount] else {
             seats[mount] = Seat(view: view)
+            view.heldWords = nil
             view.placedFrame = target
             if arrangement.fades { fadeIn?(arrangement.law) }
             return
@@ -151,10 +166,14 @@ extension PlacedView {
         }
 
         let standing = Self.rect(start)
+        let measured = words == .none ? nil : natural()
+        let holds = words == .boxed && measured.map { $0.width > standing.width + 0.5 } == true
         animator.start(animation, for: key)
         seats[mount]?.standing = standing
         seats[mount]?.destination = target
-        seats[mount]?.words = words ? natural() : nil
+        seats[mount]?.words = measured
+        seats[mount]?.holds = holds
+        view.heldWords = holds ? measured : nil
         view.travels(to: target)
         view.placedFrame = seats[mount]?.frame(standing) ?? standing
         onStart()
@@ -169,7 +188,13 @@ extension PlacedView {
             seats[mount]?.standing = step.rested ? nil : standing
             if step.rested {
                 seats[mount]?.words = nil
+                seats[mount]?.holds = false
+                seats[mount]?.view?.heldWords = nil
                 seats[mount]?.view?.travels(to: nil)
+            } else if let seat = seats[mount], seat.holds, standing.width >= (seat.words?.width ?? 0) - 0.5 {
+                // The box holds the new words: they show.
+                seats[mount]?.holds = false
+                seats[mount]?.view?.heldWords = nil
             }
             seats[mount]?.view?.placedFrame = seats[mount]?.frame(standing) ?? standing
         }
@@ -185,6 +210,8 @@ extension PlacedView {
         animator.halt(.placed(mount))
         seats[mount]?.standing = nil
         seats[mount]?.words = nil
+        seats[mount]?.holds = false
+        view.heldWords = nil
         view.travels(to: nil)
         view.placedFrame = target
     }

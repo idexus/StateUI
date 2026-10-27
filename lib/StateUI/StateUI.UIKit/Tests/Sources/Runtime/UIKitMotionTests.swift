@@ -46,22 +46,22 @@ final class UIKitMotionTests: XCTestCase {
         XCTAssertEqual(midway, label.bounds.width, accuracy: 0.5, "its words at the width it is bound for")
     }
 
-    /// A button whose width travels as its words change lays them out at the width it is bound for, as a label does:
-    /// midway it is already as wide as it lands, so its words never break onto a second line on the way.
+    /// A button whose new words need more than its box keeps showing its former words while the box grows, and
+    /// shows the new ones as it lands - never on a second line on the way.
     @MainActor
-    func testAButtonsWordsStandAtTheWidthItTravelsTo() throws {
+    func testAButtonsGrownWordsShowOnceItsBoxHoldsThem() throws {
         let clock = TestClock()
         let enabled = State(wrappedValue: true)
         let host = UIKitRenderer.running(clock: clock) {
             VStack {
-                Button(enabled.wrappedValue ? "Enabled" : "Disabled").horizontalAlignment(.center).id("button")
+                Button(enabled.wrappedValue ? "On" : "Switched off").horizontalAlignment(.center).id("button")
             }
             .motion(.eased(.milliseconds(200), .linear))
             .width(300)
             .verticalAlignment(.start)
         }
         defer { host.finish() }
-        let button = try XCTUnwrap(Self.view(of: "button", in: host))
+        let button = try XCTUnwrap(Self.view(of: "button", in: host) as? UIButton)
         let start = button.bounds.width
 
         enabled.wrappedValue = false
@@ -70,13 +70,15 @@ final class UIKitMotionTests: XCTestCase {
         clock.now = 100
         host.frame()
         host.layOut()
-        let midway = button.bounds.width
+        let (midway, saidMidway) = (button.bounds.width, button.configuration?.title)
         clock.now = 200
         host.frame()
         host.layOut()
 
-        XCTAssertGreaterThan(button.bounds.width, start + 1, "the button grew")
-        XCTAssertEqual(midway, button.bounds.width, accuracy: 0.5, "its words at the width it is bound for")
+        XCTAssertEqual(saidMidway, "On", "midway, its former words")
+        XCTAssertEqual(midway, (start + button.bounds.width) / 2, accuracy: 1, "in a box halfway grown")
+        XCTAssertEqual(button.configuration?.title, "Switched off", "and the new ones as it lands")
+        XCTAssertGreaterThan(button.bounds.width, start + 10)
     }
 
     /// A button whose room widens around words that already fit grows its box the whole way - a button taking a

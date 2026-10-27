@@ -61,7 +61,7 @@
         if values.width != nil { stated.insert(.width) }
         if values.height != nil { stated.insert(.height) }
         layoutMotion.place(
-            view, mount: mount, at: place, stated: stated, words: values.laysOutWords, natural: natural,
+            view, mount: mount, at: place, stated: stated, words: values.words, natural: natural,
             fadeIn: fadeIn, in: arrangement)
     }
 }

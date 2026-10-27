@@ -15,6 +15,10 @@ final class WebButtonView: WebDOMView, WebWordsView {
     private var picture: WebImageView?
     private var text = ""
 
+    /// The words shown before the tree's last ones, and those written last.
+    private var formerText: String?
+    private var written: String?
+
     /// How the button opens its menu; nil for a button holding none.
     private var menu: WebButtonMenu?
 
@@ -43,10 +47,31 @@ final class WebButtonView: WebDOMView, WebWordsView {
     /// words (`AccessibilityWords`).
     private var showsWords = true
 
+    /// The button's words; new ones while some are held back show at once.
     func setText(_ text: String) {
+        let former = self.text
         self.text = text
-        WebRelay.setText(words.node, text)
+        if text != former, heldWords != nil {
+            heldWords = nil
+        } else {
+            if text != former { formerText = former }
+            showText()
+        }
         showAlone()
+    }
+
+    /// The former words while new ones are held back, else the tree's.
+    /// Design: docs/design/host/motion.md#words-on-the-way
+    override func holdWords(_ holding: Bool) {
+        if !holding { formerText = nil }
+        showText()
+    }
+
+    private func showText() {
+        let shown = heldWords == nil ? text : formerText ?? text
+        guard shown != written else { return }
+        written = shown
+        WebRelay.setText(words.node, shown)
     }
 
     /// The picture alone where there is one and the words show not.

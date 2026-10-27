@@ -35,6 +35,8 @@ struct UIKitLayoutItem: LayoutChild {
     /// The view's size offered `width`, as the tree's values bound it: a layout's by its arithmetic, a control's
     /// as UIKit fits it.
     func size(offered width: Double?) -> LayoutSize {
+        // A view holding new words back is measured at their size.
+        if let held = placed?.heldWords { return held }
         let offer = values.offer(width)
         if let layout = view as? UIKitLayoutView { return values.sized(layout.measuredSize(width: offer)) }
         let fitted = view.sizeThatFits(CGSize(width: offer ?? .greatestFiniteMagnitude, height: .greatestFiniteMagnitude))

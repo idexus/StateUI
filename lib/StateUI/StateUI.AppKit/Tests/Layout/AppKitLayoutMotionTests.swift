@@ -116,6 +116,49 @@ final class AppKitLayoutMotionTests: XCTestCase {
         XCTAssertEqual(midway, (start + 300) / 2, accuracy: 1, "halfway, its box halfway: started at \(start)")
     }
 
+    /// A button whose new words need more than its box keeps showing its former words while the box grows, and
+    /// shows the new ones as it lands.
+    @MainActor
+    func testAButtonsGrownWordsShowOnceItsBoxHoldsThem() throws {
+        var now = 0.0
+        let renderer = testRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false,
+            clock: { now },
+            reducesMotion: { false })
+        defer { renderer.closeForTesting() }
+
+        func row(_ words: String) -> HostPatch {
+            var stack = HostPatch(id: .manual("stack"), type: .vStack)
+            stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+            var button = HostPatch(id: .manual("toggle"), type: .button)
+            button.properties = [.text: .string(words), .horizontalAlignment: .enumeration(Alignment.center.rawValue)]
+            stack.children = .arranged([button])
+            return stack
+        }
+        renderer.applyForTesting(row("On"))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")))
+        let button = try XCTUnwrap(renderer.viewForTesting(id: .manual("toggle")) as? NSButton)
+        native.frame = NSRect(x: 0, y: 0, width: 300, height: 200)
+        native.layoutSubtreeIfNeeded()
+        let start = button.frame.width
+
+        renderer.applyForTesting(row("Switched off"))
+        native.layoutSubtreeIfNeeded()
+        now = 100
+        renderer.advanceAnimationsForTesting()
+        native.layoutSubtreeIfNeeded()
+        let (midway, saidMidway) = (button.frame.width, button.title)
+        now = 200
+        renderer.advanceAnimationsForTesting()
+        native.layoutSubtreeIfNeeded()
+
+        XCTAssertEqual(saidMidway, "On", "midway, its former words")
+        XCTAssertEqual(midway, (start + button.frame.width) / 2, accuracy: 1, "in a box halfway grown")
+        XCTAssertEqual(button.title, "Switched off", "and the new ones as it lands")
+        XCTAssertGreaterThan(button.frame.width, start + 10)
+    }
+
     /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
     /// stack lays its children out there, its own place traveling around them.
     @MainActor

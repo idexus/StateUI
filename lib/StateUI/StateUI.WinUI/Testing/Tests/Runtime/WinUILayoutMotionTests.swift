@@ -186,6 +186,34 @@ final class WinUILayoutMotionTests: XCTestCase {
         }
     }
 
+    /// A button whose new words need more than its box keeps showing its former words while the box grows, and
+    /// shows the new ones as it lands.
+    func testAButtonsGrownWordsShowOnceItsBoxHoldsThem() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let on = State(wrappedValue: true)
+            let host = WinUIRenderer.running(clock: clock) { SwitchedPage(on: on) }
+            host.layOut()
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            let start = button.placedFrame.width
+
+            on.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+            clock.now += 100
+            host.frame()
+            let (midway, saidMidway) = (button.placedFrame.width, button.text)
+            clock.now += 100
+            host.frame()
+            let end = button.placedFrame.width
+
+            XCTAssertEqual(saidMidway, "On", "midway, its former words")
+            XCTAssertEqual(midway, (start + end) / 2, accuracy: 1, "in a box halfway grown")
+            XCTAssertEqual(button.text, "Switched off", "and the new ones as it lands")
+            XCTAssertGreaterThan(end, start + 10)
+        }
+    }
+
     /// A label whose words lengthen stands at the width they need from the start: they keep the one line they fit
     /// where it is bound, never breaking at the widths its place passes through, and show whole.
     func testATextsWordsStandAtTheWidthTheyNeed() throws {
@@ -210,6 +238,20 @@ final class WinUILayoutMotionTests: XCTestCase {
             XCTAssertEqual(words.height, bound.height, accuracy: 0.5, "on the one line they fit there")
             XCTAssertEqual(end, [0xFFFF_0000], "shown whole, to the end of its box")
         }
+    }
+}
+
+/// A button whose words a state lengthens, in the middle of a stack whose children travel for 200 ms.
+private struct SwitchedPage: View {
+    let on: State<Bool>
+
+    var body: some View {
+        VStack {
+            Button(on.wrappedValue ? "On" : "Switched off").horizontalAlignment(.center)
+        }
+        .motion(.eased(.milliseconds(200), .linear))
+        .width(300)
+        .verticalAlignment(.start)
     }
 }
 

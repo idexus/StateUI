@@ -166,7 +166,7 @@ class WebLayoutView: WebDOMView {
         let traveler = index < travelers.count ? travelers[index] : (mount: 0, fadeIn: nil)
         places.place(
             child, mount: traveler.mount, at: slot, values: values(at: index),
-            natural: { WebRelay.natural(of: child.node) }, fadeIn: traveler.fadeIn)
+            natural: { child.heldWords ?? WebRelay.natural(of: child.node) }, fadeIn: traveler.fadeIn)
     }
 
     private func placeAll() {

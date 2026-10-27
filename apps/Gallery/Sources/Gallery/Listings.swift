@@ -4553,6 +4553,22 @@ enum Listings {
             .rows(.auto, .fill, .auto)
         }
         """#,
+        "GrowingWords": #"""
+        // Sources/Samples/Layout/LivingLayoutSample.swift
+        @State private var long = false
+
+        var body: some View {
+            VStack {
+                // The box travels to the width the new words take; they show as
+                // it arrives, never broken on the way. Shorter words show at once.
+                Button(long ? "Show every detail" : "Details")
+                    .horizontalAlignment(.center)
+
+                SwitchRow("Longer words", $long)
+                    .horizontalAlignment(.center)
+            }
+        }
+        """#,
         "HTTPRequestSample": #"""
         // Sources/Samples/Environment/HTTPRequestSample.swift
         @Environment(\.application) private var application

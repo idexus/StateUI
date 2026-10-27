@@ -144,6 +144,16 @@ start, so its words never break onto a second line; words that wrap where
 they are bound stand at the destination's width and height until the place
 is wider. The host stands the view at the frame the host layer gives it.
 
+A button's words stand in a box of its own (`LaidOutWords.boxed`), and the
+box is what the eye follows: where its new words need more than the box has
+as its place sets out, it keeps showing the words it showed before while the
+box grows, and shows the new ones once the box holds them - on the way where
+it is bound wider, else as it lands (`PlacedView.heldWords`). Meanwhile it is
+measured at its new words' size, so a layout asked again places it where the
+new words take it; new words given while some are held back show at once.
+Words that shrink show at once, and a place that merely arrives forgets the
+former words.
+
 The trap is a view laying out words held at its whole destination while its
 place travels: a label shows nothing of it, but a button's box is what the
 eye follows, and it jumps to its end while only its corner travels.

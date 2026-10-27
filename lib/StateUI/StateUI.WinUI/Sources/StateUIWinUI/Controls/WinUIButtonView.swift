@@ -41,6 +41,10 @@ final class WinUIButtonView: WinUIView {
     private var words = ""
     private var look = Shown()
 
+    /// The caption shown before the tree's last one, and the caption written last.
+    private var formerWords: String?
+    private var written: String?
+
     /// How the button opens its menu, which WinUI makes a control of its own of.
     let opening: ButtonMenuOpening
 
@@ -69,10 +73,26 @@ final class WinUIButtonView: WinUIView {
         }
     }
 
-    /// The caption.
+    /// The caption; a new one while one is held back shows at once.
     func setText(_ text: String) {
+        let former = words
         words = text
+        if text != former, heldWords != nil { return heldWords = nil }
+        if text != former { formerWords = former }
         show()
+    }
+
+    /// The caption held back's former one while the box grows, else the tree's.
+    /// Design: docs/design/host/motion.md#words-on-the-way
+    override func holdWords(_ holding: Bool) {
+        if !holding { formerWords = nil }
+        if inSight != written { show() }
+    }
+
+    /// The caption in sight: the former one while new words are held back.
+    private var inSight: String {
+        guard showsWords else { return "" }
+        return heldWords == nil ? words : formerWords ?? words
     }
 
     /// Whether the caption stands beside the picture: out of sight, it names the button to Narrator through the host
@@ -99,7 +119,8 @@ final class WinUIButtonView: WinUIView {
 
     /// Writes what the button shows: all of it where its shape changed, else the words in their place.
     private func show() {
-        let inSight = showsWords ? words : ""
+        let inSight = self.inSight
+        written = inSight
         var next = look
         next.hasWords = !inSight.isEmpty
         guard next != shown else {
