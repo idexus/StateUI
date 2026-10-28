@@ -15,6 +15,7 @@ final class WebWindowBar: WebDOMView {
     private let toggle = WebDOMView(tag: "button")
     private let back = WebDOMView(tag: "button")
     private let brand = WebDOMView(tag: "div")
+    private let mark = WebImageView()
     private let heading = WebDOMView(tag: "div")
     private let name = WebDOMView(tag: "span")
     private let subtitle = WebDOMView(tag: "span")
@@ -118,7 +119,10 @@ final class WebWindowBar: WebDOMView {
             WebRelay.insert(part.node, into: side.node, at: index)
         }
         for (index, part) in [back, leading].enumerated() { WebRelay.insert(part.node, into: start.node, at: index) }
-        WebRelay.insert(heading.node, into: brand.node, at: 0)
+        WebRelay.insert(mark.node, into: brand.node, at: 0)
+        WebRelay.insert(heading.node, into: brand.node, at: 1)
+        mark.attribute("data-part", "mark")
+        mark.attribute("alt", "")
         WebRelay.insert(name.node, into: heading.node, at: 0)
         WebRelay.insert(subtitle.node, into: heading.node, at: 1)
         WebRelay.insert(words.node, into: title.node, at: 0)
@@ -153,6 +157,9 @@ final class WebWindowBar: WebDOMView {
 
         let area = chrome.titleArea
         brand.setShown(area != nil)
+        // The application's mark, the sidebar's page's picture, before its name.
+        mark.apply(picture: area?.icon, aspect: .fit)
+        mark.setShown(area?.icon != nil)
         WebRelay.setText(name.node, area?.title ?? "")
         WebRelay.setText(subtitle.node, area?.subtitle ?? "")
         subtitle.setShown(area?.subtitle?.isEmpty == false)
@@ -336,7 +343,7 @@ final class WebWindowBar: WebDOMView {
         for group in groups + sideGroups { group.release() }
         for shape in glyphs { shape.release() }
         let parts = [
-            toggle, back, closer, more, sideMore, name, subtitle, heading, brand, words, line, title, leading, trailing,
+            toggle, back, closer, more, sideMore, name, subtitle, heading, mark, brand, words, line, title, leading, trailing,
             sideLeading, sideTrailing, side, start, lead,
         ]
         for part in parts {

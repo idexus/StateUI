@@ -488,6 +488,30 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(start, 20, accuracy: 1, "in line with a row's content")
     }
 
+    /// The application's mark - the sidebar's page's picture - stands before its name over the sidebar, as tall as
+    /// its name and the line under it.
+    func testTheApplicationsMarkStandsBeforeItsNameOverTheSidebar() throws {
+        let host = WebRenderer.running {
+            SplitView(State(wrappedValue: true).projectedValue) {
+                Text("Samples").title("Gallery").subtitle("Every sample").icon("test_dot.png")
+            } detail: {
+                Text("Detail").title("Page")
+            }
+        }
+        let bar = "document.querySelector('.stateui-window > .stateui-bar')"
+        let mark = "\(bar).querySelector('.stateui-bar-brand img')"
+        let name = "\(bar).querySelector('.stateui-bar-name')"
+        host.settle {
+            (try? WebBrowser.truth("\(bar).dataset.sidebar === 'shown' && !!\(mark) && !\(mark).hidden "
+                + "&& \(mark).getBoundingClientRect().width > 0", on: 0)) == true
+        }
+
+        XCTAssertTrue(try WebBrowser.truth("(\(mark).getAttribute('src') ?? '').includes('test_dot')", on: 0), "its picture")
+        XCTAssertTrue(try WebBrowser.truth(
+            "\(mark).getBoundingClientRect().right <= \(name).getBoundingClientRect().left", on: 0), "before the name")
+        XCTAssertEqual(try WebBrowser.number("\(mark).getBoundingClientRect().height", on: 0) ?? 0, 32, accuracy: 0.5)
+    }
+
     /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its
     /// bottom edge. A bar of a color blurs behind its whole paint instead.
     func testAClearBarSoftensWhatScrollsUnderIt() throws {
