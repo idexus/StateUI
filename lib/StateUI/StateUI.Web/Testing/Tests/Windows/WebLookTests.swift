@@ -489,7 +489,7 @@ final class WebLookTests: XCTestCase {
     }
 
     /// The application's mark - the sidebar's page's picture - stands before its name over the sidebar, as tall as
-    /// its name and the line under it.
+    /// its name and the line under it and as wide as its picture is at that height.
     func testTheApplicationsMarkStandsBeforeItsNameOverTheSidebar() throws {
         let host = WebRenderer.running {
             SplitView(State(wrappedValue: true).projectedValue) {
@@ -510,6 +510,8 @@ final class WebLookTests: XCTestCase {
         XCTAssertTrue(try WebBrowser.truth(
             "\(mark).getBoundingClientRect().right <= \(name).getBoundingClientRect().left", on: 0), "before the name")
         XCTAssertEqual(try WebBrowser.number("\(mark).getBoundingClientRect().height", on: 0) ?? 0, 32, accuracy: 0.5)
+        XCTAssertEqual(try WebBrowser.number("\(mark).getBoundingClientRect().width", on: 0) ?? 0, 48, accuracy: 0.5,
+                       "a picture of 6 by 4, 32 high")
     }
 
     /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its

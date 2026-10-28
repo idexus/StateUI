@@ -164,8 +164,9 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 /* A view a page declares in place of its title stands where the title would, at its own size. */
 .stateui-bar-title[data-holds-view] { display: grid; justify-items: center; overflow: visible; font-weight: inherit; font-size: inherit; }
 .stateui-bar-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
-/* The application's mark before its name: as tall as the name and the line under it. */
-.stateui-bar-brand > [data-part="mark"] { flex: none; height: 32px; width: auto; }
+/* The application's mark before its name: as tall as the name and the line under it, as wide as its picture is at
+   that height - its own size held for no room. */
+.stateui-bar-brand > [data-part="mark"] { flex: none; height: 32px; width: auto; contain: none; }
 .stateui-bar-name { font-weight: 650; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
 .stateui-bar-subtitle { font-size: 12.5px; opacity: 0.72; white-space: nowrap; }
 .stateui-bar-heading { display: flex; flex-direction: column; min-width: 0; }
