@@ -108,7 +108,10 @@ preview.
 ```
 
 A `<title>` there names the page while the module loads, and what a link to
-it shows; without one the page is named after the application. Once the
+it shows; without one the page is named after the application. The name the
+page shows as the module loads is the head's `application-name`, else its
+`<title>`, else the application's folder's - which has room for no spaces or
+accented letters. Once the
 application runs, the tab names the page it shows beside the site's name the
 head gives in `application-name` - "Home - Notes" - and the page alone where
 the head gives none. The Gallery's describes StateUI at stateui.dev:

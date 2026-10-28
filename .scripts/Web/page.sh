@@ -17,7 +17,9 @@
 #   *.js       laid beside it, each loaded before the application starts;
 #   head.html  written into its head as it stands: a description, the address
 #              it is found at, what a shared link shows. A <title> in it names
-#              the page, which is otherwise named after the application.
+#              the page, which is otherwise named after the application; its
+#              application-name, else its <title>, is the name the page says
+#              as it loads.
 set -euo pipefail
 
 here="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -55,7 +57,14 @@ head="$page/head.html"
 [[ -f "$head" ]] || head=/dev/null
 named=0
 grep -qi '<title' "$head" && named=1
-sed -e "s/{{application}}/$application/g" -e "s/{{module}}/$product.wasm/g" -e "s/{{stamp}}/$stamp/g" \
+# The name the page says as it loads: the head's application-name, else its title, else the folder's - a quote
+# written as HTML's, so it stands in an attribute too; escaped for sed's replacement.
+shown="$({ grep -io '<meta[^>]*name="application-name"[^>]*>' "$head" || true; } | head -1 | sed -n 's/.*content="\([^"]*\)".*/\1/p')"
+[[ -n "$shown" ]] || shown="$({ grep -io '<title>[^<]*</title>' "$head" || true; } | head -1 | sed 's/<[^>]*>//g')"
+[[ -n "$shown" ]] || shown="$application"
+shown="${shown//\"/&quot;}"
+replaced="$(printf '%s' "$shown" | sed -e 's/[\/&]/\\&/g')"
+sed -e "s/{{application}}/$replaced/g" -e "s/{{module}}/$product.wasm/g" -e "s/{{stamp}}/$stamp/g" \
   -e "s#{{scripts}}#$scripts#" \
   "$library/index.html" |
   awk -v head="$head" -v named="$named" -v application="$application" '

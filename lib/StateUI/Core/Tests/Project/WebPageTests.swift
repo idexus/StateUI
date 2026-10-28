@@ -39,6 +39,24 @@ final class WebPageTests: XCTestCase {
         XCTAssertFalse(plain.contains("{{"), plain)
     }
 
+    /// The page says the application's name as it loads - its head's `application-name`, else its title, else its
+    /// folder's - its characters as written, in the words on the screen and in what assistive technology hears.
+    func testThePageLoadingSaysTheNameItsHeadGives() throws {
+        let named = try layPage(head: #"""
+            <title>Parcels - the panel</title>
+            <meta name="application-name" content="Monitoring Paczek & co">
+            """#)
+        XCTAssertTrue(named.contains(#"<div class="stateui-loading-name">Monitoring Paczek & co</div>"#), named)
+        XCTAssertTrue(named.contains(#"aria-label="Loading Monitoring Paczek & co""#), named)
+
+        let titled = try layPage(head: #"<title>Notes "kept" & found</title>"#)
+        XCTAssertTrue(titled.contains(#"<div class="stateui-loading-name">Notes &quot;kept&quot; & found</div>"#), titled)
+        XCTAssertTrue(titled.contains(#"aria-label="Loading Notes &quot;kept&quot; & found""#), titled)
+
+        let plain = try layPage(head: nil)
+        XCTAssertTrue(plain.contains(#"<div class="stateui-loading-name">Notes</div>"#), plain)
+    }
+
     /// A script of the `Page` folder is laid beside the page and loaded once;
     /// the head's own head is written into the page, not laid beside it.
     func testAPageScriptIsLoadedOnceAndTheHeadIsNotLaidBeside() throws {
@@ -75,6 +93,8 @@ final class WebPageTests: XCTestCase {
         try Data().write(to: products.appendingPathComponent("NotesWeb.wasm"))
         if let head {
             try Data(head.utf8).write(to: page.appendingPathComponent("head.html"))
+        } else {
+            try? FileManager.default.removeItem(at: page.appendingPathComponent("head.html"))
         }
         for script in scripts {
             try Data("// \(script)\n".utf8).write(to: page.appendingPathComponent(script))
