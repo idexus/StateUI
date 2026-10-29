@@ -853,6 +853,42 @@ final class NativeProjectTests: XCTestCase {
             "an Android head is built without its icon being drawn")
     }
 
+    /// The Android scripts' shared tools find the checkout they stand in by themselves: a script sourcing them from
+    /// anywhere, strict about names never set, sets nothing first.
+    func testTheAndroidToolsFindTheirCheckoutThemselves() throws {
+        let bash = URL(fileURLWithPath: "/bin/bash")
+        guard FileManager.default.fileExists(atPath: bash.path) else {
+            throw XCTSkip("no /bin/bash here; an Android head is built on macOS and Linux.")
+        }
+        let sdk = FileManager.default.temporaryDirectory.appendingPathComponent("NativeProjectTests-\(UUID().uuidString)")
+        let aapt2 = sdk.appendingPathComponent("build-tools/1.0.0/aapt2")
+        try FileManager.default.createDirectory(
+            at: sdk.appendingPathComponent("platform-tools"), withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: aapt2.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try Data().write(to: aapt2)
+        defer { try? FileManager.default.removeItem(at: sdk) }
+
+        let process = Process()
+        process.executableURL = bash
+        process.arguments = [
+            "-c", #"set -euo pipefail; source "$0"; echo "$repository_dir""#,
+            SourceTree.repository.appendingPathComponent(".scripts/Android/tools.sh").path,
+        ]
+        process.environment = ["ANDROID_HOME": sdk.path, "HOME": sdk.path, "PATH": "/usr/bin:/bin"]
+        process.currentDirectoryURL = sdk
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+        try process.run()
+        let output = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        process.waitUntilExit()
+
+        XCTAssertEqual(process.terminationStatus, 0, output)
+        XCTAssertEqual(
+            URL(fileURLWithPath: output.trimmingCharacters(in: .newlines)).resolvingSymlinksInPath(),
+            SourceTree.repository.resolvingSymlinksInPath())
+    }
+
     /// Every Android head may read the network: the host reports it to the application's views, and a head
     /// whose manifest does not ask reports it unknown for good, with nothing said anywhere.
     func testEveryAndroidHeadMayReadTheNetwork() throws {
