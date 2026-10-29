@@ -30,7 +30,7 @@ final class PlacedRunTests: XCTestCase {
     func testAPlacementCarriesItsTwelveInTheOrderAHostReadsThem() {
         let placement = Placement(
             Rect(11, 22, 120, 170),
-            transform: .translate(3, 4).scaleX(0.5),
+            transform: .scaleX(0.5).translate(3, 4),
             opacity: 0.75,
             shade: 0.25,
             zIndex: 3)
