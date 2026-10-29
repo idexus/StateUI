@@ -65,9 +65,9 @@ final class CountedView: NativeElement, FrameReporter {
 
     /// The run's places, put as a host's layout puts them: in drawing order, each child at its place.
     private func place() {
-        guard let placements = element.placement?.placements else { return }
-        for index in ZStackArithmetic.drawingOrder(of: placements.count, placedBy: placements) {
-            bench.placedAt = placements[index].place
+        guard let run = element.placement else { return }
+        for index in ZStackArithmetic.drawingOrder(of: run.placements.count, placedBy: run.placements) {
+            bench.placedAt = run.place(of: index, in: bench.room)
             bench.calls.placed += 1
         }
     }

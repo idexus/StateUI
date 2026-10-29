@@ -6,8 +6,8 @@
 
 /// `PhaseLayoutContract` on a host: each view stands where the arithmetic puts it, the arithmetic is handed the room
 /// the layout was given and handed it again when it changes, the layout takes no size from its views, the phase the
-/// program sends travels there and is awaited - each axis of it on its own - and a scroll comes to rest on a snap
-/// target.
+/// program sends travels there and is awaited - each axis of it on its own - a scroll comes to rest on a snap
+/// target, and a layout mirrored right to left stands its views and hears the hand turned about its middle.
 @_spi(Host) public enum PhaseLayoutTests: ConformanceFamily {
     public static let name = "PhaseLayout"
 
@@ -106,6 +106,38 @@
                 }
                 s.settle { apart() == 10 }
                 s.expect(apart(), 10, "the view below right under the one above, whatever the layout's view needs")
+            },
+            ConformanceCase("mirroredRightToLeftItsViewsStandTurnedAboutItsMiddle", proves: [
+                Covered(PhaseLayoutContract.mirrorsRightToLeft),
+            ], needs: [Covered(VisualElementContract.layoutDirection, on: "VStack")]) { s in
+                let (first, second) = (Received<[Double]>(), Received<[Double]>())
+                s.start {
+                    VStack {
+                        PhaseLayout([0, 1], phase: State(wrappedValue: 0.0).projectedValue) { index in
+                            Rectangle()
+                                .fill(index == 0 ? .red : .blue)
+                                .onEvent(ViewContract.frameChanged) { (index == 0 ? first : second).values.append($0) }
+                        } placements: { _, _ in
+                            [Placement(Rect(0, 0, 20, 10)), Placement(Rect(30, 10, 20, 20))]
+                        }
+                        .mirrorsRightToLeft(true)
+                        .width(60).height(40)
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                    .layoutDirection(.rightToLeft)
+                }
+
+                // Written 30 to the right of the first, the second stands 30 to its left: each turned about the middle.
+                let apart = {
+                    guard let one = first.values.last.map(FrameReport.inContent),
+                          let two = second.values.last.map(FrameReport.inContent)
+                    else { return [Double]() }
+                    return [two[0] - one[0], two[1] - one[1]]
+                }
+                s.settle { apart() == [-30, 10] }
+                s.expect(second.values.last.map(FrameReport.size), [20, 20], "at the size its placement gives")
+                s.expect(apart(), [-30, 10], "the second the mirror of where it is written from the first")
             },
             ConformanceCase("thePhaseTravelsWhereTheProgramSendsIt", proves: [
                 Covered(PhaseLayoutContract.phase),
@@ -229,6 +261,18 @@
                 try s.perform(.notch(by: Point(-2, 0)), on: layout)
                 frames(s, clock, until: 1_600)
                 s.expect(phase.wrappedValue, 3, "a target a notch")
+            },
+            ConformanceCase("mirroredRightToLeftTheHandMovesTheRunTheOtherWay", proves: [
+                Covered(PhaseLayoutContract.mirrorsRightToLeft),
+            ], needs: [Covered(PhaseLayoutContract.handMoved), Covered(VisualElementContract.layoutDirection, on: "VStack")]) { s in
+                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
+                let layout = try handLayout(s, clock: clock, phase: phase, mirrored: true)
+
+                // 140 points to the right is 1.4 targets on in the mirror: let go still, it rests on the nearest.
+                try s.perform(.sweep(by: Point(140, 0), speed: .zero), on: layout)
+                frames(s, clock, until: 1_600)
+
+                s.expect(phase.wrappedValue, 1, "on, the hand going the mirror's way")
             },
             ConformanceCase("aHandAcrossItsAxisLeavesTheRun", proves: [Covered(PhaseLayoutContract.handAxis)]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
@@ -372,10 +416,12 @@ private struct Orbit: AxesPhase {
     static var axes: [WritableKeyPath<Orbit, Double>] { [\.turn, \.zoom] }
 }
 
-/// A layout of three views a hand moves across, a hundred points a unit, resting on 0 to 5, its run on `clock`: the
-/// layout's element, once the room is told.
+/// A layout of three views a hand moves across, a hundred points a unit, resting on 0 to 5, its run on `clock` -
+/// `mirrored`, laid out right to left and turned about its middle: the layout's element, once the room is told.
 @MainActor
-private func handLayout(_ s: Session, clock: TestClock, phase: State<Double>) throws -> MountedElement {
+private func handLayout(
+    _ s: Session, clock: TestClock, phase: State<Double>, mirrored: Bool = false
+) throws -> MountedElement {
     s.start(clock: clock) {
         VStack {
             PhaseLayout([0, 1, 2], phase: phase.projectedValue) { _ in
@@ -386,10 +432,12 @@ private func handLayout(_ s: Session, clock: TestClock, phase: State<Double>) th
             }
             .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...5, snaps: .every(1))
             .motion(.eased(.milliseconds(300), .linear))
+            .mirrorsRightToLeft(mirrored)
             .width(100).height(40)
         }
         .horizontalAlignment(.start)
         .verticalAlignment(.start)
+        .layoutDirection(mirrored ? .rightToLeft : .inherited)
     }
     frames(s, clock, until: 64)
     return try s.element(ofType: .phaseLayout)

@@ -157,6 +157,7 @@ extension NodeType {
     static let gridRowSpan = ViewContract.gridRowSpan.token
     static let handAxis = PhaseLayoutContract.handAxis.token
     static let magnifies = PhaseLayoutContract.magnifies.token
+    static let mirrorsRightToLeft = PhaseLayoutContract.mirrorsRightToLeft.token
     static let pans = PhaseLayoutContract.pans.token
     static let rotates = PhaseLayoutContract.rotates.token
     static let height = VisualElementContract.height.token

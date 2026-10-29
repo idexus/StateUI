@@ -63,8 +63,8 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
     override func layout() {
         super.layout()
 
-        if let placements = placement?.placements, !placements.isEmpty {
-            apply(placements)
+        if let run = placement, !run.placements.isEmpty {
+            apply(run)
             return
         }
 
@@ -77,7 +77,8 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
         }
     }
 
-    private func apply(_ placements: [HostPlacement]) {
+    private func apply(_ run: HostPlacementRun) {
+        let placements = run.placements
         let count = min(items.count, placements.count)
         let ordered = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placements)
         let identities = ordered.map { ObjectIdentifier(items[$0].view) }
@@ -92,9 +93,9 @@ final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasu
         for index in 0..<count {
             let placement = placements[index]
             let item = items[index]
-            item.view.frame = NSRect(placed: placement.place)
+            item.view.frame = NSRect(placed: run.place(of: index, in: bounds.placed))
             (item.view as? AppKitGridView)?.setShadeOpacity(placement.drawnShade)
-            item.drawing?.placement = placement.drawing
+            item.drawing?.placement = run.drawing(of: index)
             item.drawing?.placedOpacity = placement.drawnOpacity
         }
         for item in items[count...] { drawUnplaced(item) }

@@ -213,7 +213,8 @@
                     opacity: $0.opacity,
                     zIndex: $0.zIndex,
                     shade: $0.shade)
-            })
+            },
+            direction: .leftToRight)
     }
 
     /// Builds and returns a typed patch against the generation the host holds.

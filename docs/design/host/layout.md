@@ -414,6 +414,19 @@ start goes as its leading side. The safe area's edges a layout lets its
 content under take their start and end by the content's direction too
 (`SafeAreaArithmetic.room`).
 
+A phase layout's run is written left to right and stands as written, unless
+the layout mirrors (`PhaseLayoutContract.mirrorsRightToLeft`): then, laid out
+right to left, its run stands turned by the same rule - each place about the
+room's middle, its move along and its turn the other way
+(`HostPlacementRun.place(of:in:)`, `drawing(of:)`, the run carrying its
+direction) - and the hand over it is told as the arithmetic reads it: its
+moves and speeds the other way along, a view's point about the room's width,
+two fingers' turn the other way round (`MountedElement.runDirection`).
+A direction that turns presents the run again. A toolkit that stands a view
+from the room's right edge itself - the Web, by CSS - takes the place as
+written (`writtenPlace(of:)`) and moves the view left from the right corner,
+reading no room.
+
 The direction is the element's own `layoutDirection`, or - left at
 `.inherited` - its parent's, and at the root the language's, as the host
 reported the locale (`HostLocaleInfo.layoutDirection`). The mounted element

@@ -351,6 +351,35 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.arranged, ["layout"], "a padding moved arranges them")
     }
 
+    /// A LAYOUT'S RUN TURNS WITH ITS DIRECTION: the language's direction turning presents the run again, standing
+    /// the other way where the layout mirrors right to left, and as written where it does not.
+    @MainActor
+    func testALayoutsRunTurnsWithItsDirection() {
+        let (tree, log) = Self.tree(viewless: [])
+        let locale = StandardEnvironment.locale
+        defer { locale.layoutDirection = .leftToRight }
+        func layout(_ name: String, mirrors: Bool) -> HostPatch {
+            var layout = HostPatch(id: .manual(name), type: .phaseLayout)
+            layout.driven = .replace([.area: HostStateBinding(state: name == "mirrored" ? 901 : 902, mode: .out,
+                                                              kind: .placement, laneKind: .number)])
+            if mirrors { layout.properties[.mirrorsRightToLeft] = .bool(true) }
+            layout.children = .arranged([HostPatch(id: .manual("\(name).a"), type: .text)])
+            return layout
+        }
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([layout("mirrored", mirrors: true), layout("written", mirrors: false)])
+        tree.apply(stack, complete: true)
+        let (mirrored, written) = (tree.root!.children[0], tree.root!.children[1])
+        XCTAssertEqual([mirrored.runDirection, written.runDirection], [.leftToRight, .leftToRight])
+        log.presented.removeAll()
+
+        locale.layoutDirection = .rightToLeft
+        tree.followTheLanguagesDirection()
+
+        XCTAssertEqual(log.presented["mirrored"], [.area], "its run presented again")
+        XCTAssertEqual([mirrored.runDirection, written.runDirection], [.rightToLeft, .leftToRight])
+    }
+
     /// A CHILD A NEW ARRANGEMENT KEEPS AS IT WAS IS NOT PRESENTED AGAIN: a list's next rows name the rows it keeps for
     /// their order alone; the new one and the list are.
     @MainActor
@@ -1019,6 +1048,7 @@ private final class NativeLog {
     var arranged: [String] = []
     var left: [String] = []
     var presentedWriting: [Bool] = []
+    var presented: [String: Set<Prop>] = [:]
     var turned: [String] = []
 }
 
@@ -1050,6 +1080,7 @@ private final class RecordingNative: NativeElement {
     }
     func presentFrame(_ changed: Set<Prop>) {
         log.presentedWriting.append(ProgramWrite.isWriting)
+        log.presented[name, default: []].formUnion(changed)
     }
     func arrangeChildren() { log.arranged.append(name) }
     func invalidateMeasurements() {}

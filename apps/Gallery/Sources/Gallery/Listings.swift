@@ -4186,6 +4186,7 @@ enum Listings {
         @State private var shape = Shape.wheel
         @State private var shown = 0
         @State private var shaded = true
+        @State private var rightToLeft = false
         @State private var opened = "tap one"
         @State private var moves = 0
 
@@ -4206,6 +4207,9 @@ enum Listings {
                         // Another card in the middle, swiped or assigned.
                         .onPositionChanged { _ in moves += 1 }
                 }
+                // RIGHT TO LEFT the cards stand in the mirror, as a row of views
+                // does, and the swipe that moves them on goes the other way.
+                .layoutDirection(rightToLeft ? .rightToLeft : .inherited)
                 .gridRow(0)
                 // The cards stay ON the board: one mid-crossing between two shapes,
                 // or turned far out in a small room, is cut at the board's edge
@@ -4272,6 +4276,8 @@ enum Listings {
                     Picker(Shape.allCases, selection: $shape) { $0.title }
 
                     SwitchRow("Shaded", $shaded)
+
+                    SwitchRow("Right to left", $rightToLeft)
                 }
                 .horizontalAlignment(.center)
                 .gridRow(4)
@@ -8302,6 +8308,11 @@ enum Listings {
         /// Which of them the ring is thrown by.
         @State private var throwing = Throwing.easeOut
 
+        /// Whether the board is laid out right to left, and whether the ring
+        /// turns with it or keeps the shape its arithmetic writes.
+        @State private var rightToLeft = false
+        @State private var mirrored = true
+
         /// WHICH CARD IS AT THE FRONT - the phase, two-way: `Back` and `Next`
         /// write it and the ring travels there; the hand names the card it passes
         /// and the one it comes to rest on. It starts on the middle card, and it
@@ -8319,6 +8330,7 @@ enum Listings {
                     // THE CARDS, and what moves them - the whole of the example.
                     ring
                 }
+                .layoutDirection(rightToLeft ? .rightToLeft : .inherited)
                 .gridRow(0)
                 // The cards stay ON the board: one turned far out in a small room
                 // is cut at the board's edge rather than painted over the page.
@@ -8341,8 +8353,16 @@ enum Listings {
                 Picker(Throwing.allCases, selection: $throwing) { $0.title }
                     .horizontalAlignment(.center)
                     .gridRow(2)
+
+                HStack {
+                    SwitchRow("Right to left", $rightToLeft)
+
+                    SwitchRow("Mirrored", $mirrored)
+                }
+                .horizontalAlignment(.center)
+                .gridRow(3)
             }
-            .rows(.fill, .auto, .auto)
+            .rows(.fill, .auto, .auto, .auto)
         }
 
         /// The ring of cards and its dots, placed by the arithmetic below.
@@ -8377,6 +8397,10 @@ enum Listings {
                 Rectangle()
                     .fill(Color(hex: 0x000000)))
             .motion(.eased(.milliseconds(300), .cubicOut))
+            // RIGHT TO LEFT, MIRRORED: the ring turns about the board's middle,
+            // the arithmetic above still written left to right, and the hand turns
+            // it the mirror's way. Not mirrored, it keeps the shape it is written in.
+            .mirrorsRightToLeft(mirrored)
         }
 
         /// A card either way, from a button: the ring travels there, and the

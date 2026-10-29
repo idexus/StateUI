@@ -57,6 +57,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     @State private var shape = Shape.wheel
     @State private var shown = 0
     @State private var shaded = true
+    @State private var rightToLeft = false
     @State private var opened = "tap one"
     @State private var moves = 0
     // listing: end
@@ -89,6 +90,9 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     // Another card in the middle, swiped or assigned.
                     .onPositionChanged { _ in moves += 1 }
             }
+            // RIGHT TO LEFT the cards stand in the mirror, as a row of views
+            // does, and the swipe that moves them on goes the other way.
+            .layoutDirection(rightToLeft ? .rightToLeft : .inherited)
             .gridRow(0)
             // The cards stay ON the board: one mid-crossing between two shapes,
             // or turned far out in a small room, is cut at the board's edge
@@ -161,6 +165,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 Picker(Shape.allCases, selection: $shape) { $0.title }
 
                 SwitchRow("Shaded", $shaded)
+
+                SwitchRow("Right to left", $rightToLeft)
             }
             .spacing(16)
             .horizontalAlignment(.center)

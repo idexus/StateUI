@@ -424,6 +424,8 @@
     /// Design: docs/design/host/layout.md#right-to-left
     func directionTurned(arrangingItself: Bool) {
         native.directionChanged()
+        // A phase layout's run stands in its direction: presented again, it turns with it.
+        if !ownPlacementRun.isEmpty { native.presentFrame(ownPlacementRun) }
         if arrangingItself, !children.isEmpty { native.arrangeChildren() }
         for child in children where child.inheritsDirection {
             child.directionTurned(arrangingItself: true)

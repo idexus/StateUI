@@ -182,8 +182,8 @@ class WebLayoutView: WebDOMView {
             }
         }
         for (index, view) in children.enumerated() {
-            if index < run.count {
-                placeByRun(view, run[index])
+            if index < run.count, let placement {
+                placeByRun(view, placement, at: index)
             } else {
                 place(view, values(at: index))
             }
@@ -204,6 +204,10 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#a-childs-place
     func place(_ view: WebDOMView, _ values: LayoutValues) {
         view.placedByRun = nil
+        if view.placedFromRight {
+            view.style("right", nil)
+            view.placedFromRight = false
+        }
         view.drawInRun(nil, size: nil)
         view.style("will-change", nil)
         for (side, length) in WebCSS.sides(values.margin, margin: true) { view.style("margin-\(side)", length) }
@@ -280,30 +284,37 @@ class WebLayoutView: WebDOMView {
 
     /// A child where the run puts it, drawn as it says, over the children placed before it in the run's order.
     /// Design: docs/design/platforms/web/layout.md#a-placing-run
-    private func placeByRun(_ view: WebDOMView, _ placement: HostPlacement) {
+    private func placeByRun(_ view: WebDOMView, _ run: HostPlacementRun, at index: Int) {
         // A run moves its views every frame: what has not moved is not written again, not even as words.
         // Design: docs/design/platforms/web/layout.md#a-placing-run
-        let (place, last) = (placement.place, view.placedByRun)
+        let (placement, place, last) = (run.placements[index], run.writtenPlace(of: index), view.placedByRun)
         view.placedByRun = placement
         if last == nil {
             view.style("position", "absolute")
             view.style("grid-area", nil)
             // The place is a move drawn over the layout's corner, which the browser composes each frame without
             // laying the page out again, and the view its own layer to move.
-            view.style("left", "0px")
             view.style("top", "0px")
             view.style("will-change", "transform")
             // The run's size, whatever the room's: a slot's bound would squash a card a short room scales down.
             view.style("max-width", "none")
             view.style("max-height", "none")
         }
-        if last?.place.width != place.width || last?.place.height != place.height {
+        // Right to left the view stands at the right corner and moves left: the mirror of its place, the room unread.
+        let fromRight = run.direction == .rightToLeft
+        if last == nil || view.placedFromRight != fromRight {
+            view.style(fromRight ? "right" : "left", "0px")
+            view.style(fromRight ? "left" : "right", nil)
+            view.placedFromRight = fromRight
+        }
+        if last?.bounds.width != placement.bounds.width || last?.bounds.height != placement.bounds.height {
             view.style("width", WebCSS.pixels(place.width))
             view.style("height", WebCSS.pixels(place.height))
         }
         view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
         view.drawInRun(
-            placement.drawing, size: LayoutSize(width: place.width, height: place.height), at: Point(place.x, place.y))
+            run.drawing(of: index), size: LayoutSize(width: place.width, height: place.height),
+            at: Point(fromRight ? -place.x : place.x, place.y))
         (view as? WebLayoutView)?.setShadeOpacity(placement.drawnShade)
     }
 

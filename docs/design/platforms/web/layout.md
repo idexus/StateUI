@@ -107,7 +107,10 @@ place by a `translate` before its matrix, its own layer (`will-change:
 transform`) - a run moves its views every frame, and a move the browser
 composes is drawn without laying the page out again, where a `left` and a
 `top` written each frame laid out and painted every card, which a tablet's
-browser could not keep up with. In its rectangle, unbounded by its slot - a
+browser could not keep up with. A run standing right to left stands each
+view at the layout's right corner and moves it left as far as the run wrote
+it right - the mirror of its place, with no read of the room (host/layout.md,
+right to left). In its rectangle, unbounded by its slot - a
 room lower than a card makes the run scale the card, and a slot's
 `max-height` would squash it instead - drawn with the child's own
 transform under the run's (`HostDrawingTransform.under`) and the run's

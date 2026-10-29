@@ -114,6 +114,21 @@ final class PhaseLayoutTests: XCTestCase {
         XCTAssertNil(patch.first(.scrollView), "nothing scrolls under the hand")
     }
 
+    /// A LAYOUT PLACES AS WRITTEN UNLESS IT MIRRORS RIGHT TO LEFT: the element says so only where the author asks.
+    func testALayoutPlacesAsWrittenUnlessItMirrorsRightToLeft() throws {
+        func layout(_ mirrors: Bool?) throws -> HostPatch {
+            var layout = PhaseLayout([1], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in
+                [Placement(Rect(0, 0, 10, 10))]
+            }
+            if let mirrors { layout = layout.mirrorsRightToLeft(mirrors) }
+            return try XCTUnwrap(Renders().render(layout.node).first(.phaseLayout))
+        }
+
+        XCTAssertNil(try layout(nil).props[.mirrorsRightToLeft], "as written")
+        XCTAssertNil(try layout(false).props[.mirrorsRightToLeft], "as written")
+        XCTAssertEqual(try layout(true).props[.mirrorsRightToLeft], .bool(true))
+    }
+
     /// AN ANSWER OF THE WRONG LENGTH IS SAID AND MADE TO FIT: one placement a view, the rest at the top left.
     func testAnAnswerOfTheWrongLengthIsSaidAndMadeToFit() {
         let (_, run) = bench.laid(Renders(), {

@@ -483,7 +483,7 @@ final class AppKitContainerTests: XCTestCase {
                 HostPlacement(
                     bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
                     scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
-            })
+            }, direction: .leftToRight)
         }
         let layers = AppKitZStackView()
         layers.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
@@ -508,7 +508,7 @@ final class AppKitContainerTests: XCTestCase {
                 HostPlacement(
                     bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
                     scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
-            })
+            }, direction: .leftToRight)
         }
         let layers = AppKitZStackView()
         layers.frame = NSRect(x: 0, y: 0, width: 100, height: 100)

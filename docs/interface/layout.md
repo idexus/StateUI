@@ -43,10 +43,12 @@ Without either, `.fill` takes the whole slot.
 
 `layoutDirection` lays a view and everything under it out right to left or
 left to right: a row fills from the right, a view aligned to `.start` stands
-at the right, a grid's first column is the rightmost, and padding and margins
-swap sides. A view left at `.inherited`, the default, takes its parent's
-direction, and the top of the tree the direction the user's language is
-written in. `zIndex` orders the overlapping children of a `Grid` or a
+at the right, a grid's first column is the rightmost, a `GalleryView`'s cards
+stand in the mirror, and padding and margins swap sides. A view left at
+`.inherited`, the default, takes its parent's direction, and the top of the
+tree the direction the user's language is written in. A transform, a drawing
+and a `PhaseLayout` keep the shape they are written in, unless the layout
+says `.mirrorsRightToLeft(true)` ([a phase layout](#a-phase-layout)). `zIndex` orders the overlapping children of a `Grid` or a
 `ZStack` without changing their places: a higher one is drawn over a lower
 one, and children of the same `zIndex` in the order they are written.
 
@@ -555,7 +557,9 @@ draws the cards, and `.throwing(_:)` says how one let go with speed goes on, as 
 [phase layout's](#a-phase-layout) input does, and `.itemSize(width:height:)`,
 `.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size - a `.height`, or a `.fill` row of a `Grid`.
-No view is built again while the run moves.
+No view is built again while the run moves. Laid out right to left, the cards
+stand in reading order, as a row's views do: the next one on the left, a
+swipe to the right moving the run on.
 
 ### A phase layout
 
@@ -636,6 +640,13 @@ the hand it is the snap the run passes and the one it comes to rest on, and
 a hand taking the run on its way stops the journey. A tap reaches the view
 drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
 the `shade` its placement answers.
+
+Laid out right to left, a phase layout keeps the shape its arithmetic writes:
+a dial, a clock or a table of photos reads alike in every language. A layout
+in reading order says `.mirrorsRightToLeft(true)`: each view's place turns
+about the middle of the room, with its move along and its turn, and the hand
+over it turns with it, so the arithmetic stays written left to right - the
+carousel above, so marked, brings the next name in from the left in Arabic.
 
 An axis's range is how far the hand moves it: past an end, less and less,
 and let go there, it comes back onto the end. Its snaps are where it may rest

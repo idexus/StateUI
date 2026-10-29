@@ -16,15 +16,19 @@ final class UIKitZStackView: UIKitLayoutView {
         didSet {
             guard placement != oldValue else { return }
             orderChildren()
-            // A run moving on asks only for places: they need no room, so nothing around is measured.
-            if let placements = placement?.placements, !placements.isEmpty, oldValue?.placements.isEmpty == false {
-                apply(placements)
+            // A run moving on stands its children at once in the room it last stood them in: nothing around is measured.
+            if let run = placement, !run.placements.isEmpty, oldValue?.placements.isEmpty == false,
+               let room = runRoom {
+                apply(run, in: room)
             } else {
                 forgetMeasurements()
                 setNeedsLayout()
             }
         }
     }
+
+    /// The room the run last stood its children in, where a run moving on stands them again.
+    private var runRoom: Rect?
 
     /// The room inside the ZStack's own edge.
     var padding = Insets(0) {
@@ -48,8 +52,9 @@ final class UIKitZStackView: UIKitLayoutView {
     }
 
     override func arrange(in bounds: Rect) {
-        if let placements = placement?.placements, !placements.isEmpty {
-            return apply(placements)
+        if let run = placement, !run.placements.isEmpty {
+            runRoom = bounds
+            return apply(run, in: bounds)
         }
         for item in items {
             item.drawing?.placement = nil
@@ -71,14 +76,15 @@ final class UIKitZStackView: UIKitLayoutView {
     }
 
     /// Stands each child where the run says, drawn as it says.
-    private func apply(_ placements: [HostPlacement]) {
+    private func apply(_ run: HostPlacementRun, in room: Rect) {
+        let placements = run.placements
         let count = min(items.count, placements.count)
         for index in 0..<count {
             let placement = placements[index]
             let item = items[index]
-            item.drawing?.placement = placement.drawing
+            item.drawing?.placement = run.drawing(of: index)
             item.drawing?.placedOpacity = placement.drawnOpacity
-            item.placed?.placedFrame = placement.place
+            item.placed?.placedFrame = run.place(of: index, in: room)
             (item.view as? UIKitGridView)?.setShadeOpacity(placement.drawnShade)
         }
         for item in items[count...] {

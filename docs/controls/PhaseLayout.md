@@ -39,13 +39,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (92)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>39 ✅ · 1 ☑️ · 45 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>37 ✅ · 2 ☑️ · 47 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>64 ✅ · 5 ☑️ · 16 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>53 ✅ · 2 ☑️ · 26 ✓ · 9 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>47 ✅ · 2 ☑️ · 30 ✓ · 8 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>59 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>40 ✅ · 1 ☑️ · 45 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 2 ☑️ · 47 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>65 ✅ · 5 ☑️ · 16 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>54 ✅ · 2 ☑️ · 26 ✓ · 9 –</td><td>custom <code>Panel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>48 ✅ · 2 ☑️ · 30 ✓ · 8 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/PhaseLayoutContract.swift`.
@@ -66,6 +66,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/PhaseLayoutCont
 <tr><td colspan="9">AppKit: only through the host's own: pressDown on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pressDown on PhaseLayout: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pressDown on PhaseLayout: the relay's report of the press over the layout handed to the host, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>magnifies</code></td><td>property</td><td><code>Bool</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: pinch on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: pinch on PhaseLayout: the view's listening handed the recognizer's states, no touch sent<br>WinUI 3: only through the host's own: pinch on PhaseLayout: the relay's report of the manipulation handed to the host, no touch sent<br>GTK 4: only through the host's own: pinch on PhaseLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>mirrorsRightToLeft</code></td><td>property</td><td><code>Bool</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>pans</code></td><td>property</td><td><code>Bool</code></td><td>structure</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: sweep on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: sweep on PhaseLayout: the view's listening handed the recognizer's states, no touch sent<br>Android Views: only through the host's own: sweep on PhaseLayout: the listener's report of the hand handed to the host, no touch sent<br>WinUI 3: only through the host's own: sweep on PhaseLayout: the relay's report of the hand handed to the host with its speed, no pointer sent<br>GTK 4: only through the host's own: sweep on PhaseLayout: the hand handed to the host's entry with its speed, no event<br>Web: only through the host's own: sweep on PhaseLayout: the hand handed to the host's entry with its speed, no pointer sent</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>phase</code></td><td>property</td><td><code>[Double]</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>

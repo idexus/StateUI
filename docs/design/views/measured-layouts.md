@@ -167,6 +167,11 @@ complaint rather than refused, so a gallery still being written keeps working.
 The wheel's turn is drawn flat, `ViewTransform.turn`, the same picture on every
 platform (modifiers.md, turning out of the screen plane).
 
+
+The gallery's cards stand in reading order, as a stack's views do: its
+layout mirrors right to left (`mirrorsRightToLeft(true)`, phase-layout.md,
+right to left), the next card on the left and a swipe to the right moving the
+run on.
 ## Position dots
 
 `PositionDots` is StateUI's composition of rectangles in a row, which

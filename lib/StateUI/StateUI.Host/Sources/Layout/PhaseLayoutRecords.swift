@@ -10,6 +10,7 @@ extension HostRecord {
     /// Design: docs/design/views/phase-layout.md#the-element
     public static let phaseLayout: [HostRecord] = [
         .complete(PhaseLayoutContract.phase),
+        .complete(PhaseLayoutContract.mirrorsRightToLeft),
         .notPlanned(PaddingElementContract.padding, on: PhaseLayoutContract.self,
             reason: "A phase layout stands its views where its arithmetic says, from its own top left: it takes no "
                 + "padding."),

@@ -14,14 +14,19 @@ final class GTKZStackView: GTKTravelingLayout {
             guard placement != oldValue else { return }
             setChildren(heldViews())
 
-            // A run moving on asks only for an allocation: its places need no room, so nothing around is measured.
-            if let placements = placement?.placements, !placements.isEmpty, oldValue?.placements.isEmpty == false {
-                apply(placements)
+            // A run moving on asks only for an allocation in the room it last stood its children in: nothing around
+            // is measured.
+            if let run = placement, !run.placements.isEmpty, oldValue?.placements.isEmpty == false,
+               let room = runRoom {
+                apply(run, in: room)
             } else {
                 invalidateMeasurements()
             }
         }
     }
+
+    /// The room the run last stood its children in, where a run moving on stands them again.
+    private var runRoom: Rect?
 
     /// The room inside the ZStack's own edge.
     var padding = Insets(0) {
@@ -42,8 +47,9 @@ final class GTKZStackView: GTKTravelingLayout {
     }
 
     override func arrange(in bounds: Rect) {
-        if let placements = placement?.placements, !placements.isEmpty {
-            return apply(placements)
+        if let run = placement, !run.placements.isEmpty {
+            runRoom = bounds
+            return apply(run, in: bounds)
         }
 
         beginArrangement(width: bounds.width)
@@ -57,13 +63,14 @@ final class GTKZStackView: GTKTravelingLayout {
 
     /// Stands each child where the run says, drawn as it says: at once inside an allocation, and between them in
     /// the allocation each place asks for.
-    private func apply(_ placements: [HostPlacement]) {
+    private func apply(_ run: HostPlacementRun, in room: Rect) {
+        let placements = run.placements
         let count = min(items.count, placements.count)
         for index in 0..<count {
             let placement = placements[index]
             let view = items[index].view
-            view.setPlacedDrawing(placement.drawing, opacity: placement.drawnOpacity)
-            view.layout(placement.place)
+            view.setPlacedDrawing(run.drawing(of: index), opacity: placement.drawnOpacity)
+            view.layout(run.place(of: index, in: room))
             (view as? GTKGridView)?.setShadeOpacity(placement.drawnShade)
         }
         for item in items[count...] { item.view.setPlacedDrawing(nil, opacity: 1) }

@@ -92,6 +92,11 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
     /// Which of them the ring is thrown by.
     @State private var throwing = Throwing.easeOut
 
+    /// Whether the board is laid out right to left, and whether the ring
+    /// turns with it or keeps the shape its arithmetic writes.
+    @State private var rightToLeft = false
+    @State private var mirrored = true
+
     /// WHICH CARD IS AT THE FRONT - the phase, two-way: `Back` and `Next`
     /// write it and the ring travels there; the hand names the card it passes
     /// and the one it comes to rest on. It starts on the middle card, and it
@@ -120,6 +125,7 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
                 // THE CARDS, and what moves them - the whole of the example.
                 ring
             }
+            .layoutDirection(rightToLeft ? .rightToLeft : .inherited)
             .gridRow(0)
             // The cards stay ON the board: one turned far out in a small room
             // is cut at the board's edge rather than painted over the page.
@@ -146,8 +152,17 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
             Picker(Throwing.allCases, selection: $throwing) { $0.title }
                 .horizontalAlignment(.center)
                 .gridRow(2)
+
+            HStack {
+                SwitchRow("Right to left", $rightToLeft)
+
+                SwitchRow("Mirrored", $mirrored)
+            }
+            .spacing(16)
+            .horizontalAlignment(.center)
+            .gridRow(3)
         }
-        .rows(.fill, .auto, .auto)
+        .rows(.fill, .auto, .auto, .auto)
         .rowSpacing(10)
     }
 
@@ -185,6 +200,10 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
                 .fill(Color(hex: 0x000000))
                 .cornerRadius(16))
         .motion(.eased(.milliseconds(300), .cubicOut))
+        // RIGHT TO LEFT, MIRRORED: the ring turns about the board's middle,
+        // the arithmetic above still written left to right, and the hand turns
+        // it the mirror's way. Not mirrored, it keeps the shape it is written in.
+        .mirrorsRightToLeft(mirrored)
     }
 
     /// A card either way, from a button: the ring travels there, and the

@@ -294,6 +294,14 @@ final class GalleryViewTests: XCTestCase {
         }
     }
 
+    /// THE CARDS STAND IN READING ORDER, as a stack's views do: the gallery's
+    /// layout mirrors right to left.
+    func testTheCardsStandInReadingOrder() throws {
+        let patch = Renders().render(gallery(3).node)
+
+        XCTAssertEqual(try XCTUnwrap(patch.first(.phaseLayout)).props[.mirrorsRightToLeft], .bool(true))
+    }
+
     /// The card the run is ON stands in the middle of the room, at the size it
     /// was told, and its neighbors stand out from it.
     func testTheChosenCardStandsInTheMiddle() {

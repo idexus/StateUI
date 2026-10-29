@@ -369,6 +369,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         } placements: { room, phase, from in
             (0..<count).map { place(Double($0) - phase, setOut: Double($0) == from, count, room, shape) }
         }
+        // The cards stand in reading order, as a stack's views do.
+        .mirrorsRightToLeft(true)
         // A card the hand names is the position at once, in the frame that names it.
         .onNamed { turned in
             let card = min(max(Int(turned.rounded()), 0), count - 1)

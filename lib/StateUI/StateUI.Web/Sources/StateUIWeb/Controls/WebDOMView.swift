@@ -68,6 +68,9 @@ class WebDOMView {
     /// The place a layout's run last stood the view at; nil while no run places it.
     var placedByRun: HostPlacement?
 
+    /// Whether the run last stood the view from its layout's right edge, the run standing right to left.
+    var placedFromRight = false
+
     /// How far the view is drawn from where the browser lays it out while its place travels.
     var travelOffset: (x: Double, y: Double)?
 

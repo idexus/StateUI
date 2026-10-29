@@ -167,6 +167,9 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
     /// How the run travels to where the program or the hand's throw sends it.
     private var law = Motion.inherited
 
+    /// Whether the layout turns about its middle where it lays out right to left.
+    private var mirrors = false
+
     /// What a target the run names is told to beside the phase: a composed control's own value worked out from it.
     private var named: ((Phase) -> Void)?
 
@@ -362,6 +365,24 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         return copy
     }
 
+    /// Whether the layout follows the direction its language is read in, as a stack does: laid out right to left,
+    /// it turns about its middle - each view's place, its move along and its turn - and the hand over it turns
+    /// with it, so the arithmetic stays left to right.
+    ///
+    ///     PhaseLayout(albums, id: \.title, phase: $shown) { AlbumFace($0) } placements: { room, phase in … }
+    ///         .mirrorsRightToLeft(true)   // the next album stands on the left in Arabic
+    ///
+    /// A layout places its views as written unless it says so: a dial, a clock or a table of photos keeps its
+    /// shape in every language.
+    ///
+    /// - Parameter mirrors: whether to turn right to left.
+    /// - Returns: the layout, mirrored right to left or not.
+    public func mirrorsRightToLeft(_ mirrors: Bool) -> Self {
+        var copy = self
+        copy.mirrors = mirrors
+        return copy
+    }
+
     /// Runs when the user taps a view, with its item: on the view drawn on top where the tap lands.
     ///
     ///     .onItemTapped { card in open(card) }
@@ -471,6 +492,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
     /// The views and the hand over them, each where the run puts it.
     public var body: some View {
         let run = self.run
+        let mirrors = self.mirrors
 
         if Phase.axes.isEmpty {
             complain("A PhaseLayout's phase names no axes: `axes` lists the numbers the hand and the program move.")
@@ -487,6 +509,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         .modified { element in
             // The hand is heard on the element itself, over every view, which still answers a tap.
             element.describe(PhaseLayoutContract.handAxis, run.ways.count == 1 ? run.ways.first : nil)
+            element.describe(PhaseLayoutContract.mirrorsRightToLeft, mirrors ? true : nil)
             // What a dismissal asked for ends with the layout.
             if run.dismissal != nil { element.destroying.append { run.states.dismissals.orphan() } }
             if run.moves {
@@ -631,7 +654,7 @@ extension PhaseLayout: WalkedView {
             ("source", source), ("phase", phase), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("mask", mask as Any), ("tapped", tapped as Any),
             ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),
-            ("law", law), ("named", named as Any),
+            ("law", law), ("mirrors", mirrors), ("named", named as Any),
         ]
     }
 }

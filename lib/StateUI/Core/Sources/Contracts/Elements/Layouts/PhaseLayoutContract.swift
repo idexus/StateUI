@@ -56,8 +56,14 @@ public enum PhaseLayoutContract: ElementContract {
     public static let pinchMoved = ElementEvent<Self, (GesturePhase, Double, Double, Point)>(
         "pinchMoved", layer: .native)
 
+    /// Whether the layout turns about its middle where it lays out right to left: its views' places, their move
+    /// along and their turn, and the hand over it.
+    public static let mirrorsRightToLeft = ElementProperty<Self, Bool>(
+        "mirrorsRightToLeft", layer: .stateUI, travels: false)
+
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        handAxis, handMoved, handStepped, itemDrag, itemMoved, magnifies, pans, phase, pinchMoved, rotates,
+        handAxis, handMoved, handStepped, itemDrag, itemMoved, magnifies, mirrorsRightToLeft, pans, phase, pinchMoved,
+        rotates,
     ]
 }

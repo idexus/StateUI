@@ -124,7 +124,7 @@ extension AppKitElement {
         }
 
         if let layers = view as? AppKitZStackView {
-            layers.placement = placement(.area)
+            layers.placement = element.placement
             layers.padding = element.insets(.padding)
         }
 
@@ -295,12 +295,6 @@ extension AppKitElement {
     func requested(_ property: Prop) -> CGFloat? {
         guard let value = number(property), value.isFinite, value >= 0 else { return nil }
         return CGFloat(value)
-    }
-
-    func placement(_ property: Prop) -> HostPlacementRun? {
-        guard driven[property]?.kind == .placement, let carried = element.carriedValue(property) else { return nil }
-
-        return HostBoundary.placements(from: carried)
     }
 
     /// How the element's words break, as the tree says; word wrapping where it says nothing.

@@ -41,6 +41,20 @@ The run places every child: the views, in the items' order. A host lays out
 by arithmetic only the children a run leaves unplaced, so one run for all of
 them keeps every host's ZStack to the one rule it already has.
 
+## Right to left
+
+A phase layout places its views as its arithmetic writes them, laid out
+either way: its placements are the author's moves and turns, and StateUI
+turns no transform or drawing right to left - a dial, a clock, a light table
+or a body thrown about would come out the other way round. Which way the
+hand moves the run is the author's arithmetic too. A layout in reading order
+says so (`mirrorsRightToLeft(true)`, `PhaseLayoutContract.mirrorsRightToLeft`):
+laid out right to left, the host layer turns its run about the room's middle
+and tells it the hand the mirror's way, by the rule every layout follows
+(host/layout.md, right to left), so the arithmetic is written left to right
+once. `GalleryView` is such a layout, StateUI's composition saying what an
+author's own carousel says.
+
 ## The run
 
 The arithmetic runs on the host's frames, never in a render: whenever the

@@ -100,7 +100,7 @@ extension MountedElement {
             return heard.taken
         case .notch(let notches):
             let heard = handReading.notches(notches, way: handWay)
-            if let steps = heard.steps { send(.handStepped, [.numbers([steps.x, steps.y])], in: runtime) }
+            if let steps = heard.steps { send(.handStepped, [.numbers(alongRun(steps))], in: runtime) }
             return heard.taken
         case .dragStarted:
             send(.dragStarting, [], in: runtime)
@@ -204,12 +204,14 @@ extension MountedElement {
         handOutbox = []
         said(reports, in: runtime)
 
+        // Laid out right to left, the run's turn is drawn the other way round, and so is the fingers'.
         let fingers = pinchOutbox
         pinchOutbox = []
+        let turn = runDirection == .rightToLeft ? -1.0 : 1
         for report in fingers {
             send(.pinchMoved, [
-                .enumeration(report.phase.rawValue), .number(report.scale), .number(report.degrees),
-                .numbers([report.speed.x, report.speed.y]),
+                .enumeration(report.phase.rawValue), .number(report.scale), .number(report.degrees * turn),
+                .numbers([report.speed.x, report.speed.y * turn]),
             ], in: runtime)
         }
     }
@@ -238,18 +240,33 @@ extension MountedElement {
             if report.item {
                 send(.itemMoved, [
                     .enumeration(report.phase.rawValue),
-                    .numbers([report.at.x, report.at.y]),
-                    .numbers([report.speed.x, report.speed.y]),
+                    .numbers(inRun(report.at)),
+                    .numbers(alongRun(report.speed)),
                     .number(report.still),
                 ], in: runtime)
                 continue
             }
             send(.handMoved, [
                 .enumeration(report.phase.rawValue),
-                .numbers([report.moved.x, report.moved.y]),
-                .numbers([report.speed.x, report.speed.y]),
+                .numbers(alongRun(report.moved)),
+                .numbers(alongRun(report.speed)),
             ], in: runtime)
         }
+    }
+
+    /// A move along and down - the hand's, a speed, a wheel's notches - as the run's arithmetic reads it: right to
+    /// left, the other way along.
+    /// Design: docs/design/host/layout.md#right-to-left
+    private func alongRun(_ move: Point) -> [Double] {
+        [runDirection == .rightToLeft ? -move.x : move.x, move.y]
+    }
+
+    /// A point over the layout as the run's arithmetic reads it: right to left, turned about the middle of the room
+    /// it last said it has.
+    private func inRun(_ point: Point) -> [Double] {
+        guard runDirection == .rightToLeft else { return [point.x, point.y] }
+        let width = reportedFrame.count >= 4 ? reportedFrame[2] : 0
+        return [width - point.x, point.y]
     }
 
     private static let pointerEvents: [Event] = [

@@ -87,6 +87,40 @@ final class HandHearingTests: XCTestCase {
         XCTAssertEqual(handed.last ?? 0, 3, accuracy: 0.001, "a card a notch")
     }
 
+    /// A LAYOUT MIRRORED RIGHT TO LEFT HEARS THE HAND TURNED: laid out right to left, the hand moving right moves the
+    /// run on as moving left does left to right - and a layout placing as written hears the hand as it is.
+    func testALayoutMirroredRightToLeftHearsTheHandTurned() throws {
+        for mirrors in [true, false] {
+            let (runtime, clock) = running(RightToLeftApplication(mirrors: mirrors))
+            let ring = try ring(in: runtime)
+
+            ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
+            ring.hear(.hand(.changed, moved: Point(140, 0), speed: nil), in: runtime)
+            frames(runtime, clock, until: 32)
+
+            if mirrors {
+                XCTAssertEqual(handed.last ?? 0, 1.4, accuracy: 0.001, "moved on, as the hand goes in the mirror")
+            } else {
+                XCTAssertLessThan(handed.last ?? 0, 0, "back past the first card, as written")
+            }
+        }
+    }
+
+    /// THE VIEW UNDER THE HAND OF A MIRRORED LAYOUT IS THE ONE DRAWN THERE: the hand at the right edge takes the
+    /// view the run wrote at the left, and the author is told the point as the arithmetic reads it.
+    func testTheViewUnderTheHandOfAMirroredLayoutIsTheOneDrawnThere() throws {
+        let (runtime, clock) = running(RightToLeftApplication(mirrors: true))
+        let ring = try ring(in: runtime)
+
+        ring.hear(.hand(.began, moved: .zero, speed: nil, point: Point(295, 5)), in: runtime)
+        ring.hear(.hand(.changed, moved: Point(0, 30), speed: nil, point: Point(295, 35)), in: runtime)
+        frames(runtime, clock, until: 64)
+
+        let drag = try XCTUnwrap(dragged.first)
+        XCTAssertEqual(drag.item, 0, "the view drawn at the right edge")
+        XCTAssertEqual(drag.at.x, 5, accuracy: 0.001, "the point mirrored about the room's width")
+    }
+
     /// Display frames until `end`, sixteen milliseconds apart, the clock standing at each.
     private func frames(_ runtime: HostRuntime, _ clock: HandClock, until end: Double) {
         while clock.time < end {
@@ -99,6 +133,7 @@ final class HandHearingTests: XCTestCase {
     private func running(_ application: some Application = HandApplication()) -> (HostRuntime, HandClock) {
         handed = []
         tapped = 0
+        dragged = []
         stateUIUseApp(application)
         let clock = HandClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
@@ -157,6 +192,9 @@ final class HandHearingTests: XCTestCase {
 /// How many taps the layout and its cards heard.
 @MainActor private var tapped = 0
 
+/// What the layout's drags of one view told: the view and the point.
+@MainActor private var dragged: [(item: Int, at: Point)] = []
+
 /// A clock the test winds.
 @MainActor
 private final class HandClock: FrameClock {
@@ -198,4 +236,29 @@ private struct TappedHandPage: View {
 
 private struct TappedHandApplication: Application {
     var body: some Scene { WindowGroup { TappedHandPage() } }
+}
+
+/// A run of cards laid out right to left, mirrored or placed as written, the hand taking one card by moving across.
+private struct RightToLeftPage: View {
+    let mirrors: Bool
+    @State private var turn = 0.0
+
+    var body: some View {
+        PhaseLayout([0, 1, 2, 3, 4], phase: $turn) { Text("\($0)") } placements: { _, phase in
+            handed.append(phase)
+            return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
+        }
+        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
+        .motion(.eased(.milliseconds(200), .linear))
+        .mirrorsRightToLeft(mirrors)
+        .itemDrag(begins: .across)
+        .onItemDragged { drag in dragged.append((drag.item, drag.at)) }
+        .layoutDirection(.rightToLeft)
+    }
+}
+
+private struct RightToLeftApplication: Application {
+    let mirrors: Bool
+
+    var body: some Scene { WindowGroup { RightToLeftPage(mirrors: mirrors) } }
 }
