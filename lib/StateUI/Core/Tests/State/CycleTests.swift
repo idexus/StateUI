@@ -269,11 +269,11 @@ private final class Stamped: FollowedState {
 
 @MainActor
 final class CycleTests: XCTestCase {
-    private var board: CycleBoard { Renderer.shared.board(for: .display) }
+    private var board: CycleBoard { Renderer.shared.board }
 
     /// A cycle at an instant, for arithmetic that needs one and nothing else.
     private func cycle(at now: Double) -> EngineCycle {
-        EngineCycle(sync: .display, now: now, elapsed: 16, count: 1, reducesMotion: false)
+        EngineCycle(now: now, elapsed: 16, count: 1, reducesMotion: false)
     }
 
     override func setUp() async throws {
@@ -445,7 +445,7 @@ final class CycleTests: XCTestCase {
         _ = value.image
 
         value.wrappedValue = 7
-        _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
+        _ = HostBoundary.cycle(now: 0, reducesMotion: false)
 
         XCTAssertFalse(HostBoundary.cyclesPending, "nothing waits for a reader that has no number to read")
         XCTAssertEqual(value.wrappedValue, 7)
@@ -750,12 +750,12 @@ final class CycleTests: XCTestCase {
         // Carried from here on, on the display's board.
         _ = value.image
 
-        board.arm(EngineEntry(id: 1, priority: 0, sync: .display, follows: []) { _ in
+        board.arm(EngineEntry(id: 1, priority: 0, follows: []) { _ in
             seen.append(value.wrappedValue)
             binding.post(2)
             return .wait
         })
-        board.arm(EngineEntry(id: 2, priority: 1, sync: .display, follows: []) { _ in
+        board.arm(EngineEntry(id: 2, priority: 1, follows: []) { _ in
             seen.append(value.wrappedValue)
             return .again
         })

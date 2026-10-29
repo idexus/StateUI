@@ -1812,7 +1812,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(renders.fire(try XCTUnwrap(remove.events?[.clicked])))
 
         // One frame: what the host is given to show.
-        _ = HostBoundary.cycle(.display, now: 16, reducesMotion: false)
+        _ = HostBoundary.cycle(now: 16, reducesMotion: false)
 
         let journey = try XCTUnwrap(HostBoundary.value(for: phase).flatMap(HostBoundary.journey(from:)))
         XCTAssertEqual(journey.destination, [0], "the card behind, at the front")
@@ -1840,7 +1840,7 @@ final class CatalogTests: XCTestCase {
         var now = 50_000_000.0
         func frame() {
             now += 16
-            _ = HostBoundary.cycle(.display, now: now, reducesMotion: false)
+            _ = HostBoundary.cycle(now: now, reducesMotion: false)
         }
         frame()
         XCTAssertTrue(HostBoundary.report(.lanes([0, 0, 360, 600]), through: room))

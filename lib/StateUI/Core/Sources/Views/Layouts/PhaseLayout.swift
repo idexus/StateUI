@@ -542,7 +542,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         .motion(law)
         .frame($room)
         .engine([$room.followed, run.phase.followed, $held.followed, $flung.followed, $item.followed] + followed,
-                sync: .display, priority: 0) { cycle in
+                priority: 0) { cycle in
             run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
         }
     }

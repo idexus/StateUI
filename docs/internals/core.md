@@ -324,8 +324,8 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   *Internal*; the host runs it through `HostBoundary.cycle`.
   ([The board](../design/core/cycle.md#the-board),
   [where a write lands](../design/core/cycle.md#where-a-write-lands))
-- **`.engine(following:)`**, **`.engine(tracking:)`**, **`EngineCycle`**,
-  **`EngineAnswer`** and **`Sync`** make an engine: application frame code that
+- **`.engine(following:)`**, **`.engine(tracking:)`**, **`EngineCycle`**
+  and **`EngineAnswer`** make an engine: application frame code that
   runs while it has a reason - armed by a render, stirred by a write to a
   state it follows, awake after `.again`. Its own write never wakes it.
   *Application.* ([What wakes an engine](../design/core/cycle.md#what-wakes-an-engine);

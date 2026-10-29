@@ -23,13 +23,10 @@ struct CycleReport: Equatable {
     var awake = false
 }
 
-/// One sync's images, engines and cycle.
+/// The display cycle's images, engines and cycle.
 /// Design: docs/design/core/cycle.md#the-board
 @MainActor
 final class CycleBoard {
-    /// Which clock this board runs on.
-    let sync: Sync
-
     /// Every storage of this board, weakly: a state belongs to its view.
     private var storages: [WeakStorage] = []
 
@@ -46,10 +43,6 @@ final class CycleBoard {
 
     /// How many cycles have run.
     private var count: UInt64 = 0
-
-    init(sync: Sync) {
-        self.sync = sync
-    }
 
     /// Gives a storage a new shape - a plain value a slider now animates as a
     /// journey - before the host has its number.
@@ -245,7 +238,6 @@ final class CycleBoard {
             let (run, lastRan) = (engines[place].run, engines[place].lastRan)
             let elapsed = min(max(now - lastRan, 0), EngineCycle.mostElapsed)
             let answer = run(EngineCycle(
-                sync: sync,
                 now: now,
                 elapsed: elapsed,
                 count: count,

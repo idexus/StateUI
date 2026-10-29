@@ -17,8 +17,7 @@ extension Differ {
             var kept = true
 
             for (id, engine) in zip(previous, declared) {
-                kept = Renderer.shared.board(for: engine.sync)
-                    .rearm(id, following: engine.follows, with: engine.run) && kept
+                kept = Renderer.shared.board.rearm(id, following: engine.follows, with: engine.run) && kept
             }
 
             // Unless the board forgot them, as after a session claimed afresh: then they
@@ -33,10 +32,9 @@ extension Differ {
         return declared.map { engine in
             let id = allocateHandlerId()
 
-            Renderer.shared.board(for: engine.sync).arm(EngineEntry(
+            Renderer.shared.board.arm(EngineEntry(
                 id: id,
                 priority: engine.priority,
-                sync: engine.sync,
                 follows: engine.follows,
                 run: engine.run))
 

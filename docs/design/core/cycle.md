@@ -25,8 +25,9 @@ frame.
 ## The board
 
 A `CycleBoard` holds one cycle: the images of its states (weakly - a state
-belongs to its view) and its engines in running order. There is one board per
-sync - one clock, one cycle - and the display's own frame is the only sync.
+belongs to its view) and its engines in running order. There is one board,
+on the display's own frame - one clock, one cycle; an engine names no clock,
+as there is no other to name.
 
 The board is the UI thread's, as everything it serves is: a handler's write,
 the host's report and an engine's arithmetic come one after another on that
@@ -132,9 +133,9 @@ frame after: a layout's run of the views a render put in is drawn with them.
 
 A cycle's time never goes back - a drain told a moment before the last frame
 keeps the frame's - so it is the time of one clock: the runtime's. A runtime
-brings its clock (`HostBoundary.clockStarted`), and the boards' time starts
+brings its clock (`HostBoundary.clockStarted`), and the board's time starts
 over on it, the next cycle a start; a second runtime in one process, as a
-test makes one a case, would otherwise find the boards ahead of its clock and
+test makes one a case, would otherwise find the board ahead of its clock and
 every engine standing still until it caught up.
 
 ## Engines

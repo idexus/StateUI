@@ -275,12 +275,12 @@ extension State.Storage where Value: Walked {
             let made: HostStorage
 
             if let image {
-                Renderer.shared.board(of: image).reshape(image, to: StateImage.bytes(of: start.carried(in: .current)))
+                Renderer.shared.board.reshape(image, to: StateImage.bytes(of: start.carried(in: .current)))
                 made = image
             } else {
                 made = HostStorage(StateImage.bytes(of: start.carried(in: .current)))
                 made.origin = origin
-                Renderer.shared.board(of: made).hold(made)
+                Renderer.shared.board.hold(made)
             }
 
             image = made
@@ -423,7 +423,7 @@ extension State.Storage where Value: Walked {
     /// The journey as its lanes stand, or one at nought where they stand for none.
     private static func journey(on image: HostStorage) -> JourneyLanes<Value> {
         JourneyLanes<Value>(
-            carried: Renderer.shared.board(of: image).read(image, lanes: JourneyLanes<Value>.lanes))
+            carried: Renderer.shared.board.read(image, lanes: JourneyLanes<Value>.lanes))
             ?? JourneyLanes(nothing)
     }
 
@@ -434,7 +434,7 @@ extension State.Storage where Value: Walked {
     private static func lay(
         _ parts: [JourneyPart], of journey: JourneyLanes<Value>, on image: HostStorage, forcing: UInt64 = 0
     ) {
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
         guard case .lanes(let written) = journey.carried(in: .current) else { return }
         guard case .lanes(var lanes) = board.read(image, lanes: JourneyLanes<Value>.lanes),
               lanes.count == written.count
@@ -476,7 +476,7 @@ extension State.Storage where Value: StateValue {
             themed = Self.wearsTheTheme(initial) ? initial : nil
 
             made.origin = origin
-            Renderer.shared.board(of: made).hold(made)
+            Renderer.shared.board.hold(made)
 
             image = made
             held = nil
@@ -490,7 +490,7 @@ extension State.Storage where Value: StateValue {
             hostWrite = { value in
                 let bytes = StateImage.bytes(of: value.carried(in: .current))
                 known.bytes = bytes
-                Renderer.shared.board(of: made).write(bytes, to: made)
+                Renderer.shared.board.write(bytes, to: made)
             }
 
             // A host write ends where this side's do, the storage deciding by its readers.
@@ -544,7 +544,7 @@ extension State.Storage where Value: StateValue {
 
     /// The value as the lanes stand, or `nothing` where they stand for none.
     static func lifted(from image: HostStorage) -> Value {
-        Value(carried: Renderer.shared.board(of: image).read(image, lanes: Value.lanes))
+        Value(carried: Renderer.shared.board.read(image, lanes: Value.lanes))
             ?? nothing
     }
 

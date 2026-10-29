@@ -116,10 +116,10 @@ final class GalleryViewTests: XCTestCase {
         // The run told its room as well, as the host tells it: the hand is measured against the cards it draws.
         if let feeder {
             turned += 16
-            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+            _ = HostBoundary.cycle(now: turned, reducesMotion: false)
             moved(feeder, to: [0, 0, width, height])
             turned += 16
-            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+            _ = HostBoundary.cycle(now: turned, reducesMotion: false)
         }
 
         return (patch, renders.renderFromScratch(tree()))
@@ -179,7 +179,7 @@ final class GalleryViewTests: XCTestCase {
         // THE FIRST CYCLE OF ALL LATCHES rather than runs, so the room is fed
         // after it: a write swallowed by the latch is a write no engine ever
         // sees. Two turns and the arithmetic has answered.
-        let board = Renderer.shared.board(for: .display)
+        let board = Renderer.shared.board
 
         _ = board.cycle(now: turned, reducesMotion: false)
 
@@ -550,7 +550,7 @@ final class GalleryViewTests: XCTestCase {
 
         XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, moved, speed)))
         turned += 16
-        _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+        _ = HostBoundary.cycle(now: turned, reducesMotion: false)
     }
 
     /// The hand NAMES the card it passes: as it crosses halfway between two
@@ -593,7 +593,7 @@ final class GalleryViewTests: XCTestCase {
 
         if let feeder { moved(feeder, to: [0, 0, 700, 300]) }
         turned += 16
-        _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+        _ = HostBoundary.cycle(now: turned, reducesMotion: false)
 
         XCTAssertEqual(shown.wrappedValue, 4, "the card the user left in front")
         XCTAssertEqual(try XCTUnwrap(standing(phase, as: JourneyLanes<Double>.self)).destination, 4)
@@ -610,7 +610,7 @@ final class GalleryViewTests: XCTestCase {
             gallery(5).position(shown.projectedValue).onPositionChanged { heard.append($0) }.node
         }
         let showing = laid(renders, tree)
-        let board = Renderer.shared.board(for: .display)
+        let board = Renderer.shared.board
 
         shown.wrappedValue = 3
         _ = renders.render(tree())
@@ -644,7 +644,7 @@ final class GalleryViewTests: XCTestCase {
         // The run comes onto it, and the hand lets go of it on the card.
         for _ in 0..<30 {
             turned += 16
-            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+            _ = HostBoundary.cycle(now: turned, reducesMotion: false)
         }
         hand(renders, tree, .began)
         hand(renders, tree, .ended)

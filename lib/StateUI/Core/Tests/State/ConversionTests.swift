@@ -94,7 +94,7 @@ final class ConversionTests: XCTestCase {
     private func destination(of number: Int32) -> Double? {
         guard let image = Renderer.shared.storage(of: number) else { return nil }
 
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         return JourneyLanes<Double>(carried: board.read(image, lanes: JourneyLanes<Double>.lanes))?.destination
     }
@@ -113,7 +113,8 @@ final class ConversionTests: XCTestCase {
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.value]?.state)
-        let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
+        XCTAssertNotNil(Renderer.shared.storage(of: number), "a state rides that number")
+        let board = Renderer.shared.board
 
         XCTAssertNotEqual(number, volume.number, "the control is tied to the derived state, not the source")
         XCTAssertEqual(destination(of: number), 20, "worked out from 0.2 as the conversion was made")
@@ -177,7 +178,7 @@ final class ConversionTests: XCTestCase {
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         func words() -> String? {
             String(carried: board.read(image, lanes: 0))
@@ -205,7 +206,7 @@ final class ConversionTests: XCTestCase {
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         func words() -> String? {
             String(carried: board.read(image, lanes: 0))
@@ -249,7 +250,7 @@ final class ConversionTests: XCTestCase {
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         XCTAssertEqual(String(carried: board.read(image, lanes: 0)), "10")
 
@@ -289,7 +290,8 @@ final class ConversionTests: XCTestCase {
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.value]?.state)
-        let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
+        XCTAssertNotNil(Renderer.shared.storage(of: number), "a state rides that number")
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
 
         volume.wrappedValue = 0.123
@@ -321,7 +323,8 @@ final class ConversionTests: XCTestCase {
             .node)
 
         let number = try XCTUnwrap(patch.driven?[.value]?.state)
-        let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
+        XCTAssertNotNil(Renderer.shared.storage(of: number), "a state rides that number")
+        let board = Renderer.shared.board
 
         XCTAssertEqual(destination(of: number), 90)
 

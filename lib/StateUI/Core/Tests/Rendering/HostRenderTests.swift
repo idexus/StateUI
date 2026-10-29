@@ -148,7 +148,7 @@ final class HostRenderTests: XCTestCase {
 
         XCTAssertTrue(HostBoundary.cyclesPending)
 
-        let cycle = HostBoundary.cycle(.display, now: 100, reducesMotion: false)
+        let cycle = HostBoundary.cycle(now: 100, reducesMotion: false)
 
         XCTAssertEqual(
             cycle.changes,
@@ -260,7 +260,7 @@ final class HostRenderTests: XCTestCase {
 
         let binding = try XCTUnwrap(driven[.opacity])
         let standing = try XCTUnwrap(HostBoundary.journey(from: XCTUnwrap(HostBoundary.value(for: binding))))
-        _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
+        _ = HostBoundary.cycle(now: 0, reducesMotion: false)
 
         fade.wrappedValue = 0.9
         let landing = HostJourney(
@@ -271,7 +271,7 @@ final class HostRenderTests: XCTestCase {
         XCTAssertEqual(fade.wrappedValue, 0.9, "the destination the program wrote")
         XCTAssertEqual(fade.projectedValue.journey.value, 0.4, "where the host landed")
 
-        let crossed = HostBoundary.cycle(.display, now: 16, reducesMotion: false).changes.first { $0.state == binding.state }
+        let crossed = HostBoundary.cycle(now: 16, reducesMotion: false).changes.first { $0.state == binding.state }
         let journey = try XCTUnwrap(crossed.flatMap { HostBoundary.journey(from: $0.value) })
         XCTAssertEqual(journey.destination, [0.9], "the host hears it")
 

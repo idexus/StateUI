@@ -46,7 +46,7 @@ final class Conversion {
 
         if let back {
             made.append(
-                EngineDeclaration(follows: derived().map { [$0] } ?? [], sync: .display, priority: -2) { [self] _ in
+                EngineDeclaration(follows: derived().map { [$0] } ?? [], priority: -2) { [self] _ in
                     guard let reports = derived()?.reports, reports != reportsTaken else { return .wait }
                     reportsTaken = reports
                     back()
@@ -55,7 +55,7 @@ final class Conversion {
         }
 
         made.append(
-            EngineDeclaration(follows: follows, sync: .display, priority: -1) { [self] _ in
+            EngineDeclaration(follows: follows, priority: -1) { [self] _ in
                 forward(true)
                 return .wait
             })

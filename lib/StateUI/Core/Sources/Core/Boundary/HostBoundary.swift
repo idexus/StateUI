@@ -290,17 +290,13 @@
         return Renderer.shared.dispatch(completion)
     }
 
-    /// Advances one StateUI clock and returns the state values it published.
-    public static func cycle(
-        _ sync: Sync,
-        now: Double,
-        reducesMotion: Bool
-    ) -> HostCycle {
-        Renderer.shared.hostCycle(sync: sync, now: now, reducesMotion: reducesMotion)
+    /// Runs the display's cycle and returns the state values it published.
+    public static func cycle(now: Double, reducesMotion: Bool) -> HostCycle {
+        Renderer.shared.hostCycle(now: now, reducesMotion: reducesMotion)
     }
 
     /// Whether any state or engine is waiting for a host cycle.
-    public static var cyclesPending: Bool { Renderer.shared.cycleAwake() != 0 }
+    public static var cyclesPending: Bool { Renderer.shared.cycleAwake() }
 
     /// What this process's renders came to, for a host that prints the tally.
     public static var tally: HostTally {

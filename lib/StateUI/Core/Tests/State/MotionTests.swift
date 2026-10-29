@@ -551,7 +551,7 @@ final class MotionTests: XCTestCase {
 
         renders.render(Slider(volume.projectedValue).id("s").node)
 
-        let board = Renderer.shared.board(of: volume.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         _ = board.dirty()
 
@@ -582,7 +582,7 @@ final class MotionTests: XCTestCase {
 
         renders.render(Stepper(servings.projectedValue).id("s").node)
 
-        let board = Renderer.shared.board(of: servings.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         _ = board.dirty()
 

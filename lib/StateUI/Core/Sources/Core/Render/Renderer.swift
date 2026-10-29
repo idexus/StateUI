@@ -112,9 +112,9 @@ public final class Renderer {
     /// Design: docs/design/core/acts.md#awaiting-an-answer
     var resumesPending = 0
 
-    /// One board per sync; the display's frame is the only sync.
+    /// The display cycle's board.
     /// Design: docs/design/core/cycle.md#the-board
-    let boards: [CycleBoard] = [CycleBoard(sync: .display)]
+    let board = CycleBoard()
 
     /// Every state issued a number, held weakly: a storage belongs to its view.
     var states: [Int32: () -> HostStorage?] = [:]

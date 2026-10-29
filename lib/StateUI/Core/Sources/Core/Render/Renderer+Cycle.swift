@@ -2,23 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // The renderer's half of the display cycle: the number the host quotes each
-// carried state by, the boards, and the host's reports and cycles.
+// carried state by, the board, and the host's reports and cycles.
 // Design: docs/design/core/cycle.md#state-numbers
 
 extension Renderer {
-    /// The board a value belongs to.
-    func board(of storage: HostStorage) -> CycleBoard { boards[storage.board] }
-
-    /// The board one clock's cycles run on.
-    func board(for sync: Sync) -> CycleBoard {
-        boards.first { $0.sync == sync } ?? boards[0]
-    }
-
-    /// Forgets an engine on every board - what an element leaving the tree owes.
+    /// Forgets an engine - what an element leaving the tree owes.
     func disarm(_ id: Int) {
-        for board in boards {
-            board.disarm(id)
-        }
+        board.disarm(id)
     }
 
     /// The number the host quotes this value by, issued once and kept on it.
@@ -41,7 +31,7 @@ extension Renderer {
         guard binding.mode != .in,
               let storage = storage(of: binding.state),
               storage.door == binding.kind,
-              let bytes = board(of: storage).whole(binding.state)
+              let bytes = board.whole(binding.state)
         else { return nil }
 
         return StateImage.carried(
@@ -52,8 +42,8 @@ extension Renderer {
     /// The first lane of a state a native gesture names by its number, which the
     /// gesture carries on the view.
     func hostGestureValue(state: Int32) -> Double? {
-        guard let storage = storage(of: state),
-              let bytes = board(of: storage).whole(state),
+        guard storage(of: state) != nil,
+              let bytes = board.whole(state),
               case .lanes(let lanes) = StateImage.carried(
                 of: bytes, lanes: StateValueLanes.own)
         else { return nil }
@@ -67,7 +57,7 @@ extension Renderer {
         guard value.isFinite, let storage = storage(of: state) else { return false }
 
         let mask: UInt64 = 1
-        board(of: storage).told(
+        board.told(
             StateImage.bytes(of: .lanes([value])),
             mask: mask,
             to: storage)
@@ -96,7 +86,7 @@ extension Renderer {
             mask = ~0
 
         case (.plain, .lanes(let lanes)), (.feed, .lanes(let lanes)):
-            let expected = board(of: storage).read(storage, lanes: StateValueLanes.own)
+            let expected = board.read(storage, lanes: StateValueLanes.own)
 
             guard case .lanes(let current) = expected, current.count == lanes.count else {
                 return false
@@ -108,7 +98,6 @@ extension Renderer {
             return false
         }
 
-        let board = board(of: storage)
         board.told(StateImage.bytes(of: value), mask: mask, to: storage)
 
         // After the board holds the reported value, which both callbacks read.
@@ -130,7 +119,7 @@ extension Renderer {
               !update.isEmpty,
               let storage = storage(of: binding.state),
               storage.door == binding.kind,
-              let bytes = board(of: storage).whole(binding.state)
+              let bytes = board.whole(binding.state)
         else { return false }
 
         let current = StateImage.carried(of: bytes, lanes: StateValueLanes.own)
@@ -163,15 +152,14 @@ extension Renderer {
         if update.contains(.velocity) { replace(journey.velocity, at: width * 2) }
 
         // The report speaks of the journey the host last read: a lane written since stands.
-        let laid = board(of: storage).told(StateImage.bytes(of: .lanes(lanes)), mask: mask, to: storage, keepsUnread: true)
+        let laid = board.told(StateImage.bytes(of: .lanes(lanes)), mask: mask, to: storage, keepsUnread: true)
         storage.told?(laid)
         storage.sampleTaken()
         return true
     }
 
-    /// Runs one board's cycle and takes the typed values it published.
-    func hostCycle(sync: Sync, now: Double, reducesMotion: Bool) -> HostCycle {
-        let board = board(for: sync)
+    /// Runs the display's cycle and takes the typed values it published.
+    func hostCycle(now: Double, reducesMotion: Bool) -> HostCycle {
         let report = board.cycle(now: now, reducesMotion: reducesMotion)
         let changes = board.dirty().compactMap { entry -> HostStateChange? in
             guard let storage = storage(of: entry.number), let kind = storage.door else {
@@ -196,14 +184,14 @@ extension Renderer {
         return (UInt64(1) << UInt64(count)) - 1
     }
 
-    /// How many boards have anything waiting for a cycle.
-    func cycleAwake() -> Int32 {
-        Int32(boards.filter { $0.awake }.count)
+    /// Whether anything is waiting for a cycle.
+    func cycleAwake() -> Bool {
+        board.awake
     }
 
-    /// Whether a board waits on something a turn answers at once, an engine going on of its own aside.
+    /// Whether the board waits on something a turn answers at once, an engine going on of its own aside.
     func cycleAsked() -> Bool {
-        boards.contains { $0.asked }
+        board.asked
     }
 
     /// A state by its number, or nil where none rides it any more.
@@ -218,11 +206,9 @@ extension Renderer {
         return storage
     }
 
-    /// A runtime brought a clock of its own: every board's time starts over on it.
+    /// A runtime brought a clock of its own: the board's time starts over on it.
     func clockStarted() {
-        for board in boards {
-            board.restartClock()
-        }
+        board.restartClock()
     }
 
     /// Puts the numbering back to a fresh process's, for the tests, whose
@@ -236,9 +222,6 @@ extension Renderer {
         }
 
         nextNumber = 1
-
-        for board in boards {
-            board.clear()
-        }
+        board.clear()
     }
 }

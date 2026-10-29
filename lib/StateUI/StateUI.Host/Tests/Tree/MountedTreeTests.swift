@@ -920,7 +920,7 @@ final class MountedTreeTests: XCTestCase {
             image.laneKind = .number
         }
         for state in states { state.wrappedValue = 1 }
-        _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
+        _ = HostBoundary.cycle(now: 0, reducesMotion: false)
         let bindings = images.map {
             HostStateBinding(state: Renderer.shared.number(for: $0), mode: .out, kind: .property, laneKind: .number)
         }

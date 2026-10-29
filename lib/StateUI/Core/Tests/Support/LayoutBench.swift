@@ -15,7 +15,7 @@ final class LayoutBench {
     /// One cycle of the display's board - with less motion asked for, where `reducesMotion`.
     func cycle(reducesMotion: Bool = false) {
         turned += 16
-        _ = Renderer.shared.board(for: .display).cycle(now: turned, reducesMotion: reducesMotion)
+        _ = Renderer.shared.board.cycle(now: turned, reducesMotion: reducesMotion)
     }
 
     /// Where the layout of `patch` shows its views, in the items' order, as the host reads the run.
@@ -27,7 +27,7 @@ final class LayoutBench {
     /// One frame as the host runs it: the board's cycle, and what it wrote read out, so a report after it lands.
     func frame() {
         turned += 16
-        _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+        _ = HostBoundary.cycle(now: turned, reducesMotion: false)
     }
 
     /// The hand over the layout `tree` describes, as a host reports it - its phase, how far it moved what is under

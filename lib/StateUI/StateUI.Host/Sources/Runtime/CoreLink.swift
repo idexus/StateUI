@@ -58,7 +58,7 @@
 
     /// Runs the display's cycle at `now` and returns what it published.
     public func cycle(now: Double, reducesMotion: Bool) -> HostCycle {
-        HostBoundary.cycle(.display, now: now, reducesMotion: reducesMotion)
+        HostBoundary.cycle(now: now, reducesMotion: reducesMotion)
     }
 
     /// The complete image of an attached state.

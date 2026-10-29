@@ -129,7 +129,7 @@ final class JourneyTests: XCTestCase {
         let wash = State(wrappedValue: Color(hex: 0x7C3AED))
         Renders().render(Rectangle().background(wash.projectedValue).node)
         let image = try XCTUnwrap(wash.storage.walkedImage())
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
         typealias Lanes = JourneyLanes<Color>
 
         // The host reports a frame on its way: lanes no eight bits say.
@@ -178,7 +178,7 @@ final class JourneyTests: XCTestCase {
         var now = 0.0
         let crossing = { () -> Motion? in
             now += 16
-            Renderer.shared.board(of: image).cycle(now: now, reducesMotion: false)
+            Renderer.shared.board.cycle(now: now, reducesMotion: false)
             return self.law(crossing: image)
         }
 
@@ -231,7 +231,7 @@ final class JourneyTests: XCTestCase {
         let image = try XCTUnwrap(offset.storage.walkedImage())
 
         offset.projectedValue.journey.move(to: Point(0, 5), .none)
-        Renderer.shared.board(of: image).cycle(now: 16, reducesMotion: false)
+        Renderer.shared.board.cycle(now: 16, reducesMotion: false)
 
         XCTAssertEqual(law(crossing: image), Motion.none, "the law it was given, `.none`")
         XCTAssertEqual(offset.projectedValue.journey.motion, .spring(), "the value's own standing")
@@ -306,7 +306,7 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.destination, 100, "which the engine reads back")
 
         let image = try XCTUnwrap(ball.projectedValue.journeyImage)
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         board.cycle(now: 0, reducesMotion: false)
 

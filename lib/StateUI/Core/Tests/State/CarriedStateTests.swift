@@ -262,7 +262,7 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(patch.driven?[.value]?.mode, .inOut)
         XCTAssertEqual(patch.driven?[.value]?.kind, .property)
 
-        let board = Renderer.shared.board(of: volume.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         _ = board.dirty()
 
@@ -359,7 +359,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertNotNil(patch.children.first?.driven?[.value], "the slider is tied all the same")
 
-        let board = Renderer.shared.board(of: volume.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
 
@@ -386,7 +386,7 @@ final class CarriedStateTests: XCTestCase {
                 }
                 .node)
 
-        let board = Renderer.shared.board(of: volume.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
 
@@ -608,8 +608,8 @@ final class CarriedStateTests: XCTestCase {
         // a state nothing has walked has none until something asks.
         _ = loose.projectedValue.journeyImage
 
-        let storage = try XCTUnwrap(Renderer.shared.storage(of: loose.number))
-        let image = try XCTUnwrap(Renderer.shared.board(of: storage).whole(loose.number))
+        XCTAssertNotNil(Renderer.shared.storage(of: loose.number), "a state rides the number")
+        let image = try XCTUnwrap(Renderer.shared.board.whole(loose.number))
 
         XCTAssertEqual(
             JourneyLanes<Double>(carried: StateImage.carried(of: image, lanes: StateValueLanes.own))?.motion,
