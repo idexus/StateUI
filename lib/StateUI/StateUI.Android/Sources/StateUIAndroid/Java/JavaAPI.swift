@@ -541,6 +541,7 @@ enum JavaAPI {
     static let setHandlesBack = Java.method(activity, "setHandlesBack", "(Z)V")
 
     static let views = Java.findClass("stateui/android/StateUIViews")
+    static let statusWords = Java.staticMethod(views, "statusWords", "(Landroid/content/Context;I)V")
     static let measureView = Java.staticMethod(views, "measure", "(Landroid/view/View;II)J")
     static let placeView = Java.staticMethod(views, "place", "(Landroid/view/View;IIII)V")
     static let pressable = Java.staticMethod(

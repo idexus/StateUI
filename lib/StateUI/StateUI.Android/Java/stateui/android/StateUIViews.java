@@ -576,6 +576,27 @@ final class StateUIViews {
     }
 
     /**
+     * The status bar's words over the band the window's bar paints under it: 1 light, 2 dark, 0 the theme's - dark on
+     * a light theme. Nothing on a context that is no activity.
+     */
+    @SuppressWarnings("deprecation")
+    static void statusWords(Context context, int words) {
+        if (!(context instanceof Activity)) return;
+        Window window = ((Activity) context).getWindow();
+        boolean dark = words == 0 ? !StateUIEnvironment.night(context) : words == 2;
+        if (Build.VERSION.SDK_INT >= 30) {
+            int light = WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS;
+            WindowInsetsController bars = window.getInsetsController();
+            if (bars != null) bars.setSystemBarsAppearance(dark ? light : 0, light);
+        } else {
+            View decor = window.getDecorView();
+            int flags = decor.getSystemUiVisibility();
+            decor.setSystemUiVisibility(dark
+                    ? flags | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR : flags & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+        }
+    }
+
+    /**
      * Draws the activity edge to edge, the system's bars clear over it - their words dark on a light theme - and tells
      * the host what stands over the root on each edge as it changes: the system's bars and a cutout, and the
      * keyboard, which no longer makes the window smaller.

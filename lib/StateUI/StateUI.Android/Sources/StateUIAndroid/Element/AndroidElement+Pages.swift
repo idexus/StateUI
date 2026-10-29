@@ -156,6 +156,7 @@ extension AndroidElement {
         }
 
         navigation.setShowsBar(element.arrangedChildren.last?.showsTheStacksBar ?? true)
+        AndroidRenderer.shared?.showStatusWords()
         let bar = navigation.bar(taking: AndroidBarView.Words(on: colors.background))
         bar.show(content)
         bar.showTitleView(page?.chromeTitleView?.android.layoutItem?.view)

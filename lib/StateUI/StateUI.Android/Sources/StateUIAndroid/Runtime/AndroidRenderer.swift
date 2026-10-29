@@ -55,6 +55,23 @@ final class AndroidRenderer {
     /// What the first window shows, by the host layer's rule: its arrangement of pages, its sheets, its overlays.
     private let presentation = WindowPresentation()
 
+    /// The words the status bar shows over the window's top: those of the bar the window's visible stack paints
+    /// under it - light on a dark band - else the theme's.
+    /// Design: docs/design/platforms/android/pages.md#the-bar
+    private(set) var statusWords = AndroidBarView.Words.platform
+
+    /// Gives the status bar the words of the bar under it - the window's visible stack's, where it shows one - as
+    /// the window shows and as a bar is shown again.
+    func showStatusWords() {
+        let words = presentation.arrangement?.visibleNavigationStack.map { stack -> AndroidBarView.Words in
+            guard stack.arrangedChildren.last?.showsTheStacksBar ?? true else { return .platform }
+            return AndroidBarView.Words(on: (stack.visiblePage?.barColors ?? stack.barColors).background)
+        } ?? .platform
+        guard words != statusWords else { return }
+        statusWords = words
+        Java.callStatic(JavaAPI.views, JavaAPI.statusWords, .object(context.reference), .int(words.rawValue))
+    }
+
     /// The application's scenes as they stand, kept for its next start - one for the process, handed from each
     /// activity to the next.
     private(set) var scenes = SceneKeeper()
@@ -328,6 +345,7 @@ final class AndroidRenderer {
         let rose = changes.sheets.map { modals.present($0) } ?? false
         modals.standAtTheirSizes()
         standUnderTheWindowsInsets()
+        showStatusWords()
 
         // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no
         // touch beside what they hold, which goes on to the page under them.

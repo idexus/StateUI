@@ -82,6 +82,13 @@ hold of its own. Android numbers the items in the order the menu is written,
 so each item's place is given in that order: an action, the entries of a menu
 it opens there, and the overflow's menus after every action.
 
+The window draws edge to edge, so the status bar stands over the band the
+window's bar paints under it, and its words follow that band as the bar's
+own words do (`BandWords.light`): light over a dark bar, dark over a light
+one, the theme's where the window's visible stack paints none or shows no
+bar (`AndroidRenderer.showStatusWords`, as the window shows and as a bar is
+shown again).
+
 ## A split view
 
 Each column stands under a bar of its own, Android's toolbar as a stack's

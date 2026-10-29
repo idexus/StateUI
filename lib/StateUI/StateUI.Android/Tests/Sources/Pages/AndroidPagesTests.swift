@@ -16,6 +16,7 @@ final class AndroidPagesTests: XCTestCase {
             ("testAPageStandsOnItsWindowsColor", testAPageStandsOnItsWindowsColor),
             ("testTabsOnAStackNameTheBarByTheirOwnTitle", testTabsOnAStackNameTheBarByTheirOwnTitle),
             ("testWordsOnAPaintedBarFollowHowDarkItIs", testWordsOnAPaintedBarFollowHowDarkItIs),
+            ("testTheStatusBarsWordsFollowThePaintedBarUnderThem", testTheStatusBarsWordsFollowThePaintedBarUnderThem),
             ("testABarsColorTravelsOnTheDisplaysFrames", testABarsColorTravelsOnTheDisplaysFrames),
             ("testAPushAndAPopAreHeardByThePagesInOrder", testAPushAndAPopAreHeardByThePagesInOrder),
             ("testTheBarOpensTheSidebarAndBackClosesIt", testTheBarOpensTheSidebarAndBackClosesIt),
@@ -170,6 +171,34 @@ final class AndroidPagesTests: XCTestCase {
             dark.wrappedValue = false
             host.runtime.pump.turn()
             XCTAssertEqual(navigation.bar.content.foreground, .color(red: 0, green: 0, blue: 0, alpha: 255))
+        }
+    }
+
+    /// The status bar's words over the window's painted bar follow it as the bar's own do: light over a dark bar,
+    /// dark over a light one, the theme's where the tree paints none.
+    func testTheStatusBarsWordsFollowThePaintedBarUnderThem() throws {
+        try onMainActor {
+            let navy = State(wrappedValue: true)
+            let host = AndroidRenderer.running(reducesMotion: true) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Root")
+                } destination: { _ in TitledPage(title: "Pushed") }
+                    .barBackground(navy.wrappedValue ? Color(red: 0, green: 0, blue: 128) : Color(red: 255, green: 230, blue: 0))
+            }
+            host.layOut()
+            XCTAssertEqual(host.statusWords, .light, "over a dark bar")
+
+            navy.wrappedValue = false
+            host.runtime.pump.turn()
+            XCTAssertEqual(host.statusWords, .dark, "over a light one")
+
+            let plain = AndroidRenderer.running(reducesMotion: true) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Root")
+                } destination: { _ in TitledPage(title: "Pushed") }
+            }
+            plain.layOut()
+            XCTAssertEqual(plain.statusWords, .platform, "the theme's over a bar the tree paints none of")
         }
     }
 
