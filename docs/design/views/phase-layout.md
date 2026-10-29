@@ -136,10 +136,11 @@ motion of none, shows a change at once, and a new room never travels: the
 layout follows the window.
 
 A shift is the bounds' place and size, the opacity and the shade apart, and
-the transform as the correction that takes the pose's to the one shown,
-decomposed into a move, a turn - the short way - a slant and a scale: a
-blend of the matrices would squash a turned view, and a correction at
-nought is the pose's own transform, slant and all. The order is the pose's
+the transform's five drawn numbers apart - its move, its turn the short way,
+its width and its height - each travelling on its own, as a view's own
+transform does: a blend of the matrices would squash a turned view, and a
+slant no view draws would be carried for nothing (types/transforms.md, the
+shear limit). A shift at nought is the pose itself. The order is the pose's
 at once; a shade the layout draws none of is not blended.
 
 ## The phase
@@ -310,8 +311,8 @@ poses could not be worked out lazily.
 ### Blending a pose
 
 `LayoutBlend` blends one view's poses channel by channel along the curve:
-the bounds (sizes at nought at least); the transform as `LayoutShift`'s
-parts - move, turn, slant and scale - the turn unwrapped from keyframe to
+the bounds (sizes at nought at least); the transform as its five drawn
+numbers - move, turn, width and height - the turn unwrapped from keyframe to
 keyframe the short way, and one transform at every keyframe left as it is;
 opacity and shade inside 0...1, as a cubic overshoots, an unshaded layout
 left unshaded. `zIndex` is blended as a number and the drawing order ranked

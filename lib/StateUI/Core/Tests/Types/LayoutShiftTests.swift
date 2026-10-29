@@ -7,8 +7,8 @@ import XCTest
 /// How far a view stands from where its arithmetic puts it: measured from where it was shown, laid back over a pose,
 /// and decaying to nothing under a motion.
 final class LayoutShiftTests: XCTestCase {
-    /// A SHIFT LAID OVER THE NEW POSE SHOWS THE VIEW WHERE IT STOOD: place, size, opacity, shade and a transform -
-    /// moved, turned, slanted and sized - all of it.
+    /// A SHIFT LAID OVER THE NEW POSE SHOWS THE VIEW WHERE IT STOOD: place, size, opacity, shade and a transform as
+    /// a view draws it - moved, turned and sized, a slant dropped, as no view shows one.
     func testAShiftShowsTheViewWhereItStood() {
         let shown = Placement(
             Rect(10, 20, 100, 60), transform: .scale(1.5).rotate(30).skew(10, 0).translate(4, -6), opacity: 0.4,
@@ -18,7 +18,7 @@ final class LayoutShiftTests: XCTestCase {
         let laid = LayoutShift(from: shown, to: pose).applied(to: pose)
 
         XCTAssertEqual(laid.bounds, shown.bounds)
-        assertTransform(laid.transform, shown.transform)
+        assertTransform(laid.transform, shown.transform.drawn)
         XCTAssertEqual(laid.opacity, 0.4, accuracy: 0.000_001)
         XCTAssertEqual(laid.shade, 0.2, accuracy: 0.000_001)
         XCTAssertEqual(laid.zIndex, 7, "the order is the pose's at once")

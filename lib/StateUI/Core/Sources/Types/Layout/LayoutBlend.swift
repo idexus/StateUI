@@ -7,7 +7,7 @@
 /// The poses at an axis's keyframes, blended where the phase stands between them.
 enum LayoutBlend {
     /// `runs` - every view's pose, in the views' order, at each of `knots` - blended at `place`, between
-    /// `knots[segment]` and the next, along `curve`: each view's bounds, its transform's move, turn, slant and scale,
+    /// `knots[segment]` and the next, along `curve`: each view's bounds, its transform's five drawn numbers,
     /// its opacity and its shade, and the drawing order ranked from the blended `zIndex`.
     static func blend(
         _ runs: [[Placement]], at place: Double, segment: Int, knots: [Double], curve: some LayoutInterpolation
@@ -52,24 +52,23 @@ enum LayoutBlend {
             zIndex: 0)
     }
 
-    /// The transforms blended as their parts, the turn from each to the next the short way; one transform at every
-    /// keyframe stays as it is.
+    /// The transforms blended as the five numbers a view draws - the turn from each to the next the short way; one
+    /// transform at every keyframe stays as it is.
     /// Design: docs/design/views/phase-layout.md#blending-a-pose
     private static func transform(_ transforms: [ViewTransform], along: ([Double]) -> Double) -> ViewTransform {
         guard let first = transforms.first, transforms.contains(where: { $0 != first }) else {
             return transforms.first ?? .identity
         }
 
-        let parts = transforms.map(\.parts)
-        var turns = parts.map(\.turn)
+        var turns = transforms.map(\.rotation)
         for index in turns.indices.dropFirst() {
             let step = turns[index] - turns[index - 1]
             turns[index] -= (step / 360).rounded() * 360
         }
 
-        return ViewTransform(parts: (
-            along(parts.map(\.moveX)), along(parts.map(\.moveY)), along(turns), along(parts.map(\.slant)),
-            along(parts.map(\.scaleX)), along(parts.map(\.scaleY))))
+        return ViewTransform(
+            x: along(transforms.map(\.x)), y: along(transforms.map(\.y)), rotation: along(turns),
+            width: along(transforms.map(\.width)), height: along(transforms.map(\.height)))
     }
 
     /// Each view's drawing rank from its blended number, equal numbers sharing one: views swap as their numbers

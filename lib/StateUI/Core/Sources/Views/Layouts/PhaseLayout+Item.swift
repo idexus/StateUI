@@ -64,7 +64,7 @@ extension PhaseLayout.Run {
     /// Whether `placement`, turned as it is drawn about its middle, covers `point`.
     static func covers(_ placement: Placement, _ point: Point) -> Bool {
         let bounds = placement.bounds
-        guard let undo = placement.transform.inverted else { return false }
+        guard let undo = placement.transform.drawn.inverted else { return false }
 
         let x = point.x - (bounds.x + bounds.width / 2)
         let y = point.y - (bounds.y + bounds.height / 2)
