@@ -19,23 +19,30 @@ final class AndroidPageView: AndroidSingleChildView {
     /// The bottom bar's view, held after the content's.
     private var barView: AndroidView?
 
+    /// The line along the bar's top while rows go on past it - its hard edge, which Android draws for none.
+    private let line = AndroidSeparatorView()
+
+    /// The edge the bar shows while rows go on past it.
+    private(set) var edge = ScrollEdge.automatic
+
     init(page: MountedElement) {
         self.page = page
         super.init()
     }
 
-    /// Shows `bar` - the page's bottom bar - at its foot; nil for none.
-    func showBottomBar(_ bar: MountedElement?) {
+    /// Shows `bar` - the page's bottom bar - at its foot, with `edge` while rows go on past it; nil for none.
+    func showBottomBar(_ bar: MountedElement?, edge: ScrollEdge) {
         self.bar = bar
+        self.edge = edge
         let view = bar?.android.layoutItem?.view
-        guard view !== barView else { return }
+        guard view !== barView else { return requestLayout() }
         barView = view
         holdChildren()
         requestLayout()
     }
 
     override func heldViews() -> [AndroidView] {
-        super.heldViews() + (barView.map { [$0] } ?? [])
+        super.heldViews() + (barView.map { [$0, line] } ?? [])
     }
 
     override func arrange(in bounds: Rect) {
@@ -57,8 +64,15 @@ final class AndroidPageView: AndroidSingleChildView {
         item.view.layout(SingleChildArithmetic.place(of: item, in: room, direction: direction))
         if let barItem, let place {
             barItem.view.layout(SingleChildArithmetic.place(of: barItem, in: place.bar, direction: direction))
+            line.layout(Rect(x: bounds.x, y: place.bar.y, width: bounds.width, height: 1))
         }
-        (page?.pageScroller?.android.view as? AndroidScrollView)?.keepClear(
-            SafeAreaArithmetic.clearance(room: room, safe: clear))
+        let scroller = page?.pageScroller?.android.view as? AndroidScrollView
+        scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: clear))
+        let follow: () -> Void = { [weak self, weak scroller] in
+            guard let self else { return }
+            line.setShown(edge != .none && BottomBarPlace.continues(scroller: scroller?.standing))
+        }
+        scroller?.standingChanged = follow
+        follow()
     }
 }

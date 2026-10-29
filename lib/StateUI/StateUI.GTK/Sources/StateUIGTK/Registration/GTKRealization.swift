@@ -39,6 +39,8 @@ enum GTKRealization {
         + "command - a header bar button, Ctrl+R."
 
     static let records: [HostRecord] = [
+        .partial(BottomBarContract.edge, missing: "No edge: GNOME's flat bottom bar shows its shadow while the "
+            + "content scrolls, whatever the edge says."),
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),

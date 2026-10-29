@@ -17,6 +17,10 @@ extension WinUIDriver {
             throw DriverCannot(reading: property, of: element)
         }
         if let value = backendHolds(property, on: element) { return value }
+        if property == .edge,
+           let page = (element.enclosing(type: .page)?.native as? WinUIElement)?.view as? WinUISingleChildView {
+            return page.edge.propValue
+        }
         let view = (element.native as? WinUIElement)?.view
         let cannot = DriverCannot(reading: property, of: element)
         switch element.type {

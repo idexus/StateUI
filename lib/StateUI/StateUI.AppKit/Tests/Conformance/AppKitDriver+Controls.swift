@@ -19,6 +19,9 @@ extension AppKitDriver {
         if let button = view as? AppKitButtonView, let held = buttonHolds(property, button) { return held }
         switch (property, view) {
         case (.clipsContent, _) where !(view is NSControl): return view.clipsToBounds.propValue
+        case (.edge, _):
+            let bar = sequence(first: view, next: \.superview).lazy.compactMap { $0 as? AppKitBottomBarView }.first
+            return bar?.edge.propValue
         case (.scrollOffset, let scroll as AppKitScrollView):
             return Point(scroll.offset).propValue
         case (.scrollOffset, let scroll as NSScrollView):

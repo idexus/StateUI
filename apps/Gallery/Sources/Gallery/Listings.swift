@@ -1428,51 +1428,61 @@ enum Listings {
         @State private var path: [Int] = []
         @State private var messages = (1...24).map { "Message \($0)" }
         @State private var draft = ""
+        @State private var edge = ScrollEdge.automatic
+        static let edges: [ScrollEdge] = [.automatic, .hard, .none]
 
         /// What the window is made of, which the field's blur is tinted with as the bars' are.
         @Environment(\.window) private var window
 
         var body: some View {
-            Button("Open the conversation")
-                .onClicked { presented = true }
-                .sheet(isPresented: $presented) {
-                    NavigationStack($path) {
-                        Grid {
-                            ScrollView {
-                                VStack {
-                                    ForEach(Array(messages.indices), id: \.self) { index in
-                                        Text(messages[index])
-                                    }
-                                }
+            VStack {
+                // How the rows show at the bar's edge as they pass under it.
+                Picker(Self.edges, selection: $edge) { "\($0)".titled }
+                    .presentation(.segmented)
+
+                Button("Open the conversation")
+                    .onClicked { presented = true }
+                    .sheet(isPresented: $presented) { conversation }
+            }
+        }
+
+        private var conversation: some View {
+            NavigationStack($path) {
+                Grid {
+                    ScrollView {
+                        VStack {
+                            ForEach(Array(messages.indices), id: \.self) { index in
+                                Text(messages[index])
                             }
                         }
-                        .ignoresSafeArea(.all)
-                        .galleryPage("Conversation")
-                        // The field grows with its lines, and the bar with it; the
-                        // rows pass under the bar, blurred behind the field in what
-                        // the window is made of.
-                        .bottomBar {
-                            Grid {
-                                ZStack {
-                                    TextEditor($draft)
-                                        .placeholder("Message")
-                                        .growsWithText(true)
-                                }
-                                Button("Send")
-                                    .onClicked {
-                                        guard !draft.isEmpty else { return }
-                                        messages.append(draft)
-                                        draft = ""
-                                    }
-                                    .verticalAlignment(.end)
-                                    .gridColumn(1)
-                            }
-                            .columns(.fill, .auto)
-                        }
-                    } destination: { _ in
-                        Text("")
                     }
                 }
+                .ignoresSafeArea(.all)
+                .galleryPage("Conversation")
+                // The field grows with its lines, and the bar with it; the rows
+                // pass under the bar, blurred behind the field in what the window
+                // is made of.
+                .bottomBar(edge: edge) {
+                    Grid {
+                        ZStack {
+                            TextEditor($draft)
+                                .placeholder("Message")
+                                .growsWithText(true)
+                        }
+                        Button("Send")
+                            .onClicked {
+                                guard !draft.isEmpty else { return }
+                                messages.append(draft)
+                                draft = ""
+                            }
+                            .verticalAlignment(.end)
+                            .gridColumn(1)
+                    }
+                    .columns(.fill, .auto)
+                }
+            } destination: { _ in
+                Text("")
+            }
         }
         """#,
         "BoundPropertiesSample": #"""

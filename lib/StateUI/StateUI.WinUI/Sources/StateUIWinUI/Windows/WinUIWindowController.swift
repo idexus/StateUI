@@ -54,7 +54,9 @@ final class WinUIWindowController {
         showSheets(presentation.sheets, in: runtime)
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
         for page in element.pages {
-            (page.winUI.view as? WinUISingleChildView)?.showBottomBar(page.chromeBottomBar?.winUI.layoutItem)
+            (page.winUI.view as? WinUISingleChildView)?.showBottomBar(
+                page.chromeBottomBar?.winUI.layoutItem, edge: page.chromeBottomBarEdge,
+                scroller: page.pageScroller?.winUI.view as? WinUIScrollView)
         }
     }
 

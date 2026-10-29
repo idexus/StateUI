@@ -117,7 +117,14 @@ final class GTKScrollView: GTKLayoutView {
 
     /// The scroller's view changed: the user's move, joined to the moves before it until the display's next frame;
     /// the program's own move is its write's echo.
+    /// What runs as the scroller moves, whoever moved it: a bottom bar beside the page follows the rows going on.
+    var standingChanged: (() -> Void)?
+
+    /// Where the scroller stands and the farthest it stands.
+    var standing: (offset: Point, reach: Point) { scroller.standing }
+
     private func scrolled(to standing: Point) {
+        standingChanged?()
         guard let moved = scrollerOffset.toolkitMoved(to: standing) else { return }
         movement.userMoved(from: moved.from, to: moved.to)
     }

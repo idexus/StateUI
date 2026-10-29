@@ -11,18 +11,35 @@ class WinUISingleChildView: WinUILayoutView {
     /// none.
     private var bottomBar: WinUILayoutItem?
 
-    /// Shows `bar` - the page's bottom bar - beneath its content; nil for none.
+    /// The line along the bar's top while rows go on past it - its hard edge, which WinUI draws for none.
+    private lazy var line = WinUIStackPartView.separator()
+
+    /// The edge the bar shows while rows go on past it.
+    private(set) var edge = ScrollEdge.automatic
+
+    /// The page's scroller, whose rows going on the line follows.
+    private weak var scroller: WinUIScrollView?
+
+    /// Shows `bar` - the page's bottom bar - beneath its content, with `edge` while `scroller`'s rows go on past it;
+    /// nil for none.
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
-    func showBottomBar(_ bar: WinUILayoutItem?) {
+    func showBottomBar(_ bar: WinUILayoutItem?, edge: ScrollEdge, scroller: WinUIScrollView?) {
         let held = bar?.view !== bottomBar?.view
-        bottomBar = bar
+        (bottomBar, self.edge, self.scroller) = (bar, edge, scroller)
+        scroller?.standingChanged = { [weak self] in self?.showLine() }
+        showLine()
         guard held else { return }
         holdChildren()
         invalidateMeasurements()
     }
 
+    /// Shows the line while the bar shows an edge and rows go on past it.
+    private func showLine() {
+        line.setShown(bottomBar != nil && edge != .none && BottomBarPlace.continues(scroller: scroller?.standing))
+    }
+
     override func heldViews() -> [WinUIView] {
-        super.heldViews() + (bottomBar.map { [$0.view] } ?? [])
+        super.heldViews() + (bottomBar.map { [$0.view, line] } ?? [])
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
@@ -39,6 +56,7 @@ class WinUISingleChildView: WinUILayoutView {
             let place = BottomBarPlace(
                 height: SingleChildArithmetic.size(of: bar, width: room.width).height, safe: room, whole: room)
             bar.view.layout(SingleChildArithmetic.place(of: bar, in: place.bar, direction: direction))
+            line.layout(Rect(x: room.x, y: place.bar.y, width: room.width, height: 1))
             room = place.above
         }
         guard let item = items.first, item.isShown else { return }

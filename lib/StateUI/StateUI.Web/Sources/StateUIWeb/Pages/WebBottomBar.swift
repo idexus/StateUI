@@ -55,10 +55,14 @@ final class WebBottomBar {
     /// Whether the page's content runs under the room's foot.
     private var runsUnder = false
 
+    /// The edge the bar shows while rows pass under it.
+    private var edge = ScrollEdge.automatic
+
     /// Follows what of the page stands under the bar - its content where it runs under the room's foot,
-    /// `scroller`'s rows as they move - and stands the bar on its ground while anything does.
-    func follow(runsUnder: Bool, scroller: WebDOMView?) {
-        self.runsUnder = runsUnder
+    /// `scroller`'s rows as they move - and shows `edge` while anything does.
+    func follow(runsUnder: Bool, scroller: WebDOMView?, edge: ScrollEdge) {
+        (self.runsUnder, self.edge) = (runsUnder, edge)
+        holder.attribute("data-edge", edge == .none ? "none" : edge == .hard ? "hard" : "automatic")
         if let scroller, scroller !== followed {
             scroller.listen("scroll") { [weak self] in self?.standOnGround() }
             // Rows coming and going move the scroller's reach, which no scroll tells.
@@ -68,10 +72,11 @@ final class WebBottomBar {
         standOnGround()
     }
 
-    /// The ground and its line while anything stands under the bar (`BottomBarPlace.covers`).
+    /// The edge's blur and line while anything stands under the bar (`BottomBarPlace.covers`), but for no edge.
     private func standOnGround() {
         let scroller = followed.map { (offset: WebElement.standing($0), reach: WebElement.reach($0)) }
-        holder.attribute("data-under", BottomBarPlace.covers(contentRunsUnder: runsUnder, scroller: scroller) ? "" : nil)
+        let covered = BottomBarPlace.covers(contentRunsUnder: runsUnder, scroller: scroller)
+        holder.attribute("data-under", covered && edge != .none ? "" : nil)
     }
 
     /// Reads the bar's height again, and tells the page where it changed.

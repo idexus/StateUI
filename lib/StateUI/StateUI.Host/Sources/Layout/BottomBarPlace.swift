@@ -20,21 +20,28 @@
     /// The room above the bar - where a host's bars stand beside the page, the whole room its content has.
     public let above: Rect
 
-    /// How far above the bar its ground begins: the soft edge a host draws itself rises from nothing there to whole at
-    /// the room's foot, through the bar.
-    public static let fade = 24.0
+    /// How thick the blur under a hard edge is, where a host draws it: the rows show through it blurred, not hidden.
+    public static let blur = Blur.Thickness.regular
 
-    /// The share of the ground's height, from its top, it rises over: whole below it.
-    public static let rise = 0.6
+    /// How much of the page's own color tints that blur, so the rows blur in the page's hue.
+    public static let tint = 0.5
 
-    /// Whether anything of a page stands under its bottom bar, so the bar stands on a ground of its own - a blur
-    /// fading softly toward the content - rather than on the page: nothing where the content stands clear of the room's
+    /// Whether anything of a page stands under its bottom bar, so the bar shows its edge (`ScrollEdge`) rather than
+    /// stand on the page: nothing where the content stands clear of the room's
     /// foot (`contentRunsUnder` false); where it runs under, its scroller's rows while they stand short of their end
     /// - at its end the last row stands clear above the bar - and anything else it holds always.
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
     public static func covers(contentRunsUnder: Bool, scroller: (offset: Point, reach: Point)?) -> Bool {
         guard contentRunsUnder else { return false }
-        guard let scroller else { return true }
+        guard scroller != nil else { return true }
+        return continues(scroller: scroller)
+    }
+
+    /// Whether a page's rows go on past its bottom bar - under it, or beyond its top where it stands beside the page -
+    /// so the bar shows its edge: its scroller's, while they stand short of their end; none for no scroller.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    public static func continues(scroller: (offset: Point, reach: Point)?) -> Bool {
+        guard let scroller else { return false }
         return scroller.offset.y < scroller.reach.y - 0.5
     }
 

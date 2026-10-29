@@ -82,7 +82,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Anchor](Anchor.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Application](Application.md) | 24 | 12 ✅ · 11 ✓ · 1 – | 14 ✅ · 10 ✓ | 12 ✅ · 11 ✓ · 1 – | 19 ✅ · 4 ✓ · 1 – | 16 ✅ · 6 ✓ · 1 – | 18 ✅ · 6 ✓ |
-| [BottomBar](BottomBar.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [BottomBar](BottomBar.md) | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
 | [ButtonMenu](ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Marker](Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -106,10 +106,10 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarGroup](ToolbarGroup.md) | 15 | 5 ✅ · 10 – | 5 ✅ · 10 – | 4 ✅ · 1 ☑️ · 10 – | 6 ✅ · 9 – | 5 ✅ · 10 – | 14 ✅ · 1 – |
 | [ToolbarToggle](ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 107 | 110 | 89 | 135 | 100 | 165 |
+| ✅ |  | 108 | 111 | 90 | 136 | 100 | 166 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
 | – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 208 | **189** | **196** | **185** | **196** | **195** | **195** |
+| **Met** | 209 | **190** | **197** | **186** | **197** | **195** | **196** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 

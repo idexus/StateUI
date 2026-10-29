@@ -39,6 +39,7 @@ enum WinUIRealization {
         + "ScrollView it does not pull."
 
     static let records: [HostRecord] = [
+        .complete(BottomBarContract.edge),
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(ApplicationContract.useAccentColor,
             reason: "The user's accent stands on Windows: StateUI does not override it with the application's."),

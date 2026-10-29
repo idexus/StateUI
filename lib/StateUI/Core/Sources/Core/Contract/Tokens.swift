@@ -113,6 +113,7 @@ extension NodeType {
     static let contentMode = ShapeContract.contentMode.token
     static let hidesChildrenFromAccessibility = VisualElementContract.hidesChildrenFromAccessibility.token
     static let growsWithText = TextEditorContract.growsWithText.token
+    static let edge = BottomBarContract.edge.token
     static let background = VisualElementContract.background.token
     static let barBackground = BarElementContract.barBackground.token
     static let toolbarStyle = BarElementContract.toolbarStyle.token

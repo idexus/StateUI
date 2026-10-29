@@ -24,6 +24,10 @@ extension AndroidDriver {
         if property == .title || property == .icon, let tabs = element.parent, tabs.type == .tabView {
             return try tabHolds(property, of: element, in: tabs)
         }
+        if property == .edge,
+           let page = (element.enclosing(type: .page)?.native as? AndroidElement)?.view as? AndroidPageView {
+            return page.edge.propValue
+        }
         if element.type == .window, property == .title { return Self.activityTitle() }
         if element.type == .window, property == .background { return Self.windowBackground() }
         if element.type == .sheet, property == .background {

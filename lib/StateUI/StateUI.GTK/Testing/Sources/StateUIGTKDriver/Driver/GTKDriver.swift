@@ -287,6 +287,10 @@ final class GTKDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
+        if property == .edge,
+           let page = (element.enclosing(type: .page)?.native as? GTKElement)?.view as? GTKSingleChildView {
+            return page.bottomBarEdge?.propValue
+        }
         if [.toolbarButton, .toolbarToggle].contains(element.type) { return try actionHolds(property, element) }
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .sheet, property == .background {

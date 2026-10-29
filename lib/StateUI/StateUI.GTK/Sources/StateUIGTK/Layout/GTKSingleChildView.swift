@@ -7,6 +7,9 @@
 /// A page, or a container like it: its one child in its room.
 @MainActor
 class GTKSingleChildView: GTKLayoutView {
+    /// The edge a page's bottom bar shows while rows go on past it, as its frame stands it; nil for no bar.
+    var bottomBarEdge: ScrollEdge?
+
     override func contentSize(width: Double?) -> LayoutSize {
         SingleChildArithmetic.size(of: items.first, width: width)
     }

@@ -107,6 +107,9 @@ extension WebDriver {
         case (.scrollOffset, is WebScrollView):
             let offset = try numbers("[e.scrollLeft, e.scrollTop]", on: e)
             return offset.count == 2 ? Point(x: offset[0], y: offset[1]).propValue : nil
+        case (.edge, _):
+            let edge = try WebBrowser.evaluate("e.closest('.stateui-bottom-bar')?.dataset.edge ?? ''", on: e)
+            return (edge == "none" ? ScrollEdge.none : edge == "hard" ? .hard : .automatic).propValue
         default: break
         }
         if let shape = view as? WebShapeView, let held = try shapeHolds(property, shape) { return held }

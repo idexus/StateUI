@@ -8,50 +8,28 @@ import AppKit
 
 /// A page's bottom bar in its room - a window's, a sheet's, a split view's pane: the bar's view at the room's foot over
 /// the page, as tall as it lays out across the safe area (`BottomBarPlace`); on the page while nothing stands under
-/// it, on a blur rising softly to the room's edge while the page's rows pass under it.
+/// it, and at its edge (`ScrollEdge`) while the page's rows pass under it - AppKit drawing none for a view of its own,
+/// the hard one the window's bars wear, a blur in the page's hue with a line along its top, down to the room's edge.
 /// Design: docs/design/host/layout.md#a-bar-at-the-foot
 @MainActor
 final class AppKitBottomBarView: AppKitSingleChildView {
-    /// What the bar stands on while anything stands under it: what its page stands on (`bottomBarGround`), blurring
-    /// what passes under it where that is a blur - rising from nothing above the bar to whole at the room's foot,
-    /// past the bar's own bounds above, so a click there reaches the rows.
-    private let ground: NSView = {
-        let ground = NSView()
-        ground.wantsLayer = true
+    /// The blur under a hard edge, in the page's own hue (`bottomBarTint`).
+    private let ground: AppKitMaterialView = {
+        let ground = AppKitMaterialView(BottomBarPlace.blur, behindWindow: false)
         ground.isHidden = true
         return ground
     }()
 
-    /// The blur the ground is made of where the page stands on one; nil where it stands on a color.
-    private var blur: AppKitMaterialView?
+    /// The line along the hard edge.
+    private let line: NSBox = {
+        let line = NSBox()
+        line.boxType = .separator
+        line.isHidden = true
+        return line
+    }()
 
-    /// The material the ground shows.
-    private var material: HostMaterial?
-
-    /// The ground's fade: clear at its top (`BottomBarPlace.fade` above the bar), whole from `BottomBarPlace.rise`
-    /// down - the color's, and the blur's tint's; the blur takes it as its own mask image, as a blur under a masked
-    /// layer draws no blur.
-    private let fade = AppKitBottomBarView.fadeLayer()
-
-    /// The fade over the blur's tint.
-    private let tintFade = AppKitBottomBarView.fadeLayer()
-
-    /// A fade, clear at its top and whole from `BottomBarPlace.rise` down.
-    private static func fadeLayer() -> CAGradientLayer {
-        let fade = CAGradientLayer()
-        fade.colors = [NSColor.clear.cgColor, NSColor.black.cgColor]
-        fade.locations = [0, NSNumber(value: BottomBarPlace.rise)]
-        return fade
-    }
-
-    /// The blur's mask image for `size`, clear at its top and whole from `BottomBarPlace.rise` down.
-    private static func fadeImage(_ size: NSSize) -> NSImage {
-        NSImage(size: size, flipped: true) { rect in
-            NSGradient(colors: [.clear, .black], atLocations: [0, BottomBarPlace.rise], colorSpace: .sRGB)?
-                .draw(from: NSPoint(x: 0, y: 0), to: NSPoint(x: 0, y: rect.height), options: [.drawsAfterEndingLocation])
-            return true
-        }
-    }
+    /// The edge the bar shows while rows pass under it.
+    private(set) var edge = ScrollEdge.automatic
 
     /// Where the bar's view stands on its ground.
     private var barRoom = Rect(x: 0, y: 0, width: 0, height: 0)
@@ -64,27 +42,7 @@ final class AppKitBottomBarView: AppKitSingleChildView {
     override func setItem(_ item: AppKitLayoutItem?) {
         super.setItem(item)
         if ground.superview !== self { addSubview(ground, positioned: .below, relativeTo: nil) }
-    }
-
-    /// Makes the ground of `material` - a blur and its tint, a color, or the window's own where it says nothing.
-    private func showGround(_ material: HostMaterial) {
-        guard material != self.material else { return }
-        self.material = material
-        let thickness = material.blur ?? (material.isEmpty ? .ultraThick : nil)
-        if let thickness {
-            let shown = blur ?? AppKitMaterialView(thickness, behindWindow: false)
-            shown.material = AppKitMaterialView.role(thickness)
-            shown.wash.layer?.backgroundColor = paintedColor(material.paint)?.cgColor
-            shown.wash.isHidden = material.paint == nil
-            if shown.superview !== ground { ground.addSubview(shown) }
-            blur = shown
-            ground.layer?.backgroundColor = nil
-        } else {
-            blur?.removeFromSuperview()
-            blur = nil
-            ground.layer?.backgroundColor = paintedColor(material.painted)?.cgColor
-        }
-        needsLayout = true
+        if line.superview !== self { addSubview(line, positioned: .above, relativeTo: ground) }
     }
 
     /// Where the bar stands at the foot of `safe` in `whole`, as tall as it lays out across it; nil where it shows
@@ -94,11 +52,16 @@ final class AppKitBottomBarView: AppKitSingleChildView {
         return BottomBarPlace(height: Double(fittingContentSize(width: safe.width).height), safe: safe, whole: whole)
     }
 
-    /// Stands the bar at `place` - its ground across the room's foot, its view in the bar's place on it - and
-    /// follows what of `page` stands under it: its content, `scroller`'s rows as they move. Nowhere for no place.
+    /// Stands the bar at `place` - across the room's foot, its view in the bar's place - and follows what of `page`
+    /// stands under it: its content, `scroller`'s rows as they move. Nowhere for no place.
     func stand(at place: BottomBarPlace?, over page: MountedElement?, scroller: AppKitScrollView?) {
         guard let place else { return frame = .zero }
-        if let page { showGround(page.bottomBarGround) }
+        edge = page?.chromeBottomBarEdge ?? .automatic
+        let color = page?.bottomBarTint.flatMap(paintedColor) ?? window?.backgroundColor
+        ground.wash.wantsLayer = true
+        ground.wash.layer?.backgroundColor = color.map { $0.withAlphaComponent($0.alphaComponent * BottomBarPlace.tint) }?
+            .cgColor
+        ground.wash.isHidden = color == nil
         frame = NSRect(placed: place.ground)
         barRoom = Rect(x: place.bar.x - place.ground.x, y: 0, width: place.bar.width, height: place.bar.height)
         needsLayout = true
@@ -106,38 +69,20 @@ final class AppKitBottomBarView: AppKitSingleChildView {
             SafeAreaArithmetic.under($0.contentIgnoresSafeArea, direction: $0.layoutDirection).bottom
         } ?? false
         let follow: () -> Void = { [weak self, weak scroller] in
-            self?.standsOnGround(BottomBarPlace.covers(contentRunsUnder: runsUnder, scroller: scroller?.standing))
+            guard let self else { return }
+            let covered = BottomBarPlace.covers(contentRunsUnder: runsUnder, scroller: scroller?.standing)
+            ground.isHidden = !covered || edge == .none
+            line.isHidden = ground.isHidden
         }
         scroller?.standingChanged = follow
         follow()
     }
 
-    /// Shows the ground while anything stands under the bar.
-    private func standsOnGround(_ covers: Bool) {
-        ground.isHidden = !covers
-    }
-
     override var childRoom: Rect { barRoom }
 
     override func layout() {
-        let reach = CGFloat(BottomBarPlace.fade)
-        ground.frame = NSRect(x: 0, y: -reach, width: bounds.width, height: bounds.height + reach)
-        // The layer's own geometry, whichever way the view counts: the fade's clear end at the ground's top.
-        let flipped = ground.layer?.contentsAreFlipped() ?? false
-        for each in [fade, tintFade] {
-            (each.startPoint, each.endPoint) = flipped ? (CGPoint(x: 0.5, y: 0), CGPoint(x: 0.5, y: 1))
-                : (CGPoint(x: 0.5, y: 1), CGPoint(x: 0.5, y: 0))
-            each.frame = ground.bounds
-        }
-        if let blur {
-            ground.layer?.mask = nil
-            blur.frame = ground.bounds
-            blur.maskImage = Self.fadeImage(ground.bounds.size)
-            blur.wash.wantsLayer = true
-            if blur.wash.layer?.mask !== tintFade { blur.wash.layer?.mask = tintFade }
-        } else if ground.layer?.mask !== fade {
-            ground.layer?.mask = fade
-        }
+        ground.frame = bounds
+        line.frame = NSRect(x: 0, y: 0, width: bounds.width, height: 1)
         super.layout()
     }
 }

@@ -373,24 +373,21 @@ over it - the page keeping clear what the bar and what stands under it take
 inside it - a word typed into its field - shows no chrome again; the bar's
 coming and going does.
 
-A bar stands on the page while nothing stands under it, and on a ground of
-its own - a blur fading softly toward the content, down to the room's edge -
-while anything does (`BottomBarPlace.covers`): the page's content where it
-runs under the room's foot, its scroller's rows while they stand short of
-their end. The edge is soft, as a bar a field stands in reads best: the
-ground rises from nothing `BottomBarPlace.fade` above the bar to whole
-`BottomBarPlace.rise` of the way down, the rows blurring more the lower they
-pass. The fade masks the blur itself - its own mask, UIKit's `mask` view,
-AppKit's `maskImage` - as a blur under a masked layer draws no blur at all. UIKit asks its scroll edge effect under the bar for the soft one
-(`bottomEdgeEffect.style`, `UIScrollEdgeElementContainerInteraction`, the bar
-reaching the fade above its view) - which iOS 26 draws and iOS 27 draws not at
-all, natively or in SwiftUI alike. Where the platform draws no soft edge -
-iOS 27, AppKit, the Web - the host draws the ground itself, made of what the
-page stands on (`bottomBarGround`: its own background, its arrangement's, else
-its window's), so the rows fade into the page's own ground and not into a
-material's gray. GTK's flat bottom bar shows its shadow only while the content
-scrolls, as GNOME's do; a bar standing beside the page has nothing under it.
-What the bar's view paints of its own stands over either.
+A bar stands on the page while nothing stands under it, and shows its edge
+(`ScrollEdge`, the bar's `edge`) while its page's rows go on past it - under it
+where they run under the room's foot (`BottomBarPlace.covers`), beyond its top
+where it stands beside the page (`continues`), its scroller short of its end.
+`.automatic` is the platform's: UIKit's own scroll edge effect under the bar
+(`UIScrollEdgeElementContainerInteraction`, soft on iOS 26, hard on iOS 27),
+GNOME's flat bottom bar, which shows its shadow while the content scrolls, and
+where the platform draws none - AppKit, Android, WinUI, the Web - the hard
+one. `.hard` cuts the rows off at the bar: UIKit's hard edge, a blur in the
+page's hue with a line along its top on AppKit and the Web, the theme's line
+along the bar where it stands beside the page, GNOME's bar with its border.
+`.none` shows the rows as they are - all but GNOME's flat bar, whose shadow
+stays. A soft edge drawn by StateUI itself is no road yet: a masked blur
+crossfades sharp rows into blurred ones rather than blurring them more, and
+iOS 27 draws no soft edge at all.
 
 A scroller standing at its end stays at its end as what it reaches moves with
 its content the same - its room shrinking beside a growing bar, what it keeps

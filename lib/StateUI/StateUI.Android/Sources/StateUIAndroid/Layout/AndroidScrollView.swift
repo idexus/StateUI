@@ -177,8 +177,15 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
 
     // MARK: - The user's movement
 
+    /// What runs as the scroller moves, whoever moved it: a bottom bar beside the page follows the rows going on.
+    var standingChanged: (() -> Void)?
+
+    /// Where the scroller stands and the farthest it stands, in points.
+    var standing: (offset: Point, reach: Point) { (standingOffset, reach) }
+
     /// Android moved the scroller: where to, joined to the moves before it until the display's next frame.
     func scrolled() {
+        standingChanged?()
         guard let moved = scrollerOffset.toolkitMoved(to: standingOffset) else { return }
         movement.userMoved(from: moved.from, to: moved.to)
     }

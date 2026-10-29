@@ -124,6 +124,12 @@ final class WinUIScrollView: WinUILayoutView {
         return super.measure(width: width, height: height)
     }
 
+    /// What runs as the scroller moves, whoever moved it: a bottom bar beside the page follows the rows going on.
+    var standingChanged: (() -> Void)?
+
+    /// Where the scroller stands and the farthest it stands, in DIPs.
+    var standing: (offset: Point, reach: Point) { scroller.standing }
+
     /// The room the scroller last stood in; nil before its first arrangement.
     private var laidOutIn: Rect?
 
@@ -149,6 +155,7 @@ final class WinUIScrollView: WinUILayoutView {
     /// The scroller's view changed: the program's move arriving, or the user's, joined to the moves before it until
     /// the display's next frame.
     private func scrolled(to standing: Point) {
+        standingChanged?()
         guard let moved = scrollerOffset.toolkitMoved(to: standing) else { return }
         movement.userMoved(from: moved.from, to: moved.to)
     }

@@ -98,3 +98,7 @@ Popover 4
 TextualElement 2
 Link 2
 TextAndIconElement 2
+BottomBar 2
+android BottomBar 2
+gtk BottomBar 2
+winui BottomBar 2

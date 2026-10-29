@@ -1,2 +1,3 @@
-# revision 1.1
+# revision 2.2
 BottomBar: ✅
+BottomBar.edge: ☑️ No edge: GNOME's flat bottom bar shows its shadow while the content scrolls, whatever the edge says.

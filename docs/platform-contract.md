@@ -523,7 +523,7 @@ Every control, and every part an application, its windows and its pages are made
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Anchor](controls/Anchor.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Application](controls/Application.md) | 24 | 12 ✅ · 11 ✓ · 1 – | 14 ✅ · 10 ✓ | 12 ✅ · 11 ✓ · 1 – | 19 ✅ · 4 ✓ · 1 – | 16 ✅ · 6 ✓ · 1 – | 18 ✅ · 6 ✓ |
-| [BottomBar](controls/BottomBar.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [BottomBar](controls/BottomBar.md) | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
 | [ButtonMenu](controls/ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Marker](controls/Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -547,10 +547,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarGroup](controls/ToolbarGroup.md) | 15 | 5 ✅ · 10 – | 5 ✅ · 10 – | 4 ✅ · 1 ☑️ · 10 – | 6 ✅ · 9 – | 5 ✅ · 10 – | 14 ✅ · 1 – |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 107 | 110 | 89 | 135 | 100 | 165 |
+| ✅ |  | 108 | 111 | 90 | 136 | 100 | 166 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
 | – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 208 | **189** | **196** | **185** | **196** | **195** | **195** |
+| **Met** | 209 | **190** | **197** | **186** | **197** | **195** | **196** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -605,6 +605,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
+| [BottomBar](controls/BottomBar.md) | `edge` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`), `role` | 9 | 6 ✅ · 2 ✓ · 1 – | 7 ✅ · 2 ✓ | 4 ✅ · 2 ✓ | 9 ✅ | 8 ✅ · 1 ✓ | 9 ✅ |
 | [Canvas](controls/Canvas.md) | `onDragged` (`dragged`), `drawing`, `onPressed` (`pressed`), `onReleased` (`released`) | 4 | 1 ✅ · 3 ✓ | 1 ✅ · 3 ✓ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -685,11 +686,11 @@ realizes the element and each of its members.
 `barBackground`, `barForegroundColor`, `canDrag`, `choosesOpacity`,
 `clipsContent`, `color`, `columns`, `columnSpacing`, `contentMode`,
 `cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`, `date`,
-`destination`, `dragText`, `drawing`, `droppedFileTypes`, `endReachedWithin`,
-`fill`, `fillRule`, `floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`,
-`fontWeight`, `format`, `frame`, `geometryTransform`, `gridColumn`,
-`gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`, `handAxis`,
-`height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
+`destination`, `dragText`, `drawing`, `droppedFileTypes`, `edge`,
+`endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
+`fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`, `geometryTransform`,
+`gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`,
+`handAxis`, `height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
 `hidesWithSidebar`, `holdDuration`, `horizontalAlignment`,
 `horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
 `iconSpacing`, `ignoresInput`, `ignoresSafeArea`, `inputPurpose`,

@@ -753,8 +753,19 @@ it stands on the keyboard while one shows. The page's safe area ends above it:
 its content stands clear of it, and a scroller let under the bars scrolls under
 it, its last row stopping clear. A scroller at its end stays at its end as the
 bar grows or the keyboard rises, so the last message stays in sight; one
-elsewhere stays where it is. The bar stands on the page while nothing passes
-under it, and on a blur fading softly toward the content while the rows do. Where the platform's bars stand over the page the
+elsewhere stays where it is.
+
+The bar stands on the page while nothing passes under it. While the rows go on
+past it, its `edge` says how they show there: `.automatic`, what it is unsaid,
+is the platform's own edge, `.hard` cuts them off at the bar on a blur with a
+line along it, and `.none` shows them as they are:
+
+```swift quote
+ScrollView { messages }
+    .bottomBar(edge: .hard) {
+        Composer(draft: $draft)
+    }
+``` Where the platform's bars stand over the page the
 bar does too, the rows softening as they pass under it; where they stand
 beside the page, the page ends above it. Declared on a stack or a window's
 page, a bottom bar stands on every page shown there that declares none of its

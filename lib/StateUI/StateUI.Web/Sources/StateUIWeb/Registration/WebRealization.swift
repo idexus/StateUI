@@ -23,6 +23,7 @@ enum WebRealization {
         + "reloads the whole page: a page refreshes by a command."
 
     static let records: [HostRecord] = [
+        .complete(BottomBarContract.edge),
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),

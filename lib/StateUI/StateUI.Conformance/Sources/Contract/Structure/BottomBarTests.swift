@@ -6,7 +6,7 @@
 
 /// `BottomBarContract` on a host: the view a page declares at its foot stands there as tall as it lays out, the page's
 /// content clear above it and growing smaller as it grows; a scroller let under it at its end stays at its end, one
-/// elsewhere where it is.
+/// elsewhere where it is; the edge it shows over what scrolls under it is the one its view says.
 @_spi(Host) public enum BottomBarTests: ConformanceFamily {
     public static let name = "BottomBar"
 
@@ -76,6 +76,33 @@
                 tall.wrappedValue = 130
                 try s.settle { try abs(standing() - (end + 60)) < 1 }
                 s.expect(abs(try standing() - (end + 60)) < 1, true, "at its end still: \(end) to \(try standing())")
+            },
+            ConformanceCase("aBottomBarsEdgeHoldsWhatItsViewSays", proves: [Covered(BottomBarContract.edge)]) { s in
+                let edge = State(wrappedValue: ScrollEdge.hard)
+                s.start {
+                    Grid {
+                        ScrollView {
+                            Rectangle()
+                                .fill(.red)
+                                .height(3000)
+                        }
+                    }
+                    .ignoresSafeArea(.all)
+                    .title("Foot")
+                    .bottomBar(edge: edge.wrappedValue) {
+                        Rectangle()
+                            .fill(.blue)
+                            .height(40)
+                            .id("bar")
+                    }
+                }
+                let bar = try s.element("bar")
+                try s.settle { try s.held(BottomBarContract.edge, on: bar) == .hard }
+                s.expect(try s.held(BottomBarContract.edge, on: bar), .hard, "the edge the view gave")
+
+                edge.wrappedValue = .none
+                try s.settle { try s.held(BottomBarContract.edge, on: bar) == ScrollEdge.none }
+                s.expect(try s.held(BottomBarContract.edge, on: bar), ScrollEdge.none, "the edge it changed to")
             },
         ]
     }

@@ -12,11 +12,12 @@ extension MountedElement {
         HostMaterial(enclosing(type: .window)?.value(.background))
     }
 
-    /// What this page's bottom bar stands on while anything passes under it: what the page stands on - its own
-    /// background, its arrangement's, else its window's - so the rows fade into the page's own ground.
+    /// The color this page's bottom bar tints its blur with (`BottomBarPlace.tint`): what the page stands on - its own
+    /// background, its arrangement's, else its window's - its color, or its blur's tint; nil where it says nothing.
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
-    @MainActor public var bottomBarGround: HostMaterial {
-        HostMaterial(pageBackground ?? enclosing(type: .window)?.value(.background))
+    @MainActor public var bottomBarTint: HostValue? {
+        let ground = HostMaterial(pageBackground ?? enclosing(type: .window)?.value(.background))
+        return ground.paint ?? ground.painted
     }
 
     /// What this page says it stands on: its own background, else the nearest an arrangement on its path declares for

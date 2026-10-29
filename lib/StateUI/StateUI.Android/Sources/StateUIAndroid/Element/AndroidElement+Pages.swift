@@ -287,7 +287,7 @@ extension AndroidElement {
 
     /// Shows a page's bottom bar - the one declared innermost on its path - at its foot.
     func showBottomBar() {
-        (view as? AndroidPageView)?.showBottomBar(element.chromeBottomBar)
+        (view as? AndroidPageView)?.showBottomBar(element.chromeBottomBar, edge: element.chromeBottomBarEdge)
     }
 
     /// Refreshes the bar of every stack and the row of every tabbed view in this arrangement of pages.

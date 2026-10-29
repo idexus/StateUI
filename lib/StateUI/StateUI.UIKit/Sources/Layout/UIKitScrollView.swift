@@ -110,7 +110,6 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
         if document.frame.size != documentSize { document.frame = CGRect(origin: .zero, size: documentSize) }
         if scroller.contentSize != documentSize { scroller.contentSize = documentSize }
         if let target = scrollerOffset.laidOutNow() { move(to: target) }
-        standingChanged?()
     }
 
     /// What the scroller keeps clear on each edge - the bars a room's scroller reaches under - so its first and last
@@ -154,21 +153,11 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
             native: Point(x: scroller.contentOffset.x, y: scroller.contentOffset.y), clearance: clearance)
     }
 
-    /// What runs as where the scroller stands, or how far it reaches, changes - whoever moved it, or its content
-    /// laid out: a bottom bar over the scroller follows what stands under it.
-    var standingChanged: (() -> Void)?
-
-    /// Where the scroller stands and the farthest it stands, counted from its first content kept clear.
-    var standing: (offset: Point, reach: Point) {
-        (toolkitStanding, reach(keeping: clearance))
-    }
-
     // MARK: - The user's movement
 
     func scrollViewDidScroll(_ scroller: UIScrollView) {
         // A scroll moves whatever stands in the scroller, whoever moved it: a frame read under it is said again.
         laidOut?()
-        standingChanged?()
         guard let moved = scrollerOffset.toolkitMoved(to: toolkitStanding) else { return }
         movement.userMoved(from: moved.from, to: moved.to)
     }

@@ -16,6 +16,7 @@ extension WebElement {
         let bar = bottomBar ?? WebBottomBar(in: view) { [weak self] in self?.standInTheSafeArea() }
         bottomBar = bar
         bar.show(shown)
+        standInTheSafeArea()
     }
 
     /// Stands the page's content clear of what stands over it - its bottom bar included - but on an edge where the
@@ -38,7 +39,7 @@ extension WebElement {
             WebRelay.setNumber(scroller.node, "scrollLeft", end.x)
             WebRelay.setNumber(scroller.node, "scrollTop", end.y)
         }
-        bottomBar?.follow(runsUnder: under.bottom, scroller: scroller)
+        bottomBar?.follow(runsUnder: under.bottom, scroller: scroller, edge: element.chromeBottomBarEdge)
         // What stands in the page has nothing over it on an edge the page stands its content clear of.
         let pads = edges.filter { !$0.1 }.map(\.0).joined(separator: " ")
         view.attribute("data-pads", pads.isEmpty ? nil : pads)
