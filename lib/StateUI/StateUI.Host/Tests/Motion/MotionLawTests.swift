@@ -36,6 +36,26 @@ final class MotionLawTests: XCTestCase {
         XCTAssertEqual(landed, HostMotionSample(value: [80], velocity: [0], rested: true))
     }
 
+    /// AN EASED ANIMATION ALREADY MOVING KEEPS ITS CURVE: begun at the curve's own starting speed it follows the curve
+    /// exactly - overshoot and all - and begun at any other it sets out at that speed and lands where the curve does.
+    func testAnEasedAnimationAlreadyMovingKeepsItsCurve() {
+        let motion = Motion.eased(.milliseconds(400), .backOut)
+        let sample = { (elapsed: Double, speed: Double) in
+            HostMotionLaw.sample(motion, elapsed: elapsed, from: [0], destination: [100], velocity: [speed])
+        }
+        let curvesOwn = sample(0, 0).velocity[0]
+
+        for elapsed in stride(from: 0.0, to: 400, by: 20) {
+            XCTAssertEqual(sample(elapsed, curvesOwn).value[0], sample(elapsed, 0).value[0], accuracy: 1e-9,
+                           "the curve itself at \(elapsed)")
+        }
+        XCTAssertGreaterThan(stride(from: 0.0, to: 400, by: 4).map { sample($0, curvesOwn).value[0] }.max() ?? 0, 105)
+        for speed in [-300.0, 50, 2_000] {
+            XCTAssertEqual(sample(0, speed).velocity[0], speed, accuracy: 1e-6, "sets out at \(speed)")
+            XCTAssertEqual(sample(400, speed), HostMotionSample(value: [100], velocity: [0], rested: true))
+        }
+    }
+
     func testASpringAnswersTheSameValueForTheSameInstant() {
         let first = HostMotionLaw.sample(
             .spring(response: .milliseconds(260), damping: 0.8),

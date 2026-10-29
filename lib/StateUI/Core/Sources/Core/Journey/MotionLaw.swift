@@ -42,9 +42,10 @@ import StateUIFoundation
     /// Where an animation stands `elapsed` milliseconds after it began.
     ///
     /// An eased animation from a standstill follows its curve exactly. A lane that
-    /// began moving follows the cubic Hermite of the same length instead, from the
-    /// value and speed it had to its destination at a standstill. A spring settles
-    /// each lane on its own, and the animation rests when all of them have.
+    /// began moving follows its curve too, bent at its start to set out at the speed
+    /// it had and landing where the curve does - an overshooting curve still
+    /// overshoots. A spring settles each lane on its own, and the animation rests
+    /// when all of them have.
     ///
     /// - Parameters:
     ///   - motion: The law and its numbers.
@@ -114,30 +115,22 @@ import StateUIFoundation
         let amount = ease(curve, at: progress)
         let climb = slope(curve, at: progress)
 
-        // The Hermite basis and its derivative, which only a lane that began
-        // moving needs.
-        let h00 = ((2 * progress) - 3) * progress * progress + 1
-        let h10 = ((progress - 2) * progress + 1) * progress
-        let h01 = (3 - (2 * progress)) * progress * progress
-        let d00 = (6 * progress * progress) - (6 * progress)
-        let d10 = (3 * progress * progress) - (4 * progress) + 1
-        let d01 = (6 * progress) - (6 * progress * progress)
+        // A lane already moving is the curve bent by p(1 - p)²: nothing at either end, its slope at the start the
+        // difference between the speed it had and the curve's own.
+        // Design: docs/design/core/journeys.md#motion-laws
+        let rest = 1 - progress
+        let bend = progress * rest * rest
+        let bending = rest * (1 - 3 * progress)
+        let setsOut = slope(curve, at: 0)
 
         var value = Array(repeating: 0.0, count: from.count)
         var speed = value
 
         for lane in value.indices {
-            if velocity[lane] == 0 {
-                value[lane] = from[lane] + ((destination[lane] - from[lane]) * amount)
-                speed[lane] = (destination[lane] - from[lane]) * climb / length
-            } else {
-                value[lane] = (h00 * from[lane])
-                    + (h10 * length * velocity[lane])
-                    + (h01 * destination[lane])
-                speed[lane] = ((d00 * from[lane])
-                    + (d10 * length * velocity[lane])
-                    + (d01 * destination[lane])) / length
-            }
+            let span = destination[lane] - from[lane]
+            let difference = velocity[lane] == 0 ? 0 : length * velocity[lane] - span * setsOut
+            value[lane] = from[lane] + span * amount + difference * bend
+            speed[lane] = (span * climb + difference * bending) / length
         }
 
         return HostMotionSample(value: value, velocity: speed, rested: false)

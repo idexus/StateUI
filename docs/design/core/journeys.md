@@ -279,8 +279,10 @@ every animation of its table to where it starts and where it lands.
                                     the speed the old one reached, so a new
                                     destination bends the value
   eased, from standstill            the curve itself
-  eased, already moving             the cubic Hermite of the same length, from
-                                    the value and speed to the destination at rest
+  eased, already moving             the curve bent by p(1 - p)²: it sets out at
+                                    the speed it had and lands where the curve
+                                    does - at the curve's own starting speed the
+                                    curve itself, overshoot and all
   spring                            about the distance left, so the three
                                     damping cases are the textbook ones
   still                             0.001 in the value's units, and 1 a second
