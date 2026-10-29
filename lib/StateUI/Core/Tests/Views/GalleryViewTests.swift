@@ -846,7 +846,7 @@ final class GalleryViewTests: XCTestCase {
     func testAGallerySaysWhetherItHasAShadeAtAll() {
         let bare = placements(laid(Renders(), { self.gallery(3).node }).whole)
 
-        XCTAssertEqual(bare.first?.shade, PackedPlacement.unshaded, """
+        XCTAssertEqual(bare.first?.shade, Placement.unshaded, """
             a gallery given no shade view says so on every card, whatever \
             the arithmetic answered
             """)

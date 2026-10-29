@@ -50,7 +50,7 @@ struct LayoutShift: Equatable, Sendable {
         }
 
         lanes[Self.opacity] = shown.opacity - pose.opacity
-        if shown.shade != PackedPlacement.unshaded, pose.shade != PackedPlacement.unshaded {
+        if shown.shade != Placement.unshaded, pose.shade != Placement.unshaded {
             lanes[Self.shade] = shown.shade - pose.shade
         }
         self.lanes = lanes
@@ -76,7 +76,7 @@ struct LayoutShift: Equatable, Sendable {
             lanes[Self.moveX], lanes[Self.moveY], lanes[Self.turn], lanes[Self.slant],
             lanes[Self.scaleX] + 1, lanes[Self.scaleY] + 1)))
         shifted.opacity = min(max(pose.opacity + lanes[Self.opacity], 0), 1)
-        if pose.shade != PackedPlacement.unshaded {
+        if pose.shade != Placement.unshaded {
             shifted.shade = min(max(pose.shade + lanes[Self.shade], 0), 1)
         }
         return shifted

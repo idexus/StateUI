@@ -57,9 +57,9 @@ final class LayoutShiftTests: XCTestCase {
     /// A SHADE THE LAYOUT DRAWS NONE OF IS NOT BLENDED: a pose without one keeps it, whatever was shown.
     func testAnUnshadedPoseKeepsItsShade() {
         let shown = Placement(Rect(0, 0, 10, 10), shade: 0.6)
-        let pose = Placement(Rect(0, 0, 10, 10), shade: PackedPlacement.unshaded)
+        let pose = Placement(Rect(0, 0, 10, 10), shade: Placement.unshaded)
 
-        XCTAssertEqual(LayoutShift(from: shown, to: pose).applied(to: pose).shade, PackedPlacement.unshaded)
+        XCTAssertEqual(LayoutShift(from: shown, to: pose).applied(to: pose).shade, Placement.unshaded)
     }
 
     /// A SHIFT TRAVELS TO NOTHING under the motion, and one sent on its way again sets out at the speed it had.

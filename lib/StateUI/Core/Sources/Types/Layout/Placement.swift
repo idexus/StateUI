@@ -96,8 +96,7 @@ extension Placement {
 }
 
 extension Placement {
-    /// The twelve numbers a placement is, in the order `PackedPlacement`
-    /// writes them.
+    /// The twelve numbers a placement is, in the order a host reads them.
     public var carried: StateCarried {
         .lanes([
             bounds.x,
@@ -138,39 +137,9 @@ extension Placement {
     }
 
     /// Twelve, which is what the host reads by stride.
-    public static var lanes: Int { PackedPlacement.fields }
-}
-
-/// Where one view goes, as twelve doubles in the order below, written into a
-/// buffer the host reads by stride on the platform's own frames.
-/// Design: docs/design/types/placement.md#twelve-numbers-a-view
-enum PackedPlacement {
-    /// How many numbers one view takes.
-    static let fields = 12
+    public static var lanes: Int { 12 }
 
     /// The shade of a layout with none: a number no opacity can be, which tells
     /// the host to look for no shade view.
     static let unshaded = -1.0
-
-    /// Writes one placement into `buffer`, from `offset`.
-    static func write(
-        _ placement: Placement,
-        into buffer: UnsafeMutablePointer<Double>,
-        at offset: Int
-    ) {
-        let transform = placement.transform
-
-        buffer[offset + 0] = placement.bounds.x
-        buffer[offset + 1] = placement.bounds.y
-        buffer[offset + 2] = placement.bounds.width
-        buffer[offset + 3] = placement.bounds.height
-        buffer[offset + 4] = transform.x
-        buffer[offset + 5] = transform.y
-        buffer[offset + 6] = transform.rotation
-        buffer[offset + 7] = transform.width
-        buffer[offset + 8] = transform.height
-        buffer[offset + 9] = placement.opacity
-        buffer[offset + 10] = Double(placement.zIndex)
-        buffer[offset + 11] = placement.shade
-    }
 }

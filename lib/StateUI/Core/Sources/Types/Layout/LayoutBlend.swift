@@ -40,8 +40,8 @@ enum LayoutBlend {
             max(along(poses.map(\.bounds.width)), 0),
             max(along(poses.map(\.bounds.height)), 0))
 
-        let shade = poses.allSatisfy { $0.shade == PackedPlacement.unshaded }
-            ? PackedPlacement.unshaded
+        let shade = poses.allSatisfy { $0.shade == Placement.unshaded }
+            ? Placement.unshaded
             : min(max(along(poses.map(\.shade)), 0), 1)
 
         return Placement(

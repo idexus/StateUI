@@ -124,11 +124,11 @@ final class LayoutInterpolationTests: XCTestCase {
         XCTAssertEqual(blended[0].opacity, 1)
         XCTAssertEqual(blended[0].shade, 1)
 
-        let unshaded = [[Placement(Rect.zero, shade: PackedPlacement.unshaded)],
-                        [Placement(Rect.zero, shade: PackedPlacement.unshaded)]]
+        let unshaded = [[Placement(Rect.zero, shade: Placement.unshaded)],
+                        [Placement(Rect.zero, shade: Placement.unshaded)]]
         XCTAssertEqual(
             LayoutBlend.blend(unshaded, at: 0.5, segment: 0, knots: [0, 1], curve: .linear)[0].shade,
-            PackedPlacement.unshaded)
+            Placement.unshaded)
     }
 
     /// THE DRAWING ORDER SWAPS AS THE VIEWS' NUMBERS CROSS: a view rising from 0 to 2 past one standing at 1 is drawn

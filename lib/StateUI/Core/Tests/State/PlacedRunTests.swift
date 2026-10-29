@@ -25,10 +25,9 @@ final class PlacedRunTests: XCTestCase {
 
     // MARK: - The lanes
 
-    /// The twelve a placement carries are the twelve the host reads by stride,
-    /// in that order - so the two spellings of one fact cannot drift while
-    /// both exist.
-    func testAPlacementCarriesTheSameTwelveThePackerWrites() {
+    /// A placement carries its twelve numbers in the order a host reads them by stride: the rectangle, the
+    /// transform's move, turn and sizes, the opacity, the z-index and the shade.
+    func testAPlacementCarriesItsTwelveInTheOrderAHostReadsThem() {
         let placement = Placement(
             Rect(11, 22, 120, 170),
             transform: .translate(3, 4).scaleX(0.5),
@@ -36,20 +35,8 @@ final class PlacedRunTests: XCTestCase {
             shade: 0.25,
             zIndex: 3)
 
-        let packed = UnsafeMutablePointer<Double>.allocate(capacity: PackedPlacement.fields)
-        defer { packed.deallocate() }
-
-        PackedPlacement.write(placement, into: packed, at: 0)
-
-        guard case .lanes(let lanes) = placement.carried else {
-            return XCTFail("a placement carries lanes")
-        }
-
-        XCTAssertEqual(lanes.count, PackedPlacement.fields)
-
-        for lane in 0..<PackedPlacement.fields {
-            XCTAssertEqual(lanes[lane], packed[lane], "lane \(lane)")
-        }
+        XCTAssertEqual(placement.carried, .lanes([11, 22, 120, 170, 3, 4, 0, 0.5, 1, 0.75, 3, 0.25]))
+        XCTAssertEqual(Placement.lanes, 12)
     }
 
     /// And back: the picture those numbers draw is the picture that made them.

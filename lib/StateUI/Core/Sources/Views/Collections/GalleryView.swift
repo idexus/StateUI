@@ -471,7 +471,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private static var largest: Double { 1.375 }
 
     /// Where one card goes and how it is turned, `step` cards from the one in front - the one the run's motion set
-    /// out from where `setOut`. With no shade view the shade is `PackedPlacement.unshaded`, the host seeing none of
+    /// out from where `setOut`. With no shade view the shade is `Placement.unshaded`, the host seeing none of
     /// this side's views.
     private func place(
         _ step: Double,
@@ -483,7 +483,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         var placement = placed(step, setOut: setOut, count, room, shape)
 
         placement.shade = mask == nil
-            ? PackedPlacement.unshaded
+            ? Placement.unshaded
             : min(max(placement.shade, 0), 1)
 
         return placement

@@ -1,9 +1,9 @@
 # Placement
 
 A `PhaseLayout` puts each of its views where an application's arithmetic
-says. A `Placement` is that answer for one view, a `PlacedRun` the answer for
-the whole run as the host is handed it, and `PackedPlacement` the same answer
-as the numbers a host reads.
+says. A `Placement` is that answer for one view, its twelve numbers what a
+host reads of it, and a `PlacedRun` the answer for the whole run as the host is
+handed it.
 
 ## Where one view goes
 
