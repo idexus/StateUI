@@ -201,6 +201,7 @@ enum TestJava {
     static let isPressed = Java.method(JavaAPI.view, "isPressed", "()Z")
     static let isClickable = Java.method(JavaAPI.view, "isClickable", "()Z")
     static let isEnabled = Java.method(JavaAPI.view, "isEnabled", "()Z")
+    static let getContentDescription = Java.method(JavaAPI.view, "getContentDescription", "()Ljava/lang/CharSequence;")
     static let getLetterSpacing = Java.method(JavaAPI.textView, "getLetterSpacing", "()F")
     static let getLineCount = Java.method(JavaAPI.textView, "getLineCount", "()I")
     static let getVisibility = Java.method(JavaAPI.view, "getVisibility", "()I")

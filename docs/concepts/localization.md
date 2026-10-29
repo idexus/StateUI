@@ -573,6 +573,11 @@ them in the system's language - Polish "Anuluj" on a Polish system - as the
 platform's own buttons beside them do. An application that speaks another
 language than the system's passes its own captions from its resources.
 
+A control a host builds where its platform has none names its own parts to a
+screen reader in the same language: a `Stepper`'s buttons say "Decrease" and
+"Increase" - "Zmniejsz" and "Zwiększ" on a Polish system - on the Web and on
+Android. Where the platform has the control, it names those parts itself.
+
 ## What a host adds
 
 Every word and number above is worked out in Swift before anything reaches a

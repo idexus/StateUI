@@ -230,6 +230,9 @@
     /// What an Edit menu says of the entries a host keeps in it, in the system's language.
     public var editWords: EditWords { HostBoundary.editWords }
 
+    /// What a control a host composes says of its own parts, in the system's language.
+    public var controlWords: ControlWords { HostBoundary.controlWords }
+
     /// Reports the application's lifecycle phase.
     public func setApplicationPhase(_ phase: ApplicationPhase) {
         HostBoundary.setApplicationPhase(phase)

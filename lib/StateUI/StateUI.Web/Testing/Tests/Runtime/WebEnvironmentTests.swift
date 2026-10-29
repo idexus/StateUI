@@ -38,8 +38,6 @@ final class WebEnvironmentTests: XCTestCase {
         XCTAssertFalse(american.isMetric)
     }
 
-    /// THE CHROME'S OWN BUTTONS SAY THE LIBRARY'S WORDS in the user's language (`ChromeWords`): the sidebar's toggle,
-    /// the way back, a sheet's close and the overflow.
     /// What the user asked of motion and contrast is the browser's: its media queries; a page is told of no screen
     /// reader and no scale of the system's words.
     func testThePageTellsWhatTheUserAskedOfMotionAndContrast() throws {
@@ -59,6 +57,8 @@ final class WebEnvironmentTests: XCTestCase {
         XCTAssertEqual(settings.textScale, 1)
     }
 
+    /// THE CHROME'S OWN BUTTONS SAY THE LIBRARY'S WORDS in the user's language (`ChromeWords`): the sidebar's toggle,
+    /// the way back, a sheet's close and the overflow.
     func testTheChromesButtonsSayTheLibrarysWords() throws {
         defer { WebBrowser.ask([("languages", .words(""))]) }
         WebRenderer.shared?.leave()

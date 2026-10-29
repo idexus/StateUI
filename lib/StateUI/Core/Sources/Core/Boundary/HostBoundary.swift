@@ -92,6 +92,9 @@
     /// What an Edit menu says of the entries a host keeps in it, in the system's language.
     public static var editWords: EditWords { LibraryWords.inSystemLanguage.edit }
 
+    /// What a control a host composes says of its own parts - a stepper's step down and up - in the system's language.
+    public static var controlWords: ControlWords { LibraryWords.inSystemLanguage.control }
+
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
         let locale = StandardEnvironment.locale

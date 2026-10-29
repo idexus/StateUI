@@ -6,7 +6,8 @@
 import CStateUIAndroid
 
 /// A Stepper: Android has none, so its own buttons side by side in a `LinearLayout` - one a step down,
-/// one a step up - each off at its end of the range; its element's gestures see the buttons' touches.
+/// one a step up, each named in the library's words - each off at its end of the range; its element's gestures see
+/// the buttons' touches.
 /// Design: docs/design/platforms/android/controls.md#a-stepper
 @MainActor
 final class AndroidStepperView: AndroidView {
@@ -30,8 +31,10 @@ final class AndroidStepperView: AndroidView {
 
     init() {
         super.init { _ in Java.new(JavaAPI.stepper, JavaAPI.newStepper, .object(AndroidRenderer.context)) }
-        for (button, caption) in [(down, "−"), (up, "+")] {
+        let said = CoreLink().controlWords
+        for (button, caption, words) in [(down, "−", said.decrease), (up, "+", said.increase)] {
             button.setText(caption)
+            Java.frame { Java.call(button.reference, JavaAPI.setContentDescription, .object(Java.string(words))) }
             button.setLeastSize(width: pixels(48), height: pixels(48))
             Java.call(reference, JavaAPI.addView, .object(button.reference), .int(-2), .int(-2))
         }

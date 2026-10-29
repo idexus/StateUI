@@ -26,7 +26,8 @@ extension LibraryWords {
         chrome: ChromeWords(back: "Back", sidebar: "Sidebar", close: "Close", more: "More", mainMenu: "Main Menu"),
         edit: EditWords(
             undo: "Undo", redo: "Redo", cut: "Cut", copy: "Copy", paste: "Paste", delete: "Delete",
-            selectAll: "Select All"))
+            selectAll: "Select All"),
+        control: ControlWords(decrease: "Decrease", increase: "Increase"))
 }
 
 extension RegionConventions {

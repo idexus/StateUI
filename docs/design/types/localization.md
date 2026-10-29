@@ -138,9 +138,11 @@ English and the United States' formats.
 ## The library's own words
 
 What StateUI says by itself - the "OK" and "Cancel" a dialog shows when the
-application gives no caption, and what a window's chrome says of its own
-controls (`ChromeWords`: back, the sidebar, close, more, the main menu) - is a part of
-resources like an application's,
+application gives no caption, what a window's chrome says of its own
+controls (`ChromeWords`: back, the sidebar, close, more, the main menu), and
+what a control a host composes where its platform has none says of its own
+parts to a screen reader (`ControlWords`: a stepper's step down and step up
+on the Web and on Android) - is a part of resources like an application's,
 `LibraryWords`, in the languages StateUI writes, each in its language's file.
 It speaks the system's language, matched as `.system` matches: the library
 cannot know which of an application's localizations a dialog belongs to, and

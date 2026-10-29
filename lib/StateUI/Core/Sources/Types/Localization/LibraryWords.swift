@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The words StateUI says by itself - a dialog's own captions - in the system's language, as the platform's own
-/// buttons are. Each language's words stand in its file under Languages.
+/// The words StateUI says by itself - a dialog's own captions, a control's own parts - in the system's language, as
+/// the platform's own buttons are. Each language's words stand in its file under Languages.
 /// Design: docs/design/types/localization.md#the-librarys-own-words
 struct LibraryWords: LocalizedResources {
     typealias Catalog = LibraryCatalog
@@ -15,6 +15,9 @@ struct LibraryWords: LocalizedResources {
 
     /// What an Edit menu says of the entries a host keeps in it.
     let edit: EditWords
+
+    /// What a control a host composes says of its own parts.
+    let control: ControlWords
 
     static func resources(for language: LibraryLanguage) -> LibraryWords {
         switch language {
@@ -72,6 +75,16 @@ struct LibraryWords: LocalizedResources {
 
     /// Select All.
     public let selectAll: String
+}
+
+/// What a control a host composes itself, where its platform has none, says of its own parts to a screen reader - a
+/// stepper's step down and step up - in the system's language.
+@_spi(Host) public struct ControlWords: Equatable, Sendable {
+    /// A step down.
+    public let decrease: String
+
+    /// A step up.
+    public let increase: String
 }
 
 /// The languages StateUI says its own words in, each by its tag.

@@ -327,7 +327,9 @@ nothing around it; hidden, it takes no room.
 ## A stepper
 
 Android has no stepper, so the host builds one from its own buttons: one a
-step down, one a step up, side by side, each off at its end of the range. A
+step down, one a step up, side by side, each off at its end of the range,
+each named to TalkBack in the library's words (`ControlWords`), in the
+system's language. A
 step is the user's report, held in the range; the value the tree writes is
 put where it said, within it.
 

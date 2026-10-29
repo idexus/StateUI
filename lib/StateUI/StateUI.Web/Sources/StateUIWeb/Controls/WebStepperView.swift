@@ -5,8 +5,9 @@
 @_spi(Host) import StateUIHost
 
 /// A Stepper: a field of words with the role of a spin button between a button taking a step down and one taking a
-/// step up, the keyboard's arrows a step too - each a whole step from where it stands, kept inside its range. Words
-/// that say no number, wholly, leave the number where it was; a step or words that move nothing are heard by nobody.
+/// step up, each named in the library's words, the keyboard's arrows a step too - each a whole step from where it
+/// stands, kept inside its range. Words that say no number, wholly, leave the number where it was; a step or words
+/// that move nothing are heard by nobody.
 /// Design: docs/design/platforms/web/controls.md#values-in-a-range
 @MainActor
 final class WebStepperView: WebDOMView {
@@ -30,7 +31,8 @@ final class WebStepperView: WebDOMView {
         field.attribute("type", "text")
         field.attribute("role", "spinbutton")
         field.attribute("inputmode", "decimal")
-        for (button, words, sign) in [(down, "Decrease", "−"), (up, "Increase", "+")] {
+        let said = CoreLink().controlWords
+        for (button, words, sign) in [(down, said.decrease, "−"), (up, said.increase, "+")] {
             button.attribute("type", "button")
             button.attribute("aria-label", words)
             WebRelay.setText(button.node, sign)
