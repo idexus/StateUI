@@ -188,6 +188,7 @@ enum AndroidRealization {
             reason: "Any Android window may be put away: an activity keeps none from it."),
         .partial(WindowContract.background,
             missing: "An activity is opaque by the theme it starts in: a blur or glass shows its color."),
+        .complete(LayoutContract.ignoresSafeArea),
         .complete(PhaseLayoutContract.handAxis),
         .complete(PhaseLayoutContract.handMoved),
         .complete(PhaseLayoutContract.handStepped),

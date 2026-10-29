@@ -158,6 +158,7 @@ enum WebRealization {
         .partial(VisualElementContract.background, on: PhaseLayoutContract.self,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .complete(PhaseLayoutContract.handAxis),
+        .complete(LayoutContract.ignoresSafeArea),
         .complete(PhaseLayoutContract.handMoved),
         .complete(PhaseLayoutContract.handStepped),
         .complete(PhaseLayoutContract.itemDrag),

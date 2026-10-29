@@ -40,12 +40,12 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>40 ✅ · 1 ☑️ · 45 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 2 ☑️ · 47 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>65 ✅ · 5 ☑️ · 16 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>41 ✅ · 1 ☑️ · 45 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>38 ✅ · 3 ☑️ · 47 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>66 ✅ · 5 ☑️ · 16 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>54 ✅ · 2 ☑️ · 26 ✓ · 9 –</td><td>custom <code>Panel</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>48 ✅ · 2 ☑️ · 30 ✓ · 8 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>60 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/PhaseLayoutContract.swift`.
@@ -226,8 +226,8 @@ What every layout has: the edges it runs under what stands over its page on, and
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>ignoresSafeArea</code></td><td>property</td><td><code>SafeAreaEdges</code></td><td>adaptive</td><td align="center"></td><td align="center">·</td><td align="center"></td><td align="center">–</td><td align="center">–</td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, Android Views, Web: not realized<br>UIKit: cannot read ignoresSafeArea of PhaseLayout - UIKit's driver has no path for it yet<br>WinUI 3: A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.<br>GTK 4: A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>ignoresSafeArea</code></td><td>property</td><td><code>SafeAreaEdges</code></td><td>adaptive</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">–</td><td align="center">–</td><td align="center">✅</td></tr>
+<tr><td colspan="9">UIKit: The safe area holds no keyboard: a page stands under it whatever edges it ignores.<br>WinUI 3: A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.<br>GTK 4: A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.</td></tr></tbody>
 <tbody><tr></tr><tr><td><code>clipsContent</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>letsInputThrough</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">◐</td><td align="center">◐</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: cannot read letsInputThrough of PhaseLayout - AppKit's driver has no path for it yet<br>UIKit: cannot read letsInputThrough of PhaseLayout - UIKit's driver has no path for it yet<br>WinUI 3: not realized</td></tr></tbody>

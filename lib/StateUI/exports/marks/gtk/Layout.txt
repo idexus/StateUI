@@ -1,4 +1,4 @@
-# revision 2.2
+# revision 3.2
 Grid.clipsContent: ✅
 Grid.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 Grid.letsInputThrough: ✅

@@ -1,4 +1,4 @@
-# revision 2.2
+# revision 3.2
 Grid.clipsContent: ✅
 Grid.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 Grid.letsInputThrough: not realized

@@ -5,16 +5,15 @@
 @_spi(Host) import StateUIHost
 
 /// `LayoutContract` on a host: a layout cuts what it holds to its outline where it clips and not otherwise, lets a
-/// press through where nothing it holds stands where it says so, and keeps clear of the edges it avoids - each case
-/// made for every layout.
+/// press through where nothing it holds stands where it says so, and standing a page whole runs under what stands over
+/// the page where it ignores the safe area - each case made for every layout.
 @_spi(Host) public enum LayoutTests: ConformanceFamily {
     public static let name = "Layout"
 
     public static var cases: [ConformanceCase] {
         Specimens.wearing(LayoutContract.self).flatMap { element in
             [
-                clipped(element), throughIt(element),
-                Aspects.holds(LayoutContract.ignoresSafeArea, on: element, SafeAreaEdges.none, then: .all),
+                clipped(element), throughIt(element), underTheBars(element),
                 Aspects.holds(LayoutContract.clipsContent, on: element, false, then: true),
                 Aspects.holds(LayoutContract.letsInputThrough, on: element, false, then: true),
             ]
@@ -97,17 +96,66 @@
     }
 }
 
+extension LayoutTests {
+    /// A layout standing a page whole reaches out under what stands over the page - a window's bar, a status bar, a
+    /// home indicator - where the tree says it ignores the safe area, its room the larger by it and
+    /// holding the one it stood in, and stands back clear of it told to ignore none.
+    @MainActor
+    static func underTheBars(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).runsUnderWhatStandsOverItsPageWhereItIgnoresTheSafeArea", proves: [
+            Covered(LayoutContract.ignoresSafeArea, on: element),
+        ]) { s in
+            let edges = State(wrappedValue: SafeAreaEdges.none)
+            let frames = Received<[Double]>()
+            s.start {
+                Holding.layout(element, ignores: edges.wrappedValue, heard: { frames.values.append($0) }) {
+                    Rectangle()
+                        .fill(.red)
+                }
+                .title("Under")
+            }
+
+            // A phone's bars, where the host's test window stands under none.
+            s.standUnderSystemBars(top: 24, bottom: 48)
+
+            // Its room in the window: top, bottom, left, right.
+            let room = { () -> [Double]? in
+                guard let frame = frames.values.last else { return nil }
+                let (corner, size) = (FrameReport.inWindow(frame), FrameReport.size(frame))
+                return [corner[1], corner[1] + size[1], corner[0], corner[0] + size[0]]
+            }
+            s.settle { room() != nil }
+            let clear = room() ?? []
+
+            edges.wrappedValue = .all
+            s.settle { room() != nil && room() != clear }
+            let under = room() ?? []
+            let holds = under.count == 4 && clear.count == 4 && under[0] <= clear[0] && under[1] >= clear[1]
+                && under[2] <= clear[2] && under[3] >= clear[3]
+            s.expect(holds && under != clear, true, "under what stands over it: \(under) around \(clear)")
+
+            edges.wrappedValue = .none
+            s.settle { room() == clear }
+            s.expect(room(), clear, "and clear of it again")
+        }
+    }
+}
+
 /// A layout of each kind holding a view, as a layout's cases need it.
 @MainActor
 enum Holding {
-    /// A layout of `element`'s kind holding `content`, clipping and letting input through as said, as large as
-    /// said where it is and then at its room's corner.
+    /// A layout of `element`'s kind holding `content`, clipping, letting input through and ignoring the safe area as
+    /// said, as large as said where it is and then at its room's corner, its frames told to `heard`.
     static func layout(
         _ element: String, clips: Bool = false, through: Bool = false, width: Double? = nil, height: Double? = nil,
-        _ content: () -> any View
+        ignores: SafeAreaEdges = .none, heard: (@MainActor ([Double]) -> Void)? = nil, _ content: () -> any View
     ) -> AnyView {
         let held = AnyView(content())
-        var worn: [any Worn] = [Write(LayoutContract.clipsContent, clips), Write(LayoutContract.letsInputThrough, through)]
+        var worn: [any Worn] = [
+            Write(LayoutContract.clipsContent, clips), Write(LayoutContract.letsInputThrough, through),
+            Write(LayoutContract.ignoresSafeArea, ignores),
+        ]
+        if let heard { worn.append(Hear(ViewContract.frameChanged, heard)) }
         if let width {
             worn += [Write(VisualElementContract.width, width), Write(ViewContract.horizontalAlignment, Alignment.start)]
         }

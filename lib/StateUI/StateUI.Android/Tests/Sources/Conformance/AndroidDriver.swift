@@ -209,6 +209,14 @@ final class AndroidDriver: HostDriver {
     }
 
     /// The night mode the activity's configuration stands in: the application's where it holds one.
+    func standUnderSystemBars(top: Double, bottom: Double) {
+        guard let renderer else { return }
+        let density = renderer.density
+        renderer.insetsChanged(
+            left: 0, top: Int32((top * density).rounded()), right: 0, bottom: Int32((bottom * density).rounded()),
+            keyboard: 0)
+    }
+
     func theme() throws -> ColorScheme {
         Java.callStaticBool(JavaAPI.environment, Self.night, .object(TestContext.window.reference)) ? .dark : .light
     }

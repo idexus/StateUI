@@ -123,6 +123,14 @@ application is its first launch: the driver forgets what the host's stores
 keep, and a start after it in the same case is the next launch, which finds
 them.
 
+One report a driver makes as the platform would rather than reads: the
+platform's bars over a window's edges (`standUnderSystemBars`). A host whose
+test window stands under none - Android's instrumented window - is told a
+phone's status bar and gesture bar as its toolkit tells them, through the
+host's own report of the window's insets; a host whose window has its own
+(UIKit's) or whose platform stands nothing over a window's content leaves
+it, so a case of the safe area proves on each host what a user meets there.
+
 A host with backends keeps its driver and its suite in a package of their own
 inside the host's folder, `Testing` - the WinUI host's `StateUIWinUIDriver`,
 the GTK host's `StateUIGTKDriver`, and their tests. They

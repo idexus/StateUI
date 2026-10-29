@@ -71,7 +71,7 @@ SearchField 3
 Polyline 3
 FilledShape 3
 AutomationElement 8
-Layout 2
+Layout 3
 PaddingElement 3
 PhaseLayout 12
 FocusElement 5

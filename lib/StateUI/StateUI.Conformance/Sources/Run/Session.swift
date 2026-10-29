@@ -219,6 +219,13 @@
         return try driven { try driver.announced() }
     }
 
+    /// The platform's bars over the window's edges, as a phone's stand, where the host's test window stands under
+    /// none (`HostDriver.standUnderSystemBars`).
+    public func standUnderSystemBars(top: Double, bottom: Double) {
+        driver.standUnderSystemBars(top: top, bottom: bottom)
+        driver.step()
+    }
+
     /// The theme the platform shows the application in now.
     public func theme() throws -> ColorScheme {
         note("read the theme the application shows in")

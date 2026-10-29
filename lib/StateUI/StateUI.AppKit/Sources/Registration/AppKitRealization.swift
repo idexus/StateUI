@@ -48,6 +48,7 @@ enum AppKitRealization {
         .complete(PageElementContract.icon),
         .complete(PageElementContract.title),
         .complete(LayoutContract.clipsContent),
+        .complete(LayoutContract.ignoresSafeArea),
         .partial(VisualElementContract.accessibilityHeading,
             missing: "AppKit marks a heading, not its level: every level is a heading."),
         .partial(TextInputContract.inputPurpose,

@@ -98,6 +98,11 @@
     /// The theme the platform shows the application in now: light or dark.
     func theme() throws -> ColorScheme
 
+    /// The platform's bars over the window's edges, `top` and `bottom` points deep, as a phone's status bar and
+    /// gesture bar stand - told to a host whose test window stands under none; a host whose window has its own, or
+    /// whose platform stands nothing over a window's content, leaves it.
+    func standUnderSystemBars(top: Double, bottom: Double)
+
     /// The accent the platform draws the application's controls in now.
     func accent() throws -> Color
 
@@ -211,6 +216,8 @@ extension HostDriver {
     public func announced() throws -> [String] {
         throw DriverCannot("read what the screen reader said")
     }
+
+    public func standUnderSystemBars(top: Double, bottom: Double) {}
 
     public func theme() throws -> ColorScheme {
         throw DriverCannot("read the theme the application shows in")
