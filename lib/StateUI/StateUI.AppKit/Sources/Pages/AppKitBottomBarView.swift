@@ -8,13 +8,13 @@ import AppKit
 
 /// A page's bottom bar in its room - a window's, a sheet's, a split view's pane: the bar's view at the room's foot over
 /// the page, as tall as it lays out across the safe area (`BottomBarPlace`); on the page while nothing stands under
-/// it, on a blur fading softly toward the content, down to the room's edge, while the page's rows pass under it.
+/// it, on a blur rising softly to the room's edge while the page's rows pass under it.
 /// Design: docs/design/host/layout.md#a-bar-at-the-foot
 @MainActor
 final class AppKitBottomBarView: AppKitSingleChildView {
     /// What the bar stands on while anything stands under it: what its page stands on (`bottomBarGround`), blurring
-    /// what passes under it where that is a blur - whole under the bar, fading out above it toward the content, past
-    /// the bar's own bounds, so a click there reaches the rows.
+    /// what passes under it where that is a blur - rising from nothing above the bar to whole at the room's foot,
+    /// past the bar's own bounds above, so a click there reaches the rows.
     private let ground: NSView = {
         let ground = NSView()
         ground.wantsLayer = true
@@ -28,10 +28,10 @@ final class AppKitBottomBarView: AppKitSingleChildView {
     /// The material the ground shows.
     private var material: HostMaterial?
 
-    /// The ground's fade: clear at its top, whole from the bar's top down (`BottomBarPlace.fade`).
+    /// The ground's fade: clear at its top (`BottomBarPlace.fade` above the bar), whole at the room's foot.
     private let fade: CAGradientLayer = {
         let fade = CAGradientLayer()
-        fade.colors = [NSColor.clear.cgColor, NSColor.black.cgColor, NSColor.black.cgColor]
+        fade.colors = [NSColor.clear.cgColor, NSColor.black.cgColor]
         return fade
     }()
 
@@ -108,7 +108,6 @@ final class AppKitBottomBarView: AppKitSingleChildView {
         let flipped = ground.layer?.contentsAreFlipped() ?? false
         (fade.startPoint, fade.endPoint) = flipped ? (CGPoint(x: 0.5, y: 0), CGPoint(x: 0.5, y: 1))
             : (CGPoint(x: 0.5, y: 1), CGPoint(x: 0.5, y: 0))
-        fade.locations = [0, NSNumber(value: Double(reach / max(ground.frame.height, 1))), 1]
         fade.frame = ground.bounds
         if ground.layer?.mask !== fade { ground.layer?.mask = fade }
         blur?.frame = ground.bounds

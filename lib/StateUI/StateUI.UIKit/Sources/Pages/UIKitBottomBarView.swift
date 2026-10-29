@@ -13,7 +13,8 @@ import UIKit
 /// Design: docs/design/host/layout.md#a-bar-at-the-foot
 @MainActor
 final class UIKitBottomBarView: UIKitLayoutView {
-    /// The ground iOS 27 gets: what the page stands on, fading out above the bar's view - no touch of its own.
+    /// The ground iOS 27 gets: what the page stands on, rising from nothing above the bar's view to whole at the
+    /// room's foot - no touch of its own.
     private let ground: UIView = {
         let ground = UIView()
         ground.isUserInteractionEnabled = false
@@ -27,10 +28,10 @@ final class UIKitBottomBarView: UIKitLayoutView {
     /// The material the ground shows.
     private var material: HostMaterial?
 
-    /// The ground's fade: clear at its top, whole from the bar's view down (`BottomBarPlace.fade`).
+    /// The ground's fade: clear at its top (`BottomBarPlace.fade` above the bar's view), whole at the room's foot.
     private let fade: CAGradientLayer = {
         let fade = CAGradientLayer()
-        fade.colors = [UIColor.clear.cgColor, UIColor.black.cgColor, UIColor.black.cgColor]
+        fade.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
         fade.startPoint = CGPoint(x: 0.5, y: 0)
         fade.endPoint = CGPoint(x: 0.5, y: 1)
         return fade
@@ -125,7 +126,6 @@ final class UIKitBottomBarView: UIKitLayoutView {
     override func arrange(in bounds: Rect) {
         ground.frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
         fade.frame = ground.bounds
-        fade.locations = [0, NSNumber(value: BottomBarPlace.fade / max(bounds.height, 1)), 1]
         if ground.layer.mask !== fade { ground.layer.mask = fade }
         if let blur, let material {
             blur.frame = ground.bounds

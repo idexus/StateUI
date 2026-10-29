@@ -377,9 +377,9 @@ A bar stands on the page while nothing stands under it, and on a ground of
 its own - a blur fading softly toward the content, down to the room's edge -
 while anything does (`BottomBarPlace.covers`): the page's content where it
 runs under the room's foot, its scroller's rows while they stand short of
-their end. The edge is soft, as a bar a field stands in reads best, and it
-fades out `BottomBarPlace.fade` above the bar, so the controls stand on the
-whole blur. UIKit asks its scroll edge effect under the bar for the soft one
+their end. The edge is soft, as a bar a field stands in reads best: the
+ground rises from nothing `BottomBarPlace.fade` above the bar to whole at the
+room's foot, the rows blurring more the lower they pass. UIKit asks its scroll edge effect under the bar for the soft one
 (`bottomEdgeEffect.style`, `UIScrollEdgeElementContainerInteraction`, the bar
 reaching the fade above its view) - which iOS 26 draws and iOS 27 draws not at
 all, natively or in SwiftUI alike. Where the platform draws no soft edge -

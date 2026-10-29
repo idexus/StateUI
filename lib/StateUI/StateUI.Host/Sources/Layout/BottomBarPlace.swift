@@ -20,8 +20,8 @@
     /// The room above the bar - where a host's bars stand beside the page, the whole room its content has.
     public let above: Rect
 
-    /// How far above the bar its ground fades out toward the content, so the bar's controls stand on the whole blur:
-    /// the soft edge a host draws itself.
+    /// How far above the bar its ground begins: the soft edge a host draws itself rises from nothing there to whole at
+    /// the room's foot, through the bar.
     public static let fade = 24.0
 
     /// Whether anything of a page stands under its bottom bar, so the bar stands on a ground of its own - a blur
