@@ -227,7 +227,24 @@ class WinUIView {
 
     /// Asks WinUI to measure this element again, and every panel above it.
     func invalidateMeasure() {
+        measuredAt.removeAll(keepingCapacity: true)
         stateui_winui_invalidate_measure(handle)
+    }
+
+    /// The sizes the view measured at each width since its content last changed: an arrangement asks them again,
+    /// as WinUI measuring a control again inside one marks its layout for another pass.
+    /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
+    private var measuredAt: [(width: Double?, size: LayoutSize)] = []
+
+    /// The view's size at `width`: inside an arrangement the one a measure made there, else WinUI's measure, kept.
+    func measured(width: Double?) -> LayoutSize {
+        if Self.arranging > 0, let kept = measuredAt.last(where: { $0.width == width }) { return kept.size }
+        let size = measure(width: width, height: nil)
+        guard Self.arranging == 0 else { return size }
+        measuredAt.removeAll { $0.width == width }
+        if measuredAt.count == 4 { measuredAt.removeFirst() }
+        measuredAt.append((width, size))
+        return size
     }
 
     /// The element's size for the room offered, in DIPs; nil offers any.

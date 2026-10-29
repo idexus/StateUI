@@ -10577,6 +10577,22 @@ enum Listings {
                 Switch($spaced)
                     .text("Space")
 
+                SectionTitle("Short of room")
+
+                // A row short of room takes it from its words: the button stays
+                // whole, and the title wraps to what is left - or, kept to one
+                // line, ends where the room does.
+                HStack {
+                    Text("A title longer than the row has room for beside its button")
+                    Button("Open")
+                }
+
+                HStack {
+                    Text("A title longer than the row has room for beside its button")
+                        .maximumLines(1)
+                    Button("Open")
+                }
+
                 SectionTitle("Separator")
 
                 // The platform's own line, across its stack.

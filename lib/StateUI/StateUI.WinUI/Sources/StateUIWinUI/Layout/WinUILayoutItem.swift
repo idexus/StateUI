@@ -34,7 +34,7 @@ struct WinUILayoutItem: LayoutChild {
             if WinUIView.arranging == 0 { _ = view.measure(width: layout.standsAt ?? offer, height: nil) }
             measured = layout.naturalSize(width: offer)
         } else {
-            measured = view.measure(width: offer, height: nil)
+            measured = view.measured(width: offer)
         }
 
         return values.sized(measured)

@@ -19,8 +19,13 @@ that does not settle ends the process. So each measure the panel answers
 measures every shown child; WinUI answers a child it measured at the same
 size from what it kept, and measures one it did not.
 
-A native control is measured at each width the arithmetic offers it. A
-layout of StateUI's asks for no room, so it is measured at the width of the
+A native control is measured at each width the arithmetic offers it inside
+a measure - a label in a row short of room at its natural width and at its
+share - and keeps what each gave until its content changes; inside an
+arrangement it is answered from those, and WinUI is not asked again: a
+control measured inside an arrangement at a width other than its last marks
+its layout for another pass, and two widths a pass never settle
+(`WinUIView.measured(width:)`). A layout of StateUI's asks for no room, so it is measured at the width of the
 place it stands in: WinUI measures it again only where a change beneath
 marked it. Put in a place of another width, it is measured there first, which
 measures its own children at the widths its arrangement then gives them - a

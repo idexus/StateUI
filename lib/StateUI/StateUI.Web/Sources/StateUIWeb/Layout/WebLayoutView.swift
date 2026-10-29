@@ -227,14 +227,16 @@ class WebLayoutView: WebDOMView {
         let sized = arrangement == .layers && values.area != nil
         let fillsAcross = across == "stretch" && arrangement != .stack(.horizontal)
         let fillsDown = down == "stretch" && arrangement != .stack(.vertical)
-        let yieldsAcross = stopsAcross || fillsAcross || sized
+        // A row short of room takes it from its words: the browser shrinks them alike, by their natural widths.
+        let wordsInARow = arrangement == .stack(.horizontal) && values.yieldsInARow
+        let yieldsAcross = stopsAcross || fillsAcross || sized || wordsInARow
         let yieldsDown = stopsDown || fillsDown || sized
         view.style("min-width", WebCSS.pixels(values.minimumWidth) ?? (yieldsAcross ? "0" : nil))
         view.style("min-height", WebCSS.pixels(values.minimumHeight) ?? (yieldsDown ? "0" : nil))
         switch arrangement {
         case .stack(let axis):
             // A space takes an equal share of the room its siblings leave.
-            view.style("flex", values.grows(along: axis) ? "1 1 0" : "none")
+            view.style("flex", values.grows(along: axis) ? "1 1 0" : wordsInARow ? "0 1 auto" : "none")
             view.style("justify-self", nil)
             view.style("align-self", axis == .vertical ? across : down)
         case .single, .grid, .layers:

@@ -115,6 +115,23 @@ wrapped text is measured at the width it will have; a horizontal stack offers
 none, because the width is what the children decide. A hidden child takes no
 room and no spacing.
 
+## A row short of room
+
+A row with less room than its shown children, their margins and the spacing
+need takes it from its words: a label (`LaidOutWords.bare`) that states no
+width of its own (`LayoutValues.yieldsInARow`) shares what the others leave
+with the other labels, in proportion to their natural widths and within
+their bounds; every other child keeps its natural width, and a space has
+none left (`StackArithmetic.rowWidths`). A label narrowed is measured again
+at its width, so its words wrap to it, and a row measured for a width works
+its labels out at the widths it would place them at: it is as tall as they
+stand there, and its natural width is still its words on one line, as a
+grid's is - no label is measured at one width and placed at another, which
+WinUI would measure until it gave up. Every host runs the arithmetic but the
+Web, which hands its rows to the browser: a label there is a flex item that
+shrinks by its natural width down to nothing (`flex: 0 1 auto`, `min-width:
+0`), the same share.
+
 ## A space
 
 A child that grows - a `Space` - takes the room the stack's shown children

@@ -63,6 +63,24 @@ struct StackLayoutSample: SampleContent, ExampleContent {
                 .text("Space")
                 .accessibilityIdentifier("stackLayout.spaced")
 
+            SectionTitle("Short of room")
+
+            // A row short of room takes it from its words: the button stays
+            // whole, and the title wraps to what is left - or, kept to one
+            // line, ends where the room does.
+            HStack {
+                Text("A title longer than the row has room for beside its button")
+                Button("Open")
+            }
+            .spacing(8)
+
+            HStack {
+                Text("A title longer than the row has room for beside its button")
+                    .maximumLines(1)
+                Button("Open")
+            }
+            .spacing(8)
+
             SectionTitle("Separator")
 
             // The platform's own line, across its stack.
@@ -88,7 +106,8 @@ struct StackLayoutSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("`.horizontalAlignment` places a child across the room its stack gives it. A `Space` takes the room "
-            + "its siblings leave; a `Separator` draws the platform's line across its stack.")
+            + "its siblings leave; a row short of room takes it from its words; a `Separator` draws the platform's "
+            + "line across its stack.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

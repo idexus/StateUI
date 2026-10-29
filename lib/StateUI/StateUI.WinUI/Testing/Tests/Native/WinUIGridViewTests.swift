@@ -61,4 +61,33 @@ final class WinUIGridViewTests: XCTestCase {
             XCTAssertGreaterThan(words.frame.height, line * 1.5, "wrapped again")
         }
     }
+
+    /// A row whose words yield settles at every width: the label measured at its natural width and at its share
+    /// inside the measure, and asked again only for those inside the arrangement - a measure inside an arrangement
+    /// at another width marks the layout for another pass, which WinUI ends the process over.
+    func testARowWhoseWordsYieldSettlesAtEveryWidth() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack {
+                    HStack {
+                        Text("Words far longer than the row they stand in has room for, wrapping to what is left")
+                        Rectangle().fill(.blue).width(60).height(20)
+                    }
+                    .spacing(0)
+                    .padding(horizontal: 14, vertical: 12)
+                }
+                .padding(horizontal: 24, vertical: 20)
+            }
+            let words = try XCTUnwrap(host.views(WinUITextView.self).first)
+            let window = try XCTUnwrap(host.window)
+            for width in stride(from: 1400.0, through: 300, by: -23) {
+                window.request(WindowFrame(width: width, height: 440))
+                host.step()
+                host.layOut()
+            }
+            // The row's own place may still be on its way to the last width: the words yielded, whatever it stands at.
+            let row = try XCTUnwrap(words.placingLayout)
+            XCTAssertLessThan(words.frame.width, row.frame.width - 60, "the words narrower than the row less the box")
+        }
+    }
 }

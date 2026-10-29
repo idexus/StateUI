@@ -15,7 +15,8 @@
         case vertical
     }
 
-    /// The room a stack's shown children take, each measured once for the width offered.
+    /// The room a stack's shown children take, each measured once for the width offered - a row's words at the width
+    /// it would give them in that room, so it is as tall as they stand there.
     @MainActor
     public static func size<Child: LayoutChild>(
         of items: [Child], axis: Axis, spacing: Double, padding: Insets, width offered: Double?
@@ -39,11 +40,16 @@
                 height: padding.top + padding.bottom + gaps + along)
 
         case .horizontal:
-            for item in visible {
-                let size = item.size(offered: nil)
-                let margin = item.values.margin
-                along += size.width + margin.start + margin.end
-                across = max(across, size.height + margin.top + margin.bottom)
+            var naturals: [LayoutSize?] = visible.map { $0.size(offered: nil) }
+            for (item, natural) in zip(visible, naturals) {
+                along += (natural?.width ?? 0) + item.values.margin.start + item.values.margin.end
+            }
+            if let offered {
+                let room = max(0, offered - padding.start - padding.end)
+                naturals = wrapped(visible, naturals, rowWidths(of: visible, naturals: naturals, spacing: spacing, room: room))
+            }
+            for (item, size) in zip(visible, naturals) {
+                across = max(across, (size?.height ?? 0) + item.values.margin.top + item.values.margin.bottom)
             }
             return LayoutSize(
                 width: padding.start + padding.end + gaps + along,
@@ -71,15 +77,20 @@
     ) -> [Rect?] {
         let content = bounds.inset(padding)
         let cross = axis == .vertical ? content.width : content.height
-        let naturals: [LayoutSize?] = items.map { item in
+        var naturals: [LayoutSize?] = items.map { item in
             guard item.isShown else { return nil }
             let margin = item.values.margin
             return item.size(offered: axis == .vertical ? max(0, cross - margin.start - margin.end) : nil)
         }
-        let share = growingShare(of: items, naturals: naturals, axis: axis, spacing: spacing, in: content)
+        // A row short of room takes it from its words, which stand at the width they are measured at.
+        let row = axis == .horizontal ? rowWidths(of: items, naturals: naturals, spacing: spacing, room: content.width) : nil
+        if let row { naturals = wrapped(items, naturals, row) }
+        let share = row?.yielded == true
+            ? 0 : growingShare(of: items, naturals: naturals, axis: axis, spacing: spacing, in: content)
         var offset = axis == .vertical ? content.y : content.x
 
-        return zip(items, naturals).map { item, natural in
+        return zip(items, naturals).enumerated().map { index, pair in
+            let (item, natural) = pair
             guard let natural else { return nil }
             let values = item.values
             let margin = values.margin
@@ -106,11 +117,51 @@
                     available: available, minimum: values.minimumHeight, maximum: values.maximumHeight)
                 let y = Extent.start(
                     option: values.vertical, extent: height, start: content.y + margin.top, available: available)
-                let width = values.boundedWidth(values.grows(along: axis) ? share : natural.width)
+                let width = values.grows(along: axis)
+                    ? values.boundedWidth(share) : row?.widths[index] ?? values.boundedWidth(natural.width)
                 let place = Rect(x: offset, y: y, width: width, height: height)
                 offset += width + margin.end + spacing
                 return place
             }
+        }
+    }
+
+    /// Each child's width along a row: its natural width - and, where the row has less room than its shown children,
+    /// their margins and the spacing need, the words (`yieldsInARow`) sharing what the others leave in proportion to
+    /// their natural widths, the others keeping theirs; nil for a hidden child, nothing for one that grows.
+    /// Design: docs/design/host/layout.md#a-row-short-of-room
+    @MainActor
+    private static func rowWidths<Child: LayoutChild>(
+        of items: [Child], naturals: [LayoutSize?], spacing: Double, room: Double
+    ) -> (widths: [Double?], yielded: Bool) {
+        let widths: [Double?] = zip(items, naturals).map { item, natural in
+            natural.map { item.values.grows(along: .horizontal) ? 0 : item.values.boundedWidth($0.width) }
+        }
+        let shown = items.indices.filter { widths[$0] != nil }
+        let margins = shown.reduce(0.0) { $0 + items[$1].values.margin.start + items[$1].values.margin.end }
+        let needed = shown.reduce(margins) { $0 + (widths[$1] ?? 0) } + spacing * Double(max(shown.count - 1, 0))
+        let words = shown.filter { items[$0].values.yieldsInARow }
+        let wordsWidth = words.reduce(0.0) { $0 + (widths[$1] ?? 0) }
+        guard needed > room, wordsWidth > 0 else { return (widths, false) }
+
+        let left = max(0, room - (needed - wordsWidth))
+        var yielded = widths
+        for index in words {
+            yielded[index] = items[index].values.boundedWidth((widths[index] ?? 0) * left / wordsWidth)
+        }
+        return (yielded, true)
+    }
+
+    /// `naturals` with each child a row narrowed measured again at its width, so its words wrap to it.
+    @MainActor
+    private static func wrapped<Child: LayoutChild>(
+        _ items: [Child], _ naturals: [LayoutSize?], _ row: (widths: [Double?], yielded: Bool)
+    ) -> [LayoutSize?] {
+        guard row.yielded else { return naturals }
+        return zip(items, zip(naturals, row.widths)).map { item, pair in
+            guard let natural = pair.0, let width = pair.1, item.values.yieldsInARow,
+                  width < item.values.boundedWidth(natural.width) else { return pair.0 }
+            return item.size(offered: width)
         }
     }
 
@@ -143,6 +194,11 @@ extension LayoutValues {
     /// Whether the child takes a share of the room along `axis`: it grows and states no length of its own there.
     public func grows(along axis: StackArithmetic.Axis) -> Bool {
         grows && (axis == .vertical ? height : width) == nil
+    }
+
+    /// Whether the child gives up width in a row short of room: words alone (a label), stating no width of their own.
+    public var yieldsInARow: Bool {
+        words == .bare && width == nil
     }
 }
 

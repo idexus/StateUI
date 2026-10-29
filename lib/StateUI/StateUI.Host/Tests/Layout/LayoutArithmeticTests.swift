@@ -208,6 +208,65 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places.map { $0?.width }, [20, 30, 50])
     }
 
+    /// A ROW SHORT OF ROOM TAKES IT FROM ITS WORDS: the controls keep their width, and the words share what the
+    /// others and the spacing leave, in proportion to their natural widths.
+    @MainActor
+    func testARowShortOfRoomTakesItFromItsWords() {
+        let row = Self.row(title: 300, note: 100)
+
+        let places = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 10, padding: Insets(0), in: Rect(0, 0, 300, 100),
+            direction: .leftToRight)
+
+        XCTAssertEqual(places.map { $0?.width }, [150, 50, 80], "200 left for the words, shared 3 to 1")
+        XCTAssertEqual(places.map { $0?.x }, [0, 160, 220], "the button still on the row")
+        XCTAssertEqual(places[0]?.height, 40, "the title wrapped to its 150")
+    }
+
+    /// A row with room enough keeps every child at its natural width.
+    @MainActor
+    func testARowWithRoomKeepsItsWordsWhole() {
+        let places = StackArithmetic.places(
+            of: Self.row(title: 300, note: 100), axis: .horizontal, spacing: 10, padding: Insets(0),
+            in: Rect(0, 0, 600, 100), direction: .leftToRight)
+
+        XCTAssertEqual(places.map { $0?.width }, [300, 100, 80])
+    }
+
+    /// A row measured for a width is as tall as its words wrapped to the width it gives them there, and its natural
+    /// width is still its words on one line - the words placed at the width they were measured at, offered any room.
+    @MainActor
+    func testARowMeasuresItsWordsAtTheWidthItPlacesThem() {
+        let measured = Self.row(title: 300, note: 100, offers: Offers())
+        let placed = Self.row(title: 300, note: 100, offers: Offers())
+
+        let size = StackArithmetic.size(of: measured, axis: .horizontal, spacing: 10, padding: Insets(0), width: 300)
+        XCTAssertEqual(size, LayoutSize(width: 500, height: 40), "the title two lines at its 150")
+
+        for room in stride(from: 100.0, through: 700, by: 23) {
+            _ = StackArithmetic.size(of: measured, axis: .horizontal, spacing: 10, padding: Insets(0), width: room)
+            _ = StackArithmetic.places(
+                of: placed, axis: .horizontal, spacing: 10, padding: Insets(0), in: Rect(0, 0, room, 100),
+                direction: .leftToRight)
+            XCTAssertEqual(measured[0].offers?.widths.last, placed[0].offers?.widths.last, "the title at \(room)")
+        }
+    }
+
+    /// A row of a title, a note and a button: the words wrap and yield, the button keeps its 80.
+    @MainActor
+    private static func row(title: Double, note: Double, offers: Offers? = nil) -> [Child] {
+        var words = [Child(width: title, height: 20), Child(width: note, height: 20)]
+        for index in words.indices {
+            words[index].values.words = .bare
+            words[index].values.vertical = 0
+            words[index].wraps = true
+        }
+        words[0].offers = offers
+        var button = Child(width: 80, height: 30)
+        button.values.words = .boxed
+        return words + [button]
+    }
+
     /// Words in a proportional column wrap to it: their row is as tall as they are at the column's width, where
     /// the grid places them and where it is measured for a width narrower than its words.
     @MainActor

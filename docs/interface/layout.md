@@ -116,6 +116,12 @@ VStack {
 .padding(24)
 ```
 
+A row with less room than its children need takes it from its words: a
+button, a toggle or a picture keeps its width, and the labels share what the
+others leave in proportion to their natural widths - wrapping to it, or
+ending where the room does when kept to `.maximumLines(1)`. A label that
+states its own width keeps it.
+
 The content closure is retained and described when the differ asks for the
 container's children. A state read inside that closure belongs to the
 container's description scope, which can keep invalidation narrower than a

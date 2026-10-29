@@ -25,7 +25,11 @@ stops it short of its slot, when it stands in the middle, as the host layer
 places it. The least size a control's look gives it - a button's, a
 field's, a slider's - is its own size, and yields where the tree states a
 size or a most, where the child fills its slot and in an area: CSS's least
-wins over a stated size, so a button stated 30 high stood 36. A hidden child
+wins over a stated size, so a button stated 30 high stood 36. A label in a
+row shrinks by its natural width down to nothing (`flex: 0 1 auto`,
+`min-width: 0`), so a row short of room takes it from its words as the host
+layer's arithmetic does elsewhere (host/layout.md, a row short of room); every
+other child of a stack keeps its own (`flex: none`). A hidden child
 is `hidden`, which takes it out of the layout: it takes no room and no
 spacing.
 
