@@ -25,7 +25,7 @@ public struct LayoutPlaces: Equatable, Sendable, ExpressibleByArrayLiteral {
 
     /// Every `step` from the lower end of the range, and the upper end.
     ///
-    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: .every(0.25), wraps: true)
+    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: .every(0.25), circular: true)
     ///
     /// - Parameter step: how far apart the places are; above nought.
     /// - Returns: the places.
@@ -52,9 +52,9 @@ public struct LayoutPlaces: Equatable, Sendable, ExpressibleByArrayLiteral {
         places = .listed(values)
     }
 
-    /// The places in `range`, lowest first, its ends included - its upper end left out where the axis `wraps`, as it
+    /// The places in `range`, lowest first, its ends included - its upper end left out where the axis is `circular`, as it
     /// is the lower one a turn on.
-    func values(in range: ClosedRange<Double>, wraps: Bool) -> [Double] {
+    func values(in range: ClosedRange<Double>, circular: Bool) -> [Double] {
         let (low, high) = (range.lowerBound, range.upperBound)
         let inside: [Double]
         switch places {
@@ -66,7 +66,7 @@ public struct LayoutPlaces: Equatable, Sendable, ExpressibleByArrayLiteral {
             inside = count > 0 ? (1...count).map { low + Double($0) * step }.filter { $0 < high - step * 1e-6 } : []
         }
 
-        let ends = wraps ? [low] : [low, high]
+        let ends = circular ? [low] : [low, high]
         return Array(Set(ends + inside)).sorted()
     }
 

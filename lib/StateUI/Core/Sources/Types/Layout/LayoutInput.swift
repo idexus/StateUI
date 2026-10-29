@@ -138,8 +138,8 @@ public struct LayoutInput: Equatable, Sendable {
     /// would end - the snap nearest it, where the axis has snaps - as `throwing` says; let go still, onto the
     /// nearest.
     ///
-    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, wraps: true)
-    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), wraps: true)
+    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, circular: true)
+    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), circular: true)
     ///
     /// - Parameters:
     ///   - degreesPerUnit: how far the fingers turn for one unit of the axis, in degrees; above nought.

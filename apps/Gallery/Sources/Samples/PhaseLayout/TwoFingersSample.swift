@@ -55,7 +55,7 @@ struct TwoFingersSample: SampleContent, ExampleContent {
             // large, resting at either or at its own size - both at once.
             .axis(
                 \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
-                wraps: true)
+                circular: true)
             .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
             .motion(.spring(response: .milliseconds(420), damping: 0.8))
         }

@@ -205,12 +205,12 @@ naming no axes is said.
 
 ## An axis
 
-`.axis(_:input:range:keyframes:snaps:wraps:)` is the one declaration of an
+`.axis(_:input:range:keyframes:snaps:circular:)` is the one declaration of an
 axis the hand moves: what moves it (a `LayoutInput`), how far (`range`),
 where its layout is worked out (`keyframes`, [keyframes](#keyframes)), where
-it may rest (`snaps`), and whether it comes round (`wraps`) - the keyframes
+it may rest (`snaps`), and whether it comes round (`circular`) - the keyframes
 and the snaps both a `LayoutPlaces`, places on the axis. One concept, one
-place: an input, a rest and a wrap are never declared apart, so no axis has
+place: an input, a rest and its coming round are never declared apart, so no axis has
 an input with no range or a rest with no input.
 
 - THE RANGE is the hand's, not the program's: the hand moves the axis freely
@@ -220,7 +220,7 @@ an input with no range or a rest with no input.
 - THE SNAPS are places beside the range's ends, which always are: listed
   (`[1, 2]`, `.at(_:)`), a step from the lower end (`.every(_:)`), or none
   inside (`.limits`) - worked out once into the run's `stops`, lowest first,
-  the upper end left out where the axis wraps. NO SNAPS is an axis of its
+  the upper end left out where the axis is circular. NO SNAPS is an axis of its
   own kind: it rests wherever the hand or its throw leaves it, inside its
   range, and is named nothing while the hand holds it - the phase is where
   the run rests or is going, and a held axis with no snaps is going nowhere
@@ -325,7 +325,7 @@ dragged, a trackpad's two fingers and a wheel are one hand, each host telling
 it as its toolkit does and the host layer making it one stream of the
 element's `handMoved` (host/runtime.md, the hand over a layout). No scroller
 lies over the views, so nothing bounds how far the hand goes: a run that
-comes round (`wraps: true`) turns for ever, and the views under the hand
+comes round (`circular: true`) turns for ever, and the views under the hand
 still answer a tap.
 
 - The hand takes the run where it is shown: a journey or a throw under way

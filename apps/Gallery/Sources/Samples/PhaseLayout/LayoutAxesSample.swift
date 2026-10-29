@@ -28,8 +28,8 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
         "range: 0...3",
         "range: 0...3, snaps: [1, 2]",
         "range: 0...3, snaps: .limits",
-        "range: 0...4, wraps: true",
-        "range: 0...4, snaps: .every(1), wraps: true",
+        "range: 0...4, circular: true",
+        "range: 0...4, snaps: .every(1), circular: true",
     ]
 
     /// The pictures on the cards: the gallery's groups'.
@@ -78,9 +78,9 @@ struct LayoutAxesSample: SampleContent, ExampleContent {
             // ...on an end alone: the first card or the last...
             .axis(\.limits, input: hand, range: 0...3, snaps: .limits)
             // ...round and round, anywhere - 4 is 0 a turn on...
-            .axis(\.round, input: hand, range: 0...4, wraps: true)
+            .axis(\.round, input: hand, range: 0...4, circular: true)
             // ...and round and round, a card at a time.
-            .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), wraps: true)
+            .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), circular: true)
             .motion(.spring(response: .milliseconds(360), damping: 0.8))
         }
         .clipsContent(true)

@@ -878,7 +878,7 @@ a gate, as an event's does - `.onItemDismissed(.up, beyond: 120, policy:
 .ignoreWhileRunning) { card in try await archive(card) }` - and what it runs
 ends with the layout.
 
-A run with no ends comes round: `wraps: true` makes one turn of the range
+A run with no ends comes round: `circular: true` makes one turn of the range
 bring the layout back where it was - its upper end is its lower one a turn
 on, its snaps repeated each turn - so the hand and the program both move it
 on forever. The arithmetic folds the phase itself:
@@ -903,7 +903,7 @@ struct Ring: View {
         }
         .axis(
             \.self, input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(400), damping: 0.8)),
-            range: 0...Double(names.count), snaps: .every(1), wraps: true)
+            range: 0...Double(names.count), snaps: .every(1), circular: true)
         .height(200)
     }
 }
@@ -948,7 +948,7 @@ struct Planets: View {
 }
 ```
 
-`.axis(_:input:range:keyframes:snaps:wraps:)` declares one axis whole - what
+`.axis(_:input:range:keyframes:snaps:circular:)` declares one axis whole - what
 moves it, how far it runs, where its layout is worked out, where it rests,
 whether it comes round - and the hand moves
 that one alone, resting it on its own snaps whatever the others do. One input
@@ -996,7 +996,7 @@ struct Compass: View {
                     24))
             }
         }
-        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), wraps: true)
+        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), circular: true)
         .axis(\.size, input: .magnification, range: 0.5...2, snaps: [1])
         .height(240)
     }

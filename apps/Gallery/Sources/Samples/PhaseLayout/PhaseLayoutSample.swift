@@ -191,7 +191,7 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
         // card back.
         .axis(
             \.self, input: .scroll(.horizontal, throwing: throwing.motion),
-            range: 0...Double(Self.cards.count), snaps: .every(1), wraps: true)
+            range: 0...Double(Self.cards.count), snaps: .every(1), circular: true)
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
         // over every card, wearing the card's own corners - which is why it is
         // the application's to give and not the library's to draw.
@@ -365,7 +365,7 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
                 + "end: past the last card is the first again. `Back` and `Next` send it "
                 + "there without the hand - the phase itself travels, under the layout's "
                 + "`.motion`. The phase, `phase: $turn`, is the card at the front; "
-                + "`.axis(\\.self, input: .scroll(…), range:, snaps: .every(1), wraps: true)` gives "
+                + "`.axis(\\.self, input: .scroll(…), range:, snaps: .every(1), circular: true)` gives "
                 + "it to the hand, resting on a card and coming round. The picker changes how a throw goes "
                 + "on - `.scroll(…, throwing:)` takes any motion: eased, its length says how far a "
                 + "throw carries and its curve how it slows; a spring settles as springs do.")

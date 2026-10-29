@@ -85,7 +85,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         let range: ClosedRange<Double>
         let keyframes: LayoutPlaces?
         let snaps: LayoutPlaces?
-        let wraps: Bool
+        let circular: Bool
 
         /// What is wrong with the declaration, if anything, as the author is told it.
         var complaint: String? {
@@ -100,18 +100,18 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
                 return "A PhaseLayout's magnification was given a range reaching nought, which no spreading of the "
                     + "fingers reaches. The fingers move nothing."
             }
-            if wraps, input.gesture == .magnification {
+            if circular, input.gesture == .magnification {
                 return "A PhaseLayout's magnification was told to come round, which a size never does: it stops at "
                     + "the ends of its range."
             }
-            if wraps, high <= low {
+            if circular, high <= low {
                 return "A PhaseLayout's axis was told to come round over a range of no length: it stays where it is."
             }
             if snaps == nil, case .hand(_, _, swipes: true) = input.gesture {
                 return "A PhaseLayout's swipe moves the run one snap a hand, and its axis was given none: it swipes "
                     + "from end to end of its range."
             }
-            if wraps, keyframes != nil, let knots = hand?.knots, knots.count < 3 {
+            if circular, keyframes != nil, let knots = hand?.knots, knots.count < 3 {
                 return "A PhaseLayout's axis comes round with keyframes at its ends alone, which are one place a "
                     + "turn apart: nothing is blended between them."
             }
@@ -125,16 +125,16 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
                   input.gesture != .magnification || low > 0
             else { return nil }
 
-            let period = wraps && high > low && input.gesture != .magnification ? high - low : nil
+            let period = circular && high > low && input.gesture != .magnification ? high - low : nil
             let swipes = if case .hand(_, _, swipes: true) = input.gesture { true } else { false }
             let snaps = snaps ?? (swipes ? .limits : nil)
             let knots = keyframes.map { keyframes in
-                Array(Set(keyframes.values(in: range, wraps: false) + (snaps?.values(in: range, wraps: false) ?? [])))
+                Array(Set(keyframes.values(in: range, circular: false) + (snaps?.values(in: range, circular: false) ?? [])))
                     .sorted()
             }
             return Hand(
                 index: index, axis: axis, gesture: input.gesture, throwing: input.throwing, low: low, high: high,
-                stops: snaps?.values(in: range, wraps: period != nil) ?? [], period: period, knots: knots)
+                stops: snaps?.values(in: range, circular: period != nil) ?? [], period: period, knots: knots)
         }
     }
 
@@ -257,7 +257,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
     ///
     ///     .axis(\.self, input: .swipe(.horizontal), range: 0...Double(cards.count - 1), snaps: .every(1))
     ///     .axis(\.zoom, input: .magnification, range: 0.5...2)
-    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: .every(0.25), wraps: true)
+    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: .every(0.25), circular: true)
     ///
     /// The hand moves the axis freely inside its range - less and less past an end, which it comes back onto when
     /// let go - and let go, the run goes on to where its throw would end: the snap nearest it, where the axis has
@@ -284,7 +284,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
     ///   - keyframes: where the arithmetic is asked beside the ends of the range and the snaps; every frame unless
     ///     said.
     ///   - snaps: where it may rest beside the ends of its range; anywhere inside it unless said.
-    ///   - wraps: whether it comes round, its range one turn.
+    ///   - circular: whether its end meets its start, its range one turn.
     /// - Returns: the layout, its axis moved by the hand.
     public func axis(
         _ axis: WritableKeyPath<Phase, Double>,
@@ -292,12 +292,12 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         range: ClosedRange<Double>,
         keyframes: LayoutPlaces? = nil,
         snaps: LayoutPlaces? = nil,
-        wraps: Bool = false
+        circular: Bool = false
     ) -> Self {
         var copy = self
         copy.axes.removeAll { $0.axis == axis }
         copy.axes.append(
-            Given(axis: axis, input: input, range: range, keyframes: keyframes, snaps: snaps, wraps: wraps))
+            Given(axis: axis, input: input, range: range, keyframes: keyframes, snaps: snaps, circular: circular))
         return copy
     }
 

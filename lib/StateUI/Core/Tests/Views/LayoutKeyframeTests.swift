@@ -245,7 +245,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAnAxisThatComesRoundBlendsAcrossItsSeam() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) {
-            $0.axis(\.self, input: .scroll(.horizontal), range: 0...3, keyframes: .every(1), wraps: true)
+            $0.axis(\.self, input: .scroll(.horizontal), range: 0...3, keyframes: .every(1), circular: true)
         }
         let worn = try worn(bench.laid(renders, built).patch)
 
@@ -317,7 +317,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAWrappingAxisWithKeyframesAtItsEndsAloneIsSaid() {
         let (phase, asked) = (State(wrappedValue: 0.0), Asked())
         _ = Renders().render(tree(phase, asked) {
-            $0.axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .limits, wraps: true)
+            $0.axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .limits, circular: true)
         }())
 
         XCTAssertTrue(hasComplained("keyframes at its ends alone"))

@@ -38,7 +38,7 @@ final class LayoutPinchTests: XCTestCase {
             return (0..<4).map { _ in Placement(Rect(0, 0, 40, 40)) }
         }
         .axis(\.zoom, input: .magnification, range: 0.5...2, snaps: [1])
-        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), wraps: true)
+        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), circular: true)
         .motion(.eased(.milliseconds(160), .linear))
         if itemDrag { layout = layout.itemDrag(begins: .held) }
         return layout.node

@@ -60,13 +60,13 @@ final class LayoutAxisTests: XCTestCase {
     /// THE SNAPS ARE THE PLACES GIVEN AND THE RANGE'S ENDS - the upper end the lower one a turn on where the axis
     /// comes round.
     func testTheSnapsAreThePlacesGivenAndTheEnds() {
-        XCTAssertEqual(([1, 2] as LayoutPlaces).values(in: 0...3, wraps: false), [0, 1, 2, 3])
-        XCTAssertEqual(LayoutPlaces.limits.values(in: 0...3, wraps: false), [0, 3])
-        XCTAssertEqual(LayoutPlaces.every(1).values(in: 0...3, wraps: false), [0, 1, 2, 3])
-        XCTAssertEqual(LayoutPlaces.every(1).values(in: 0...2.5, wraps: false), [0, 1, 2, 2.5])
-        XCTAssertEqual(LayoutPlaces.every(0.25).values(in: 0...1, wraps: true), [0, 0.25, 0.5, 0.75])
-        XCTAssertEqual(LayoutPlaces.at([-1, 0.5, 4]).values(in: 0...3, wraps: false), [0, 0.5, 3], "outside, left out")
-        XCTAssertEqual(LayoutPlaces.every(0.1).values(in: 0...1, wraps: false).count, 11, "none a rounding short of 1")
+        XCTAssertEqual(([1, 2] as LayoutPlaces).values(in: 0...3, circular: false), [0, 1, 2, 3])
+        XCTAssertEqual(LayoutPlaces.limits.values(in: 0...3, circular: false), [0, 3])
+        XCTAssertEqual(LayoutPlaces.every(1).values(in: 0...3, circular: false), [0, 1, 2, 3])
+        XCTAssertEqual(LayoutPlaces.every(1).values(in: 0...2.5, circular: false), [0, 1, 2, 2.5])
+        XCTAssertEqual(LayoutPlaces.every(0.25).values(in: 0...1, circular: true), [0, 0.25, 0.5, 0.75])
+        XCTAssertEqual(LayoutPlaces.at([-1, 0.5, 4]).values(in: 0...3, circular: false), [0, 0.5, 3], "outside, left out")
+        XCTAssertEqual(LayoutPlaces.every(0.1).values(in: 0...1, circular: false).count, 11, "none a rounding short of 1")
     }
 
     // MARK: - An axis with no snaps
@@ -202,7 +202,7 @@ final class LayoutAxisTests: XCTestCase {
     func testAnAxisThatComesRoundHasNoEnd() {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed) {
-            $0.axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, wraps: true)
+            $0.axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, circular: true)
         }
         _ = bench.laid(renders, built)
 
@@ -222,7 +222,7 @@ final class LayoutAxisTests: XCTestCase {
         let built = tree(table, handed) {
             $0.axis(
                 \.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(0.25),
-                wraps: true)
+                circular: true)
         }
         _ = bench.laid(renders, built)
 

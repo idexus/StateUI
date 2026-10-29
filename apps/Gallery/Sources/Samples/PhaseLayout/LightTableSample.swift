@@ -92,7 +92,7 @@ struct LightTableSample: SampleContent, ExampleContent {
         // round.
         .axis(
             \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
-            wraps: true)
+            circular: true)
         .motion(.spring(response: .milliseconds(420), damping: 0.82))
     }
 

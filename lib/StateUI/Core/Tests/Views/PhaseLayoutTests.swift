@@ -436,7 +436,7 @@ final class PhaseLayoutTests: XCTestCase {
                 handed.phases.append(at)
                 return [Placement(Rect(0, 0, 10, 10))]
             }
-            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...7, snaps: .every(1), wraps: true)
+            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...7, snaps: .every(1), circular: true)
             .node
         }
 
@@ -495,7 +495,7 @@ final class PhaseLayoutTests: XCTestCase {
         func tree() -> Node {
             PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
                 .axis(
-                    \.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1), wraps: true)
+                    \.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1), circular: true)
                 .node
         }
         _ = bench.laid(renders, tree)

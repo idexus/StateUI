@@ -5703,8 +5703,8 @@ enum Listings {
             "range: 0...3",
             "range: 0...3, snaps: [1, 2]",
             "range: 0...3, snaps: .limits",
-            "range: 0...4, wraps: true",
-            "range: 0...4, snaps: .every(1), wraps: true",
+            "range: 0...4, circular: true",
+            "range: 0...4, snaps: .every(1), circular: true",
         ]
 
         /// The pictures on the cards: the gallery's groups'.
@@ -5744,9 +5744,9 @@ enum Listings {
                 // ...on an end alone: the first card or the last...
                 .axis(\.limits, input: hand, range: 0...3, snaps: .limits)
                 // ...round and round, anywhere - 4 is 0 a turn on...
-                .axis(\.round, input: hand, range: 0...4, wraps: true)
+                .axis(\.round, input: hand, range: 0...4, circular: true)
                 // ...and round and round, a card at a time.
-                .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), wraps: true)
+                .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), circular: true)
                 .motion(.spring(response: .milliseconds(360), damping: 0.8))
             }
             .clipsContent(true)
@@ -6155,7 +6155,7 @@ enum Listings {
             // round.
             .axis(
                 \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
-                wraps: true)
+                circular: true)
             .motion(.spring(response: .milliseconds(420), damping: 0.82))
         }
 
@@ -8389,7 +8389,7 @@ enum Listings {
             // card back.
             .axis(
                 \.self, input: .scroll(.horizontal, throwing: throwing.motion),
-                range: 0...Double(Self.cards.count), snaps: .every(1), wraps: true)
+                range: 0...Double(Self.cards.count), snaps: .every(1), circular: true)
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
             // over every card, wearing the card's own corners - which is why it is
             // the application's to give and not the library's to draw.
@@ -12100,7 +12100,7 @@ enum Listings {
                 // large, resting at either or at its own size - both at once.
                 .axis(
                     \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
-                    wraps: true)
+                    circular: true)
                 .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
                 .motion(.spring(response: .milliseconds(420), damping: 0.8))
             }
