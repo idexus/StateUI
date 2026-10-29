@@ -20,8 +20,12 @@
     /// The room above the bar - where a host's bars stand beside the page, the whole room its content has.
     public let above: Rect
 
+    /// How far above the bar its ground fades out toward the content, so the bar's controls stand on the whole blur:
+    /// the soft edge a host draws itself.
+    public static let fade = 24.0
+
     /// Whether anything of a page stands under its bottom bar, so the bar stands on a ground of its own - a blur
-    /// with a line along its top - rather than on the page: nothing where the content stands clear of the room's
+    /// fading softly toward the content - rather than on the page: nothing where the content stands clear of the room's
     /// foot (`contentRunsUnder` false); where it runs under, its scroller's rows while they stand short of their end
     /// - at its end the last row stands clear above the bar - and anything else it holds always.
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot

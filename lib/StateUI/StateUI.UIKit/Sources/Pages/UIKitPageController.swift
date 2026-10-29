@@ -195,10 +195,9 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
             safe: safe, whole: wholeRect,
             edges: page?.element.contentIgnoresSafeArea ?? .none, direction: page?.element.layoutDirection ?? .leftToRight)
         page?.placedFrame = room
-        bottomBar.frame = bar.map { CGRect(x: $0.bar.x, y: $0.bar.y, width: $0.bar.width, height: $0.bar.height) } ?? .zero
         let scroller = page?.element.pageScroller?.uiKit.view as? UIKitScrollView
         scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: safe))
-        if bar != nil { bottomBar.standOver(scroller?.scroller) }
+        bottomBar.stand(at: bar, over: page?.element, scroller: scroller)
         page?.view?.layoutIfNeeded()
         // What reads a frame says where it stands within this pass, and what that moves is laid out again: a room
         // UIKit alone narrowed - a sidebar sliding - places its layout in the frame that measured it.

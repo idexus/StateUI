@@ -754,8 +754,7 @@ its content stands clear of it, and a scroller let under the bars scrolls under
 it, its last row stopping clear. A scroller at its end stays at its end as the
 bar grows or the keyboard rises, so the last message stays in sight; one
 elsewhere stays where it is. The bar stands on the page while nothing passes
-under it, and on a blur with a line along its top while the rows do, as the
-platform's own bars stand. Where the platform's bars stand over the page the
+under it, and on a blur fading softly toward the content while the rows do. Where the platform's bars stand over the page the
 bar does too, the rows softening as they pass under it; where they stand
 beside the page, the page ends above it. Declared on a stack or a window's
 page, a bottom bar stands on every page shown there that declares none of its

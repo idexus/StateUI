@@ -14,7 +14,7 @@ ApplicationSessionSample.swift 5e888fc7cfd589fc
 AxesPhaseSample.swift 837eb2173aea8077
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
-BottomBarSample.swift 079493ffd4e31c5e
+BottomBarSample.swift 72bf32d3636f4abd
 BoundPropertiesSample.swift 52240d3e367abe61
 BrushSample.swift 9bcd94f7f88fe7af
 BuilderSample.swift eda47ffd0dda692b

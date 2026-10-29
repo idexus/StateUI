@@ -374,15 +374,21 @@ inside it - a word typed into its field - shows no chrome again; the bar's
 coming and going does.
 
 A bar stands on the page while nothing stands under it, and on a ground of
-its own - a blur with a line along its top, down to the room's edge - while
-anything does (`BottomBarPlace.covers`): the page's content where it runs
-under the room's foot, its scroller's rows while they stand short of their
-end. Where the platform draws that itself, the host leaves it the platform's:
-UIKit's scroll edge effect under the bar (`UIScrollEdgeElementContainer
-Interaction`), soft on iOS 26 and a blur with a line on iOS 27, and GTK's flat
-bottom bar, which shows its shadow only while the content scrolls. AppKit and
-the Web draw the blur and the line; a bar standing beside the page has
-nothing under it. What the bar's view paints of its own stands over either.
+its own - a blur fading softly toward the content, down to the room's edge -
+while anything does (`BottomBarPlace.covers`): the page's content where it
+runs under the room's foot, its scroller's rows while they stand short of
+their end. The edge is soft, as a bar a field stands in reads best, and it
+fades out `BottomBarPlace.fade` above the bar, so the controls stand on the
+whole blur. UIKit asks its scroll edge effect under the bar for the soft one
+(`bottomEdgeEffect.style`, `UIScrollEdgeElementContainerInteraction`, the bar
+reaching the fade above its view) - which iOS 26 draws and iOS 27 draws not at
+all, natively or in SwiftUI alike. Where the platform draws no soft edge -
+iOS 27, AppKit, the Web - the host draws the ground itself, made of what the
+page stands on (`bottomBarGround`: its own background, its arrangement's, else
+its window's), so the rows fade into the page's own ground and not into a
+material's gray. GTK's flat bottom bar shows its shadow only while the content
+scrolls, as GNOME's do; a bar standing beside the page has nothing under it.
+What the bar's view paints of its own stands over either.
 
 A scroller standing at its end stays at its end as what it reaches moves with
 its content the same - its room shrinking beside a growing bar, what it keeps

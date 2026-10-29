@@ -1429,6 +1429,9 @@ enum Listings {
         @State private var messages = (1...24).map { "Message \($0)" }
         @State private var draft = ""
 
+        /// What the window is made of, which the field's blur is tinted with as the bars' are.
+        @Environment(\.window) private var window
+
         var body: some View {
             Button("Open the conversation")
                 .onClicked { presented = true }
@@ -1446,12 +1449,15 @@ enum Listings {
                         .ignoresSafeArea(.all)
                         .galleryPage("Conversation")
                         // The field grows with its lines, and the bar with it; the
-                        // rows pass under the bar.
+                        // rows pass under the bar, blurred behind the field in what
+                        // the window is made of.
                         .bottomBar {
                             Grid {
-                                TextEditor($draft)
-                                    .placeholder("Message")
-                                    .growsWithText(true)
+                                ZStack {
+                                    TextEditor($draft)
+                                        .placeholder("Message")
+                                        .growsWithText(true)
+                                }
                                 Button("Send")
                                     .onClicked {
                                         guard !draft.isEmpty else { return }

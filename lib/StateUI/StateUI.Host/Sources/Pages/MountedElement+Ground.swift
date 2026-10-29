@@ -12,6 +12,13 @@ extension MountedElement {
         HostMaterial(enclosing(type: .window)?.value(.background))
     }
 
+    /// What this page's bottom bar stands on while anything passes under it: what the page stands on - its own
+    /// background, its arrangement's, else its window's - so the rows fade into the page's own ground.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    @MainActor public var bottomBarGround: HostMaterial {
+        HostMaterial(pageBackground ?? enclosing(type: .window)?.value(.background))
+    }
+
     /// What this page says it stands on: its own background, else the nearest an arrangement on its path declares for
     /// its pages - on past a sheet to the view presenting it; nil where none says one, and for a sidebar's page, which
     /// stands on its sidebar's material.
