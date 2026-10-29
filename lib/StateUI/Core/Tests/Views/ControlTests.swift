@@ -360,6 +360,7 @@ final class ControlTests: XCTestCase {
                     Rectangle()
                         .fill(.black))
                 .motion(.spring(response: .milliseconds(240)))
+                .mirrorsRightToLeft(true)
                 .onItemTapped { _ in }
                 .itemDrag(begins: .held)
                 .onItemDragged { _ in }
@@ -868,7 +869,8 @@ final class ControlTests: XCTestCase {
             "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
         ]
         // A map's markers are rebuilt with the map; a composed view's configuration changes what it builds, which a
-        // state carried past the tree cannot - a gallery's shape and fading, a list's layout, a layout's drag.
+        // state carried past the tree cannot - a gallery's shape and fading, a list's layout, a layout's drag and its
+        // mirror.
         let perControl = [
             "Views/Mixins/TextualElement.swift|text:String",
             "Views/Controls/Map.swift|label:String", "Views/Controls/Map.swift|subtitle:String",
@@ -877,6 +879,7 @@ final class ControlTests: XCTestCase {
             "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
             "Views/Collections/GalleryView.swift|throwing:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
             "Views/Layouts/PhaseLayout.swift|itemDrag:ItemDragStart",
+            "Views/Layouts/PhaseLayout.swift|mirrorsRightToLeft:Bool",
         ]
         let missing = values
             .filter { value in
