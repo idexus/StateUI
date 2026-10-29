@@ -11,8 +11,6 @@ struct BottomBarSample: SampleContent, ExampleContent {
     @State private var edge = ScrollEdge.automatic
     static let edges: [ScrollEdge] = [.automatic, .hard, .none]
 
-    /// What the window is made of, which the field's blur is tinted with as the bars' are.
-    @Environment(\.window) private var window
     // listing: end
 
     static let id = "bottomBar"
@@ -50,8 +48,7 @@ struct BottomBarSample: SampleContent, ExampleContent {
             .ignoresSafeArea(.all)
             .galleryPage("Conversation")
             // The field grows with its lines, and the bar with it; the rows
-            // pass under the bar, blurred behind the field in what the window
-            // is made of.
+            // pass under the bar, and under the field's glass.
             .bottomBar(edge: edge) {
                 Grid {
                     ZStack {
@@ -59,8 +56,8 @@ struct BottomBarSample: SampleContent, ExampleContent {
                             .placeholder("Message")
                             .growsWithText(true)
                     }
-                    .background(window.background ?? .blur(.thin.tint(Palette.field)))
-                    .shape(.roundedRectangle(10))
+                    .background(.glass(.regular))
+                    .shape(.capsule)
                     Button("Send")
                         .onClicked {
                             guard !draft.isEmpty else { return }

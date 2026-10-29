@@ -110,7 +110,7 @@ struct MenuPage: View {
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)
-            .padding(12)   // listing: keep
+            .padding(horizontal: 12, vertical: 6)   // listing: keep
     }
 }
 // listing: end

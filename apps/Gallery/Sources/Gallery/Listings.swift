@@ -1431,8 +1431,6 @@ enum Listings {
         @State private var edge = ScrollEdge.automatic
         static let edges: [ScrollEdge] = [.automatic, .hard, .none]
 
-        /// What the window is made of, which the field's blur is tinted with as the bars' are.
-        @Environment(\.window) private var window
 
         var body: some View {
             VStack {
@@ -1460,8 +1458,7 @@ enum Listings {
                 .ignoresSafeArea(.all)
                 .galleryPage("Conversation")
                 // The field grows with its lines, and the bar with it; the rows
-                // pass under the bar, blurred behind the field in what the window
-                // is made of.
+                // pass under the bar, and under the field's glass.
                 .bottomBar(edge: edge) {
                     Grid {
                         ZStack {
@@ -7255,7 +7252,7 @@ enum Listings {
             /// answered before the first render, and the StateUI release it is built on.
             private var footer: some View {
                 Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
-                    .padding(12)
+                    .padding(horizontal: 12, vertical: 6)
             }
         }
         """#,
