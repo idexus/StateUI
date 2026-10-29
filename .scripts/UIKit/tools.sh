@@ -198,7 +198,7 @@ import json, sys
 wanted, listed = sys.argv[1:3]
 for each in json.load(open(listed))["result"]["devices"]:
     hardware = each.get("hardwareProperties", {})
-    if hardware.get("reality") != "physical" or hardware.get("platform") != "iOS":
+    if hardware.get("reality") == "simulated" or hardware.get("platform") != "iOS":
         continue
     if wanted in (each.get("identifier"), hardware.get("udid"), each.get("deviceProperties", {}).get("name")):
         print(each["identifier"], hardware["udid"])
