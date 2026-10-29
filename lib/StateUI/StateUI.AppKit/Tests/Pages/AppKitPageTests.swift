@@ -456,6 +456,32 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertGreaterThan(sidebar.minX, 0, "the sidebar floats in the window's margin")
     }
 
+    /// A page in a split view's column stands clear of the window's bar over its pane, and under it where its own
+    /// layout ignores the safe area - as a window's page does.
+    @MainActor
+    func testAColumnsPageRunsUnderTheBarWhereItIgnoresTheSafeArea() throws {
+        func top(ignoring edges: SafeAreaEdges) throws -> CGFloat {
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+            defer { renderer.closeForTesting() }
+            var column = HostPatch(id: .manual("column"), type: .vStack)
+            column.properties[.ignoresSafeArea] = edges.propValue
+            var home = page("home", title: "Home")
+            home.children = .arranged([column])
+            renderer.applyForTesting(tree(flyout(
+                presented: true, menu: page("menu", title: "Menu"), detail: navigation([home])), width: 1200))
+
+            let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+            window.setContentSize(NSSize(width: 1200, height: 800))
+            window.contentView?.layoutSubtreeIfNeeded()
+            let shown = try XCTUnwrap(renderer.viewForTesting(id: .manual("navigation")))
+            return shown.frame.minY
+        }
+
+        let clear = try top(ignoring: .none)
+        XCTAssertGreaterThan(clear, 0, "clear of the bar over its pane")
+        XCTAssertEqual(try top(ignoring: .all), 0, "and under it, ignoring the safe area")
+    }
+
     @MainActor
     func testUserTabSelectionReportsTheSelectedIndexOnce() throws {
         let renderer = testRenderer(

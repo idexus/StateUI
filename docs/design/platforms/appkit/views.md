@@ -100,6 +100,14 @@ the pane's layer, a blur or glass a view of its own under the page - over
 the system's. A Mac sidebar never slides over the detail: a window too narrow
 for both hides it, so the overlay material is never shown.
 
+Each pane of a split view is a room, as the window is: the window's title bar
+and toolbar stand over the top of both - the sidebar spans the title bar -
+and its column's content stands clear of them, or under them on the edges
+its visible page's own layout ignores, by the host layer's rule
+(`AppKitPaneView.childRoom`, `SafeAreaArithmetic.room`), its scroller keeping
+clear what it reaches under. The window lays the panes again as a column's
+page changes - pushed, popped, its edges said anew.
+
 ## A child turned in place
 
 A ZStack whose run turns its drawing order - two cards swapping ranks as a

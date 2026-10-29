@@ -46,8 +46,6 @@ final class AppKitSplitView: AppKitHitTestView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
 
-        sidebarSurface.insetsBySafeArea = true
-        detailSurface.insetsBySafeArea = true
         sidebarController.view = sidebarSurface
         detailController.view = detailSurface
         sidebarItem.canCollapse = true
@@ -130,6 +128,18 @@ final class AppKitSplitView: AppKitHitTestView {
 
     var detailRowAccessoryForTesting: NSSplitViewItemAccessoryViewController? {
         detailItem.topAlignedAccessoryViewControllers.first
+    }
+
+    /// The columns' arrangements, whose visible pages say which edges each pane's content runs under.
+    func setColumns(sidebar: MountedElement?, detail: MountedElement?) {
+        sidebarSurface.column = sidebar
+        detailSurface.column = detail
+    }
+
+    /// A column's page changed - pushed, popped, its edges said anew: each pane lays its column again.
+    func columnsChanged() {
+        sidebarSurface.needsLayout = true
+        detailSurface.needsLayout = true
     }
 
     func setItems(_ items: [AppKitLayoutItem]) {

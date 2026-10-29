@@ -15,11 +15,6 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         didSet { if direction != oldValue { needsLayout = true } }
     }
 
-    /// Whether the child keeps out of the part of this view that the window's
-    /// title bar and toolbar cover.
-    var insetsBySafeArea = false {
-        didSet { if insetsBySafeArea != oldValue { needsLayout = true } }
-    }
     private(set) var item: AppKitLayoutItem?
 
     override var isFlipped: Bool { true }
@@ -50,9 +45,11 @@ class AppKitSingleChildView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         super.layout()
         guard let item, item.isShown else { return }
 
-        let room = (insetsBySafeArea ? safeAreaRect : bounds).placed
-        item.view.frame = NSRect(placed: SingleChildArithmetic.place(of: item, in: room, direction: direction))
+        item.view.frame = NSRect(placed: SingleChildArithmetic.place(of: item, in: childRoom, direction: direction))
     }
+
+    /// The room the child stands in: the whole view.
+    var childRoom: Rect { bounds.placed }
 }
 
 #endif

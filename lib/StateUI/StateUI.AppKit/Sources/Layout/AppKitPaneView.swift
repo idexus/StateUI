@@ -6,13 +6,9 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// One pane of a split view. Its page keeps out of the part the window's title
-/// bar and toolbar cover, and the brush written for the bars paints that part;
-/// a sidebar's pane stands on the material its split view says, else on the
-/// system's sidebar.
-///
-/// A room: the split view decides its size and it gives its page all of it, so
-/// a change inside the page is laid out by the page.
+/// One pane of a split view, a room: its column's content stands against the safe area as a window's page does,
+/// the bars' brush paints the part they cover, and a sidebar's pane stands on its split view's material.
+/// Design: docs/design/platforms/appkit/views.md#a-sidebars-material
 @MainActor
 final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
     /// What the window's bars are painted with - a color or a gradient - over `barBand`.
@@ -33,8 +29,23 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
         NSRect(x: 0, y: 0, width: bounds.width, height: max(0, safeAreaRect.minY))
     }
 
+    /// The column the pane holds, whose visible page says which edges its content runs under.
+    weak var column: MountedElement? {
+        didSet { needsLayout = true }
+    }
+
+    /// The room the column's content stands in against the pane's safe area.
+    override var childRoom: Rect {
+        let page = column?.visiblePage
+        return SafeAreaArithmetic.room(
+            safe: safeAreaRect.placed, whole: bounds.placed, edges: page?.contentIgnoresSafeArea ?? .none,
+            direction: page?.layoutDirection ?? .leftToRight)
+    }
+
     override func layout() {
         super.layout()
+        (column?.visiblePage?.pageScroller?.appKit.view as? AppKitScrollView)?.keepClear(
+            SafeAreaArithmetic.clearance(room: childRoom, safe: safeAreaRect.placed))
         if barBrush.paints { needsDisplay = true }
         layOutReporting(item?.view)
     }

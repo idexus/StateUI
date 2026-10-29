@@ -50,6 +50,7 @@ extension AppKitElement {
 
         if let split = view as? AppKitSplitView {
             split.setItems(items)
+            split.setColumns(sidebar: element.arrangedChildren.first, detail: element.arrangedChildren.dropFirst().first)
             return
         }
 
