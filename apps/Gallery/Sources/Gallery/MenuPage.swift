@@ -47,20 +47,25 @@ struct MenuPage: View {
     @Environment(\.device) private var device
 
     var body: some View {
+        // The rows run under the bars, the first and the last stopping clear
+        // of them.
         Grid {
             ScrollView {
                 rows
             }
-
-            footer
-
-            WindowPhaseLog(log: log)
         }
-        // Two rows: the footer keeps its height, and the rows take what is
-        // left and scroll above it.
-        .rows(.fill, .auto)
+        .ignoresSafeArea(.all)
         .title("StateUI")
         .icon(Self.mark)
+        // The line about what this is stands at the menu's foot, on glass
+        // the rows scroll under.
+        .bottomBar {
+            ZStack {
+                footer
+                WindowPhaseLog(log: log)
+            }
+            .background(.glass(.regular))
+        }
     }
 
     /// Home, one row per group, the row that is not always listed, and the one
@@ -107,8 +112,6 @@ struct MenuPage: View {
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)
             .padding(12)   // listing: keep
-            // The footer's own row, written on the footer.
-            .gridRow(1)
     }
 }
 // listing: end

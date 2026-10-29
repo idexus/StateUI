@@ -94,6 +94,10 @@ enum Palette {
     /// let through.
     static let field = Color(light: Color(hex: 0x000000, opacity: 0.05), dark: Color(hex: 0xFFFFFF, opacity: 0.08))
 
+    /// The ground words are typed on where rows pass under it - a field in a
+    /// bottom bar: nothing let through.
+    static let solidField = Color(light: Color(hex: 0xFFFFFF), dark: Color(hex: 0x2B2A33))
+
     /// A region set apart within a panel.
     static let well = Color(light: Color(hex: 0x000000, opacity: 0.04), dark: Color(hex: 0xFFFFFF, opacity: 0.04))
 

@@ -410,6 +410,7 @@ final class Catalog {
                 Sample(ClipboardSample()),
                 Sample(ShareSample()),
                 Sample(ToolbarSample()),
+                Sample(BottomBarSample()),
                 Sample(ToolbarLayersSample(nav: nav)),
                 Sample(MenuBarSample()),
                 Sample(ContextMenuSample()),

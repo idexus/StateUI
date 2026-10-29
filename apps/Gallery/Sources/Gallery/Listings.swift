@@ -1422,6 +1422,54 @@ enum Listings {
             }
         }
         """#,
+        "BottomBarSample": #"""
+        // Sources/Samples/Navigation/BottomBarSample.swift
+        @State private var presented = false
+        @State private var path: [Int] = []
+        @State private var messages = (1...24).map { "Message \($0)" }
+        @State private var draft = ""
+
+        var body: some View {
+            Button("Open the conversation")
+                .onClicked { presented = true }
+                .sheet(isPresented: $presented) {
+                    NavigationStack($path) {
+                        Grid {
+                            ScrollView {
+                                VStack {
+                                    ForEach(Array(messages.indices), id: \.self) { index in
+                                        Text(messages[index])
+                                    }
+                                }
+                            }
+                        }
+                        .ignoresSafeArea(.all)
+                        .galleryPage("Conversation")
+                        // The field grows with its lines, and the bar with it. The
+                        // rows pass under the bar's glass and behind the field, which
+                        // lets none of them through.
+                        .bottomBar {
+                            Grid {
+                                TextEditor($draft)
+                                    .placeholder("Message")
+                                    .growsWithText(true)
+                                Button("Send")
+                                    .onClicked {
+                                        guard !draft.isEmpty else { return }
+                                        messages.append(draft)
+                                        draft = ""
+                                    }
+                                    .verticalAlignment(.end)
+                                    .gridColumn(1)
+                            }
+                            .columns(.fill, .auto)
+                        }
+                    } destination: { _ in
+                        Text("")
+                    }
+                }
+        }
+        """#,
         "BoundPropertiesSample": #"""
         // Sources/Samples/Driven/BoundPropertiesSample.swift
         /// A number the host WALKS: handed to `fontSize`, an assignment travels
@@ -7133,20 +7181,24 @@ enum Listings {
             @Environment(\.device) private var device
 
             var body: some View {
+                // The rows run under the bars, the first and the last stopping clear
+                // of them.
                 Grid {
                     ScrollView {
                         rows
                     }
-
-                    footer
-
-                    WindowPhaseLog(log: log)
                 }
-                // Two rows: the footer keeps its height, and the rows take what is
-                // left and scroll above it.
-                .rows(.fill, .auto)
+                .ignoresSafeArea(.all)
                 .title("StateUI")
                 .icon(Self.mark)
+                // The line about what this is stands at the menu's foot, on glass
+                // the rows scroll under.
+                .bottomBar {
+                    ZStack {
+                        footer
+                        WindowPhaseLog(log: log)
+                    }
+                }
             }
 
             /// Home, one row per group, the row that is not always listed, and the one
@@ -7189,8 +7241,6 @@ enum Listings {
             private var footer: some View {
                 Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
                     .padding(12)
-                    // The footer's own row, written on the footer.
-                    .gridRow(1)
             }
         }
         """#,

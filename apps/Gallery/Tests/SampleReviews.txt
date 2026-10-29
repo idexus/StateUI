@@ -14,6 +14,7 @@ ApplicationSessionSample.swift 5e888fc7cfd589fc
 AxesPhaseSample.swift 837eb2173aea8077
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
+BottomBarSample.swift 084f1ada60a4c351
 BoundPropertiesSample.swift 52240d3e367abe61
 BrushSample.swift 9bcd94f7f88fe7af
 BuilderSample.swift eda47ffd0dda692b
@@ -119,12 +120,12 @@ ShortcutSample.swift 613e9bc5911f4fc5
 SizingSample.swift 505216705d5b9909
 SliderSample.swift de5c388891de8278
 SpinnerSample.swift e38153fa2576bf0f
-SplitViewSample.swift e89f55f263b880b8
+SplitViewSample.swift 3fd03f16f5a2a7a7
 StackLayoutSample.swift ff825d58aebc74b3
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
-StyleSample.swift 753f701c2b758560
+StyleSample.swift 7a85ea5267b5cb95
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ae41f144fd9164ad
 TabsSample.swift 13660845c50cb716
