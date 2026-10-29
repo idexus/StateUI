@@ -92,7 +92,7 @@ PanSample.swift 8db15bbfd3c2b4b7
 PersistentStateSample.swift 4be06bf5d5e98ef8
 PhaseLayoutSample.swift c863a604a74f32aa
 PickerSample.swift 86c5cbb290e05823
-PinchSample.swift 6aa4a07113d9cf10
+PinchSample.swift 096ba21a40fbcd00
 PlatformSupportSample.swift 24107a58da1308fc
 PointerSample.swift 3306b3b76379bc70
 PollSample.swift 29d40feb24ecaa77

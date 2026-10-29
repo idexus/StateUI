@@ -88,6 +88,10 @@
     /// A press dragged with ⌥/Alt over the element, read as two fingers, while one is under way.
     var mirroredFingers = MirroredFingers()
 
+    /// How far the pinch heard on the element has spread since it began - what it tells, as a pan tells its totals;
+    /// nil while none is under way.
+    var pinchFromStart: Double?
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 

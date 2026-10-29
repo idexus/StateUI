@@ -1759,8 +1759,8 @@ final class CatalogTests: XCTestCase {
     /// The pinch works on a platform that never sends `.began`.
     ///
     /// A native trackpad magnification may arrive as `.changed` followed by
-    /// `.ended`, with no `.began`. Multiplying by each report's change
-    /// keeps the interaction independent of that optional phase.
+    /// `.ended`, with no `.began`: the host layer begins the pinch itself, so
+    /// the sample always knows the size it had when the pinch began.
     func testThePinchSampleDoesNotWaitForAStatusThatMayNeverCome() throws {
         // The sample owns its state now, so the test goes through a render the
         // way the app does: fire the handler the host reports, then read the
@@ -1770,22 +1770,19 @@ final class CatalogTests: XCTestCase {
         let first = renders.render(PinchSample().node)
         let pinchUpdated = try XCTUnwrap(eventId("pinchUpdated", in: first))
 
-        // Exactly what the platform sent, in the order it sent it.
-        renders.fire(pinchUpdated, with: [
-            .enumeration(GesturePhase.changed.rawValue), .number(1.02), .numbers([0.5, 0.45]),
-        ])
-        renders.fire(pinchUpdated, with: [
-            .enumeration(GesturePhase.ended.rawValue), .number(1), .numbers([0, 0]),
-        ])
+        // What the element tells of a step and an end with no beginning: one begun for it, the spread from it.
+        for (phase, scale) in [(GesturePhase.began, 1.0), (.changed, 1.02), (.ended, 1.02)] {
+            renders.fire(pinchUpdated, with: [.enumeration(phase.rawValue), .number(scale), .numbers([0.5, 0.45])])
+        }
 
         let second = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: second)), 1.02, accuracy: 0.0001,
                        "the scale did not follow a pinch that never said .began")
 
         // And a second gesture goes on from where the first left off.
-        renders.fire(pinchUpdated, with: [
-            .enumeration(GesturePhase.changed.rawValue), .number(1.02), .numbers([0.5, 0.45]),
-        ])
+        for (phase, scale) in [(GesturePhase.began, 1.0), (.changed, 1.02)] {
+            renders.fire(pinchUpdated, with: [.enumeration(phase.rawValue), .number(scale), .numbers([0.5, 0.45])])
+        }
 
         let third = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: third)), 1.0404, accuracy: 0.0001)

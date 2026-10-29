@@ -4,6 +4,7 @@ import StateUI
 struct PinchSample: SampleContent, ExampleContent {
     // listing: PinchSample
     @State private var pinch = 1.0
+    @State private var pinchedFrom = 1.0
     @State private var reports = 0
     // listing: end
 
@@ -44,11 +45,10 @@ struct PinchSample: SampleContent, ExampleContent {
             .onPinchUpdated { update in
                 reports += 1
 
-                // Multiplying needs no scale captured at the start: each
-                // report carries its own step.
-                if update.phase == .changed {
-                    pinch = max(0.5, min(3, pinch * update.scale))
-                }
+                // The spread since the pinch began scales the size it had
+                // then.
+                if update.phase == .began { pinchedFrom = pinch }
+                pinch = max(0.5, min(3, pinchedFrom * update.scale))
             }
 
             // Per cent rather than a formatted double: String(format:) is
@@ -73,8 +73,8 @@ struct PinchSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("`scale` is RELATIVE - how much has changed since the LAST report - so "
-                + "a view being pinched multiplies rather than assigns. `scaleOrigin` says "
+            Text("`scale` is how far the fingers have spread since the pinch began, so "
+                + "a view being pinched scales the size it had then. `scaleOrigin` says "
                 + "where the pinch is centered, as a fraction of the view.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

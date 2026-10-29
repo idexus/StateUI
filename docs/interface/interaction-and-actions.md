@@ -118,12 +118,13 @@ held. The control dictionary says it member by member.
 
 ### Pan and pinch
 
-`PanUpdate` reports its phase and total displacement from the gesture's start.
-`PinchUpdate.scale` is relative to the previous report:
+`PanUpdate` reports its phase and total displacement from the gesture's start,
+and `PinchUpdate.scale` how far the fingers have spread since the pinch began:
 
 ```swift quote
 @State private var x = 0.0
 @State private var scale = 1.0
+@State private var scaled = 1.0
 
 Rectangle()
     .fill(.cornflowerBlue)
@@ -133,7 +134,8 @@ Rectangle()
         if update.phase == .changed { x = update.totalX }
     }
     .onPinchUpdated { update in
-        if update.phase == .changed { scale *= update.scale }
+        if update.phase == .began { scaled = scale }
+        scale = scaled * update.scale
     }
 ```
 

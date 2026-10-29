@@ -61,7 +61,7 @@ extension MountedElement {
             dragged(phase, x: x, y: y, in: runtime)
         case .pinch(let phase, let scale, let at):
             guard hearsFingers else {
-                send(.pinchUpdated, [.enumeration(phase.rawValue), .number(scale), .numbers([at.x, at.y])], in: runtime)
+                pinched(phase, scale: scale, at: at, in: runtime)
                 return true
             }
             return fingers(pinchReading.pinch(phase, scale: scale, at: runtime.clock.now()), in: runtime)
@@ -127,6 +127,19 @@ extension MountedElement {
             send(.accessibilityAdjusted, [step.propValue], in: runtime)
         }
         return true
+    }
+
+    /// A pinch's step at `phase`, told as the spread since the pinch began - a step with no beginning heard, as a
+    /// trackpad may tell, beginning one first.
+    /// Design: docs/design/types/gestures.md#a-pinch-from-its-start
+    private func pinched(_ phase: GesturePhase, scale: Double, at: Point, in runtime: HostRuntime) {
+        if phase != .began, pinchFromStart == nil {
+            send(.pinchUpdated, [.enumeration(GesturePhase.began.rawValue), .number(1), .numbers([at.x, at.y])],
+                 in: runtime)
+        }
+        let spread = (phase == .began ? 1 : pinchFromStart ?? 1) * scale
+        pinchFromStart = phase == .ended || phase == .cancelled ? nil : spread
+        send(.pinchUpdated, [.enumeration(phase.rawValue), .number(spread), .numbers([at.x, at.y])], in: runtime)
     }
 
     /// Whether two fingers spreading or turning move the layout this element is.

@@ -8622,6 +8622,7 @@ enum Listings {
         "PinchSample": #"""
         // Sources/Samples/Gestures/PinchSample.swift
         @State private var pinch = 1.0
+        @State private var pinchedFrom = 1.0
         @State private var reports = 0
 
         var body: some View {
@@ -8649,11 +8650,10 @@ enum Listings {
                 .onPinchUpdated { update in
                     reports += 1
 
-                    // Multiplying needs no scale captured at the start: each
-                    // report carries its own step.
-                    if update.phase == .changed {
-                        pinch = max(0.5, min(3, pinch * update.scale))
-                    }
+                    // The spread since the pinch began scales the size it had
+                    // then.
+                    if update.phase == .began { pinchedFrom = pinch }
+                    pinch = max(0.5, min(3, pinchedFrom * update.scale))
                 }
 
                 // Per cent rather than a formatted double: String(format:) is

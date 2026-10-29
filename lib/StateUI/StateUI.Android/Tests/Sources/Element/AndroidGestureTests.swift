@@ -104,7 +104,7 @@ final class AndroidGestureTests: XCTestCase {
 
             XCTAssertEqual(phases.values.first, "began 0.5 0.5")
             XCTAssertEqual(phases.values.last, "ended 0.5 0.5")
-            XCTAssertEqual(scales.values.reduce(1, *), 900.0 / 675.0, accuracy: 0.01)
+            XCTAssertEqual(scales.values.last ?? 0, 900.0 / 675.0, accuracy: 0.01, "the spread since the pinch began")
         }
     }
 

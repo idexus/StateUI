@@ -49,9 +49,13 @@ translation. Android measures a pan on the screen, where the touch stands
 whatever the view does, so a handler answering by translating the view does
 not feed its own answer back into the next report.
 
-## A pinch is relative
+## A pinch from its start
 
-A pinch's scale is how much the fingers moved since the last report, not
-since the pinch began, so a handler multiplies what it holds rather than
-assigning. The origin is where the pinch is centered, as a fraction of the
+A pinch's scale is how far the fingers have spread since the pinch began, as
+a pan reports its totals: a platform tells each step, and the host layer
+multiplies them from the pinch's start (`MountedElement.pinchFromStart`), so
+a handler scales what it held when the pinch began and never gathers the
+steps itself. A step with no beginning heard - a trackpad's magnification may
+come as steps and an end alone - begins the pinch first, at 1, so the
+beginning a handler keeps its size at always comes. The origin is where the pinch is centered, as a fraction of the
 view.

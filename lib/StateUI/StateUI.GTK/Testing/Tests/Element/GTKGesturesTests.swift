@@ -245,7 +245,8 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
-    /// A pinch says its scale since the last step and where it is; the pointer says where it moved.
+    /// A pinch says its scale since it began and where it is - begun first where GTK told no beginning; the pointer
+    /// says where it moved.
     func testAPinchAndThePointerSayWhereTheyAre() throws {
         try onUIThread {
             let host = GTKRenderer.running { DragPage() }
@@ -256,7 +257,7 @@ final class GTKGesturesTests: XCTestCase {
             GTKTestHost.emit(zoom, "scale-changed", [1.5])
             GTKTestHost.emit(zoom, "scale-changed", [3])
             GTKTestHost.emit(motion, "motion", [12, 7])
-            let expected = "x 10 pinch 1.5 at 0.5; pinch 2.0 at 0.5; moved 12,7; "
+            let expected = "x 10 pinch 1.0 at 0.5; pinch 1.5 at 0.5; pinch 3.0 at 0.5; moved 12,7; "
             host.settle { host.texts.first == expected }
 
             XCTAssertEqual(host.texts.first, expected)
