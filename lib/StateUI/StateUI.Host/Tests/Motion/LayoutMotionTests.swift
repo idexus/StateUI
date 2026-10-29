@@ -261,7 +261,7 @@ final class LayoutMotionTests: XCTestCase {
         layout.arrange([(moved, 1, Self.row(0, y: 200))])
         XCTAssertEqual(moved.placedFrame.y, 50, accuracy: 1e-9, "it bends from where it stands")
         let bent = try XCTUnwrap(layout.animator.animation(for: .placed(1)))
-        XCTAssertEqual(bent.velocity[1], 0.5, accuracy: 1e-9, "at the speed it has")
+        XCTAssertEqual(bent.velocity[1], 500, accuracy: 1e-9, "at the speed it has, per second")
 
         layout.frame(at: 150)
         XCTAssertGreaterThan(moved.placedFrame.y, 50, "and goes on, never back")

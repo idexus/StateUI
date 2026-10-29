@@ -89,7 +89,7 @@ struct LayoutTravel: Equatable, Sendable {
     var velocity: [Double]
     var began: Double
 
-    /// Where the shift stands at `now` under `law`, how fast it goes, per millisecond, and whether it has come to
+    /// Where the shift stands at `now` under `law`, how fast it goes, per second, and whether it has come to
     /// nothing.
     func at(_ now: Double, under law: Motion) -> HostMotionSample {
         HostMotionLaw.sample(

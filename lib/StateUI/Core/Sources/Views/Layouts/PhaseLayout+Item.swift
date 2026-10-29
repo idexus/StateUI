@@ -111,8 +111,8 @@ extension PhaseLayout.Run {
         if let speed = hand.speed, !hand.dismissed {
             let lanes = LayoutShift(from: placement, to: poses[index]).lanes
             var velocity = LayoutShift.none.lanes
-            velocity[LayoutShift.x] = speed.x / 1_000
-            velocity[LayoutShift.y] = speed.y / 1_000
+            velocity[LayoutShift.x] = speed.x
+            velocity[LayoutShift.y] = speed.y
             travels[hand.identity] = LayoutTravel(from: lanes, velocity: velocity, began: now)
             shown[index] = LayoutShift(lanes: lanes).applied(to: poses[index])
             states.item.wrappedValue = nil

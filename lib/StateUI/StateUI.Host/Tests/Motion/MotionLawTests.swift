@@ -24,25 +24,25 @@ final class MotionLawTests: XCTestCase {
     func testAnAnimationThatBeganMovingStartsAtItsSpeedAndLandsStill() {
         let motion = Motion.eased(.milliseconds(300), .cubicOut)
         let start = HostMotionLaw.sample(
-            motion, elapsed: 0, from: [20], destination: [80], velocity: [0.3])
+            motion, elapsed: 0, from: [20], destination: [80], velocity: [300])
         let late = HostMotionLaw.sample(
-            motion, elapsed: 299.9, from: [20], destination: [80], velocity: [0.3])
+            motion, elapsed: 299.9, from: [20], destination: [80], velocity: [300])
         let landed = HostMotionLaw.sample(
-            motion, elapsed: 300, from: [20], destination: [80], velocity: [0.3])
+            motion, elapsed: 300, from: [20], destination: [80], velocity: [300])
 
         XCTAssertEqual(start.value[0], 20, accuracy: 1e-12)
-        XCTAssertEqual(start.velocity[0], 0.3, accuracy: 1e-12)
-        XCTAssertEqual(late.velocity[0], 0, accuracy: HostMotionLaw.still)
+        XCTAssertEqual(start.velocity[0], 300, accuracy: 1e-9)
+        XCTAssertEqual(late.velocity[0], 0, accuracy: HostMotionLaw.stillSpeed)
         XCTAssertEqual(landed, HostMotionSample(value: [80], velocity: [0], rested: true))
     }
 
     func testASpringAnswersTheSameValueForTheSameInstant() {
         let first = HostMotionLaw.sample(
             .spring(response: .milliseconds(260), damping: 0.8),
-            elapsed: 147, from: [20, -4], destination: [80, 10], velocity: [0.03, -0.01])
+            elapsed: 147, from: [20, -4], destination: [80, 10], velocity: [30, -10])
         let second = HostMotionLaw.sample(
             .spring(response: .milliseconds(260), damping: 0.8),
-            elapsed: 147, from: [20, -4], destination: [80, 10], velocity: [0.03, -0.01])
+            elapsed: 147, from: [20, -4], destination: [80, 10], velocity: [30, -10])
 
         XCTAssertEqual(first, second)
         XCTAssertFalse(first.rested)
@@ -87,7 +87,7 @@ final class MotionLawTests: XCTestCase {
             for lane in animation.from.indices {
                 XCTAssertEqual(start.value[lane], animation.from[lane], accuracy: 1e-12, named)
                 if animation.velocity[lane] != 0, eased {
-                    XCTAssertEqual(start.velocity[lane], animation.velocity[lane], accuracy: 1e-12, named)
+                    XCTAssertEqual(start.velocity[lane], animation.velocity[lane], accuracy: 1e-9, named)
                 }
             }
 
@@ -170,11 +170,11 @@ final class MotionLawTests: XCTestCase {
         // curve on a lane without.
         animations.append(Animation(
             motion: .eased(.milliseconds(300), .cubicOut),
-            from: [20, -4], destination: [80, 10], velocity: [0.3, 0],
+            from: [20, -4], destination: [80, 10], velocity: [300, 0],
             instants: [0, 30, 75, 150, 225, 290, 300]))
         animations.append(Animation(
             motion: .eased(.milliseconds(250), .sineInOut),
-            from: [1], destination: [0], velocity: [-0.004],
+            from: [1], destination: [0], velocity: [-4],
             instants: [0, 25, 125, 249, 250]))
 
         // Springs: critically damped from rest and moving, ringing, crawling.
@@ -184,13 +184,13 @@ final class MotionLawTests: XCTestCase {
             from: [0], destination: [100], velocity: [0], instants: spring))
         animations.append(Animation(
             motion: .spring(response: .milliseconds(260)),
-            from: [0, 50], destination: [100, 50], velocity: [0.5, -0.2], instants: spring))
+            from: [0, 50], destination: [100, 50], velocity: [500, -200], instants: spring))
         animations.append(Animation(
             motion: .spring(response: .milliseconds(400), damping: 0.5),
             from: [0], destination: [1], velocity: [0], instants: spring + [6_400]))
         animations.append(Animation(
             motion: .spring(response: .milliseconds(200), damping: 1.8),
-            from: [10, 0], destination: [0, 5], velocity: [0, 0.01], instants: spring))
+            from: [10, 0], destination: [0, 5], velocity: [0, 10], instants: spring))
 
         // A spring too loose to settle is over at the longest walk anyway.
         animations.append(Animation(

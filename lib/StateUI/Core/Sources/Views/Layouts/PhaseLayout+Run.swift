@@ -730,7 +730,7 @@ extension PhaseLayout {
             if case .spring = fling.motion.kind {
                 let sample = HostMotionLaw.sample(
                     fling.motion, elapsed: elapsed, from: [fling.from], destination: [fling.to],
-                    velocity: [fling.speed / 1_000])
+                    velocity: [fling.speed])
                 return sample.rested ? nil : sample.value.first
             }
 

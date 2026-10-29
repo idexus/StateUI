@@ -14,7 +14,7 @@ import StateUIFoundation
     /// The value of each lane.
     public let value: [Double]
 
-    /// How fast each lane is going, per millisecond.
+    /// How fast each lane is going, per second.
     public let velocity: [Double]
 
     /// Whether the animation has arrived: every lane at its destination and still.
@@ -23,14 +23,17 @@ import StateUIFoundation
 
 /// The two motion laws, evaluated from the time since an animation began.
 ///
-/// Time is in milliseconds, the unit of `Motion`'s numbers, so velocity is per
-/// millisecond. A journey reports its velocity per second; an animator converts
-/// where it reports.
+/// Time is in milliseconds, the unit of `Motion`'s numbers; a speed is per
+/// second, as a journey's is, told in and answered.
 @_spi(Host) public enum HostMotionLaw {
-    /// How near its destination and how slow a lane is when it counts as arrived: in
-    /// the value's own units, and per millisecond for the speed. A thousandth of a
-    /// color channel or of a point is below any display's resolution.
+    /// How near its destination a lane is when it counts as arrived, in the value's
+    /// own units. A thousandth of a color channel or of a point is below any
+    /// display's resolution.
     public static let still = 0.001
+
+    /// How slow a lane is when it counts as still, per second: a thousandth of a unit
+    /// a millisecond.
+    public static let stillSpeed = 1.0
 
     /// The longest a spring animates, in milliseconds. A spring has no stated end;
     /// this keeps any animation from holding a display clock awake for ever.
@@ -48,8 +51,7 @@ import StateUIFoundation
     ///   - elapsed: Milliseconds since the animation began.
     ///   - from: Where each lane began.
     ///   - destination: Where each lane is going.
-    ///   - velocity: How fast each lane was going when it began, per
-    ///     millisecond.
+    ///   - velocity: How fast each lane was going when it began, per second.
     /// - Returns: The value and velocity at that instant, and whether the
     ///   animation has arrived. Lanes that do not pair up land at once.
     public static func sample(
@@ -63,9 +65,12 @@ import StateUIFoundation
             return landed(destination)
         }
 
+        // The arithmetic runs in milliseconds: a speed is told per second and answered so.
+        let velocity = velocity.map { $0 / 1_000 }
+        let sample: HostMotionSample
         switch motion.kind {
         case .eased(let milliseconds, let curve):
-            return eased(
+            sample = eased(
                 length: Double(milliseconds),
                 curve: curve,
                 elapsed: elapsed,
@@ -73,7 +78,7 @@ import StateUIFoundation
                 destination: destination,
                 velocity: velocity)
         case .spring(let milliseconds, let damping):
-            return spring(
+            sample = spring(
                 response: Double(max(milliseconds, 1)),
                 damping: max(damping, 0.01),
                 elapsed: elapsed,
@@ -81,8 +86,10 @@ import StateUIFoundation
                 destination: destination,
                 velocity: velocity)
         case .inherited, .none, .custom:
-            return landed(destination)
+            sample = landed(destination)
         }
+        return HostMotionSample(
+            value: sample.value, velocity: sample.velocity.map { $0 * 1_000 }, rested: sample.rested)
     }
 
     /// An animation at its destination, standing still.
@@ -188,7 +195,7 @@ import StateUIFoundation
                     + (c2 * second * exp(second * elapsed))
             }
 
-            if abs(remaining) <= still && abs(derivative) <= still {
+            if abs(remaining) <= still && abs(derivative) * 1_000 <= stillSpeed {
                 value[lane] = target
                 speed[lane] = 0
             } else {

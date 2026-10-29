@@ -331,7 +331,7 @@ private final class StateChannel {
 
             for (index, lane) in run.lanes.enumerated() {
                 value[lane] = step.value[index]
-                velocity[lane] = step.velocity[index] * 1_000
+                velocity[lane] = step.velocity[index]
             }
         }
 
@@ -382,10 +382,10 @@ private final class StateChannel {
         let animation = Animation(
             from: lanes.map { value[$0] },
             destination: lanes.map { destination[$0] },
-            velocity: lanes.map { (stated.contains($0) ? incoming.velocity[$0] : velocity[$0]) / 1_000 },
+            velocity: lanes.map { stated.contains($0) ? incoming.velocity[$0] : velocity[$0] },
             motion: motion,
             began: now)
-        for (index, lane) in lanes.enumerated() { velocity[lane] = animation.velocity[index] * 1_000 }
+        for (index, lane) in lanes.enumerated() { velocity[lane] = animation.velocity[index] }
 
         let instant = !motion.animates
 

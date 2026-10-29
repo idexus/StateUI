@@ -126,7 +126,7 @@ final class DescribedMotionTests: XCTestCase {
 
         XCTAssertEqual(described.presentedValue(for: key), .number(0.5), "it bends from where it stands")
         let bent = try XCTUnwrap(animator.animation(for: .described(key)))
-        XCTAssertEqual(bent.velocity[0], 0.005, accuracy: 1e-9, "at the speed it had")
+        XCTAssertEqual(bent.velocity[0], 5, accuracy: 1e-9, "at the speed it had, per second")
         XCTAssertEqual(firstEnded, 1, "the animation cut short ends there")
         XCTAssertEqual(secondEnded, 0)
 

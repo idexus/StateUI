@@ -283,15 +283,16 @@ every animation of its table to where it starts and where it lands.
                                     the value and speed to the destination at rest
   spring                            about the distance left, so the three
                                     damping cases are the textbook ones
-  still                             0.001 in the value's units and per ms: below
-                                    any display's resolution for a color
-                                    channel (0 to 1) or a point
+  still                             0.001 in the value's units, and 1 a second
+                                    for a speed: below any display's resolution
+                                    for a color channel (0 to 1) or a point
   longest                           a spring is over after 10 s, so no animation
                                     holds a display clock awake for ever
 ```
 
-Time is in milliseconds, the unit a `Motion` keeps its length in, so the law's velocity
-is per millisecond; a journey reports per second, and an animator converts
-where it reports. The slope of an eased curve is a central difference on the
+Time is in milliseconds, the unit a `Motion` keeps its length in, and a speed
+is per second everywhere - told to the law, answered by it, carried by an
+animation and reported by a journey - the law alone working in milliseconds
+inside, so no animator converts. The slope of an eased curve is a central difference on the
 curve, a function of progress alone, so it answers the same number in every
 run.

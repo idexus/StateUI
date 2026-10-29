@@ -47,7 +47,7 @@
     /// Where each lane is going.
     public let destination: [Double]
 
-    /// Each lane's speed when it began, per millisecond.
+    /// Each lane's speed when it began, per second.
     public let velocity: [Double]
 
     /// The timing it runs under.
@@ -75,7 +75,7 @@
     /// Whether it starts where it ends, standing still: nothing to animate.
     public var arrives: Bool {
         zip(from, destination).allSatisfy { abs($0 - $1) < HostMotionLaw.still }
-            && velocity.allSatisfy { abs($0) < HostMotionLaw.still }
+            && velocity.allSatisfy { abs($0) < HostMotionLaw.stillSpeed }
     }
 }
 
@@ -87,7 +87,7 @@
     /// Each lane's value.
     public let value: [Double]
 
-    /// Each lane's speed, per millisecond.
+    /// Each lane's speed, per second.
     public let velocity: [Double]
 
     /// Whether the animation arrived; an arrived animation has left the animator.
