@@ -124,10 +124,24 @@ final class WinUIScrollView: WinUILayoutView {
         return super.measure(width: width, height: height)
     }
 
-    /// Stands WinUI's scroller over the whole of the room, then an offset the tree wrote before there was one.
+    /// The room the scroller last stood in; nil before its first arrangement.
+    private var laidOutIn: Rect?
+
+    /// Stands WinUI's scroller over the whole of the room, then an offset the tree wrote before there was one - or at
+    /// its end still where it stood at its end as its room changed, a move of its own told as the user's is. WinUI
+    /// tells the new reach once its own pass is over: it is the old one and what the room lost.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
     override func arrange(in bounds: Rect) {
+        let (before, was) = (scroller.standing, laidOutIn)
+        laidOutIn = bounds
         outermost.layout(bounds)
-        if let target = scrollerOffset.laidOutNow() { move(to: target) }
+        if let target = scrollerOffset.laidOutNow() {
+            move(to: target)
+        } else if let was {
+            let now = Point(
+                x: max(0, before.reach.x + was.width - bounds.width), y: max(0, before.reach.y + was.height - bounds.height))
+            if let end = ScrollArithmetic.keptAtEnd(before.offset, reach: before.reach, now: now) { scroller.move(to: end) }
+        }
     }
 
     // MARK: - The user's movement

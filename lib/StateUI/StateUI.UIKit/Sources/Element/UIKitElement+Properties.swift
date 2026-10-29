@@ -94,6 +94,11 @@ extension UIKitElement {
             (entry.parent?.uiKit.view as? UIKitItemsView)?.remeasure(entry)
             return
         }
+        // A bottom bar's size is its page's to place: the page under the arrangement around the bar lays out again.
+        if let slot = walk.layouts.firstIndex(where: { $0.type == .bottomBar }),
+           let around = walk.layouts[slot...].first(where: { NodeType.pageTypes.contains($0.type) }) {
+            around.visiblePage?.uiKit.controller?.view.setNeedsLayout()
+        }
         view?.window?.rootViewController?.view.setNeedsLayout()
     }
 }

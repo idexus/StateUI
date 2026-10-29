@@ -57,6 +57,7 @@ extension NodeType {
     static let fill = FillContract.nodeType
     static let navigationStack = NavigationStackContract.nodeType
     static let titleView = TitleViewContract.nodeType
+    static let bottomBar = BottomBarContract.nodeType
     static let overlay = OverlayContract.nodeType
     static let popover = PopoverContract.nodeType
     static let sheet = SheetContract.nodeType

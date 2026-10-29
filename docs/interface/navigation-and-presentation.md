@@ -700,6 +700,66 @@ struct InboxPage: View {
 }
 ```
 
+## A bar at the foot
+
+`.bottomBar { }` stands a view at the foot of the page, declared where the
+state it follows lives - a message's field and its Send button, a line of
+what the page holds:
+
+```swift
+import StateUI
+
+struct Message {
+    let id: Int
+    let words: String
+}
+
+struct Conversation: View {
+    @State private var messages = [Message(id: 0, words: "Hello")]
+    @State private var draft = ""
+
+    var body: some View {
+        Grid {
+            ScrollView {
+                VStack {
+                    ForEach(messages, id: \.id) { message in
+                        Text(message.words)
+                    }
+                }
+                .spacing(8)
+            }
+        }
+        .ignoresSafeArea(.all)
+        .title("Conversation")
+        .bottomBar {
+            HStack {
+                TextEditor($draft)
+                    .growsWithText(true)
+                Button("Send")
+                    .onClicked {
+                        messages.append(Message(id: messages.count, words: draft))
+                        draft = ""
+                    }
+            }
+            .spacing(8)
+            .padding(12)
+        }
+    }
+}
+```
+
+The bar is as tall as it lays out, so it grows with the field's lines, and
+it stands on the keyboard while one shows. The page's safe area ends above it:
+its content stands clear of it, and a scroller let under the bars scrolls under
+it, its last row stopping clear. A scroller at its end stays at its end as the
+bar grows or the keyboard rises, so the last message stays in sight; one
+elsewhere stays where it is. The bar stands on what its view paints - glass,
+a color, or nothing where the rows may show between its controls. Where the platform's bars stand over the page the
+bar does too, the rows softening as they pass under it; where they stand
+beside the page, the page ends above it. Declared on a stack or a window's
+page, a bottom bar stands on every page shown there that declares none of its
+own; the innermost declaration wins.
+
 ## Menu bars and context menus
 
 A page's menus are declared like its actions, with `.menuBar { }` on the

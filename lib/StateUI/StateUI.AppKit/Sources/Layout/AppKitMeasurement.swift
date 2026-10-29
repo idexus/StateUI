@@ -77,7 +77,8 @@ extension NSView {
     ///
     /// The climb goes over the native views a container keeps inside itself -
     /// a scroller's clip view, a tab view - and stops below a room, or at the
-    /// window's content. A change that cannot alter a size never calls this,
+    /// window's content; a room lays itself again for its bottom bar, the one
+    /// child it measures. A change that cannot alter a size never calls this,
     /// so nothing beside it moves.
     func invalidateMeasurements() {
         var current: NSView? = self
@@ -86,10 +87,11 @@ extension NSView {
             (view as? AppKitMeasurementCaching)?.measurements.invalidate()
             view.needsLayout = true
 
-            guard view !== view.window?.contentView,
-                  let above = view.superview,
-                  !(above is AppKitRoom)
-            else { break }
+            guard view !== view.window?.contentView, let above = view.superview else { break }
+            if above is AppKitRoom {
+                if view is AppKitBottomBarView { above.needsLayout = true }
+                break
+            }
 
             // What the parent reads when it measures this view; a room does
             // not measure its child, so the view below one keeps its answer.

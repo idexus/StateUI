@@ -48,6 +48,11 @@ extension MountedElement {
         declared(.titleView).last?.element.children.lazy.compactMap(\.presentingElement).first
     }
 
+    /// What stands at this page's foot: the bottom bar declared innermost on its path; nil where none.
+    public var chromeBottomBar: MountedElement? {
+        declared(.bottomBar).last?.element.children.lazy.compactMap(\.presentingElement).first
+    }
+
     /// The menus this page's window shows on its menu bar while the page is shown, composed from its path.
     public var chromeMenus: ChromeMenus {
         ChromeMenus(declared(.menuBar))

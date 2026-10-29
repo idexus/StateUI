@@ -48,6 +48,23 @@ final class RenderedChromeTests: XCTestCase {
         XCTAssertTrue(touches(Self.content(.changed([Self.holder(.arranged([words, Self.group()]))]))), "let go")
     }
 
+    /// A BOTTOM BAR MADE OR LET GO TOUCHES THE CHROME, AND WHAT IT HOLDS CHANGED DOES NOT: its room lays what it holds
+    /// as a page's own view, a word typed into it showing no bar again.
+    func testABottomBarMadeOrLetGoTouchesTheChromeAndWhatItHoldsDoesNot() {
+        let words = HostPatch(id: .manual("x"), type: .text)
+        var draft = HostPatch(id: .manual("draft"), type: .text)
+        var bar = HostPatch(id: .manual("bar"), type: .bottomBar)
+        bar.children = .arranged([draft])
+        XCTAssertTrue(touches(Self.content(.changed([Self.holder(.arranged([words, Self.group(), bar]))]))), "made")
+
+        draft.properties[.text] = .string("Hello")
+        var typed = HostPatch(id: .manual("bar"), type: .bottomBar)
+        typed.children = .changed([draft])
+        XCTAssertFalse(touches(Self.content(.changed([Self.holder(.changed([typed]))]))), "what it holds")
+
+        XCTAssertTrue(touches(Self.content(.changed([Self.holder(.arranged([words, Self.group()]))]))), "let go")
+    }
+
     /// CHILDREN IN A NEW ORDER TOUCH THE CHROME WHERE ONE HOLDS A DECLARATION: the actions stand in the order the
     /// page's tree gives them.
     func testChildrenInANewOrderTouchTheChromeWhereOneHoldsADeclaration() {

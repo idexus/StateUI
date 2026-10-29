@@ -74,8 +74,11 @@ test of the direction could tell from a real one.
 
 Some modifiers write a child rather than a property: `.contextMenu` appends a
 context menu, `.toolbar` a group of actions, `.titleView` the view in a page's
-title place, `.overlays` the views laid over the window, `.menuBar` the
-window's menus while the page shows, and `Map.markers` writes markers. On an
+title place, `.bottomBar` the view at a page's foot, `.overlays` the views laid
+over the window, `.menuBar` the window's menus while the page shows, and
+`Map.markers` writes markers. A slot whose view stands in a room of the host's -
+the overlays, a bottom bar - holds it in a layer, which places it as its values
+say: no layout arranges what a slot holds. On an
 arrangement the child follows its pages, and the host keeps it apart from
 them.
 They sit after whatever the view lays out, so the view's own children keep the

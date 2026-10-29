@@ -129,6 +129,7 @@ final class GTKPageFrame {
             adw_header_bar_set_show_end_title_buttons(header.opaque, chrome.offersClose ? 1 : 0)
         }
         if chrome.tabs !== self.chrome.tabs { showTabs(chrome.tabs) }
+        if chrome.bottomBar !== self.chrome.bottomBar { showBottomBar(chrome.bottomBar) }
         if chrome.barBackground != self.chrome.barBackground || chrome.barForeground != self.chrome.barForeground {
             paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
         }
@@ -177,6 +178,34 @@ final class GTKPageFrame {
         if let barClass { gtk_widget_add_css_class(bar, barClass) }
         adw_toolbar_view_add_top_bar(widget.opaque, bar)
         tabsBar = bar
+    }
+
+    /// The holder of the page's bottom bar beneath its content; nil until the page shows one.
+    private var bottomHolder: GTKWidget?
+
+    /// The page's bottom bar beneath its content, as GNOME's applications stand theirs: beside the content, which
+    /// ends above it - in a holder of the frame's own, taken from another frame's where it stood there.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    private func showBottomBar(_ bar: GTKView?) {
+        if let shown = chrome.bottomBar, let holder = bottomHolder, gtk_widget_get_parent(shown.widget) == holder {
+            gtk_box_remove(holder.of(GtkBox.self), shown.widget)
+        }
+        guard let bar else {
+            if let bottomHolder { gtk_widget_set_visible(bottomHolder, 0) }
+            return
+        }
+        if let row = gtk_widget_get_parent(bar.widget),
+           g_type_check_instance_is_a(row.of(GTypeInstance.self), gtk_box_get_type()) != 0 {
+            gtk_box_remove(row.of(GtkBox.self), bar.widget)
+        }
+        let holder = bottomHolder ?? {
+            let made = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0)!
+            adw_toolbar_view_add_bottom_bar(widget.opaque, made)
+            bottomHolder = made
+            return made
+        }()
+        gtk_box_append(holder.of(GtkBox.self), bar.widget)
+        gtk_widget_set_visible(holder, 1)
     }
 
     /// The sidebar's toggle at the bar's start, pressed in while the sidebar shows, while the page offers it.

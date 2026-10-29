@@ -93,6 +93,7 @@ extension UIKitElement {
                 chrome.show(
                     on: controller.navigationItem, barSize: UIKitNavigationController.barBackground(of: controller),
                     buttons: &barButtonsSaid)
+                (controller as? UIKitPageController)?.showBottomBar(element.chromeBottomBar)
             }
         case .tabView:
             if let controller {

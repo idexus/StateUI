@@ -94,6 +94,9 @@ struct GTKPageChrome {
     /// A tabbed view's switcher, which stands in a bar of its own beneath the header bar; nil for none.
     var tabs: GTKView?
 
+    /// The page's bottom bar, beneath its content; nil for none.
+    var bottomBar: GTKView?
+
     /// The groups of actions at the bar's start and at its end, each in reading order.
     var leading: [[GTKToolbarAction]] = []
     var trailing: [[GTKToolbarAction]] = []

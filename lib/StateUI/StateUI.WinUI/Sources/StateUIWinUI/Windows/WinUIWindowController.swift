@@ -53,6 +53,9 @@ final class WinUIWindowController {
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
         showSheets(presentation.sheets, in: runtime)
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
+        for page in element.pages {
+            (page.winUI.view as? WinUISingleChildView)?.showBottomBar(page.chromeBottomBar?.winUI.layoutItem)
+        }
     }
 
     /// Stands the window as the element asks: the place, the size, the bounds and the traits the tree changed, and

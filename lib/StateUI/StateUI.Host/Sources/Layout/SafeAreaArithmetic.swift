@@ -52,6 +52,12 @@
         return Rect(x: minX, y: minY, width: max(0, maxX - minX), height: max(0, maxY - minY))
     }
 
+    /// What stands over a room's foot: the keyboard while it is the higher, else the system's bar or home indicator -
+    /// never both, the keyboard standing over them.
+    public static func bottom(system: Double, keyboard: Double) -> Double {
+        max(system, keyboard)
+    }
+
     /// On which edges content ignoring the safe area on `edges` runs under what stands over its room: the start and
     /// the end are its `direction`'s.
     public static func under(

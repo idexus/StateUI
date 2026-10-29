@@ -877,6 +877,23 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(root.first(id: .manual("home"))?.chromeTitleView?.id, .manual("shared"))
     }
 
+    /// The bottom bar declared innermost on a page's path stands at its foot: the page's own, else its stack's.
+    func testTheInnermostBottomBarStandsAtThePagesFoot() throws {
+        let runtime = runtime(node("window", .window, children: [
+            node("stack", .navigationStack, children: [
+                node("home", .page),
+                node("detail", .page, children: [
+                    node("content", .vStack, children: [node("bar", .bottomBar, children: [node("own", .text)])]),
+                ]),
+                node("outer", .bottomBar, children: [node("shared", .text)]),
+            ]),
+        ])) { _ in }
+        let root = try XCTUnwrap(runtime.tree.root)
+
+        XCTAssertEqual(root.first(id: .manual("detail"))?.chromeBottomBar?.id, .manual("own"))
+        XCTAssertEqual(root.first(id: .manual("home"))?.chromeBottomBar?.id, .manual("shared"))
+    }
+
     /// The bar's look a path declares is its nearest arrangement's, one value at a time: a stack further in paints
     /// its own bar. A sidebar wears its own split view's bar and nothing from around it; a sheet wears the look of the
     /// bar over the view presenting it, and its own stack's over that.

@@ -88,6 +88,7 @@ final class WebWindowController {
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.web.view) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.web.view)) }
         if let pages = changes.sheets { showSheets(pages) }
+        for page in element.pages { page.web.showBottomBar() }
         adaptSidebar()
     }
 

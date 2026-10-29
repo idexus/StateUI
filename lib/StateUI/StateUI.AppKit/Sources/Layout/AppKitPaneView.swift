@@ -34,18 +34,45 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
         didSet { needsLayout = true }
     }
 
-    /// The room the column's content stands in against the pane's safe area.
+    /// The column's visible page's bottom bar, over the pane's foot.
+    private let bottomBar = AppKitBottomBarView()
+
+    /// Shows the column's visible page's bottom bar, or takes it away where it declares none.
+    func showBottomBar() {
+        let bar = column?.visiblePage?.chromeBottomBar
+        bottomBar.show(bar)
+        if bar == nil {
+            bottomBar.removeFromSuperview()
+        } else if bottomBar.superview !== self {
+            addSubview(bottomBar, positioned: .above, relativeTo: nil)
+        }
+        needsLayout = true
+    }
+
+    override func setItem(_ item: AppKitLayoutItem?) {
+        super.setItem(item)
+        if bottomBar.item != nil, bottomBar.superview !== self { addSubview(bottomBar, positioned: .above, relativeTo: nil) }
+    }
+
+    /// Where the bottom bar stands at the pane's foot; nil where it shows none.
+    private var bottomBarPlace: BottomBarPlace? {
+        bottomBar.superview === self ? bottomBar.place(safe: safeAreaRect.placed, whole: bounds.placed) : nil
+    }
+
+    /// The room the column's content stands in against the pane's safe area, its bottom bar standing over its foot.
     override var childRoom: Rect {
         let page = column?.visiblePage
         return SafeAreaArithmetic.room(
-            safe: safeAreaRect.placed, whole: bounds.placed, edges: page?.contentIgnoresSafeArea ?? .none,
-            direction: page?.layoutDirection ?? .leftToRight)
+            safe: bottomBarPlace?.safe ?? safeAreaRect.placed, whole: bounds.placed,
+            edges: page?.contentIgnoresSafeArea ?? .none, direction: page?.layoutDirection ?? .leftToRight)
     }
 
     override func layout() {
         super.layout()
+        let place = bottomBarPlace
+        bottomBar.stand(at: place)
         (column?.visiblePage?.pageScroller?.appKit.view as? AppKitScrollView)?.keepClear(
-            SafeAreaArithmetic.clearance(room: childRoom, safe: safeAreaRect.placed))
+            SafeAreaArithmetic.clearance(room: childRoom, safe: place?.safe ?? safeAreaRect.placed))
         if barBrush.paints { needsDisplay = true }
         layOutReporting(item?.view)
     }

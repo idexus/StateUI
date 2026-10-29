@@ -100,10 +100,17 @@ final class GTKScrollView: GTKLayoutView {
         document.contentSize(width: width)
     }
 
-    /// Stands GTK's scroller over the whole of the room, then an offset the tree wrote before there was one.
+    /// Stands GTK's scroller over the whole of the room, then an offset the tree wrote before there was one - or at
+    /// its end still where it stood at its end as its room changed, a move of its own told as the user's is.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
     override func arrange(in bounds: Rect) {
+        let before = scroller.standing
         scroller.layout(bounds)
-        if let target = scrollerOffset.laidOutNow() { move(to: target) }
+        if let target = scrollerOffset.laidOutNow() {
+            move(to: target)
+        } else if let end = ScrollArithmetic.keptAtEnd(before.offset, reach: before.reach, now: scroller.standing.reach) {
+            scroller.move(to: end)
+        }
     }
 
     // MARK: - The user's movement

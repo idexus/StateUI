@@ -62,6 +62,7 @@ final class WebConformanceTests: XCTestCase {
     func testSheet() { conform(SheetTests.self) }
     func testNavigationStack() { conform(NavigationStackTests.self) }
     func testOverlay() { conform(OverlayTests.self) }
+    func testBottomBar() { conform(BottomBarTests.self) }
     func testPage() { conform(PageTests.self) }
     func testMarker() { conform(MarkerTests.self) }
     func testScene() { conform(SceneTests.self) }

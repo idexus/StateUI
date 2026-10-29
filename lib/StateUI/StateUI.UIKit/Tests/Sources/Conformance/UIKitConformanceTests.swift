@@ -61,6 +61,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testSheet() { conform(SheetTests.self) }
     @MainActor func testNavigationStack() { conform(NavigationStackTests.self) }
     @MainActor func testOverlay() { conform(OverlayTests.self) }
+    @MainActor func testBottomBar() { conform(BottomBarTests.self) }
     @MainActor func testPage() { conform(PageTests.self) }
     @MainActor func testMarker() { conform(MarkerTests.self) }
     @MainActor func testScene() { conform(SceneTests.self) }

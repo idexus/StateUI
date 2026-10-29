@@ -138,8 +138,8 @@ final class AppKitSplitView: AppKitHitTestView {
 
     /// A column's page changed - pushed, popped, its edges said anew: each pane lays its column again.
     func columnsChanged() {
-        sidebarSurface.needsLayout = true
-        detailSurface.needsLayout = true
+        sidebarSurface.showBottomBar()
+        detailSurface.showBottomBar()
     }
 
     func setItems(_ items: [AppKitLayoutItem]) {

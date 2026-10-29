@@ -285,6 +285,11 @@ extension AndroidElement {
         (view as? AndroidSplitView).map { !$0.overlays && $0.isPresented } ?? false
     }
 
+    /// Shows a page's bottom bar - the one declared innermost on its path - at its foot.
+    func showBottomBar() {
+        (view as? AndroidPageView)?.showBottomBar(element.chromeBottomBar)
+    }
+
     /// Refreshes the bar of every stack and the row of every tabbed view in this arrangement of pages.
     func refreshBars() {
         guard NodeType.pageTypes.contains(type) else { return }

@@ -22,6 +22,9 @@ final class WebElement: NativeElement {
     /// Whether the view's size changing is followed, for a frame the tree reads.
     var observesSize = false
 
+    /// A page's bottom bar over its foot, made once one is declared.
+    var bottomBar: WebBottomBar?
+
     /// Whether the view listens for the user's asking for its context menu.
     var listensForMenu = false
     var listensForButtonMenu = false

@@ -49,7 +49,7 @@ extension MountedElement {
 
         var each = parent
         while let element = each, element.type != .window, !NodeType.pageTypes.contains(element.type) {
-            if Self.declarationTypes.contains(element.type) { return true }
+            if Self.shownInChrome.contains(element.type) { return true }
             each = element.parent
         }
         return false
@@ -63,8 +63,13 @@ extension MountedElement {
         return held.contains(where: \.holdsDeclarations)
     }
 
-    /// The declarations the chrome takes from a page's path: its actions, its title view, its menus, its overlays.
-    private static let declarationTypes: Set<NodeType> = [.toolbarGroup, .titleView, .menuBar, .overlay]
+    /// The declarations the chrome takes from a page's path: its actions, its title view, its bottom bar, its menus,
+    /// its overlays.
+    private static let declarationTypes = shownInChrome.union([.bottomBar])
+
+    /// The declarations whose views the chrome shows, so a change inside one shows the chrome again - not a bottom
+    /// bar, which its room lays out as a page's own view.
+    private static let shownInChrome: Set<NodeType> = [.toolbarGroup, .titleView, .menuBar, .overlay]
 
     /// The elements the chrome is made of by their type.
     private static let chromeTypes = declarationTypes.union(NodeType.pageTypes).union([.application, .scene, .window, .sheet])

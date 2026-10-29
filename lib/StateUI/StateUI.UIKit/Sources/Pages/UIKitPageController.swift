@@ -21,6 +21,12 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
     /// The blur or glass a sidebar page stands on, under what it shows; nil while it stands on a color.
     private var ground: (view: UIKitBackdropView, material: HostMaterial)?
 
+    /// The page's bottom bar, over its foot.
+    private let bottomBar = UIKitBottomBarView()
+
+    /// A view on the keyboard's top, so the page lays itself out again as the keyboard moves - within its animation.
+    private let keyboardTop = UIView()
+
     init(page: UIKitElement) {
         self.page = page
         super.init(nibName: nil, bundle: nil)
@@ -40,6 +46,26 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         view = UIView()
         showBackground()
         if let shown = page?.view { view.addSubview(shown) }
+        keyboardTop.isHidden = true
+        keyboardTop.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(keyboardTop)
+        NSLayoutConstraint.activate([
+            keyboardTop.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            keyboardTop.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            keyboardTop.widthAnchor.constraint(equalToConstant: 0), keyboardTop.heightAnchor.constraint(equalToConstant: 0),
+        ])
+    }
+
+    /// Shows `bar` - the page's bottom bar - over its foot; nil for none.
+    func showBottomBar(_ bar: MountedElement?) {
+        loadViewIfNeeded()
+        bottomBar.show(bar)
+        if bar == nil {
+            bottomBar.removeFromSuperview()
+        } else if bottomBar.superview !== view {
+            view.insertSubview(bottomBar, aboveSubview: page?.view ?? view)
+        }
+        view.setNeedsLayout()
     }
 
     /// The page's background - its own, else its arrangement's (`pageBackground`) - behind the whole screen it stands
@@ -103,10 +129,13 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         showBackground()
     }
 
-    /// The safe area the page's content stands in: clear of the screen's bars, the notch, and the window's own
-    /// controls in its corner - an iPad's window - which a bar over the page stands clear of already.
+    /// The safe area the page's content stands in: clear of the screen's bars, the notch, the keyboard, and the
+    /// window's own controls in its corner - an iPad's window - which a bar over the page stands clear of already.
     var safeInsets: UIEdgeInsets {
-        view.edgeInsets(for: .safeArea(cornerAdaptation: .vertical))
+        var insets = view.edgeInsets(for: .safeArea(cornerAdaptation: .vertical))
+        let keyboard = view.bounds.maxY - view.keyboardLayoutGuide.layoutFrame.minY
+        insets.bottom = SafeAreaArithmetic.bottom(system: insets.bottom, keyboard: max(0, keyboard))
+        return insets
     }
 
     /// How far the page's room stands from its leading edge while a sidebar slides beside it - as far as the sidebar
@@ -156,13 +185,20 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         // The bars over the page are its safe area's as the screen's are: content stands clear of them, or under.
         // Design: docs/design/host/layout.md#the-safe-area
         let (inside, whole) = (view.bounds.inset(by: insets), whole)
-        let safe = Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height)
+        let wholeRect = Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height)
+        let bar = bottomBar.superview === view
+            ? bottomBar.place(safe: Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height),
+                              whole: wholeRect)
+            : nil
+        let safe = bar?.safe ?? Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height)
         let room = SafeAreaArithmetic.room(
-            safe: safe, whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),
+            safe: safe, whole: wholeRect,
             edges: page?.element.contentIgnoresSafeArea ?? .none, direction: page?.element.layoutDirection ?? .leftToRight)
         page?.placedFrame = room
-        (page?.element.pageScroller?.uiKit.view as? UIKitScrollView)?.keepClear(
-            SafeAreaArithmetic.clearance(room: room, safe: safe))
+        bottomBar.frame = bar.map { CGRect(x: $0.bar.x, y: $0.bar.y, width: $0.bar.width, height: $0.bar.height) } ?? .zero
+        let scroller = page?.element.pageScroller?.uiKit.view as? UIKitScrollView
+        scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: safe))
+        if bar != nil { bottomBar.standOver(scroller?.scroller) }
         page?.view?.layoutIfNeeded()
         // What reads a frame says where it stands within this pass, and what that moves is laid out again: a room
         // UIKit alone narrowed - a sidebar sliding - places its layout in the frame that measured it.

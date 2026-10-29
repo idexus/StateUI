@@ -126,6 +126,7 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
     override func arrange(width: Int32, height: Int32) {
         guard let outer = refresh?.layout.reference ?? scrollers.first?.reference else { return }
 
+        let (standing, before) = (standingOffset, reach)
         Java.call(
             outer, JavaAPI.measure,
             .int(ViewConstants.spec(ViewConstants.exactly, width)),
@@ -133,7 +134,25 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
         Java.call(outer, JavaAPI.layout, .int(0), .int(0), .int(width), .int(height))
         if let target = scrollerOffset.laidOutNow() {
             move(to: target)
+        } else if let end = ScrollArithmetic.keptAtEnd(standing, reach: before, now: reach) {
+            // At its end still as its room shrinks or grows - a bottom bar growing beside it: a move of its own,
+            // told as the user's is. Design: docs/design/host/layout.md#a-bar-at-the-foot
+            if let vertical { Java.call(vertical.reference, JavaAPI.scrollTo, .int(0), .int(pixels(end.y))) }
+            if let horizontal { Java.call(horizontal.reference, JavaAPI.scrollTo, .int(pixels(end.x)), .int(0)) }
         }
+    }
+
+    /// The farthest Android's scrollers stand, in points: the content and what they keep clear, past their viewport.
+    private var reach: Point {
+        let points = { (object: jobject?, method: jmethodID) -> Double in
+            object.map { Double(Java.callInt($0, method)) / self.density } ?? 0
+        }
+        let viewport = (vertical ?? horizontal)?.reference
+        return Point(
+            x: max(0, points(document.reference, JavaAPI.getWidth) + kept.left + kept.right
+                - points(viewport, JavaAPI.getWidth)),
+            y: max(0, points(document.reference, JavaAPI.getHeight) + kept.top + kept.bottom
+                - points(viewport, JavaAPI.getHeight)))
     }
 
     /// What the scroller keeps clear on each edge, in points - what a page's scroller reaches under - so its first

@@ -352,6 +352,36 @@ stands beside the page rather than over it insets nothing, and a desktop
 window with nothing over its content has its whole room safe. The page's
 background stands behind everything over it either way.
 
+## A bar at the foot
+
+A page's bottom bar (`.bottomBar`) is a view the page stands at its foot, in a
+layer of its own the core wraps it in - no layout arranges what a slot holds,
+so the layer places it as its values say. It stands across the safe area as
+tall as it lays out at that width, measured again on every layout, its foot on
+the safe area's foot (`BottomBarPlace`): above a phone's home indicator, its
+ground running down to the room's edge, and on the keyboard while one shows.
+What stands over a room's foot is the keyboard while it is the higher, else
+the system's bar - never both (`SafeAreaArithmetic.bottom`). The innermost
+declaration on a page's path wins, as a title view's does.
+
+The page's safe area ends above the bar: its content stands clear of it, and
+a scroller let under scrolls under it, its last row stopping clear. A host
+stands the bar as its platform's bars stand: over the page where they stand
+over it - the page keeping clear what the bar and what stands under it take
+(`safe`) - else beside it, the page's whole room the one above the bar
+(`above`). What the bar holds is laid out as a page's own view, so a change
+inside it - a word typed into its field - shows no chrome again; the bar's
+coming and going does.
+
+A scroller standing at its end stays at its end as what it reaches moves with
+its content the same - its room shrinking beside a growing bar, what it keeps
+clear growing under one, the keyboard rising (`ScrollArithmetic.keptAtEnd`); one
+elsewhere stays where it is, and one that reached nothing stays at its start,
+so a field at the top of a short form stays in sight. The keeping is the
+scroller's own move, told to the tree as the user's is, so the state says
+where it stands. Content growing at the end moves nothing: a list that loads
+more as it is reached must not follow what it loaded.
+
 ## Words on a painted band
 
 Words on a band the tree paints - a bar, a row of tabs - take the color the

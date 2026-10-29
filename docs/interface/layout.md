@@ -479,7 +479,8 @@ is drawn and nothing is cut. A dashed outline belongs to a shape: lay a
 Every room a page stands in - a window, a sheet, a popover - has a safe area:
 the part of it clear of what stands over the page there. That is a phone's
 status bar, notch and home indicator, the keyboard, a popover's arrow, and the
-page's own bars - a stack's, the tabs', a split view column's part of the bar.
+page's own bars - a stack's, the tabs', a split view column's part of the bar,
+its bottom bar.
 A page's own layout stands clear of all of it by default; `ignoresSafeArea`
 names the edges it runs under instead - `.all` edge to edge, `.top`,
 `[.start, .top]` - so its background colors the status bar's strip and its

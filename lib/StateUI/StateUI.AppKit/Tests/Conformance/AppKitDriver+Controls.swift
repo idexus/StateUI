@@ -19,6 +19,8 @@ extension AppKitDriver {
         if let button = view as? AppKitButtonView, let held = buttonHolds(property, button) { return held }
         switch (property, view) {
         case (.clipsContent, _) where !(view is NSControl): return view.clipsToBounds.propValue
+        case (.scrollOffset, let scroll as AppKitScrollView):
+            return Point(scroll.offset).propValue
         case (.scrollOffset, let scroll as NSScrollView):
             let origin = scroll.contentView.bounds.origin
             return Point(x: Double(origin.x), y: Double(origin.y)).propValue

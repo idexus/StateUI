@@ -62,6 +62,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testSheet", testSheet),
             ("testNavigationStack", testNavigationStack),
             ("testOverlay", testOverlay),
+            ("testBottomBar", testBottomBar),
             ("testPage", testPage),
             ("testMarker", testMarker),
             ("testScene", testScene),
@@ -159,6 +160,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testSheet() throws { try conform(SheetTests.self) }
     func testNavigationStack() throws { try conform(NavigationStackTests.self) }
     func testOverlay() throws { try conform(OverlayTests.self) }
+    func testBottomBar() throws { try conform(BottomBarTests.self) }
     func testPage() throws { try conform(PageTests.self) }
     func testMarker() throws { try conform(MarkerTests.self) }
     func testScene() throws { try conform(SceneTests.self) }

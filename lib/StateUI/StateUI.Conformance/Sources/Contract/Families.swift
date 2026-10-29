@@ -57,6 +57,7 @@
         SheetTests.self,
         NavigationStackTests.self,
         OverlayTests.self,
+        BottomBarTests.self,
         PageTests.self,
         MarkerTests.self,
         SceneTests.self,

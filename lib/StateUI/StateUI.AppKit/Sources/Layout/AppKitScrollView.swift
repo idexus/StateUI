@@ -52,15 +52,28 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     /// content scroll out from under them; its offsets are counted from its first content clear of them.
     private var clearance = Clearance.none
 
-    /// Keeps `clearance` clear, the scroller standing where the tree has it.
-    /// Design: docs/design/host/layout.md#the-safe-area
+    /// Keeps `clearance` clear, the scroller standing where the tree has it - or at its end still where it stood at
+    /// its end, a move of its own told as the user's is (`ScrollArithmetic.keptAtEnd`).
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
     func keepClear(_ clearance: Clearance) {
         guard clearance != self.clearance else { return }
-        let standing = offset
+        let (standing, before) = (offset, reach(keeping: self.clearance))
         self.clearance = clearance
         automaticallyAdjustsContentInsets = false
         contentInsets = NSEdgeInsets(top: clearance.top, left: clearance.left, bottom: clearance.bottom, right: clearance.right)
         scrollClip(to: standing)
+        if let end = ScrollArithmetic.keptAtEnd(Point(standing), reach: before, now: reach(keeping: clearance)) {
+            contentView.scroll(to: native(NSPoint(x: end.x, y: end.y)))
+            reflectScrolledClipView(contentView)
+        }
+    }
+
+    /// The farthest the scroller stands keeping `clearance` clear: its content and the clearance past its viewport.
+    private func reach(keeping clearance: Clearance) -> Point {
+        let document = documentSurface.frame.size
+        return Point(
+            x: max(0, document.width + clearance.left + clearance.right - contentSize.width),
+            y: max(0, document.height + clearance.top + clearance.bottom - contentSize.height))
     }
 
     /// Where the clip view at `origin` stands the scroller, counted from its first content kept clear.

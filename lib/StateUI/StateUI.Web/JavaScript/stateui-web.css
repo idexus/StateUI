@@ -110,11 +110,35 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 .stateui-window:has(> .stateui-bar:not([hidden])) > :is(.stateui-room, .stateui-overlays) {
   --stateui-over-top: calc(var(--stateui-bar-height) + env(safe-area-inset-top, 0px));
 }
-/* What a page stands its content clear of is nothing more to what stands in it. */
-[data-pads~="top"] > * { --stateui-over-top: 0px; }
-[data-pads~="left"] > * { --stateui-over-left: 0px; }
-[data-pads~="bottom"] > * { --stateui-over-bottom: 0px; }
-[data-pads~="right"] > * { --stateui-over-right: 0px; }
+/* What a page stands its content clear of is nothing more to what stands in it - but its bottom bar, over the foot of
+   the page's whole room, which stands on what stands under the room. */
+[data-pads~="top"] > :not(.stateui-bottom-bar) { --stateui-over-top: 0px; }
+[data-pads~="left"] > :not(.stateui-bottom-bar) { --stateui-over-left: 0px; }
+[data-pads~="bottom"] > :not(.stateui-bottom-bar) { --stateui-over-bottom: 0px; }
+[data-pads~="right"] > :not(.stateui-bottom-bar) { --stateui-over-right: 0px; }
+/* A page's bottom bar over the foot of its room, as the window's bar is over its top: the page stands clear of it, its
+   rows scrolling under it where the page says so, softened as they pass under it (layout.md#a-bar-at-the-foot). */
+.stateui-bottom-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  display: grid;
+  padding: 0 var(--stateui-over-right) var(--stateui-over-bottom) var(--stateui-over-left);
+}
+.stateui-bottom-bar[hidden] { display: none; }
+.stateui-bottom-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  mask-image: linear-gradient(to top, #000 35%, transparent);
+  -webkit-mask-image: linear-gradient(to top, #000 35%, transparent);
+}
 
 /* The window: its bar over the room its pages stand in. */
 .stateui-window {

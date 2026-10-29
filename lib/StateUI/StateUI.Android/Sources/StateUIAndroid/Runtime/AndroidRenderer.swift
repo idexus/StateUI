@@ -346,6 +346,7 @@ final class AndroidRenderer {
         modals.standAtTheirSizes()
         standUnderTheWindowsInsets()
         showStatusWords()
+        for page in window.pages { (page.native as? AndroidElement)?.showBottomBar() }
 
         // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no
         // touch beside what they hold, which goes on to the page under them.
@@ -374,7 +375,8 @@ final class AndroidRenderer {
     func insetsChanged(left: Int32, top: Int32, right: Int32, bottom: Int32, keyboard: Int32) {
         let insets = Clearance(
             top: Double(top) / density, left: Double(left) / density,
-            bottom: Double(max(bottom, keyboard)) / density, right: Double(right) / density)
+            bottom: SafeAreaArithmetic.bottom(system: Double(bottom), keyboard: Double(keyboard)) / density,
+            right: Double(right) / density)
         guard insets != windowInsets else { return }
         windowInsets = insets
         standUnderTheWindowsInsets()

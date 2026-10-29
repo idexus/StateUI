@@ -517,6 +517,15 @@ extension ControlDictionary {
                 .format("t")
             """#),
 
+        (BottomBarContract.self, #"""
+            @State var draft = ""
+
+            Text("Messages")
+                .bottomBar {
+                    TextEditor($draft).growsWithText(true)
+                }
+            """#),
+
         (TitleViewContract.self, #"""
             @State var query = ""
 

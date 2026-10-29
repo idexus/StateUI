@@ -93,6 +93,7 @@ of its members each meets, and why a cell is empty.
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Anchor](controls/Anchor.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Application](controls/Application.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [BottomBar](controls/BottomBar.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Button](controls/Button.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ButtonMenu](controls/ButtonMenu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Canvas](controls/Canvas.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -216,6 +217,7 @@ contract.
 | `Sheet` | sheet `NSWindow` | `present(_:animated:)` | `FrameLayout` sheet over the activity | sheets of `ContentDialog`'s look in a `Grid` layer over the window | `AdwDialog` | `<dialog>` with `showModal()` |
 | `Anchor` | structure | structure | structure | structure | structure | structure |
 | `Overlay` | pass-through `NSView` above the page | pass-through `UIView` above the page | top child of a `FrameLayout` | top layer of a root `Grid` | custom `GtkWidget` in the window's `GtkOverlay` | `<div>` layered over the page |
+| `BottomBar` | custom `NSView` over the page's foot | custom `UIView` over the page's foot, its edge `UIScrollEdgeElementContainerInteraction` | custom `ViewGroup` child of the page, beneath its content | custom `Panel` child of the page, beneath its content | `AdwToolbarView` bottom bar | `<div>` over the page's foot |
 | `Popover` | `NSPopover` | `UIPopoverPresentationController`, a popover on a phone too | `PopupWindow` | `Flyout` | `GtkPopover` | `<div popover>` |
 | `ContextMenu`, `MenuBar`, `Menu`, `MenuItem` | `NSMenu` / `NSMenuItem` | `UIMenu` / `UIAction`; `UIContextMenuInteraction`; `UIMenuBuilder` menu bar | `ContextMenu` / `SubMenu` / `MenuItem`; a menu bar's menus in the `Toolbar` overflow | `MenuFlyout` / `MenuBar` | `GMenu` in a `GtkPopoverMenu`; a menu bar as a `GtkMenuButton` main menu | ARIA `menu` in a `popover`; a menu bar's menus under the bar's More button |
 | `MenuToggle` | an `NSMenuItem` whose `state` is on or off | a `UIAction` whose `state` is on or off | a checkable `MenuItem` | `ToggleMenuFlyoutItem` | a `GMenu` item of a stateful action | `role=menuitemcheckbox` with `aria-checked` in an ARIA `menu` |
@@ -521,6 +523,7 @@ Every control, and every part an application, its windows and its pages are made
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Anchor](controls/Anchor.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Application](controls/Application.md) | 24 | 12 ✅ · 11 ✓ · 1 – | 14 ✅ · 10 ✓ | 12 ✅ · 11 ✓ · 1 – | 19 ✅ · 4 ✓ · 1 – | 16 ✅ · 6 ✓ · 1 – | 18 ✅ · 6 ✓ |
+| [BottomBar](controls/BottomBar.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ButtonMenu](controls/ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Marker](controls/Marker.md) | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
@@ -663,10 +666,10 @@ realizes the element and each of its members.
 <!-- vocabulary:begin -->
 ### Controls and structural nodes
 
-`Anchor`, `Application`, `Button`, `ButtonMenu`, `Canvas`, `Capsule`,
-`CheckBox`, `ColorPicker`, `ContextMenu`, `DatePicker`, `Ellipse`, `Fill`,
-`Grid`, `HStack`, `Image`, `ItemsView`, `Line`, `Link`, `Map`, `Marker`, `Menu`,
-`MenuBar`, `MenuItem`, `MenuSeparator`, `MenuToggle`, `NavigationStack`,
+`Anchor`, `Application`, `BottomBar`, `Button`, `ButtonMenu`, `Canvas`,
+`Capsule`, `CheckBox`, `ColorPicker`, `ContextMenu`, `DatePicker`, `Ellipse`,
+`Fill`, `Grid`, `HStack`, `Image`, `ItemsView`, `Line`, `Link`, `Map`, `Marker`,
+`Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `MenuToggle`, `NavigationStack`,
 `Overlay`, `Page`, `Path`, `PhaseLayout`, `Picker`, `Polygon`, `Polyline`,
 `Popover`, `ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`,
 `Separator`, `Sheet`, `Slider`, `Space`, `Spinner`, `SplitView`, `Stepper`,

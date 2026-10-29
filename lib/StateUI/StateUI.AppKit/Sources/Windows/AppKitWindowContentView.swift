@@ -20,6 +20,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     private weak var page: NSView?
     private var pageSpansTitleBar = false
     private let overlaySurface = AppKitOverlaySurfaceView()
+    private let bottomBar = AppKitBottomBarView()
 
     /// The window's own material, under the page, while the window lets the
     /// desktop show through it.
@@ -127,6 +128,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
             }
         }
 
+        if bottomBar.superview === self, let page { addSubview(bottomBar, positioned: .above, relativeTo: page) }
         overlaySurface.setItems(overlays)
         if overlays.isEmpty {
             overlaySurface.removeFromSuperview()
@@ -167,15 +169,29 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 }
 
 extension AppKitWindowContentView {
-    /// Lays the page in the room its content stands in - clear of the toolbar, or under it where it says so - and
-    /// has its scroller keep clear what it reaches under (`SafeAreaArithmetic`).
+    /// Shows `bar` - the visible page's bottom bar - over the page's foot; nil for none.
+    func showBottomBar(_ bar: MountedElement?) {
+        bottomBar.show(bar)
+        if bar == nil {
+            bottomBar.removeFromSuperview()
+        } else if bottomBar.superview !== self {
+            addSubview(bottomBar, positioned: .below, relativeTo: overlaySurface.superview === self ? overlaySurface : nil)
+        }
+        needsLayout = true
+    }
+
+    /// Lays the page in the room its content stands in - clear of the toolbar and the bottom bar, or under them where
+    /// it says so - and has its scroller keep clear what it reaches under (`SafeAreaArithmetic`).
     /// Design: docs/design/host/layout.md#the-safe-area
     private func layPage() {
-        let safe = Rect(x: safeAreaRect.minX, y: safeAreaRect.minY, width: safeAreaRect.width, height: safeAreaRect.height)
+        let whole = Rect(x: 0, y: 0, width: bounds.width, height: bounds.height)
+        let place = bottomBar.superview === self ? bottomBar.place(safe: safeAreaRect.placed, whole: whole) : nil
+        let safe = place?.safe ?? safeAreaRect.placed
         let room = SafeAreaArithmetic.room(
-            safe: safe, whole: Rect(x: 0, y: 0, width: bounds.width, height: bounds.height),
+            safe: safe, whole: whole,
             edges: visiblePage?.contentIgnoresSafeArea ?? .none, direction: visiblePage?.layoutDirection ?? .leftToRight)
         page?.frame = NSRect(x: room.x, y: room.y, width: room.width, height: room.height)
+        bottomBar.stand(at: place)
         (visiblePage?.pageScroller?.appKit.view as? AppKitScrollView)?.keepClear(
             SafeAreaArithmetic.clearance(room: room, safe: safe))
     }
