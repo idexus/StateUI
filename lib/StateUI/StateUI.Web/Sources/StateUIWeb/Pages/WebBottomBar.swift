@@ -49,6 +49,31 @@ final class WebBottomBar {
         bar?.element.layoutValues ?? LayoutValues()
     }
 
+    /// The scroller whose rows the bar follows, listened to once.
+    private weak var followed: WebDOMView?
+
+    /// Whether the page's content runs under the room's foot.
+    private var runsUnder = false
+
+    /// Follows what of the page stands under the bar - its content where it runs under the room's foot,
+    /// `scroller`'s rows as they move - and stands the bar on its ground while anything does.
+    func follow(runsUnder: Bool, scroller: WebDOMView?) {
+        self.runsUnder = runsUnder
+        if let scroller, scroller !== followed {
+            scroller.listen("scroll") { [weak self] in self?.standOnGround() }
+            // Rows coming and going move the scroller's reach, which no scroll tells.
+            (scroller as? WebLayoutView)?.children.first?.followSize { [weak self] in self?.standOnGround() }
+        }
+        followed = scroller
+        standOnGround()
+    }
+
+    /// The ground and its line while anything stands under the bar (`BottomBarPlace.covers`).
+    private func standOnGround() {
+        let scroller = followed.map { (offset: WebElement.standing($0), reach: WebElement.reach($0)) }
+        holder.attribute("data-under", BottomBarPlace.covers(contentRunsUnder: runsUnder, scroller: scroller) ? "" : nil)
+    }
+
     /// Reads the bar's height again, and tells the page where it changed.
     private func measure() {
         let measured = shown.map { WebRelay.size(of: $0.node).height } ?? 0

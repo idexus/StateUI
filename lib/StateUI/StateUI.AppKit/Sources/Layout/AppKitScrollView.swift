@@ -269,6 +269,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
             // Only a scroller the content left off its reach: a move stops a throw and cuts the stretch past an edge.
             scrollClip(to: reachable(normalized(standing(contentView.bounds.origin))))
         }
+        standingChanged?()
     }
 
     override func scrollWheel(with event: NSEvent) {
@@ -332,9 +333,19 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         movement.holdEnded(rests: true)
     }
 
+    /// What runs as where the scroller stands, or how far it reaches, changes - whoever moved it, or its content laid
+    /// out: a bottom bar over the scroller follows what stands under it.
+    var standingChanged: (() -> Void)?
+
+    /// Where the scroller stands and the farthest it stands, counted from its first content kept clear.
+    var standing: (offset: Point, reach: Point) {
+        (Point(offset), reach(keeping: clearance))
+    }
+
     /// The clip view moved: the user's move, told where it stands first - the report runs the render that writes
     /// the state back, and that write is told apart from an application's by where the scroller already stands.
     @objc private func clipBoundsChanged(_ notification: Notification) {
+        standingChanged?()
         guard let moved = scrollerOffset.toolkitMoved(to: Point(offset)) else { return }
         movement.userMoved(from: moved.from, to: moved.to)
     }

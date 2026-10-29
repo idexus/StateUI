@@ -34,6 +34,18 @@ final class BottomBarTests: XCTestCase {
                        Clearance(top: 60, left: 0, bottom: 80, right: 0))
     }
 
+    /// Something stands under the bar while the page's rows run under it short of their end, or while content with
+    /// no scroller runs under it; nothing where the content stands clear of the foot, or its scroller stands at its
+    /// end, its last row clear above the bar.
+    func testSomethingStandsUnderTheBarWhileTheRowsRunShortOfTheirEnd() {
+        let end = Point(x: 0, y: 500)
+        XCTAssertTrue(BottomBarPlace.covers(contentRunsUnder: true, scroller: (Point(x: 0, y: 120), end)))
+        XCTAssertFalse(BottomBarPlace.covers(contentRunsUnder: true, scroller: (Point(x: 0, y: 499.6), end)), "at its end")
+        XCTAssertFalse(BottomBarPlace.covers(contentRunsUnder: true, scroller: (.zero, .zero)), "rows that fit")
+        XCTAssertTrue(BottomBarPlace.covers(contentRunsUnder: true, scroller: nil), "content with no scroller")
+        XCTAssertFalse(BottomBarPlace.covers(contentRunsUnder: false, scroller: (.zero, end)), "content clear of it")
+    }
+
     /// The keyboard stands over a room's foot in place of the system's bar while it is the higher, never on it.
     func testTheKeyboardStandsOverTheFootInPlaceOfTheSystemsBar() {
         XCTAssertEqual(SafeAreaArithmetic.bottom(system: 34, keyboard: 0), 34)

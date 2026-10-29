@@ -191,9 +191,9 @@ extension AppKitWindowContentView {
             safe: safe, whole: whole,
             edges: visiblePage?.contentIgnoresSafeArea ?? .none, direction: visiblePage?.layoutDirection ?? .leftToRight)
         page?.frame = NSRect(x: room.x, y: room.y, width: room.width, height: room.height)
-        bottomBar.stand(at: place)
-        (visiblePage?.pageScroller?.appKit.view as? AppKitScrollView)?.keepClear(
-            SafeAreaArithmetic.clearance(room: room, safe: safe))
+        let scroller = visiblePage?.pageScroller?.appKit.view as? AppKitScrollView
+        scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: safe))
+        bottomBar.stand(at: place, over: visiblePage, scroller: scroller)
     }
 }
 

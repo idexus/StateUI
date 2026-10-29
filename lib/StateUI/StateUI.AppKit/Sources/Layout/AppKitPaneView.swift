@@ -70,9 +70,9 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
     override func layout() {
         super.layout()
         let place = bottomBarPlace
-        bottomBar.stand(at: place)
-        (column?.visiblePage?.pageScroller?.appKit.view as? AppKitScrollView)?.keepClear(
-            SafeAreaArithmetic.clearance(room: childRoom, safe: place?.safe ?? safeAreaRect.placed))
+        let scroller = column?.visiblePage?.pageScroller?.appKit.view as? AppKitScrollView
+        scroller?.keepClear(SafeAreaArithmetic.clearance(room: childRoom, safe: place?.safe ?? safeAreaRect.placed))
+        bottomBar.stand(at: place, over: column?.visiblePage, scroller: scroller)
         if barBrush.paints { needsDisplay = true }
         layOutReporting(item?.view)
     }

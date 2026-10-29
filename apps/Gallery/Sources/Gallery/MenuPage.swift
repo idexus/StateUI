@@ -57,14 +57,13 @@ struct MenuPage: View {
         .ignoresSafeArea(.all)
         .title("StateUI")
         .icon(Self.mark)
-        // The line about what this is stands at the menu's foot, on glass
-        // the rows scroll under.
+        // The line about what this is stands at the menu's foot, and the rows
+        // scroll under it.
         .bottomBar {
             ZStack {
                 footer
                 WindowPhaseLog(log: log)
             }
-            .background(.glass(.regular))
         }
     }
 

@@ -373,6 +373,17 @@ over it - the page keeping clear what the bar and what stands under it take
 inside it - a word typed into its field - shows no chrome again; the bar's
 coming and going does.
 
+A bar stands on the page while nothing stands under it, and on a ground of
+its own - a blur with a line along its top, down to the room's edge - while
+anything does (`BottomBarPlace.covers`): the page's content where it runs
+under the room's foot, its scroller's rows while they stand short of their
+end. Where the platform draws that itself, the host leaves it the platform's:
+UIKit's scroll edge effect under the bar (`UIScrollEdgeElementContainer
+Interaction`), soft on iOS 26 and a blur with a line on iOS 27, and GTK's flat
+bottom bar, which shows its shadow only while the content scrolls. AppKit and
+the Web draw the blur and the line; a bar standing beside the page has
+nothing under it. What the bar's view paints of its own stands over either.
+
 A scroller standing at its end stays at its end as what it reaches moves with
 its content the same - its room shrinking beside a growing bar, what it keeps
 clear growing under one, the keyboard rising (`ScrollArithmetic.keptAtEnd`); one

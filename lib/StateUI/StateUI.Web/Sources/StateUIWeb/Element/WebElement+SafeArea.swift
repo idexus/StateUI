@@ -38,18 +38,19 @@ extension WebElement {
             WebRelay.setNumber(scroller.node, "scrollLeft", end.x)
             WebRelay.setNumber(scroller.node, "scrollTop", end.y)
         }
+        bottomBar?.follow(runsUnder: under.bottom, scroller: scroller)
         // What stands in the page has nothing over it on an edge the page stands its content clear of.
         let pads = edges.filter { !$0.1 }.map(\.0).joined(separator: " ")
         view.attribute("data-pads", pads.isEmpty ? nil : pads)
     }
 
     /// Where a scroller stands, in CSS pixels.
-    private static func standing(_ scroller: WebDOMView) -> Point {
+    static func standing(_ scroller: WebDOMView) -> Point {
         Point(x: WebRelay.number(of: scroller.node, "scrollLeft"), y: WebRelay.number(of: scroller.node, "scrollTop"))
     }
 
     /// The farthest a scroller stands, in CSS pixels: its content and its padding past its viewport.
-    private static func reach(_ scroller: WebDOMView) -> Point {
+    static func reach(_ scroller: WebDOMView) -> Point {
         let number = { (name: String) in WebRelay.number(of: scroller.node, name) }
         return Point(
             x: max(0, number("scrollWidth") - number("clientWidth")), y: max(0, number("scrollHeight") - number("clientHeight")))

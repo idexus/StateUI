@@ -1445,9 +1445,8 @@ enum Listings {
                         }
                         .ignoresSafeArea(.all)
                         .galleryPage("Conversation")
-                        // The field grows with its lines, and the bar with it. The
-                        // rows pass under the bar's glass and behind the field, which
-                        // lets none of them through.
+                        // The field grows with its lines, and the bar with it; the
+                        // rows pass under the bar.
                         .bottomBar {
                             Grid {
                                 TextEditor($draft)
@@ -7191,8 +7190,8 @@ enum Listings {
                 .ignoresSafeArea(.all)
                 .title("StateUI")
                 .icon(Self.mark)
-                // The line about what this is stands at the menu's foot, on glass
-                // the rows scroll under.
+                // The line about what this is stands at the menu's foot, and the rows
+                // scroll under it.
                 .bottomBar {
                     ZStack {
                         footer

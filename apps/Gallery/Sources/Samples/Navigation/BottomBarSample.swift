@@ -33,15 +33,13 @@ struct BottomBarSample: SampleContent, ExampleContent {
                     }
                     .ignoresSafeArea(.all)
                     .galleryPage("Conversation")
-                    // The field grows with its lines, and the bar with it. The
-                    // rows pass under the bar's glass and behind the field, which
-                    // lets none of them through.
+                    // The field grows with its lines, and the bar with it; the
+                    // rows pass under the bar.
                     .bottomBar {
                         Grid {
                             TextEditor($draft)
                                 .placeholder("Message")
                                 .growsWithText(true)
-                                .background(Palette.solidField)
                             Button("Send")
                                 .onClicked {
                                     guard !draft.isEmpty else { return }
@@ -54,7 +52,6 @@ struct BottomBarSample: SampleContent, ExampleContent {
                         .columns(.fill, .auto)
                         .columnSpacing(10)
                         .padding(12)
-                        .background(.glass(.regular))
                     }
                 } destination: { _ in
                     Text("")
