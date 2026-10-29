@@ -28,12 +28,30 @@ final class AppKitBottomBarView: AppKitSingleChildView {
     /// The material the ground shows.
     private var material: HostMaterial?
 
-    /// The ground's fade: clear at its top (`BottomBarPlace.fade` above the bar), whole at the room's foot.
-    private let fade: CAGradientLayer = {
+    /// The ground's fade: clear at its top (`BottomBarPlace.fade` above the bar), whole from `BottomBarPlace.rise`
+    /// down - the color's, and the blur's tint's; the blur takes it as its own mask image, as a blur under a masked
+    /// layer draws no blur.
+    private let fade = AppKitBottomBarView.fadeLayer()
+
+    /// The fade over the blur's tint.
+    private let tintFade = AppKitBottomBarView.fadeLayer()
+
+    /// A fade, clear at its top and whole from `BottomBarPlace.rise` down.
+    private static func fadeLayer() -> CAGradientLayer {
         let fade = CAGradientLayer()
         fade.colors = [NSColor.clear.cgColor, NSColor.black.cgColor]
+        fade.locations = [0, NSNumber(value: BottomBarPlace.rise)]
         return fade
-    }()
+    }
+
+    /// The blur's mask image for `size`, clear at its top and whole from `BottomBarPlace.rise` down.
+    private static func fadeImage(_ size: NSSize) -> NSImage {
+        NSImage(size: size, flipped: true) { rect in
+            NSGradient(colors: [.clear, .black], atLocations: [0, BottomBarPlace.rise], colorSpace: .sRGB)?
+                .draw(from: NSPoint(x: 0, y: 0), to: NSPoint(x: 0, y: rect.height), options: [.drawsAfterEndingLocation])
+            return true
+        }
+    }
 
     /// Where the bar's view stands on its ground.
     private var barRoom = Rect(x: 0, y: 0, width: 0, height: 0)
@@ -106,11 +124,20 @@ final class AppKitBottomBarView: AppKitSingleChildView {
         ground.frame = NSRect(x: 0, y: -reach, width: bounds.width, height: bounds.height + reach)
         // The layer's own geometry, whichever way the view counts: the fade's clear end at the ground's top.
         let flipped = ground.layer?.contentsAreFlipped() ?? false
-        (fade.startPoint, fade.endPoint) = flipped ? (CGPoint(x: 0.5, y: 0), CGPoint(x: 0.5, y: 1))
-            : (CGPoint(x: 0.5, y: 1), CGPoint(x: 0.5, y: 0))
-        fade.frame = ground.bounds
-        if ground.layer?.mask !== fade { ground.layer?.mask = fade }
-        blur?.frame = ground.bounds
+        for each in [fade, tintFade] {
+            (each.startPoint, each.endPoint) = flipped ? (CGPoint(x: 0.5, y: 0), CGPoint(x: 0.5, y: 1))
+                : (CGPoint(x: 0.5, y: 1), CGPoint(x: 0.5, y: 0))
+            each.frame = ground.bounds
+        }
+        if let blur {
+            ground.layer?.mask = nil
+            blur.frame = ground.bounds
+            blur.maskImage = Self.fadeImage(ground.bounds.size)
+            blur.wash.wantsLayer = true
+            if blur.wash.layer?.mask !== tintFade { blur.wash.layer?.mask = tintFade }
+        } else if ground.layer?.mask !== fade {
+            ground.layer?.mask = fade
+        }
         super.layout()
     }
 }

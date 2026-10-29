@@ -24,6 +24,9 @@
     /// the room's foot, through the bar.
     public static let fade = 24.0
 
+    /// The share of the ground's height, from its top, it rises over: whole below it.
+    public static let rise = 0.6
+
     /// Whether anything of a page stands under its bottom bar, so the bar stands on a ground of its own - a blur
     /// fading softly toward the content - rather than on the page: nothing where the content stands clear of the room's
     /// foot (`contentRunsUnder` false); where it runs under, its scroller's rows while they stand short of their end

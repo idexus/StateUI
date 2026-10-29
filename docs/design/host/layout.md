@@ -378,8 +378,10 @@ its own - a blur fading softly toward the content, down to the room's edge -
 while anything does (`BottomBarPlace.covers`): the page's content where it
 runs under the room's foot, its scroller's rows while they stand short of
 their end. The edge is soft, as a bar a field stands in reads best: the
-ground rises from nothing `BottomBarPlace.fade` above the bar to whole at the
-room's foot, the rows blurring more the lower they pass. UIKit asks its scroll edge effect under the bar for the soft one
+ground rises from nothing `BottomBarPlace.fade` above the bar to whole
+`BottomBarPlace.rise` of the way down, the rows blurring more the lower they
+pass. The fade masks the blur itself - its own mask, UIKit's `mask` view,
+AppKit's `maskImage` - as a blur under a masked layer draws no blur at all. UIKit asks its scroll edge effect under the bar for the soft one
 (`bottomEdgeEffect.style`, `UIScrollEdgeElementContainerInteraction`, the bar
 reaching the fade above its view) - which iOS 26 draws and iOS 27 draws not at
 all, natively or in SwiftUI alike. Where the platform draws no soft edge -

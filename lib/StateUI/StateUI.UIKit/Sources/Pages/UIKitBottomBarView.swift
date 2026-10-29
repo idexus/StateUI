@@ -28,14 +28,9 @@ final class UIKitBottomBarView: UIKitLayoutView {
     /// The material the ground shows.
     private var material: HostMaterial?
 
-    /// The ground's fade: clear at its top (`BottomBarPlace.fade` above the bar's view), whole at the room's foot.
-    private let fade: CAGradientLayer = {
-        let fade = CAGradientLayer()
-        fade.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
-        fade.startPoint = CGPoint(x: 0.5, y: 0)
-        fade.endPoint = CGPoint(x: 0.5, y: 1)
-        return fade
-    }()
+    /// The ground's fade: clear at its top (`BottomBarPlace.fade` above the bar's view), whole from
+    /// `BottomBarPlace.rise` down - the blur's own mask, as a blur under a masked view draws no blur at all.
+    private let fade = UIKitFadeView()
 
     /// Where the bar's view stands within the bar.
     private var barRoom = Rect(x: 0, y: 0, width: 0, height: 0)
@@ -126,15 +121,40 @@ final class UIKitBottomBarView: UIKitLayoutView {
     override func arrange(in bounds: Rect) {
         ground.frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height)
         fade.frame = ground.bounds
-        if ground.layer.mask !== fade { ground.layer.mask = fade }
         if let blur, let material {
+            ground.mask = nil
             blur.frame = ground.bounds
             blur.show(material, as: .rounded([0, 0, 0, 0]))
             let wash = blur.showsGlass ? UIKitBrush() : UIKitBrush(material.paint)
             blur.lay(wash, stroke: UIKitBrush(), width: 0, over: ground.bounds, along: .rectangle)
+            // `show` takes the layer's mask away: the fade is laid again after it.
+            blur.mask = nil
+            blur.mask = fade
+        } else if ground.mask !== fade {
+            ground.mask = fade
         }
         guard let item = items.first else { return }
         place(item, at: SingleChildArithmetic.place(of: item, in: barRoom, direction: direction))
+    }
+}
+
+/// A view clear at its top and whole from `BottomBarPlace.rise` of its height down: a mask a blur keeps drawing under.
+@MainActor
+private final class UIKitFadeView: UIView {
+    override class var layerClass: AnyClass { CAGradientLayer.self }
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        guard let fade = layer as? CAGradientLayer else { return }
+        fade.colors = [UIColor.clear.cgColor, UIColor.black.cgColor]
+        fade.locations = [0, NSNumber(value: BottomBarPlace.rise)]
+        fade.startPoint = CGPoint(x: 0.5, y: 0)
+        fade.endPoint = CGPoint(x: 0.5, y: 1)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("UIKitFadeView is made in code")
     }
 }
 #endif

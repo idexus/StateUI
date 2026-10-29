@@ -132,15 +132,15 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 .stateui-bottom-bar[data-under]::before {
   content: "";
   position: absolute;
-  /* Rising from nothing BottomBarPlace.fade above the bar to whole at the room's foot. */
+  /* Rising from nothing BottomBarPlace.fade above the bar, whole below BottomBarPlace.rise of its height. */
   inset: -24px 0 0 0;
   z-index: -1;
   pointer-events: none;
   background: color-mix(in srgb, var(--stateui-page, var(--stateui-surface)) 72%, transparent);
   backdrop-filter: blur(20px) saturate(1.6);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  mask-image: linear-gradient(to top, #000, transparent);
-  -webkit-mask-image: linear-gradient(to top, #000, transparent);
+  mask-image: linear-gradient(to top, #000 40%, transparent);
+  -webkit-mask-image: linear-gradient(to top, #000 40%, transparent);
 }
 
 /* The window: its bar over the room its pages stand in. */
