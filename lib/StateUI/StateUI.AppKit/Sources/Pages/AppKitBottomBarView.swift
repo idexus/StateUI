@@ -75,7 +75,7 @@ final class AppKitBottomBarView: AppKitSingleChildView {
 
     /// Stands the bar at `place` - across the room's foot, its view in the bar's place above the bar at the foot - and
     /// follows what of `page` stands under it: its content, `scroller`'s rows as they move. Nowhere for no place.
-    func stand(at place: BottomBarPlace?, over page: MountedElement?, scroller: AppKitScrollView?) {
+    func stand(at place: BottomBarPlace?, over page: MountedElement?, scroller: AppKitPageScroller?) {
         guard let place else { return frame = .zero }
         edge = page?.chromeBottomBarEdge ?? .automatic
         let color = page?.bottomBarTint.flatMap(paintedColor) ?? window?.backgroundColor

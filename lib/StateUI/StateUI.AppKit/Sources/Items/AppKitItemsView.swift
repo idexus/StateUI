@@ -32,7 +32,8 @@ final class AppKitCollection: NSCollectionView {
 /// builds what a cell holds.
 /// Design: docs/design/platforms/appkit/items.md
 @MainActor
-final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring, NSCollectionViewDelegate {
+final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring, NSCollectionViewDelegate,
+    AppKitPageScroller {
     let cells: ItemsCells
     let collection = AppKitCollection()
     private let scroller = NSScrollView()
@@ -87,9 +88,64 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
 
     override func layout() {
         super.layout()
+        let resized = scroller.frame.size != bounds.size
         if scroller.frame != bounds { scroller.frame = bounds }
         measureResized()
         cells.showing(shownIdentities)
+        if resized { roomChanged() }
+    }
+
+    // MARK: - A page's scroller
+
+    /// What the list keeps clear of the bars over it, where it is its page's scroller; its offsets are counted from
+    /// its first item clear of them.
+    private var clearance = Clearance.none
+
+    /// Keeps `clearance` clear: its first and last items scroll out from under the bars, its end kept where they
+    /// grow (`ScrollArithmetic.keptAtEnd`), and the item the program scrolled to stood again in the room they leave.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    func keepClear(_ clearance: Clearance) {
+        guard clearance != self.clearance else { return }
+        let before = standing
+        self.clearance = clearance
+        scroller.automaticallyAdjustsContentInsets = false
+        scroller.contentInsets = NSEdgeInsets(
+            top: clearance.top, left: clearance.left, bottom: clearance.bottom, right: clearance.right)
+        let end = ScrollArithmetic.keptAtEnd(before.offset, reach: before.reach, now: standing.reach)
+        stand(at: end ?? before.offset)
+        roomChanged()
+    }
+
+    var standingChanged: (() -> Void)?
+
+    var standing: (offset: Point, reach: Point) {
+        let origin = scroller.contentView.bounds.origin
+        let size = collection.frame.size
+        let viewport = scroller.contentView.bounds.size
+        let reach = Point(
+            x: max(0, size.width + clearance.left + clearance.right - viewport.width),
+            y: max(0, size.height + clearance.top + clearance.bottom - viewport.height))
+        return (SafeAreaArithmetic.offset(native: Point(x: origin.x, y: origin.y), clearance: clearance), reach)
+    }
+
+    /// Stands the list at `offset`, counted from its first item kept clear.
+    private func stand(at offset: Point) {
+        let native = SafeAreaArithmetic.native(offset: offset, clearance: clearance)
+        scroller.contentView.scroll(to: NSPoint(x: native.x, y: native.y))
+        scroller.reflectScrolledClipView(scroller.contentView)
+    }
+
+    /// The list's room changed - its size, or what it keeps clear of the bars over it: the item the program scrolled
+    /// to stands again where it put it (`ItemsCells.roomChanged`), a glide going on there.
+    /// Design: docs/design/platforms/appkit/items.md#scrolling-to-an-item
+    private func roomChanged() {
+        guard let target = cells.roomChanged(), let indexPath = source.indexPath(for: target.identity) else { return }
+        layoutSubtreeIfNeeded()
+        guard let point = self.target(of: indexPath, anchor: target.anchor) else { return }
+        if gliding { glide(to: point) } else {
+            scroller.contentView.scroll(to: point)
+            scroller.reflectScrolledClipView(scroller.contentView)
+        }
     }
 
     // MARK: - What the tree says
@@ -230,6 +286,7 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
 
     @objc private func scrolled() {
         cells.showing(shownIdentities)
+        standingChanged?()
     }
 
     // MARK: - What the user does
@@ -292,30 +349,35 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         cells.scroll(to: identity, anchor: anchor)
         glides += 1
         gliding = false
-        let clip = scroller.contentView
         guard !ItemsScrollTarget.glides(reducingMotion: reducesMotion()) else {
             guard let target = target(of: indexPath, anchor: anchor) else { return }
-            let glide = glides
             gliding = true
-            NSAnimationContext.runAnimationGroup({ _ in
-                clip.animator().setBoundsOrigin(target)
-            }, completionHandler: { [weak self] in
-                // AppKit ends an animation group on the main thread.
-                MainActor.assumeIsolated {
-                    guard let self, glide == self.glides else { return }
-                    self.gliding = false
-                    self.settle()
-                }
-            })
-            return
+            return glide(to: target)
         }
         collection.scrollToItems(at: [indexPath], scrollPosition: layoutShape.isAcross ? .left : .top)
         layoutSubtreeIfNeeded()
         settle()
     }
 
+    /// Glides the clip view to `target`, the item stood again as the glide ends - unless another glide, or the user,
+    /// took over.
+    private func glide(to target: NSPoint) {
+        glides += 1
+        let glide = glides
+        NSAnimationContext.runAnimationGroup({ _ in
+            scroller.contentView.animator().setBoundsOrigin(target)
+        }, completionHandler: { [weak self] in
+            // AppKit ends an animation group on the main thread.
+            MainActor.assumeIsolated {
+                guard let self, glide == self.glides else { return }
+                self.gliding = false
+                self.settle()
+            }
+        })
+    }
+
     /// Whether a scroll the program asked for glides now, which stands its item again as it stops; and how many
-    /// scrolls began, so a glide another took over stands nothing.
+    /// glides began, so a glide another took over stands nothing.
     private var gliding = false
     private var glides = 0
 
@@ -346,12 +408,15 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         let visible = scroller.contentView.bounds
         let size = collection.frame.size
         let across = layoutShape.isAcross
-        let (start, length, room, now) = across
+        // Within the room the bars over the list leave it, its offsets counted from the clip view's.
+        let (before, after) = across ? (clearance.left, clearance.right) : (clearance.top, clearance.bottom)
+        let (start, length, side, now) = across
             ? (item.minX, item.width, visible.width, visible.minX)
             : (item.minY, item.height, visible.height, visible.minY)
-        guard let place = anchor.place(of: start, length: length, in: room, at: now) else { return nil }
-        let reach = max(0, (across ? size.width : size.height) - room)
-        let offset = min(max(0, place), reach)
+        let room = side - before - after
+        guard let place = anchor.place(of: start, length: length, in: room, at: now + before) else { return nil }
+        let content = across ? size.width : size.height
+        let offset = min(max(-before, place - before), max(-before, content + after - side))
         return across ? NSPoint(x: offset, y: visible.minY) : NSPoint(x: visible.minX, y: offset)
     }
 

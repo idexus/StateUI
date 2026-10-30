@@ -35,7 +35,7 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (1)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">⌛</td><td></td><td>custom <code>NSView</code> over the page's foot</td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>1 ✅</td><td>custom <code>NSView</code> over the page's foot</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>1 ✅</td><td>custom <code>UIView</code> over the page's foot, its edge <code>UIScrollEdgeElementContainerInteraction</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td></td><td>custom <code>ViewGroup</code> child of the page, beneath its content</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td></td><td>custom <code>Panel</code> child of the page, beneath its content</td></tr></tbody>
@@ -49,5 +49,5 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/BottomBarContract
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>edge</code></td><td>property</td><td><code>ScrollEdge</code></td><td>adaptive</td><td align="center">⌛</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>edge</code></td><td>property</td><td><code>ScrollEdge</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
