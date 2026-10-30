@@ -73,6 +73,11 @@ extension PhaseLayout {
         var focus: Hand?
         let law: Motion
 
+        /// What the views move by between their places and where they are shown, and the body each view at an index
+        /// says it is - nil for one of the world's own.
+        let world: PhysicsWorld
+        let body: @MainActor (Int) -> PhysicsBody?
+
         /// The law the run moves under: its own, or - `.inherited` - the application's, as a host's channel answers
         /// it, so a change and a program's write of the phase travel alike.
         /// Design: docs/design/views/phase-layout.md#a-change-at-the-current-phase

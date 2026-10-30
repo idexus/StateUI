@@ -164,6 +164,9 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
     /// How the run travels to where the program or the hand's throw sends it.
     private var law = Motion.inherited
 
+    /// What the views move by between where the arithmetic puts them and where they are shown.
+    private var world = PhysicsWorld.standard
+
     /// Whether the layout turns about its middle where it lays out right to left.
     private var mirrors = false
 
@@ -349,8 +352,9 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         return copy
     }
 
-    /// How the run travels where the program or a settle sends it; let go short of the next snap, the run comes
-    /// onto it at a unit a length of this motion, so the short way is short.
+    /// How the phase travels where the program or a settle sends it; let go short of the next snap, the run comes
+    /// onto it at a unit a length of this motion, so the short way is short. How a view a change moves comes onto its
+    /// new place is the world's (`physicsWorld(_:)`).
     ///
     ///     .motion(.spring(response: .milliseconds(240)))
     ///
@@ -359,6 +363,20 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
     public func motion(_ motion: Motion) -> Self {
         var copy = self
         copy.law = motion
+        return copy
+    }
+
+    /// What the views move by between where the arithmetic puts them and where they are shown: a view a change
+    /// moves - joining, the run arranged anew, let go by the hand - comes onto its new place as a body of this
+    /// world, and one with a body of its own (`physicsBody(_:)`) as that body says.
+    ///
+    ///     .physicsWorld(.spring(response: .milliseconds(420), damping: 0.8))
+    ///
+    /// - Parameter world: the world; `.standard` unless said, `.none` for views standing at their places at once.
+    /// - Returns: the layout, its views moving by that world.
+    public func physicsWorld(_ world: PhysicsWorld) -> Self {
+        var copy = self
+        copy.world = world
         return copy
     }
 
@@ -568,6 +586,20 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         let readsFrom: Bool
         let kept = LayoutPoses()
 
+        /// The body each view says it is (`physicsBody(_:)`), in the items' order: read off the views the first time a
+        /// frame asks, once for this description.
+        private var bodies: [PhysicsBody?]?
+
+        /// The body the view at `index` says it is; nil for one of the world's own.
+        @MainActor
+        func body(at index: Int) -> PhysicsBody? {
+            let bodies = self.bodies ?? items.map { item in
+                view(item).props[ViewContract.physicsBody.token].flatMap(PhysicsBody.init(propValue:))
+            }
+            self.bodies = bodies
+            return bodies.indices.contains(index) ? bodies[index] : nil
+        }
+
         /// What the initializer was handed.
         @MainActor
         init(
@@ -622,7 +654,9 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
                 grip: _grip, item: _item, dismissals: dismissalRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
-            law: law)
+            law: law,
+            world: world,
+            body: { [source] index in source.body(at: index) })
     }
 
     /// The layout's states, handed on whole: what its engine and handlers read and write.
@@ -650,7 +684,7 @@ extension PhaseLayout: WalkedView {
             ("source", source), ("phase", phase), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("mask", mask as Any), ("tapped", tapped as Any),
             ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),
-            ("law", law), ("mirrors", mirrors), ("named", named as Any),
+            ("law", law), ("world", world), ("mirrors", mirrors), ("named", named as Any),
         ]
     }
 }
@@ -675,5 +709,5 @@ struct LayoutShown<Phase: AxesPhase>: Equatable {
     var room = Rect.zero
     var poses: [Int: Placement] = [:]
     var shown: [Int: Placement] = [:]
-    var travels: [Int: LayoutTravel] = [:]
+    var bodies = LayoutBodies()
 }

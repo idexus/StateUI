@@ -25,8 +25,7 @@ final class LayoutItemDragTests: XCTestCase {
 
     /// Three cards: A, and B over it a little to the right; C apart, turned an eighth of a turn.
     private func cards(
-        _ told: Told, _ order: State<[String]>? = nil, dismissing: Bool = false, awaiting: Bool = false,
-        motion: Motion = .eased(.milliseconds(160), .linear)
+        _ told: Told, _ order: State<[String]>? = nil, dismissing: Bool = false, awaiting: Bool = false
     ) -> Node {
         let names = order?.wrappedValue ?? ["A", "B", "C"]
         let places: [String: Placement] = [
@@ -41,7 +40,7 @@ final class LayoutItemDragTests: XCTestCase {
         }
         .itemDrag(begins: .held)
         .onItemDragged { told.drags.append($0) }
-        .motion(motion)
+        .physicsWorld(.spring(response: .milliseconds(160)))
         if awaiting {
             // A dismissal that awaits, past any test's end: another while it runs is ignored.
             return layout.onItemDismissed(.up, beyond: 50, policy: .ignoreWhileRunning) { name in
@@ -113,7 +112,7 @@ final class LayoutItemDragTests: XCTestCase {
         XCTAssertLessThan(run[0].bounds.x, 60)
     }
 
-    /// LET GO, THE VIEW COMES BACK TO ITS PLACE under the layout's motion, from where the hand left it.
+    /// LET GO, THE VIEW COMES BACK TO ITS PLACE as a body of the world, from where the hand left it.
     func testLetGoTheViewComesBackToItsPlace() {
         let told = Told()
         let renders = Renders()
@@ -125,11 +124,12 @@ final class LayoutItemDragTests: XCTestCase {
         bench.item(renders, tree, .ended, at: Point(155, 50))
         let first = shown(renders, tree)[1].bounds.x
         for _ in 0..<5 { bench.cycle() }
-        let halfway = shown(renders, tree)[1].bounds.x
-        for _ in 0..<10 { bench.cycle() }
+        let going = shown(renders, tree)[1].bounds.x
+        for _ in 0..<40 { bench.cycle() }
 
         XCTAssertEqual(first, 130, accuracy: 0.001, "from where the hand left it")
-        XCTAssertEqual(halfway, 90, accuracy: 0.001, "half its way in half the motion")
+        XCTAssertLessThan(going, 130, "on its way back")
+        XCTAssertGreaterThan(going, 50)
         XCTAssertEqual(shown(renders, tree)[1].bounds.x, 50, accuracy: 0.001, "at its place")
     }
 
@@ -144,7 +144,7 @@ final class LayoutItemDragTests: XCTestCase {
         bench.item(renders, tree, .began, at: Point(75, 50))
         bench.item(renders, tree, .changed, at: Point(75, 20))
         bench.item(renders, tree, .ended, at: Point(75, 20))
-        for _ in 0..<20 { bench.cycle() }
+        for _ in 0..<40 { bench.cycle() }
         _ = await settle()
         XCTAssertEqual(told.dismissed, [], "short of the dismissal")
         XCTAssertEqual(shown(renders, tree)[1].bounds.y, 0, accuracy: 0.001, "back at its place")

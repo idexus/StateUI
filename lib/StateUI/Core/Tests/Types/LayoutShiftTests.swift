@@ -62,19 +62,6 @@ final class LayoutShiftTests: XCTestCase {
         XCTAssertEqual(LayoutShift(from: shown, to: pose).applied(to: pose).shade, Placement.unshaded)
     }
 
-    /// A SHIFT TRAVELS TO NOTHING under the motion, and one sent on its way again sets out at the speed it had.
-    func testAShiftTravelsToNothing() {
-        let law = Motion.eased(.milliseconds(200), .linear)
-        let travel = LayoutTravel(from: [40], velocity: [0], began: 1_000)
-
-        XCTAssertEqual(travel.at(1_100, under: law).value[0], 20, accuracy: 0.000_001, "halfway")
-        XCTAssertTrue(travel.at(1_200, under: law).rested, "nothing left")
-
-        let going = travel.at(1_100, under: law)
-        let again = LayoutTravel(from: going.value, velocity: going.velocity, began: 1_100)
-        XCTAssertEqual(again.at(1_100, under: law).velocity[0], going.velocity[0], accuracy: 0.000_001)
-    }
-
     private func assertTransform(
         _ transform: ViewTransform, _ expected: ViewTransform, file: StaticString = #filePath, line: UInt = #line
     ) {

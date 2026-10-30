@@ -97,6 +97,10 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
     @State private var rightToLeft = false
     @State private var mirrored = true
 
+    /// Whether each card follows its place as a body, lagging as the ring
+    /// turns and swaying back onto it.
+    @State private var swaying = false
+
     /// WHICH CARD IS AT THE FRONT - the phase, two-way: `Back` and `Next`
     /// write it and the ring travels there; the hand names the card it passes
     /// and the one it comes to rest on. It starts on the middle card, and it
@@ -157,6 +161,8 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
                 SwitchRow("Right to left", $rightToLeft)
 
                 SwitchRow("Mirrored", $mirrored)
+
+                SwitchRow("Cards sway", $swaying)
             }
             .spacing(16)
             .horizontalAlignment(.center)
@@ -171,7 +177,15 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
         PhaseLayout(Self.pieces, phase: $turn) { piece in
             switch piece {
             case .card(let index):
-                face(Self.cards[index])
+                // A BODY FOLLOWING ITS PLACE: carried by the ring, the card lags
+                // behind as it turns, swings past where the turn stops and
+                // settles back onto its place.
+                if swaying {
+                    face(Self.cards[index])
+                        .physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.55)))
+                } else {
+                    face(Self.cards[index])
+                }
             case .dot:
                 Rectangle()
                     .fill(Palette.text)

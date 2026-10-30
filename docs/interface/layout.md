@@ -705,7 +705,11 @@ A change of the layout at the phase it stands at travels too. A view
 joining fades in where the arithmetic puts it; one leaving goes at once and
 the others close up; a new order slides; and a value read in the body - a
 switch between a fan and a pile - takes every view from where it was to its
-new place, under `.motion(_:)`, while the phase goes on as it goes:
+new place as a body of the layout's world, while the phase goes on as it
+goes. `.physicsWorld(_:)` says how: each view on a spring to its place,
+`.standard` - 300 milliseconds, never past it - unless said, `.none` for
+views standing at their places at once; `.motion(_:)` is the phase's law
+alone:
 
 ```swift
 struct Hand: View {
@@ -724,7 +728,7 @@ struct Hand: View {
                     Placement(Rect(room.width / 2 - 60 + Double(index) * gap, 0, 120, room.height))
                 }
             }
-            .motion(.spring(response: .milliseconds(300)))
+            .physicsWorld(.spring(response: .milliseconds(300), damping: 0.8))
             .height(160)
 
             Button("Add").onClicked { names.append("Bloom") }
@@ -738,6 +742,32 @@ Removing the card at the front brings the one behind it there, as the
 others close up. Where the front card was the last, the phase itself has to
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
 before it, under `.motion(_:)`.
+
+A view can be a body of its own: `.physicsBody(.followsLayout(_:))` on it
+makes it follow its place on the spring it names - carried by the run, it
+lags behind its place while the run turns, swings past where a throw stops
+and settles back onto it. The world is worked out at a fixed step, so every
+host and frame rate shows the same motion; under less motion every view
+stands at its place:
+
+```swift
+struct Swaying: View {
+    @State private var turn = 0.0
+
+    var body: some View {
+        PhaseLayout(["Mural", "Nebula", "Ridge", "Bloom"], phase: $turn) { name in
+            Text(name)
+                .physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.55)))
+        } placements: { room, phase in
+            (0..<4).map { index in
+                Placement(Rect(room.width / 2 - 60 + (Double(index) - phase) * 140, 0, 120, room.height))
+            }
+        }
+        .axis(\.self, input: .scroll(.horizontal), range: 0...3, snaps: .every(1))
+        .height(160)
+    }
+}
+```
 
 The arithmetic can also be handed where the run's motion set out: the phase
 it stood at when the hand, a throw or a journey took it away, then each
@@ -844,7 +874,7 @@ each time the hand moves it, and again each long press it stands. Lift the
 view as the hand takes it - `.scale(lifted == item ? 1.18 : 1)` with a
 `.motion(_:_:)` of its own on `.transform` - so the hand knows it has it. Changing the order there makes room: the others travel to
 their new places while the held view stays under the hand. Let go, it
-settles into its place under `.motion(_:)`:
+settles into its place as a body of the layout's world:
 
 ```swift
 struct Board: View {

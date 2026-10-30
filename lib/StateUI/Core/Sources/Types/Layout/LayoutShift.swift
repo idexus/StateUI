@@ -6,8 +6,7 @@
 import StateUIFoundation
 
 /// How far a view stands from where its arithmetic puts it, channel by channel: what a change of a layout's
-/// description at the current phase leaves, laid over the view's pose and decaying to nothing under the layout's
-/// motion.
+/// description at the current phase leaves, laid over the view's pose - a body's lanes (`LayoutBodies`).
 /// Design: docs/design/views/phase-layout.md#a-change-at-the-current-phase
 struct LayoutShift: Equatable, Sendable {
     /// The numbers, lane by lane: the bounds' place and size; the transform's five drawn numbers apart - its move
@@ -80,21 +79,6 @@ struct LayoutShift: Equatable, Sendable {
             shifted.shade = min(max(pose.shade + lanes[Self.shade], 0), 1)
         }
         return shifted
-    }
-}
-
-/// A shift on its way to nothing: where its lanes stood and how fast they went as it set out, and when.
-struct LayoutTravel: Equatable, Sendable {
-    var from: [Double]
-    var velocity: [Double]
-    var began: Double
-
-    /// Where the shift stands at `now` under `law`, how fast it goes, per second, and whether it has come to
-    /// nothing.
-    func at(_ now: Double, under law: Motion) -> HostMotionSample {
-        HostMotionLaw.sample(
-            law, elapsed: max(now - began, 0), from: from, destination: Array(repeating: 0, count: from.count),
-            velocity: velocity)
     }
 }
 

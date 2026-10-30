@@ -194,6 +194,7 @@ enum AppKitRealization {
         .complete(ToolbarToggleContract.isOn),
         .complete(ToolbarToggleContract.onIcon),
         .complete(ToolbarToggleContract.toggled),
+        .complete(ViewContract.physicsBody),
         .complete(ToolbarLabelContract.icon),
         .complete(ToolbarLabelContract.text),
         .unrealized(AutomationElementContract.accessibilityIdentifier, on: ToolbarButtonContract.self,

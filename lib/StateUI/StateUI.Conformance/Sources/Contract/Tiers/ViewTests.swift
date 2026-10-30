@@ -9,7 +9,7 @@
 /// hears of the user's hand - taps counted, a press held, a pan carrying its states and ending as a swipe, a pinch, the pointer
 /// coming, moving, pressing and going, a drag and a drop; each case made for every element wearing the tier. And
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
-/// corner.
+/// corner; and how a view of a phase layout moves as a body following its place.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
     public static let name = "View"
 
@@ -18,7 +18,7 @@
             [
                 margined(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
                 tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
-                dragged(element), droppedOn(element), filesDroppedOn(element),
+                dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
         } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner]
     }
@@ -130,6 +130,56 @@
 
             s.settle { frames.values.last.map(FrameReport.inContent) == [0, 0] }
             s.expect(frames.values.last.map(FrameReport.inContent), [0, 0], "at the safe area's corner, under the bar")
+        }
+    }
+
+    /// A view of a phase layout following its place as a body lags behind it as the phase moves it, passes it on a
+    /// spring damped below 1, and settles onto it.
+    @MainActor
+    static func bodied(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).aBodyFollowingItsPlaceLagsAndSettles", proves: [
+            Covered(ViewContract.physicsBody, on: element),
+        ], needs: [Covered(PhaseLayoutContract.self), Covered(ButtonContract.clicked)]) { s in
+            let clock = TestClock()
+            let phase = State(wrappedValue: 0.0)
+            let laid = Received<Double>()
+            let body = PhysicsBody.followsLayout(.spring(response: .milliseconds(400), damping: 0.5))
+            s.start(clock: clock) {
+                VStack {
+                    PhaseLayout([0], phase: phase.projectedValue) { _ in
+                        Specimens.view(element, [
+                            Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
+                            Write(ViewContract.physicsBody, body),
+                        ])
+                    } placements: { _, at in
+                        laid.values.append(at)
+                        return [Placement(Rect(at * 100, 0, 40, 40))]
+                    }
+                    .motion(.none)
+                    .width(200).height(40)
+                    // The place leaps a hundred on.
+                    Button("Leap").onClicked { phase.wrappedValue = 1 }.id("leap")
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            s.settle { laid.values.last == 0 }
+            let start = try s.place(of: s.element("specimen")).x
+            let moved = { (try? s.place(of: s.element("specimen")).x).map { $0 - start } ?? .nan }
+
+            // The body is carried by its spring after its place.
+            try s.perform(.activate, on: s.element("leap"))
+            s.settle { laid.values.last == 1 }
+            var (first, farthest) = (moved(), 0.0)
+            while clock.now < 3_000 {
+                clock.now += 16
+                s.frame()
+                if first.isNaN { first = moved() }
+                farthest = max(farthest, moved())
+            }
+            s.expect(first < 50, true, "behind its place as it leaps")
+            s.expect(farthest > 101, true, "past it, on its spring")
+            s.expect(abs(moved() - 100) < 0.5, true, "and onto it")
         }
     }
 

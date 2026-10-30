@@ -110,15 +110,11 @@ What changes a view's pose otherwise than the phase, the room or a followed
 state - a view joining or leaving, a new order, a value read in the body - is
 a new description of the layout, and it travels, as does a new place the
 motion sets out from ([where a motion set out](#where-a-motion-set-out)): each
-view goes from where it was shown to where the new arithmetic puts it, under
-the layout's motion, while the phase goes on as it goes. A layout that says no
-motion of its own (`.inherited`) moves under the application's
-(`application.motion`), as a host's channel answers `.inherited`: a change and
-a program's write of the phase travel alike, and an application that turned
-motion off sees a change land at once. Three layers each own
-one thing: the motion times the phase, the arithmetic turns a phase into
-poses, and a shift per identity (`LayoutShift`) turns a pose into what is
-shown.
+view goes from where it was shown to where the new arithmetic puts it, as a
+body of the layout's world ([bodies](#bodies)), while the phase goes on as it
+goes. Three layers each own one thing: the motion times the phase, the
+arithmetic turns a phase into poses, and a body per identity - its shift
+(`LayoutShift`) and how fast it goes - turns a pose into what is shown.
 
 A description is told apart by a number each gets as it is made
 (an object's address would not do: one let go is soon another's). On the first frame of
@@ -128,12 +124,13 @@ frame's poses: a view whose pose is the same goes on as it was, so a render
 that changes nothing changes no way, and a phase traveling meanwhile is no
 change; a view whose pose differs is shifted from where the last frame
 showed it, a view new to the run from nothing - it fades in. A view leaving
-goes at once, and the others close up. The shift decays to nought under
-the layout's motion (`.standard` where it inherits one), setting out at the
-speed a shift it replaces had, so a change changed again does not jump; the
-engine runs again each frame while one is on its way. Less motion, or a
-motion of none, shows a change at once, and a new room never travels: the
-layout follows the window.
+goes at once, and the others close up. The shift is a body's, going on at
+the speed the body had, so a change changed again does not jump; the poses
+then stand as the new description puts them at the last frame's phase, so a
+body following its place is carried by the phase's move alone. The engine
+runs again each frame while a body is on its way. Less motion, or a world of
+none, shows a change at once, and a new room never travels: the layout
+follows the window.
 
 A shift is the bounds' place and size, the opacity and the shade apart, and
 the transform's five drawn numbers apart - its move, its turn the short way,
@@ -142,6 +139,32 @@ transform does: a blend of the matrices would squash a turned view, and a
 slant no view draws would be carried for nothing (types/transforms.md, the
 shear limit). A shift at nought is the pose itself. The order is the pose's
 at once; a shade the layout draws none of is not blended.
+
+## Bodies
+
+Each view the run shows a shift of is a body of the layout's world
+(`PhysicsWorld`, `.physicsWorld(_:)`): a mass on a spring to its place, its
+shift's lanes and how fast each goes (`LayoutBodies`), pulled onto nought -
+the world's spring, `.standard` 300 ms critically damped, or the body's own
+(`.physicsBody(_:)`, `ViewContract.physicsBody`, read off each item's view
+once a description, the first time a frame asks). The world is worked out at
+a fixed step - 240 a second, semi-implicit, the spring's frequency as
+`HostMotionLaw`'s - with an accumulator, so other frames, another host or
+another rate bring a body to the same place; a frame works out at most 32
+steps, and a world further behind lets the rest go, slowing rather than
+spending a frame catching up (the Web without a JIT). A body as near and as
+slow as an animation counts arrived leaves the world.
+
+A body of the world's own is at its place but where a change shifted it: the
+phase and the hand carry it exactly. A body following its layout
+(`.followsLayout(_:)`) is carried by its place's moves too: the place moving
+under it since the last frame, it keeps where it was shown and its spring
+pulls it after - a card lagging while the run scrolls and settling back,
+flying past where a throw stops at the end and coming back. The view the hand
+lets go goes back onto its place as a body setting out at the hand's speed.
+`.motion` is the phase's law alone: how a change, a join or a hand's let go
+comes onto a place is the world's. Under less motion, and in a world of none,
+no body stands: every view at its place.
 
 ## The phase
 

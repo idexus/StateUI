@@ -174,6 +174,7 @@ enum UIKitRealization {
         .notPlanned(TextAndIconElementContract.showsText, on: ToolbarToggleContract.self,
             reason: "A UIKit bar button shows its picture or its words, never both."),
         .complete(ToolbarToggleContract.toggled),
+        .complete(ViewContract.physicsBody),
         .complete(ToolbarLabelContract.icon),
         .complete(ToolbarLabelContract.text),
         .complete(ToolbarGroupContract.barEdge),

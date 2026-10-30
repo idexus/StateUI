@@ -94,12 +94,11 @@ extension PhaseLayout.Run {
         return ways.contains { dismissal.directions.contains($0.0) && $0.1 > dismissal.beyond }
     }
 
-    /// The held view in `shown`, as the hand holds it - `poses` worked out at `now` in `room` - and the changes on
-    /// their way in `travels`: let go, its way back is a change under the layout's motion, setting out at the hand's
-    /// speed; dismissed, it flies on, and its item is told once it has left the room. Whether it goes on.
+    /// The held view in `shown`, as the hand holds it - `poses` worked out at `now` in `room` - and the bodies of
+    /// the world in `bodies`: let go, it goes back onto its place as a body, setting out at the hand's speed;
+    /// dismissed, it flies on, and its item is told once it has left the room. Whether it goes on.
     func showHeld(
-        _ shown: inout [Placement], travels: inout [Int: LayoutTravel], poses: [Placement], at now: Double,
-        room: Rect
+        _ shown: inout [Placement], bodies: inout LayoutBodies, poses: [Placement], at now: Double, room: Rect
     ) -> Bool {
         guard var hand = states.item.wrappedValue else { return false }
         guard let index = slots.firstIndex(where: { $0.identity == hand.identity }) else {
@@ -113,7 +112,7 @@ extension PhaseLayout.Run {
             var velocity = LayoutShift.none.lanes
             velocity[LayoutShift.x] = speed.x
             velocity[LayoutShift.y] = speed.y
-            travels[hand.identity] = LayoutTravel(from: lanes, velocity: velocity, began: now)
+            bodies.set(hand.identity, lanes: lanes, velocity: velocity, spring: spring(of: index), at: now)
             shown[index] = LayoutShift(lanes: lanes).applied(to: poses[index])
             states.item.wrappedValue = nil
             return true
@@ -135,10 +134,10 @@ extension PhaseLayout.Run {
     }
 
     /// How fast a dismissed view flies on, per second: the hand's speed, and its way out no slower than the room's
-    /// length a length of the layout's motion.
+    /// length a response of the world's spring.
     func flight(of hand: LayoutItemHand, in room: Rect) -> Point {
         var speed = hand.speed ?? Point(x: 0, y: 0)
-        let length = max(Double(resolvedLaw.milliseconds), 1) / 1_000
+        let length = max(world.spring?.response ?? 0, 1) / 1_000
         let across = hand.at.x - hand.from.x, down = hand.at.y - hand.from.y
         if abs(down) >= abs(across) {
             speed.y = down < 0 ? min(speed.y, -room.height / length) : max(speed.y, room.height / length)

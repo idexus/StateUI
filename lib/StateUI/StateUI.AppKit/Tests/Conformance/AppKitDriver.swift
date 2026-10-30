@@ -187,6 +187,7 @@ final class AppKitDriver: HostDriver {
 
     /// Where the element's view stands in its window, as AppKit placed it - measured down from the window's top.
     func place(of element: MountedElement) throws -> Rect {
+        layOutWindows()
         guard let view = (element.native as? AppKitElement)?.view, let window = view.window,
               let content = window.contentView
         else { throw DriverCannot("read where \(element.type.name) stands") }
