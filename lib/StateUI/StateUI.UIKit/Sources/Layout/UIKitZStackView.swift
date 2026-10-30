@@ -42,11 +42,6 @@ final class UIKitZStackView: UIKitLayoutView {
     /// Whether the ZStack stands a phase layout, which has no size of its own.
     var phaseLayout = false
 
-    override func setItems(_ items: [UIKitLayoutItem]) {
-        super.setItems(items)
-        orderChildren()
-    }
-
     override func contentSize(width: Double?) -> LayoutSize {
         ZStackArithmetic.size(of: items, padding: padding, width: width, phaseLayout: phaseLayout)
     }
@@ -68,10 +63,11 @@ final class UIKitZStackView: UIKitLayoutView {
 
     /// The children back to front as the run ranks them, or in their order without one: a touch reaches the front
     /// one first.
-    private func orderChildren() {
+    override func orderChildren() {
         let order = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placement?.placements ?? [])
+        let host = childrenHost
         for index in order where index < items.count {
-            bringSubviewToFront(items[index].view)
+            host.bringSubviewToFront(items[index].view)
         }
     }
 

@@ -52,8 +52,9 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         guard items.count != self.items.count || !zip(items, self.items).allSatisfy({ $0.arranges(like: $1) })
         else { return }
 
-        let host = childrenHost
-        for gone in self.items where gone.view.superview === host && !items.contains(where: { $0.view === gone.view }) {
+        let hosts = [self, box.backdropView?.contentView]
+        for gone in self.items
+        where hosts.contains(where: { $0 === gone.view.superview }) && !items.contains(where: { $0.view === gone.view }) {
             gone.view.removeFromSuperview()
         }
         self.items = items
@@ -65,11 +66,12 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     /// Where the children stand: in the box's interactive glass, so a touch on them is the glass's as well - else in
     /// the layout, above its backdrop.
     /// Design: docs/design/platforms/uikit/drawing.md#interactive-glass
-    private var childrenHost: UIView {
+    var childrenHost: UIView {
         box.backdropView.flatMap { $0.holdsChildren ? $0.contentView : nil } ?? self
     }
 
-    /// Stands each child in the children's host, in the tree's order - the backdrop beneath them in the layout.
+    /// Stands each child in the children's host in the tree's order - the backdrop beneath them in the layout - then
+    /// in the order the layout draws them (`orderChildren`).
     private func standChildren() {
         let host = childrenHost
         let first = host === self && box.backdropView != nil ? 1 : 0
@@ -77,7 +79,19 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         where item.view.superview !== host || host.subviews.firstIndex(of: item.view) != first + index {
             host.insertSubview(item.view, at: first + index)
         }
+        orderChildren()
     }
+
+    /// Stands the children again where their host changed - the box's interactive glass came or went - their order
+    /// otherwise left as it is.
+    private func followChildrenHost() {
+        let host = childrenHost
+        guard items.contains(where: { $0.view.superview !== host }) else { return }
+        standChildren()
+    }
+
+    /// Orders the children back to front as the layout draws them; most draw them in the tree's order.
+    func orderChildren() {}
 
     func forgetMeasurements() {
         measurements.invalidate()
@@ -116,7 +130,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     override func layoutSubviews() {
         super.layoutSubviews()
         box.paint(on: self)
-        standChildren()
+        followChildrenHost()
         let room = arrangementRoom ?? bounds.size
         places.begin(width: room.width)
         arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
@@ -128,7 +142,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
         box.set(background: background, stroke: stroke, width: width, shape: shape, clips: clips)
         box.paint(on: self)
-        standChildren()
+        followChildrenHost()
     }
 
     /// A touch outside the shape the layout cuts to reaches nothing of it: UIKit tests a touch against the bounds.
