@@ -13,12 +13,15 @@ still apply the final destination, normally by snapping. Only checked rows in
 
 ## Motion laws
 
-`Motion` has two destination-seeking laws:
+`Motion` has three destination-seeking laws:
 
 - `.eased(length, curve)` takes the stated `Duration` - `.milliseconds(300)` -
   and lands on the destination exactly;
 - `.spring(response:damping:)` keeps standing velocity when retargeted and
-  settles on the destination rather than at an unrelated resting point.
+  settles on the destination rather than at an unrelated resting point;
+- `.glide(longest:)` sets out at the speed the value has and slows onto the
+  destination, as long as that speed takes to get there and no longer than
+  `longest` - what a value thrown by the hand goes on with.
 
 Three special values select ownership:
 
@@ -116,6 +119,7 @@ exposes what the host is showing between writes:
 | `velocity` | per-second velocity, lane by lane |
 | `motion` | law owned by this value wherever it is attached |
 | `move(to:_:)` | set a destination; `arrived()` awaits its outcome |
+| `reach(_:)` | where a law would carry the value on alone, at the speed it has |
 | `stop()` | stop at the standing value |
 | `snap(to:)` | set standing value, destination, and zero velocity together |
 | `convert` | derive another host-driven value from live journey lanes |
@@ -191,6 +195,47 @@ Writing `journey.value` alone changes only the standing value. Writing
 `journey.velocity` kicks the existing journey. These operations are primarily
 for custom engines; an ordinary application decision writes the state or calls
 `move(to:_:)`.
+
+## A throw
+
+A gesture's report says how fast the hand goes, and its end how fast it
+lifted. Handing that speed to the value's journey, then moving it on a glide,
+lets the value go on from the hand and slow onto where it is sent; `reach(_:)`
+says where the glide alone would carry it, so the value can be sent to the
+nearest place it may rest at instead:
+
+```swift
+struct Strip: View {
+    @State private var offset = 0.0
+
+    var body: some View {
+        Rectangle()
+            .fill(.cornflowerBlue)
+            .width(60)
+            .height(60)
+            .translationX($offset)
+            .onPanUpdated { pan in
+                switch pan.phase {
+                case .changed:
+                    $offset.journey.snap(to: pan.totalX)
+                case .ended:
+                    let glide = Motion.glide(longest: .milliseconds(800))
+                    $offset.journey.velocity = pan.velocityX
+                    // The nearest stop of every hundred points to where the throw would land.
+                    let stop = ($offset.journey.reach(glide) / 100).rounded() * 100
+                    $offset.journey.move(to: stop, glide)
+                default:
+                    break
+                }
+            }
+    }
+}
+```
+
+A glide always lands where it is sent, never sooner than 80 milliseconds nor
+later than `longest`: a fast throw to a near stop slows over a short glide, a
+slow one over a longer, and a value standing still - or thrown away from the
+stop - takes half of `longest`.
 
 ## Visibility and layout motion
 

@@ -123,10 +123,22 @@ public struct Motion: Equatable, Sendable {
         return milliseconds == 0 ? .none : Motion(kind: .eased(milliseconds: milliseconds, curve: curve))
     }
 
-    /// A glide: the value sets out at the speed it has and slows onto its destination on `cubicOut`, as long as that
-    /// speed takes there - never shorter than `HostMotionLaw.shortestGlide`, nor longer than `longest`.
+    /// A glide: the value sets out at the speed it has and slows onto its
+    /// destination, as long as that speed takes to get there - what a value
+    /// thrown by the hand goes on with.
+    ///
+    ///     $offset.journey.velocity = pan.velocityX
+    ///     $offset.journey.move(to: 0, .glide(longest: .milliseconds(800)))
+    ///
+    /// It always lands where it is sent, never sooner than 80 milliseconds nor
+    /// later than `longest`; a value standing still, or going the other way,
+    /// takes half of `longest`. Where a throw alone would carry the value is
+    /// `journey.reach(.glide(longest:))`.
+    ///
+    /// - Parameter longest: the longest it may take, to the millisecond.
+    /// - Returns: the motion.
     /// Design: docs/design/types/motion.md#a-glide
-    static func glide(within longest: Duration) -> Motion {
+    public static func glide(longest: Duration) -> Motion {
         let milliseconds = Motion.milliseconds(of: longest)
 
         return milliseconds == 0 ? .none : Motion(kind: .glide(milliseconds: milliseconds))

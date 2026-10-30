@@ -239,6 +239,33 @@ public struct Journey<Value: Walked> {
         return arrival
     }
 
+    /// Where the value comes to rest if `motion` carries it on from where it
+    /// is, at the speed it has, alone - what a throw reaches, to send it to
+    /// the nearest place it may rest at:
+    ///
+    ///     $offset.journey.velocity = pan.velocityY
+    ///     let glide = Motion.glide(longest: .milliseconds(800))
+    ///     $offset.journey.move(to: rows.nearest(to: $offset.journey.reach(glide)), glide)
+    ///
+    /// A value goes as far as its speed for the motion's length over how
+    /// steeply the motion sets out: an eased one on its curve, a glide and a
+    /// spring as `cubicOut` does. Standing still, or under a motion that does
+    /// not animate, it rests where it is; `.inherited` is the value's own law.
+    ///
+    /// - Parameter motion: the law that would carry it.
+    /// - Returns: where it would come to rest.
+    /// Design: docs/design/types/motion.md#where-a-throw-reaches
+    public func reach(_ motion: Motion) -> Value {
+        let at = value
+        let law = motion.kind == .inherited ? storage?.law ?? motion : motion
+        guard case .lanes(let from) = at.carried(in: .current), case .lanes(let speed) = velocity.carried(in: .current),
+              from.count == speed.count
+        else { return at }
+
+        let reached = zip(from, speed).map { $0 + HostMotionLaw.carried($1, under: law) }
+        return Value(carried: .lanes(reached)) ?? at
+    }
+
     /// Puts one part of the value there at once, as `snap(to:)` does the whole: the other lanes go on as they were.
     /// Design: docs/design/core/journeys.md#one-part-at-once
     func snap(_ part: WritableKeyPath<Value, Double>, to target: Double) {

@@ -477,7 +477,7 @@ extension PhaseLayout {
             }
             if case .spring = throwing.kind { return (throwing, speed) }
             let longest = max(Double(Self.timing(of: throwing).milliseconds) * 2, Self.shortest)
-            return (.glide(within: .milliseconds(Int(longest.rounded()))), speed)
+            return (.glide(longest: .milliseconds(Int(longest.rounded()))), speed)
         }
 
         /// An axis letting go, where the hand works on it - a magnification's logarithm: where it held the run, how
@@ -700,28 +700,12 @@ extension PhaseLayout {
         /// its length over how steeply its curve sets out; a spring, for a third of its response - as far as a
         /// `cubicOut` of that length.
         static func carried(_ speed: Double, by throwing: Motion) -> Double {
-            let timing = timing(of: throwing)
-            let length = Double(timing.milliseconds) / 1_000
-
-            return speed * length / setsOut(timing)
+            HostMotionLaw.carried(speed, under: timing(of: throwing))
         }
 
         /// The law a throw is timed by: its own, the inherited one 400 milliseconds on `cubicOut`.
         static func timing(of throwing: Motion) -> Motion {
             throwing.kind == .inherited ? .eased(.milliseconds(400)) : throwing
-        }
-
-        /// How steeply a throw under `timing` sets out: eased, its curve's first slope; a spring, as a `cubicOut`
-        /// of its response does.
-        static func setsOut(_ timing: Motion) -> Double {
-            if case .spring = timing.kind { return 3 }
-            return max(HostMotionLaw.slope(easing(of: timing), at: 0), 0.1)
-        }
-
-        /// The easing a throw under `motion` sets out by where it is eased: its own, `cubicOut` for a motion with none.
-        static func easing(of motion: Motion) -> Easing {
-            if case .eased(_, let curve) = motion.kind { return curve }
-            return .cubicOut
         }
 
         /// How long a throw at `speed` units a second takes to go `left` on under `throwing`, in milliseconds: the
@@ -730,7 +714,7 @@ extension PhaseLayout {
         static func flight(_ left: Double, at speed: Double, by throwing: Motion) -> Double {
             let timing = timing(of: throwing)
             let length = Double(timing.milliseconds)
-            let setting = speed == 0 ? .infinity : abs(left / speed) * setsOut(timing) * 1_000
+            let setting = speed == 0 ? .infinity : abs(left / speed) * HostMotionLaw.setsOut(timing) * 1_000
 
             return min(max(setting, shortest), max(length * 2, shortest))
         }
@@ -743,7 +727,7 @@ extension PhaseLayout {
             switch motion.kind {
             case .eased(_, let curve): return .eased(length, curve)
             case .spring(_, let damping): return .spring(response: length, damping: damping)
-            case .glide: return .glide(within: length)
+            case .glide: return .glide(longest: length)
             case .inherited, .none, .custom: return .none
             }
         }

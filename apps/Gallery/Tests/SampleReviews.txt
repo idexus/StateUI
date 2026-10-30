@@ -89,7 +89,7 @@ NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift dc1582b9377c772d
 OutlineSample.swift 4ee91e4fde45645c
 PacedStateSample.swift e821a58ecd748f76
-PanSample.swift 464d5711df723f14
+PanSample.swift 6fdd4eb9a5672208
 PersistentStateSample.swift 4be06bf5d5e98ef8
 PhaseLayoutSample.swift 9abe36b892519bb2
 PickerSample.swift 86c5cbb290e05823

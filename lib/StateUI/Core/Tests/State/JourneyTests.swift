@@ -81,6 +81,24 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.velocity, 0, "and not moving")
     }
 
+    /// WHERE A THROW REACHES: as far as the value's speed for the motion's length over how steeply the motion sets
+    /// out - a glide as `cubicOut` does, an eased motion on its curve; standing still, or under no motion, where it is.
+    func testWhereAThrowReaches() {
+        let offset = State(wrappedValue: Point(0, 0))
+        let journey = offset.projectedValue.journey
+        journey.snap(to: Point(100, 20))
+        journey.velocity = Point(600, -300)
+
+        let glided = journey.reach(.glide(longest: .milliseconds(900)))
+        XCTAssertEqual(glided.x, 100 + 600 * 0.9 / 3, accuracy: 0.1, "a glide sets out as cubicOut does")
+        XCTAssertEqual(glided.y, 20 - 300 * 0.9 / 3, accuracy: 0.1)
+        XCTAssertEqual(journey.reach(.eased(.milliseconds(400), .linear)).x, 100 + 600 * 0.4, accuracy: 0.1)
+        XCTAssertEqual(journey.reach(.none), Point(100, 20), "no motion carries it")
+
+        journey.velocity = Point(0, 0)
+        XCTAssertEqual(journey.reach(.glide(longest: .milliseconds(900))), Point(100, 20), "still, where it is")
+    }
+
     /// A STATE NOBODY WEARS LANDS WHERE IT IS WRITTEN. Until an element
     /// registers the state the host has no number for it and nothing walks it,
     /// so a write puts the value at the destination as well - and once an

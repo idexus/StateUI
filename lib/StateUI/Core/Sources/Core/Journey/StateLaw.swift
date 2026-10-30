@@ -49,7 +49,7 @@ enum StateLaw {
             return .eased(.milliseconds(length), curve ?? .cubicOut)
         case 3 where lanes.count > 2: return .spring(response: .milliseconds(length), damping: third)
         case 4: return .custom
-        case 5: return .glide(within: .milliseconds(length))
+        case 5: return .glide(longest: .milliseconds(length))
         default: return Motion.none
         }
     }

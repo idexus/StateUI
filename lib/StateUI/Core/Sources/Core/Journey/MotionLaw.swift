@@ -273,6 +273,23 @@ import StateUIFoundation
         }
     }
 
+    /// How steeply `motion` sets out, per unit of its length: eased, its curve's first slope; a glide, `cubicOut`'s;
+    /// a spring, as a `cubicOut` of its response does - never under a tenth, so a curve setting out flat reaches a
+    /// finite way.
+    static func setsOut(_ motion: Motion) -> Double {
+        if case .eased(_, let curve) = motion.kind { return max(slope(curve, at: 0), 0.1) }
+        return slope(.cubicOut, at: 0)
+    }
+
+    /// How far a value going at `speed` a second carries on under `motion` alone: its speed for the motion's length
+    /// over how steeply the motion sets out; none under a motion that does not animate.
+    /// Design: docs/design/types/motion.md#where-a-throw-reaches
+    static func carried(_ speed: Double, under motion: Motion) -> Double {
+        guard motion.animates else { return 0 }
+
+        return speed * Double(motion.milliseconds) / 1_000 / setsOut(motion)
+    }
+
     /// How steeply `curve` climbs at `progress`, per unit of progress: a central
     /// difference on the curve, a function of progress alone.
     static func slope(_ curve: Easing, at progress: Double) -> Double {

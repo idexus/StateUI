@@ -61,7 +61,7 @@ final class MotionLawTests: XCTestCase {
     func testAGlideSetsOutAtItsSpeedAndSlowsOntoItsDestination() {
         let sample = { (elapsed: Double) in
             HostMotionLaw.sample(
-                .glide(within: .milliseconds(600)), elapsed: elapsed, from: [0], destination: [100], velocity: [1_000])
+                .glide(longest: .milliseconds(600)), elapsed: elapsed, from: [0], destination: [100], velocity: [1_000])
         }
 
         XCTAssertEqual(sample(0).velocity[0], 1_000, accuracy: 1e-9, "at the speed it had")
@@ -74,7 +74,7 @@ final class MotionLawTests: XCTestCase {
     /// slow its longest - setting out at its speed either way; set out still or away it takes half its longest; each
     /// lane by its own way, the glide at rest when the last is.
     func testAGlideIsHeldToItsShortestAndItsLongest() {
-        let glide = Motion.glide(within: .milliseconds(600))
+        let glide = Motion.glide(longest: .milliseconds(600))
         let sample = { (elapsed: Double, speed: [Double]) in
             HostMotionLaw.sample(glide, elapsed: elapsed, from: [0, 0], destination: [10, 10], velocity: speed)
         }
@@ -235,7 +235,7 @@ final class MotionLawTests: XCTestCase {
         let glide: [Double] = [0, 16, 40, 80, 150, 299, 300, 600, 700]
         for velocity in [[1_000.0, 0], [100_000, -10], [10, 900]] {
             animations.append(Animation(
-                motion: .glide(within: .milliseconds(600)), from: [0, 50], destination: [100, 0], velocity: velocity,
+                motion: .glide(longest: .milliseconds(600)), from: [0, 50], destination: [100, 0], velocity: velocity,
                 instants: glide))
         }
 

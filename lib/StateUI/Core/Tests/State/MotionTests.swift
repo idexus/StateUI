@@ -34,7 +34,7 @@ final class MotionTests: XCTestCase {
 
     /// A glide lies on the image as its kind and its longest, and reads back as itself.
     func testAGlideTravelsAsItsLongest() {
-        let glide = Motion.glide(within: .milliseconds(640))
+        let glide = Motion.glide(longest: .milliseconds(640))
 
         XCTAssertEqual(StateLaw.lanes(of: glide), [5, 640, 0])
         XCTAssertEqual(StateLaw.motion(of: StateLaw.lanes(of: glide)), glide)
