@@ -44,8 +44,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tr><td colspan="3">no run of it on these sources</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center"></td><td></td><td>a <code>GtkLabel</code> in an <code>AdwHeaderBar</code> or a <code>GtkActionBar</code></td></tr>
 <tr><td colspan="3">no run of it on these sources</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center"></td><td></td><td><code>&lt;span&gt;</code> in an ARIA <code>toolbar</code></td></tr>
-<tr><td colspan="3">no run of it on these sources</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>2 ✅</td><td><code>&lt;span&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarLabelContract.swift`.
@@ -54,6 +53,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarLabelContr
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr></tbody>
-<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr></tbody>
+<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td></tr></tbody>
 </table>

@@ -50,7 +50,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>8 –</td><td><code>Toolbar</code> <code>MenuItem</code>; at the page's foot a <code>Toolbar</code> of its own</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>8 –</td><td>a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>, a group's on a capsule; <code>AppBarButton</code> behind More; at the page's foot a <code>CommandBar</code> of its own</td></tr></tbody>
 <tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>8 –</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code>; at the page's foot in a <code>GtkActionBar</code>, <code>AdwToolbarView</code>'s bottom bar</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>8 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code>; at the page's foot a <code>toolbar</code> of its own</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>15 ✅ · 1 –</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code>; at the page's foot a <code>toolbar</code> of its own</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarGroupContract.swift`.
@@ -59,16 +59,16 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarGroupContr
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>barEdge</code></td><td>property</td><td><code>ToolbarEdge</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr></tbody>
-<tbody><tr></tr><tr><td><code>hidesWithSidebar</code></td><td>property</td><td><code>Bool</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>part</code></td><td>property</td><td><code>ToolbarPart</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>position</code></td><td>property</td><td><code>ToolbarPosition</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>spacing</code></td><td>property</td><td><code>Double</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
+<tbody><tr></tr><tr><td><code>barEdge</code></td><td>property</td><td><code>ToolbarEdge</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>hidesWithSidebar</code></td><td>property</td><td><code>Bool</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>order</code></td><td>property</td><td><code>Int</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>part</code></td><td>property</td><td><code>ToolbarPart</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>position</code></td><td>property</td><td><code>ToolbarPosition</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>spacing</code></td><td>property</td><td><code>Double</code></td><td>adaptive</td><td align="center">–</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: The Mac's toolbar draws its items in the Mac's own look.<br>UIKit: A bar's items stand in the system's own look.</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>standsAlone</code></td><td>property</td><td><code>Bool</code></td><td>stateUI</td><td align="center">–</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: The Mac's toolbar draws every group on a glass of its own, a lone item's too.<br>UIKit: UIKit's bar draws every group on a glass of its own, a lone item's too.</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>standsAlone</code></td><td>property</td><td><code>Bool</code></td><td>stateUI</td><td align="center">–</td><td align="center">–</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">–</td></tr>
+<tr><td colspan="9">AppKit: The Mac's toolbar draws every group on a glass of its own, a lone item's too.<br>UIKit: UIKit's bar draws every group on a glass of its own, a lone item's too.<br>Web: The bar draws every group on a glass of its own, a lone item's too.</td></tr></tbody>
 </table>
 
 ## From [PaddingElement](tiers/PaddingElement.md)

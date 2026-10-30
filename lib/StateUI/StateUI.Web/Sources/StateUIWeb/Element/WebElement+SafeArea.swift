@@ -7,15 +7,16 @@
 /// A page against what stands over its room - the depths the stylesheet passes down as `--stateui-over-*`.
 /// Design: docs/design/platforms/web/pages.md#the-safe-area
 extension WebElement {
-    /// Shows a page's bottom bar - the one declared innermost on its path - over its foot, and stands the page clear
-    /// of it.
+    /// Shows a page's bottom bar - the one declared innermost on its path - and its bar at its foot over its foot, and
+    /// stands the page clear of them.
     func showBottomBar() {
         guard type == .page, let view else { return }
         let shown = element.chromeBottomBar?.web.placedElement
-        guard shown != nil || bottomBar != nil else { return }
+        let actions = element.chromeBottomActions
+        guard shown != nil || !actions.isEmpty || bottomBar != nil else { return }
         let bar = bottomBar ?? WebBottomBar(in: view) { [weak self] in self?.standInTheSafeArea() }
         bottomBar = bar
-        bar.show(shown)
+        bar.show(shown, toolbar: actions)
         standInTheSafeArea()
     }
 

@@ -234,10 +234,7 @@ final class WebWindowBar: WebDOMView {
             WebRelay.insert(group.node, into: edge.node, at: place)
             for (index, item) in items.enumerated() {
                 // A button opens its item's menu one way for good: an item opening it another way is another.
-                let opening = ButtonMenu.opening(of: item)
-                let standing = buttons.removeValue(forKey: ObjectIdentifier(item))
-                if let standing, standing.opening != opening { standing.release() }
-                let button = standing.flatMap { $0.opening == opening ? $0 : nil } ?? WebBarButton(opening: opening)
+                let button = WebBarButton.standing(for: item, from: &buttons)
                 button.show(item)
                 WebRelay.insert(button.node, into: group.node, at: index)
                 kept[ObjectIdentifier(item)] = button

@@ -122,7 +122,7 @@ final class WebDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if [.menuItem, .menuToggle, .menu].contains(element.type), let value = try menuItemHolds(property, on: element) { return value }
-        if [.toolbarButton, .toolbarToggle].contains(element.type), let value = try toolbarItemHolds(property, on: element) {
+        if NodeType.toolbarItemTypes.contains(element.type), let value = try toolbarItemHolds(property, on: element) {
             return value
         }
         if element.type == .toolbarGroup, let group = try barView(of: element) {

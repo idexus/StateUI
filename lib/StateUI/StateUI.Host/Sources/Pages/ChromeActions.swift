@@ -20,6 +20,9 @@
     /// The actions behind the overflow, in reading order.
     public var overflow: [MountedElement] { overflowSections.flatMap { $0 } }
 
+    /// Whether the bar holds no action, on it or behind its overflow.
+    public var isEmpty: Bool { start.isEmpty && end.isEmpty && overflowSections.isEmpty }
+
     /// The actions at the end in reading order, for a bar that draws no groups.
     public var primary: [MountedElement] { end.flatMap { $0 } }
 

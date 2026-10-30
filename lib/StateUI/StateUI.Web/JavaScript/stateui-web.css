@@ -142,6 +142,18 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 }
 /* A hard edge draws a line along the top. */
 .stateui-bottom-bar[data-under][data-edge="hard"]::before { border-top: 0.5px solid var(--stateui-separator); }
+/* A page's bar at its foot (.toolbar(.bottom)), under its view: its groups at either edge, in the window's bar's
+   buttons. */
+.stateui-bottom-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 12px;
+  color: var(--stateui-text);
+}
+.stateui-bottom-toolbar[hidden] { display: none; }
 
 /* The window: its bar over the room its pages stand in. */
 .stateui-window {
@@ -288,7 +300,7 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 }
 
 /* Its buttons: round and glassy, each on its own, an action group's sharing one capsule. */
-.stateui-bar button {
+:is(.stateui-bar, .stateui-bottom-toolbar) button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -309,7 +321,7 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
-.stateui-bar {
+:is(.stateui-bar, .stateui-bottom-toolbar) {
   /* Light, a breath over a grouped list's ground; dark, a step clearer. */
   --stateui-glass: light-dark(color-mix(in srgb, currentColor 7%, transparent),
     color-mix(in srgb, currentColor 13%, transparent));
@@ -326,27 +338,39 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   box-shadow: var(--stateui-glass-edge);
 }
 .stateui-bar-actions:not(:has(> :not([hidden]))) { display: none; }
+/* Words on a bar stand on the bar itself, small and quieter than its actions; a group of words alone draws no glass. */
+.stateui-bar-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  font-size: 0.8125rem;
+  color: color-mix(in srgb, currentColor 62%, transparent);
+  white-space: nowrap;
+}
+.stateui-bar-label img { width: 16px; height: 16px; }
+.stateui-bar-group:not(:has(> :not(.stateui-bar-label))) { background: transparent; box-shadow: none; }
 .stateui-bar-group button { background: transparent; box-shadow: none; }
 /* Lit under a pointer that hovers - a finger hovers nowhere, and a browser keeps the button it tapped hovered - and
    pressed, where it can be chosen; `:where` keeps a setting standing on its tint under the pointer. */
 @media (hover: hover) {
-  .stateui-bar button:hover:where(:not(:disabled)) {
+  :is(.stateui-bar, .stateui-bottom-toolbar) button:hover:where(:not(:disabled)) {
     background: light-dark(color-mix(in srgb, currentColor 14%, transparent),
       color-mix(in srgb, currentColor 20%, transparent));
   }
 }
-.stateui-bar button:active:where(:not(:disabled)) {
+:is(.stateui-bar, .stateui-bottom-toolbar) button:active:where(:not(:disabled)) {
   background: light-dark(color-mix(in srgb, currentColor 21%, transparent),
     color-mix(in srgb, currentColor 27%, transparent));
 }
-.stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
-.stateui-bar button:disabled { opacity: 0.4; cursor: default; }
+:is(.stateui-bar, .stateui-bottom-toolbar) button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
+:is(.stateui-bar, .stateui-bottom-toolbar) button:disabled { opacity: 0.4; cursor: default; }
 /* A setting on the bar standing on: tinted in the accent, as a two-state button pressed. */
-.stateui-bar button[aria-pressed="true"] {
+:is(.stateui-bar, .stateui-bottom-toolbar) button[aria-pressed="true"] {
   background: color-mix(in srgb, var(--stateui-accent) 24%, transparent);
   color: var(--stateui-accent);
 }
-.stateui-bar button img { width: 22px; height: 22px; }
+:is(.stateui-bar, .stateui-bottom-toolbar) button img { width: 22px; height: 22px; }
 /* Plain buttons: no background at rest, one under the pointer - the Web's own look for a bar's buttons. */
 .stateui-bar[data-toolbar-style="plain"] :is(button, .stateui-bar-group, .stateui-bar-actions > button) {
   background: transparent;
@@ -715,7 +739,7 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 .stateui-link { color: LinkText; text-decoration: underline; cursor: pointer; }
 .stateui-link[aria-disabled="true"] { color: GrayText; cursor: default; }
 /* A button opening its menu says so, as a menu button does - a bar's too. */
-:is(.stateui-button, .stateui-bar button)[data-menu="opens"]:not([data-bare])::after {
+:is(.stateui-button, :is(.stateui-bar, .stateui-bottom-toolbar) button)[data-menu="opens"]:not([data-bare])::after {
   content: "▾";
   margin-inline-start: 6px;
 }

@@ -20,13 +20,32 @@ final class WebBarButton: WebDOMView {
     /// How the button opens its item's menu, its own for good: an item opening it otherwise is another button.
     let opening: ButtonMenuOpening
 
-    /// A button for an item opening a menu as `opening` says.
-    init(opening: ButtonMenuOpening = .none) {
+    /// Whether it stands for words nobody chooses (`ToolbarLabel`): no button, words on the bar itself.
+    let isLabel: Bool
+
+    /// The button standing for `item` among `buttons`, taken out of them - one opening its menu another way, or
+    /// another kind, let go of - else a new one.
+    static func standing(for item: MountedElement, from buttons: inout [ObjectIdentifier: WebBarButton]) -> WebBarButton {
+        let opening = ButtonMenu.opening(of: item)
+        let isLabel = item.type == .toolbarLabel
+        let standing = buttons.removeValue(forKey: ObjectIdentifier(item))
+        if let standing, standing.opening == opening, standing.isLabel == isLabel { return standing }
+        standing?.release()
+        return WebBarButton(opening: opening, isLabel: isLabel)
+    }
+
+    /// A button for an item opening a menu as `opening` says, or words where it is a label.
+    init(opening: ButtonMenuOpening = .none, isLabel: Bool = false) {
         self.opening = opening
-        super.init(tag: "button")
-        attribute("type", "button")
+        self.isLabel = isLabel
+        super.init(tag: isLabel ? "span" : "button")
         WebRelay.insert(picture.node, into: node, at: 0)
         WebRelay.insert(words.node, into: node, at: 1)
+        guard !isLabel else {
+            attribute("class", "stateui-bar-label")
+            return
+        }
+        attribute("type", "button")
         if opening != .none {
             menu = WebButtonMenu(on: self, opening) { [weak self] in
                 guard let self, let item else { return }
@@ -52,7 +71,8 @@ final class WebBarButton: WebDOMView {
         picture.apply(picture: entry.icon, aspect: .fit)
         picture.setShown(entry.icon != nil)
         WebRelay.setText(words.node, entry.title)
-        words.setShown(item.showsActionWords)
+        words.setShown(isLabel || item.showsActionWords)
+        guard !isLabel else { return }
         attribute("aria-label", entry.title)
         attribute("title", entry.title)
         attribute("disabled", entry.isEnabled ? nil : "")

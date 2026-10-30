@@ -233,7 +233,10 @@ extension WebDriver {
             case .showsMenuArrow:
                 let shows = "e.dataset.menu === 'opens' && !e.hasAttribute('data-bare')"
                 return try WebBrowser.truth(shows, on: e).propValue
-            case .text: return try WebBrowser.evaluate("e.getAttribute('aria-label')", on: e)?.propValue
+            // An action names itself; words on the bar show theirs.
+            case .text:
+                return try WebBrowser.evaluate("e.getAttribute('aria-label') ?? e.querySelector('span').textContent", on: e)?
+                    .propValue
             case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: e)).propValue
             case .role:
                 let destructive = try WebBrowser.truth("e.hasAttribute('data-destructive')", on: e)
@@ -255,30 +258,18 @@ extension WebDriver {
     /// The button standing for the bar's item `element`, or the group for its group; nil for any other element.
     func barView(of element: MountedElement) throws -> WebDOMView? {
         switch element.type {
-        case .toolbarButton, .toolbarToggle: return try barButtons().first { $0.item === element }
+        case .toolbarButton, .toolbarToggle, .toolbarLabel: return try barButtons().first { $0.item === element }
         case .toolbarGroup: return renderer?.roster.controllers.first?.window.bar.shownGroups.first { $0.group === element }
         default: return nil
         }
     }
 
-    /// The bar as the user meets it: each edge's groups of actions, then those behind the bar's More.
+    /// The bar at `edge` of `page` as the user meets it: each edge's groups of actions, then those behind the bar's
+    /// More - at its top the window's bar, at its foot the page's own.
     func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
-        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
+        guard edge == .top else { return try toolbar(of: page) }
         guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("read the bar of \(page.type.name)") }
-        let buttons = bar.buttons.values
-        let groups = { (edge: String) throws -> [[String]] in
-            let script = "[...e.querySelectorAll('\(edge) > .stateui-bar-group')].map((g) => [...g.children]"
-                + ".filter((b) => !b.hidden).map((b) => stateui.numberOf(b) + (b.disabled ? '!' : '')).join(',')).join(';')"
-            let said = try WebBrowser.evaluate(script, on: bar.node) ?? ""
-            return said.split(separator: ";").map { group in
-                group.split(separator: ",").compactMap { word in
-                    let enabled = !word.hasSuffix("!")
-                    guard let node = Int32(word.filter(\.isNumber)),
-                          let item = buttons.first(where: { $0.node == node })?.item else { return nil }
-                    return BarWords.word(item, enabled: enabled)
-                }
-            }.filter { !$0.isEmpty }
-        }
+        let groups = { (edge: String) throws -> [[String]] in try Self.groups(edge, on: bar.node, buttons: Array(bar.buttons.values)) }
         // A split view's page reads its part: the sidebar's over the sidebar, the detail's beside it.
         guard page.splitBarPart?.part == .sidebar else {
             let leading = try groups(".stateui-bar-start > .stateui-bar-actions")
@@ -290,12 +281,49 @@ extension WebDriver {
         return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page, behind: Self.sidebarMore))
     }
 
+    /// The bar at `page`'s foot: its groups at either edge, then those behind its More; nothing while it shows none.
+    private func toolbar(of page: MountedElement) throws -> String {
+        guard let toolbar = (page.native as? WebElement)?.bottomBar?.toolbar,
+              try WebBrowser.truth("!e.hidden && !e.closest('[hidden]')", on: toolbar.node)
+        else { return BarWords.said(leading: [], trailing: [], overflow: []) }
+        let buttons = Array(toolbar.buttons.values)
+        let leading = try Self.groups(":scope > .stateui-bar-actions[data-edge=start]", on: toolbar.node, buttons: buttons)
+        let trailing = try Self.groups(":scope > .stateui-bar-actions:not([data-edge])", on: toolbar.node, buttons: buttons)
+        var overflow: [String] = []
+        if try WebBrowser.truth("!e.hidden", on: toolbar.more.node) {
+            try click(toolbar.more)
+            defer { press("Escape") }
+            overflow = try openMenu()
+        }
+        return BarWords.said(leading: leading, trailing: trailing, overflow: overflow)
+    }
+
+    /// The groups standing in `edge` under the bar `node`, each its shown items said by the elements of `buttons`.
+    private static func groups(_ edge: String, on node: Int32, buttons: [WebBarButton]) throws -> [[String]] {
+            let script = "[...e.querySelectorAll('\(edge) > .stateui-bar-group')].map((g) => [...g.children]"
+                + ".filter((b) => !b.hidden).map((b) => stateui.numberOf(b) + (b.disabled ? '!' : '')).join(',')).join(';')"
+            let said = try WebBrowser.evaluate(script, on: node) ?? ""
+            return said.split(separator: ";").map { group in
+                group.split(separator: ",").compactMap { word in
+                    let enabled = !word.hasSuffix("!")
+                    guard let node = Int32(word.filter(\.isNumber)),
+                          let item = buttons.first(where: { $0.node == node })?.item else { return nil }
+                    return BarWords.word(item, enabled: enabled)
+                }
+            }.filter { !$0.isEmpty }
+    }
+
     /// The actions behind the bar's More found by `more`, as its menu shows them before the page's menus.
     private func overflow(of page: MountedElement, behind more: String) throws -> [String] {
         let bar = try self.bar(over: page)
         guard try WebBrowser.truth("!e.querySelector('\(more)').hidden", on: bar) else { return [] }
         try click(bar, part: more)
         defer { press("Escape") }
+        return try openMenu()
+    }
+
+    /// The actions the menu open now shows, before the page's menus, each said by its element.
+    private func openMenu() throws -> [String] {
         let open = "[...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open'))"
         let script = "((m) => { const out = []; for (const c of m ? m.children : []) {"
             + " if (c.getAttribute('role') === 'separator') break; if (c.classList.contains('stateui-menu')) continue;"
@@ -314,15 +342,23 @@ extension WebDriver {
     /// Every toolbar item under `element`, its slots included.
     private func toolbarItems(in element: MountedElement?) -> [MountedElement] {
         guard let element else { return [] }
-        let own = [.toolbarButton, .toolbarToggle].contains(element.type) ? [element] : []
+        let own = NodeType.toolbarItemTypes.contains(element.type) ? [element] : []
         return own + (element.children + element.slots).flatMap { toolbarItems(in: $0) }
     }
 
-    /// The bar's actions, in their order on the page.
+    /// The bar's items, in their order on the page, then those of the bars at the pages' feet.
     func barButtons() throws -> [WebBarButton] {
         guard let bar = renderer?.roster.controllers.first?.window.bar else { return [] }
-        let order = try numbers("[...e.querySelectorAll('.stateui-bar-group > button')].map(stateui.numberOf)", on: bar.node)
+        let order = try numbers("[...e.querySelectorAll('.stateui-bar-group > *')].map(stateui.numberOf)", on: bar.node)
         let buttons = bar.buttons.values
-        return order.compactMap { node in buttons.first { Double($0.node) == node } }
+        let feet = footToolbars(in: renderer?.runtime.tree.root).flatMap(\.buttons.values)
+        return order.compactMap { node in buttons.first { Double($0.node) == node } } + feet
+    }
+
+    /// The bars at the feet of the pages under `element`.
+    private func footToolbars(in element: MountedElement?) -> [WebBottomToolbar] {
+        guard let element else { return [] }
+        let own = element.type == .page ? [(element.native as? WebElement)?.bottomBar?.toolbar].compactMap { $0 } : []
+        return own + element.children.flatMap { footToolbars(in: $0) }
     }
 }

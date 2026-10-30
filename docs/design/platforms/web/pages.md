@@ -111,6 +111,20 @@ moves: a bar whose columns moved to a standing would be measured on its way
 there, find another, and stand the two in turn, frame after frame. Only the
 widths of its first and last columns move, with the sidebar.
 
+## The bar at the foot
+
+A page's actions for the bar at its foot (`.toolbar(.bottom)`) stand in a
+`toolbar` of their own under the page's view bar (`.bottomBar`), both in the
+one holder over the page's foot: the page stands clear of their height
+together, and they stand on the page while nothing passes under them and on
+the bar's blur while rows do. Its groups and buttons are the window bar's -
+the same glass, each item keeping its button across renders - its leading
+groups at its start and the rest at its end, as many as fit by the window
+bar's rule (`BarFit`), the rest behind a More at its end. Words on a bar
+(`ToolbarLabel`), on either bar, are a `<span>` standing on the bar itself,
+smaller and quieter than its actions, a group of words alone drawing no
+glass; behind a More they are an entry nobody can choose.
+
 ## The safe area
 
 The page is drawn under a phone's status bar, notch and home indicator
