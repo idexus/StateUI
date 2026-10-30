@@ -202,9 +202,9 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
-    /// A press dragged moves the state it carries from where it stood, says its phases and totals, and a swipe is
-    /// told when it ends having gone far enough a way the view listens for; the pointer's press says where it went
-    /// down and where it was let go.
+    /// A press dragged moves the state it carries from where it stood, says its phases and totals - its end where it
+    /// reached - and a swipe is told when it ends having gone far enough a way the view listens for; the pointer's
+    /// press says where it went down and where it was let go.
     func testADragMovesItsStateAndEndsAsASwipe() throws {
         try onUIThread {
             let host = GTKRenderer.running { DragPage() }
@@ -217,7 +217,7 @@ final class GTKGesturesTests: XCTestCase {
             GTKTestHost.emit(drag, "drag-update", [-60, 5])
             GTKTestHost.emit(drag, "drag-end", [-60, 5])
             GTKTestHost.emit(press, "drag-end", [-60, 5])
-            let expected = "x -50 pressed 70; pan 0 0; pan 1 -60; pan 2 0; swiped 2; released 10; "
+            let expected = "x -50 pressed 70; pan 0 0; pan 1 -60; pan 2 -60; swiped 2; released 10; "
             host.settle { host.texts.first == expected }
 
             XCTAssertEqual(host.texts.first, expected)
