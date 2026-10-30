@@ -851,11 +851,35 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 .stateui-toggle[aria-disabled] > span { opacity: 0.45; }
 /* A picker's segments: a row of buttons in one rounded frame, the one chosen in the accent; its radio buttons, a
    column. */
-.stateui-segments { display: inline-flex; border: 1px solid var(--stateui-line-strong); border-radius: 8px; overflow: hidden; }
-.stateui-segment { appearance: none; border: 0; margin: 0; padding: 6px 14px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
-.stateui-segment + .stateui-segment { border-inline-start: 1px solid var(--stateui-line-strong); }
-.stateui-segment[aria-checked="true"] { background: var(--stateui-accent); color: #ffffff; }
-.stateui-segment:disabled { opacity: 0.45; cursor: default; }
+/* Segments: one frame, rounded at its ends, split by lines - each segment a part of it, sharing the room it is
+   given, none a button of its own look (the room's rule for a button stands under these). */
+.stateui-segments {
+  display: inline-flex;
+  border: 1px solid var(--stateui-line-strong);
+  border-radius: var(--stateui-radius);
+  overflow: hidden;
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-segment {
+  appearance: none;
+  flex: 1 1 0;
+  min-height: 32px;
+  margin: 0;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-segment + .stateui-segment {
+  border-inline-start: 1px solid var(--stateui-line-strong);
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-segment[aria-checked="true"] {
+  background: var(--stateui-accent);
+  color: #ffffff;
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-segment:disabled { opacity: 0.45; cursor: default; }
 .stateui-radios { display: inline-flex; flex-direction: column; gap: 6px; }
 .stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
 .stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
@@ -865,6 +889,8 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   padding-inline-start: min(12px, calc(var(--stateui-field-room) * 0.2609));
   padding-inline-end: min(34px, calc(var(--stateui-field-room) * 0.7391));
   cursor: pointer;
+  /* A picker's menu lets what lies behind it through, lit a breath, as the platforms' pickers do. */
+  background-color: light-dark(rgb(0 0 0 / 0.05), rgb(255 255 255 / 0.08));
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;

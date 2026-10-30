@@ -605,6 +605,45 @@ final class WebLookTests: XCTestCase {
                        "none", "no ring, focused")
     }
 
+    /// Segments stand in one frame, rounded at its ends and split by lines: a segment draws no frame, corners or
+    /// ground of its own, but the chosen one's accent, and the segments share the room the picker is given.
+    func testSegmentsStandInOneFrame() throws {
+        let host = WebRenderer.running {
+            Picker(["Small", "Medium", "Large"], selection: State(wrappedValue: "Medium").projectedValue) { $0 }
+                .presentation(.segmented)
+                .width(300)
+        }
+        host.settle { (try? WebBrowser.number("document.querySelectorAll('.stateui-segment').length", on: 0)) == 3 }
+        let segment = { (index: Int, property: String) in
+            try WebBrowser.evaluate(
+                "getComputedStyle(document.querySelectorAll('.stateui-segment')[\(index)]).\(property)", on: 0)
+        }
+        XCTAssertEqual(try look(".stateui-segments", "borderTopWidth"), "1px", "one frame")
+        XCTAssertNotEqual(try look(".stateui-segments", "borderTopLeftRadius"), "0px", "rounded at its ends")
+        for index in 0..<3 {
+            XCTAssertEqual(try segment(index, "borderTopLeftRadius"), "0px", "no corners of its own")
+            XCTAssertEqual(try segment(index, "borderTopWidth"), "0px", "no frame of its own")
+        }
+        XCTAssertEqual(try segment(0, "backgroundColor"), "rgba(0, 0, 0, 0)", "no ground of its own")
+        XCTAssertNotEqual(try segment(1, "backgroundColor"), "rgba(0, 0, 0, 0)", "the chosen one's accent")
+        XCTAssertEqual(try segment(1, "borderInlineStartWidth"), "1px", "a line between")
+        let widths = try (0..<3).map {
+            try XCTUnwrap(WebBrowser.number(
+                "document.querySelectorAll('.stateui-segment')[\($0)].getBoundingClientRect().width", on: 0))
+        }
+        XCTAssertEqual(widths.reduce(0, +), 298, accuracy: 1, "sharing the room within the frame")
+    }
+
+    /// A picker's menu stands on a ground that lets what lies behind it through, as the platforms' pickers do.
+    func testAPickersMenuLetsWhatLiesBehindThrough() throws {
+        let host = WebRenderer.running {
+            Picker(["Small", "Large"], selection: State(wrappedValue: "Small").projectedValue) { $0 }
+        }
+        host.settle { (try? WebBrowser.number("document.querySelectorAll('.stateui-room select').length", on: 0)) == 1 }
+        let ground = try XCTUnwrap(look(".stateui-room select", "backgroundColor"))
+        XCTAssertTrue(ground.hasPrefix("rgba(") || ground.contains("/"), "translucent: \(ground)")
+    }
+
     func testAControlOverEveryPageWearsTheStylesheet() throws {
         let host = WebRenderer.running {
             Text("Beneath").overlays { VStack { Switch(true); Button("Over") } }

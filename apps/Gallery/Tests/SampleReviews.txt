@@ -9,7 +9,7 @@ AnimatedPropertySample.swift 3e32ce6e1efaac36
 AnimationSample.swift c490402644539ae0
 AppSwitcherSample.swift 8572c4ecb3c90bb3
 AppThemeSample.swift e3467cfdec02937b
-AppearanceSample.swift 591a412c617e2832
+AppearanceSample.swift fd9af6ad11a13ece
 ApplicationSessionSample.swift 5e888fc7cfd589fc
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
@@ -125,7 +125,7 @@ StackLayoutSample.swift 5f82478083f9d4fe
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
-StyleSample.swift 753f701c2b758560
+StyleSample.swift 90fcb3651eeb6d3e
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ae41f144fd9164ad
 TabsSample.swift 13660845c50cb716
