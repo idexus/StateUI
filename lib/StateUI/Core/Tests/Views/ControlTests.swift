@@ -296,11 +296,13 @@ final class ControlTests: XCTestCase {
                 }
                 .spacing(12)),
 
-            ControlCase("HStack", source: "StackLayouts.swift",
+            ControlCase("HStack", sources: ["StackLayouts.swift", "HStackProperties.swift"],
                 HStack {
                     Text("One")
                 }
-                .spacing(6)),
+                .spacing(6)
+                .wraps(true)
+                .rowSpacing(4)),
 
             ControlCase("ZStack", source: "ZStack.swift",
                 ZStack {

@@ -132,6 +132,25 @@ Web, which hands its rows to the browser: a label there is a flex item that
 shrinks by its natural width down to nothing (`flex: 0 1 auto`, `min-width:
 0`), the same share.
 
+## A row that wraps
+
+A row that `wraps` goes on onto a further line where its room ends
+(`StackArithmetic.Lines.wrapped`). Its shown children are taken in order,
+each line as many as its content's width takes at their natural widths with
+their margins and the spacing between them, and at least one, so a child wider
+than the room stands alone on its line; a growing child counts as none of it
+(`StackArithmetic.broken`). Each line is then one row in a room of its own
+across the content, as tall as its children stand there: everything a row
+does - words giving up width where a lone child is wider than its line, a
+space taking what its line leaves, children resting on a first baseline -
+it does line by line, with the same arithmetic. The lines stand from the
+top, `rowSpacing` apart, and the row is as wide as its widest line; offered
+no width, it stands on one line. Right to left, each line fills from the
+right. Only a row wraps: a column is measured as tall as its children for a
+width it is offered, and no height is offered to break it at. The Web hands
+the row to the browser's flexbox, which breaks its lines the same way
+([web layout](../platforms/web/layout.md#a-row-that-wraps)).
+
 ## A first baseline
 
 A child aligned `.firstBaseline` down a row rests its first line of words on

@@ -94,9 +94,11 @@ HStack
   letsInputThrough
   lineWidth
   padding
+  rowSpacing
   shape
   spacing
   stroke
+  wraps
 Image
   contentMode
   source

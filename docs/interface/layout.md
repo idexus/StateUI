@@ -117,7 +117,7 @@ in the [platform matrix](../platform-contract.md#shared-view-members).
 
 ## Stacks
 
-`VStack` and `HStack` are the two non-wrapping stack layouts:
+`VStack` and `HStack` are the two stack layouts:
 
 ```swift
 VStack {
@@ -138,6 +138,34 @@ button, a toggle or a picture keeps its width, and the labels share what the
 others leave in proportion to their natural widths - wrapping to it, or
 ending where the room does when kept to `.maximumLines(1)`. A label that
 states its own width keeps it.
+
+A row told `.wraps(true)` goes on onto a further line instead: each line
+holds as many children as its room takes at their natural widths, at least
+one, and the lines stand `.rowSpacing` apart, the spacing between children
+on a line staying `.spacing`:
+
+```swift
+struct Tags: View {
+    let tags = ["Swift", "Layout", "State", "Motion", "Journey", "Native"]
+
+    var body: some View {
+        HStack {
+            ForEach(tags, id: \.self) { tag in
+                Text(tag)
+                    .padding(horizontal: 10, vertical: 4)
+                    .background(.lightGray)
+            }
+        }
+        .wraps(true)
+        .spacing(8)
+        .rowSpacing(8)
+    }
+}
+```
+
+Each line is a row of its own: a space takes what its line leaves, and
+children aligned `.firstBaseline` rest on their line's baseline. Only a row
+wraps; a column grows as tall as its children need.
 
 The content closure is retained and described when the differ asks for the
 container's children. A state read inside that closure belongs to the

@@ -15,13 +15,38 @@
         case vertical
     }
 
+    /// How a row stands its children: on one line, or broken onto as many lines as its room needs.
+    /// Design: docs/design/host/layout.md#a-row-that-wraps
+    public enum Lines: Equatable, Sendable {
+        /// One line, however long.
+        case one
+
+        /// Each line as many children as its room takes, at least one, the lines `spacing` apart.
+        case wrapped(spacing: Double)
+
+        /// What a row's members say: wrapped where it `wraps`, its lines `rowSpacing` apart.
+        public init(_ values: ElementValues<HStackContract>) {
+            self = values[HStackContract.wraps] == true ? .wrapped(spacing: values[HStackContract.rowSpacing] ?? 0) : .one
+        }
+    }
+
     /// The room a stack's shown children take, each measured once for the width offered - a row's words at the width
     /// it would give them in that room, so it is as tall as they stand there.
     @MainActor
     public static func size<Child: LayoutChild>(
-        of items: [Child], axis: Axis, spacing: Double, padding: Insets, width offered: Double?
+        of items: [Child], axis: Axis, spacing: Double, lines: Lines = .one, padding: Insets, width offered: Double?
     ) -> LayoutSize {
         let visible = items.filter(\.isShown)
+        if axis == .horizontal, case .wrapped(let lineSpacing) = lines, let offered {
+            let room = max(0, offered - padding.start - padding.end)
+            let sizes = broken(visible, spacing: spacing, room: room).map { line in
+                size(of: line.map { visible[$0] }, axis: .horizontal, spacing: spacing, padding: Insets(0), width: room)
+            }
+            return LayoutSize(
+                width: padding.start + padding.end + (sizes.map(\.width).max() ?? 0),
+                height: padding.top + padding.bottom + sizes.reduce(0) { $0 + $1.height }
+                    + lineSpacing * Double(max(sizes.count - 1, 0)))
+        }
         let gaps = spacing * Double(max(visible.count - 1, 0))
         var along = 0.0
         var across = 0.0
@@ -71,18 +96,44 @@
     /// are turned about the middle of `bounds`.
     @MainActor
     public static func places<Child: LayoutChild>(
-        of items: [Child], axis: Axis, spacing: Double, padding: Insets, in bounds: Rect,
+        of items: [Child], axis: Axis, spacing: Double, lines: Lines = .one, padding: Insets, in bounds: Rect,
         direction: LayoutDirection
     ) -> [Rect?] {
-        leftToRight(of: items, axis: axis, spacing: spacing, padding: padding, in: bounds)
+        leftToRight(of: items, axis: axis, spacing: spacing, lines: lines, padding: padding, in: bounds)
             .map { $0.map { direction.places($0, in: bounds) } }
     }
 
-    /// The places as a layout written left to right has them: each child measured once, a growing one given its
-    /// share of the room the others leave.
-    /// Design: docs/design/host/layout.md#a-space
+    /// The places as a layout written left to right has them - a wrapped row's line by line, each line in its own
+    /// room across the content, as tall as its children stand on it.
+    /// Design: docs/design/host/layout.md#a-row-that-wraps
     @MainActor
     private static func leftToRight<Child: LayoutChild>(
+        of items: [Child], axis: Axis, spacing: Double, lines: Lines, padding: Insets, in bounds: Rect
+    ) -> [Rect?] {
+        guard axis == .horizontal, case .wrapped(let lineSpacing) = lines else {
+            return oneLine(of: items, axis: axis, spacing: spacing, padding: padding, in: bounds)
+        }
+        let content = bounds.inset(padding)
+        var places = [Rect?](repeating: nil, count: items.count)
+        var y = content.y
+        for line in broken(items, spacing: spacing, room: content.width) {
+            let children = line.map { items[$0] }
+            let height = size(of: children, axis: .horizontal, spacing: spacing, padding: Insets(0), width: content.width)
+                .height
+            let room = Rect(x: content.x, y: y, width: content.width, height: height)
+            for (index, place) in zip(line, oneLine(of: children, axis: .horizontal, spacing: spacing, padding: Insets(0), in: room)) {
+                places[index] = place
+            }
+            y += height + lineSpacing
+        }
+        return places
+    }
+
+    /// The places on one line as a layout written left to right has them: each child measured once, a growing one
+    /// given its share of the room the others leave.
+    /// Design: docs/design/host/layout.md#a-space
+    @MainActor
+    private static func oneLine<Child: LayoutChild>(
         of items: [Child], axis: Axis, spacing: Double, padding: Insets, in bounds: Rect
     ) -> [Rect?] {
         let content = bounds.inset(padding)
@@ -152,9 +203,9 @@
     /// Design: docs/design/host/layout.md#a-first-baseline
     @MainActor
     public static func firstBaseline<Child: LayoutChild>(
-        of items: [Child], axis: Axis, spacing: Double, padding: Insets, in bounds: Rect
+        of items: [Child], axis: Axis, spacing: Double, lines: Lines = .one, padding: Insets, in bounds: Rect
     ) -> Double? {
-        let places = leftToRight(of: items, axis: axis, spacing: spacing, padding: padding, in: bounds)
+        let places = leftToRight(of: items, axis: axis, spacing: spacing, lines: lines, padding: padding, in: bounds)
         for (item, place) in zip(items, places) {
             guard let place, let baseline = item.firstBaseline(offered: place.width) else { continue }
             return place.y - bounds.y + baseline
@@ -186,6 +237,28 @@
             yielded[index] = items[index].values.boundedWidth((widths[index] ?? 0) * left / wordsWidth)
         }
         return (yielded, true)
+    }
+
+    /// The shown children's indices line by line: each line as many as `room` takes at their natural widths with
+    /// their margins and the spacing between them, at least one - a growing child taking none of it.
+    /// Design: docs/design/host/layout.md#a-row-that-wraps
+    @MainActor
+    private static func broken<Child: LayoutChild>(_ items: [Child], spacing: Double, room: Double) -> [[Int]] {
+        var lines: [[Int]] = []
+        var line: [Int] = []
+        var taken = 0.0
+        for (index, item) in items.enumerated() where item.isShown {
+            let values = item.values
+            let natural = values.grows(along: .horizontal) ? 0 : values.boundedWidth(item.size(offered: nil).width)
+            let width = values.margin.start + natural + values.margin.end
+            if !line.isEmpty, taken + spacing + width > room {
+                lines.append(line)
+                (line, taken) = ([], 0)
+            }
+            taken += (line.isEmpty ? 0 : spacing) + width
+            line.append(index)
+        }
+        return line.isEmpty ? lines : lines + [line]
     }
 
     /// `naturals` with each child a row narrowed measured again at its width, so its words wrap to it.

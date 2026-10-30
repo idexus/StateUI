@@ -288,6 +288,7 @@ extension NodeType {
     static let width = VisualElementContract.width.token
     static let windowType = WindowContract.windowType.token
     static let windowValue = WindowContract.windowValue.token
+    static let wraps = HStackContract.wraps.token
     static let x = WindowContract.x.token
     static let x1 = LineContract.x1.token
     static let x2 = LineContract.x2.token

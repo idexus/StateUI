@@ -17,6 +17,7 @@ extension AndroidRegistrations {
 
         registry.add(HStackContract.self, create: { _ in AndroidStackView(axis: .horizontal) }) { stack in
             stack.applies(LayoutMembers.stackMembers) { view, values in applyStack(view, values) }
+            stack.applies(LayoutMembers.rowMembers) { view, values in view.lines = StackArithmetic.Lines(values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }

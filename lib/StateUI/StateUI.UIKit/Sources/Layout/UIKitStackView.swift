@@ -19,6 +19,11 @@ final class UIKitStackView: UIKitLayoutView {
         didSet { if padding != oldValue { invalidate() } }
     }
 
+    /// Whether a row stands on one line or wraps, and the room between its lines.
+    var lines = StackArithmetic.Lines.one {
+        didSet { if lines != oldValue { invalidate() } }
+    }
+
     init(axis: StackArithmetic.Axis) {
         self.axis = axis
         super.init()
@@ -32,17 +37,17 @@ final class UIKitStackView: UIKitLayoutView {
     override func firstBaseline(width: Double?) -> Double? {
         let size = measuredSize(width: width)
         return StackArithmetic.firstBaseline(
-            of: items, axis: axis, spacing: spacing, padding: padding,
+            of: items, axis: axis, spacing: spacing, lines: lines, padding: padding,
             in: Rect(x: 0, y: 0, width: size.width, height: size.height))
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        StackArithmetic.size(of: items, axis: axis, spacing: spacing, padding: padding, width: width)
+        StackArithmetic.size(of: items, axis: axis, spacing: spacing, lines: lines, padding: padding, width: width)
     }
 
     override func arrange(in bounds: Rect) {
         let places = StackArithmetic.places(
-            of: items, axis: axis, spacing: spacing, padding: padding, in: bounds, direction: direction)
+            of: items, axis: axis, spacing: spacing, lines: lines, padding: padding, in: bounds, direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: place) }
         }

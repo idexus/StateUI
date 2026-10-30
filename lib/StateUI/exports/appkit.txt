@@ -76,7 +76,9 @@ Grid
   rows
 HStack
   padding
+  rowSpacing
   spacing
+  wraps
 Image
   contentMode
   isAnimating

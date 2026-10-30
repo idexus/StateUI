@@ -486,7 +486,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Ellipse](controls/Ellipse.md) | 82 | 44 ✅ · 2 ☑️ · 36 ✓ | 42 ✅ · 3 ☑️ · 36 ✓ · 1 – | 64 ✅ · 6 ☑️ · 10 ✓ · 1 – | 59 ✅ · 2 ☑️ · 14 ✓ · 7 – | 51 ✅ · 3 ☑️ · 22 ✓ · 6 – | 56 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Fill](controls/Fill.md) | 77 | 40 ✅ · 1 ☑️ · 36 ✓ | 38 ✅ · 2 ☑️ · 36 ✓ · 1 – | 61 ✅ · 5 ☑️ · 10 ✓ · 1 – | 57 ✅ · 2 ☑️ · 14 ✓ · 4 – | 48 ✅ · 2 ☑️ · 21 ✓ · 6 – | 52 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Grid](controls/Grid.md) | 87 | 49 ✅ · 1 ☑️ · 36 ✓ | 44 ✅ · 3 ☑️ · 38 ✓ · 1 – | 69 ✅ · 5 ☑️ · 12 ✓ · 1 – | 66 ✅ · 2 ☑️ · 13 ✓ · 5 – | 55 ✅ · 2 ☑️ · 23 ✓ · 7 – | 62 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| [HStack](controls/HStack.md) | 84 | 46 ✅ · 1 ☑️ · 36 ✓ | 41 ✅ · 3 ☑️ · 38 ✓ · 1 – | 66 ✅ · 5 ☑️ · 12 ✓ · 1 – | 63 ✅ · 2 ☑️ · 13 ✓ · 5 – | 52 ✅ · 2 ☑️ · 23 ✓ · 7 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [HStack](controls/HStack.md) | 86 | 48 ✅ · 1 ☑️ · 36 ✓ | 43 ✅ · 3 ☑️ · 38 ✓ · 1 – | 68 ✅ · 5 ☑️ · 12 ✓ · 1 – | 65 ✅ · 2 ☑️ · 13 ✓ · 5 – | 54 ✅ · 2 ☑️ · 23 ✓ · 7 – | 61 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Image](controls/Image.md) | 77 | 38 ✅ · 2 ☑️ · 36 ✓ | 37 ✅ · 2 ☑️ · 36 ✓ · 1 – | 58 ✅ · 5 ☑️ · 10 ✓ · 1 – | 54 ✅ · 1 ☑️ · 14 ✓ · 7 – | 46 ✅ · 2 ☑️ · 22 ✓ · 6 – | 51 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [ItemsView](controls/ItemsView.md) | 92 | 45 ✅ · 2 ☑️ · 40 ✓ · 4 – | 42 ✅ · 2 ☑️ · 42 ✓ · 5 – | 70 ✅ · 5 ☑️ · 13 ✓ · 2 – | 67 ✅ · 2 ☑️ · 13 ✓ · 9 – | 56 ✅ · 2 ☑️ · 23 ✓ · 9 – | 62 ✅ · 1 ☑️ · 22 ✓ · 6 – |
 | [Line](controls/Line.md) | 85 | 47 ✅ · 2 ☑️ · 36 ✓ | 46 ✅ · 2 ☑️ · 36 ✓ · 1 – | 68 ✅ · 5 ☑️ · 10 ✓ · 1 – | 63 ✅ · 1 ☑️ · 14 ✓ · 7 – | 55 ✅ · 2 ☑️ · 22 ✓ · 6 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
@@ -514,10 +514,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 84 | 46 ✅ · 1 ☑️ · 36 ✓ | 42 ✅ · 3 ☑️ · 37 ✓ · 1 – | 67 ✅ · 5 ☑️ · 11 ✓ · 1 – | 63 ✅ · 2 ☑️ · 13 ✓ · 5 – | 53 ✅ · 2 ☑️ · 22 ✓ · 7 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 90 | 50 ✅ · 2 ☑️ · 37 ✓ · 1 – | 47 ✅ · 2 ☑️ · 39 ✓ · 2 – | 68 ✅ · 5 ☑️ · 12 ✓ · 4 – | 50 ✅ · 13 ✓ · 26 – | 58 ✅ · 2 ☑️ · 24 ✓ · 6 – | 59 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 83 | 45 ✅ · 1 ☑️ · 36 ✓ | 40 ✅ · 3 ☑️ · 38 ✓ · 1 – | 65 ✅ · 5 ☑️ · 12 ✓ · 1 – | 62 ✅ · 2 ☑️ · 13 ✓ · 5 – | 51 ✅ · 2 ☑️ · 23 ✓ · 7 – | 58 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1693 | 1591 | 2324 | 2279 | 1944 | 2172 |
+| ✅ |  | 1695 | 1593 | 2326 | 2281 | 1946 | 2174 |
 | ✓ |  | 1358 | 1400 | 403 | 496 | 844 | 762 |
 | – |  | 54 | 106 | 161 | 249 | 238 | 134 |
-| **Met** | 3203 | **3105** | **3097** | **2888** | **3024** | **3026** | **3068** |
+| **Met** | 3205 | **3107** | **3099** | **2890** | **3026** | **3028** | **3070** |
 | 🧩 |  | 0 | 0 | 82 | 82 | 82 | 82 |
 
 ### Application structure
@@ -616,6 +616,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ColorPicker](controls/ColorPicker.md) | `choosesOpacity`, `color`, `onColorChanged` (`colorChanged`) | 3 | 3 ✅ | 3 ✅ | 3 – | 3 ✅ | 3 ✅ | 2 ✅ · 1 – |
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ · 4 – | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ | 4 ✅ · 3 – |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
+| [HStack](controls/HStack.md) | `rowSpacing`, `wraps` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 9 ✅ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
@@ -725,7 +726,7 @@ realizes the element and each of its members.
 `time`, `tint`, `title`, `toolbarSpacing`, `toolbarStyle`, `tooltip`,
 `tracking`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
 `verticalAlignment`, `verticalScrollIndicator`, `verticalTextAlignment`,
-`width`, `windowType`, `windowValue`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
+`width`, `windowType`, `windowValue`, `wraps`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
 `zIndex`.
 
 ### Events

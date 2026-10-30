@@ -73,9 +73,20 @@ class WebLayoutView: WebDOMView {
         }
     }
 
-    /// The room left between the children of a stack.
+    /// The room left between the children of a stack, along its axis.
     func setSpacing(_ spacing: Double) {
-        style("gap", spacing == 0 ? nil : WebCSS.pixels(spacing))
+        style(arrangement == .stack(.vertical) ? "row-gap" : "column-gap", spacing == 0 ? nil : WebCSS.pixels(spacing))
+    }
+
+    /// Whether a row wraps, its lines from its top the room between them apart.
+    /// Design: docs/design/platforms/web/layout.md#a-row-that-wraps
+    func setLines(_ lines: StackArithmetic.Lines) {
+        guard case .wrapped(let spacing) = lines else {
+            return ["flex-wrap", "align-content", "row-gap"].forEach { style($0, nil) }
+        }
+        style("flex-wrap", "wrap")
+        style("align-content", "flex-start")
+        style("row-gap", spacing == 0 ? nil : WebCSS.pixels(spacing))
     }
 
     /// The room left between a grid's rows and between its columns.

@@ -121,7 +121,7 @@ SizingSample.swift 505216705d5b9909
 SliderSample.swift de5c388891de8278
 SpinnerSample.swift e38153fa2576bf0f
 SplitViewSample.swift e0bdf81a2346c7ac
-StackLayoutSample.swift e210b9bcb8aec1bd
+StackLayoutSample.swift ba50f79acf7d94d1
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6

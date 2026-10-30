@@ -10628,6 +10628,11 @@ enum Listings {
         // Sources/Samples/Layout/StackLayoutSample.swift
         @State private var spaced = true
         @State private var onBaseline = true
+        @State private var wraps = true
+        static let tags = [
+            "Button", "Toggle", "Slider", "Picker", "Text", "Image", "Stack", "Grid",
+            "Scroll", "List", "Map", "Sheet", "Menu", "Toolbar", "Tab", "Split",
+        ]
 
         var body: some View {
             VStack {
@@ -10706,6 +10711,18 @@ enum Listings {
                         .maximumLines(1)
                     Button("Open")
                 }
+
+                SectionTitle("Wraps")
+
+                // A row that wraps goes on onto the next line where its room
+                // ends; on one line, its words share the room it has.
+                HStack {
+                    ForEach(Self.tags, id: \.self) { StackCell(text: $0) }
+                }
+                .wraps(wraps)
+
+                Switch($wraps)
+                    .text("Wraps")
 
                 SectionTitle("Separator")
 

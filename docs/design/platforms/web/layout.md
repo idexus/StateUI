@@ -8,11 +8,22 @@ browser places a child where the host layer's arithmetic would.
 
 ## A layout is the browser's
 
-A stack is a flexbox along its axis, its spacing the flexbox's gap and its
-padding the element's own. A page, and the window's room, is a grid of one
+A stack is a flexbox along its axis, its spacing the flexbox's gap along that
+axis and its padding the element's own. A page, and the window's room, is a grid of one
 cell that its one child stands in. A child of a stack takes its natural size
 along the stack and never shrinks: a stack offers its children no less than
 they need, as the host layer's stack does.
+
+## A row that wraps
+
+A row that wraps is a flexbox that wraps (`flex-wrap: wrap`): the browser
+breaks it into lines at its children's natural widths, as the host layer's
+arithmetic does ([a row that wraps](../../host/layout.md#a-row-that-wraps)),
+its lines the row's line spacing apart (`row-gap`) - the spacing along a row
+being `column-gap`, so the two never overwrite each other - and standing from
+its top (`align-content: flex-start`) rather than stretched over a taller
+room. A label wider than its line stands alone on it and shrinks to it, and a
+space grows into what its line leaves, as elsewhere.
 
 ## A child's place
 

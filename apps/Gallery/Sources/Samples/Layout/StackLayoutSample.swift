@@ -1,10 +1,15 @@
 import StateUI
 
-/// The two non-wrapping stack directions.
+/// The two stack directions, and a row that wraps.
 struct StackLayoutSample: SampleContent, ExampleContent {
     // listing: StackLayoutSample
     @State private var spaced = true
     @State private var onBaseline = true
+    @State private var wraps = true
+    static let tags = [
+        "Button", "Toggle", "Slider", "Picker", "Text", "Image", "Stack", "Grid",
+        "Scroll", "List", "Map", "Sheet", "Menu", "Toolbar", "Tab", "Split",
+    ]
     // listing: end
 
     static let id = "stackLayout"
@@ -101,6 +106,21 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
+            SectionTitle("Wraps")
+
+            // A row that wraps goes on onto the next line where its room
+            // ends; on one line, its words share the room it has.
+            HStack {
+                ForEach(Self.tags, id: \.self) { StackCell(text: $0) }
+            }
+            .wraps(wraps)
+            .spacing(8)
+            .rowSpacing(8)
+
+            Switch($wraps)
+                .text("Wraps")
+                .accessibilityIdentifier("stackLayout.wraps")
+
             SectionTitle("Separator")
 
             // The platform's own line, across its stack.
@@ -127,7 +147,8 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         Text("`.horizontalAlignment` places a child across the room its stack gives it; `.firstBaseline` rests "
             + "words of other sizes on one line. A `Space` takes the room its siblings leave; a row short of room "
-            + "takes it from its words; a `Separator` draws the platform's line across its stack.")
+            + "takes it from its words, and `.wraps(true)` goes on onto further lines; a `Separator` draws the "
+            + "platform's line across its stack.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

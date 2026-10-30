@@ -24,6 +24,7 @@ extension AppKitRegistrations {
                 view.spacing = CGFloat(values[StackContract.spacing] ?? 0)
                 view.padding = values[PaddingElementContract.padding] ?? Insets(0)
             }
+            stack.applies(LayoutMembers.rowMembers) { view, values in view.lines = StackArithmetic.Lines(values) }
         }
 
         // A fill is a box of its own that holds nothing: its material, outline and shape the box's decoration draws,

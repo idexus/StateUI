@@ -10,6 +10,7 @@ extension StyleBag: BarItemElement where Target: BarItemElement {}
 extension StyleBag: ViewProperties where Target: View {}
 extension StyleBag: LayoutProperties where Target: Layout {}
 extension StyleBag: StackProperties where Target: Stack {}
+extension StyleBag: HStackProperties where Target == HStack {}
 extension StyleBag: ShapeProperties where Target: Shape {}
 extension StyleBag: FilledShapeProperties where Target: FilledShape {}
 extension StyleBag: CorneredShapeProperties where Target: CorneredShape {}

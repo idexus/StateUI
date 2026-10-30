@@ -16,6 +16,7 @@ extension WebRegistrations {
 
         registry.add(HStackContract.self, create: { _ in WebLayoutView(arrangement: .stack(.horizontal)) }) { stack in
             stack.applies(LayoutMembers.stackMembers) { view, values in applyStack(view, values) }
+            stack.applies(LayoutMembers.rowMembers) { view, values in view.setLines(StackArithmetic.Lines(values)) }
             stack.applies(LayoutMembers.boxMembers) { view, values in applyBox(view, values) }
             stack.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }

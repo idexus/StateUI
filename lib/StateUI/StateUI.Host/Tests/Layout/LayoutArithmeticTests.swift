@@ -246,6 +246,42 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(stacked.map { $0?.y }, [0, 20], "a column reads it as the near edge")
     }
 
+    /// A row that wraps goes on onto a further line where its room ends: each line as many children as it takes at
+    /// their natural widths, at least one, the lines the row's line spacing apart, each as tall as its children; right
+    /// to left, each line fills from the right, and a growing child takes what its own line leaves.
+    func testARowThatWrapsGoesOnOntoFurtherLines() {
+        var low = Child(width: 40, height: 10)
+        low.values.vertical = Alignment.start.rawValue
+        let row = [Child(width: 60, height: 20), Child(width: 60, height: 20), Child(width: 60, height: 30), low]
+        let lines = StackArithmetic.Lines.wrapped(spacing: 6)
+        let padding = Insets(4)
+
+        let size = StackArithmetic.size(
+            of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, width: 158)
+        XCTAssertEqual(size, LayoutSize(width: 138, height: 64), "lines of 130 and 110, 20 and 30 tall, 6 apart")
+        let bounds = Rect(0, 0, 158, 64)
+        let places = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, in: bounds, direction: .leftToRight)
+        XCTAssertEqual(places, [Rect(4, 4, 60, 20), Rect(74, 4, 60, 20), Rect(4, 30, 60, 30), Rect(74, 30, 40, 10)])
+        XCTAssertEqual(
+            StackArithmetic.size(of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, width: nil),
+            LayoutSize(width: 258, height: 38), "offered no width, on one line")
+
+        let mirrored = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, in: bounds, direction: .rightToLeft)
+        XCTAssertEqual(mirrored.map { $0?.x }, [94, 24, 94, 44], "each line from the right")
+
+        var space = Child(width: 0, height: 0)
+        space.values.grows = true
+        let spread = StackArithmetic.places(
+            of: [Child(width: 200, height: 10), Child(width: 60, height: 10), space, Child(width: 30, height: 10)],
+            axis: .horizontal, spacing: 10, lines: lines, padding: Insets(0), in: Rect(0, 0, 150, 40),
+            direction: .leftToRight)
+        XCTAssertEqual(spread[0], Rect(0, 0, 200, 10), "wider than the room, alone on its line")
+        XCTAssertEqual(spread[2].map { [$0.x, $0.y, $0.width] }, [70, 16, 40], "the space takes what its own line leaves")
+        XCTAssertEqual(spread[3]?.x, 120)
+    }
+
     func testARowShortOfRoomTakesItFromItsWords() {
         let row = Self.row(title: 300, note: 100)
 
