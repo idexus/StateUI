@@ -1,5 +1,5 @@
-# revision 15.1
-MotionLayout: ◐ cannot sweep on MotionLayout - the Web's driver has no path for it yet
+# revision 15.2
+MotionLayout: ✅
 MotionLayout.itemDrag: ✅
 MotionLayout.itemDragUpdated: ✅
 MotionLayout.magnifies: ✅

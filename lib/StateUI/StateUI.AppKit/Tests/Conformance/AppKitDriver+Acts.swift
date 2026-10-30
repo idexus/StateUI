@@ -93,6 +93,10 @@ extension AppKitDriver {
             native?.handReader?.hand(.began, moved: .zero)
             native?.handReader?.hand(.changed, moved: offset)
             native?.handReader?.hand(.ended, moved: .zero, speed: speed)
+        // A view that hears no hand - an axis of keyframes alone - holds no reader of the host's: a sweep reaches
+        // nothing, as AppKit hands it to no one.
+        case (.sweep, _) where !element.hearing.contains(.hand):
+            break
         case (.notch(let notches), _) where native?.handReader != nil:
             native?.handReader?.notched(notches)
         case (.pinch(let scale, let point), _) where native?.pinchRecognizer != nil:

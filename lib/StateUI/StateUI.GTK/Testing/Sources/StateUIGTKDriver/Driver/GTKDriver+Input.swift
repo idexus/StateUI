@@ -15,6 +15,8 @@ extension GTKDriver {
     func input(_ act: UserAct, on view: GTKView) -> Bool {
         if let button = view as? GTKButtonView, case .pressDown = act { pressButton(button, act) }
         if let button = view as? GTKButtonView, case .lift = act { pressButton(button, act) }
+        // A view that hears no hand - an axis of keyframes alone - holds no drag of the host's: a sweep reaches nothing.
+        if case .sweep = act, !view.hearing.contains(.hand) { return true }
         guard let listening = view.listening else { return view is GTKButtonView && ["pressDown", "lift"].contains(act.description) }
         let controllers = { (kind: Hearing) in listening.controllers[kind] ?? [] }
         renderer?.layOut()
@@ -46,7 +48,6 @@ extension GTKDriver {
         // A throw's speed is the events' times, which a signal emitted here carries none of: the hand reaches the
         // host's entry as the drag would hand it, with the speed - ✓.
         case .sweep(let offset, let speed):
-            guard view.hearing.contains(.hand) else { return false }
             listening.hand(.began, moved: .zero)
             listening.hand(.changed, moved: offset)
             listening.hand(.ended, moved: .zero, speed: speed)

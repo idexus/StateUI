@@ -99,3 +99,6 @@ TextualElement 2
 Link 2
 TextAndIconElement 2
 BottomBar 5
+appkit MotionLayout 2
+gtk MotionLayout 2
+web MotionLayout 2

@@ -40,15 +40,12 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (95)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">◐</td><td>42 ✅ · 1 ☑️ · 46 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr>
-<tr><td colspan="3">cannot sweep on MotionLayout - AppKit's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>42 ✅ · 1 ☑️ · 46 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 3 ☑️ · 48 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>68 ✅ · 5 ☑️ · 16 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>55 ✅ · 2 ☑️ · 27 ✓ · 9 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">◐</td><td>49 ✅ · 2 ☑️ · 31 ✓ · 8 –</td><td>custom <code>GtkWidget</code></td></tr>
-<tr><td colspan="3">cannot sweep on MotionLayout - GTK's driver has no path for it yet</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">◐</td><td>63 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr>
-<tr><td colspan="3">cannot sweep on MotionLayout - the Web's driver has no path for it yet</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>49 ✅ · 2 ☑️ · 31 ✓ · 8 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>63 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/MotionLayoutContract.swift`.

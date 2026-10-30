@@ -110,6 +110,9 @@ extension WebDriver {
         case (.hover(let point), _): try mouse("mouseMoved", at: point, on: e)
         case (.leave, _): try leave(e)
         case (.pan(let offset), _): try pan(e, by: offset)
+        // A view that hears no hand - an axis of keyframes alone - takes the pointer as the browser hands it: a drag
+        // across it, which nothing hears.
+        case (.sweep(let offset, _), _) where !element.hearing.contains(.hand): try pan(e, by: offset)
         // A throw's speed is the events' times, which input the driver sends carries as the browser receives it:
         // the hand reaches the host's entry as the pointer would hand it, with the speed - ✓.
         case (.sweep(let offset, let speed), _):

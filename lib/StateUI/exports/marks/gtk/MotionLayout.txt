@@ -1,5 +1,5 @@
-# revision 15.1
-MotionLayout: ◐ cannot sweep on MotionLayout - GTK's driver has no path for it yet
+# revision 15.2
+MotionLayout: ✅
 MotionLayout.itemDrag: ✅
 MotionLayout.itemDragUpdated: ✅
 MotionLayout.magnifies: ✓ pinch on MotionLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
