@@ -749,10 +749,8 @@ enum Listings {
                     }
                     // Thrown as the gallery's home turns its cards: a spring that
                     // carries the hand on and settles.
-                    .axis(
-                        \.self,
-                        input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(500), damping: 0.8)),
-                        range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+                    .axis(\.self, input: .scroll(.horizontal), range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+                    .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
                     // A FIRST MOVE UP is the card's: it follows the hand; let go
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
@@ -7585,9 +7583,8 @@ enum Listings {
             // nearest where the throw would end. It rests on a card, never
             // between two - and comes round, a turn of the range bringing every
             // card back.
-            .axis(
-                \.self, input: .scroll(.horizontal, throwing: throwing.motion),
-                range: 0...Double(Self.cards.count), snaps: .every(1), periodic: true)
+            .axis(\.self, input: .scroll(.horizontal), range: 0...Double(Self.cards.count), snaps: .every(1), periodic: true)
+            .throwMotion(throwing.motion)
             // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
             // over every card, wearing the card's own corners - which is why it is
             // the application's to give and not the library's to draw.

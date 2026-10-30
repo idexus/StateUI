@@ -361,9 +361,8 @@ final class MotionLayoutTests: XCTestCase {
             let renders = Renders()
             func tree() -> Node {
                 MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _ in [Placement(Rect(0, 0, 10, 10))] }
-                    .axis(
-                        \.self, input: .scroll(.horizontal, pointsPerUnit: 100, throwing: throwing), range: 0...6,
-                        snaps: .every(1))
+                    .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...6, snaps: .every(1))
+                    .throwMotion(throwing)
                     .node
             }
 

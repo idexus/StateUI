@@ -7,7 +7,7 @@ AnalogClockSample.swift 6fa4f5693b1a66d7
 AnimatedInputSample.swift 1d4e3ab94a8e6a90
 AnimatedPropertySample.swift 3e32ce6e1efaac36
 AnimationSample.swift c490402644539ae0
-AppSwitcherSample.swift 6e6d8cd760cfc3a8
+AppSwitcherSample.swift 8572c4ecb3c90bb3
 AppThemeSample.swift e3467cfdec02937b
 AppearanceSample.swift 591a412c617e2832
 ApplicationSessionSample.swift 5e888fc7cfd589fc
@@ -82,7 +82,7 @@ MapSample.swift 9f441e3325fef845
 MaterialsSample.swift 0074507d1ab40b46
 MenuBarSample.swift feaefec006cc6607
 ModalSample.swift 67f7242eaa710537
-MotionLayoutSample.swift 4f628e13cf10174f
+MotionLayoutSample.swift 014ac7ddb9440ad8
 MotionSample.swift 37c6f1ae5c962e49
 MultiWindowSample.swift 98db0fa6f187c585
 NavigationSample.swift d3e0587edb1ebef8

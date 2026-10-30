@@ -229,13 +229,13 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// How the run goes on when the user lets go of it with speed - how far a
     /// throw carries, and how it slows - as any motion says it.
     ///
-    ///     .throwing(.spring(response: .milliseconds(500), damping: 0.8))
+    ///     .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
     ///
     /// - Parameter motion: eased, its length says how far a throw carries and
     ///   its curve how it slows; a spring settles as springs do. Either sets
     ///   out at the hand's speed.
     /// - Returns: the gallery, thrown that way.
-    public func throwing(_ motion: Motion) -> Self {
+    public func throwMotion(_ motion: Motion) -> Self {
         var copy = self
         copy.thrown = motion
         return copy
@@ -384,10 +384,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         // The hand carries the card in front, however big the room draws it; a deck is swiped a card at a time.
         if swipes {
-            let throwing = thrown ?? LayoutInput.scroll(.horizontal).throwing
-            let input = shape == .deck
-                ? LayoutInput.swipe(.horizontal, throwing: throwing) : .scroll(.horizontal, throwing: throwing)
+            let input = shape == .deck ? LayoutInput.swipe(.horizontal) : .scroll(.horizontal)
             layout = layout.axis(\.self, input: input, range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+            if let thrown { layout = layout.throwMotion(thrown) }
         }
 
         // The shade sits beside the press: the card that dips wears none.

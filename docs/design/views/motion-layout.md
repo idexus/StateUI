@@ -418,7 +418,7 @@ the ends give less and less past them, a snap is nearest by the
 logarithm, a throw carries the logarithm on - and pinching in acts as
 spreading does. Its range stands above nought. A rotation moves a unit
 every `degreesPerUnit` the fingers turn, clockwise on. Let go, the axes go
-on together, each to where it would end under its input's `throwing` - the
+on together, each to where it would end under the layout's `throwMotion` - the
 snap nearest that - or onto the nearest as a hand let go still does; a unit of
 a magnification's logarithm counts as a hundred device units and a
 rotation's as its degrees, by which either is judged thrown or settled. A
@@ -469,7 +469,8 @@ nearest to the middle may stand still between boards.
 ## A throw
 
 A throw goes on to the target nearest where it would end: the speed the hand
-let go at, carried by the input's `throwing` - a motion like any other - says
+let go at, carried by the layout's `throwMotion` - a motion like any other, one
+for every axis - says
 how much farther it would go (eased, the speed for its length over how
 steeply its curve sets out; a spring, for a third of its response; 400 ms of
 `cubicOut` unless said, about an eighth of a second's worth of the speed), and

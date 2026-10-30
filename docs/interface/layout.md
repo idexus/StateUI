@@ -733,7 +733,8 @@ hardly moves - a pile of cards fanned out by another axis.
 
 A hand let go with speed throws the run: it goes on to the snap nearest
 where the throw would end, and `turn` names that snap at once. How it goes
-on is the input's `throwing:` motion - eased, its length says how far it
+on is the layout's `.throwMotion(_:)` - one for every axis, so axes let go
+together go on by one law - eased, its length says how far it
 carries, a shorter length stopping it sooner, and it slows onto the snap from
 the hand's speed; a spring carries it as far as its response and settles as
 springs do. A throw sets out at the hand's speed, and goes on as the parameters'
@@ -983,9 +984,8 @@ struct Ring: View {
                     opacity: 1 - min(abs(step) / 3, 1))
             }
         }
-        .axis(
-            \.self, input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(400), damping: 0.8)),
-            range: 0...Double(names.count), snaps: .every(1), periodic: true)
+        .axis(\.self, input: .scroll(.horizontal), range: 0...Double(names.count), snaps: .every(1), periodic: true)
+        .throwMotion(.spring(response: .milliseconds(400), damping: 0.8))
         .height(200)
     }
 }

@@ -213,9 +213,8 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
         // nearest where the throw would end. It rests on a card, never
         // between two - and comes round, a turn of the range bringing every
         // card back.
-        .axis(
-            \.self, input: .scroll(.horizontal, throwing: throwing.motion),
-            range: 0...Double(Self.cards.count), snaps: .every(1), periodic: true)
+        .axis(\.self, input: .scroll(.horizontal), range: 0...Double(Self.cards.count), snaps: .every(1), periodic: true)
+        .throwMotion(throwing.motion)
         // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
         // over every card, wearing the card's own corners - which is why it is
         // the application's to give and not the library's to draw.
@@ -396,7 +395,7 @@ struct MotionLayoutSample: SampleContent, ExampleContent {
                 + "`.motion`. The parameters, `parameters: $turn`, are the card at the front; "
                 + "`.axis(\\.self, input: .scroll(…), range:, snaps: .every(1), periodic: true)` gives "
                 + "it to the hand, resting on a card and coming round. The picker changes how a throw goes "
-                + "on - `.scroll(…, throwing:)` takes any motion: eased, its length says how far a "
+                + "on - `.throwMotion(_:)` takes any motion: eased, its length says how far a "
                 + "throw carries and its curve how it slows; a spring settles as springs do.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

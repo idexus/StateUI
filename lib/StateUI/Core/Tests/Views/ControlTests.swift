@@ -820,7 +820,7 @@ final class ControlTests: XCTestCase {
             "background", "pageBackground", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
             "minimumDate", "dash", "points", "options", "columns",
-            "rows", "shape", "geometryTransform", "transform", "motion", "layoutBody", "followsLayout", "id",
+            "rows", "shape", "geometryTransform", "transform", "motion", "throwMotion", "layoutBody", "followsLayout", "id",
             "assign", "area",
             // Tiers no view wears.
             "barBackground", "barForegroundColor", "toolbarStyle", "toolbarSpacing",
@@ -884,7 +884,7 @@ final class ControlTests: XCTestCase {
             "Views/Controls/Map.swift|type:MarkerType",
             "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
             "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
-            "Views/Collections/GalleryView.swift|throwing:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
+            "Views/Collections/GalleryView.swift|throwMotion:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
             "Views/Layouts/MotionLayout.swift|itemDrag:ItemDragStart",
             "Views/Layouts/MotionLayout.swift|mirrorsRightToLeft:Bool",
             "Views/Layouts/MotionLayout.swift|dynamics:LayoutDynamics",

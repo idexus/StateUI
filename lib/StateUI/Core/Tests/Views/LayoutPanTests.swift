@@ -33,13 +33,18 @@ final class LayoutPanTests: XCTestCase {
 
     /// A board of three by three a hand pans a hundred points a unit, resting on each square, and two fingers spread
     /// as large as twice.
-    private func tree(_ board: State<Board>, _ handed: Handed) -> Node {
-        MotionLayout([0, 1], parameters: board.projectedValue) { Text("\($0)") } placements: { _, board in
+    private func tree(_ board: State<Board>, _ handed: Handed, downFirst: Bool = false) -> Node {
+        let layout = MotionLayout([0, 1], parameters: board.projectedValue) { Text("\($0)") } placements: { _, board in
             handed.boards.append(board)
             return [Placement(Rect(-board.x * 100, -board.y * 100, 40, 40)), Placement(.zero)]
         }
-        .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
-        .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+        let across = { (layout: MotionLayout<[Int], Int, Board>) in
+            layout.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+        }
+        let down = { (layout: MotionLayout<[Int], Int, Board>) in
+            layout.axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+        }
+        return (downFirst ? across(down(layout)) : down(across(layout)))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
         .motion(.eased(.milliseconds(160), .linear))
         .node
@@ -92,6 +97,28 @@ final class LayoutPanTests: XCTestCase {
         bench.hand(renders, built, .ended, speed: Point(-600, -10))
         frames(60)
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 0), "across thrown on, down let go still")
+    }
+
+    /// AXES LET GO TOGETHER GO ON BY ONE LAW, whatever order they were declared in: across thrown on, down let go
+    /// still, the parameters travel alike frame by frame.
+    func testAxesLetGoTogetherGoOnByOneLawWhateverTheirOrder() {
+        func journey(downFirst: Bool) -> [Board] {
+            bench.walks = true
+            let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+            func built() -> Node { tree(board, handed, downFirst: downFirst) }
+            _ = bench.laid(renders, built)
+            bench.hand(renders, built, .began)
+            bench.hand(renders, built, .changed, moved: Point(-20, -30))
+            bench.hand(renders, built, .ended, speed: Point(-600, 0))
+            handed.boards.removeAll()
+            frames(8)
+            return handed.boards
+        }
+        let (acrossFirst, downFirst) = (journey(downFirst: false), journey(downFirst: true))
+
+        XCTAssertFalse(acrossFirst.isEmpty)
+        XCTAssertEqual(acrossFirst.map(\.y), downFirst.map(\.y), "the way down goes as the way across does")
+        XCTAssertEqual(acrossFirst.map(\.x), downFirst.map(\.x))
     }
 
     /// A WHEEL'S NOTCHES STEP EACH AXIS their way.

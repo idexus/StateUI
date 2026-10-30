@@ -140,8 +140,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
                     .sorted()
             }
             return Hand(
-                index: index, axis: axis, gesture: input?.gesture, throwing: input?.throwing ?? LayoutInput.scroll(.horizontal).throwing,
-                low: low, high: high,
+                index: index, axis: axis, gesture: input?.gesture, low: low, high: high,
                 stops: snaps?.values(in: range, periodic: period != nil) ?? [], period: period, knots: knots)
         }
     }
@@ -177,6 +176,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
 
     /// What the views move by between where the arithmetic puts them and where they are shown.
     private var world = LayoutDynamics.standard
+
+    /// How a throw goes on once the hand lets go, every axis alike.
+    private var throwLaw = Motion.eased(.milliseconds(400), .cubicOut)
 
     /// What is told once the run comes to rest.
     private var settled: ValueHandler<Parameters>?
@@ -379,6 +381,21 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     public func motion(_ motion: Motion) -> Self {
         var copy = self
         copy.law = motion
+        return copy
+    }
+
+    /// How the parameters go on once the hand lets go of them with speed - how far a throw carries and how it slows -
+    /// every axis alike, so axes let go together go on by one law whatever order they were declared in.
+    ///
+    ///     .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
+    ///
+    /// - Parameter motion: eased, its length says how far a throw carries - the hand's speed for that long, over how
+    ///   steeply the curve sets out - and its curve how it slows; a spring carries the hand's speed for a third of its
+    ///   response and settles as springs do. Either sets out at the hand's speed. A light friction unless said.
+    /// - Returns: the layout, thrown that way.
+    public func throwMotion(_ motion: Motion) -> Self {
+        var copy = self
+        copy.throwLaw = motion
         return copy
     }
 
@@ -697,6 +714,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             hands: hands,
             focus: hands.first { $0.way != nil },
             law: law,
+            throwing: throwLaw,
             world: world,
             body: { [source] index in source.body(at: index) },
             settled: settled)
@@ -728,7 +746,8 @@ extension MotionLayout: WalkedView {
             ("source", source), ("parameters", parameters), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("mask", mask as Any), ("tapped", tapped as Any),
             ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),
-            ("law", law), ("world", world), ("settled", settled as Any), ("mirrors", mirrors), ("named", named as Any),
+            ("law", law), ("world", world), ("throwLaw", throwLaw), ("settled", settled as Any), ("mirrors", mirrors),
+            ("named", named as Any),
         ]
     }
 }

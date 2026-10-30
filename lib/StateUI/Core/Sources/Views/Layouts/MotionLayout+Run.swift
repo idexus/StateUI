@@ -16,7 +16,6 @@ extension MotionLayout {
         let index: Int
         let axis: WritableKeyPath<Parameters, Double>
         let gesture: LayoutInput.Gesture?
-        let throwing: Motion
         let low: Double
         let high: Double
         let stops: [Double]
@@ -73,6 +72,9 @@ extension MotionLayout {
         var focus: Hand?
         let law: Motion
 
+        /// How a throw goes on once the hands let go, every axis alike (`throwMotion(_:)`).
+        let throwing: Motion
+
         /// What the views move by between their places and where they are shown, and the body each view at an index
         /// says it is - nil for one of the world's own.
         let world: LayoutDynamics
@@ -117,7 +119,6 @@ extension MotionLayout {
             guard case .hand(_, _, let swipes)? = focus?.gesture ?? nil else { return false }
             return swipes
         }
-        var throwing: Motion { focus?.throwing ?? LayoutInput.scroll(.horizontal).throwing }
 
         /// Where the hand holds the axis in focus, while it does.
         var held: Double? {
@@ -425,7 +426,8 @@ extension MotionLayout {
 
         /// The axes `lettings` holds let go at once: each named where it comes to rest, then the run going on there
         /// from where the hands left it as one journey of the parameters on the host's channel - each axis setting out
-        /// at its hand's speed - under the law the first axis going on takes.
+        /// at its hand's speed - under one law, whatever order the axes were declared in: the throw's where an axis is
+        /// thrown, else the approach of the longest way.
         /// Design: docs/design/views/motion-layout.md#coming-onto-a-target
         func letGo(together lettings: [(run: Run, letting: Letting)]) {
             let start = live()
@@ -438,7 +440,11 @@ extension MotionLayout {
                 lettingRest.0.run.going(lettingRest.0.letting, to: lettingRest.1).map { (run: lettingRest.0.run, going: $0) }
             }
             for (run, _) in lettings { run.held = nil }
-            guard let law = goings.first?.going.law else { return }
+            // One law whatever order the axes were declared in: a throw's, where one is thrown - every axis throws
+            // alike - else the approach of the longest way, which the others' arrive within.
+            let thrown = goings.first { $0.going.thrown }
+            let longest = goings.max { abs($0.going.left) < abs($1.going.left) }
+            guard let law = (thrown ?? longest)?.going.law else { return }
 
             let journey = parameters.journey
             var velocity = journey.velocity
@@ -455,7 +461,7 @@ extension MotionLayout {
         /// that motion over as much of its length as the way left is of a unit. Its law, and its speed in units of the
         /// parameters a second; nil where it stands there already, or has no law to go by.
         /// Design: docs/design/views/motion-layout.md#coming-onto-a-target
-        func going(_ letting: Letting, to value: Double) -> (law: Motion, speed: Double)? {
+        func going(_ letting: Letting, to value: Double) -> (law: Motion, speed: Double, thrown: Bool, left: Double)? {
             let along = toHand(value)
             let left = along - letting.point
             let motion = resolvedLaw
@@ -473,11 +479,11 @@ extension MotionLayout {
             guard isThrow else {
                 let approach = Self.approach(motion, over: left)
                 let springs = if case .spring = approach.kind { true } else { false }
-                return (approach, springs && left * letting.speed > 0 ? speed : 0)
+                return (approach, springs && left * letting.speed > 0 ? speed : 0, false, left)
             }
-            if case .spring = throwing.kind { return (throwing, speed) }
+            if case .spring = throwing.kind { return (throwing, speed, true, left) }
             let longest = max(Double(Self.timing(of: throwing).milliseconds) * 2, Self.shortest)
-            return (.glide(longest: .milliseconds(Int(longest.rounded()))), speed)
+            return (.glide(longest: .milliseconds(Int(longest.rounded()))), speed, true, left)
         }
 
         /// An axis letting go, where the hand works on it - a magnification's logarithm: where it held the run, how
