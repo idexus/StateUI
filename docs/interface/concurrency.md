@@ -189,12 +189,21 @@ struct DraftSheet: View {
 An asynchronous helper called by a handler must inherit its caller's executor
 or state its isolation explicitly:
 
-```swift quote
-@MainActor
-func loadDocument() async throws {
-    let name = try await window.prompt(
-        "Open", message: "Document name", placeholder: "Name")
-    if let name { currentDocument = name }
+```swift
+struct OpenButton: View {
+    @Environment(\.window) private var window
+    @State private var currentDocument = ""
+
+    var body: some View {
+        Button("Open").onClicked(.ignoreWhileRunning) { try await loadDocument() }
+    }
+
+    @MainActor
+    func loadDocument() async throws {
+        let name = try await window.prompt(
+            "Open", message: "Document name", placeholder: "Name")
+        if let name { currentDocument = name }
+    }
 }
 ```
 
@@ -261,7 +270,10 @@ actions in one handler preserves the order in which they are issued, but the
 batch is not a transaction and their completions can arrive independently.
 Use `await` to express a dependency:
 
-```swift quote
+```swift
+@Environment(\.window) private var window
+@State private var title = "Draft"
+
 Button("Rename and confirm").onClicked(.ignoreWhileRunning) {
     guard let name = try await window.prompt(
         "Rename", message: "New name", placeholder: "Name")
@@ -330,7 +342,12 @@ deadline starts from completion instead of releasing a burst of missed ticks.
 A nonrepeating ticker is a reusable delay. It is useful for polling that must
 not overlap:
 
-```swift quote
+```swift
+struct StatusService {
+    func status() async -> String { "Ready" }
+}
+
+let service = StatusService()
 @State private var status = "Waiting"
 @State private var poll = Ticker(every: .seconds(30), isRepeating: false)
 

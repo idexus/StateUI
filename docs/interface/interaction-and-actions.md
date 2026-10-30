@@ -50,7 +50,10 @@ half-configured recognizer remains in the tree.
 
 ### Tap and swipe
 
-```swift quote
+```swift
+enum Route: Hashable { case details, next }
+@State private var path: [Route] = []
+
 HStack {
     Text("Open details")
 }
@@ -124,7 +127,7 @@ spread, and `RotationUpdate.angle` how far they have turned, in degrees
 clockwise. A handler keeps what it held when the gesture began and applies
 the gesture to that:
 
-```swift quote
+```swift
 @State private var x = 0.0
 @State private var scale = 1.0
 @State private var scaled = 1.0
@@ -155,7 +158,7 @@ nought as it begins and, at its end, as fast as it lifted, beside where it
 reached. Handing that to a state's journey lets the value go on at the hand's
 speed:
 
-```swift quote
+```swift
 @State private var x = 0.0
 
 Rectangle()
@@ -188,7 +191,17 @@ pointer hover; application behavior must not depend on hover as its sole route.
 
 Text is the portable drag payload:
 
-```swift quote
+```swift
+struct Item {
+    let id: String
+    let title: String
+}
+
+let item = Item(id: "note-1", title: "Shopping")
+@State private var dragging: String? = nil
+@State private var highlighted = false
+func receive(_ text: String) {}
+
 Text(item.title)
     .draggable(text: item.id)
     .onDragEnded { dragging = nil }
@@ -208,7 +221,9 @@ Files dragged from the system - from a file manager, another application, the
 desktop - land on a view through `onDrop(files:)`, as `ChosenFile`s of the
 kinds it lists:
 
-```swift quote
+```swift
+@State private var report = ""
+
 ZStack { Text("Drop a report here") }
     .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
         report = String(decoding: try await files[0].read(), as: UTF8.self)
@@ -263,7 +278,10 @@ aim.
 Dialogs are sequential host actions rather than tree nodes, asked of the window
 a view stands in - the session it reads with `@Environment(\.window)`:
 
-```swift quote
+```swift
+@Environment(\.window) private var window
+@State private var drafts = ["Plans"]
+
 Button("Delete").onClicked(.ignoreWhileRunning) {
     let confirmed = try await window.confirm(
         "Delete draft?",
@@ -281,7 +299,22 @@ prompt that returns typed text or `nil` on cancellation. An accepted empty
 prompt is `""`, distinct from cancellation. A cancel left unnamed says the
 system's own word, in the user's language:
 
-```swift quote
+```swift
+enum Share: CaseIterable {
+    case mail, messages, delete
+
+    var title: String {
+        switch self {
+        case .mail: "Mail"
+        case .messages: "Messages"
+        case .delete: "Delete"
+        }
+    }
+}
+
+@Environment(\.window) private var window
+@State private var drafts = ["Plans"]
+
 let choice = try await window.chooseAction(
     "Share via", among: Share.allCases, caption: \.title, destructive: .delete)
 if choice == .delete { drafts.removeAll() }
@@ -822,7 +855,9 @@ style do not, as automation never meets a run and a style dresses many controls.
 
 Announce an important asynchronous change that has no visible focused element:
 
-```swift quote
+```swift
+@Environment(\.application) private var application
+
 try await application.announce("Import complete")
 ```
 

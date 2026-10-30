@@ -41,7 +41,18 @@ enum HandbookStyles {
 
 Install the sheet on `ApplicationSession` when the application is made:
 
-```swift quote
+```swift
+@MainActor
+enum HandbookStyles {
+    static var sheet: StyleSheet {
+        StyleSheet {
+            Style<Text>().fontSize(15)
+        }
+    }
+}
+
+struct MainPage: View { var body: some View { Text("Notes") } }
+
 struct NotesApp: Application {
     @Environment(\.application) private var application
 
@@ -331,7 +342,7 @@ state it starts in - and receives the typed state. Naming states declares
 them without changing how the control looks and hears only them; naming none
 hears every state the control declares, normal included:
 
-```swift quote
+```swift
 @State private var scale = 1.0
 
 Button("Hold")

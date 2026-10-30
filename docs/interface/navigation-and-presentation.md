@@ -10,10 +10,26 @@ bindings.
 `NavigationStack` renders a root page plus one destination for every element of
 a typed path:
 
-```swift quote
+```swift
 enum Route: Hashable {
     case note(Int)
     case settings
+}
+
+struct HomePage: View {
+    @Binding var path: [Route]
+    var body: some View { Button("Open note 42").onClicked { path.append(.note(42)) } }
+}
+
+struct NotePage: View {
+    let id: Int
+    @Binding var path: [Route]
+    var body: some View { Button("Settings").onClicked { path.append(.settings) } }
+}
+
+struct SettingsPage: View {
+    @Binding var path: [Route]
+    var body: some View { Button("Back to the start").onClicked { path = [] } }
 }
 
 struct MainPage: View {
@@ -34,7 +50,14 @@ struct MainPage: View {
 
 Navigation operations are ordinary array operations:
 
-```swift quote
+```swift
+enum Route: Hashable {
+    case note(Int)
+    case settings
+}
+
+var path: [Route] = []
+
 path.append(.note(42))  // push
 path.removeLast()       // pop
 path = []               // return to root
@@ -60,10 +83,14 @@ only its value can read where it is, but cannot navigate on its owner's behalf.
 `TabView` is built from a distinct collection of application values. A
 selection binding says which one is showing:
 
-```swift quote
+```swift
 enum Tab: Hashable, CaseIterable {
     case notes, search, settings
 }
+
+struct NotesPage: View { var body: some View { Text("Notes") } }
+struct SearchPage: View { var body: some View { Text("Search") } }
+struct SettingsPage: View { var body: some View { Text("Settings") } }
 
 @State private var selected = Tab.notes
 
@@ -90,7 +117,14 @@ not to the tab host.
 `SplitView` owns two pages - a sidebar and a detail - and a two-way binding
 saying whether the sidebar shows:
 
-```swift quote
+```swift
+struct MenuPage: View {
+    @Binding var showsSidebar: Bool
+    var body: some View { Button("Close").onClicked { showsSidebar = false } }
+}
+
+struct MainPage: View { var body: some View { Text("Main") } }
+
 @State private var menuOpen = false
 
 SplitView($menuOpen, sidebar: {
@@ -126,7 +160,24 @@ beside the detail, changing as the window is resized or the device turned.
 A sidebar row reads it to close a sidebar lying over the page once the user
 has chosen, and to leave one beside the page open:
 
-```swift quote
+```swift
+enum Section { case inbox, archive }
+
+struct MenuPage: View {
+    @Binding var showsSidebar: Bool
+    @Binding var overlays: Bool
+    @State private var section = Section.inbox
+
+    var body: some View {
+        Button("Archive").onClicked {
+            section = .archive
+            if overlays { showsSidebar = false }
+        }
+    }
+}
+
+struct MainPage: View { var body: some View { Text("Main") } }
+
 @State private var menuOpen = false
 @State private var menuOverlays = false
 
@@ -136,10 +187,6 @@ SplitView($menuOpen, sidebar: {
     MainPage()
 })
 .sidebarOverlays($menuOverlays)
-
-// In a row of MenuPage:
-section = .archive
-if overlays { showsSidebar = false }
 ```
 
 Nothing the application writes into the state reaches the host; it is the
@@ -151,8 +198,22 @@ bar, ☰ at the start of a phone's bar - unless `.showsSidebarToggle(false)`
 takes it away. A value from a state keeps it to some pages, as to the root
 of the detail's stack, leaving a page pushed over it the way back alone:
 
-```swift quote
-@State private var path: [Route] = []
+```swift
+struct MenuPage: View {
+    @Binding var showsSidebar: Bool
+    var body: some View { Text("Mailboxes") }
+}
+
+struct InboxPage: View { var body: some View { Text("Inbox") } }
+
+struct MailPage: View {
+    let id: Int
+    init(_ id: Int) { self.id = id }
+    var body: some View { Text("Mail \(id)") }
+}
+
+@State private var menuOpen = false
+@State private var path: [Int] = []
 
 SplitView($menuOpen, sidebar: {
     MenuPage(showsSidebar: $menuOpen)
@@ -169,7 +230,16 @@ own button is then the way in.
 What the sidebar stands on is the split view's to say, for each of the two
 places, as a `Material` - a color, a gradient, a blur, glass:
 
-```swift quote
+```swift
+struct MenuPage: View {
+    @Binding var showsSidebar: Bool
+    var body: some View { Text("Mailboxes") }
+}
+
+struct MainPage: View { var body: some View { Text("Main") } }
+
+@State private var menuOpen = false
+
 SplitView($menuOpen, sidebar: {
     MenuPage(showsSidebar: $menuOpen)
 }, detail: {
@@ -405,7 +475,21 @@ A view shown as a page says what its page is by modifier - `.title("Notes")`
 ([What a view says of its page](application-and-sessions.md#what-a-view-says-of-its-page)).
 An arrangement is a page already, and takes its title and icon the same way:
 
-```swift quote
+```swift
+enum SettingsRoute: Hashable { case account, privacy }
+
+struct SettingsHome: View {
+    @Binding var path: [SettingsRoute]
+    var body: some View { Button("Account").onClicked { path.append(.account) } }
+}
+
+struct SettingsDestination: View {
+    let route: SettingsRoute
+    var body: some View { Text("\(route)") }
+}
+
+@State private var settingsPath: [SettingsRoute] = []
+
 NavigationStack($settingsPath) {
     SettingsHome(path: $settingsPath)
 } destination: { route in
@@ -421,7 +505,18 @@ stack is the one its own view says. Its `.pageBackground` is what each of its
 pages that says none stands on - the nearest arrangement's, as a bar's look
 is - so a stack in a sheet grounds every page it pushes with one modifier:
 
-```swift quote
+```swift
+struct DraftPage: View { var body: some View { Text("Draft") } }
+
+struct StepPage: View {
+    let step: Int
+    init(_ step: Int) { self.step = step }
+    var body: some View { Text("Step \(step)") }
+}
+
+let paper = Color(hex: 0xFBF7EE)
+@State private var path: [Int] = []
+
 NavigationStack($path) {
     DraftPage()
 } destination: { step in
@@ -433,7 +528,7 @@ NavigationStack($path) {
 A view such as `SearchField` can stand in the page's title slot, declared where
 the state it follows lives:
 
-```swift quote
+```swift
 @State private var query = ""
 
 VStack { … }
@@ -451,7 +546,11 @@ there that declares none of its own; the innermost declaration wins.
 A page's actions are declared where the state they follow lives, with
 `.toolbar { }` on the page's view:
 
-```swift quote
+```swift
+@State private var hasChanges = false
+func save() async throws {}
+func delete() async throws {}
+
 VStack { … }
     .toolbar {
         ToolbarButton("Save")
@@ -484,7 +583,11 @@ one keeps - and behind the overflow it is a section of the menu. An item
 declared alone stands in a group of its own, bare on WinUI, and an item in a
 group stands where its group does:
 
-```swift quote
+```swift
+func bold() {}
+func italic() {}
+func share() {}
+
 VStack { … }
     .toolbar {
         ToolbarGroup {
@@ -535,7 +638,9 @@ through the toolbar's own display mode, and an iPhone's bar shows a picture or
 words, so there the item keeps its picture alone. An item with no picture
 always shows its words.
 
-```swift quote
+```swift
+func add() {}
+
 VStack { … }
     .toolbar {
         ToolbarButton("Add")
@@ -554,7 +659,7 @@ checked or not, as a `MenuToggle` does in a menu. A Mac's toolbar item holds
 no state of its own: it shows the on picture, and one with none stands out
 while on; Android's bar shows the state by the on picture alone.
 
-```swift quote
+```swift
 @State private var showsInspector = false
 
 VStack { … }
@@ -574,8 +679,10 @@ the Web on theirs; iOS, Android and WinUI draw none on a bar. A bar that has no
 split part - iOS and WinUI - opens a split item's menu held, and Android puts it
 behind the overflow, the item's action on the bar.
 
-```swift quote
+```swift
 @State private var order = "A to Z"
+func save() {}
+func saveCopy() {}
 
 VStack { … }
     .toolbar {
@@ -598,8 +705,9 @@ above it, both in the safe area. On iOS the bar is its navigation
 controller's toolbar, so a page shows it inside a `NavigationStack`, as it
 shows its top bar.
 
-```swift quote
+```swift
 @State private var unread = 3
+func compose() {}
 
 VStack { … }
     .toolbar(.bottom) {
@@ -782,7 +890,15 @@ past it, its `edge` says how they show there: `.automatic`, what it is unsaid,
 is the platform's own edge, `.hard` cuts them off at the bar on a blur with a
 line along it, and `.none` shows them as they are:
 
-```swift quote
+```swift
+struct Composer: View {
+    @Binding var draft: String
+    var body: some View { TextField($draft) }
+}
+
+@State private var draft = ""
+let messages = Text("Messages")
+
 ScrollView { messages }
     .bottomBar(edge: .hard) {
         Composer(draft: $draft)
@@ -801,10 +917,12 @@ platform's own, and where it draws none a blur that hides while nothing
 passes under the bar; `.hard` adds a line along its foot on every platform;
 `.none` shows the rows as they are where the platform lets it:
 
-```swift quote
+```swift
+@State private var path: [Int] = []
+let messages = Text("Messages")
+
 NavigationStack($path) {
     ScrollView { messages }
-        .ignoresSafeArea(.all)
 } destination: { _ in Text("") }
 .barScrollEdge(.hard)
 ```
@@ -814,7 +932,17 @@ NavigationStack($path) {
 A page's menus are declared like its actions, with `.menuBar { }` on the
 page's view, and stand on the desktop menu bar while the page is shown:
 
-```swift quote
+```swift
+struct RecentFile: Identifiable {
+    let id: String
+    let name: String
+}
+
+@State private var hasChanges = false
+let recent = [RecentFile(id: "notes", name: "Notes.txt")]
+func save() async throws {}
+func open(_ file: RecentFile) {}
+
 VStack { … }
     .menuBar {
         Menu("File") {
@@ -843,7 +971,12 @@ and the window's comes back as the page goes. Other menus follow the ones
 declared further out, before the platform's Window and Help; `order` moves a
 declaration's menus and sections earlier or later, lower first.
 
-```swift quote
+```swift
+struct Library: View { var body: some View { Text("Library") } }
+struct Welcome: View { var body: some View { Text("Welcome") } }
+
+@State private var sidebar = true
+
 SplitView($sidebar) {
     Library()
 } detail: {
@@ -884,7 +1017,15 @@ can do.
 
 The same item vocabulary can be attached to any view as a context menu:
 
-```swift quote
+```swift
+struct Document {
+    var title: String
+}
+
+let document = Document(title: "Plans")
+func duplicate(_ document: Document) {}
+func delete(_ document: Document) {}
+
 Text(document.title)
     .contextMenu {
         MenuItem("Duplicate").onClicked { duplicate(document) }

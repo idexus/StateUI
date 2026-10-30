@@ -363,16 +363,22 @@ The Inspector records complete render passes only while it is open or host
 logging is enabled. Offer it from a page toolbar and optionally give the scene
 its own inspector window:
 
-```swift quote
+```swift
+struct EditorPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        TextEditor()
+            .toolbar { ToolbarButton.inspector(window) }
+    }
+}
+
 struct EditorScene: Scene {
     var body: some Scene {
         WindowGroup { EditorPage() }
         Window(.debugInspector) { DebugInspector() }
     }
 }
-
-// Inside a page with a WindowSession environment:
-.toolbar { ToolbarButton.inspector(window) }
 ```
 
 The inspector shows what caused each pass, whether a composed view was built,

@@ -354,7 +354,10 @@ deceleration. `onScrollStopped` runs once a movement has ended, and a write to
 the offset from there carries the viewport on to a resting place of the
 author's own:
 
-```swift quote
+```swift
+@State private var offset = Point(0, 0)
+let cards = Text("Cards")
+
 ScrollView { cards }
     .orientation(.horizontal)
     .scrollOffset($offset)
@@ -389,7 +392,19 @@ cards turned by a finger, a wheel or a trackpad, endless if need be - is a
 
 `ForEach` expands application data into identified children:
 
-```swift quote
+```swift
+struct Item: Identifiable {
+    let id: Int
+    let title: String
+}
+
+struct Row: View {
+    let item: Item
+    var body: some View { Text(item.title) }
+}
+
+let items = [Item(id: 1, title: "One"), Item(id: 2, title: "Two")]
+
 ForEach(items, id: \.id) { item in
     Row(item: item)
 }
@@ -409,10 +424,15 @@ builds only the items the platform's own collection shows
 Frame observation is opt-in. A view without a frame modifier creates no frame
 subscription. Any view can report its rectangle when that rectangle changes:
 
-```swift quote
-.onFrameChanged { rect = $0 }
-.onFrameChanged(in: .global) { windowRect = $0 }
-.onFrameChanged(in: .safeArea) { safeRect = $0 }
+```swift
+@State private var rect = Rect.zero
+@State private var windowRect = Rect.zero
+@State private var safeRect = Rect.zero
+
+Text("Measured")
+    .onFrameChanged { rect = $0 }
+    .onFrameChanged(in: .global) { windowRect = $0 }
+    .onFrameChanged(in: .safeArea) { safeRect = $0 }
 ```
 
 There are three readings of the same native measurement:
@@ -426,9 +446,10 @@ There are three readings of the same native measurement:
 The frame feed is useful when an engine or authored layout needs the native
 rectangle without making a body read it:
 
-```swift quote
+```swift
 @State private var room = Rect.zero
 @State private var columns = 1.0
+let tiles = Text("Tiles")
 
 Grid { tiles }
     .frame($room)

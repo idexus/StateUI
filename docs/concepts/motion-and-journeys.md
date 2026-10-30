@@ -95,7 +95,9 @@ merged over that plan.
 
 This lets size snap while placement travels:
 
-```swift quote
+```swift
+let content = Text("Content")
+
 VStack { content }
     .motion(.spring(response: .milliseconds(240)))
     .motion(.none, .size)
@@ -134,7 +136,9 @@ reads the new value at once and every body that read it is built again, as
 after an assignment, while the host walks the value there on the move's law.
 It returns at once; its `arrived()` awaits the outcome:
 
-```swift quote
+```swift
+@State private var opacity = 1.0
+
 let arrived = try await $opacity.journey.move(
     to: 0.2,
     .eased(.milliseconds(400), .cubicOut)).arrived()

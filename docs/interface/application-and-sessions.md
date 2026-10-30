@@ -68,7 +68,9 @@ own. `application.colorScheme` is `.system` until it is written; `.light` or
 `.system` gives it back to the user's setting. `info.colorScheme` reports the
 theme in force, which every `Color(light:dark:)` resolves against.
 
-```swift quote
+```swift
+@Environment(\.application) private var application
+
 Button("Dark").onClicked { application.colorScheme = .dark }
 Button("As the system").onClicked { application.colorScheme = .system }
 ```
@@ -77,14 +79,30 @@ Button("As the system").onClicked { application.colorScheme = .system }
 platform with none, the application's own tint - reported live, so a view
 reading it is built again when the user changes it.
 
-```swift quote
+```swift
+@Environment(\.application) private var app
+@State private var on = false
+
 Switch($on).tint(app.info.accentColor)
 ```
 
 Configuration needed before the first view is built belongs in the
 application's initializer:
 
-```swift quote
+```swift
+@MainActor
+enum AppStyles {
+    static var sheet: StyleSheet {
+        StyleSheet {
+            Style<Text>().fontSize(15)
+        }
+    }
+}
+
+struct NotesScene: Scene {
+    var body: some Scene { WindowGroup { Text("Notes") } }
+}
+
 struct NotesApp: Application {
     @Environment(\.application) private var application
 
@@ -109,13 +127,25 @@ there does not compile. No window is a main one: the window launch opens is
 one window of the `WindowGroup` with no name, like any other, and closing it
 closes that window alone.
 
-```swift quote
+```swift
 extension WindowType where Value == Void {
     static let inspector = WindowType("notes.inspector")
 }
 
 extension WindowType where Value == Int {
     static let document = WindowType("notes.document")
+}
+
+final class Library {
+    @State var titles: [String] = []
+}
+
+struct NotesPage: View { var body: some View { Text("Notes") } }
+struct InspectorPage: View { var body: some View { Text("Inspector") } }
+
+struct DocumentPage: View {
+    let number: Int
+    var body: some View { Text("Document \(number)") }
 }
 
 struct NotesScene: Scene {
@@ -234,10 +264,20 @@ updates an existing native window without replacing it.
 `hidesWhenInactive` and `floatsOnTop` describe how a group's windows stand
 beside the application's other scenes:
 
-```swift quote
-Window(.inspector) { InspectorPage() }
-    .hidesWhenInactive(true)
-    .floatsOnTop(true)
+```swift
+extension WindowType where Value == Void {
+    static let inspector = WindowType("notes.inspector")
+}
+
+struct InspectorPage: View { var body: some View { Text("Inspector") } }
+
+struct ToolsScene: Scene {
+    var body: some Scene {
+        Window(.inspector) { InspectorPage() }
+            .hidesWhenInactive(true)
+            .floatsOnTop(true)
+    }
+}
 ```
 
 Both default to `false` and are independent.
@@ -297,7 +337,7 @@ standing: every window of the scene reads the one value. The host keeps it
 with the scene's windows and hands it back before the restored scene is
 described.
 
-```swift quote
+```swift
 extension SceneKey where Value == Int {
     static let selectedDocument = SceneKey("com.example.notes.selected-document")
 }
@@ -317,17 +357,31 @@ Process-wide preferences use `@State(persistentKey:)` instead; see
 The application opens a window by its kind; a session closes the exact
 window or scene it is:
 
-```swift quote
-@Environment(\.application) private var application
-@Environment(\.scene) private var scene
-@Environment(\.window) private var window
+```swift
+extension WindowType where Value == Void {
+    static let inspector = WindowType("notes.inspector")
+}
 
-try await application.openWindow()
-try await application.openWindow(.inspector)
-try await application.openWindow(.document, value: 7)
-try await application.closeWindow(.document, value: 7)
-try await window.close()
-try await scene.close()
+extension WindowType where Value == Int {
+    static let document = WindowType("notes.document")
+}
+
+struct WindowsPage: View {
+    @Environment(\.application) private var application
+    @Environment(\.scene) private var scene
+    @Environment(\.window) private var window
+
+    var body: some View { Text("Windows") }
+
+    func rearrange() async throws {
+        try await application.openWindow()
+        try await application.openWindow(.inspector)
+        try await application.openWindow(.document, value: 7)
+        try await application.closeWindow(.document, value: 7)
+        try await window.close()
+        try await scene.close()
+    }
+}
 ```
 
 A window opens in the scene declaring its kind, which opens with it where it
@@ -440,7 +494,7 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 
 Position and size are four independent optional requests:
 
-```swift quote
+```swift
 @Environment(\.window) private var window
 
 window.x = 120
@@ -495,17 +549,23 @@ windows cannot show what is behind them paints the blur's color instead.
 Text belongs on a surface of its own rather than straight over the desktop.
 `nil` keeps the platform's own window, and so does a nil half of a pair:
 
-```swift quote
-.onCreated {
-    window.background = .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15)))
-}
+```swift
+@Environment(\.window) private var window
+
+VStack { … }
+    .onCreated {
+        window.background = .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15)))
+    }
 ```
 
-```swift quote
-.onCreated {
-    // The platform's own window in the light theme, a tinted blur in the dark.
-    window.background = Material(light: nil, dark: .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15))))
-}
+```swift
+@Environment(\.window) private var window
+
+VStack { … }
+    .onCreated {
+        // The platform's own window in the light theme, a tinted blur in the dark.
+        window.background = Material(light: nil, dark: .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15))))
+    }
 ```
 
 The surfaces laid over the window's pages stand on its background too - a
@@ -530,12 +590,16 @@ report, so `.onChanged(window.phase)` sees every one. A host reports a phase
 only when it differs from the last it reported, so a repeated native callback
 triggers no extra reaction.
 
-```swift quote
-.onChanged(window.phase, policy: .waitForPrevious) { oldPhase, newPhase in
-    if newPhase == .stopped {
-        try await saveDraft()
+```swift
+@Environment(\.window) private var window
+func saveDraft() async throws {}
+
+VStack { … }
+    .onChanged(window.phase, policy: .waitForPrevious) { oldPhase, newPhase in
+        if newPhase == .stopped {
+            try await saveDraft()
+        }
     }
-}
 ```
 
 ## What a view says of its page
@@ -601,7 +665,7 @@ belongs to the containing page arrangement.
 
 A value the body computes is said again whenever the body is built again:
 
-```swift quote
+```swift
 struct EditorPage: View {
     @State private var dirty = false
 
@@ -614,6 +678,8 @@ struct EditorPage: View {
             }
             .title(dirty ? "Draft - Edited" : "Draft")
     }
+
+    private func save() { dirty = false }
 }
 ```
 

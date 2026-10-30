@@ -132,7 +132,14 @@ foreground, and run background properties, but it has no independent frame,
 margin, or gesture surface. Runs made from a list go in as an array, each
 matched by where it sits:
 
-```swift quote
+```swift
+struct Token {
+    let text: String
+    let color: Color
+}
+
+let tokens = [Token(text: "let ", color: .purple), Token(text: "total", color: .black)]
+
 Text().spans {
     tokens.map { TextSpan($0.text).textColor($0.color) }
 }
