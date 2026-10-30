@@ -4,9 +4,9 @@
 import Foundation
 
 /// The code a page shows, read from the code that runs: each region a source marks
-/// `// listing: <name>` to `// listing: end` - `// listing: <name>, <name>` for code several listings show - a
-/// name's regions in one file joined in order, the decoration left out; `// listing: <name> keep` keeps a region's
-/// look, where the look is what it shows.
+/// `// listing: <name>` to `// listing: end` - `// listing: <name>, <name>` for code several listings show, a
+/// region inside another for a part of it one shows - a name's regions in one file joined in order, the decoration
+/// left out; `// listing: <name> keep` keeps a region's look, where the look is what it shows.
 enum ListingRegions {
     /// The modifiers a listing leaves out as decoration - how a view looks rather than what it is or does. A
     /// region marked `keep` keeps them, and a line ending `// listing: keep` stays, where the look is the point.
@@ -63,62 +63,70 @@ enum ListingRegions {
     }
 
     /// The regions `text` marks, by name, each name's joined in order with a blank line between; Swift's leave
-    /// out the decoration, another language's stand as written.
+    /// out the decoration, another language's stand as written. A region may stand inside another - a handbook's
+    /// cut of a sample's code - and its lines are then both listings'.
     static func regions(in text: String, swift: Bool) -> (regions: [(String, String)], problems: [String]) {
         var regions: [(name: String, text: String)] = []
         var problems: [String] = []
-        var open: [String]?
-        var keepsLook = false
-        var lines: [Substring] = []
-        var skipped: Int?
+        var open: [OpenRegion] = []
 
         for (number, line) in text.split(separator: "\n", omittingEmptySubsequences: false).enumerated() {
             let marker = line.trimmingCharacters(in: .whitespaces)
             if marker.hasPrefix("// listing: "), !marker.hasSuffix("// listing: keep") {
                 let name = String(marker.dropFirst("// listing: ".count))
-                if name == "end" {
-                    guard let opened = open else {
-                        problems.append("line \(number + 1) ends a region none began")
-                        continue
+                guard name == "end" else {
+                    let keepsLook = name.hasSuffix(" keep")
+                    let names = (keepsLook ? String(name.dropLast(" keep".count)) : name).components(separatedBy: ", ")
+                    if let twice = names.first(where: { name in open.contains { $0.names.contains(name) } }) {
+                        problems.append("line \(number + 1) begins `\(twice)` inside itself")
                     }
-                    // Each region is moved left on its own, so one cut from inside a type stands beside one
-                    // cut from the file's top - unless an earlier region of the name left a type open, inside
-                    // which it then stands.
-                    for name in opened {
-                        if let at = regions.firstIndex(where: { $0.name == name }) {
-                            let text = dedented(lines)
-                            let closing = text.prefix { $0 == "}" }.count
-                            let depth = max(0, openBraces(in: regions[at].text) - closing)
-                            regions[at].text += "\n\n" + indented(text, by: depth * 4)
-                        } else {
-                            regions.append((name, dedented(lines)))
-                        }
+                    open.append(OpenRegion(names: names, keepsLook: keepsLook))
+                    continue
+                }
+                guard let closed = open.popLast() else {
+                    problems.append("line \(number + 1) ends a region none began")
+                    continue
+                }
+                // Each region is moved left on its own, so one cut from inside a type stands beside one
+                // cut from the file's top - unless an earlier region of the name left a type open, inside
+                // which it then stands.
+                for name in closed.names {
+                    if let at = regions.firstIndex(where: { $0.name == name }) {
+                        let text = dedented(closed.lines)
+                        let closing = text.prefix { $0 == "}" }.count
+                        let depth = max(0, openBraces(in: regions[at].text) - closing)
+                        regions[at].text += "\n\n" + indented(text, by: depth * 4)
+                    } else {
+                        regions.append((name, dedented(closed.lines)))
                     }
-                    open = nil
-                } else if let opened = open {
-                    problems.append("line \(number + 1) begins `\(name)` inside `\(opened.joined(separator: ", "))`")
-                } else {
-                    keepsLook = name.hasSuffix(" keep")
-                    open = (keepsLook ? String(name.dropLast(" keep".count)) : name).components(separatedBy: ", ")
-                    lines = []
                 }
                 continue
             }
-            guard open != nil else { continue }
 
-            if swift, skipped != nil || isDecoration(marker, keepingLook: keepsLook) {
-                // The modifier's call is left out; what follows its closing bracket stays, on the line before.
-                let after = remainder(of: marker, depth: &skipped)
-                if !after.isEmpty, let last = lines.indices.last { lines[last] += after }
-                continue
+            for index in open.indices {
+                if swift, open[index].skipped != nil || isDecoration(marker, keepingLook: open[index].keepsLook) {
+                    // The modifier's call is left out; what follows its closing bracket stays, on the line before.
+                    let after = remainder(of: marker, depth: &open[index].skipped)
+                    if !after.isEmpty, let last = open[index].lines.indices.last { open[index].lines[last] += after }
+                    continue
+                }
+                open[index].lines.append(line.hasSuffix("// listing: keep")
+                    ? Substring(line.dropLast("// listing: keep".count).trimmingSuffix())
+                    : line)
             }
-            lines.append(line.hasSuffix("// listing: keep")
-                ? Substring(line.dropLast("// listing: keep".count).trimmingSuffix())
-                : line)
         }
-        if let opened = open { problems.append("`\(opened.joined(separator: ", "))` is never ended") }
+        if let unended = open.last { problems.append("`\(unended.names.joined(separator: ", "))` is never ended") }
 
         return (regions.map { ($0.name, $0.text) }, problems)
+    }
+
+    /// A region begun and not yet ended: its names, whether it keeps its look, its lines so far, and how far inside
+    /// a decoration modifier's call it stands.
+    private struct OpenRegion {
+        let names: [String]
+        let keepsLook: Bool
+        var lines: [Substring] = []
+        var skipped: Int?
     }
 
     /// Whether `line` is a decoration modifier the listing leaves out - its semantics always, its look unless

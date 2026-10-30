@@ -111,6 +111,7 @@ final class TrafficLightView: NSView {
 
 // MARK: - Registration
 
+// listing: appkit.md.control
 extension TrafficLightView {
     /// Adds the light for `TrafficLightContract`: `create` makes the view once
     /// per element and wires the tap it reports, and `property` puts the
@@ -131,4 +132,5 @@ extension TrafficLightView {
         }
     }
 }
+// listing: end
 // listing: end

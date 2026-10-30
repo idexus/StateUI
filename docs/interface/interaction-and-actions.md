@@ -520,24 +520,14 @@ A batch of actions is not a transaction. Use ordinary Swift control flow and
 Both halves are always needed: a declaration alone reaches nothing, and a host
 refuses by name an act nobody registered.
 
-The AppKit host registers them in Swift, typed by the same contract the call
-is written against:
-
-```swift quote
-StateUIActs.add(NotesContract.exportDocument) { draft in
-    "~/Documents/\(draft).pdf"
-}
-```
-
-An act aimed at a control names that control at argument 0, and the host turns
-the identity back into the view its registration made - so the performer is
-handed the view itself:
-
-```swift quote
-StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
-    bar.flash()
-}
-```
+Each host registers the performer in its head, in Swift, typed by the same
+contract the call is written against. An act aimed at a control names that
+control at argument 0, and the host turns the identity back into the view its
+registration made - so the performer is handed the view itself. The Gallery's
+heads register both kinds: [AppKit](../hosts/appkit.md#an-act),
+[UIKit](../hosts/uikit.md#an-act), [Android](../hosts/android.md#an-act),
+[WinUI](../hosts/winui.md#an-act), [GTK](../hosts/gtk.md#an-act) and
+[the Web](../hosts/web.md#acts-and-events).
 
 ## Host-extension events
 
@@ -580,19 +570,21 @@ handler. An ordinary control or gesture event always belongs on its element
 instead. Use an application's events only for provider-owned notifications
 that genuinely have no element identity.
 
-The AppKit host raises such an event in Swift, typed by the same contract the
-subscription is written against, from whatever thread the platform reports
-on; the subscriptions hear it on the UI thread soon after, in the order
-raised:
-
-```swift quote
-StateUIEvents.raise(NotesContract.importFinished, location)
-```
-
-A raise nobody hears is an ordinary one rather than a failure, so a host
-wires its sources unconditionally. The head declares what it raises,
-`StateUIEvents.raises(NotesContract.importFinished)`, and a subscription to an
-event no head declared is said once, as a misspelled name would be.
+Each host raises such an event in its head, in Swift -
+`StateUIEvents.raise(NotesContract.importFinished, location)` - typed by the
+same contract the subscription is written against, from whatever thread the
+platform reports on; the subscriptions hear it on the UI thread soon after, in
+the order raised. A raise nobody hears is an ordinary one rather than a
+failure, so a host wires its sources unconditionally. The head declares what
+it raises, `StateUIEvents.raises(NotesContract.importFinished)`, and a
+subscription to an event no head declared is said once, as a misspelled name
+would be. The Gallery's heads raise the battery's changes:
+[AppKit](../hosts/appkit.md#an-event-without-a-control),
+[UIKit](../hosts/uikit.md#an-event-without-a-control),
+[Android](../hosts/android.md#an-event-without-a-control),
+[WinUI](../hosts/winui.md#an-event-without-a-control),
+[GTK](../hosts/gtk.md#an-event-without-a-control) and
+[the Web](../hosts/web.md#acts-and-events).
 
 ## Keyboard shortcuts
 

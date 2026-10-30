@@ -127,9 +127,11 @@ final class DocumentationExamplesTests: XCTestCase {
     // MARK: - Reading the document
 
     /// Every ```swift block, with the line number of its opening fence. A fence
-    /// saying more than the language - ```swift quote - is a listing QUOTED
-    /// from somewhere else, a line of the library's own source or a manifest,
-    /// and is not an example anybody would write; it is left alone.
+    /// saying more than the language is left alone: ```swift quote is QUOTED
+    /// from somewhere else - a line of the library's own source or a manifest,
+    /// not an example anybody would write - and ```swift listing <name> is CUT
+    /// from the Gallery's code that its host's build compiles, which
+    /// `SampleListingsTests` holds it to.
     static func swiftBlocks(in text: String, document: String) -> [Example] {
         var examples: [Example] = []
         var open: Int? = nil
@@ -160,7 +162,7 @@ final class DocumentationExamplesTests: XCTestCase {
     /// README followed by every handbook document in path order: docs and each
     /// of its topics' folders, the control dictionary's examples included - not
     /// the design notes, which hold no application code.
-    private static func documents() throws -> [(String, URL)] {
+    static func documents() throws -> [(String, URL)] {
         var found = [("README.md", repository.appendingPathComponent("README.md"))]
         let directory = repository.appendingPathComponent("docs")
         var pending = [""]

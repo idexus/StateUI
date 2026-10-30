@@ -143,6 +143,7 @@ extension RatingBarView {
     @MainActor
     static func register() {
         // listing: end
+        // listing: appkit.md.applies
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
             let bar = RatingBarView()
 
@@ -165,13 +166,16 @@ extension RatingBarView {
             }
             bar.raises(RatingBarContract.ratingChanged)
         }
+        // listing: end
 
         // listing: InteropActsSample.AppKit.swift
+        // listing: appkit.md.aimedAct
         // Aimed at one bar: the identity the aim sent is turned back into the
         // view this host made, and the performer is handed that view.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
             bar.flash()
         }
+        // listing: end
     }
 }
 // listing: end

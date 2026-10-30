@@ -15659,6 +15659,137 @@ extension Listings {
         // Before StateUIWinUI.run(): the pushes this host raises, their source wired.
         GalleryEventSources.start()
         """#,
+        "appkit.md.acts": #"""
+        // Platforms/AppKit/Host/GalleryActs.swift
+        // A performer is handed the arguments its act declares and answers
+        // the values it declares.
+        StateUIActs.add(GalleryContract.log) { line in
+            Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
+        }
+
+        StateUIActs.add(GalleryContract.batteryLevel) {
+            battery()
+        }
+        """#,
+        "appkit.md.aimedAct": #"""
+        // Platforms/AppKit/Host/RatingBarView.swift
+        // Aimed at one bar: the identity the aim sent is turned back into the
+        // view this host made, and the performer is handed that view.
+        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+            bar.flash()
+        }
+        """#,
+        "appkit.md.applies": #"""
+        // Platforms/AppKit/Host/RatingBarView.swift
+        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
+            let bar = RatingBarView()
+
+            // A tapped star is the USER's change: it lands on the state the
+            // value is carried in, and raises the event with it - so an
+            // application hears it once, whether it holds the rating in a
+            // state or in a handler.
+            bar.onRatingChanged = { rating in
+                reports.report(
+                    RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
+            }
+            return bar
+        }) { bar in
+            // The stars and the rating come together: a rating stands within
+            // the stars, whichever of the two changed.
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { view, values in
+                view.show(
+                    rating: values[RatingBarContract.rating] ?? 0,
+                    of: Int(values[RatingBarContract.maximum] ?? 5))
+            }
+            bar.raises(RatingBarContract.ratingChanged)
+        }
+        """#,
+        "appkit.md.control": #"""
+        // Platforms/AppKit/Host/TrafficLightView.swift
+        extension TrafficLightView {
+            /// Adds the light for `TrafficLightContract`: `create` makes the view once
+            /// per element and wires the tap it reports, and `property` puts the
+            /// described signal on it. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+                    let light = TrafficLightView()
+                    light.onLampTapped = { index in
+                        reports.raise(TrafficLightContract.lampTapped, index)
+                    }
+                    return light
+                }) { light in
+                    light.property(TrafficLightContract.signal) { view, signal in
+                        view.signal = (signal ?? .stop).rawValue
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "appkit.md.controls": #"""
+        // Platforms/AppKit/Host/GalleryControls.swift
+        /// The gallery's own controls, as this host realizes them.
+        ///
+        /// The contracts and the Swift halves are shared by every host - see
+        /// Sources/Samples/Interop. What each control IS on screen is its view's, and
+        /// so is its registration: `register()` at the end of the view's own file.
+        /// This is the list of them, and nothing else.
+        enum GalleryControls {
+            /// Registers every control this host realizes. Said once, before the
+            /// application runs.
+            @MainActor
+            static func register() {
+                TrafficLightView.register()
+                RatingBarView.register()
+                MetalCube3DView.register()
+            }
+        }
+        """#,
+        "appkit.md.event": #"""
+        // Platforms/AppKit/Host/GalleryEventSources.swift
+        let notify: IOPowerSourceCallbackType = { _ in
+            MainActor.assumeIsolated { GalleryEventSources.report() }
+        }
+
+        guard let source = IOPSNotificationCreateRunLoopSource(notify, nil)?.takeRetainedValue()
+        else { return }
+
+        CFRunLoopAddSource(CFRunLoopGetMain(), source, .defaultMode)
+
+        /// Raises the battery's reading, where it has changed and there is one.
+        private static func report() {
+            let (level, charging) = GalleryActs.battery()
+
+            guard level > 0 else { return }
+            guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+            lastSaid = (level, charging)
+            StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+        }
+        """#,
+        "appkit.md.head": #"""
+        // Platforms/AppKit/main.swift
+        import GalleryUI
+        import StateUIAppKit
+
+        registerApplication()
+
+        // What this host answers for the application, said before it runs: the
+        // controls it realizes, the acts it performs, and the pushes it reports. Each
+        // lives in Host/ beside this file.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+
+        StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+        """#,
+        "appkit.md.raises": #"""
+        // Platforms/AppKit/Host/GalleryEventSources.swift
+        // Declared where the source is wired: a handler listening for an
+        // event nothing declared is told, once, that it will not hear it.
+        StateUIEvents.raises(GalleryContract.batteryChanged)
+        """#,
     ]
 }
 #else

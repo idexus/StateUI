@@ -20,6 +20,7 @@ enum GalleryActs {
     /// application runs.
     @MainActor
     static func register() {
+        // listing: appkit.md.acts
         // A performer is handed the arguments its act declares and answers
         // the values it declares.
         StateUIActs.add(GalleryContract.log) { line in
@@ -29,6 +30,7 @@ enum GalleryActs {
         StateUIActs.add(GalleryContract.batteryLevel) {
             battery()
         }
+        // listing: end
     }
     // listing: end
 
