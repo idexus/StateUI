@@ -205,9 +205,12 @@ struct HomePage: View {
                 }
                 .position($chosen)
                 .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
+                #if !WEB
                 // EACH CARD A LIGHT BODY: it lags a breath behind the turn
-                // and settles back onto its place.
+                // and settles back onto its place - not yet on the Web,
+                // where the bodies' frames still stutter.
                 .itemBody(.followsLayout(.spring(response: .milliseconds(320), damping: 0.75)))
+                #endif
                 .onItemActivated { route in nav.push(.group(route)) }
                 // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card here
                 // would show the card BEHIND it - the wheel stands them one
