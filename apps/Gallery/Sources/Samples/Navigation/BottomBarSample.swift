@@ -55,7 +55,9 @@ struct BottomBarSample: SampleContent, ExampleContent {
                         TextEditor($draft)
                             .placeholder("Message")
                             .growsWithText(true)
+                            .background(Color.transparent)
                     }
+                    // The field's own ground is the capsule's glass.
                     .background(.glass(.regular))
                     .shape(.capsule)
                     Button("Send")
