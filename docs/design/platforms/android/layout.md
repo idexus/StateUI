@@ -20,9 +20,14 @@ only moved there.
 ## Points and pixels
 
 The arithmetic works in points; the views in pixels. The host converts at the
-display's density, rounding each edge of a rectangle rather than its size, so
-neighbors meet without a gap. A text's size is in scaled pixels, so the
-user's font scale applies to it as it does to every application's text.
+display's density, each edge of a rectangle outward to a whole pixel - its
+start and top down, its end and bottom up - rather than its size, so
+neighbors meet without a gap, and a view is never a pixel narrower than it
+measured: rounded to the nearest, an edge pair at a density that splits a
+point - 420 dpi, 2.625 pixels a point - could take a pixel off, and a label a
+pixel short breaks its last word onto a line its height never shows ("Layout"
+stood as "Layou"). A text's size is in scaled pixels, so the user's font
+scale applies to it as it does to every application's text.
 
 ## Measured once
 

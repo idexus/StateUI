@@ -424,9 +424,12 @@ class AndroidView {
 
     /// Places the view at `place`, in points of its parent: measured there exactly and laid out, in one call.
     func layout(_ place: Rect) {
+        // Each edge outward to a whole pixel: never a pixel short of what the view measured, neighbors meeting.
+        // Design: docs/design/platforms/android/layout.md#points-and-pixels
         let frame = (
-            left: pixels(place.x), top: pixels(place.y),
-            right: pixels(place.x + place.width), bottom: pixels(place.y + place.height))
+            left: Int32((place.x * density).rounded(.down)), top: Int32((place.y * density).rounded(.down)),
+            right: Int32(((place.x + place.width) * density).rounded(.up)),
+            bottom: Int32(((place.y + place.height) * density).rounded(.up)))
         let resized = laidOut.map { $0.right - $0.left != frame.right - frame.left || $0.bottom - $0.top != frame.bottom - frame.top }
             ?? true
         laidOut = frame

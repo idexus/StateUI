@@ -16,7 +16,23 @@ final class AndroidFrameReportTests: XCTestCase {
             ("testAViewThatJoinsSaysNothingBeforeItIsLaidOut", testAViewThatJoinsSaysNothingBeforeItIsLaidOut),
             ("testAViewInAListSaysWhereItStandsOnceTheListMoved", testAViewInAListSaysWhereItStandsOnceTheListMoved),
             ("testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn", testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn),
+            ("testAViewKeepsItsSizeWhereverItStands", testAViewKeepsItsSizeWhereverItStands),
         ]
+    }
+
+    /// A view is never narrower nor shorter than its size in whole pixels wherever it stands: each edge goes outward
+    /// to a whole pixel - a label a pixel narrower than it measured breaks its last word onto a line nobody sees.
+    func testAViewKeepsItsSizeWhereverItStands() {
+        onMainActor {
+            let view = AndroidSeparatorView()
+            let (width, height) = (Int32((47.3 * view.density).rounded(.up)), Int32((13.7 * view.density).rounded(.up)))
+            for step in 0..<20 {
+                let x = Double(step) * 0.05
+                view.layout(Rect(x: x, y: x, width: 47.3, height: 13.7))
+                XCTAssertGreaterThanOrEqual(Java.callInt(view.outermost, JavaAPI.getWidth), width, "at \(x)")
+                XCTAssertGreaterThanOrEqual(Java.callInt(view.outermost, JavaAPI.getHeight), height, "at \(x)")
+            }
+        }
     }
 
     /// A view says nothing of where it stands before a layout places it: the first report its handler hears is
