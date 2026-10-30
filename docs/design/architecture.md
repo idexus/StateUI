@@ -114,6 +114,18 @@ of the main run loop on Apple, as each call from the page ends on the Web,
 posted elsewhere - by the thread that made the work, the UI thread's own or
 another queueing a job.
 
+## The public surface
+
+What an application can name of the library is recorded:
+`lib/StateUI/exports/api/StateUI.txt` holds every public declaration of the
+`StateUI` module, a line each - its kind, its path and its declaration as the
+compiler prints it - sorted, read from the symbol graph the toolchain extracts
+from the module the core's tests just built. `APISurfaceTests` compares the
+module with the record, so a change to the public API stands in its commit's
+diff as lines added and taken away, and passes only once
+`STATEUI_UPDATE_EXPORTS=1` has written it. `@_spi(Host)` declarations are the
+hosts' and stay out; documentation changes nothing there.
+
 ## Where to read next
 
 - [Glossary](glossary.md): StateUI's words and the common term for each.
