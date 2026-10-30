@@ -82,6 +82,14 @@ final class WebWindowBar: WebDOMView {
     /// What the user is doing to each of the bar's own buttons - a press, the pointer over it - by the button.
     private var ownStates: [ObjectIdentifier: (pressed: Bool, over: Bool)] = [:]
 
+    /// The page under the bar and, over a sidebar, the sidebar's page; the scroller of each listened to last; and
+    /// whether each part shows its edge.
+    private weak var pageUnder: MountedElement?
+    private weak var sideUnder: MountedElement?
+    private weak var pageRows: WebDOMView?
+    private weak var sideRows: WebDOMView?
+    private var edges = (page: false, side: false)
+
     init() {
         super.init(tag: "header")
         attribute("class", "stateui-bar")
@@ -224,6 +232,33 @@ final class WebWindowBar: WebDOMView {
 
     /// Stands `runs` on `edge`, each a group of buttons - a group of `pool` taken before one is made, an item's
     /// button the one standing for it - each item's button joining `kept`; the groups standing.
+    /// Follows what of `page` stands under the bar, and of `sidebar` under its part over a sidebar, and shows each
+    /// part's edge while anything does (`TopBarEdge.covers`): `data-under` over the page, `data-side-under` over the
+    /// sidebar.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-top
+    func follow(page: MountedElement?, sidebar: MountedElement?) {
+        (pageUnder, sideUnder) = (page, sidebar)
+        showEdges()
+    }
+
+    /// Each part's edge, read again from its page as its rows move.
+    private func showEdges() {
+        let (page, side) = (covers(pageUnder, listened: &pageRows), covers(sideUnder, listened: &sideRows))
+        if page != edges.page { attribute("data-under", page ? "" : nil) }
+        if side != edges.side { attribute("data-side-under", side ? "" : nil) }
+        edges = (page, side)
+    }
+
+    /// Whether anything of `page` stands under its part of the bar, its scroller listened to once.
+    private func covers(_ page: MountedElement?, listened: inout WebDOMView?) -> Bool {
+        guard let page else { return false }
+        let rows = page.pageScroller?.web.view
+        if let rows, rows !== listened { rows.listen("scroll") { [weak self] in self?.showEdges() } }
+        listened = rows
+        let runs = SafeAreaArithmetic.under(page.contentIgnoresSafeArea, direction: page.layoutDirection).top
+        return TopBarEdge.covers(contentRunsUnder: runs, scrollerOffset: rows.map(WebElement.standing))
+    }
+
     private func place(
         _ runs: [[MountedElement]], on edge: WebDOMView, from pool: inout [WebBarGroup],
         keeping kept: inout [ObjectIdentifier: WebBarButton]

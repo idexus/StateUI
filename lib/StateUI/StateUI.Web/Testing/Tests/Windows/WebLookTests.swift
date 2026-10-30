@@ -514,28 +514,73 @@ final class WebLookTests: XCTestCase {
                        "a picture of 6 by 4, 32 high")
     }
 
-    /// A clear bar paints nothing and softens what scrolls under it: a blur under its words, fading out toward its
-    /// bottom edge. A bar of a color blurs behind its whole paint instead.
-    func testAClearBarSoftensWhatScrollsUnderIt() throws {
+    /// A clear bar paints nothing while nothing of the page stands under it, and stands on a blur in the page's hue
+    /// while the rows the page lets under it pass under it - none once they are back at their start. A bar of a color
+    /// paints itself instead.
+    func testAClearBarShowsItsEdgeWhileRowsPassUnderIt() throws {
         let clear = State(wrappedValue: true)
         let host = WebRenderer.running {
-            TabView([0]) { tab in Text("Tab \(tab)").title("Tab \(tab)") }
-                .title("Clear")
-                .barBackground(clear.wrappedValue ? .transparent : .white)
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Grid { ScrollView { Text("rows").height(2000) }.id("rows") }.ignoresSafeArea(.all).title("Clear")
+            } destination: { _ in Text("Pushed") }
+            .barBackground(clear.wrappedValue ? .transparent : .white)
         }
+        let bar = ".stateui-window > .stateui-bar"
+        let rows = { (host.runtime.tree.root?.first(id: .manual("rows"))?.native as? WebElement)?.view?.node }
+        host.settle { rows() != nil }
+        let node = try XCTUnwrap(rows())
+        let under = { try WebBrowser.truth("document.querySelector('\(bar)').hasAttribute('data-under')", on: 0) }
         let edge = { (property: String) in
-            try WebBrowser.evaluate(
-                "getComputedStyle(document.querySelector('.stateui-window > .stateui-bar'), '::before').\(property)",
-                on: 0)
+            try WebBrowser.evaluate("getComputedStyle(document.querySelector('\(bar)'), '::before').\(property)", on: 0)
         }
-        host.settle { (try? self.look(".stateui-window > .stateui-bar", "backgroundColor")) == "rgba(0, 0, 0, 0)" }
+        XCTAssertFalse(try under(), "the rows at their start")
+        XCTAssertEqual(try edge("content"), "none", "nothing drawn")
 
+        try WebBrowser.run("e.scrollTop = 300", on: node)
+        host.settle { (try? under()) == true }
         XCTAssertEqual(try edge("backdropFilter")?.hasPrefix("blur("), true, "a blur")
-        XCTAssertEqual(try edge("maskImage")?.hasPrefix("linear-gradient("), true, "fading out")
+        XCTAssertNotEqual(try edge("backgroundColor"), "rgba(0, 0, 0, 0)", "in the page's hue")
 
+        try WebBrowser.run("e.scrollTop = 0", on: node)
+        host.settle { (try? under()) == false }
+        XCTAssertEqual(try edge("content"), "none", "back at their start")
+
+        try WebBrowser.run("e.scrollTop = 300", on: node)
         clear.wrappedValue = false
-        host.settle { (try? self.look(".stateui-window > .stateui-bar", "backgroundColor")) == "rgb(255, 255, 255)" }
-        XCTAssertEqual(try edge("backdropFilter"), "none", "a bar of a color")
+        host.settle { (try? self.look(bar, "backgroundColor")) == "rgb(255, 255, 255)" }
+        XCTAssertEqual(try edge("content"), "none", "a bar of a color")
+    }
+
+    /// A sheet's bar stands over the top of its room, as the window's does: a page's content stands below it, and its
+    /// rows let under it scroll under it, the bar showing its edge once they pass under it.
+    func testASheetsRowsScrollUnderItsBar() throws {
+        let under = State(wrappedValue: false)
+        let host = WebRenderer.running {
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Grid { ScrollView { Text("rows").height(2000) }.id("rows") }
+                        .ignoresSafeArea(under.wrappedValue ? .all : .none)
+                        .title("Sheet")
+                } destination: { _ in Text("Next") }
+                .barBackground(.transparent)
+            }
+        }
+        let rows = { (host.runtime.tree.root?.first(id: .manual("rows"))?.native as? WebElement)?.view?.node }
+        host.settle { rows() != nil }
+        let node = try XCTUnwrap(rows())
+        let sheetBar = "document.querySelector('dialog.stateui-sheet[open] > .stateui-bar')"
+        let top: () throws -> Double? = {
+            try WebBrowser.number("e.getBoundingClientRect().top - \(sheetBar).getBoundingClientRect().top", on: node)
+        }
+        let barHeight = try XCTUnwrap(WebBrowser.number("\(sheetBar).getBoundingClientRect().height", on: 0))
+        XCTAssertEqual(try XCTUnwrap(top()), barHeight, accuracy: 0.5, "below the bar")
+
+        under.wrappedValue = true
+        host.settle { (try? top()) == 0 }
+        XCTAssertEqual(try XCTUnwrap(top()), 0, accuracy: 0.5, "under it")
+        try WebBrowser.run("e.scrollTop = 300", on: node)
+        host.settle { (try? WebBrowser.truth("\(sheetBar).hasAttribute('data-under')", on: 0)) == true }
+        XCTAssertTrue(try WebBrowser.truth("\(sheetBar).hasAttribute('data-under')", on: 0), "its edge")
     }
 
     func testAControlOverEveryPageWearsTheStylesheet() throws {

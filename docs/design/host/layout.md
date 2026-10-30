@@ -444,6 +444,19 @@ scroller's own move, told to the tree as the user's is, so the state says
 where it stands. Content growing at the end moves nothing: a list that loads
 more as it is reached must not follow what it loaded.
 
+## A bar at the top
+
+A page's top bar - the window's, a sheet's - shows its edge as the bottom bar
+does: it stands on what is under it while nothing of the page is, and shows
+its edge while the page's rows pass under it (`TopBarEdge.covers`): where its
+content runs under the room's top, its scroller's rows once they scroll past
+their start - at their start the first row stands clear below the bar - and
+anything else it holds always. Beside a sidebar each part of the bar follows
+its own page. The edge is the automatic one: the platform's own where its
+bars draw one, else - on the Web - the bottom bar's blur in the page's hue
+(`BottomBarPlace.blur`, `tint`), which hides while nothing passes under the
+bar.
+
 ## Words on a painted band
 
 Words on a band the tree paints - a bar, a row of tabs - take the color the

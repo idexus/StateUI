@@ -165,6 +165,7 @@ final class WebWindowController {
         var title = chrome.title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string ?? ""
         let split = chrome.splitView?.web.view as? WebSplitView
         window.bar.show(chrome, title: title, sidebar: split?.isPresented, split: split)
+        window.bar.follow(page: presentation.arrangement?.visiblePage, sidebar: presentation.arrangement?.sidebarPage)
         // The page the user sees may stand with no bar over it.
         window.bar.setShown(presentation.arrangement?.visiblePage?.value(.showsNavigationBar)?.bool != false)
         for tabs in presentation.arrangement?.tabViewsShown ?? [] { tabs.web.showBarColors() }
@@ -173,6 +174,7 @@ final class WebWindowController {
             let own = WindowChrome(window: element, arrangement: page)
             let named = own.title.flatMap { $0.isEmpty ? nil : $0 } ?? ""
             sheet.bar.show(own, title: named, sidebar: nil)
+            sheet.bar.follow(page: page.visiblePage, sidebar: nil)
             // A sheet has no bar of its own: a stack in it brings one, offering the close unless its page says not.
             sheet.bar.setShown(page.bringsABar)
             sheet.offersClose(page.offersClose)

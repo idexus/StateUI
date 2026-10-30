@@ -30,9 +30,13 @@ bar is the
 page's surface, translucent, blurred and deepened over what lies behind it,
 the room running under it ([the safe area](#the-safe-area)). A clear bar
 paints nothing: a page resting below it shows as it is, the same color as
-the page under it, and what scrolls under it softens - blurred at the top,
-the blur fading out toward the bar's bottom edge (`data-clear`). No line
-stands under the bar. The same title
+the page under it, and while the page's rows pass under it, it shows the
+automatic edge ([a bar at the top](../../host/layout.md#a-bar-at-the-top)):
+a blur in the page's hue (`data-clear`, `data-under`). Beside a sidebar each
+part follows its own page - the part over the sidebar stands on the sidebar
+under it and shows its edge while the sidebar's rows pass under it
+(`data-side-under`); a bar of its own material paints that part with the
+sidebar's ground. No line stands under the bar. The same title
 names the browser's tab, beside the site's name ([The tab](#the-tab)).
 
 A page's title stands with the line under it the page says (`barSubtitle`).
@@ -275,7 +279,9 @@ other laid over the browser's dialog background as an image layer; the
 browser's own where the window says none. A sheet has no bar of its own: a stack in it brings one
 (`bringsABar`), the chrome of the sheet's page (`WindowChrome`), its way back
 the window's (`WindowPresentation.wayBack`), ending with a button closing the
-sheet unless the page says it offers none. Escape is the user's dismissal as that button is: the browser does not
+sheet unless the page says it offers none. The bar stands over the top of
+the sheet's room as the window's stands over its room, the room running
+under it, the bar's depth the top of the room's safe area. Escape is the user's dismissal as that button is: the browser does not
 close the dialog itself, false is written onto the top sheet's state, and a
 sheet closes as the tree lets its page go. The last sheet's
 title names the browser's tab.
