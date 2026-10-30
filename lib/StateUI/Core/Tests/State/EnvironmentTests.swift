@@ -93,7 +93,7 @@ private struct RenameButton: View {
 
     var body: some View {
         Button("rename").onClicked {
-            let name: Binding<String>.Proxy = $session.name
+            let name: Proxy<String> = $session.name
             name.wrappedValue = "typed"
         }
     }

@@ -21,7 +21,7 @@
 /// carries it, so a control shows it with no view rebuilt, and it has a
 /// journey. A model lent this way may be edited or replaced; to hand over
 /// less, hand over the value or the object instead. One property or element
-/// of it - `$profile.name`, `$hops[2]` - is a `Binding.Proxy`, which reads
+/// of it - `$profile.name`, `$hops[2]` - is a `Proxy`, which reads
 /// and writes through the whole. A class of `@State` properties is lent the
 /// same way: `@Binding var basket: Basket`, with `basket.$note` the note's own
 /// state.
@@ -102,12 +102,12 @@ public struct Binding<Value>: TwoWay {
     }
 
     /// The whole state lent as a proxy - what a child borrowing with
-    /// `@Binding.Proxy` is handed where its parent lends all of a state:
+    /// `@Proxy` is handed where its parent lends all of a state:
     ///
     ///     NameRow(name: $name.proxy)
     ///
     /// The proxy reads and writes the state; the host does not carry it.
-    public var proxy: Proxy {
+    public var proxy: Proxy<Value> {
         Proxy(read: read, write: write, standing: { [storage] in storage.value }, reaches: { true },
               lender: storage, lent: nil, mailroom: mailroom)
     }
@@ -121,7 +121,7 @@ public struct Binding<Value>: TwoWay {
     /// A model takes the subscript below.
     public subscript<Subject>(
         dynamicMember keyPath: WritableKeyPath<Value, Subject> & Sendable
-    ) -> Binding<Subject>.Proxy {
+    ) -> Proxy<Subject> {
         proxy[dynamicMember: keyPath]
     }
 
@@ -133,7 +133,7 @@ public struct Binding<Value>: TwoWay {
     /// property's own state is `basket.$note`, a `Binding` the host carries.
     public subscript<Subject>(
         dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject> & Sendable
-    ) -> Binding<Subject>.Proxy {
+    ) -> Proxy<Subject> {
         proxy[dynamicMember: keyPath]
     }
 }
@@ -149,7 +149,7 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable & Sendab
     /// The whole is read, the element written, and the whole put back.
     ///
     /// - Parameter index: which element, in the collection's own index space.
-    public subscript(index: Value.Index) -> Binding<Value.Element>.Proxy {
+    public subscript(index: Value.Index) -> Proxy<Value.Element> {
         proxy[index]
     }
 }

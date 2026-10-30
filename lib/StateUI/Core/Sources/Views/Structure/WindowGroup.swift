@@ -58,7 +58,7 @@ public struct WindowGroup: Scene {
     ///   - content: the view for one value.
     public init<Value: Codable & Hashable & SendableMetatype, Content: View>(
         _ type: WindowType<Value>,
-        @ViewBuilder content: @escaping (Binding<Value>.Proxy) -> Content
+        @ViewBuilder content: @escaping (Proxy<Value>) -> Content
     ) {
         declared = DeclaredWindows(
             type: type.key, valueType: Value.self,
@@ -67,7 +67,7 @@ public struct WindowGroup: Scene {
                 // what it has open, builds it again.
                 let standing = opened?.value?.base as! Value
 
-                let window = Binding<Value>.Proxy(
+                let window = Proxy<Value>(
                     get: { standing },
                     set: { if let opened, let record { record.retarget(opened.serial, to: $0) } })
 

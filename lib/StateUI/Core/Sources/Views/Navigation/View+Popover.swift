@@ -43,7 +43,7 @@ extension View {
         item state: some TwoWay<Item?>, @ViewBuilder content: @escaping (Item) -> Content
     ) -> Modified {
         let item = state.wrappedValue
-        let presented = Binding.Proxy(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
+        let presented = Proxy(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
         return showing(PopoverElement(
             content: {
                 item.map { item in

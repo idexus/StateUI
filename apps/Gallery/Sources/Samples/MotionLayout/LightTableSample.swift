@@ -53,7 +53,7 @@ struct LightTableSample: SampleContent, ExampleContent {
 
             SwitchRow(
                 "Snap",
-                Binding.Proxy(
+                Proxy(
                     get: { snaps },
                     set: { snapping in
                         snaps = snapping

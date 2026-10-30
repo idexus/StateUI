@@ -61,7 +61,7 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     public init<Item: Equatable>(
         _ items: [Item], selection: some TwoWay<Item>, caption: (Item) -> String = { "\($0)" }
     ) {
-        let chosen = Binding<Item?>.Proxy(
+        let chosen = Proxy<Item?>(
             get: { selection.wrappedValue }, set: { if let value = $0 { selection.wrappedValue = value } })
         self.init(items, chosen: chosen, caption: caption)
     }
@@ -86,7 +86,7 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     private init<Item: Equatable>(_ items: [Item], chosen: some TwoWay<Item?>, caption: (Item) -> String) {
         var picker = Picker()
         picker.node.write(PickerContract.options, items.map(caption))
-        let place = Binding<Int>.Proxy(
+        let place = Proxy<Int>(
             get: { chosen.wrappedValue.flatMap { items.firstIndex(of: $0) } ?? -1 },
             set: { place in if items.indices.contains(place) { chosen.wrappedValue = items[place] } })
         self = picker.described(.selectedIndex, place, on: .selectedIndexChanged)

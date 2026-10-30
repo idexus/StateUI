@@ -145,9 +145,9 @@ public struct EnvironmentLender<Value> {
     /// One property of the object, as a proxy that writes through it.
     public subscript<Subject>(
         dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject> & Sendable
-    ) -> Binding<Subject>.Proxy {
+    ) -> Proxy<Subject> {
         let object = object
-        return Binding.Proxy(get: { object()[keyPath: keyPath] }, set: { object()[keyPath: keyPath] = $0 })
+        return Proxy(get: { object()[keyPath: keyPath] }, set: { object()[keyPath: keyPath] = $0 })
     }
 }
 

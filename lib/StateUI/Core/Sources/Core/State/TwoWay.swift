@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A value read and written through whoever holds it - a whole state's
-/// `Binding`, or a `Binding.Proxy` - which is what a two-way control takes.
+/// `Binding`, or a `Proxy` - which is what a two-way control takes.
 ///
 ///     TextField($name)            // the whole state, carried by the host
 ///     TextField($profile.name)    // one property of a state, through the whole

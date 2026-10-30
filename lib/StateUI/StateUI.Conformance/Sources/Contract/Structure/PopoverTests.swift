@@ -49,7 +49,7 @@
                 // A proxy, which the host does not carry, hears the dismissal as the event, the written value with it.
                 let shown = State(wrappedValue: false)
                 let written = Received<Bool>()
-                let bound = Binding.Proxy(get: { shown.wrappedValue }, set: {
+                let bound = Proxy(get: { shown.wrappedValue }, set: {
                     written.values.append($0)
                     shown.wrappedValue = $0
                 })

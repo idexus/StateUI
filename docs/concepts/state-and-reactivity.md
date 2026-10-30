@@ -13,6 +13,14 @@ ownership model and the host motion axis are introduced in
 [Architecture](architecture.md). This chapter is the author-facing reference
 for choosing and composing those paths.
 
+Three words say how a view holds a value:
+
+- `@State` owns the value and manages its state;
+- `@Binding` refers to a value through a whole binding, with the host's
+  reactive channel;
+- `@Proxy` reads and writes a value through another source, with no host
+  channel of its own.
+
 ## Owning a value with `@State`
 
 A state belongs where its lifetime belongs:
@@ -210,10 +218,10 @@ The projection `$name` is a `Binding<String>`. A borrowed binding projects
 itself again, so it can be handed through several composed views without a new
 wrapper or adapter.
 
-### A part of a state: `Binding.Proxy`
+### A part of a state: `Proxy`
 
 Bindings use dynamic-member lookup for writable key paths. `$contact.name` is
-one property of the state, a `Binding<String>.Proxy`: it reads the whole value,
+one property of the state, a `Proxy<String>`: it reads the whole value,
 changes the member, and writes the whole value back:
 
 ```swift
@@ -246,7 +254,7 @@ struct Levels: View {
 }
 ```
 
-Every two-way control takes either a `Binding` or a `Binding.Proxy`: both keep
+Every two-way control takes either a `Binding` or a `Proxy`: both keep
 `TwoWay`. A proxy has no state storage of its own, so the control reads it
 while the body is built and writes the user's change back through it, and the
 body that read it is rebuilt when the state changes. Only a whole state rides
@@ -254,7 +262,7 @@ the host's channel with no body rebuilt, has a journey (`$x.journey`), or wakes
 an engine. Those take `Binding` alone, so a proxy handed to them does not
 compile. Give each value the host carries on its own its own `@State`.
 
-A child that accepts a part borrows it with `@Binding.Proxy`. A parent lending
+A child that accepts a part borrows it with `@Proxy`. A parent lending
 a whole state to such a child says so with `.proxy`:
 
 ```swift
@@ -263,7 +271,7 @@ struct Contact {
 }
 
 struct NameRow: View {
-    @Binding.Proxy var name: String
+    @Proxy var name: String
 
     var body: some View {
         TextField($name)
@@ -287,7 +295,7 @@ For a model held in state, the two useful spellings have different owners:
 
 - `profile.$name` is the model property's whole state, a `Binding`;
 - `$profile.name` is the `name` part reached through the state that holds the
-  model, a `Binding.Proxy`.
+  model, a `Proxy`.
 
 A proxy to an element knows whether its collection still has it: a write, or
 a post, to `$levels[1]` after the array shrank to one element is dropped and
@@ -295,7 +303,7 @@ said once rather than reaching past the end.
 
 ### A proxy over closures
 
-Use `Binding.Proxy(get:set:)` at an integration boundary that StateUI does not
+Use `Proxy(get:set:)` at an integration boundary that StateUI does not
 own:
 
 ```swift
@@ -303,8 +311,8 @@ own:
 final class ExternalSettings {
     var name = ""
 
-    var nameProxy: Binding<String>.Proxy {
-        Binding.Proxy(
+    var nameProxy: Proxy<String> {
+        Proxy(
             get: { self.name },
             set: { self.name = $0 })
     }
@@ -324,7 +332,7 @@ Use the consequence you need as the selection rule:
 | --- | --- | --- |
 | Change which views exist or how authored values are composed | read the state in a body | rebuild current readers, then diff |
 | Give a child access to the same value | pass `$value` to `@Binding` | determined by what the child does with it |
-| Give a child one property of a value | pass `$value.member` to `@Binding.Proxy` | rebuild the child, which reads it |
+| Give a child one property of a value | pass `$value.member` to `@Proxy` | rebuild the child, which reads it |
 | Keep a native property synchronized continuously | hand the whole state to a binding-taking control or modifier | host-cycle update, no body read |
 | Wake arithmetic on a display frame | name the state in `engine(following:)` or `engine(tracking:)` | wake that engine |
 | Turn one or more carried states into another carried value | `convert`, or `multi` for several | conversion engine, no body read |
@@ -477,7 +485,7 @@ views convert one source on one line, and lets it go when it leaves.
 
 Conversions take whole StateUI states as sources, which keeps them on the
 host-cycle path: `convert` and `multi` are offered on `Binding` alone, so a
-`Binding.Proxy` cannot be converted.
+`Proxy` cannot be converted.
 
 ### Destination conversion and journey conversion
 

@@ -50,7 +50,7 @@ extension Binding where Value: Sendable {
     }
 }
 
-extension Binding.Proxy where Value: Sendable {
+extension Proxy where Value: Sendable {
     /// Writes `value` through the proxy from any thread, in a job of
     /// `MainActor`'s soon after - a post to a part waits under that part.
     ///

@@ -52,7 +52,7 @@ private struct Shown: View {
 
 /// The same, lent one property of a state.
 private struct ShownPart: View {
-    @Binding.Proxy var text: String
+    @Proxy var text: String
     let builds: Builds
 
     var body: some View {

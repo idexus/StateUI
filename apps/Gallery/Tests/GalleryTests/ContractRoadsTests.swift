@@ -201,8 +201,8 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Map(region: MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 500)).markers { Marker(at: Location(latitude: 52, longitude: 21)) }"#),
         Road(
             name: "a tab selection of another type than the tabs",
-            closed: #"_ = TabView([1, 2], selection: Binding<String>.Proxy(get: { "a" }, set: { _ in })) { Text("\($0)") }"#,
-            open: #"_ = TabView([1, 2], selection: Binding<Int>.Proxy(get: { 1 }, set: { _ in })) { Text("\($0)") }"#),
+            closed: #"_ = TabView([1, 2], selection: Proxy<String>(get: { "a" }, set: { _ in })) { Text("\($0)") }"#,
+            open: #"_ = TabView([1, 2], selection: Proxy<Int>(get: { 1 }, set: { _ in })) { Text("\($0)") }"#),
         Road(
             name: "a view standing on the menu bar",
             closed: #"_ = Text("Notes").menuBar { Text("File") }"#,
@@ -396,7 +396,7 @@ final class ContractRoadsTests: XCTestCase {
             open: """
                 struct Room { var name = "" }
                 struct NameRow: View {
-                    @Binding.Proxy var name: String
+                    @Proxy var name: String
                     var body: some View { TextField($name) }
                 }
                 @State var room = Room()
@@ -405,7 +405,7 @@ final class ContractRoadsTests: XCTestCase {
         Road(
             name: "closures taken for a whole state",
             closed: "_ = Slider(Binding(get: { 0.5 }, set: { _ in }))",
-            open: "_ = Slider(Binding.Proxy(get: { 0.5 }, set: { _ in }))"),
+            open: "_ = Slider(Proxy(get: { 0.5 }, set: { _ in }))"),
     ]
 
     /// Each closed road fails to compile, and the open road beside it compiles.

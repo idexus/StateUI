@@ -31,10 +31,10 @@ and this table maps the two.
 
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
-| `@State` | state | the one declaration of mutable state |
-| `Binding` (`$x`) | binding | a borrowed reference to a whole state |
-| `Binding.Proxy` (`$x.member`, `$x[i]`) | lens | a value read and written through a part of a state, or closures |
-| `TwoWay` | binding protocol | what a two-way control takes: a `Binding` or a `Binding.Proxy` |
+| `@State` | state | the one declaration of mutable state: owns the value and manages its state |
+| `Binding` (`$x`) | binding | refers to a value through a whole binding, with the host's reactive channel |
+| `Proxy` (`@Proxy`, `$x.member`, `$x[i]`) | lens | reads and writes a value through another source - a part of a state, or closures - with no host channel of its own |
+| `TwoWay` | binding protocol | what a two-way control takes: a `Binding` or a `Proxy` |
 | body rebuild, reactive path 1 | re-render | a body that read a written state runs again and is diffed |
 | reader (of a state) | dependent, subscriber | the body or content that read a state and is rebuilt when it changes |
 | binding twin | binding overload | the `Binding` form of a value modifier |
@@ -42,7 +42,7 @@ and this table maps the two.
 | follow (`following:`) | depend on, subscribe to | what wakes an engine: a write to a state it follows |
 | track (`tracking:`) | follow continuously | an engine that follows and keeps running on the next cycles while it answers `.again` |
 | conversion (`convert`) | derived binding | a binding that reads and writes another state through a mapping |
-| lender, lent | source storage | what a `Binding.Proxy` borrows its value from: the state's storage and which part of it |
+| lender, lent | source storage | what a `Proxy` borrows its value from: the state's storage and which part of it |
 | reading, sample (`.samples`) | throttled copy | an animated value copied into ordinary state at a pace |
 | host-carried state, reactive path 2 | bound control value | a state a native control shows and changes with no rebuild |
 | attachment, wear (a state), wearer | binding, bound control | a control property tied to a state |

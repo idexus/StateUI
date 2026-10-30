@@ -30,9 +30,9 @@ final class PopoverNodeTests: XCTestCase {
     }
 
     /// A proxy the host does not carry, whose writes the test reads back.
-    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Binding<Value>.Proxy {
+    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Proxy<Value> {
         var held = value
-        return Binding.Proxy(get: { held }, set: { held = $0; written($0) })
+        return Proxy(get: { held }, set: { held = $0; written($0) })
     }
 
     /// A view holds one popover - written again it stands in - its state carried in and out, what it shows its

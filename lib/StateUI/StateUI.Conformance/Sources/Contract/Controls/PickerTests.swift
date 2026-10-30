@@ -29,7 +29,7 @@
             ], needs: [Covered(TextualElementContract.text, on: TextContract.self), Covered(ButtonContract.clicked)]) { s in
                 let size = State(wrappedValue: "M")
                 let written = Received<String>()
-                let chosen = Binding.Proxy(get: { size.wrappedValue }, set: { written.values.append($0); size.wrappedValue = $0 })
+                let chosen = Proxy(get: { size.wrappedValue }, set: { written.values.append($0); size.wrappedValue = $0 })
                 s.start {
                     VStack {
                         Text("size \(size.wrappedValue)").id("label")
@@ -180,7 +180,7 @@
         ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
             let size = State(wrappedValue: "M")
             let written = Received<String>()
-            let chosen = Binding.Proxy(get: { size.wrappedValue }, set: { written.values.append($0); size.wrappedValue = $0 })
+            let chosen = Proxy(get: { size.wrappedValue }, set: { written.values.append($0); size.wrappedValue = $0 })
             s.start {
                 VStack {
                     Text("size \(size.wrappedValue)").id("label")

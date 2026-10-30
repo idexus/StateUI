@@ -89,7 +89,7 @@ private struct CartOwner {
 
     /// What `TextField($cart.note)` would be given - a proxy INTO the model,
     /// through a key path.
-    var note: Binding<String>.Proxy { $cart.note }
+    var note: Proxy<String> { $cart.note }
 }
 
 /// A view that was LENT the model. There is no second wrapper for a class: a
@@ -98,7 +98,7 @@ private struct CartOwner {
 private struct NoteRow {
     @Binding var basket: Cart
 
-    var note: Binding<String>.Proxy { $basket.note }
+    var note: Proxy<String> { $basket.note }
 }
 
 /// How many times a closure was built, and what `debugInfo()` said there - a
@@ -519,7 +519,7 @@ final class ModelStateTests: XCTestCase {
         XCTAssertTrue(owner.cart === replacement, """
             `$` says: I lend you this, do with it what you want - which includes \
             replacing it. A parent meaning to lend less hands the object itself \
-            and the child builds its own Binding.Proxy(get:set:).
+            and the child builds its own Proxy(get:set:).
             """)
         XCTAssertTrue(Renderer.shared.needsRender)
     }

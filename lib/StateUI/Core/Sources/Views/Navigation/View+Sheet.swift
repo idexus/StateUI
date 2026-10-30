@@ -52,7 +52,7 @@ extension View {
             page.identify(item)
             return page
         }
-        let presented = Binding.Proxy(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
+        let presented = Proxy(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
         return presenting(SheetElement(page: page, presented: presented))
     }
 

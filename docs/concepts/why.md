@@ -124,13 +124,20 @@ declared journey type, and an engine woken by what it reads. Each would double
 every API that takes a state, and where a state is used already says what it
 is.
 
-## A part of a state is a proxy, a type of its own
+## Three words: `@State`, `@Binding`, `@Proxy`
+
+One simple rule names the three ways a view holds a value:
+
+- `@State` owns the value and manages its state;
+- `@Binding` refers to a value through a whole binding, with the host's
+  reactive channel;
+- `@Proxy` reads and writes a value through another source, with no host
+  channel of its own.
 
 `$master` is a `Binding`: the state itself, which the host carries with no
 body rebuilt, which has a journey and which wakes an engine. `$mix.volume`,
-`$levels[1]` and `Binding.Proxy(get:set:)` are a `Binding.Proxy`: a value read
-and written through something else
-([A part of a state](state-and-reactivity.md#a-part-of-a-state-bindingproxy)).
+`$levels[1]` and `Proxy(get:set:)` are a `Proxy`
+([A part of a state](state-and-reactivity.md#a-part-of-a-state-proxy)).
 Every two-way control takes either, through the protocol both keep, `TwoWay`;
 what needs the state itself takes `Binding` alone:
 
@@ -160,9 +167,10 @@ struct Mixer: View {
   modifier, `engine(following:)`, a motion layout's parameters or `convert`
   does not compile; `.engine(following: $mix.volume)` is an error, not an
   engine that never wakes.
-- **A child says what it accepts.** `@Binding` borrows a whole state;
-  `@Binding.Proxy` takes a part as well, and a parent lending it a whole state
-  writes `$x.proxy`.
+- **One language.** The three words say who holds the value, and each type is
+  one of them; a child says which it accepts - `@Binding` a whole state,
+  `@Proxy` a part as well, a parent lending it a whole state writing
+  `$x.proxy`.
 - **A proxy promises reading and writing, never a notification.** A part
   reads through the whole state, so a body reading it is rebuilt when the state
   changes; closures over a store StateUI does not own rebuild nothing when that

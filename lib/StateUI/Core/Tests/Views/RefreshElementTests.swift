@@ -21,7 +21,7 @@ final class RefreshElementTests: XCTestCase {
         var heard: [Bool] = []
         let renders = Renders()
         let patch = renders.render(ScrollView { Text("") }
-            .isRefreshing(Binding.Proxy(get: { held }, set: { held = $0 }))
+            .isRefreshing(Proxy(get: { held }, set: { held = $0 }))
             .onRefreshRequested { heard.append(held) }
             .node)
 

@@ -40,7 +40,7 @@ final class AndroidPickerViewTests: XCTestCase {
         try onMainActor {
             let chosen = State(wrappedValue: "S")
             let heard = Received<String>()
-            let written = Binding.Proxy(get: { chosen.wrappedValue }, set: { heard.values.append($0); chosen.wrappedValue = $0 })
+            let written = Proxy(get: { chosen.wrappedValue }, set: { heard.values.append($0); chosen.wrappedValue = $0 })
             let host = AndroidRenderer.running {
                 Picker(["S", "M", "L"], selection: written)
             }

@@ -86,6 +86,11 @@ post is refused as it is posted.
 
 ## Bindings
 
+Three words say how a view holds a value: `@State` owns it and manages its
+state; `@Binding` refers to it through a whole binding, with the host's
+reactive channel; `@Proxy` reads and writes it through another source, with no
+host channel of its own.
+
 A `Binding` is a whole state: two closures - read and write - and the storage
 it borrows (`storage`). `$counter` builds a new binding every time it is
 written, so two spellings of one state are two values; the storage is how they
@@ -101,7 +106,7 @@ properties is lent the same way; there is no second wrapper for it.
 
 ## Proxies
 
-A `Binding.Proxy` reads and writes through something else: a part of a state,
+A `Proxy` reads and writes through something else: a part of a state,
 reached from a `Binding` by a member or an index, or two closures. It holds
 read and write, the value as it stands, and who it borrows from: the storage
 behind the state (`lender`) and which part of it (`lent`) - nothing for
@@ -133,13 +138,13 @@ A proxy promises reading and writing, never a notification. A part's reads go
 through the whole state, so a body reading it is that state's reader; closures
 over a store StateUI does not own rebuild nothing when the store changes.
 
-A child borrows a proxy with `@Binding.Proxy`. Swift's memberwise initializer
+A child borrows a proxy with `@Proxy`. Swift's memberwise initializer
 takes the wrapper's type, so a parent lending a whole state to such a child
 writes `$x.proxy`.
 
 ## Reading without recording
 
-`Binding.standing` and `Binding.Proxy.standing` read the value without
+`Binding.standing` and `Proxy.standing` read the value without
 recording a dependency. It is what
 the machinery of a write uses - `move`, `stop`, `snap(to:)` and the journey's
 setters read what they are about to change - because a write reading its target

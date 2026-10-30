@@ -66,7 +66,7 @@ under a finger costs the arithmetic and nothing else.
 
 A part of a state (`$room.width`) has no image of its own for the host to write
 into, and a proxy made from closures has none either. Both are a
-`Binding.Proxy`, and a driven property takes `Binding` alone, so a proxy handed
+`Proxy`, and a driven property takes `Binding` alone, so a proxy handed
 to one does not compile; every two-way control takes either and describes a
 proxy (core/state.md#proxies).
 
@@ -134,7 +134,7 @@ takes the value one of two ways, decided by the type:
                                   own write. The control is no reader of the state, and
                                   what a change costs is decided by who reads the state.
 
-  a Binding.Proxy - a part of a   described: the value read at build goes into the
+  a Proxy - a part of a   described: the value read at build goes into the
   state, or closures              description, and each report is written back through the
                                   proxy. The closure that wrote the control is a reader
                                   and renders on every report.

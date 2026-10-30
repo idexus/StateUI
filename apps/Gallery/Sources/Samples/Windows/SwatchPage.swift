@@ -7,7 +7,7 @@ import StateUI
 /// `MultiWindowSample`.
 struct SwatchPage: View {
     /// Which swatch the window is for - its value, lent by its group.
-    @Binding.Proxy var number: Int
+    @Proxy var number: Int
 
     /// The window this is the page of - named for its swatch, and closed from
     /// here.

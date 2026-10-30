@@ -916,27 +916,27 @@ enum Listings {
                 // The theme first: which of the two looks below the gallery wears.
                 SectionTitle("The theme")
                 Picker(themes.map(\.scheme),
-                       selection: Binding.Proxy(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
+                       selection: Proxy(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
                     themes.first { $0.scheme == scheme }?.name ?? ""
                 }
 
                 // The accent the platform draws its controls in, where the user
                 // chooses none for the system.
                 SectionTitle("The accent")
-                Picker(Array(accents.indices), selection: Binding.Proxy(
+                Picker(Array(accents.indices), selection: Proxy(
                     get: { accents.firstIndex { $0.color == application.accentColor } ?? 0 },
                     set: { application.accentColor = accents[$0].color })) { accents[$0].name }
 
                 #if WEB
                 // The bars' buttons, which the Web draws itself.
                 SectionTitle("The bars' buttons")
-                Picker(Self.toolbarStyles.map(\.style), selection: Binding.Proxy(
+                Picker(Self.toolbarStyles.map(\.style), selection: Proxy(
                     get: { style.toolbarStyle }, set: { style.toolbarStyle = $0 })) { chosen in
                     Self.toolbarStyles.first { $0.style == chosen }?.name ?? ""
                 }
                 // The application's own look for them: a style for every group and
                 // every button on a bar, its states included (AppStyles.bars).
-                Switch(Binding.Proxy(get: { style.barsInOwnLook }, set: { owns in
+                Switch(Proxy(get: { style.barsInOwnLook }, set: { owns in
                     style.barsInOwnLook = owns
                     application.styles = AppStyles.sheet(barsInOwnLook: owns)
                 }))
@@ -978,7 +978,7 @@ enum Listings {
                 let name = title.lowercased()
                 // Each surface's choices write that part of the theme's look.
                 let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in
-                    Binding.Proxy(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
+                    Proxy(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
                 }
 
                 let choice = self.choice
@@ -1011,7 +1011,7 @@ enum Listings {
             let label: String
             let theme: String
             let part: GallerySurface
-            let surface: Binding<SurfaceLook>.Proxy
+            let surface: Proxy<SurfaceLook>
 
             var body: some View {
                 let surface = self.surface
@@ -1066,7 +1066,7 @@ enum Listings {
 
                 // One write for the whole application: every value without a
                 // motion of its own takes it.
-                Picker(Self.laws, selection: Binding.Proxy(get: { application.motion }, set: { application.motion = $0 }),
+                Picker(Self.laws, selection: Proxy(get: { application.motion }, set: { application.motion = $0 }),
                        caption: Self.name)
                     .horizontalAlignment(.center)
 
@@ -6021,7 +6021,7 @@ enum Listings {
 
                 SwitchRow(
                     "Fan out",
-                    Binding.Proxy(
+                    Proxy(
                         get: { fanned },
                         set: { fanning in
                             fanned = fanning
@@ -6241,7 +6241,7 @@ enum Listings {
 
                 SwitchRow(
                     "Snap",
-                    Binding.Proxy(
+                    Proxy(
                         get: { snaps },
                         set: { snapping in
                             snaps = snapping

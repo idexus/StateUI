@@ -1322,23 +1322,23 @@ final class ControlTests: XCTestCase {
     /// the host to tie.
     func testAPartOrClosureBindingKeepsTheDescribedRoad() {
         var on = false
-        let closure = Binding<Bool>.Proxy(get: { on }, set: { on = $0 })
+        let closure = Proxy<Bool>(get: { on }, set: { on = $0 })
         let room = State(wrappedValue: Rect(0, 0, 3, 4))
         let sizes = ["S", "M", "L", "XL"]
 
         struct Profile { var name = "" }
         let profile = State(wrappedValue: Profile())
         var typed = ""
-        let text = Binding<String>.Proxy(get: { typed }, set: { typed = $0 })
+        let text = Proxy<String>(get: { typed }, set: { typed = $0 })
         var day = CalendarDate(year: 2026, month: 1, day: 1)
-        let date = Binding<CalendarDate>.Proxy(get: { day }, set: { day = $0 })
+        let date = Proxy<CalendarDate>(get: { day }, set: { day = $0 })
         var clock = ClockTime(hour: 0, minute: 0)
-        let time = Binding<ClockTime>.Proxy(get: { clock }, set: { clock = $0 })
+        let time = Proxy<ClockTime>(get: { clock }, set: { clock = $0 })
 
         let renders = Renders()
         let patch = renders.render(Node(type: "VStack", children: [
             Switch(closure).node,
-            Picker(sizes, selection: Binding.Proxy(
+            Picker(sizes, selection: Proxy(
                 get: { sizes[Int(room.wrappedValue.width)] },
                 set: { room.wrappedValue.width = Double(sizes.firstIndex(of: $0) ?? 0) })).node,
             TextField(text).node,

@@ -26,7 +26,7 @@ private struct Settings {
     @State var profile = Profile()
 
     /// What `TextField($profile.name)` would be given.
-    var name: Binding<String>.Proxy { $profile.name }
+    var name: Proxy<String> { $profile.name }
 }
 
 @MainActor
@@ -147,7 +147,7 @@ final class StateTests: XCTestCase {
     func testAProxyCanBeBuiltFromAGetterAndASetter() {
         var held = "start"
 
-        let proxy = Binding.Proxy(get: { held }, set: { held = $0 })
+        let proxy = Proxy(get: { held }, set: { held = $0 })
 
         XCTAssertEqual(proxy.wrappedValue, "start")
 

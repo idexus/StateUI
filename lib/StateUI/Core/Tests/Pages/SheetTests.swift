@@ -14,7 +14,7 @@ private struct Note: Hashable {
 
 /// A view presenting a sheet while its state says so.
 private struct Presenting: View {
-    let editing: Binding<Bool>.Proxy
+    let editing: Proxy<Bool>
 
     var body: some View {
         Button("Edit")
@@ -26,7 +26,7 @@ private struct Presenting: View {
 
 /// A view presenting a page of the note its state holds.
 private struct PresentingANote: View {
-    let note: Binding<Note?>.Proxy
+    let note: Proxy<Note?>
 
     var body: some View {
         Text("Notes")
@@ -90,9 +90,9 @@ final class SheetTests: XCTestCase {
     }
 
     /// A proxy the host does not carry, whose writes the test reads back.
-    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Binding<Value>.Proxy {
+    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Proxy<Value> {
         var held = value
-        return Binding.Proxy(get: { held }, set: { held = $0; written($0) })
+        return Proxy(get: { held }, set: { held = $0; written($0) })
     }
 
     /// A sheet is one slot of the view presenting it: while its state is false it holds no page, its state
