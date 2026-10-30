@@ -135,10 +135,8 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         .itemDrag(begins: .perpendicular)
         .onItemDismissed(.up, beyond: 120) { card in remove(card) }
         // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
-        // where the parameters stand; `.dynamics` THE CARDS reaching their new
-        // places after a card joins, leaves or the order changes.
+        // where the parameters stand.
         .motion(.spring(response: .milliseconds(380), damping: 0.82))
-        .dynamics(.spring(response: .milliseconds(300), damping: 1))
     }
 
     /// Where one card stands in the fan: along an arc and turned with it, the
