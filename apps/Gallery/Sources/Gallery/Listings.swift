@@ -1426,10 +1426,35 @@ enum Listings {
         // Sources/Samples/Navigation/BottomBarSample.swift
         @State private var presented = false
         @State private var path: [Int] = []
-        @State private var messages = (1...24).map { "Message \($0)" }
+        @State private var messages = Self.talk
         @State private var draft = ""
+        @State private var offset = Point(x: 0, y: 0)
+        /// Whether the messages' next frame takes the scroller to their end: they opened, or one was just sent.
+        @State private var toEnd = false
+        /// How tall the field stands at one line: the least it has stood at.
+        @State private var oneLine = 0.0
         @State private var edge = ScrollEdge.automatic
         static let edges: [ScrollEdge] = [.automatic, .hard, .none]
+
+        /// One message: what it says, and whether it is ours.
+        struct Message: Hashable {
+            let text: String
+            let mine: Bool
+        }
+
+        /// A conversation long enough to scroll under the bar.
+        static let talk: [Message] = [
+            ("Are we still on for Saturday?", false), ("Yes! Ten o'clock at the station?", true),
+            ("Perfect. Should I bring anything?", false), ("Just good shoes - the trail is muddy after the rain.", true),
+            ("Noted. How long is the walk?", false), ("About four hours there and back, with a stop for lunch.", true),
+            ("Lunch where?", false), ("There's a hut at the top. They make the best soup.", true),
+            ("Sold. Is Anna coming too?", false), ("She said she'd try, but she has a deadline.", true),
+            ("Tell her the soup is non-negotiable.", false), ("Ha, I will.", true),
+            ("What if it rains again?", false), ("Then we take the lower path through the forest.", true),
+            ("You've thought of everything.", false), ("I've done this walk a few times.", true),
+            ("Can you send me the map?", false), ("I'll send it tonight.", true),
+            ("Thanks! See you Saturday.", false), ("See you - don't forget the shoes!", true),
+        ].map { Message(text: $0.0, mine: $0.1) }
 
 
         var body: some View {
@@ -1438,8 +1463,12 @@ enum Listings {
                 Picker(Self.edges, selection: $edge) { "\($0)".titled }
                     .presentation(.segmented)
 
+                // It opens at its end, at the latest message.
                 Button("Open the conversation")
-                    .onClicked { presented = true }
+                    .onClicked {
+                        toEnd = true
+                        presented = true
+                    }
                     .sheet(isPresented: $presented) { conversation }
             }
         }
@@ -1449,11 +1478,19 @@ enum Listings {
                 Grid {
                     ScrollView {
                         VStack {
+                            // Theirs on the left, ours on the right.
                             ForEach(Array(messages.indices), id: \.self) { index in
-                                Text(messages[index])
+                                bubble(messages[index])
                             }
                         }
+                        .onFrameChanged { frame in
+                            guard toEnd else { return }
+                            toEnd = false
+                            // Past the end is kept at the end: as far as it reaches.
+                            offset = Point(x: 0, y: frame.height)
+                        }
                     }
+                    .scrollOffset($offset)
                 }
                 .ignoresSafeArea(.all)
                 .galleryPage("Conversation")
@@ -1466,13 +1503,18 @@ enum Listings {
                                 .placeholder("Message")
                                 .growsWithText(true)
                         }
-                        // The field's own ground is the capsule's glass, its words
-                        // clear of the capsule's round ends.
+                        // The field's own ground is glass, its words clear of the
+                        // round ends: a capsule at one line, its corners rounding
+                        // alike as more lines grow it.
+                        .onFrameChanged { frame in
+                            if oneLine == 0 || frame.height < oneLine { oneLine = frame.height }
+                        }
                         Button("Send")
                             .onClicked {
                                 guard !draft.isEmpty else { return }
-                                messages.append(draft)
+                                messages.append(Message(text: draft, mine: true))
                                 draft = ""
+                                toEnd = true
                             }
                             .verticalAlignment(.end)
                             .gridColumn(1)
@@ -1482,6 +1524,17 @@ enum Listings {
             } destination: { _ in
                 Text("")
             }
+        }
+
+        /// A message in its bubble, at its side of the conversation.
+        private func bubble(_ message: Message) -> some View {
+            ZStack {
+                Text(message.text)
+            }
+            // A capsule at one line - a corner never rounds past half the
+            // height - and round corners on more.
+            .maximumWidth(300)
+            .horizontalAlignment(message.mine ? .end : .start)
         }
         """#,
         "BoundPropertiesSample": #"""
