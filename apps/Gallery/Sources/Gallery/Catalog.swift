@@ -266,7 +266,7 @@ final class Catalog {
         SampleGroup(
             route: "motionLayout",
             title: "Motion Layout",
-            summary: "Views placed by arithmetic of your own, worked out from a phase the hand or the "
+            summary: "Views placed by arithmetic of your own, worked out from parameters the hand or the "
                 + "program moves: a ring, a deck, pages of icons, a table panned, pinched and turned.",
             icon: ImageSource(light: "nav_motionlayout.png", dark: "nav_motionlayout_dark.png"),
             card: ImageSource("cat_motionlayout.png"),
