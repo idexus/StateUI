@@ -201,8 +201,8 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Map(region: MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 500)).markers { Marker(at: Location(latitude: 52, longitude: 21)) }"#),
         Road(
             name: "a tab selection of another type than the tabs",
-            closed: #"_ = TabView([1, 2], selection: Binding<String>(get: { "a" }, set: { _ in })) { Text("\($0)") }"#,
-            open: #"_ = TabView([1, 2], selection: Binding<Int>(get: { 1 }, set: { _ in })) { Text("\($0)") }"#),
+            closed: #"_ = TabView([1, 2], selection: Binding<String>.Proxy(get: { "a" }, set: { _ in })) { Text("\($0)") }"#,
+            open: #"_ = TabView([1, 2], selection: Binding<Int>.Proxy(get: { 1 }, set: { _ in })) { Text("\($0)") }"#),
         Road(
             name: "a view standing on the menu bar",
             closed: #"_ = Text("Notes").menuBar { Text("File") }"#,
@@ -324,6 +324,88 @@ final class ContractRoadsTests: XCTestCase {
             name: "a type of an application's own taken as properties",
             closed: "struct Lamps: AppliedProperties {}",
             open: "struct Lamps {}"),
+        Road(
+            name: "a part of a state followed by an engine",
+            closed: """
+                struct Room { var width = 0.0 }
+                @State var room = Room()
+                _ = Text("x").engine(following: $room.width) { _ in }
+                """,
+            open: """
+                @State var width = 0.0
+                _ = Text("x").engine(following: $width) { _ in }
+                """),
+        Road(
+            name: "a part of a state followed by a motion layout",
+            closed: """
+                struct Room { var width = 0.0 }
+                @State var phase = 0.0
+                @State var room = Room()
+                _ = MotionLayout([1], parameters: $phase) { Text("\\($0)") } placements: { _, _ in [] }
+                    .following($room.width)
+                """,
+            open: """
+                @State var phase = 0.0
+                @State var width = 0.0
+                _ = MotionLayout([1], parameters: $phase) { Text("\\($0)") } placements: { _, _ in [] }
+                    .following($width)
+                """),
+        Road(
+            name: "a part of a state on a journey",
+            closed: """
+                @State var levels = [0.2, 0.5]
+                _ = $levels[1].journey
+                """,
+            open: """
+                @State var level = 0.5
+                _ = $level.journey
+                """),
+        Road(
+            name: "a part of a state driving a property",
+            closed: """
+                struct Room { var width = 0.0 }
+                @State var room = Room()
+                _ = Text("x").minimumWidth($room.width)
+                """,
+            open: """
+                @State var width = 0.0
+                _ = Text("x").minimumWidth($width)
+                """),
+        Road(
+            name: "a part of a state converted",
+            closed: """
+                struct Room { var width = 0.0 }
+                @State var room = Room()
+                _ = $room.width.convert { $0 * 2 }
+                """,
+            open: """
+                @State var width = 0.0
+                _ = $width.convert { $0 * 2 }
+                """),
+        Road(
+            name: "a part of a state lent to a child borrowing a whole state",
+            closed: """
+                struct Room { var name = "" }
+                struct NameRow: View {
+                    @Binding var name: String
+                    var body: some View { TextField($name) }
+                }
+                @State var room = Room()
+                _ = NameRow(name: $room.name)
+                """,
+            open: """
+                struct Room { var name = "" }
+                struct NameRow: View {
+                    @Binding.Proxy var name: String
+                    var body: some View { TextField($name) }
+                }
+                @State var room = Room()
+                _ = NameRow(name: $room.name)
+                """),
+        Road(
+            name: "closures taken for a whole state",
+            closed: "_ = Slider(Binding(get: { 0.5 }, set: { _ in }))",
+            open: "_ = Slider(Binding.Proxy(get: { 0.5 }, set: { _ in }))"),
     ]
 
     /// Each closed road fails to compile, and the open road beside it compiles.

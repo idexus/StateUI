@@ -59,7 +59,7 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// An assignment (`volume = 1`) animates the thumb there under the
     /// element's motion; `$volume.journey` reads where the thumb is, and
     /// `try await $volume.journey.move(to: 1).arrived()` waits for the arrival.
-    public init(_ state: Binding<Double>) {
+    public init(_ state: some TwoWay<Double>) {
         self = Slider().value(state)
     }
 
@@ -75,8 +75,12 @@ public struct Slider: ElementView, TintElement, SliderProperties, FocusElement {
     /// - Parameter state: the state the thumb shows and writes back into,
     ///   carried by the host as a journey.
     /// - Returns: the control, wearing and reporting that value.
-    public func value(_ state: Binding<Double>) -> Modified {
-        journey(SliderContract.value.token, by: state)
+    public func value(_ state: some TwoWay<Double>) -> Modified {
+        guard let whole = state.whole else {
+            return described(SliderContract.value.token, state, on: SliderContract.valueChanged.token)
+        }
+
+        return journey(SliderContract.value.token, by: whole)
     }
 
     // MARK: Events

@@ -51,7 +51,7 @@ private struct Readout: View {
 
     var body: some View {
         let shown = volume.projectedValue.convert { "\($0) \(unit)" }
-        if let storage = shown.described { seen.storages.append(ObjectIdentifier(storage)) }
+        seen.storages.append(ObjectIdentifier(shown.storage))
 
         return Slider(volume.projectedValue).accessibilityLabel(shown.wrappedValue)
     }
@@ -354,16 +354,5 @@ final class ConversionTests: XCTestCase {
 
         XCTAssertEqual(builds.count, 2, "the body read the source through the conversion")
         XCTAssertEqual(patch.props[.text], .string("75%"), "and read the converted value afresh")
-    }
-
-    /// A conversion of a part of a state, or of a binding made from closures,
-    /// is worked out at build and reports nothing back - said out loud, and
-    /// still a value.
-    func testAConversionOfAPartIsWorkedOutAtBuild() {
-        let room = State(wrappedValue: Rect(0, 0, 200, 100))
-        let half = room.projectedValue.width.convert { $0 / 2 }
-
-        XCTAssertEqual(half.wrappedValue, 100)
-        XCTAssertNil(half.conversion, "nothing the host could carry, so nothing to arm")
     }
 }

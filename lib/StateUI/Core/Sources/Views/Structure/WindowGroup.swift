@@ -49,7 +49,7 @@ public struct WindowGroup: Scene {
     ///
     ///     WindowGroup(.document) { $id in DocumentPage(id: id) }
     ///
-    /// The view is handed a binding to its window's value: reading it says which value the window is for, and
+    /// The view is handed a proxy to its window's value: reading it says which value the window is for, and
     /// writing it makes the same window about another - which is also what the system restores it for.
     ///
     /// - Parameters:
@@ -58,7 +58,7 @@ public struct WindowGroup: Scene {
     ///   - content: the view for one value.
     public init<Value: Codable & Hashable & SendableMetatype, Content: View>(
         _ type: WindowType<Value>,
-        @ViewBuilder content: @escaping (Binding<Value>) -> Content
+        @ViewBuilder content: @escaping (Binding<Value>.Proxy) -> Content
     ) {
         declared = DeclaredWindows(
             type: type.key, valueType: Value.self,
@@ -67,11 +67,11 @@ public struct WindowGroup: Scene {
                 // what it has open, builds it again.
                 let standing = opened?.value?.base as! Value
 
-                let binding = Binding<Value>(
+                let window = Binding<Value>.Proxy(
                     get: { standing },
                     set: { if let opened, let record { record.retarget(opened.serial, to: $0) } })
 
-                return Node.page(content(binding))
+                return Node.page(content(window))
             },
             restore: { text in ValueText.read(Value.self, from: text).map(AnyHashable.init) })
     }

@@ -14,7 +14,7 @@ private struct Note: Hashable {
 
 /// A view presenting a sheet while its state says so.
 private struct Presenting: View {
-    let editing: Binding<Bool>
+    let editing: Binding<Bool>.Proxy
 
     var body: some View {
         Button("Edit")
@@ -26,7 +26,7 @@ private struct Presenting: View {
 
 /// A view presenting a page of the note its state holds.
 private struct PresentingANote: View {
-    let note: Binding<Note?>
+    let note: Binding<Note?>.Proxy
 
     var body: some View {
         Text("Notes")
@@ -76,7 +76,7 @@ private struct Leaving: View {
     var body: some View {
         VStack {
             if stands.wrappedValue {
-                Presenting(editing: editing)
+                Presenting(editing: editing.proxy)
             }
         }
     }
@@ -89,10 +89,10 @@ final class SheetTests: XCTestCase {
         Renderer.shared.clearStates()
     }
 
-    /// A state's binding the host cannot carry, whose writes the test reads back.
-    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Binding<Value> {
+    /// A proxy the host does not carry, whose writes the test reads back.
+    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Binding<Value>.Proxy {
         var held = value
-        return Binding(get: { held }, set: { held = $0; written($0) })
+        return Binding.Proxy(get: { held }, set: { held = $0; written($0) })
     }
 
     /// A sheet is one slot of the view presenting it: while its state is false it holds no page, its state
@@ -100,7 +100,7 @@ final class SheetTests: XCTestCase {
     /// makes.
     func testASheetHoldsItsPageWhileItShows() throws {
         let editing = State(wrappedValue: false)
-        let hidden = Presenting(editing: editing.projectedValue).node.built
+        let hidden = Presenting(editing: editing.projectedValue.proxy).node.built
         let sheet = try XCTUnwrap(hidden.children.first { $0.type == .sheet })
 
         XCTAssertNil(sheet.driven[.isPresented], "described, not carried")
@@ -108,13 +108,13 @@ final class SheetTests: XCTestCase {
         XCTAssertTrue(sheet.children.isEmpty, "nothing built while it does not show")
 
         editing.wrappedValue = true
-        let patch = Renders().render(Presenting(editing: editing.projectedValue).node)
+        let patch = Renders().render(Presenting(editing: editing.projectedValue.proxy).node)
         let shown = try XCTUnwrap(patch.subtree.first { $0.type == .sheet })
         XCTAssertEqual(shown.children.map(\.type), [.page])
         XCTAssertEqual(shown.children.first?.props[.title], .string("Editor"))
     }
 
-    /// The user's dismissal writes false into a state the host cannot carry.
+    /// The user's dismissal writes false into a proxy the host does not carry.
     func testTheDismissalWritesFalseIntoIsPresented() throws {
         var written: [Bool] = []
         let renders = Renders()
@@ -142,12 +142,12 @@ final class SheetTests: XCTestCase {
     /// Another value presents another page, standing in the place of the first.
     func testAnotherItemIsAnotherPage() throws {
         let note = State<Note?>(wrappedValue: Note(name: "Inbox"))
-        let first = try XCTUnwrap(PresentingANote(note: note.projectedValue).node.built.children.first { $0.type == .sheet })
+        let first = try XCTUnwrap(PresentingANote(note: note.projectedValue.proxy).node.built.children.first { $0.type == .sheet })
         note.wrappedValue = Note(name: "Sent")
-        let second = try XCTUnwrap(PresentingANote(note: note.projectedValue).node.built.children.first { $0.type == .sheet })
+        let second = try XCTUnwrap(PresentingANote(note: note.projectedValue.proxy).node.built.children.first { $0.type == .sheet })
 
         XCTAssertNotEqual(first.children.first?.identity, second.children.first?.identity)
-        let patch = Renders().render(PresentingANote(note: note.projectedValue).node)
+        let patch = Renders().render(PresentingANote(note: note.projectedValue.proxy).node)
         XCTAssertEqual(patch.subtree.first { $0.type == .sheet }?.children.first?.props[.title], .string("Sent"))
     }
 

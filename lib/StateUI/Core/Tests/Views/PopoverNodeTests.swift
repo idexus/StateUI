@@ -29,10 +29,10 @@ final class PopoverNodeTests: XCTestCase {
         Renderer.shared.clearStates()
     }
 
-    /// A state's binding the host cannot carry, whose writes the test reads back.
-    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Binding<Value> {
+    /// A proxy the host does not carry, whose writes the test reads back.
+    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Binding<Value>.Proxy {
         var held = value
-        return Binding(get: { held }, set: { held = $0; written($0) })
+        return Binding.Proxy(get: { held }, set: { held = $0; written($0) })
     }
 
     /// A view holds one popover - written again it stands in - its state carried in and out, what it shows its
@@ -50,7 +50,7 @@ final class PopoverNodeTests: XCTestCase {
         XCTAssertEqual(popover.built.children.map(\.type), [.text])
     }
 
-    /// A part of a state - which the host cannot carry - shows what it holds, and the user's dismissal writes it.
+    /// A proxy - which the host does not carry - shows what it holds, and the user's dismissal writes it.
     func testTheDismissalWritesFalseIntoIsPresented() throws {
         var written: [Bool] = []
         let renders = Renders()

@@ -11,8 +11,7 @@ extension PropertyContainer {
     ///
     /// - Parameters:
     ///   - property: the member, written with its contract.
-    ///   - state: the whole state, `$x`, of a `@State` or a `@Binding`. A part
-    ///     of one, `$room.width`, cannot be carried and is refused.
+    ///   - state: the whole state, `$x`, of a `@State` or a `@Binding`.
     ///   - mode: which way the value crosses.
     ///   - kind: how the host applies the value; see `StateKind`.
     /// - Returns: the element, with the registration on it.
@@ -70,9 +69,8 @@ extension PropertyContainer {
     /// the reports rebuild nothing.
     func driven<Value: StateValue>(_ property: Prop, by state: Binding<Value>) -> Modified {
         guard let image = state.image else {
-            complain("`\(property.name)` was told to report into a part of a state, or a "
-                + "binding made from closures, which the host cannot carry. Report "
-                + "into the whole state.")
+            complain("`\(property.name)` was told to report into a state the host carries as a journey. "
+                + "Report into a state of its own.")
             return modified { _ in }
         }
 
@@ -106,13 +104,12 @@ extension PropertyContainer {
     ) -> Modified {
         // The image, never the value: nothing is read at build.
         guard let image = state.image else {
-            complain("`\(property.name)` was driven from a part of a state, or a binding "
-                + "made from closures, which the host cannot carry. Drive it from "
-                + "the whole state.")
+            complain("`\(property.name)` was driven from a state the host carries as a journey. "
+                + "Drive it from a state of its own.")
             return modified { _ in }
         }
 
-        state.described?.wearThemedPair()
+        state.storage.wearThemedPair()
 
         return modified {
             $0.driven[property] = StateRegistration(
@@ -136,26 +133,24 @@ extension PropertyContainer {
     ) -> Modified {
         guard kind == .property else {
             guard let image = state.image else {
-                complain("`\(property.name)` was driven from a part of a state, or a binding "
-                    + "made from closures, which the host cannot carry. Drive it from "
-                    + "the whole state.")
+                complain("`\(property.name)` was driven from a state the host carries as a journey. "
+                    + "Drive it from a state of its own.")
                 return modified { _ in }
             }
 
-            state.described?.wearThemedPair()
+            state.storage.wearThemedPair()
 
             return setValue(property, onImage: image, mode: mode, kind: kind,
                             moving: Value.moving, laneKind: Value.laneKind, conversion: state.conversion)
         }
 
         guard let image = state.journeyImage else {
-            complain("`\(property.name)` was handed a part of a state, a binding made from "
-                + "closures, or a state the host already carries in another shape, "
-                + "none of which it can walk. Hand it the whole state.")
+            complain("`\(property.name)` was handed a state the host already carries in another shape, "
+                + "which it cannot walk. Hand it a state of its own.")
             return modified { _ in }
         }
 
-        state.described?.wearThemedPair()
+        state.storage.wearThemedPair()
 
         return setValue(property, onImage: image, mode: mode, kind: kind,
                         moving: JourneyLanes<Value>.moving, laneKind: Value.laneKind, conversion: state.conversion)
@@ -189,14 +184,12 @@ extension PropertyContainer {
     /// Design: docs/design/views/bindings.md#binding-twins
     func journey<Value: Walked>(_ property: Prop, by state: Binding<Value>) -> Modified {
         guard let image = state.journeyImage else {
-            complain("`\(property.name)` was handed a part of a state, a binding made from "
-                + "closures, or a state the host already carries in another shape, "
-                + "none of which it can walk. Hand it the whole state, declared for "
-                + "it.")
+            complain("`\(property.name)` was handed a state the host already carries in another shape, "
+                + "which it cannot walk. Hand it a state declared for it.")
             return modified { _ in }
         }
 
-        state.described?.wearThemedPair()
+        state.storage.wearThemedPair()
 
         return setValue(property, onImage: image, mode: .inOut, kind: .property,
                         moving: JourneyLanes<Value>.moving, laneKind: Value.laneKind, conversion: state.conversion)

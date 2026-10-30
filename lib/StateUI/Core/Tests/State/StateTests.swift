@@ -26,7 +26,7 @@ private struct Settings {
     @State var profile = Profile()
 
     /// What `TextField($profile.name)` would be given.
-    var name: Binding<String> { $profile.name }
+    var name: Binding<String>.Proxy { $profile.name }
 }
 
 @MainActor
@@ -144,17 +144,17 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(old.get(), 7, "and a handler holding the old box reads the new value")
     }
 
-    func testABindingCanBeBuiltFromAGetterAndASetter() {
+    func testAProxyCanBeBuiltFromAGetterAndASetter() {
         var held = "start"
 
-        let binding = Binding(get: { held }, set: { held = $0 })
+        let proxy = Binding.Proxy(get: { held }, set: { held = $0 })
 
-        XCTAssertEqual(binding.wrappedValue, "start")
+        XCTAssertEqual(proxy.wrappedValue, "start")
 
-        binding.wrappedValue = "typed"
+        proxy.wrappedValue = "typed"
 
         XCTAssertEqual(held, "typed", """
-            The escape hatch: a binding to something this library does not own. \
+            The escape hatch: a proxy to something this library does not own. \
             Whether the write asks for a render is then the setter's business - \
             this one owns nothing, so nothing was asked for.
             """)

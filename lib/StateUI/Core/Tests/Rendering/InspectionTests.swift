@@ -356,7 +356,7 @@ final class InspectionTests: XCTestCase {
         Renderer.shared.setApplication(ShowingApplication())
         _ = Renderer.shared.renderHost(baseline: 0)
 
-        Inspection.ownStates = [ObjectIdentifier(try XCTUnwrap(drawn.$revision.described))]
+        Inspection.ownStates = [ObjectIdentifier(drawn.$revision.storage)]
         Inspection.clear()
         drawn.revision += 1
 
@@ -599,7 +599,7 @@ final class InspectionTests: XCTestCase {
 
         Renderer.name(statesOf: application)
 
-        XCTAssertEqual(application.$menuOpen.described?.origin, "menuOpen")
+        XCTAssertEqual(application.$menuOpen.storage.origin, "menuOpen")
     }
 
     func testADifferenceIsNamedByItsProperty() {

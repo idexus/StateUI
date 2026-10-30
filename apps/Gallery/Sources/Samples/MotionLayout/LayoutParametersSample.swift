@@ -62,7 +62,7 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
 
             SwitchRow(
                 "Fan out",
-                Binding(
+                Binding.Proxy(
                     get: { fanned },
                     set: { fanning in
                         fanned = fanning

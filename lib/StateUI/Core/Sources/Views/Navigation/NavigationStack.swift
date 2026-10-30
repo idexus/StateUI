@@ -73,7 +73,7 @@ public struct NavigationStack: ElementView, Arrangement, BarElement, AutomationE
     /// - Parameter root: the page under everything, built once and kept.
     /// - Parameter destination: the page for one route, asked in path order.
     public init<Route: Hashable, Root: View, Destination: View>(
-        _ path: Binding<[Route]>,
+        _ path: some TwoWay<[Route]>,
         @ViewBuilder root: () -> Root,
         @ViewBuilder destination: (Route) -> Destination
     ) {

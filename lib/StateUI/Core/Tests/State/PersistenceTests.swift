@@ -221,7 +221,7 @@ final class PersistenceTests: XCTestCase {
         sidebar.count = 12
 
         XCTAssertEqual(footer.count, 12)
-        XCTAssertIdentical(sidebar.$count.lender, footer.$count.lender)
+        XCTAssertIdentical(sidebar.$count.storage, footer.$count.storage)
     }
 
     // MARK: - Going out

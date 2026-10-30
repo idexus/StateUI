@@ -46,10 +46,10 @@
             ConformanceCase("theUsersDismissalLandsOnTheState", proves: [
                 Covered(PopoverContract.isPresented), Covered(PopoverContract.isPresentedChanged),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
-                // A binding the host cannot carry hears the dismissal as the event, the written value with it.
+                // A proxy, which the host does not carry, hears the dismissal as the event, the written value with it.
                 let shown = State(wrappedValue: false)
                 let written = Received<Bool>()
-                let bound = Binding(get: { shown.wrappedValue }, set: {
+                let bound = Binding.Proxy(get: { shown.wrappedValue }, set: {
                     written.values.append($0)
                     shown.wrappedValue = $0
                 })
@@ -121,7 +121,7 @@
 
 /// A button showing its popover of filters, which a button inside closes.
 struct FiltersAnchor: View {
-    let shown: Binding<Bool>
+    let shown: any TwoWay<Bool>
 
     var body: some View {
         VStack {

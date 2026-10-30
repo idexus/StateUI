@@ -157,7 +157,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var curve: (any LayoutInterpolation)?
 
     /// States whose writes run the arithmetic again on the host's frames.
-    private var followed: [(any FollowedState)?] = []
+    private var followed: [any FollowedState] = []
 
     /// What is drawn over each view at its placement's `shade`, if anything.
     private var mask: Node?
@@ -572,10 +572,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             complain("A MotionLayout's parameters name no axes: `axes` lists the numbers the hand and the program move.")
         }
         for complaint in complaints { complain(complaint) }
-        if parameters.followed == nil {
-            complain("A MotionLayout's parameters are a state lent with `$`: a binding worked out from others cannot be "
-                + "worn, so the parameters would jump where they are sent rather than travel there.")
-        }
 
         return PlacedStack {
             ForEach(run.slots, identify: { $0.identity }) { slot in run.wrapped(slot) }
@@ -717,7 +713,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             curve: curve ?? LayoutCurve.linear,
             readsFrom: source.readsFrom,
             kept: source.kept,
-            followed: followed.compactMap { $0 },
+            followed: followed,
             description: source.number,
             mask: mask,
             tapped: tapped,

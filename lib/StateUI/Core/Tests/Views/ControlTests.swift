@@ -852,6 +852,12 @@ final class ControlTests: XCTestCase {
                 let name = String(line[line.index(line.startIndex, offsetBy: 12)..<open])
                 let type = String(inside[inside.index(after: colon)...].drop(while: { $0 == " " }))
 
+                // A two-way control's twin takes a whole state or a proxy alike.
+                if type.hasPrefix("some TwoWay<"), type.hasSuffix(">"), !name.contains("<") {
+                    twins.insert(path + "|" + name + ":" + String(type.dropFirst("some TwoWay<".count).dropLast()))
+                    continue
+                }
+
                 // A view or a protocol's value - a header, a shade - is no value a state carries.
                 guard !name.contains("<"), !type.hasPrefix("some "), !type.hasPrefix("any ") else { continue }
 
@@ -1310,29 +1316,29 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(size.wrappedValue, "M")
     }
 
-    /// A two-way control handed a binding the host CANNOT carry - a part of a
-    /// state, or one made from closures - keeps the described road: the value
-    /// is read at build, the report is written back through the binding, and
-    /// nothing is registered for the host to tie.
+    /// A two-way control handed a proxy - a part of a state, or one made from
+    /// closures - keeps the described road: the value is read at build, the
+    /// report is written back through the proxy, and nothing is registered for
+    /// the host to tie.
     func testAPartOrClosureBindingKeepsTheDescribedRoad() {
         var on = false
-        let closure = Binding<Bool>(get: { on }, set: { on = $0 })
+        let closure = Binding<Bool>.Proxy(get: { on }, set: { on = $0 })
         let room = State(wrappedValue: Rect(0, 0, 3, 4))
         let sizes = ["S", "M", "L", "XL"]
 
         struct Profile { var name = "" }
         let profile = State(wrappedValue: Profile())
         var typed = ""
-        let text = Binding<String>(get: { typed }, set: { typed = $0 })
+        let text = Binding<String>.Proxy(get: { typed }, set: { typed = $0 })
         var day = CalendarDate(year: 2026, month: 1, day: 1)
-        let date = Binding<CalendarDate>(get: { day }, set: { day = $0 })
+        let date = Binding<CalendarDate>.Proxy(get: { day }, set: { day = $0 })
         var clock = ClockTime(hour: 0, minute: 0)
-        let time = Binding<ClockTime>(get: { clock }, set: { clock = $0 })
+        let time = Binding<ClockTime>.Proxy(get: { clock }, set: { clock = $0 })
 
         let renders = Renders()
         let patch = renders.render(Node(type: "VStack", children: [
             Switch(closure).node,
-            Picker(sizes, selection: Binding(
+            Picker(sizes, selection: Binding.Proxy(
                 get: { sizes[Int(room.wrappedValue.width)] },
                 set: { room.wrappedValue.width = Double(sizes.firstIndex(of: $0) ?? 0) })).node,
             TextField(text).node,
@@ -1371,6 +1377,29 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(profile.wrappedValue.name, "Notes")
         XCTAssertEqual(day, CalendarDate(year: 2026, month: 8, day: 2))
         XCTAssertEqual(clock, ClockTime(hour: 9, minute: 30))
+    }
+
+    /// A slider and a stepper take a part of a state as every two-way control
+    /// does: the value read at build, nothing tied, the user's move written
+    /// back through the whole.
+    func testASliderAndAStepperTakeAPartTheDescribedWay() {
+        let levels = State(wrappedValue: [0.2, 3.0])
+
+        let renders = Renders()
+        let patch = renders.render(Node(type: "VStack", children: [
+            Slider(levels.projectedValue[0]).id("slider").node,
+            Stepper(levels.projectedValue[1]).id("stepper").node,
+        ]))
+
+        XCTAssertEqual(patch.child("slider")?.props[.value], .number(0.2))
+        XCTAssertNil(patch.child("slider")?.driven)
+        XCTAssertEqual(patch.child("stepper")?.props[.value], .number(3))
+        XCTAssertNil(patch.child("stepper")?.driven)
+
+        renders.fire(handler(patch.child("slider"), "valueChanged"), with: [.number(0.7)])
+        renders.fire(handler(patch.child("stepper"), "valueChanged"), with: [.number(4)])
+
+        XCTAssertEqual(levels.wrappedValue, [0.7, 4])
     }
 
     /// A value the PLATFORM moves - the scroller's offset, which the platform

@@ -41,7 +41,7 @@ public struct CheckBox: ElementView, TextualElement, TintElement, CheckBoxProper
     }
 
     /// Two-way: shows what the binding holds, and writes back what is ticked.
-    public init(_ state: Binding<Bool>) {
+    public init(_ state: some TwoWay<Bool>) {
         self = CheckBox().isOn(state)
     }
 
@@ -52,10 +52,12 @@ public struct CheckBox: ElementView, TextualElement, TintElement, CheckBoxProper
     /// - Parameter state: the state shown, and written back into as the user
     ///   ticks it.
     /// - Returns: the box, wearing and reporting that value.
-    public func isOn(_ state: Binding<Bool>) -> Modified {
-        state.image == nil
-            ? described(CheckBoxContract.isOn.token, state, on: CheckBoxContract.toggled.token)
-            : plain(CheckBoxContract.isOn.token, by: state, mode: .inOut)
+    public func isOn(_ state: some TwoWay<Bool>) -> Modified {
+        guard let whole = state.whole else {
+            return described(CheckBoxContract.isOn.token, state, on: CheckBoxContract.toggled.token)
+        }
+
+        return plain(CheckBoxContract.isOn.token, by: whole, mode: .inOut)
     }
 
     // MARK: Events

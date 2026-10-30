@@ -27,8 +27,8 @@ public struct Journey<Value: Walked> {
     /// The state this is the journey of.
     private let state: Binding<Value>
 
-    /// The storage behind the state; nothing for a part of one or a closure binding.
-    var storage: State<Value>.Storage? { state.described }
+    /// The storage behind the state.
+    var storage: State<Value>.Storage { state.storage }
 
     /// The journey of a state, reached as `$fade.journey`.
     init(of state: Binding<Value>) { self.state = state }
@@ -40,7 +40,7 @@ public struct Journey<Value: Walked> {
     /// The run `owner` shows the value at `value` while it moves it; nil once it rests.
     /// Design: docs/design/core/journeys.md#where-a-run-shows-it
     func show(_ value: Value?, by owner: ObjectIdentifier) {
-        storage?.show(value, by: owner)
+        storage.show(value, by: owner)
     }
 
     /// The lanes as they stand, with the read recorded against the image.
@@ -56,7 +56,7 @@ public struct Journey<Value: Walked> {
     /// The storage, its journey image - made now if nothing has yet - and the lanes
     /// as they stand, read without recording: what every write starts from.
     private func walking() -> (State<Value>.Storage, HostStorage, JourneyLanes<Value>)? {
-        guard let storage, let image = storage.walkedImage(), let lanes = storage.journeyLanes else {
+        guard let image = storage.walkedImage(), let lanes = storage.journeyLanes else {
             return nil
         }
 
@@ -72,7 +72,7 @@ public struct Journey<Value: Walked> {
     public var value: Value {
         get {
             let walked = lanes()?.value
-            return storage?.shown?.value ?? walked ?? state.wrappedValue
+            return storage.shown?.value ?? walked ?? state.wrappedValue
         }
 
         nonmutating set {
@@ -127,11 +127,11 @@ public struct Journey<Value: Walked> {
     public var motion: Motion {
         get {
             _ = lanes()
-            return storage?.law ?? .inherited
+            return storage.law
         }
 
         nonmutating set {
-            guard HandlerRun.admits("a journey's law"), let storage else { return }
+            guard HandlerRun.admits("a journey's law") else { return }
             guard newValue.kind != .custom, storage.law.kind != .custom else {
                 complain("`\(storage.origin ?? "a state")` was given a law after it was declared "
                     + "that would change who walks it. `.custom` is said at the declaration - "
@@ -204,9 +204,8 @@ public struct Journey<Value: Walked> {
     private func send(to target: Value, under motion: Motion?) -> Arrival {
         guard HandlerRun.admits("a movement") else { return Arrival(at: false) }
         guard let (storage, image, lanes) = walking() else {
-            complain("`move` was called on a part of a state, a binding made from closures, "
-                + "or a state the host carries as the value itself, none of which it can "
-                + "walk. Move the whole state, handed to something that walks it.")
+            complain("`move` was called on a state the host carries as the value itself, which it cannot "
+                + "walk. Hand the state to something that walks it.")
             return Arrival(at: false)
         }
 
@@ -257,7 +256,7 @@ public struct Journey<Value: Walked> {
     /// Design: docs/design/types/motion.md#where-a-throw-reaches
     public func reach(_ motion: Motion) -> Value {
         let at = value
-        let law = motion.kind == .inherited ? storage?.law ?? motion : motion
+        let law = motion.kind == .inherited ? storage.law : motion
         guard case .lanes(let from) = at.carried(in: .current), case .lanes(let speed) = velocity.carried(in: .current),
               from.count == speed.count
         else { return at }
@@ -291,8 +290,8 @@ public struct Journey<Value: Walked> {
     public func stop() {
         guard HandlerRun.admits("a stop") else { return }
         guard let (storage, _, standing) = walking() else {
-            complain("`stop` was called on a part of a state, a binding made from closures, "
-                + "or a state the host carries as the value itself, none of which it walks.")
+            complain("`stop` was called on a state the host carries as the value itself, which it does not "
+                + "walk.")
             return
         }
 

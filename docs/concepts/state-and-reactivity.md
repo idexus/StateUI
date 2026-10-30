@@ -210,11 +210,11 @@ The projection `$name` is a `Binding<String>`. A borrowed binding projects
 itself again, so it can be handed through several composed views without a new
 wrapper or adapter.
 
-### Binding to a part
+### A part of a state: `Binding.Proxy`
 
-Bindings use dynamic-member lookup for writable key paths. A value member is
-updated by reading the whole value, changing the member, and writing the whole
-value back:
+Bindings use dynamic-member lookup for writable key paths. `$contact.name` is
+one property of the state, a `Binding<String>.Proxy`: it reads the whole value,
+changes the member, and writes the whole value back:
 
 ```swift
 struct Contact {
@@ -234,49 +234,87 @@ struct ContactForm: View {
 }
 ```
 
-A mutable collection can be borrowed by index in the same way:
+A mutable collection lends one element by index in the same way:
 
 ```swift
-@State var levels = [0.2, 0.5, 0.8]
+struct Levels: View {
+    @State private var levels = [0.2, 0.5, 0.8]
 
-Stepper($levels[1])
+    var body: some View {
+        Stepper($levels[1])
+    }
+}
+```
+
+Every two-way control takes either a `Binding` or a `Binding.Proxy`: both keep
+`TwoWay`. A proxy has no state storage of its own, so the control reads it
+while the body is built and writes the user's change back through it, and the
+body that read it is rebuilt when the state changes. Only a whole state rides
+the host's channel with no body rebuilt, has a journey (`$x.journey`), or wakes
+an engine. Those take `Binding` alone, so a proxy handed to them does not
+compile. Give each value the host carries on its own its own `@State`.
+
+A child that accepts a part borrows it with `@Binding.Proxy`. A parent lending
+a whole state to such a child says so with `.proxy`:
+
+```swift
+struct Contact {
+    var name = ""
+}
+
+struct NameRow: View {
+    @Binding.Proxy var name: String
+
+    var body: some View {
+        TextField($name)
+    }
+}
+
+struct People: View {
+    @State private var contact = Contact()
+    @State private var nickname = ""
+
+    var body: some View {
+        VStack {
+            NameRow(name: $contact.name)
+            NameRow(name: $nickname.proxy)
+        }
+    }
+}
 ```
 
 For a model held in state, the two useful spellings have different owners:
 
-- `profile.$name` is the model property's whole state;
+- `profile.$name` is the model property's whole state, a `Binding`;
 - `$profile.name` is the `name` part reached through the state that holds the
-  model.
+  model, a `Binding.Proxy`.
 
-A part has no independent state storage. It works for described values and
-write-back, but it cannot be a host motion channel, a journey, or an engine's
-followed state. Give independently carried values their own `@State` storage.
-
-A binding to an element knows whether its collection still has it: a write, or
+A proxy to an element knows whether its collection still has it: a write, or
 a post, to `$levels[1]` after the array shrank to one element is dropped and
 said once rather than reaching past the end.
 
-### A custom binding
+### A proxy over closures
 
-Use `Binding(get:set:)` at an integration boundary that StateUI does not own:
+Use `Binding.Proxy(get:set:)` at an integration boundary that StateUI does not
+own:
 
 ```swift
 @MainActor
 final class ExternalSettings {
     var name = ""
 
-    var nameBinding: Binding<String> {
-        Binding(
+    var nameProxy: Binding<String>.Proxy {
+        Binding.Proxy(
             get: { self.name },
             set: { self.name = $0 })
     }
 }
 ```
 
-The setter decides whether anything is invalidated. A closure binding has no
-StateUI storage for the host to carry or for an engine to follow, so controls
-read it while describing and report changes through its setter. Prefer a real
-`@State` whenever StateUI owns the value.
+A proxy promises reading and writing, never a notification. The setter decides
+whether anything is invalidated: writing a `@State` does, while a store StateUI
+does not own rebuilds nothing when it changes. Prefer a real `@State` whenever
+StateUI owns the value.
 
 ## Selecting a reactive path
 
@@ -286,6 +324,7 @@ Use the consequence you need as the selection rule:
 | --- | --- | --- |
 | Change which views exist or how authored values are composed | read the state in a body | rebuild current readers, then diff |
 | Give a child access to the same value | pass `$value` to `@Binding` | determined by what the child does with it |
+| Give a child one property of a value | pass `$value.member` to `@Binding.Proxy` | rebuild the child, which reads it |
 | Keep a native property synchronized continuously | hand the whole state to a binding-taking control or modifier | host-cycle update, no body read |
 | Wake arithmetic on a display frame | name the state in `engine(following:)` or `engine(tracking:)` | wake that engine |
 | Turn one or more carried states into another carried value | `convert`, or `multi` for several | conversion engine, no body read |
@@ -436,9 +475,9 @@ Text(.multi($name, $width, $height).convert { name, width, height in
 Each view writing a conversion keeps its own derived state, even where two
 views convert one source on one line, and lets it go when it leaves.
 
-Conversions require whole StateUI states as sources to remain on the host-cycle
-path. A binding to a member or one made from closures is evaluated as described
-data instead and cannot receive a host-carried reverse conversion.
+Conversions take whole StateUI states as sources, which keeps them on the
+host-cycle path: `convert` and `multi` are offered on `Binding` alone, so a
+`Binding.Proxy` cannot be converted.
 
 ### Destination conversion and journey conversion
 

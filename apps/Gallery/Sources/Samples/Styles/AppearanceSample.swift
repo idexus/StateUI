@@ -48,7 +48,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
             // The theme first: which of the two looks below the gallery wears.
             SectionTitle("The theme")
             Picker(themes.map(\.scheme),
-                   selection: Binding(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
+                   selection: Binding.Proxy(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
                 themes.first { $0.scheme == scheme }?.name ?? ""
             }
                 .accessibilityIdentifier("appearance.theme")
@@ -57,7 +57,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
             // The accent the platform draws its controls in, where the user
             // chooses none for the system.
             SectionTitle("The accent")
-            Picker(Array(accents.indices), selection: Binding(
+            Picker(Array(accents.indices), selection: Binding.Proxy(
                 get: { accents.firstIndex { $0.color == application.accentColor } ?? 0 },
                 set: { application.accentColor = accents[$0].color })) { accents[$0].name }
                 .accessibilityIdentifier("appearance.accent")
@@ -66,7 +66,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
             #if WEB
             // The bars' buttons, which the Web draws itself.
             SectionTitle("The bars' buttons")
-            Picker(Self.toolbarStyles.map(\.style), selection: Binding(
+            Picker(Self.toolbarStyles.map(\.style), selection: Binding.Proxy(
                 get: { style.toolbarStyle }, set: { style.toolbarStyle = $0 })) { chosen in
                 Self.toolbarStyles.first { $0.style == chosen }?.name ?? ""
             }
@@ -74,7 +74,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Buttons")
             // The application's own look for them: a style for every group and
             // every button on a bar, its states included (AppStyles.bars).
-            Switch(Binding(get: { style.barsInOwnLook }, set: { owns in
+            Switch(Binding.Proxy(get: { style.barsInOwnLook }, set: { owns in
                 style.barsInOwnLook = owns
                 application.styles = AppStyles.sheet(barsInOwnLook: owns)
             }))
@@ -155,7 +155,7 @@ private struct LookColumn: View {
         let name = title.lowercased()
         // Each surface's choices write that part of the theme's look.
         let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in
-            Binding(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
+            Binding.Proxy(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
         }
 
         let choice = self.choice
@@ -190,7 +190,7 @@ private struct SurfacePickers: View {
     let label: String
     let theme: String
     let part: GallerySurface
-    let surface: Binding<SurfaceLook>
+    let surface: Binding<SurfaceLook>.Proxy
 
     var body: some View {
         let surface = self.surface
@@ -204,18 +204,18 @@ private struct SurfacePickers: View {
             Text(title)
                 .fontSize(12)
                 .textColor(Palette.subtle)
-            Picker(materials, selection: Binding(get: { look.material }, set: { surface.wrappedValue.material = $0 })) {
+            Picker(materials, selection: surface.material) {
                 $0.name
             }
                 .accessibilityIdentifier(id)
                 .accessibilityLabel("\(label), \(theme)")
-            Picker(accents, selection: Binding(get: { look.color }, set: { surface.wrappedValue.color = $0 })) {
+            Picker(accents, selection: surface.color) {
                 $0.name
             }
                 .accessibilityIdentifier("\(id)Color")
                 .accessibilityLabel("\(label)'s color, \(theme)")
                 .isEnabled(look.material.showsColor)
-            Picker(blurs, selection: Binding(get: { look.blur }, set: { surface.wrappedValue.blur = $0 })) { blur in
+            Picker(blurs, selection: surface.blur) { blur in
                 ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
             }
                 .accessibilityIdentifier("\(id)Blur")

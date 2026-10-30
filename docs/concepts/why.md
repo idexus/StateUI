@@ -124,6 +124,57 @@ declared journey type, and an engine woken by what it reads. Each would double
 every API that takes a state, and where a state is used already says what it
 is.
 
+## A part of a state is a proxy, a type of its own
+
+`$master` is a `Binding`: the state itself, which the host carries with no
+body rebuilt, which has a journey and which wakes an engine. `$mix.volume`,
+`$levels[1]` and `Binding.Proxy(get:set:)` are a `Binding.Proxy`: a value read
+and written through something else
+([A part of a state](state-and-reactivity.md#a-part-of-a-state-bindingproxy)).
+Every two-way control takes either, through the protocol both keep, `TwoWay`;
+what needs the state itself takes `Binding` alone:
+
+```swift
+struct Mix {
+    var volume = 0.5
+}
+
+struct Mixer: View {
+    @State private var mix = Mix()
+    @State private var master = 0.5
+
+    var body: some View {
+        VStack {
+            Slider($mix.volume)     // read at build, each move written back
+            Slider($master)         // carried by the host, on a journey
+        }
+        .engine(following: $master) { _ in }
+    }
+}
+```
+
+- **The road is the type's.** Whether a value rides the host's channel is
+  decided by its type, never by where it came from: a proxy is described,
+  whatever it reaches - a whole state lent as one with `$master.proxy` too.
+- **A mistake the compiler refuses.** A proxy handed to a journey, a driven
+  modifier, `engine(following:)`, a motion layout's parameters or `convert`
+  does not compile; `.engine(following: $mix.volume)` is an error, not an
+  engine that never wakes.
+- **A child says what it accepts.** `@Binding` borrows a whole state;
+  `@Binding.Proxy` takes a part as well, and a parent lending it a whole state
+  writes `$x.proxy`.
+- **A proxy promises reading and writing, never a notification.** A part
+  reads through the whole state, so a body reading it is rebuilt when the state
+  changes; closures over a store StateUI does not own rebuild nothing when that
+  store changes.
+
+**Deliberately rejected:** one binding type whose road depends on its origin -
+a slider that moves on `$master.journey` and silently stands still for
+`$mix.volume`, or a control that compiles with a part and sets nothing;
+refusing a part at run time with a complaint, which still compiles and does
+nothing; and aliases for the proxy - two names for one type are two things to
+learn.
+
 ## Native controls, through what they expose
 
 Each host renders with its platform's own controls, so an application looks

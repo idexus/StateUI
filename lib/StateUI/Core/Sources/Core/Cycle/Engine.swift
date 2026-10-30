@@ -225,27 +225,18 @@ extension ModifiableElement {
         priority: Double = 0,
         _ run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) -> Modified {
-        var follows: [(any FollowedState)?] = []
+        var follows: [any FollowedState] = []
         for storage in repeat (each tracking).followed { follows.append(storage) }
 
         return engine(follows, priority: priority, run)
     }
 
-    /// Registers an engine woken by `named`'s writes; a part of a state or a binding made from closures is
-    /// refused, said once.
+    /// Registers an engine woken by the writes of the states it `follows`.
     func engine(
-        _ named: [(any FollowedState)?], priority: Double,
+        _ follows: [any FollowedState], priority: Double,
         _ run: @escaping @MainActor (EngineCycle) -> EngineAnswer
     ) -> Modified {
-        let follows = named.compactMap { $0 }
-
-        if follows.count < named.count {
-            complain("An engine was handed a part of a state, or a binding made "
-                + "from closures, which has no storage of its own to be woken by. "
-                + "Follow the whole state.")
-        }
-
-        return modified {
+        modified {
             $0.engines.append(EngineDeclaration(follows: follows, priority: priority, run: run))
         }
     }

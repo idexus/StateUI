@@ -43,7 +43,7 @@ public struct Switch: ElementView, TextualElement, TintElement, SwitchProperties
     }
 
     /// Two-way: shows what the binding holds, and writes back what is flipped.
-    public init(_ state: Binding<Bool>) {
+    public init(_ state: some TwoWay<Bool>) {
         self = Switch().isOn(state)
     }
 
@@ -58,10 +58,12 @@ public struct Switch: ElementView, TextualElement, TintElement, SwitchProperties
     /// - Parameter state: the state shown, and written back into as the user
     ///   flips it.
     /// - Returns: the switch, wearing and reporting that value.
-    public func isOn(_ state: Binding<Bool>) -> Modified {
-        state.image == nil
-            ? described(SwitchContract.isOn.token, state, on: SwitchContract.toggled.token)
-            : plain(SwitchContract.isOn.token, by: state, mode: .inOut)
+    public func isOn(_ state: some TwoWay<Bool>) -> Modified {
+        guard let whole = state.whole else {
+            return described(SwitchContract.isOn.token, state, on: SwitchContract.toggled.token)
+        }
+
+        return plain(SwitchContract.isOn.token, by: whole, mode: .inOut)
     }
 
     // MARK: Events

@@ -48,7 +48,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private let source: Source
 
     /// Where the middle card is written, when an author lent a binding.
-    private var pin: Binding<Int>?
+    private var pin: (any TwoWay<Int>)?
 
     /// What runs when the middle card changes, beside any binding, through its gate.
     private var moved: ValueHandler<Int>?
@@ -147,7 +147,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     ///
     /// - Parameter state: where the middle card is written and read.
     /// - Returns: the gallery, keeping its card there.
-    public func position(_ state: Binding<Int>) -> Self {
+    public func position(_ state: some TwoWay<Int>) -> Self {
         var copy = self
         copy.pin = state
         return copy

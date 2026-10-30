@@ -125,13 +125,10 @@ extension VisualElement {
         _ asks: Asks
     ) -> Modified {
         modified {
-            guard let from = source.described, let image = from.walkedImage(),
-                  let into = target.described
-            else {
-                complain("`.samples` was given a binding that borrows no @State the host "
-                    + "walks - a closure binding, a part of a state, or a state carried as "
-                    + "the value itself - so there is no journey to read. Hand it the "
-                    + "state itself.")
+            let from = source.storage, into = target.storage
+            guard let image = from.walkedImage() else {
+                complain("`.samples` was given a state the host carries as the value itself, so there is no "
+                    + "journey to read. Hand it a state the host walks.")
                 return
             }
 

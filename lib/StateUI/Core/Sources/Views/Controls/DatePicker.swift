@@ -70,7 +70,7 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
     }
 
     /// Two-way: shows the date and writes back the one that is chosen.
-    public init(_ state: Binding<CalendarDate>) {
+    public init(_ state: some TwoWay<CalendarDate>) {
         self = DatePicker().date(state)
     }
 
@@ -88,10 +88,12 @@ public struct DatePicker: ElementView, TextColorElement, FontElement, DatePicker
     /// - Parameter state: the state shown, and written back into when a day is
     ///   chosen.
     /// - Returns: the control, wearing and reporting that day.
-    public func date(_ state: Binding<CalendarDate>) -> Modified {
-        state.image == nil
-            ? described(.date, state, on: .dateChanged)
-            : plain(.date, by: state, mode: .inOut)
+    public func date(_ state: some TwoWay<CalendarDate>) -> Modified {
+        guard let whole = state.whole else {
+            return described(.date, state, on: .dateChanged)
+        }
+
+        return plain(.date, by: whole, mode: .inOut)
     }
 
     // MARK: Events

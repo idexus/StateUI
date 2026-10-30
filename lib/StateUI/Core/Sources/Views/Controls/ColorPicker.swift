@@ -51,7 +51,7 @@ public struct ColorPicker: ElementView, ColorPickerProperties, FocusElement {
 
     /// Two-way: shows what the binding holds, and writes back what the user
     /// chooses.
-    public init(_ state: Binding<Color>) {
+    public init(_ state: some TwoWay<Color>) {
         self = ColorPicker().color(state)
     }
 
@@ -67,10 +67,12 @@ public struct ColorPicker: ElementView, ColorPickerProperties, FocusElement {
     /// - Parameter state: the state shown, and written back into as the user
     ///   chooses.
     /// - Returns: the picker, wearing and reporting that color.
-    public func color(_ state: Binding<Color>) -> Modified {
-        state.image == nil
-            ? described(ColorPickerContract.color.token, state, on: ColorPickerContract.colorChanged.token)
-            : journey(ColorPickerContract.color.token, by: state)
+    public func color(_ state: some TwoWay<Color>) -> Modified {
+        guard let whole = state.whole else {
+            return described(ColorPickerContract.color.token, state, on: ColorPickerContract.colorChanged.token)
+        }
+
+        return journey(ColorPickerContract.color.token, by: whole)
     }
 
     // MARK: Events

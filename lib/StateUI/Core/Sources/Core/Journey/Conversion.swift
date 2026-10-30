@@ -107,12 +107,7 @@ extension Journey {
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> {
-        guard let source = storage else {
-            complain("`journey.convert` was called on a part of a state, or a binding made "
-                + "from closures, which the host cannot walk. The value is worked out at "
-                + "build instead, and nothing reports back through it.")
-            return Binding<Out>(get: { transform(self) }, set: { _ in })
-        }
+        let source = storage
 
         // The image is made now, so the engine has a journey from its first run and a
         // body reading the result reads the journey.
@@ -137,7 +132,7 @@ extension Journey {
 
 extension Binding where Value: StateValue {
     /// The conversion this binding is the derived side of, if it is one.
-    var conversion: Conversion? { described?.conversion }
+    var conversion: Conversion? { storage.conversion }
 
     /// This state converted on its way to a control: a second state the host
     /// carries, worked out from this one by an engine the differ writes, so
@@ -166,12 +161,7 @@ extension Binding where Value: StateValue {
         line: UInt = #line,
         column: UInt = #column
     ) -> Binding<Out> {
-        guard let source = described else {
-            complain("`convert` was called on a part of a state, or a binding made from "
-                + "closures, which the host cannot carry. The value is worked out at "
-                + "build instead, and nothing reports back through it.")
-            return Binding<Out>(get: { transform(self.wrappedValue) }, set: { _ in })
-        }
+        let source = storage
 
         let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) { transform(source.value) }
         let conversion = derived.conversion ?? Conversion()
@@ -200,8 +190,8 @@ extension Binding where Value: StateValue {
     /// - Parameter transform: the source's value, from the derived one.
     /// - Returns: the same derived state, now reporting back.
     public func convertBack<Source: StateValue>(_ transform: @escaping (Value) -> Source) -> Binding<Value> {
-        guard let derived = described,
-              let conversion = derived.conversion,
+        let derived = storage
+        guard let conversion = derived.conversion,
               conversion.sources.count == 1,
               let source = conversion.sources[0] as? State<Source>.Storage
         else {
@@ -227,8 +217,8 @@ extension Binding where Value: StateValue {
     public func convertBack<First: StateValue, Second: StateValue>(
         _ transform: @escaping (Value) -> (First, Second)
     ) -> Binding<Value> {
-        guard let derived = described,
-              let conversion = derived.conversion,
+        let derived = storage
+        guard let conversion = derived.conversion,
               conversion.sources.count == 2,
               let first = conversion.sources[0] as? State<First>.Storage,
               let second = conversion.sources[1] as? State<Second>.Storage

@@ -636,15 +636,14 @@ final class CarriedStateTests: XCTestCase {
     /// A PART of a carried state is not itself driven: the image is the whole
     /// value, and no message can say that a property rides one lane of it.
     ///
-    /// The part still reads and writes - through the whole, as any derived
-    /// binding does - so what this pins is which ROAD it takes, not whether it
-    /// works: the whole has an image, and a part of it is a binding made from
-    /// closures, which no driven modifier accepts.
+    /// The part still reads and writes - through the whole - so what this pins
+    /// is which ROAD it takes, not whether it works: the whole has an image, and
+    /// a part of it is a proxy, which no driven modifier accepts.
     func testAPartOfACarriedStateIsNotDriven() {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
         let whole: Binding<Rect> = room.projectedValue
-        let part: Binding<Double> = whole.width
+        let part: Binding<Double>.Proxy = whole.width
 
         part.wrappedValue = 90
 

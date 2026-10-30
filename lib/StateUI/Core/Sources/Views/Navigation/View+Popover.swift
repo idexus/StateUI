@@ -20,7 +20,7 @@ extension View {
     ///   - content: what the popover shows.
     /// - Returns: this view, with its popover.
     public func popover<Content: View>(
-        isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content
+        isPresented state: some TwoWay<Bool>, @ViewBuilder content: @escaping () -> Content
     ) -> Modified {
         showing(PopoverElement(content: { [content().node] }, presented: state))
     }
@@ -40,10 +40,10 @@ extension View {
     ///   - content: what the popover shows of a value.
     /// - Returns: this view, with its popover.
     public func popover<Item: Hashable, Content: View>(
-        item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content
+        item state: some TwoWay<Item?>, @ViewBuilder content: @escaping (Item) -> Content
     ) -> Modified {
         let item = state.wrappedValue
-        let presented = Binding(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
+        let presented = Binding.Proxy(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
         return showing(PopoverElement(
             content: {
                 item.map { item in
@@ -71,11 +71,10 @@ struct PopoverElement: ElementView {
 
     /// What `content` makes, shown while `state` holds true, the user's dismissal written back; leaving the tree
     /// writes false.
-    init(content: @escaping () -> [Node], presented state: Binding<Bool>) {
+    init(content: @escaping () -> [Node], presented state: some TwoWay<Bool>) {
         node.producer = content
-        self = state.image == nil
-            ? described(PopoverContract.isPresented.token, state, on: PopoverContract.isPresentedChanged.token)
-            : plain(PopoverContract.isPresented.token, by: state, mode: .inOut)
+        self = state.whole.map { plain(PopoverContract.isPresented.token, by: $0, mode: .inOut) }
+            ?? described(PopoverContract.isPresented.token, state, on: PopoverContract.isPresentedChanged.token)
         node.destroying.append { if state.wrappedValue { state.wrappedValue = false } }
     }
 }

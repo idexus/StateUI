@@ -6,7 +6,7 @@
 enum RefreshWorn {
     case requested(@MainActor () throws -> Void)
     case awaited(Gating, EventHandler)
-    case refreshing(Binding<Bool>)
+    case refreshing(any TwoWay<Bool>)
     case enabled(Bool)
     case enabledBy(Binding<Bool>)
 

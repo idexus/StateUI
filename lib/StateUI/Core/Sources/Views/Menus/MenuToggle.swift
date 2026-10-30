@@ -27,7 +27,7 @@ public struct MenuToggle: Element, MenuItemElement {
     /// The state is read where the menu is built, so a change builds that
     /// body again: a menu is walked from the tree, never a channel of its own.
     /// Design: docs/design/host/pages.md#a-checked-entry
-    public init(_ text: String, isOn: Binding<Bool>) {
+    public init(_ text: String, isOn: some TwoWay<Bool>) {
         self.init(text, isOn: isOn.wrappedValue)
         node.addHandler(MenuToggleContract.toggled.token) {
             if let turned = EventBuffer.current.value()?.bool { isOn.wrappedValue = turned }

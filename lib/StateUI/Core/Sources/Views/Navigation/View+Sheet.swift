@@ -25,7 +25,7 @@ extension View {
     ///   - state: whether the sheet shows, written false as it closes.
     ///   - content: what the sheet shows.
     /// - Returns: this view, with its sheet.
-    public func sheet<Content: View>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Modified {
+    public func sheet<Content: View>(isPresented state: some TwoWay<Bool>, @ViewBuilder content: () -> Content) -> Modified {
         presenting(SheetElement(page: state.wrappedValue ? Node.page(content()) : nil, presented: state))
     }
 
@@ -45,14 +45,14 @@ extension View {
     ///   - content: what the sheet shows of the value.
     /// - Returns: this view, with its sheet.
     public func sheet<Item: Hashable, Content: View>(
-        item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content
+        item state: some TwoWay<Item?>, @ViewBuilder content: (Item) -> Content
     ) -> Modified {
         let page = state.wrappedValue.map { item in
             var page = Node.page(content(item))
             page.identify(item)
             return page
         }
-        let presented = Binding(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
+        let presented = Binding.Proxy(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
         return presenting(SheetElement(page: page, presented: presented))
     }
 
@@ -72,7 +72,7 @@ struct SheetElement: ElementView {
 
     /// `page` presented while `state` holds true, the user's dismissal written back - described, never carried by
     /// the host: the view presenting it builds again as it changes, its page with it; leaving the tree writes false.
-    init(page: Node?, presented state: Binding<Bool>) {
+    init(page: Node?, presented state: some TwoWay<Bool>) {
         node = Node(contract: SheetContract.self, children: page.map { [$0] } ?? [])
         self = described(SheetContract.isPresented.token, state, on: SheetContract.isPresentedChanged.token)
         node.destroying.append { if state.wrappedValue { state.wrappedValue = false } }

@@ -163,16 +163,6 @@ final class MotionLayoutTests: XCTestCase {
                        "the phase written is where the host walks it")
     }
 
-    /// A PHASE IS A STATE: a binding worked out from others cannot be worn, so it is said once - its phase would jump.
-    func testAPhaseWorkedOutFromOthersIsSaid() {
-        var stored = 0.0
-        _ = Renders().render(
-            MotionLayout([1], parameters: Binding(get: { stored }, set: { stored = $0 })) { Text("\($0)") } placements: { _, _ in [] }
-                .node)
-
-        XCTAssertTrue(hasComplained("A MotionLayout's parameters are a state lent with `$`"))
-    }
-
     /// WITHOUT A HAND THE PHASE TRAVELS AS THE HOST WALKS IT: a write is where the run goes, and the arithmetic is
     /// handed each frame where the host says the phase stands - never the destination at once.
     func testWithoutAHandThePhaseTravelsAsTheHostWalksIt() async throws {

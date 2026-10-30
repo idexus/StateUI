@@ -77,14 +77,14 @@ final class InspectorModel {
             String(reflecting: InspectorPanel.self),
             String(reflecting: InspectorPage.self),
         ]
-        Inspection.ownStates = Set([
-            $places.described.map { ObjectIdentifier($0) },
-            $collapsed.described.map { ObjectIdentifier($0) },
-            $paused.described.map { ObjectIdentifier($0) },
-            $revision.described.map { ObjectIdentifier($0) },
-            $selected.described.map { ObjectIdentifier($0) },
-            $showingComplaints.described.map { ObjectIdentifier($0) },
-        ].compactMap { $0 })
+        Inspection.ownStates = [
+            ObjectIdentifier($places.storage),
+            ObjectIdentifier($collapsed.storage),
+            ObjectIdentifier($paused.storage),
+            ObjectIdentifier($revision.storage),
+            ObjectIdentifier($selected.storage),
+            ObjectIdentifier($showingComplaints.storage),
+        ]
         Inspection.landed = { [unowned self] in self.landed() }
         // A complaint comes on any thread; the inspectors hear of it on theirs.
         Said.shared.onSaid { libraryTask { InspectorModel.shared.landed() } }

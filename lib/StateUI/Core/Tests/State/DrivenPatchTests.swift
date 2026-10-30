@@ -379,9 +379,11 @@ final class DrivenPatchTests: XCTestCase {
 
                 values.formUnion(written.occurrences(between: "public func ", and: "(_ value:"))
 
-                if let name = written.occurrences(between: "public func ", and: "(").first,
-                   let type = written.occurrences(between: "Binding<", and: ">").first {
-                    signature = (name, type)
+                // Each declaration starts afresh, so a body is never read as an earlier signature's.
+                if let name = written.occurrences(between: "public func ", and: "(").first {
+                    let type = written.occurrences(between: "Binding<", and: ">").first
+                        ?? written.occurrences(between: "TwoWay<", and: ">").first
+                    signature = type.map { (name, $0) }
                 } else if let property = written.occurrences(between: "journey(", and: ",").first,
                           property.hasPrefix(".")
                             || property.split(separator: ".").first?.hasSuffix("Contract") == true,

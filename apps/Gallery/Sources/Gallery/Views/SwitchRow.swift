@@ -16,12 +16,12 @@ import StateUI
 struct SwitchRow: View {
     private let text: String
 
-    private let value: Binding<Bool>
+    private let value: any TwoWay<Bool>
 
     /// - Parameters:
     ///   - text: What the option is called.
     ///   - value: The state it is thrown from, and written back to.
-    init(_ text: String, _ value: Binding<Bool>) {
+    init(_ text: String, _ value: some TwoWay<Bool>) {
         self.text = text
         self.value = value
     }

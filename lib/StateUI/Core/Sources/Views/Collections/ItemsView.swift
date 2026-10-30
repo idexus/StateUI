@@ -146,7 +146,7 @@ extension ItemsView {
 
     /// One item chosen at a time, borrowed two-way: the user's choice is
     /// written here, nil where they let it go, and assigning it chooses.
-    public func selection(_ state: Binding<ID?>) -> Self {
+    public func selection(_ state: some TwoWay<ID?>) -> Self {
         var copy = self
         copy.choice = Choice(
             mode: .single,
@@ -156,7 +156,7 @@ extension ItemsView {
     }
 
     /// As many items chosen as the user likes, borrowed two-way.
-    public func selection(_ state: Binding<Set<ID>>) -> Self {
+    public func selection(_ state: some TwoWay<Set<ID>>) -> Self {
         var copy = self
         copy.choice = Choice(
             mode: .multiple,
@@ -292,7 +292,7 @@ extension ItemsView {
     /// Whether the refresh is under way, both ways: the user's pull writes true into the state, and the
     /// application writes false once the items are fresh - or true, to show a refresh it began itself, which runs
     /// no `onRefreshRequested`. Without it, the spinner a pull shows goes at once.
-    public func isRefreshing(_ state: Binding<Bool>) -> Self {
+    public func isRefreshing(_ state: some TwoWay<Bool>) -> Self {
         wearing(.refreshing(state))
     }
 

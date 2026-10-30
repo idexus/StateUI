@@ -59,9 +59,10 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     ///   - selection: the state holding the chosen value, shown and written back into.
     ///   - caption: the words each value shows by; its description unless given.
     public init<Item: Equatable>(
-        _ items: [Item], selection: Binding<Item>, caption: (Item) -> String = { "\($0)" }
+        _ items: [Item], selection: some TwoWay<Item>, caption: (Item) -> String = { "\($0)" }
     ) {
-        let chosen = Binding<Item?>(get: { selection.wrappedValue }, set: { if let value = $0 { selection.wrappedValue = value } })
+        let chosen = Binding<Item?>.Proxy(
+            get: { selection.wrappedValue }, set: { if let value = $0 { selection.wrappedValue = value } })
         self.init(items, chosen: chosen, caption: caption)
     }
 
@@ -74,7 +75,7 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     ///   - selection: the state holding the chosen value, or nil, shown and written back into.
     ///   - caption: the words each value shows by; its description unless given.
     public init<Item: Equatable>(
-        _ items: [Item], selection: Binding<Item?>, caption: (Item) -> String = { "\($0)" }
+        _ items: [Item], selection: some TwoWay<Item?>, caption: (Item) -> String = { "\($0)" }
     ) {
         self.init(items, chosen: selection, caption: caption)
     }
@@ -82,10 +83,10 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     /// The choice crosses as the chosen value's place in the list, worked out
     /// again at each build, and a choice reported comes back as its value.
     /// Design: docs/design/views/bindings.md#two-way-controls
-    private init<Item: Equatable>(_ items: [Item], chosen: Binding<Item?>, caption: (Item) -> String) {
+    private init<Item: Equatable>(_ items: [Item], chosen: some TwoWay<Item?>, caption: (Item) -> String) {
         var picker = Picker()
         picker.node.write(PickerContract.options, items.map(caption))
-        let place = Binding<Int>(
+        let place = Binding<Int>.Proxy(
             get: { chosen.wrappedValue.flatMap { items.firstIndex(of: $0) } ?? -1 },
             set: { place in if items.indices.contains(place) { chosen.wrappedValue = items[place] } })
         self = picker.described(.selectedIndex, place, on: .selectedIndexChanged)

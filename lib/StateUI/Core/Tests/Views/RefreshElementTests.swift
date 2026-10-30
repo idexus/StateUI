@@ -14,14 +14,14 @@ final class RefreshElementTests: XCTestCase {
         Renderer.shared.clearStates()
     }
 
-    /// A part of a state - which the host cannot carry - shows what it holds, and the pull writes it true before the
-    /// handler hears the pull.
+    /// A proxy - which the host does not carry - shows what it holds, and the pull writes it true before the handler
+    /// hears the pull.
     func testThePullWritesAStateTheHostCannotCarry() throws {
         var held = false
         var heard: [Bool] = []
         let renders = Renders()
         let patch = renders.render(ScrollView { Text("") }
-            .isRefreshing(Binding(get: { held }, set: { held = $0 }))
+            .isRefreshing(Binding.Proxy(get: { held }, set: { held = $0 }))
             .onRefreshRequested { heard.append(held) }
             .node)
 
