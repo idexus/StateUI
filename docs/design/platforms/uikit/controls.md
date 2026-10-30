@@ -190,5 +190,9 @@ it on its own layer - the border in the stroke's color and width, the
 corners as `BoxArithmetic.cornerRadius` rounds the shape at the field's size,
 again as the size changes, so a capsule's ends stay whole - and a field on
 one line lays its own frame aside (`borderStyle`), taking it back where the
-tree outlines it no more (`UIKitFieldOutline`). An editor keeps its corners
-of 8 where the tree says no shape.
+tree outlines it no more (`UIKitFieldOutline`). Laid aside, that frame takes
+its measures with it - UIKit sets the words of a frameless field against its
+edge and measures it a line tall - so an outlined field keeps them, read off a
+field in its own frame in the same font: as tall, its words set in as far, and
+no less than half a round end. An editor keeps its corners of 8 where the
+tree says no shape.
