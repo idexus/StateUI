@@ -37,7 +37,7 @@ Fill.frameChanged: ✅
 Fill.gridColumnSpan: ✅
 Fill.gridRowSpan: ✅
 Grid.held: ✓ hold on Grid: handed to the host's recognizer or handler, no NSEvent sent
-Grid.physicsBody: ✅
+Grid.layoutBody: ✅
 HStack.panYChannel: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
 Image.area: ✅
 Image.frameChanged: ✅
@@ -75,7 +75,7 @@ Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
 Picker.held: ✓ hold on Picker: handed to the host's recognizer or handler, no NSEvent sent
-Picker.physicsBody: ✅
+Picker.layoutBody: ✅
 Polygon.panYChannel: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polyline.area: ✅
 Polyline.frameChanged: ✅
@@ -127,7 +127,7 @@ Switch.gridRowSpan: ✅
 Text.holdDuration: ✅
 Text.verticalAlignment: ✅
 TextEditor.held: ✓ hold on TextEditor: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.physicsBody: ✅
+TextEditor.layoutBody: ✅
 TextField.panYChannel: ✓ pan on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TimePicker.area: ✅
 TimePicker.frameChanged: ✅

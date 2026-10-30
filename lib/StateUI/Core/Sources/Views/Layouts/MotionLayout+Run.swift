@@ -75,8 +75,8 @@ extension MotionLayout {
 
         /// What the views move by between their places and where they are shown, and the body each view at an index
         /// says it is - nil for one of the world's own.
-        let world: PhysicsWorld
-        let body: @MainActor (Int) -> PhysicsBody?
+        let world: LayoutDynamics
+        let body: @MainActor (Int) -> LayoutBody?
 
         /// What is told once the run comes to rest.
         let settled: ValueHandler<Parameters>?

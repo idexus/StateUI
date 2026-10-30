@@ -31,7 +31,7 @@ Ellipse.frameChanged: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRowSpan: ✅
 Fill.held: ✓ hold on Fill: handed to the host's recognizer or handler, no NSEvent sent
-Fill.physicsBody: ✅
+Fill.layoutBody: ✅
 Grid.panYChannel: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
 HStack.area: ✅
 HStack.frameChanged: ✅
@@ -62,7 +62,7 @@ MotionLayout.pointerMoved: ✓ hover on MotionLayout: handed to the host's recog
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.pointerReleased: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.held: ✓ hold on Path: handed to the host's recognizer or handler, no NSEvent sent
-Path.physicsBody: ✅
+Path.layoutBody: ✅
 Picker.panYChannel: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.area: ✅
 Polygon.frameChanged: ✅
@@ -118,7 +118,7 @@ Stepper.frameChanged: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅
 Switch.held: ✓ hold on Switch: handed to the host's recognizer or handler, no NSEvent sent
-Switch.physicsBody: ✅
+Switch.layoutBody: ✅
 Text.frameChanged: ✅
 Text.margin: ✅
 Text.swipeDirection: ✓ pan on Text: handed to the host's recognizer or handler, no NSEvent sent

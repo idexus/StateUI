@@ -35,8 +35,8 @@ DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 Ellipse.area: ✅
 Ellipse.frameChanged: ✅
+Ellipse.layoutBody: ✅
 Ellipse.panYChannel: ✅
-Ellipse.physicsBody: ✅
 Fill.canDrag: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
 Fill.dragEnded: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
 Fill.dragStarting: ✓ dragAndDrop on Fill: the relay's drag reports told by the driver, no drag WinUI began
@@ -68,8 +68,8 @@ ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 Line.area: ✅
 Line.frameChanged: ✅
+Line.layoutBody: ✅
 Line.panYChannel: ✅
-Line.physicsBody: ✅
 Link.canDrag: ✓ dragAndDrop on Link: the relay's drag reports told by the driver, no drag WinUI began
 Link.dragEnded: ✓ dragAndDrop on Link: the relay's drag reports told by the driver, no drag WinUI began
 Link.dragStarting: ✓ dragAndDrop on Link: the relay's drag reports told by the driver, no drag WinUI began
@@ -106,8 +106,8 @@ Polyline.tapCount: ✅
 Polyline.tapped: ✅
 ProgressBar.area: ✅
 ProgressBar.frameChanged: ✅
+ProgressBar.layoutBody: ✅
 ProgressBar.panYChannel: ✅
-ProgressBar.physicsBody: ✅
 Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Rectangle.dragStarting: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -170,8 +170,8 @@ Text.holdDuration: – WinUI's hold comes after the system's own time: a view ke
 Text.margin: ✅
 TextEditor.area: ✅
 TextEditor.frameChanged: ✅
+TextEditor.layoutBody: ✅
 TextEditor.panYChannel: ✅
-TextEditor.physicsBody: ✅
 TextField.canDrag: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
 TextField.dragEnded: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began
 TextField.dragStarting: ✓ dragAndDrop on TextField: the relay's drag reports told by the driver, no drag WinUI began

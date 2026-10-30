@@ -40,8 +40,8 @@ Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Fill.area: ✅
 Fill.frameChanged: ✅
+Fill.layoutBody: ✅
 Fill.panYChannel: ✅
-Fill.physicsBody: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragEnded: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
 Grid.dragStarting: ✓ dragAndDrop on Grid: the relay's drag reports told by the driver, no drag WinUI began
@@ -70,8 +70,8 @@ Line.tapCount: ✅
 Line.tapped: ✅
 Link.area: ✅
 Link.frameChanged: ✅
+Link.layoutBody: ✅
 Link.panYChannel: ✅
-Link.physicsBody: ✅
 Map.canDrag: 🧩
 Map.dragEnded: 🧩
 Map.dragStarting: 🧩
@@ -116,8 +116,8 @@ ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 Rectangle.area: ✅
 Rectangle.frameChanged: ✅
+Rectangle.layoutBody: ✅
 Rectangle.panYChannel: ✅
-Rectangle.physicsBody: ✅
 ScrollView.canDrag: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
 ScrollView.dragStarting: ✓ dragAndDrop on ScrollView: the relay's drag reports told by the driver, no drag WinUI began
@@ -147,8 +147,8 @@ Space.pointerReleased: ✅
 Space.tapped: ✅
 Spinner.area: ✅
 Spinner.frameChanged: ✅
+Spinner.layoutBody: ✅
 Spinner.panYChannel: ✅
-Spinner.physicsBody: ✅
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅
@@ -174,8 +174,8 @@ TextEditor.tapCount: ✅
 TextEditor.tapped: ✅
 TextField.area: ✅
 TextField.frameChanged: ✅
+TextField.layoutBody: ✅
 TextField.panYChannel: ✅
-TextField.physicsBody: ✅
 TimePicker.canDrag: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began
 TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the relay's drag reports told by the driver, no drag WinUI began

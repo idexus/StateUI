@@ -30,7 +30,7 @@ final class LayoutSettleTests: XCTestCase {
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
         .motion(.eased(.milliseconds(160)))
-        .physicsWorld(.spring(response: .milliseconds(160)))
+        .dynamics(.spring(response: .milliseconds(160)))
         .onSettled { told.phases.append($0) }
         .node
     }

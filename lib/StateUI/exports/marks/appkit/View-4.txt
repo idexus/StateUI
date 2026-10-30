@@ -17,7 +17,7 @@ CheckBox.frameChanged: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRowSpan: ✅
 ColorPicker.held: ✓ hold on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
-ColorPicker.physicsBody: ✅
+ColorPicker.layoutBody: ✅
 DatePicker.panYChannel: ✓ pan on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.area: ✅
 Ellipse.frameChanged: ✅
@@ -53,7 +53,7 @@ Line.frameChanged: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
 Link.held: ✓ hold on Link: handed to the host's recognizer or handler, no NSEvent sent
-Link.physicsBody: ✅
+Link.layoutBody: ✅
 Map.panYChannel: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.frameChanged: ✅
 MotionLayout.horizontalAlignment: ✅
@@ -100,7 +100,7 @@ Separator.area: ✅
 Separator.frameChanged: ✅
 Separator.rotationUpdated: ✓ rotate on Separator: handed to the host's recognizer or handler, no NSEvent sent
 Slider.held: ✓ hold on Slider: handed to the host's recognizer or handler, no NSEvent sent
-Slider.physicsBody: ✅
+Slider.layoutBody: ✅
 Space.panYChannel: ✓ pan on Space: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.frameChanged: ✅
 Spinner.gridColumn: ✅

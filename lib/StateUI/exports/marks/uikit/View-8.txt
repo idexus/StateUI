@@ -41,7 +41,7 @@ HStack.frameChanged: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
 Image.held: ✓ hold on Image: the view's listening handed the recognizer's states, no touch sent
-Image.physicsBody: ✅
+Image.layoutBody: ✅
 ItemsView.panYChannel: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 Line.holdDuration: ✅
 Link.frameChanged: ✅
@@ -78,7 +78,7 @@ Polygon.frameChanged: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRowSpan: ✅
 Polyline.held: ✓ hold on Polyline: the view's listening handed the recognizer's states, no touch sent
-Polyline.physicsBody: ✅
+Polyline.layoutBody: ✅
 ProgressBar.panYChannel: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 Rectangle.area: ✅
 Rectangle.frameChanged: ✅
@@ -107,7 +107,7 @@ Space.pointerMoved: ✓ hover on Space: the view's listening handed the recogniz
 Space.pointerPressed: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
 Space.pointerReleased: ✓ hover on Space: the view's listening handed the recognizer's states, no touch sent
 Spinner.held: ✓ hold on Spinner: the view's listening handed the recognizer's states, no touch sent
-Spinner.physicsBody: ✅
+Spinner.layoutBody: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the drop interaction's handler told the driver's files, no drag session
 Stepper.tapped: ✓ pressDown on Stepper: the view's listening handed the recognizer's states, no touch sent
@@ -129,7 +129,7 @@ TextField.frameChanged: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRowSpan: ✅
 TimePicker.held: ✓ hold on TimePicker: the view's listening handed the recognizer's states, no touch sent
-TimePicker.physicsBody: ✅
+TimePicker.layoutBody: ✅
 VStack.panYChannel: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent
 WebView.area: ✅
 WebView.frameChanged: ✅

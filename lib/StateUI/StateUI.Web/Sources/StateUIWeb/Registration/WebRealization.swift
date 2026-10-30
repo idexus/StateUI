@@ -114,7 +114,7 @@ enum WebRealization {
         .complete(ToolbarToggleContract.onIcon),
         .complete(TextAndIconElementContract.showsText, on: ToolbarToggleContract.self),
         .complete(ToolbarToggleContract.toggled),
-        .complete(ViewContract.physicsBody),
+        .complete(ViewContract.layoutBody),
         .complete(ToolbarLabelContract.icon),
         .complete(ToolbarLabelContract.text),
         .complete(ToolbarGroupContract.barEdge),

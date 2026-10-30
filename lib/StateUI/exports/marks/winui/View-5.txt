@@ -31,8 +31,8 @@ ColorPicker.tapCount: ✅
 ColorPicker.tapped: ✅
 DatePicker.area: ✅
 DatePicker.frameChanged: ✅
+DatePicker.layoutBody: ✅
 DatePicker.panYChannel: ✅
-DatePicker.physicsBody: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the relay's drag reports told by the driver, no drag WinUI began
 Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the relay's drag reports told by the driver, no drag WinUI began
@@ -88,8 +88,8 @@ Map.panXChannel: 🧩
 Map.verticalAlignment: 🧩
 MotionLayout.area: ✅
 MotionLayout.frameChanged: ✅
+MotionLayout.layoutBody: ✅
 MotionLayout.panYChannel: ✅
-MotionLayout.physicsBody: ✅
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
@@ -108,8 +108,8 @@ Polygon.tapCount: ✅
 Polygon.tapped: ✅
 Polyline.area: ✅
 Polyline.frameChanged: ✅
+Polyline.layoutBody: ✅
 Polyline.panYChannel: ✅
-Polyline.physicsBody: ✅
 ProgressBar.canDrag: ✓ dragAndDrop on ProgressBar: the relay's drag reports told by the driver, no drag WinUI began
 ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the relay's drag reports told by the driver, no drag WinUI began
 ProgressBar.dragStarting: ✓ dragAndDrop on ProgressBar: the relay's drag reports told by the driver, no drag WinUI began
@@ -161,8 +161,8 @@ Stepper.tapCount: ✅
 Stepper.tapped: ✅
 Switch.area: ✅
 Switch.frameChanged: ✅
+Switch.layoutBody: ✅
 Switch.panYChannel: ✅
-Switch.physicsBody: ✅
 Text.rotationUpdated: ✓ rotate on Text: the relay's report of the manipulation handed to the host, no touch sent
 Text.tapCount: ✅
 Text.tapped: ✅

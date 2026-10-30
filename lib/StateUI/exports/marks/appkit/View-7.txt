@@ -14,7 +14,7 @@ Capsule.frameChanged: ✅
 Capsule.gridColumnSpan: ✅
 Capsule.gridRowSpan: ✅
 CheckBox.held: ✓ hold on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
-CheckBox.physicsBody: ✅
+CheckBox.layoutBody: ✅
 ColorPicker.panYChannel: ✓ pan on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.area: ✅
 DatePicker.frameChanged: ✅
@@ -46,7 +46,7 @@ ItemsView.panTouchCount: ✓ pan on ItemsView: handed to the host's recognizer o
 ItemsView.panUpdated: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 ItemsView.panXChannel: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 Line.held: ✓ hold on Line: handed to the host's recognizer or handler, no NSEvent sent
-Line.physicsBody: ✅
+Line.layoutBody: ✅
 Link.panYChannel: ✓ pan on Link: handed to the host's recognizer or handler, no NSEvent sent
 Map.area: ✅
 Map.frameChanged: ✅
@@ -90,7 +90,7 @@ ScrollView.frameChanged: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRowSpan: ✅
 SearchField.held: ✓ hold on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-SearchField.physicsBody: ✅
+SearchField.layoutBody: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Separator.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Separator.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session

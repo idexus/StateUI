@@ -168,7 +168,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var law = Motion.inherited
 
     /// What the views move by between where the arithmetic puts them and where they are shown.
-    private var world = PhysicsWorld.standard
+    private var world = LayoutDynamics.standard
 
     /// What is told once the run comes to rest.
     private var settled: ValueHandler<Parameters>?
@@ -188,7 +188,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///   - parameters: the state the arithmetic is worked out from, which the program and the user's hand move.
     ///   - content: the view for one item.
     ///   - placements: where every view goes, given the room - from the layout's top left, at its size - and the
-    ///     parameters as it stands this frame; one placement per view, in the items' order.
+    ///     parameters as they stand this frame; one placement per view, in the items' order.
     public init<Content: View>(
         _ items: Items,
         id: KeyPath<Items.Element, ID>,
@@ -285,7 +285,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     ///     .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1), snaps: .endpoints)
     ///
     /// - Parameters:
-    ///   - axis: the axis, one of the parameters' `axes`; `\.self` for a `Double` parameters.
+    ///   - axis: the axis, one of the parameters' `axes`; `\.self` for `Double` parameters.
     ///   - input: what moves it.
     ///   - range: how far the hand moves it; above nought for a magnification.
     ///   - keyframes: where the arithmetic is asked beside the ends of the range and the snaps; every frame unless
@@ -359,9 +359,9 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         return copy
     }
 
-    /// How the parameters travel where the program or a settle sends it; let go short of the next snap, the run comes
+    /// How the parameters travel where the program or a settle sends them; let go short of the next snap, the run comes
     /// onto it at a unit a length of this motion, so the short way is short. How a view a change moves comes onto its
-    /// new place is the world's (`physicsWorld(_:)`).
+    /// new place is the world's (`dynamics(_:)`).
     ///
     ///     .motion(.spring(response: .milliseconds(240)))
     ///
@@ -375,15 +375,16 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
 
     /// What the views move by between where the arithmetic puts them and where they are shown: a view a change
     /// moves - joining, the run arranged anew, let go by the hand - comes onto its new place as a body of this
-    /// world, and one with a body of its own (`physicsBody(_:)`) as that body says.
+    /// world, and one with a body of its own (`layoutBody(_:)`) as that body says.
     ///
-    ///     .physicsWorld(.spring(response: .milliseconds(420), damping: 0.8))
+    ///     .dynamics(.spring(response: .milliseconds(420), damping: 0.8))
     ///
-    /// - Parameter world: the world; `.standard` unless said, `.none` for views standing at their places at once.
-    /// - Returns: the layout, its views moving by that world.
-    public func physicsWorld(_ world: PhysicsWorld) -> Self {
+    /// - Parameter dynamics: the layout's dynamics; `.standard` unless said, `.none` for views standing at their
+    ///   places at once - the parameters still travel under `motion(_:)`.
+    /// - Returns: the layout, its views moving by those dynamics.
+    public func dynamics(_ dynamics: LayoutDynamics) -> Self {
         var copy = self
-        copy.world = world
+        copy.world = dynamics
         return copy
     }
 
@@ -618,15 +619,15 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         let readsFrom: Bool
         let kept = LayoutPoses()
 
-        /// The body each view says it is (`physicsBody(_:)`), in the items' order: read off the views the first time a
+        /// The body each view says it is (`layoutBody(_:)`), in the items' order: read off the views the first time a
         /// frame asks, once for this description.
-        private var bodies: [PhysicsBody?]?
+        private var bodies: [LayoutBody?]?
 
         /// The body the view at `index` says it is; nil for one of the world's own.
         @MainActor
-        func body(at index: Int) -> PhysicsBody? {
+        func body(at index: Int) -> LayoutBody? {
             let bodies = self.bodies ?? items.map { item in
-                view(item).props[ViewContract.physicsBody.token].flatMap(PhysicsBody.init(propValue:))
+                view(item).props[ViewContract.layoutBody.token].flatMap(LayoutBody.init(propValue:))
             }
             self.bodies = bodies
             return bodies.indices.contains(index) ? bodies[index] : nil

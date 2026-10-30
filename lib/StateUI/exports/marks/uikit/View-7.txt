@@ -14,7 +14,7 @@ Capsule.frameChanged: ✅
 Capsule.gridColumnSpan: ✅
 Capsule.gridRowSpan: ✅
 CheckBox.held: ✓ hold on CheckBox: the view's listening handed the recognizer's states, no touch sent
-CheckBox.physicsBody: ✅
+CheckBox.layoutBody: ✅
 ColorPicker.panYChannel: ✓ pan on ColorPicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.area: ✅
 DatePicker.frameChanged: ✅
@@ -46,7 +46,7 @@ ItemsView.panTouchCount: ✓ pan on ItemsView: the view's listening handed the r
 ItemsView.panUpdated: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.panXChannel: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
 Line.held: ✓ hold on Line: the view's listening handed the recognizer's states, no touch sent
-Line.physicsBody: ✅
+Line.layoutBody: ✅
 Link.panYChannel: ✓ pan on Link: the view's listening handed the recognizer's states, no touch sent
 Map.area: ✅
 Map.frameChanged: ✅
@@ -90,7 +90,7 @@ ScrollView.frameChanged: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRowSpan: ✅
 SearchField.held: ✓ hold on SearchField: the view's listening handed the recognizer's states, no touch sent
-SearchField.physicsBody: ✅
+SearchField.layoutBody: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Separator.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Separator.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session

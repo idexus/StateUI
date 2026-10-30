@@ -17,7 +17,7 @@ CheckBox.frameChanged: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRowSpan: ✅
 ColorPicker.held: ✓ hold on ColorPicker: the view's listening handed the recognizer's states, no touch sent
-ColorPicker.physicsBody: ✅
+ColorPicker.layoutBody: ✅
 DatePicker.panYChannel: ✓ pan on DatePicker: the view's listening handed the recognizer's states, no touch sent
 Ellipse.area: ✅
 Ellipse.frameChanged: ✅
@@ -53,7 +53,7 @@ Line.frameChanged: ✅
 Line.gridColumnSpan: ✅
 Line.gridRowSpan: ✅
 Link.held: ✓ hold on Link: the view's listening handed the recognizer's states, no touch sent
-Link.physicsBody: ✅
+Link.layoutBody: ✅
 Map.panYChannel: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.frameChanged: ✅
 MotionLayout.horizontalAlignment: ✅
@@ -100,7 +100,7 @@ Separator.area: ✅
 Separator.frameChanged: ✅
 Separator.rotationUpdated: ✓ rotate on Separator: the view's listening handed the recognizer's states, no touch sent
 Slider.held: ✓ hold on Slider: the view's listening handed the recognizer's states, no touch sent
-Slider.physicsBody: ✅
+Slider.layoutBody: ✅
 Space.panYChannel: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Spinner.frameChanged: ✅
 Spinner.gridColumn: ✅

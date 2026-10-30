@@ -453,7 +453,7 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 | `onPanUpdated` (`panUpdated`) | [View](controls/tiers/View.md) | event |
 | `panXChannel` | [View](controls/tiers/View.md) | property |
 | `panYChannel` | [View](controls/tiers/View.md) | property |
-| `physicsBody` | [View](controls/tiers/View.md) | property |
+| `layoutBody` | [View](controls/tiers/View.md) | property |
 | `onPinchUpdated` (`pinchUpdated`) | [View](controls/tiers/View.md) | event |
 | `onPointerEntered` (`pointerEntered`) | [View](controls/tiers/View.md) | event |
 | `onPointerExited` (`pointerExited`) | [View](controls/tiers/View.md) | event |
@@ -576,7 +576,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | --- | --- | --- |
 | [AutomationElement](controls/tiers/AutomationElement.md) | `accessibilityIdentifier` | 1 |
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityActionPerformed`, `accessibilityActions`, `onAccessibilityAdjusted` (`accessibilityAdjusted`), `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `accessibilityRole`, `accessibilityValue`, `background`, `frame`, `height`, `hidesChildrenFromAccessibility`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 36 |
-| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDrop` (`filesDropped`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onHeld` (`held`), `holdDuration`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `physicsBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 38 |
+| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDrop` (`filesDropped`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onHeld` (`held`), `holdDuration`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `layoutBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 38 |
 | [Layout](controls/tiers/Layout.md) | `ignoresSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
 | [TextInput](controls/tiers/TextInput.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
@@ -706,15 +706,15 @@ realizes the element and each of its members.
 `isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`,
 `isSelectable`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`,
 `isZoomEnabled`, `itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`,
-`keysTaken`, `label`, `layoutDirection`, `letsInputThrough`, `lineBreak`,
-`lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`, `magnifies`,
-`mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`, `maximumLength`,
-`maximumLines`, `maximumWidth`, `menuKind`, `minimum`, `minimumDate`,
-`minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`, `miterLimit`, `onIcon`,
-`opacity`, `options`, `order`, `orientation`, `padding`, `pans`,
-`panTouchCount`, `panXChannel`, `panYChannel`, `parameters`, `part`,
-`physicsBody`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`,
-`position`, `presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
+`keysTaken`, `label`, `layoutBody`, `layoutDirection`, `letsInputThrough`,
+`lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`,
+`magnifies`, `mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`,
+`maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`, `minimum`,
+`minimumDate`, `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`,
+`miterLimit`, `onIcon`, `opacity`, `options`, `order`, `orientation`, `padding`,
+`pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `parameters`, `part`,
+`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
+`presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
 `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,

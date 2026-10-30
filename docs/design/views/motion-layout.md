@@ -143,10 +143,10 @@ at once; a shade the layout draws none of is not blended.
 ## Bodies
 
 Each view the run shows a shift of is a body of the layout's world
-(`PhysicsWorld`, `.physicsWorld(_:)`): a mass on a spring to its place, its
+(`LayoutDynamics`, `.dynamics(_:)`): a mass on a spring to its place, its
 shift's lanes and how fast each goes (`LayoutBodies`), pulled onto nought -
 the world's spring, `.standard` 300 ms critically damped, or the body's own
-(`.physicsBody(_:)`, `ViewContract.physicsBody`, read off each item's view
+(`.layoutBody(_:)`, `ViewContract.layoutBody`, read off each item's view
 once a description, the first time a frame asks). The world is worked out at
 a fixed step - 240 a second, semi-implicit, the spring's frequency as
 `HostMotionLaw`'s - with an accumulator, so other frames, another host or

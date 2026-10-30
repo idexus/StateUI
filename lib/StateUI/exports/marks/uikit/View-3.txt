@@ -37,7 +37,7 @@ Fill.frameChanged: ✅
 Fill.gridColumnSpan: ✅
 Fill.gridRowSpan: ✅
 Grid.held: ✓ hold on Grid: the view's listening handed the recognizer's states, no touch sent
-Grid.physicsBody: ✅
+Grid.layoutBody: ✅
 HStack.panYChannel: ✓ pan on HStack: the view's listening handed the recognizer's states, no touch sent
 Image.area: ✅
 Image.frameChanged: ✅
@@ -75,7 +75,7 @@ Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
 Picker.held: ✓ hold on Picker: the view's listening handed the recognizer's states, no touch sent
-Picker.physicsBody: ✅
+Picker.layoutBody: ✅
 Polygon.panYChannel: ✓ pan on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polyline.area: ✅
 Polyline.frameChanged: ✅
@@ -127,7 +127,7 @@ Switch.gridRowSpan: ✅
 Text.holdDuration: ✅
 Text.verticalAlignment: ✅
 TextEditor.held: ✓ hold on TextEditor: the view's listening handed the recognizer's states, no touch sent
-TextEditor.physicsBody: ✅
+TextEditor.layoutBody: ✅
 TextField.panYChannel: ✓ pan on TextField: the view's listening handed the recognizer's states, no touch sent
 TimePicker.area: ✅
 TimePicker.frameChanged: ✅

@@ -30,7 +30,7 @@ DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
 Ellipse.held: ✓ hold on Ellipse: the view's listening handed the recognizer's states, no touch sent
-Ellipse.physicsBody: ✅
+Ellipse.layoutBody: ✅
 Fill.panYChannel: ✓ pan on Fill: the view's listening handed the recognizer's states, no touch sent
 Grid.area: ✅
 Grid.frameChanged: ✅
@@ -95,7 +95,7 @@ SearchField.panTouchCount: ✓ pan on SearchField: the view's listening handed t
 SearchField.panUpdated: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.panXChannel: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
 Separator.held: ✓ hold on Separator: the view's listening handed the recognizer's states, no touch sent
-Separator.physicsBody: ✅
+Separator.layoutBody: ✅
 Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the view's listening handed the recognizer's states, no touch sent
@@ -109,7 +109,7 @@ Space.gridColumnSpan: ✅
 Space.gridRowSpan: ✅
 Spinner.holdDuration: ✅
 Stepper.held: ✓ hold on Stepper: the view's listening handed the recognizer's states, no touch sent
-Stepper.physicsBody: ✅
+Stepper.layoutBody: ✅
 Switch.panYChannel: ✓ pan on Switch: the view's listening handed the recognizer's states, no touch sent
 Text.frameChanged: ✅
 Text.gridColumn: ✅

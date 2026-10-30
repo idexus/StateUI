@@ -25,7 +25,7 @@ ColorPicker.frameChanged: ✅
 ColorPicker.gridColumnSpan: ✅
 ColorPicker.gridRowSpan: ✅
 DatePicker.held: ✓ hold on DatePicker: the view's listening handed the recognizer's states, no touch sent
-DatePicker.physicsBody: ✅
+DatePicker.layoutBody: ✅
 Ellipse.panYChannel: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
 Fill.area: ✅
 Fill.frameChanged: ✅
@@ -62,7 +62,7 @@ Link.frameChanged: ✅
 Link.gridColumnSpan: ✅
 Link.gridRowSpan: ✅
 Map.held: ✓ hold on Map: the view's listening handed the recognizer's states, no touch sent
-Map.physicsBody: ✅
+Map.layoutBody: ✅
 MotionLayout.panTouchCount: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.panUpdated: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.panXChannel: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
@@ -109,7 +109,7 @@ Slider.frameChanged: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
 Space.held: ✓ hold on Space: the view's listening handed the recognizer's states, no touch sent
-Space.physicsBody: ✅
+Space.layoutBody: ✅
 Spinner.frameChanged: ✅
 Spinner.margin: ✅
 Spinner.swipeDirection: ✓ pan on Spinner: the view's listening handed the recognizer's states, no touch sent

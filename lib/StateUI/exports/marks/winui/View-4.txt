@@ -11,8 +11,8 @@ Canvas.tapCount: ✅
 Canvas.tapped: ✅
 Capsule.area: ✅
 Capsule.frameChanged: ✅
+Capsule.layoutBody: ✅
 Capsule.panYChannel: ✅
-Capsule.physicsBody: ✅
 CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.dragStarting: ✓ dragAndDrop on CheckBox: the relay's drag reports told by the driver, no drag WinUI began
@@ -54,8 +54,8 @@ HStack.tapCount: ✅
 HStack.tapped: ✅
 Image.area: ✅
 Image.frameChanged: ✅
+Image.layoutBody: ✅
 Image.panYChannel: ✅
-Image.physicsBody: ✅
 ItemsView.canDrag: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
 ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
 ItemsView.dragStarting: ✓ dragAndDrop on ItemsView: the relay's drag reports told by the driver, no drag WinUI began
@@ -90,8 +90,8 @@ MotionLayout.panXChannel: ✅
 MotionLayout.verticalAlignment: ✅
 Path.area: ✅
 Path.frameChanged: ✅
+Path.layoutBody: ✅
 Path.panYChannel: ✅
-Path.physicsBody: ✅
 Picker.canDrag: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragEnded: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragStarting: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
@@ -136,8 +136,8 @@ Separator.tapCount: ✅
 Separator.tapped: ✅
 Slider.area: ✅
 Slider.frameChanged: ✅
+Slider.layoutBody: ✅
 Slider.panYChannel: ✅
-Slider.physicsBody: ✅
 Space.canDrag: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
 Space.dragEnded: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
 Space.dragStarting: ✓ dragAndDrop on Space: the relay's drag reports told by the driver, no drag WinUI began
@@ -189,8 +189,8 @@ VStack.tapCount: ✅
 VStack.tapped: ✅
 WebView.area: ✅
 WebView.frameChanged: ✅
+WebView.layoutBody: ✅
 WebView.panYChannel: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
-WebView.physicsBody: ✅
 ZStack.canDrag: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began
 ZStack.dragEnded: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began
 ZStack.dragStarting: ✓ dragAndDrop on ZStack: the relay's drag reports told by the driver, no drag WinUI began

@@ -30,7 +30,7 @@ DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
 Ellipse.held: ✓ hold on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
-Ellipse.physicsBody: ✅
+Ellipse.layoutBody: ✅
 Fill.panYChannel: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Grid.area: ✅
 Grid.frameChanged: ✅
@@ -95,7 +95,7 @@ SearchField.panTouchCount: ✓ pan on SearchField: handed to the host's recogniz
 SearchField.panUpdated: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 SearchField.panXChannel: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 Separator.held: ✓ hold on Separator: handed to the host's recognizer or handler, no NSEvent sent
-Separator.physicsBody: ✅
+Separator.layoutBody: ✅
 Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: handed to the host's recognizer or handler, no NSEvent sent
@@ -109,7 +109,7 @@ Space.gridColumnSpan: ✅
 Space.gridRowSpan: ✅
 Spinner.holdDuration: ✅
 Stepper.held: ✓ hold on Stepper: handed to the host's recognizer or handler, no NSEvent sent
-Stepper.physicsBody: ✅
+Stepper.layoutBody: ✅
 Switch.panYChannel: ✓ pan on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Text.frameChanged: ✅
 Text.gridColumn: ✅

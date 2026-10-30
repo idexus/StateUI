@@ -355,7 +355,7 @@ final class ControlTests: XCTestCase {
             ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
                 MotionLayout(["one", "two"], parameters: turn.projectedValue) {
                     Text($0)
-                        .physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
+                        .layoutBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
                 } placements: { room, phase in
                     [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
                 }
@@ -365,7 +365,7 @@ final class ControlTests: XCTestCase {
                     Rectangle()
                         .fill(.black))
                 .motion(.spring(response: .milliseconds(240)))
-                .physicsWorld(.standard)
+                .dynamics(.standard)
                 .mirrorsRightToLeft(true)
                 .onItemTapped { _ in }
                 .itemDrag(begins: .longPress)
@@ -820,7 +820,7 @@ final class ControlTests: XCTestCase {
             "background", "pageBackground", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
             "minimumDate", "dash", "points", "options", "columns",
-            "rows", "shape", "geometryTransform", "transform", "motion", "physicsBody", "id",
+            "rows", "shape", "geometryTransform", "transform", "motion", "layoutBody", "followsLayout", "id",
             "assign", "area",
             // Tiers no view wears.
             "barBackground", "barForegroundColor", "toolbarStyle", "toolbarSpacing",
@@ -887,7 +887,7 @@ final class ControlTests: XCTestCase {
             "Views/Collections/GalleryView.swift|throwing:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
             "Views/Layouts/MotionLayout.swift|itemDrag:ItemDragStart",
             "Views/Layouts/MotionLayout.swift|mirrorsRightToLeft:Bool",
-            "Views/Layouts/MotionLayout.swift|physicsWorld:PhysicsWorld",
+            "Views/Layouts/MotionLayout.swift|dynamics:LayoutDynamics",
         ]
         let missing = values
             .filter { value in

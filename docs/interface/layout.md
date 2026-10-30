@@ -751,7 +751,7 @@ joining fades in where the arithmetic puts it; one leaving goes at once and
 the others close up; a new order slides; and a value read in the body - a
 switch between a fan and a pile - takes every view from where it was to its
 new place as a body of the layout's world, while the parameters go on as they
-go. `.physicsWorld(_:)` says how: each view on a spring to its place,
+go. `.dynamics(_:)` says how: each view on a spring to its place,
 `.standard` - 300 milliseconds, never past it - unless said, `.none` for
 views standing at their places at once; `.motion(_:)` is the parameters' law
 alone:
@@ -773,7 +773,7 @@ struct Hand: View {
                     Placement(Rect(room.width / 2 - 60 + Double(index) * gap, 0, 120, room.height))
                 }
             }
-            .physicsWorld(.spring(response: .milliseconds(300), damping: 0.8))
+            .dynamics(.spring(response: .milliseconds(300), damping: 0.8))
             .height(160)
 
             Button("Add").onClicked { names.append("Bloom") }
@@ -788,8 +788,8 @@ others close up. Where the front card was the last, the parameters themselves ha
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
 before it, under `.motion(_:)`.
 
-A view can be a body of its own: `.physicsBody(.followsLayout(_:))` on it
-makes it follow its place on the spring it names - carried by the run, it
+A view can be a body of its own: `.followsLayout(_:)` on it - short for
+`.layoutBody(.followsLayout(_:))` - makes it follow its place on the spring it names - carried by the run, it
 lags behind its place while the run turns, swings past where a throw stops
 and settles back onto it. The world is worked out at a fixed step, so every
 host and frame rate shows the same motion; under less motion every view
@@ -805,7 +805,7 @@ struct Swaying: View {
     var body: some View {
         MotionLayout(["Mural", "Nebula", "Ridge", "Bloom"], parameters: $turn) { name in
             Text(name)
-                .physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.55)))
+                .followsLayout(.spring(response: .milliseconds(420), damping: 0.55))
         } placements: { room, turn in
             (0..<4).map { index in
                 Placement(Rect(room.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, room.height))

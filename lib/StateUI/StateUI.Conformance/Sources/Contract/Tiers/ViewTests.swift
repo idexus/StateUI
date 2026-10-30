@@ -167,18 +167,18 @@
     @MainActor
     static func bodied(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aBodyFollowingItsPlaceLagsAndSettles", proves: [
-            Covered(ViewContract.physicsBody, on: element),
+            Covered(ViewContract.layoutBody, on: element),
         ], needs: [Covered(MotionLayoutContract.self), Covered(ButtonContract.clicked)]) { s in
             let clock = TestClock()
             let phase = State(wrappedValue: 0.0)
             let laid = Received<Double>()
-            let body = PhysicsBody.followsLayout(.spring(response: .milliseconds(400), damping: 0.5))
+            let body = LayoutBody.followsLayout(.spring(response: .milliseconds(400), damping: 0.5))
             s.start(clock: clock) {
                 VStack {
                     MotionLayout([0], parameters: phase.projectedValue) { _ in
                         Specimens.view(element, [
                             Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
-                            Write(ViewContract.physicsBody, body),
+                            Write(ViewContract.layoutBody, body),
                         ])
                     } placements: { _, at in
                         laid.values.append(at)

@@ -1,14 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// How one view of a motion layout moves as a body of its layout's world (`PhysicsWorld`).
+/// How one view of a motion layout moves as a body of its layout's world (`LayoutDynamics`).
 ///
 ///     MotionLayout(cards, id: \.name) { card in
-///         CardFace(card).physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
+///         CardFace(card).layoutBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
 ///     } placements: { room, parameters in … }
 ///
 /// Design: docs/design/views/motion-layout.md#bodies
-public struct PhysicsBody: Equatable, Sendable {
+public struct LayoutBody: Equatable, Sendable {
     /// The spring it follows its place on.
     let spring: LayoutBodies.Spring
 
@@ -18,17 +18,17 @@ public struct PhysicsBody: Equatable, Sendable {
     ///
     /// - Parameter spring: the spring, `.spring(response:damping:)`.
     /// - Returns: the body.
-    public static func followsLayout(_ spring: Motion) -> PhysicsBody {
+    public static func followsLayout(_ spring: Motion) -> LayoutBody {
         guard case .spring(let milliseconds, let damping) = spring.kind else {
             complain("A body follows its layout on a spring: .followsLayout(.spring(response:damping:)). "
                 + "It follows on the world's standard spring.")
-            return PhysicsBody(spring: PhysicsWorld.standard.spring ?? LayoutBodies.Spring(response: 300, damping: 1))
+            return LayoutBody(spring: LayoutDynamics.standard.spring ?? LayoutBodies.Spring(response: 300, damping: 1))
         }
-        return PhysicsBody(spring: LayoutBodies.Spring(response: Double(milliseconds), damping: damping))
+        return LayoutBody(spring: LayoutBodies.Spring(response: Double(milliseconds), damping: damping))
     }
 }
 
-extension PhysicsBody: HostRepresentable {
+extension LayoutBody: HostRepresentable {
     /// Its spring's response, in milliseconds, and damping.
     public var propValue: PropValue { .numbers([spring.response, spring.damping]) }
 

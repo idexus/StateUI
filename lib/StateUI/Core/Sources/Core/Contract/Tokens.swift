@@ -234,7 +234,7 @@ extension NodeType {
     static let panTouchCount = ViewContract.panTouchCount.token
     static let panXChannel = ViewContract.panXChannel.token
     static let panYChannel = ViewContract.panYChannel.token
-    static let physicsBody = ViewContract.physicsBody.token
+    static let layoutBody = ViewContract.layoutBody.token
     static let parameters = MotionLayoutContract.parameters.token
     static let placeholder = TextInputContract.placeholder.token
     static let placeholderColor = TextInputContract.placeholderColor.token

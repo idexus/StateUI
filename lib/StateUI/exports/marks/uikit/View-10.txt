@@ -11,7 +11,7 @@ Canvas.frameChanged: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRowSpan: ✅
 Capsule.held: ✓ hold on Capsule: the view's listening handed the recognizer's states, no touch sent
-Capsule.physicsBody: ✅
+Capsule.layoutBody: ✅
 CheckBox.panYChannel: ✓ pan on CheckBox: the view's listening handed the recognizer's states, no touch sent
 ColorPicker.area: ✅
 ColorPicker.frameChanged: ✅
@@ -57,7 +57,7 @@ Map.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers
 Map.tapCount: ✓ tap on Map: the view's listening handed the recognizer's states, no touch sent
 Map.tapped: ✓ tap on Map: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.held: ✓ hold on MotionLayout: the view's listening handed the recognizer's states, no touch sent
-MotionLayout.physicsBody: ✅
+MotionLayout.layoutBody: ✅
 Path.frameChanged: ✅
 Path.margin: ✅
 Path.swipeDirection: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
@@ -89,7 +89,7 @@ Rectangle.frameChanged: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
 ScrollView.held: ✓ hold on ScrollView: the view's listening handed the recognizer's states, no touch sent
-ScrollView.physicsBody: ✅
+ScrollView.layoutBody: ✅
 SearchField.panYChannel: ✓ pan on SearchField: the view's listening handed the recognizer's states, no touch sent
 Separator.holdDuration: ✅
 Slider.area: ✅
@@ -143,4 +143,4 @@ WebView.frameChanged: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅
 ZStack.held: ✓ hold on ZStack: the view's listening handed the recognizer's states, no touch sent
-ZStack.physicsBody: ✅
+ZStack.layoutBody: ✅

@@ -96,7 +96,7 @@ final class LayoutFollowerTests: XCTestCase {
     private func tree(_ phase: State<Double>) -> Node {
         MotionLayout([0, 1], parameters: phase.projectedValue) { index in
             if index == 0 {
-                Text("\(index)").physicsBody(.followsLayout(.spring(response: .milliseconds(400), damping: 0.5)))
+                Text("\(index)").layoutBody(.followsLayout(.spring(response: .milliseconds(400), damping: 0.5)))
             } else {
                 Text("\(index)")
             }
@@ -105,6 +105,17 @@ final class LayoutFollowerTests: XCTestCase {
         }
         .motion(.none)
         .node
+    }
+
+    /// A VIEW FOLLOWING ITS LAYOUT WEARS THE BODY THAT FOLLOWS IT: `.followsLayout(spring)` writes what
+    /// `.layoutBody(.followsLayout(spring))` does.
+    func testAViewFollowingItsLayoutWearsTheBodyThatFollowsIt() {
+        let spring = Motion.spring(response: .milliseconds(420), damping: 0.55)
+        let short = Text("a").followsLayout(spring).node
+        let whole = Text("a").layoutBody(.followsLayout(spring)).node
+
+        XCTAssertEqual(short.props[.layoutBody], whole.props[.layoutBody])
+        XCTAssertEqual(short.props[.layoutBody], LayoutBody.followsLayout(spring).propValue)
     }
 
     /// A BODY FOLLOWING ITS PLACE LAGS BEHIND IT, PASSES IT AND SETTLES ONTO IT; the world's own goes with its place.

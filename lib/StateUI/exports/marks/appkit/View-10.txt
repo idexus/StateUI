@@ -11,7 +11,7 @@ Canvas.frameChanged: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRowSpan: ✅
 Capsule.held: ✓ hold on Capsule: handed to the host's recognizer or handler, no NSEvent sent
-Capsule.physicsBody: ✅
+Capsule.layoutBody: ✅
 CheckBox.panYChannel: ✓ pan on CheckBox: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.area: ✅
 ColorPicker.frameChanged: ✅
@@ -57,7 +57,7 @@ Map.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop ro
 Map.tapCount: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.tapped: ✓ tap on Map: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.held: ✓ hold on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
-MotionLayout.physicsBody: ✅
+MotionLayout.layoutBody: ✅
 Path.frameChanged: ✅
 Path.margin: ✅
 Path.swipeDirection: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
@@ -89,7 +89,7 @@ Rectangle.frameChanged: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRowSpan: ✅
 ScrollView.held: ✓ hold on ScrollView: handed to the host's recognizer or handler, no NSEvent sent
-ScrollView.physicsBody: ✅
+ScrollView.layoutBody: ✅
 SearchField.panYChannel: ✓ pan on SearchField: handed to the host's recognizer or handler, no NSEvent sent
 Separator.holdDuration: ✅
 Slider.area: ✅
@@ -143,4 +143,4 @@ WebView.frameChanged: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRowSpan: ✅
 ZStack.held: ✓ hold on ZStack: handed to the host's recognizer or handler, no NSEvent sent
-ZStack.physicsBody: ✅
+ZStack.layoutBody: ✅

@@ -161,7 +161,7 @@ enum AndroidRealization {
         .partial(TextAndIconElementContract.showsText, on: ToolbarToggleContract.self,
             missing: "Android shows the words beside the picture only where the bar has room: an upright phone keeps the picture alone."),
         .complete(ToolbarToggleContract.toggled),
-        .complete(ViewContract.physicsBody),
+        .complete(ViewContract.layoutBody),
         .complete(ToolbarLabelContract.icon),
         .complete(ToolbarLabelContract.text),
         .complete(ToolbarGroupContract.barEdge),

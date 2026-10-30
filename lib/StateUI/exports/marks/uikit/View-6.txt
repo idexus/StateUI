@@ -31,7 +31,7 @@ Ellipse.frameChanged: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRowSpan: ✅
 Fill.held: ✓ hold on Fill: the view's listening handed the recognizer's states, no touch sent
-Fill.physicsBody: ✅
+Fill.layoutBody: ✅
 Grid.panYChannel: ✓ pan on Grid: the view's listening handed the recognizer's states, no touch sent
 HStack.area: ✅
 HStack.frameChanged: ✅
@@ -62,7 +62,7 @@ MotionLayout.pointerMoved: ✓ hover on MotionLayout: the view's listening hande
 MotionLayout.pointerPressed: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 MotionLayout.pointerReleased: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.held: ✓ hold on Path: the view's listening handed the recognizer's states, no touch sent
-Path.physicsBody: ✅
+Path.layoutBody: ✅
 Picker.panYChannel: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.area: ✅
 Polygon.frameChanged: ✅
@@ -118,7 +118,7 @@ Stepper.frameChanged: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅
 Switch.held: ✓ hold on Switch: the view's listening handed the recognizer's states, no touch sent
-Switch.physicsBody: ✅
+Switch.layoutBody: ✅
 Text.frameChanged: ✅
 Text.margin: ✅
 Text.swipeDirection: ✓ pan on Text: the view's listening handed the recognizer's states, no touch sent

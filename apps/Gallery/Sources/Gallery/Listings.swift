@@ -7557,7 +7557,7 @@ enum Listings {
                     // settles back onto its place.
                     if swaying {
                         face(Self.cards[index])
-                            .physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.55)))
+                            .followsLayout(.spring(response: .milliseconds(420), damping: 0.55))
                     } else {
                         face(Self.cards[index])
                     }

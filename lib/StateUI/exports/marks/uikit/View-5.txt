@@ -1,6 +1,6 @@
 # revision 19.1
 Button.held: ✓ hold on Button: the view's listening handed the recognizer's states, no touch sent
-Button.physicsBody: ✅
+Button.layoutBody: ✅
 Canvas.panYChannel: ✓ pan on Canvas: the view's listening handed the recognizer's states, no touch sent
 Capsule.area: ✅
 Capsule.frameChanged: ✅
@@ -43,7 +43,7 @@ Image.frameChanged: ✅
 Image.gridColumnSpan: ✅
 Image.gridRowSpan: ✅
 ItemsView.held: ✓ hold on ItemsView: the view's listening handed the recognizer's states, no touch sent
-ItemsView.physicsBody: ✅
+ItemsView.layoutBody: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Line.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Line.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -77,7 +77,7 @@ Polyline.frameChanged: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRowSpan: ✅
 ProgressBar.held: ✓ hold on ProgressBar: the view's listening handed the recognizer's states, no touch sent
-ProgressBar.physicsBody: ✅
+ProgressBar.layoutBody: ✅
 Rectangle.panYChannel: ✓ pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
 ScrollView.area: ✅
 ScrollView.frameChanged: ✅
@@ -136,7 +136,7 @@ TimePicker.frameChanged: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅
 VStack.held: ✓ hold on VStack: the view's listening handed the recognizer's states, no touch sent
-VStack.physicsBody: ✅
+VStack.layoutBody: ✅
 WebView.panYChannel: ✓ pan on WebView: the view's listening handed the recognizer's states, no touch sent
 ZStack.area: ✅
 ZStack.frameChanged: ✅

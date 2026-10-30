@@ -4,8 +4,8 @@ Button.tapCount: ✅
 Button.tapped: ✅
 Canvas.area: ✅
 Canvas.frameChanged: ✅
+Canvas.layoutBody: ✅
 Canvas.panYChannel: ✅
-Canvas.physicsBody: ✅
 Capsule.canDrag: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
 Capsule.dragEnded: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
 Capsule.dragStarting: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
@@ -47,8 +47,8 @@ Grid.tapCount: ✅
 Grid.tapped: ✅
 HStack.area: ✅
 HStack.frameChanged: ✅
+HStack.layoutBody: ✅
 HStack.panYChannel: ✅
-HStack.physicsBody: ✅
 Image.canDrag: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
 Image.dragEnded: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
 Image.dragStarting: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
@@ -121,12 +121,12 @@ ScrollView.tapCount: ✅
 ScrollView.tapped: ✅
 SearchField.area: ✅
 SearchField.frameChanged: ✅
+SearchField.layoutBody: ✅
 SearchField.panYChannel: ✅
-SearchField.physicsBody: ✅
 Separator.area: ✅
 Separator.frameChanged: ✅
+Separator.layoutBody: ✅
 Separator.panYChannel: ✅
-Separator.physicsBody: ✅
 Slider.canDrag: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
 Slider.dragEnded: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
 Slider.dragStarting: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
@@ -183,8 +183,8 @@ TimePicker.tapCount: ✅
 TimePicker.tapped: ✅
 VStack.area: ✅
 VStack.frameChanged: ✅
+VStack.layoutBody: ✅
 VStack.panYChannel: ✅
-VStack.physicsBody: ✅
 WebView.canDrag: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
 WebView.dragEnded: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
 WebView.dragStarting: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began

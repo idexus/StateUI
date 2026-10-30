@@ -1,8 +1,8 @@
 # revision 19.1
 Button.area: ✅
 Button.frameChanged: ✅
+Button.layoutBody: ✅
 Button.panYChannel: ✅
-Button.physicsBody: ✅
 Canvas.canDrag: ✓ dragAndDrop on Canvas: the relay's drag reports told by the driver, no drag WinUI began
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the relay's drag reports told by the driver, no drag WinUI began
 Canvas.dragStarting: ✓ dragAndDrop on Canvas: the relay's drag reports told by the driver, no drag WinUI began
@@ -44,8 +44,8 @@ Fill.tapCount: ✅
 Fill.tapped: ✅
 Grid.area: ✅
 Grid.frameChanged: ✅
+Grid.layoutBody: ✅
 Grid.panYChannel: ✅
-Grid.physicsBody: ✅
 HStack.canDrag: ✓ dragAndDrop on HStack: the relay's drag reports told by the driver, no drag WinUI began
 HStack.dragEnded: ✓ dragAndDrop on HStack: the relay's drag reports told by the driver, no drag WinUI began
 HStack.dragStarting: ✓ dragAndDrop on HStack: the relay's drag reports told by the driver, no drag WinUI began
@@ -75,8 +75,8 @@ Link.tapCount: ✅
 Link.tapped: ✅
 Map.area: 🧩
 Map.frameChanged: 🧩
+Map.layoutBody: 🧩
 Map.panYChannel: 🧩
-Map.physicsBody: 🧩
 MotionLayout.frameChanged: ✅
 MotionLayout.gridColumn: ✅
 MotionLayout.gridRow: ✅
@@ -119,8 +119,8 @@ Rectangle.tapCount: ✅
 Rectangle.tapped: ✅
 ScrollView.area: ✅
 ScrollView.frameChanged: ✅
+ScrollView.layoutBody: ✅
 ScrollView.panYChannel: ✅
-ScrollView.physicsBody: ✅
 SearchField.canDrag: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
 SearchField.dragStarting: ✓ dragAndDrop on SearchField: the relay's drag reports told by the driver, no drag WinUI began
@@ -176,8 +176,8 @@ TextField.tapCount: ✅
 TextField.tapped: ✅
 TimePicker.area: ✅
 TimePicker.frameChanged: ✅
+TimePicker.layoutBody: ✅
 TimePicker.panYChannel: ✅
-TimePicker.physicsBody: ✅
 VStack.canDrag: ✓ dragAndDrop on VStack: the relay's drag reports told by the driver, no drag WinUI began
 VStack.dragEnded: ✓ dragAndDrop on VStack: the relay's drag reports told by the driver, no drag WinUI began
 VStack.dragStarting: ✓ dragAndDrop on VStack: the relay's drag reports told by the driver, no drag WinUI began

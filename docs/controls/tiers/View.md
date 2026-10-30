@@ -47,7 +47,7 @@ How each of them realizes these members is on its own page.
 | `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Point, Point)` | native |
 | `panXChannel` | property | `Int` | structure |
 | `panYChannel` | property | `Int` | structure |
-| `physicsBody` | property | `PhysicsBody` | stateUI |
+| `layoutBody` | property | `LayoutBody` | stateUI |
 | `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point, Double)` | native |
 | `onPointerEntered` (`pointerEntered`) | event |  | native |
 | `onPointerExited` (`pointerExited`) | event |  | native |

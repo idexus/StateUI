@@ -217,7 +217,7 @@ final class ContractTests: XCTestCase {
             ItemDragStart.longPress,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
             SelectionMode.multiple, ScrollAnchor.center, ScrollEdge.hard, ToolbarEdge.bottom,
-            PhysicsBody.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)),
+            LayoutBody.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)),
             ItemsEntries(header: "h", sections: [ItemsEntries.Section("0", footer: "f", items: ["1", "2"])]),
             [0, 7, 255] as [UInt8], FileType("Page", extensions: ["html", "htm"]),
             [FileType("Text", extensions: ["txt"]), FileType("Page", extensions: ["html"])] as [FileType],

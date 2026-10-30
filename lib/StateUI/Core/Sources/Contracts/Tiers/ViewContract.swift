@@ -77,7 +77,7 @@ public enum ViewContract: Contract {
     public static let margin = ElementProperty<Self, Insets>("margin", layer: .native, moves: .spacing)
 
     /// How the view moves as a body of its motion layout's world, inside one; where it is none, the world's own.
-    public static let physicsBody = ElementProperty<Self, PhysicsBody>("physicsBody", layer: .stateUI, travels: false)
+    public static let layoutBody = ElementProperty<Self, LayoutBody>("layoutBody", layer: .stateUI, travels: false)
 
     /// How many pointers a pan must have.
     public static let panTouchCount = ElementProperty<Self, Int>(
@@ -149,7 +149,7 @@ public enum ViewContract: Contract {
         allowsDrop, area, canDrag, dragLeave,
         dragOver, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
         gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, margin, panTouchCount,
-        panUpdated, panXChannel, panYChannel, physicsBody, pinchUpdated, pointerEntered, pointerExited,
+        panUpdated, panXChannel, panYChannel, layoutBody, pinchUpdated, pointerEntered, pointerExited,
         pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirection, swipeThreshold, swiped,
         tapCount, tapped, verticalAlignment,
     ]

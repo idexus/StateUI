@@ -41,7 +41,7 @@ HStack.frameChanged: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
 Image.held: ✓ hold on Image: handed to the host's recognizer or handler, no NSEvent sent
-Image.physicsBody: ✅
+Image.layoutBody: ✅
 ItemsView.panYChannel: ✓ pan on ItemsView: handed to the host's recognizer or handler, no NSEvent sent
 Line.holdDuration: ✅
 Link.frameChanged: ✅
@@ -78,7 +78,7 @@ Polygon.frameChanged: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRowSpan: ✅
 Polyline.held: ✓ hold on Polyline: handed to the host's recognizer or handler, no NSEvent sent
-Polyline.physicsBody: ✅
+Polyline.layoutBody: ✅
 ProgressBar.panYChannel: ✓ pan on ProgressBar: handed to the host's recognizer or handler, no NSEvent sent
 Rectangle.area: ✅
 Rectangle.frameChanged: ✅
@@ -107,7 +107,7 @@ Space.pointerMoved: ✓ hover on Space: handed to the host's recognizer or handl
 Space.pointerPressed: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent
 Space.pointerReleased: ✓ hover on Space: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.held: ✓ hold on Spinner: handed to the host's recognizer or handler, no NSEvent sent
-Spinner.physicsBody: ✅
+Spinner.layoutBody: ✅
 Stepper.droppedFileTypes: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session
 Stepper.filesDropped: ✓ dropFiles on Stepper: the window's drop routing told the driver's files, no dragging session
 Stepper.tapped: ✓ pressDown on Stepper: handed to the host's recognizer or handler, no NSEvent sent
@@ -129,7 +129,7 @@ TextField.frameChanged: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRowSpan: ✅
 TimePicker.held: ✓ hold on TimePicker: handed to the host's recognizer or handler, no NSEvent sent
-TimePicker.physicsBody: ✅
+TimePicker.layoutBody: ✅
 VStack.panYChannel: ✓ pan on VStack: handed to the host's recognizer or handler, no NSEvent sent
 WebView.area: ✅
 WebView.frameChanged: ✅

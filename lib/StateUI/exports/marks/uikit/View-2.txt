@@ -7,7 +7,7 @@ Button.frameChanged: ✅
 Button.gridColumnSpan: ✅
 Button.gridRowSpan: ✅
 Canvas.held: ✓ hold on Canvas: the view's listening handed the recognizer's states, no touch sent
-Canvas.physicsBody: ✅
+Canvas.layoutBody: ✅
 Capsule.panYChannel: ✓ pan on Capsule: the view's listening handed the recognizer's states, no touch sent
 CheckBox.area: ✅
 CheckBox.frameChanged: ✅
@@ -87,7 +87,7 @@ ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRowSpan: ✅
 Rectangle.frameChanged: ✅
 Rectangle.held: ✓ hold on Rectangle: the view's listening handed the recognizer's states, no touch sent
-Rectangle.physicsBody: ✅
+Rectangle.layoutBody: ✅
 ScrollView.panYChannel: ✓ pan on ScrollView: the view's listening handed the recognizer's states, no touch sent
 SearchField.area: ✅
 SearchField.frameChanged: ✅
@@ -122,7 +122,7 @@ Switch.pointerMoved: ✓ hover on Switch: the view's listening handed the recogn
 Switch.pointerPressed: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
 Switch.pointerReleased: ✓ hover on Switch: the view's listening handed the recognizer's states, no touch sent
 Text.held: ✓ hold on Text: the view's listening handed the recognizer's states, no touch sent
-Text.physicsBody: ✅
+Text.layoutBody: ✅
 TextEditor.droppedFileTypes: ✓ dropFiles on TextEditor: the drop interaction's handler told the driver's files, no drag session
 TextEditor.filesDropped: ✓ dropFiles on TextEditor: the drop interaction's handler told the driver's files, no drag session
 TextEditor.tapped: ✓ pressDown on TextEditor: the view's listening handed the recognizer's states, no touch sent
@@ -141,5 +141,5 @@ VStack.frameChanged: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRowSpan: ✅
 WebView.held: ✓ hold on WebView: the view's listening handed the recognizer's states, no touch sent
-WebView.physicsBody: ✅
+WebView.layoutBody: ✅
 ZStack.panYChannel: ✓ pan on ZStack: the view's listening handed the recognizer's states, no touch sent
