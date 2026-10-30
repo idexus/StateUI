@@ -51,15 +51,25 @@ The host builds on macOS, for Android 9 (API 28) or newer:
 An application's Android head is a library Android loads. Its `JNI_OnLoad`
 names the application and hands the virtual machine to the host. Android calls
 it on the UI thread from C, which no actor's type can say, so the head enters
-`MainActor` there once, with `MainActor.assumeIsolated`:
+`MainActor` there once, with `MainActor.assumeIsolated` - here the Gallery's,
+which also says what it answers for the application:
 
-```swift quote
-import NotesUI
+```swift listing android.md.head
+// Platforms/Android/Swift/GalleryAndroid.swift
+import GalleryUI
 import StateUIAndroid
 
+// What Android calls as it loads this library, on the UI thread: the application is named to the host, this head
+// says what it answers for the application - the controls it realizes, the acts it performs, the events it raises,
+// each in Host/ beside this file - and the host registers the native methods its activity calls.
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-    MainActor.assumeIsolated { registerApplication() }
+    MainActor.assumeIsolated {
+        registerApplication()
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.register()
+    }
     return StateUIAndroid.load(machine)
 }
 ```
@@ -118,16 +128,24 @@ public static func add<Realized: ElementContract, Made: AndroidControl>(
   value over as the type its contract declares, `nil` where it is no longer
   described, and `raises(_:)` records an event the control raises.
 
-```swift quote
-StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
-    let light = TrafficLightView()
-    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
-    return light
-}) { light in
-    light.property(TrafficLightContract.signal) { control, signal in
-        control.signal = signal ?? .stop
+```swift listing android.md.control
+// Platforms/Android/Swift/Host/TrafficLightView.swift
+extension TrafficLightView {
+    /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
+    /// reports, and `property` puts the described signal on it. Said once, as the library loads.
+    @MainActor
+    static func register() {
+        StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+            let light = TrafficLightView()
+            light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+            return light
+        }) { light in
+            light.property(TrafficLightContract.signal) { control, signal in
+                control.signal = signal ?? .stop
+            }
+            light.raises(TrafficLightContract.lampTapped)
+        }
     }
-    light.raises(TrafficLightContract.lampTapped)
 }
 ```
 
@@ -144,18 +162,28 @@ it spins and stands in a window - the same declaration Metal draws on AppKit.
 
 ### Properties taken together
 
-A control that must take one property before another - a web view its agent
-before its page - names them with `applies`, and is handed them whole
-whenever any of them changes: each as the type its contract declares, and
-whether it changed (`ControlValues`). Each `property` alone comes in no
-promised order.
+A control that must take properties together - a rating bar its stars and
+its rating, a web view its agent before its page - names them with `applies`,
+and is handed them whole whenever any of them changes: each as the type its
+contract declares, and whether it changed (`ControlValues`). Each `property`
+alone comes in no promised order. The Gallery's rating bar also reports the
+rating the user taps, with `reports.report`:
 
-```swift quote
-StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
-    web.applies(WebViewContract.userAgent, WebViewContract.source) { control, values in
-        if values.changed(WebViewContract.userAgent) { control.userAgent = values[WebViewContract.userAgent] }
-        if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
+```swift listing android.md.applies
+// Platforms/Android/Swift/Host/RatingBarView.swift
+StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
+    let bar = RatingBarView()
+    bar.onRatingChanged = { rating in
+        reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
     }
+    return bar
+}) { bar in
+    // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+    bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
+        control.show(
+            rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+    }
+    bar.raises(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -168,15 +196,24 @@ change: one added, moved, taken away, or given another value. A child is a
 `AndroidChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
-view of its own.
+view of its own. The Gallery's Google map draws its markers so:
 
-```swift quote
-StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
-    map.property(MapContract.region) { control, region in … }
-    map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) {
-        control, markers in
-        control.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
-        // the user taps one: marker.reports.raise(MarkerContract.selected)
+```swift listing android.md.children
+// Platforms/Android/Swift/Host/GoogleMapView.swift
+StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
+    map.property(MapContract.region) { control, region in control.show(region) }
+    map.property(MapContract.mapType) { control, type in control.show(type) }
+    map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
+    map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
+    map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
+    map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
+    map.raises(MapContract.mapClicked)
+    map.children(
+        MarkerContract.self,
+        properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+        events: MarkerContract.selected, MarkerContract.detailsClicked
+    ) { control, markers in
+        control.show(markers)
     }
 }
 ```
@@ -212,12 +249,17 @@ should its web process die. The head registers nothing for it.
 `StateUIActs.add(_:on:_:)` one aimed at the application's own element, handed
 that element's control:
 
-```swift quote
+```swift listing android.md.acts
+// Platforms/Android/Swift/Host/GalleryActs.swift
 StateUIActs.add(GalleryContract.log) { line in
-    Java.frame { Java.callStatic(device, log, .object(Java.string(line))) }
+    Java.frame { Java.callStatic(Self.device, Self.log, .object(Java.string(line))) }
 }
 
+// Platforms/Android/Swift/Host/RatingBarView.swift
+// An act aimed at a control is its control's: the identity the aim sent is turned back into the control
+// this host made, and the performer is handed that control.
 StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+    // The Java view fades itself, with its own animate().
     bar.flash()
 }
 ```
@@ -235,9 +277,26 @@ starts, so a handler listening for one no source raises is told so. Its
 source is often Android's own - the Gallery's activity registers a receiver
 for the battery while it lives:
 
-```swift quote
-StateUIEvents.raises(GalleryContract.batteryChanged)
-StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+```swift listing android.md.event
+// Platforms/Android/Swift/Host/GalleryEventSources.swift
+/// Declares the event the activity's watcher raises. Said once, as the library loads.
+@MainActor
+static func register() {
+    StateUIEvents.raises(GalleryContract.batteryChanged)
+}
+
+@MainActor private static var lastSaid: (level: Double, charging: Bool)?
+
+/// The battery said its level and whether it charges: raised where it changed, and a device with no battery
+/// says nothing.
+@MainActor
+static func report(level: Double, charging: Bool) {
+    guard level > 0 else { return }
+    guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+    lastSaid = (level, charging)
+    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+}
 ```
 
 ## Running

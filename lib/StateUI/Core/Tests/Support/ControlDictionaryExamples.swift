@@ -930,21 +930,15 @@ extension ControlDictionary {
     ]
 
     /// What an application registers with a host that does not realize a provider's element, shown under the
-    /// element's example: the words saying when, and the host's registration, quoted - it is written against a
-    /// host's facade, which no handbook block compiles with.
+    /// element's example: the words saying when, and where the hosts' pages show the Gallery's registration, cut from
+    /// its heads.
     /// Design: docs/design/contracts/dictionary.md#examples
-    static let registrations: [(contract: any ElementContract.Type, words: String, code: String)] = [
+    static let registrations: [(contract: any ElementContract.Type, words: String)] = [
         (MapContract.self,
          "A host with no map of its own shows the one the application registers with it - its control, the provider "
-            + "and the key it needs - and draws the pins as the map's children:",
-         #"""
-            StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
-                map.property(MapContract.region) { control, region in … }
-                map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) { control, pins in
-                    // each marker: its typed values, and its own reports to raise selected on it
-                }
-            }
-            """#),
+            + "and the key it needs - and draws the pins as the map's children, as the Gallery's "
+            + "[Android](../hosts/android.md#children-a-control-draws) and "
+            + "[Web](../hosts/web.md#children-a-control-draws) heads register Google's."),
     ]
 
     /// The example opening `contract`'s page.

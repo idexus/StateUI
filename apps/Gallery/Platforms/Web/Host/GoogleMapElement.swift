@@ -109,6 +109,7 @@ final class GoogleMapElement: WebControl {
 extension GoogleMapElement {
     /// Adds the map for `MapContract`, its markers, and the act moving it. Said once, before the application runs.
     static func register() {
+        // listing: web.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
             map.property(MapContract.mapType) { control, type in control.show(type) }
@@ -125,6 +126,7 @@ extension GoogleMapElement {
                 control.show(markers)
             }
         }
+        // listing: end
 
         StateUIActs.add(MapContract.moveToRegion, on: GoogleMapElement.self) { map, region in
             map.move(to: region)

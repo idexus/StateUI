@@ -76,9 +76,9 @@ of a small application where its contract is one (`Application`, `Scene`,
 
 A provider's element a host may not realize - a `Map` - shows under its
 example what an application registers with such a host
-(`ControlDictionary.registrations`): a sentence, and the
-registration quoted - `swift quote`, never compiled, since it is written
-against a host's facade and the handbook compiles against `StateUI` alone.
+(`ControlDictionary.registrations`): a sentence pointing to the hosts' pages,
+where the Gallery's registration is cut from its heads - code written against a
+host's facade, which that host's build compiles.
 
 ## Marks
 

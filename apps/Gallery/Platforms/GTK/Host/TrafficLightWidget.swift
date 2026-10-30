@@ -111,7 +111,7 @@ final class TrafficLightWidget: GTKControl {
 
 // MARK: - Registration
 
-// listing: InteropControlSample.GTK.swift
+// listing: InteropControlSample.GTK.swift, gtk.md.control
 extension TrafficLightWidget {
     /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
     /// reports, and `property` puts the described signal on it. Said once, before the application runs.

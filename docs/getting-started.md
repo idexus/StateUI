@@ -288,23 +288,25 @@ public func registerApplication() {
 }
 ```
 
-The AppKit executable registers the module and starts the host:
+The AppKit executable registers the module and starts the host - the
+starter's `Platforms/AppKit/main.swift` does that and finds its artwork; the
+Gallery's head, which also registers its own controls, reads:
 
-```swift quote
-import Foundation
-import NotesUI
+```swift listing appkit.md.head
+// Platforms/AppKit/main.swift
+import GalleryUI
 import StateUIAppKit
 
 registerApplication()
 
-let beside = Bundle.main.executableURL!.deletingLastPathComponent()
-let application = FileManager.default.fileExists(atPath: beside.appendingPathComponent("Resources").path)
-    ? beside
-    : URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+// What this host answers for the application, said before it runs: the
+// controls it realizes, the acts it performs, and the pushes it reports. Each
+// lives in Host/ beside this file.
+GalleryControls.register()
+GalleryActs.register()
+GalleryEventSources.start()
 
-StateUIAppKit.run(
-    resourceDirectory: application.appendingPathComponent("Resources/Images", isDirectory: true),
-    applicationIcon: application.appendingPathComponent("Resources/AppIcon/appicon_macos.svg"))
+StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
 ```
 
 The head finds its artwork beside itself where a deployed copy carries it -
@@ -338,16 +340,22 @@ answers for the application beyond the library:
 
 The Gallery's GTK head registers both:
 
-```swift quote
+```swift listing gtk.md.head
+// Platforms/GTK/main.swift
 import GalleryUI
 import StateUIGTK
 import StateUIWebViewGTK
 
+// Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+// the acts it performs, and the pushes it reports - each in Host/ beside this file.
 registerApplication()
+// Each control's own register(), at the end of its file: its widget, and any act aimed at it.
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
+// The backends the Gallery shows a library element through: the web view, over WebKitGTK.
 StateUIWebViewGTK.register()
+// Then GTK holds this thread until the last window closes.
 StateUIGTK.run(applicationID: "com.stateui.gallery")
 ```
 

@@ -45,6 +45,7 @@ final class TrafficLightView: AndroidControl {
     }
 }
 
+// listing: android.md.control
 extension TrafficLightView {
     /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
     /// reports, and `property` puts the described signal on it. Said once, as the library loads.
@@ -62,4 +63,5 @@ extension TrafficLightView {
         }
     }
 }
+// listing: end
 // listing: end

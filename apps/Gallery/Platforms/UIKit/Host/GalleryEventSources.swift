@@ -25,6 +25,7 @@ enum GalleryEventSources {
     private static var observers: [NSObjectProtocol] = []
 
     // listing: InteropEventsSample.UIKit.swift
+    // listing: uikit.md.event
     /// Declares what the gallery raises and starts watching. Said once,
     /// before the application runs.
     static func start() {
@@ -51,5 +52,6 @@ enum GalleryEventSources {
         lastSaid = (level, charging)
         StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
+    // listing: end
 }
 // listing: end

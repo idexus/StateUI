@@ -17,10 +17,12 @@ enum GalleryActs {
     /// Registers every act this host performs. Said once, before the application runs.
     @MainActor
     static func register() {
+        // listing: winui.md.acts
         // The log needs no relay: Swift calls Win32 itself - OutputDebugStringW, which a debugger reads.
         StateUIActs.add(GalleryContract.log) { line in
             line.withCString(encodedAs: UTF16.self) { OutputDebugStringW($0) }
         }
+        // listing: end
         // The power status, GetSystemPowerStatus, read by the gallery's relay.
         StateUIActs.add(GalleryContract.batteryLevel) {
             GalleryPower.battery()

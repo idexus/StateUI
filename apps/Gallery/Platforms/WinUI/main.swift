@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// listing: winui.md.head
 import GalleryUI
 import StateUIWebViewWinUI
 import StateUIWinUI
@@ -21,3 +22,4 @@ GalleryEventSources.start()
 // The backends the Gallery shows a library element through: the web view, over WebView2.
 StateUIWebViewWinUI.register()
 StateUIWinUI.run(linkSchemes: ["stateui-gallery"])
+// listing: end

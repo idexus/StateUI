@@ -12,9 +12,11 @@ enum GalleryActs {
     /// Registers each act with the host. Said once, as the library loads.
     @MainActor
     static func register() {
+        // listing: android.md.acts
         StateUIActs.add(GalleryContract.log) { line in
             Java.frame { Java.callStatic(Self.device, Self.log, .object(Java.string(line))) }
         }
+        // listing: end
 
         StateUIActs.add(GalleryContract.batteryLevel) {
             // The sticky ACTION_BATTERY_CHANGED, read in GalleryDevice.java.

@@ -59,14 +59,25 @@ The host builds on Linux, on arm64 or x64:
 An application's GTK head is an executable. Its `main` names the application
 and hands the thread to the host, under the application's reverse-DNS name;
 the host ends the process with the code GTK ended with - a start GTK refused
-fails it:
+fails it. The Gallery's head:
 
-```swift quote
-import NotesUI
+```swift listing gtk.md.head
+// Platforms/GTK/main.swift
+import GalleryUI
 import StateUIGTK
+import StateUIWebViewGTK
 
+// Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+// the acts it performs, and the pushes it reports - each in Host/ beside this file.
 registerApplication()
-StateUIGTK.run(applicationID: "com.example.notes")
+// Each control's own register(), at the end of its file: its widget, and any act aimed at it.
+GalleryControls.register()
+GalleryActs.register()
+GalleryEventSources.start()
+// The backends the Gallery shows a library element through: the web view, over WebKitGTK.
+StateUIWebViewGTK.register()
+// Then GTK holds this thread until the last window closes.
+StateUIGTK.run(applicationID: "com.stateui.gallery")
 ```
 
 The name is the one the desktop knows the application by. GTK keeps one
@@ -112,16 +123,25 @@ public static func add<Realized: ElementContract, Made: GTKControl>(
   value over as the type its contract declares, `nil` where it is no longer
   described, and `raises(_:)` records an event the control raises.
 
-```swift quote
-StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightWidget in
-    let light = TrafficLightWidget()
-    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
-    return light
-}) { light in
-    light.property(TrafficLightContract.signal) { control, signal in
-        control.signal = signal ?? .stop
+```swift listing gtk.md.control
+// Platforms/GTK/Host/TrafficLightWidget.swift
+extension TrafficLightWidget {
+    /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
+    /// reports, and `property` puts the described signal on it. Said once, before the application runs.
+    @MainActor
+    static func register() {
+        StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightWidget in
+            let light = TrafficLightWidget()
+            light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+            return light
+        }) { light in
+            // Handed back typed - a TrafficSignal, not its number.
+            light.property(TrafficLightContract.signal) { control, signal in
+                control.signal = signal ?? .stop
+            }
+            light.raises(TrafficLightContract.lampTapped)
+        }
     }
-    light.raises(TrafficLightContract.lampTapped)
 }
 ```
 
@@ -138,18 +158,30 @@ host drawing it in its own way.
 
 ### Properties taken together
 
-A control that must take one property before another - a web view its agent
-before its page - names them with `applies`, and is handed them whole
-whenever any of them changes: each as the type its contract declares, and
-whether it changed (`ControlValues`). Each `property` alone comes in no
-promised order.
+A control that must take properties together - a rating bar its stars and
+its rating, a web view its agent before its page - names them with `applies`,
+and is handed them whole whenever any of them changes: each as the type its
+contract declares, and whether it changed (`ControlValues`). Each `property`
+alone comes in no promised order. The Gallery's rating bar also reports the
+rating the user taps, with `reports.report`:
 
-```swift quote
-StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
-    web.applies(WebViewContract.userAgent, WebViewContract.source) { control, values in
-        if values.changed(WebViewContract.userAgent) { control.userAgent = values[WebViewContract.userAgent] }
-        if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
+```swift listing gtk.md.applies
+// Platforms/GTK/Host/RatingBarWidget.swift
+StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarWidget in
+    let bar = RatingBarWidget()
+    // A tapped star is the USER's change: it lands on the state the value is carried in, and raises the event
+    // with it.
+    bar.onRatingChanged = { rating in
+        reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
     }
+    return bar
+}) { bar in
+    // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+    bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
+        control.show(
+            rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+    }
+    bar.raises(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -162,18 +194,8 @@ change: one added, moved, taken away, or given another value. A child is a
 `GTKChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
-widget of its own.
-
-```swift quote
-StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
-    map.property(MapContract.region) { control, region in … }
-    map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) {
-        control, markers in
-        control.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
-        // the user taps one: marker.reports.raise(MarkerContract.selected)
-    }
-}
-```
+widget of its own. The Gallery's [Web](web.md#children-a-control-draws) and
+[Android](android.md#children-a-control-draws) heads register a map this way.
 
 A library element a host does not realize - a `Map` where the platform has no
 map of its own - is registered the same way, with the provider and the key it
@@ -196,11 +218,17 @@ Gallery's does. Until then the host realizes no web view.
 `StateUIActs.add(_:on:_:)` one aimed at the application's own element, handed
 that element's control:
 
-```swift quote
+```swift listing gtk.md.acts
+// Platforms/GTK/Host/GalleryActs.swift
+// A performer is handed the arguments its act declares and answers the values it declares.
+// GLib's own log, where journalctl reads it.
 StateUIActs.add(GalleryContract.log) { line in
     g_log_default_handler("Gallery", STATEUI_LOG_LEVEL_MESSAGE, line, nil)
 }
 
+// Platforms/GTK/Host/RatingBarWidget.swift
+// Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
+// The performer is handed that control, and flash() dims it and brings it back with libadwaita's animation.
 StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
     bar.flash()
 }
@@ -218,9 +246,35 @@ refused by name.
 element, from any thread; `StateUIEvents.raises` declares it before the host
 runs, so a handler listening for one no source raises is told so.
 
-```swift quote
-StateUIEvents.raises(GalleryContract.batteryChanged)
-StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+```swift listing gtk.md.event
+// Platforms/GTK/Host/GalleryEventSources.swift
+/// Declares what the host raises and wires its source. Said once, before the application runs.
+@MainActor
+static func start() {
+    // A handler listening for an event nothing declared is told, once, that it will not hear it.
+    StateUIEvents.raises(GalleryContract.batteryChanged)
+
+    // UPower's display device signals each change of its properties, the battery's among them.
+    guard let device = GalleryPower.device else { return }
+    // A C callback carries no context; the report is named in full.
+    let changed: @convention(c) (OpaquePointer?, OpaquePointer?, OpaquePointer?, gpointer?) -> Void = { _, _, _, _ in
+        MainActor.assumeIsolated { GalleryEventSources.report() }
+    }
+    g_signal_connect_data(
+        UnsafeMutableRawPointer(device), "g-properties-changed", unsafeBitCast(changed, to: GCallback.self), nil,
+        nil, GConnectFlags(rawValue: 0))
+    report()
+}
+
+@MainActor
+private static func report() {
+    let (level, charging) = GalleryPower.battery()
+    // Nothing is raised without a battery, nor for a notice that left it as it was.
+    guard level > 0, lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+    lastSaid = (level, charging)
+    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+}
 ```
 
 ## Running

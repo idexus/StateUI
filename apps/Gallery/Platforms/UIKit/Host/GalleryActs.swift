@@ -19,6 +19,7 @@ enum GalleryActs {
     /// application runs.
     @MainActor
     static func register() {
+        // listing: uikit.md.acts
         StateUIActs.add(GalleryContract.log) { line in
             Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
         }
@@ -26,6 +27,7 @@ enum GalleryActs {
         StateUIActs.add(GalleryContract.batteryLevel) {
             battery()
         }
+        // listing: end
     }
     // listing: end
 

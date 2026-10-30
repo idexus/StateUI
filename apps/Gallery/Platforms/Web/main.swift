@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// listing: web.md.head
 import GalleryUI
 import StateUIWeb
 
@@ -14,4 +15,5 @@ GalleryActs.register()
 // listing: InteropEventsSample.Web.swift
 GalleryEventSources.start()
 StateUIWeb.run(name: "Gallery")
+// listing: end
 // listing: end

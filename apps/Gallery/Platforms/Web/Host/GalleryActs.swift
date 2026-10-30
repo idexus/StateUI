@@ -16,9 +16,11 @@ enum GalleryActs {
     /// Registers every act this host performs. Said once, before the application runs.
     @MainActor
     static func register() {
+        // listing: web.md.acts
         StateUIActs.add(GalleryContract.log) { line in
             _ = try await StateUIScripts.call("log", line)
         }
+        // listing: end
         StateUIActs.add(GalleryContract.batteryLevel) {
             battery(try await StateUIScripts.call("batteryLevel"))
         }

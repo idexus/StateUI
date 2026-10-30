@@ -48,6 +48,7 @@ final class TrafficLightControl: WinUIControl {
 
 // MARK: - Registration
 
+// listing: winui.md.control
 extension TrafficLightControl {
     /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
     /// reports, and `property` puts the described signal on it. Said once, before the application runs.
@@ -66,4 +67,5 @@ extension TrafficLightControl {
         }
     }
 }
+// listing: end
 // listing: end

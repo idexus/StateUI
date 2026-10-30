@@ -133,6 +133,7 @@ final class GoogleMapView: AndroidControl {
 extension GoogleMapView {
     /// Adds the map for `MapContract`, its markers, and the act moving it. Said once, as the library loads.
     static func register() {
+        // listing: android.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
             map.property(MapContract.mapType) { control, type in control.show(type) }
@@ -149,6 +150,7 @@ extension GoogleMapView {
                 control.show(markers)
             }
         }
+        // listing: end
 
         StateUIActs.add(MapContract.moveToRegion, on: GoogleMapView.self) { map, region in
             map.show(region, animated: true)

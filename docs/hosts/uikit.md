@@ -43,19 +43,21 @@ exact application identifier before a wildcard.
 
 An application's UIKit head is `Platforms/UIKit/main.swift`. It registers the
 application, says what this host answers for it, then starts the host, which
-never returns:
+never returns - here the Gallery's:
 
-```swift quote
-import NotesUI
+```swift listing uikit.md.head
+// Platforms/UIKit/main.swift
+import GalleryUI
 import StateUIUIKit
 
 registerApplication()
 
-// The controls this host realizes, the acts it performs, and the pushes it
-// reports. Each lives in Host/ beside this file.
-NotesControls.register()
-NotesActs.register()
-NotesEventSources.start()
+// What this host answers for the application, said before it runs: the
+// controls it realizes, the acts it performs, and the pushes it reports. Each
+// lives in Host/ beside this file.
+GalleryControls.register()
+GalleryActs.register()
+GalleryEventSources.start()
 
 StateUIUIKit.run()
 ```
@@ -149,8 +151,12 @@ public static func add<Realized: ElementContract, Made: UIView>(
   over as the type its contract declares, `nil` where it is no longer
   described, and `raises(_:)` records an event the view raises.
 
-```swift quote
+```swift listing uikit.md.control
+// Platforms/UIKit/Host/TrafficLightView.swift
 extension TrafficLightView {
+    /// Adds the light for `TrafficLightContract`: `create` makes the view once
+    /// per element and wires the tap it reports, and `property` puts the
+    /// described signal on it. Said once, before the application runs.
     @MainActor
     static func register() {
         StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
@@ -181,18 +187,36 @@ next section says, and no other child is shown.
 
 ### Properties taken together
 
-A view that must take one property before another - a web view its agent
-before its page - names them with `applies`, and is handed them whole
-whenever any of them changes: each as the type its contract declares, and
-whether it changed (`ControlValues`). Each `property` alone comes in no
-promised order.
+A view that must take properties together - a rating bar its stars and its
+rating, a web view its agent before its page - names them with `applies`, and
+is handed them whole whenever any of them changes: each as the type its
+contract declares, and whether it changed (`ControlValues`). Each `property`
+alone comes in no promised order. The Gallery's rating bar also reports the
+rating the user taps, with `reports.report`:
 
-```swift quote
-StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
-    web.applies(WebViewContract.userAgent, WebViewContract.source) { view, values in
-        if values.changed(WebViewContract.userAgent) { view.userAgent = values[WebViewContract.userAgent] }
-        if values.changed(WebViewContract.source) { view.show(values[WebViewContract.source]) }
+```swift listing uikit.md.applies
+// Platforms/UIKit/Host/RatingBarView.swift
+// The bar, added for its contract: its stars and its rating put on it together, a tapped star reported.
+StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
+    let bar = RatingBarView()
+
+    // A tapped star is the USER's change: it lands on the state the
+    // value is carried in, and raises the event with it - so an
+    // application hears it once, whether it holds the rating in a
+    // state or in a handler.
+    bar.onRatingChanged = { rating in
+        reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
     }
+    return bar
+}) { bar in
+    // The stars and the rating come together: a rating stands within
+    // the stars, whichever of the two changed.
+    bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { view, values in
+        view.show(
+            rating: values[RatingBarContract.rating] ?? 0,
+            of: Int(values[RatingBarContract.maximum] ?? 5))
+    }
+    bar.raises(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -205,18 +229,8 @@ change: one added, moved, taken away, or given another value. A child is a
 `UIKitChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the view keeps what it drew for one by it. Such a child has no
-view of its own.
-
-```swift quote
-StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
-    map.property(MapContract.region) { view, region in … }
-    map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) {
-        view, markers in
-        view.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
-        // the user taps one: marker.reports.raise(MarkerContract.selected)
-    }
-}
-```
+view of its own. The Gallery's [Web](web.md#children-a-control-draws) and
+[Android](android.md#children-a-control-draws) heads register a map this way.
 
 This host draws a `Map` with MapKit itself. A library element a host does
 not realize - a `Map` on a platform with no map of its own - is registered
@@ -228,11 +242,19 @@ the same way, with the provider and the key it needs.
 `StateUIActs.add(_:on:_:)` one aimed at the application's own element, handed
 that element's view:
 
-```swift quote
-StateUIActs.add(NotesContract.log) { line in
-    Logger(subsystem: "com.example.notes", category: "Notes").notice("\(line, privacy: .public)")
+```swift listing uikit.md.acts
+// Platforms/UIKit/Host/GalleryActs.swift
+StateUIActs.add(GalleryContract.log) { line in
+    Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
 }
 
+StateUIActs.add(GalleryContract.batteryLevel) {
+    battery()
+}
+
+// Platforms/UIKit/Host/RatingBarView.swift
+// Aimed at one bar: the identity the aim sent is turned back into the
+// view this host made, and the performer is handed that view.
 StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
     bar.flash()
 }
@@ -246,16 +268,36 @@ fail the call with the reason, named. The Swift half is under
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, and `StateUIEvents.raises` declares it where its source is wired:
+element, and `StateUIEvents.raises` declares it where its source is wired -
+here the Gallery's battery:
 
-```swift quote
-StateUIEvents.raises(NotesContract.batteryChanged)
+```swift listing uikit.md.event
+// Platforms/UIKit/Host/GalleryEventSources.swift
+/// Declares what the gallery raises and starts watching. Said once,
+/// before the application runs.
+static func start() {
+    // What the host raises, declared where its source is wired: a handler
+    // listening for an event nothing raises is told so.
+    StateUIEvents.raises(GalleryContract.batteryChanged)
 
-UIDevice.current.isBatteryMonitoringEnabled = true
-NotificationCenter.default.addObserver(
-    forName: UIDevice.batteryLevelDidChangeNotification, object: nil, queue: .main
-) { _ in
-    StateUIEvents.raise(NotesContract.batteryChanged, Double(UIDevice.current.batteryLevel))
+    UIDevice.current.isBatteryMonitoringEnabled = true
+    for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {
+        observers.append(NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { _ in
+            MainActor.assumeIsolated { report() }
+        })
+    }
+    report()
+}
+
+/// Raises the battery's reading, where it has changed and there is one.
+private static func report() {
+    let (level, charging) = GalleryActs.battery()
+
+    guard level > 0 else { return }
+    guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+    lastSaid = (level, charging)
+    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
 }
 ```
 

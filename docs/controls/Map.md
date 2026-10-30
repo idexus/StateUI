@@ -12,16 +12,7 @@ Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), r
     .onMapClicked { place in tapped = "\(place.latitude), \(place.longitude)" }
 ```
 
-A host with no map of its own shows the one the application registers with it - its control, the provider and the key it needs - and draws the pins as the map's children:
-
-```swift quote
-StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
-    map.property(MapContract.region) { control, region in … }
-    map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) { control, pins in
-        // each marker: its typed values, and its own reports to raise selected on it
-    }
-}
-```
+A host with no map of its own shows the one the application registers with it - its control, the provider and the key it needs - and draws the pins as the map's children, as the Gallery's [Android](../hosts/android.md#children-a-control-draws) and [Web](../hosts/web.md#children-a-control-draws) heads register Google's.
 
 Layer: `provider`. An optional provider supplies it: a package, or the application that registers it with its hosts.
 

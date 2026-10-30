@@ -16,11 +16,13 @@ enum GalleryActs {
     /// Registers every act this host performs. Said once, before the application runs.
     @MainActor
     static func register() {
+        // listing: gtk.md.acts
         // A performer is handed the arguments its act declares and answers the values it declares.
         // GLib's own log, where journalctl reads it.
         StateUIActs.add(GalleryContract.log) { line in
             g_log_default_handler("Gallery", STATEUI_LOG_LEVEL_MESSAGE, line, nil)
         }
+        // listing: end
         // The battery, as UPower tells it on the system bus.
         StateUIActs.add(GalleryContract.batteryLevel) {
             GalleryPower.battery()

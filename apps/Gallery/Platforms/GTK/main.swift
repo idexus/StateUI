@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
+// listing: gtk.md.head
 import GalleryUI
 import StateUIGTK
 import StateUIWebViewGTK
@@ -18,3 +19,4 @@ GalleryEventSources.start()
 StateUIWebViewGTK.register()
 // Then GTK holds this thread until the last window closes.
 StateUIGTK.run(applicationID: "com.stateui.gallery")
+// listing: end

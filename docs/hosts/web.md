@@ -65,14 +65,22 @@ The host builds on macOS and on Linux:
 An application's Web head is an executable the browser runs: the page loads
 the module and runs its `main`, which names the application and shows it in
 the page. `main` returns; from then on the browser calls the application as
-the user acts and as the display draws.
+the user acts and as the display draws. The Gallery's head:
 
-```swift quote
-import NotesUI
+```swift listing web.md.head
+// Platforms/Web/main.swift
+import GalleryUI
 import StateUIWeb
 
+// Register the application module, then say what this host answers for it
+// before it runs - the controls it realizes, the acts it performs and the
+// pushes it reports, each in Host/ beside this file, their scripts in Page/ -
+// and show it in the page; the browser calls it from then on.
 registerApplication()
-StateUIWeb.run(name: "Notes")
+GalleryControls.register()
+GalleryActs.register()
+GalleryEventSources.start()
+StateUIWeb.run(name: "Gallery")
 ```
 
 `STATEUI_HOST=web` is what makes a build a Web one: the application's manifest
@@ -139,18 +147,45 @@ is the browser's own by the time a control makes one. The control tells the
 element what it is through its attributes, and hears what it does through its
 events:
 
-```swift quote
+```swift listing web.md.control
+// Platforms/Web/Host/WebGLCube3DView.swift
+/// A cube drawn by WebGL 2 in the page: the gallery's own element, `<gallery-cube3d>` of Page/cube3d.js, which knows
+/// nothing of StateUI - told what it is through its attributes. The Swift half is Sources/Samples/Interop/Cube3D.swift.
 @MainActor
 final class WebGLCube3DView: WebControl {
     let element = WebPageElement(tag: "gallery-cube3d")
 
+    /// How long the cube's edge is, as a share of the element.
+    var cubeSize = 0.6 {
+        didSet { if cubeSize != oldValue { element.setAttribute("size", String(cubeSize)) } }
+    }
+
+    /// Which color it is painted, as the element reads it: the vocabulary's member number.
     var color = CubeColor.teal {
-        didSet { element.setAttribute("color", String(color.rawValue)) }
+        didSet { if color != oldValue { element.setAttribute("color", String(color.rawValue)) } }
+    }
+
+    /// Whether it turns. Stopped, it holds the angle it had.
+    var isSpinning = true {
+        didSet { if isSpinning != oldValue { element.setAttribute("spinning", isSpinning ? "" : nil) } }
+    }
+
+    init() {
+        element.setAttribute("size", String(cubeSize))
+        element.setAttribute("color", String(color.rawValue))
+        element.setAttribute("spinning", "")
     }
 }
 
-StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { cube in
-    cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+extension WebGLCube3DView {
+    /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
+    static func register() {
+        StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { cube in
+            cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
+            cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+            cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
+        }
+    }
 }
 ```
 
@@ -162,18 +197,30 @@ a number in its event's `detail` to `listen(_:number:)` and words to
 
 ### Properties taken together
 
-A control that must take one property before another - a web view its agent
-before its page - names them with `applies`, and is handed them whole
-whenever any of them changes: each as the type its contract declares, and
-whether it changed (`ControlValues`). Each `property` alone comes in no
-promised order.
+A control that must take properties together - a rating bar its stars and
+its rating, a web view its agent before its page - names them with `applies`,
+and is handed them whole whenever any of them changes: each as the type its
+contract declares, and whether it changed (`ControlValues`). Each `property`
+alone comes in no promised order. The Gallery's rating bar also reports the
+rating the user taps, with `reports.report`:
 
-```swift quote
-StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
-    web.applies(WebViewContract.userAgent, WebViewContract.source) { control, values in
-        if values.changed(WebViewContract.userAgent) { control.userAgent = values[WebViewContract.userAgent] }
-        if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
+```swift listing web.md.applies
+// Platforms/Web/Host/RatingBarElement.swift
+StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarElement in
+    let bar = RatingBarElement()
+    // A tapped star is the USER's change: it lands on the state the value is carried in, and raises the event
+    // with it.
+    bar.onRatingChanged = { rating in
+        reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
     }
+    return bar
+}) { bar in
+    // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+    bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
+        control.show(
+            rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+    }
+    bar.raises(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -188,13 +235,22 @@ change: one added, moved, taken away, or given another value. A child is a
 it lives, so the control keeps what it drew for one by it. Such a child has no
 element of its own on the page.
 
-```swift quote
-StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
-    map.property(MapContract.region) { control, region in … }
-    map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) {
-        control, markers in
-        control.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
-        // the user taps one: marker.reports.raise(MarkerContract.selected)
+```swift listing web.md.children
+// Platforms/Web/Host/GoogleMapElement.swift
+StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
+    map.property(MapContract.region) { control, region in control.show(region) }
+    map.property(MapContract.mapType) { control, type in control.show(type) }
+    map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
+    map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
+    map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
+    map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
+    map.raises(MapContract.mapClicked)
+    map.children(
+        MarkerContract.self,
+        properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+        events: MarkerContract.selected, MarkerContract.detailsClicked
+    ) { control, markers in
+        control.show(markers)
     }
 }
 ```
@@ -226,13 +282,16 @@ application's own scripts reach for it. A script answers an act by name on
 one with `StateUIScripts.call` - awaiting its promise, throwing why it broke -
 and hears the other with `StateUIScripts.hear`:
 
-```swift quote
+```swift listing web.md.acts
+// Platforms/Web/Host/GalleryActs.swift
 StateUIActs.add(GalleryContract.log) { line in
     _ = try await StateUIScripts.call("log", line)
 }
 
+// Platforms/Web/Host/GalleryEventSources.swift
 StateUIScripts.hear("battery") { words in
     let (level, charging) = GalleryActs.battery(words)
+    guard level > 0 else { return }
     StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
 }
 ```
