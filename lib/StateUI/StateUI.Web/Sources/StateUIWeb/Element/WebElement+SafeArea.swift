@@ -35,6 +35,8 @@ extension WebElement {
                 ? "calc(var(--stateui-over-bottom) + \(WebCSS.pixels(foot) ?? "0px"))" : "var(--stateui-over-\(edge))"
             view.style("padding-\(edge)", runsUnder ? nil : depth)
             scroller?.style("padding-\(edge)", runsUnder ? depth : nil)
+            // An item scrolled into view stands clear of the bars too: the browser aligns to its scroll padding.
+            scroller?.style("scroll-padding-\(edge)", runsUnder ? depth : nil)
         }
         if let scroller, let end = ScrollArithmetic.keptAtEnd(standing, reach: before, now: Self.reach(scroller)) {
             WebRelay.setNumber(scroller.node, "scrollLeft", end.x)
