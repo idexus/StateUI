@@ -72,6 +72,39 @@ final class UIKitPagesTests: XCTestCase {
         host.settle { navigation.transitionCoordinator == nil }
     }
 
+    /// A page taken off a stack leaves nothing alive: its controller and the views it showed go once its move ends.
+    @MainActor
+    func testAPageTakenOffAStackLeavesNothingAlive() throws {
+        let path = State(wrappedValue: [1])
+        // Started in a pool of its own, as the application's run loop drains what a launch autoreleased.
+        let host = autoreleasepool {
+            UIKitRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    Text("Root")
+                } destination: { level in
+                    TextField(State(wrappedValue: "Level \(level)").projectedValue)
+                }
+            }
+        }
+        defer { host.finish() }
+        let stack = try XCTUnwrap(host.runtime.tree.root?.first(type: .navigationStack))
+        let navigation = try XCTUnwrap((stack.native as? UIKitElement)?.controller as? UIKitNavigationController)
+        let standing = { (count: Int) in navigation.viewControllers.count == count && navigation.transitionCoordinator == nil }
+        host.settle { standing(2) }
+        weak var page: UIViewController?
+        weak var field: UIView?
+        autoreleasepool {
+            page = navigation.topViewController
+            field = host.views(UIKitTextFieldView.self).first
+        }
+        XCTAssertNotNil(page)
+
+        path.wrappedValue = []
+        host.settle { standing(1) && page == nil }
+        XCTAssertNil(page, "its controller")
+        XCTAssertNil(field, "a view it showed")
+    }
+
     /// The user's way back is not undone by a render while the page goes. The stack is told once the move ends, so a
     /// render meanwhile still describes the page going - and the stack shows it no more.
     @MainActor

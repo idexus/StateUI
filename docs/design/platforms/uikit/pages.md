@@ -30,6 +30,21 @@ slides. A frame report's safe area is that same one -
 the page's, under its stack's bar as well as the status bar - so a view at its
 page's top corner reads nothing from it.
 
+## The keyboard
+
+A page stands clear of the keyboard docked at its screen's foot, as of the
+screen's bars: its safe area's foot is the keyboard's top where that stands
+higher ([the safe area](../../host/layout.md#the-safe-area)). UIKit tells
+where the keyboard goes as it begins to move (`UIKitKeyboardPlace`, from
+`keyboardWillChangeFrameNotification`): the frame it goes to, kept while it
+reaches the screen's foot - one floating over the screen, or gone below it,
+is none - and each page laid out again within the keyboard's own animation,
+its duration and curve, so a bar at the foot rides on it. UIKit's keyboard
+layout guide gives the same top, but a view reading it enrolls its window
+with the scene's keyboard tracking for as long as the scene stands, past the
+window leaving it, and a system guide cannot be taken off its view: every
+window a scene ever showed would stay alive.
+
 ## The bar
 
 A page's bar is its navigation item: its title and the line under it the page

@@ -24,9 +24,6 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
     /// The page's bottom bar, over its foot.
     private let bottomBar = UIKitBottomBarView()
 
-    /// A view on the keyboard's top, so the page lays itself out again as the keyboard moves - within its animation.
-    private let keyboardTop = UIView()
-
     init(page: UIKitElement) {
         self.page = page
         super.init(nibName: nil, bundle: nil)
@@ -46,14 +43,9 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         view = UIView()
         showBackground()
         if let shown = page?.view { view.addSubview(shown) }
-        keyboardTop.isHidden = true
-        keyboardTop.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(keyboardTop)
-        NSLayoutConstraint.activate([
-            keyboardTop.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
-            keyboardTop.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            keyboardTop.widthAnchor.constraint(equalToConstant: 0), keyboardTop.heightAnchor.constraint(equalToConstant: 0),
-        ])
+        // The page lays itself out again as the keyboard moves, within its animation.
+        // Design: docs/design/platforms/uikit/pages.md#the-keyboard
+        UIKitKeyboardPlace.follow(view)
     }
 
     /// Shows `bar` - the page's bottom bar - over its foot; nil for none.
@@ -133,8 +125,7 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
     /// window's own controls in its corner - an iPad's window - which a bar over the page stands clear of already.
     var safeInsets: UIEdgeInsets {
         var insets = view.edgeInsets(for: .safeArea(cornerAdaptation: .vertical))
-        let keyboard = view.bounds.maxY - view.keyboardLayoutGuide.layoutFrame.minY
-        insets.bottom = SafeAreaArithmetic.bottom(system: insets.bottom, keyboard: max(0, keyboard))
+        insets.bottom = SafeAreaArithmetic.bottom(system: insets.bottom, keyboard: UIKitKeyboardPlace.height(over: view))
         return insets
     }
 

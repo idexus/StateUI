@@ -66,13 +66,16 @@ extension UIKitRenderer {
         runtime.displayCycle.frame(now: frameClock.now())
     }
 
-    /// Turns the main run loop until `done` holds: a handler resumed on the main queue runs there.
+    /// Turns the main run loop until `done` holds: a handler resumed on the main queue runs there. Each turn drains
+    /// what it autoreleased, as the application's run loop does, so a controller let go is gone.
     func settle(until done: () -> Bool) {
         for _ in 0..<150 {
-            guard !done() else { break }
-            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
-            runtime.pump.turn()
-            layOut()
+            guard !autoreleasepool(invoking: done) else { break }
+            autoreleasepool {
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+                runtime.pump.turn()
+                layOut()
+            }
         }
     }
 
