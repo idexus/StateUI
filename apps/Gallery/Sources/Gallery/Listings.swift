@@ -7509,7 +7509,7 @@ enum Listings {
 
         /// Whether the ring grows as it turns - the cards flung outward, as a
         /// weight on a string is - read by the arithmetic below, never the body.
-        @State private var flungOut = false
+        @State private var flungOut = true
 
         /// The card the ring last came to rest on - every card and the ring
         /// still - told once each rest.
