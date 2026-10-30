@@ -12,9 +12,23 @@ extension MountedElement {
     /// Design: docs/design/host/pages.md#a-pages-actions
     public var chromeActions: ChromeActions {
         guard value(.showsNavigationBar)?.bool != false else { return ChromeActions() }
+        return actions(on: .top)
+    }
 
+    /// This page's actions for the bar at its foot (`.toolbar(.bottom)`), by the rules of its top bar's.
+    /// Design: docs/design/host/pages.md#a-pages-actions
+    public var chromeBottomActions: ChromeActions {
+        actions(on: .bottom)
+    }
+
+    /// This page's actions for the bar at `edge`.
+    private func actions(on edge: ToolbarEdge) -> ChromeActions {
+        let onEdge = { (declared: [ChromeActions.Declared]) in
+            declared.filter { ($0.element.value(.barEdge).flatMap(ToolbarEdge.init(propValue:)) ?? .top) == edge }
+        }
         guard let (split, part) = splitBarPart else {
-            return ChromeActions(arrangementsGroups(as: .detail) + ownGroups(as: .detail), part: nil, sidebarShown: true)
+            return ChromeActions(
+                onEdge(arrangementsGroups(as: .detail) + ownGroups(as: .detail)), part: nil, sidebarShown: true)
         }
         let other = (part == .sidebar ? split.arrangedChildren.dropFirst().first : split.arrangedChildren.first)?
             .visiblePage
@@ -24,7 +38,7 @@ extension MountedElement {
         }
         let others = other?.ownGroups(as: part == .sidebar ? .detail : .sidebar) ?? []
         return ChromeActions(
-            around + stacks + ownGroups(as: part) + others, part: part, sidebarShown: split.sidebarIsVisible)
+            onEdge(around + stacks + ownGroups(as: part) + others), part: part, sidebarShown: split.sidebarIsVisible)
     }
 
     /// The groups the stacks and tabs around this page declare for every page they show, their part unsaid being

@@ -223,6 +223,8 @@ enum PatchDump {
             return spelled(member, as: ToolbarPosition.self)
         case Prop.part.name:
             return spelled(member, as: ToolbarPart.self)
+        case Prop.barEdge.name:
+            return spelled(member, as: ToolbarEdge.self)
 
         // The shapes and the map.
         case Prop.lineCap.name:

@@ -37,7 +37,8 @@ extension AppKitDriver {
 
     /// The bar the window of `page` shows, read from its toolbar: the actions before the first flexible space and
     /// after the last, each run between two spaces a group, then the overflow's actions.
-    func bar(of page: MountedElement) throws -> String {
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
         let toolbar = try controller(of: page).toolbarForTesting
         let identifiers = toolbar.identifiersForTesting
         var root = page

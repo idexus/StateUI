@@ -42,33 +42,83 @@ extension UIKitDriver {
         return Color(red: channel(0), green: channel(1), blue: channel(2))
     }
 
-    /// The bar `page` shows, read from its navigation item: its leading and trailing groups, the overflow's entries -
-    /// each action told by the element whose identifier it carries.
-    func bar(of page: MountedElement) throws -> String {
+    /// The bar at `edge` of `page`: at its top read from its navigation item - its leading and trailing groups, the
+    /// overflow's entries - at its foot from its toolbar items.
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        guard edge == .top else { return try toolbar(of: page) }
         guard let item = (page.native as? UIKitElement)?.controller?.navigationItem else {
             throw DriverCannot("read the bar of \(page.type.name)")
         }
-        var root = page
-        while let parent = root.parent { root = parent }
-        let items = Self.toolbarItems(in: root)
-        let word = { (action: UIAction?, enabled: Bool) -> String? in
-            guard let action, let element = items.first(where: { ($0.native as? UIKitElement)?.actionIdentifier == action.identifier })
-            else { return nil }
-            return BarWords.word(element, enabled: enabled)
-        }
+        let word = Self.word(on: page)
         let groups = { (groups: [UIBarButtonItemGroup]) -> [[String]] in
-            groups.map { $0.barButtonItems.compactMap { word($0.primaryAction, $0.isEnabled) } }.filter { !$0.isEmpty }
+            groups.map { $0.barButtonItems.compactMap(word) }.filter { !$0.isEmpty }
         }
-        let overflow = item.trailingItemGroups.flatMap(\.barButtonItems).filter { $0.primaryAction == nil }
-            .flatMap { $0.menu?.children ?? [] }
-            .compactMap { ($0 as? UIAction).flatMap { word($0, !$0.attributes.contains(.disabled)) } }
+        let overflow = item.trailingItemGroups.flatMap(\.barButtonItems)
+            .filter { $0.primaryAction == nil && $0.customView == nil }
+            .flatMap { Self.entries(of: $0, on: page) }
         return BarWords.said(
             leading: groups(item.leadingItemGroups), trailing: groups(item.trailingItemGroups), overflow: overflow)
     }
 
+    /// How the bar over `page` says an item of its own - an action by the element whose identifier it carries, words
+    /// by the element whose label it shows; nil for one no element stands for.
+    private static func word(on page: MountedElement) -> (UIBarButtonItem) -> String? {
+        var root = page
+        while let parent = root.parent { root = parent }
+        let elements = toolbarItems(in: root)
+        return { item in
+            let element = elements.first { element in
+                guard let native = element.native as? UIKitElement else { return false }
+                if let label = item.customView { return native.barLabel === label }
+                return item.primaryAction.map { $0.identifier == native.actionIdentifier } ?? false
+            }
+            return element.map { BarWords.word($0, enabled: item.isEnabled) }
+        }
+    }
+
+    /// The entries of the menu `item` opens behind a bar's overflow, each said by its element.
+    private static func entries(of item: UIBarButtonItem, on page: MountedElement) -> [String] {
+        var root = page
+        while let parent = root.parent { root = parent }
+        let elements = toolbarItems(in: root)
+        return (item.menu?.children ?? []).compactMap { entry in
+            guard let action = entry as? UIAction,
+                  let element = elements.first(where: { ($0.native as? UIKitElement)?.actionIdentifier == action.identifier })
+            else { return nil }
+            return BarWords.word(element, enabled: !action.attributes.contains(.disabled))
+        }
+    }
+
+    /// The bar at `page`'s foot, read from its toolbar items while its stack shows the toolbar: the groups apart by
+    /// fixed spaces, the leading before the space between the edges, the overflow the More button's entries.
+    private func toolbar(of page: MountedElement) throws -> String {
+        guard let controller = (page.native as? UIKitElement)?.controller else {
+            throw DriverCannot("read the bar at the foot of \(page.type.name)")
+        }
+        guard controller.navigationController?.isToolbarHidden == false else {
+            return BarWords.said(leading: [], trailing: [], overflow: [])
+        }
+        let word = Self.word(on: page)
+        var sides: [[[String]]] = [[[]]]
+        var overflow: [String] = []
+        for item in controller.toolbarItems ?? [] {
+            if item.identifier == UIKitPageToolbar.betweenIdentifier {
+                sides.append([[]])
+            } else if item.identifier == UIKitPageToolbar.moreIdentifier {
+                overflow = Self.entries(of: item, on: page)
+            } else if let said = word(item) {
+                sides[sides.count - 1][sides[sides.count - 1].count - 1].append(said)
+            } else {
+                sides[sides.count - 1].append([])
+            }
+        }
+        let groups = { (side: Int) in sides.indices.contains(side) ? sides[side].filter { !$0.isEmpty } : [] }
+        return BarWords.said(leading: groups(0), trailing: groups(1), overflow: overflow)
+    }
+
     /// Every toolbar item under `root`, the arrangements' slots included.
     private static func toolbarItems(in root: MountedElement) -> [MountedElement] {
-        ([.toolbarButton, .toolbarToggle].contains(root.type) ? [root] : []) + (root.children + root.slots).flatMap { toolbarItems(in: $0) }
+        (NodeType.toolbarItemTypes.contains(root.type) ? [root] : []) + (root.children + root.slots).flatMap { toolbarItems(in: $0) }
     }
 
     /// A view's context menu, or a window's menus on the menu bar, as UIKit is handed them.

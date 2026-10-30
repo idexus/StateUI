@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// How a driver says the bar it reads (`HostDriver.bar(of:)`), the same for every host: the leading groups, "|", the
+/// How a driver says the bar it reads (`HostDriver.bar(of:at:)`), the same for every host: the leading groups, "|", the
 /// trailing groups, "|", the overflow - a group its actions in brackets, groups and actions apart by a space.
 @_spi(Host) @MainActor public enum BarWords {
     /// `leading`, `trailing` and `overflow` said: `"[filter]|[save add] [home]|more"`.

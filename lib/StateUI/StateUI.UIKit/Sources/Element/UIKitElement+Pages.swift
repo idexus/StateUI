@@ -62,6 +62,17 @@ extension UIKitElement {
         return chrome
     }
 
+    /// What the bar at a page's foot shows: its actions as the host layer orders them (`chromeBottomActions`). A tabbed
+    /// view's: its chosen tab's page's.
+    /// Design: docs/design/platforms/uikit/pages.md#the-bar-at-the-foot
+    var toolbar: UIKitPageToolbar {
+        if type == .tabView { return element.selectedTab?.visiblePage?.uiKit.toolbar ?? UIKitPageToolbar() }
+        let actions = element.chromeBottomActions
+        return UIKitPageToolbar(
+            leadingActions: actions.start.map { $0.map(Self.action) }, actions: actions.end.map { $0.map(Self.action) },
+            overflow: actions.overflow.map(Self.action))
+    }
+
     /// The user pressed the bar's close button: the sheet the page's stack stands in goes, false onto its state.
     private func closeItsSheet() {
         guard let way = element.closingItsSheet, let window = element.enclosing(type: .window) else { return }
@@ -74,7 +85,8 @@ extension UIKitElement {
         return UIKitBarAction(
             title: entry.title, icon: entry.icon, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
             identifier: entry.identifier, perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit,
-            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil, menu: menu(of: item))
+            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil, isLabel: item.type == .toolbarLabel,
+            menu: menu(of: item))
     }
 
     /// The menu a bar's button opens, read as a button's is (`ButtonMenu`); nil for one holding none.
@@ -93,6 +105,7 @@ extension UIKitElement {
                 chrome.show(
                     on: controller.navigationItem, barSize: UIKitNavigationController.barBackground(of: controller),
                     buttons: &barButtonsSaid)
+                toolbar.show(on: controller, items: &toolbarItemsSaid)
                 (controller as? UIKitPageController)?.showBottomBar(element.chromeBottomBar)
             }
         case .tabView:
@@ -100,6 +113,7 @@ extension UIKitElement {
                 chrome.show(
                     on: controller.navigationItem, barSize: UIKitNavigationController.barBackground(of: controller),
                     buttons: &barButtonsSaid)
+                toolbar.show(on: controller, items: &toolbarItemsSaid)
             }
             let tabs = controller as? UIKitTabBarController
             tabs?.showsTheStacksBar = element.showsTheStacksBar

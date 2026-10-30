@@ -72,9 +72,10 @@
     /// The menu `button` opens (`Button.menu`), written as `menu(of:)` writes one.
     func buttonMenu(of button: MountedElement) throws -> String
 
-    /// The bar `page` shows as the user meets it: the leading groups, "|", the trailing groups, "|", the actions in
-    /// the overflow - a group its actions' ids in brackets, in reading order, "!" before one that cannot be chosen.
-    func bar(of page: MountedElement) throws -> String
+    /// The bar at `edge` of `page` as the user meets it: the leading groups, "|", the trailing groups, "|", the
+    /// actions in the overflow - a group its actions' ids in brackets, in reading order, "!" before one that cannot be
+    /// chosen.
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String
 
     /// Whether `element` holds the keyboard.
     func focused(_ element: MountedElement) throws -> Bool
@@ -188,7 +189,7 @@ extension HostDriver {
         throw DriverCannot("read the menu \(button.type.name) opens")
     }
 
-    public func bar(of page: MountedElement) throws -> String {
+    public func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
         throw DriverCannot("read the bar of \(page.type.name)")
     }
 

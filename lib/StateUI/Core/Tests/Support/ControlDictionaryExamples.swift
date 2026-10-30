@@ -236,6 +236,16 @@ extension ControlDictionary {
                 }
             """#),
 
+        (ToolbarLabelContract.self, #"""
+            @State var unread = 3
+
+            Text("Inbox")
+                .toolbar(.bottom) {
+                    ToolbarLabel("\(unread) unread")
+                        .icon("envelope.png")
+                }
+            """#),
+
         (MenuToggleContract.self, #"""
             @State var showsRuler = false
 

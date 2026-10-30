@@ -9,7 +9,7 @@
 /// Design: docs/design/contracts/dictionary.md#marks
 enum AppKitRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
-    static let unrealized: [any ElementContract.Type] = []
+    static let unrealized: [any ElementContract.Type] = [ToolbarLabelContract.self]
 
     /// The entries the Mac will not have; none.
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []

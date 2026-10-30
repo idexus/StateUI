@@ -171,6 +171,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testTitleView() throws { try conform(TitleViewTests.self) }
     func testToolbarButton() throws { try conform(ToolbarButtonTests.self) }
     func testToolbarGroup() throws { try conform(ToolbarGroupTests.self) }
+    func testToolbarLabel() throws { try conform(ToolbarLabelTests.self) }
     func testToolbarToggle() throws { try conform(ToolbarToggleTests.self) }
     func testWindow() throws { try conform(WindowTests.self) }
     func testAutomationElement() throws { try conform(AutomationElementTests.self) }

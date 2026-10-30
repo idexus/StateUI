@@ -73,6 +73,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testTitleView() { conform(TitleViewTests.self) }
     @MainActor func testToolbarButton() { conform(ToolbarButtonTests.self) }
     @MainActor func testToolbarGroup() { conform(ToolbarGroupTests.self) }
+    @MainActor func testToolbarLabel() { conform(ToolbarLabelTests.self) }
     @MainActor func testToolbarToggle() { conform(ToolbarToggleTests.self) }
     @MainActor func testWindow() { conform(WindowTests.self) }
     @MainActor func testAutomationElement() { conform(AutomationElementTests.self) }

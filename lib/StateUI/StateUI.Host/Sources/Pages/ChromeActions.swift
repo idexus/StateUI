@@ -52,7 +52,7 @@
             }
             let standing = placed.filter { $0.position == position }.sorted { key($0) < key($1) }
             for each in standing {
-                let items = each.group.element.children.filter { [.toolbarButton, .toolbarToggle].contains($0.type) }
+                let items = each.group.element.children.filter { NodeType.toolbarItemTypes.contains($0.type) }
                 guard !items.isEmpty else { continue }
                 switch position {
                 case .start: start.append(items)
@@ -67,7 +67,8 @@
     @MainActor struct Declared {
         let element: MountedElement
 
-        /// How far out its declarer stands: -1 for a split view's own, else how deep in its page's tree it stands.
+        /// How far out its declarer stands: below nought for an arrangement's own, the outermost lowest, else how deep
+        /// in its page's tree it stands.
         let depth: Int
 
         /// The part it stands in: its own, else its declarer's.

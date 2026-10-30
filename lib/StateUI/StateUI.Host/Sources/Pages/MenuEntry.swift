@@ -140,7 +140,7 @@
         self.element = element
         title = element?.value(.text)?.string ?? ""
         icon = HostPicture(Self.picture(of: element))
-        isEnabled = element?.isEffectivelyEnabled ?? true
+        isEnabled = element.map { $0.type != .toolbarLabel && $0.isEffectivelyEnabled } ?? true
         isDestructive = element?.value(.role).flatMap(ActionRole.init(propValue:)) == .destructive
         identifier = element?.value(.accessibilityIdentifier)?.string
         isOn = kind == .item ? element?.value(.isOn)?.bool : nil

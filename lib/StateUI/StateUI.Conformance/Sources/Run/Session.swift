@@ -174,10 +174,10 @@
         return try driven { try driver.buttonMenu(of: button) }
     }
 
-    /// The bar `page` shows as the user meets it (`HostDriver.bar(of:)`).
-    public func bar(of page: MountedElement) throws -> String {
-        note("read the bar of \(page.type.name)")
-        return try driven { try driver.bar(of: page) }
+    /// The bar at `edge` of `page` as the user meets it (`HostDriver.bar(of:at:)`): its title's, unsaid.
+    public func bar(of page: MountedElement, at edge: ToolbarEdge = .top) throws -> String {
+        note(edge == .top ? "read the bar of \(page.type.name)" : "read the bar at the foot of \(page.type.name)")
+        return try driven { try driver.bar(of: page, at: edge) }
     }
 
     /// Whether `element` holds the keyboard.

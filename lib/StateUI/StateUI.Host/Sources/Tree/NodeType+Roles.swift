@@ -16,9 +16,12 @@
     /// The entries that have no view of their own: structure, and the parts of another's view.
     public static let viewlessTypes: Set<NodeType> = [
         .application, .scene, .window, .anchor, .sheet, .titleView, .bottomBar, .toolbarGroup, .toolbarButton,
-        .toolbarToggle, .menuBar, .contextMenu, .menu, .menuItem, .menuToggle, .menuSeparator, .buttonMenu, .textSpans,
+        .toolbarToggle, .toolbarLabel, .menuBar, .contextMenu, .menu, .menuItem, .menuToggle, .menuSeparator, .buttonMenu, .textSpans,
         .textSpan,
     ]
+
+    /// What stands on a bar among its groups: an action, a setting, words.
+    public static let toolbarItemTypes: Set<NodeType> = [.toolbarButton, .toolbarToggle, .toolbarLabel]
 
     /// The entries a menu draws itself.
     public static let menuTypes: Set<NodeType> = [

@@ -26,9 +26,18 @@ extension View {
     /// in nearer the title, then as declared. Declared on a disabled view, its
     /// items are disabled with it.
     ///
-    /// - Parameter content: the items and groups, in reading order.
-    public func toolbar(@ToolbarBuilder _ content: () -> ToolbarContent) -> Modified {
-        let groups = content().groups
+    /// Given `.bottom`, the items stand on a bar at the page's foot instead -
+    /// a desktop's thin status bar, a phone's bottom toolbar - by the same
+    /// rules; a bottom bar's view stands above them.
+    ///
+    /// - Parameters:
+    ///   - edge: the edge of the page whose bar the items stand on.
+    ///   - content: the items and groups, in reading order.
+    public func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Modified {
+        var groups = content().groups
+        if edge != .top {
+            for index in groups.indices { groups[index].write(ToolbarGroupContract.barEdge, edge) }
+        }
         // After the element's own children; the host finds them by type.
         // Design: docs/design/views/modifiers.md#slot-children
         return modified { $0.children.append(contentsOf: groups) }

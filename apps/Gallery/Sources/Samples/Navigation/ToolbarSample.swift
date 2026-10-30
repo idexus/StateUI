@@ -40,6 +40,9 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
     /// Whether the branch declaring the actions is disabled.
     @State private var locked = false
+
+    /// Whether the page shows the bar at its foot.
+    @State private var atFoot = true
     // listing: end
 
     static let id = "toolbar"
@@ -84,6 +87,10 @@ struct ToolbarSample: SampleContent, ExampleContent {
 
                 switchRow($saveHeld, "Save's menu held", id: "toolbar.saveHeld")
                 switchRow($sortArrow, "Sort's arrow", id: "toolbar.sortArrow")
+
+                SectionTitle("At the page's foot")
+
+                switchRow($atFoot, "The bar at the foot", id: "toolbar.atFoot")
             }
             .spacing(12)
             // The page's actions, declared where their state lives: they follow
@@ -141,6 +148,19 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .role(.destructive)
                     .isEnabled(saved > 0)
                     .onClicked { saved = 0 }
+            }
+            // The bar at the page's foot, by the same rules: words nobody
+            // chooses at its start, an action at its end.
+            .toolbar(.bottom) {
+                if atFoot {
+                    ToolbarLabel(recent.isEmpty ? "No recent files" : "\(recent.count) recent file(s)")
+                        .id("foot.files")
+                        .placement(at: .start)
+
+                    ToolbarButton("Save")
+                        .id("foot.save")
+                        .onClicked { saved += 1 }
+                }
             }
             // The desktop File menu, declared the same way: Save, and the recent
             // files following the state.
@@ -222,6 +242,11 @@ struct ToolbarSample: SampleContent, ExampleContent {
             Text("Recent files live in the desktop File menu, after Save: "
                 + "Add puts one there, choosing one removes it, and the submenu is disabled "
                 + "while it is empty.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("The bar at the foot is `.toolbar(.bottom)`: a phone's bottom toolbar, a desktop's thin "
+                + "status bar. Its `ToolbarLabel` counts the recent files, and its Save saves as the top one does.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

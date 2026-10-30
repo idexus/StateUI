@@ -11748,6 +11748,9 @@ enum Listings {
         /// Whether the branch declaring the actions is disabled.
         @State private var locked = false
 
+        /// Whether the page shows the bar at its foot.
+        @State private var atFoot = true
+
         var body: some View {
             VStack {
                 VStack {
@@ -11778,6 +11781,10 @@ enum Listings {
 
                     switchRow($saveHeld, "Save's menu held", id: "toolbar.saveHeld")
                     switchRow($sortArrow, "Sort's arrow", id: "toolbar.sortArrow")
+
+                    SectionTitle("At the page's foot")
+
+                    switchRow($atFoot, "The bar at the foot", id: "toolbar.atFoot")
                 }
                 // The page's actions, declared where their state lives: they follow
                 // it as the body builds - `saved` decides whether Clear can be pressed,
@@ -11834,6 +11841,19 @@ enum Listings {
                         .role(.destructive)
                         .isEnabled(saved > 0)
                         .onClicked { saved = 0 }
+                }
+                // The bar at the page's foot, by the same rules: words nobody
+                // chooses at its start, an action at its end.
+                .toolbar(.bottom) {
+                    if atFoot {
+                        ToolbarLabel(recent.isEmpty ? "No recent files" : "\(recent.count) recent file(s)")
+                            .id("foot.files")
+                            .placement(at: .start)
+
+                        ToolbarButton("Save")
+                            .id("foot.save")
+                            .onClicked { saved += 1 }
+                    }
                 }
                 // The desktop File menu, declared the same way: Save, and the recent
                 // files following the state.

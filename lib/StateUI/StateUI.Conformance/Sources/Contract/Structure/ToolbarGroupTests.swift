@@ -8,7 +8,7 @@
 /// alone - a group's items together, by their order and at their position, out of reach with a disabled group, the
 /// room between them its own, a lone item's own group told from one its author declared; a split view's stand in the part of its bar they name
 /// over the page shown there, move to the other part as their part changes, and while the sidebar is not shown stand
-/// at the detail's start or hide with it.
+/// at the detail's start or hide with it; those declared for the bar at a page's foot stand there.
 @_spi(Host) public enum ToolbarGroupTests: ConformanceFamily {
     public static let name = "ToolbarGroup"
 
@@ -172,6 +172,36 @@
                 path.wrappedValue = [1]
                 try s.settle { try items() == "share home" }
                 s.expect(try items(), "share home", "a pushed page's own, and its stack's still")
+            },
+            ConformanceCase("aBottomToolbarsItemsStandAtThePagesFoot", proves: [
+                Covered(ToolbarGroupContract.barEdge),
+            ], needs: [Covered(ActionElementContract.clicked, on: "ToolbarButton")]) { s in
+                let path = State(wrappedValue: [Int]())
+                let heard = Received<String>()
+                s.start {
+                    NavigationStack(path.projectedValue) {
+                        VStack { Text("Page") }
+                            .toolbar { ToolbarButton("Save").id("save") }
+                            .toolbar(.bottom) {
+                                ToolbarButton("Clear").onClicked { heard.values.append("clear") }.id("clear")
+                                ToolbarButton("Archive").placement(at: .start).id("archive")
+                            }
+                    } destination: { _ in
+                        VStack { Text("Pushed") }.toolbar(.bottom) { ToolbarButton("Share").id("share") }
+                    }
+                }
+                let foot = { try s.bar(of: try shownPage(s), at: .bottom) }
+
+                try s.settle { try foot() == "[archive]|[clear]|" }
+                s.expect(try foot(), "[archive]|[clear]|", "at the page's foot, each at its position")
+                s.expect(try s.bar(of: try shownPage(s)), "|[save]|", "and none on the bar at its top")
+                try s.perform(.activate, on: s.element("clear"))
+                s.settle { heard.values == ["clear"] }
+                s.expect(heard.values, ["clear"], "chosen there")
+
+                path.wrappedValue = [1]
+                try s.settle { try foot() == "|[share]|" }
+                s.expect(try foot(), "|[share]|", "a pushed page's own alone")
             },
             ConformanceCase("aSplitViewsDetailItemsStandBesideTheDetailsOwn", proves: [
                 Covered(ToolbarGroupContract.part),

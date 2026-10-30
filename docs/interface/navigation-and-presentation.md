@@ -589,6 +589,27 @@ VStack { … }
     }
 ```
 
+`.toolbar(.bottom) { }` stands its items on a bar at the page's foot - a
+phone's bottom toolbar, a desktop's thin status bar - by the same rules:
+groups, positions, order and the overflow. Words nobody chooses are a
+`ToolbarLabel`, on either bar, its picture before them; behind the overflow
+it is an entry nobody can choose. A page's view bar (`.bottomBar`) stands
+above it, both in the safe area. On iOS the bar is its navigation
+controller's toolbar, so a page shows it inside a `NavigationStack`, as it
+shows its top bar.
+
+```swift quote
+@State private var unread = 3
+
+VStack { … }
+    .toolbar(.bottom) {
+        ToolbarLabel("\(unread) unread")
+            .placement(at: .start)
+        ToolbarButton("Compose")
+            .onClicked { compose() }
+    }
+```
+
 On AppKit a page's furniture is its window's toolbar: the top page's title
 names the window, the way back is the system's back item, the actions are
 toolbar items - a space between two groups, a group at the start before the
@@ -766,7 +787,9 @@ ScrollView { messages }
     .bottomBar(edge: .hard) {
         Composer(draft: $draft)
     }
-``` Where the platform's bars stand over the page the
+```
+
+Where the platform's bars stand over the page the
 bar does too, the rows softening as they pass under it; where they stand
 beside the page, the page ends above it. Declared on a stack or a window's
 page, a bottom bar stands on every page shown there that declares none of its

@@ -79,6 +79,7 @@ extension NodeType {
     static let timePicker = TimePickerContract.nodeType
     static let toolbarButton = ToolbarButtonContract.nodeType
     static let toolbarToggle = ToolbarToggleContract.nodeType
+    static let toolbarLabel = ToolbarLabelContract.nodeType
     static let toolbarGroup = ToolbarGroupContract.nodeType
     static let vStack = VStackContract.nodeType
     static let webView = WebViewContract.nodeType
@@ -223,6 +224,7 @@ extension NodeType {
     static let opacity = VisualElementContract.opacity.token
     static let order = ToolbarGroupContract.order.token
     static let part = ToolbarGroupContract.part.token
+    static let barEdge = ToolbarGroupContract.barEdge.token
     static let position = ToolbarGroupContract.position.token
     static let orientation = ScrollViewContract.orientation.token
     static let padding = PaddingElementContract.padding.token

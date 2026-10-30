@@ -201,12 +201,16 @@ public struct DeclaringPage: View {
     /// Its groups, after its settings.
     let groups: @MainActor () -> [ToolbarGroup]
 
-    /// A page declaring `items`, `toggles`, `groups` and `title`, `beside` its words.
+    /// Its words, after its groups.
+    let labels: @MainActor () -> [ToolbarLabel]
+
+    /// A page declaring `items`, `toggles`, `groups`, `labels` and `title`, `beside` its words.
     public init(
         beside: [any View] = [], key: String = "", title: (any View)? = nil,
         _ items: @escaping @MainActor () -> [ToolbarButton] = { [] },
         toggles: @escaping @MainActor () -> [ToolbarToggle] = { [] },
-        groups: @escaping @MainActor () -> [ToolbarGroup] = { [] }
+        groups: @escaping @MainActor () -> [ToolbarGroup] = { [] },
+        labels: @escaping @MainActor () -> [ToolbarLabel] = { [] }
     ) {
         self.beside = beside
         self.key = key
@@ -214,15 +218,17 @@ public struct DeclaringPage: View {
         self.toggles = toggles
         self.items = items
         self.groups = groups
+        self.labels = labels
     }
 
     public var body: some View {
-        let (items, toggles, groups) = (self.items, self.toggles, self.groups)
+        let (items, toggles, groups, labels) = (self.items, self.toggles, self.groups, self.labels)
         let words = VStack { Beside([Text("Page")] + beside) }
         let declared = words.toolbar {
             items()
             toggles()
             groups()
+            labels()
         }
         guard let title else { return declared }
         return declared.titleView { AnyView(title) }

@@ -65,6 +65,25 @@ where the button has no click of its own, else holding it does - UIKit's bar
 offers no arrow part, so a split stands as held. The menu carries its
 element's identifier, as an action does.
 
+## The bar at the foot
+
+A page's actions for the bar at its foot (`.toolbar(.bottom)`) are its
+`toolbarItems`, and its navigation controller shows its toolbar while the
+page on top holds any - set as the move to a page starts, so the toolbar
+comes and goes with its page. The groups stand apart by a fixed space of no
+width, which UIKit draws as separate shared backgrounds; a flexible space
+stands between the leading groups and the rest, and the overflow is a More
+button at the end. The flexible space and the More button carry the same
+`identifier` on every page, so UIKit carries them across a move as the same
+items. A view's bar (`.bottomBar`) stands above the toolbar, as the safe
+area UIKit gives the page already ends at it.
+
+Words on a bar (`ToolbarLabel`) are a bar button holding a label - its
+picture before its words in the footnote's size, in the bar's words' color
+or the secondary one - off the shared background
+(`hidesSharedBackground`), as status words stand on the bar itself; behind
+the overflow they are an action nobody can choose.
+
 ## Pictures on the bars
 
 A picture on a bar - an action's - stands 20 points tall, as a symbol stands

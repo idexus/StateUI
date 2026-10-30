@@ -148,7 +148,8 @@ of its members each meets, and why a cell is empty.
 | [TimePicker](controls/TimePicker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarButton](controls/ToolbarButton.md) | structure | ✓ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ToolbarGroup](controls/ToolbarGroup.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [ToolbarGroup](controls/ToolbarGroup.md) | structure | ⌛ | ✅ | ⌛ | ⌛ | ⌛ | ⌛ |
+| [ToolbarLabel](controls/ToolbarLabel.md) | structure |  | ✅ |  |  |  |  |
 | [ToolbarToggle](controls/ToolbarToggle.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [WebView](controls/WebView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -224,8 +225,9 @@ contract.
 | `ButtonMenu` | `NSComboButton`, unified or split | `UIButton.menu`, opened by a tap or held | `PopupMenu` at the button, opened by a click or held | `DropDownButton`, `SplitButton` | `GtkMenuButton`, `AdwSplitButton` | `aria-haspopup` button opening an ARIA `menu`, or held for it |
 | `Separator` | an `NSBox` separator | a hairline `UIView` in the separator color | a `View` in the theme's list divider | a line in `DividerStrokeColorDefaultBrush` | a `GtkSeparator` | `<hr>` |
 | `MenuSeparator` | a separator `NSMenuItem` | a group break in a `UIMenu` | a group divider in a menu | `MenuFlyoutSeparator` | a section break in a `GMenu` | `role=separator` in an ARIA `menu` |
-| `ToolbarGroup` / `ToolbarButton` | `NSToolbarItem`; `NSMenuToolbarItem` overflow | `UIBarButtonItemGroup` / `UIBarButtonItem` | `Toolbar` `MenuItem` | a `CommandBar`'s `AppBarElementContainer` in the `TitleBar`, a group's on a capsule; `AppBarButton` behind More | `GtkButton` in an `AdwHeaderBar` | `<button>` in an ARIA `toolbar` |
+| `ToolbarGroup` / `ToolbarButton` | `NSToolbarItem`; `NSMenuToolbarItem` overflow; at the page's foot a strip of native controls | `UIBarButtonItemGroup` / `UIBarButtonItem`; at the page's foot the navigation controller's `UIToolbar` | `Toolbar` `MenuItem`; at the page's foot a `Toolbar` of its own | a `CommandBar`'s `AppBarElementContainer` in the `TitleBar`, a group's on a capsule; `AppBarButton` behind More; at the page's foot a `CommandBar` of its own | `GtkButton` in an `AdwHeaderBar`; at the page's foot in a `GtkActionBar`, `AdwToolbarView`'s bottom bar | `<button>` in an ARIA `toolbar`; at the page's foot a `toolbar` of its own |
 | `ToolbarToggle` | an `NSToolbarItem` showing its on picture, prominent while on with none; a checked `NSMenuItem` in the overflow | a `UIBarButtonItem` with `changesSelectionAsPrimaryAction`, `isSelected` while on | a checkable `Toolbar` `MenuItem`, its state on the bar by its on picture | a `ToggleButton` in a `CommandBar`'s `AppBarElementContainer` in the `TitleBar`; `AppBarToggleButton` behind More | `GtkToggleButton` in an `AdwHeaderBar` | `<button aria-pressed>` in an ARIA `toolbar` |
+| `ToolbarLabel` | an `NSTextField` label as an `NSToolbarItem`'s view; a disabled `NSMenuItem` in the overflow | a `UIBarButtonItem` holding a label, off its shared background; a disabled `UIAction` in the overflow | a `TextView` as a `Toolbar` `MenuItem`'s action view | a `TextBlock` in a `CommandBar`'s `AppBarElementContainer` | a `GtkLabel` in an `AdwHeaderBar` or a `GtkActionBar` | `<span>` in an ARIA `toolbar` |
 | `ZStack` / `PhaseLayout` / `Fill` / `Space` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | flexbox |
 | `Grid` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid |
@@ -544,13 +546,14 @@ Every control, and every part an application, its windows and its pages are made
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarButton](controls/ToolbarButton.md) | 27 | 5 ✅ · 2 ✓ · 18 – | 6 ✅ · 1 ☑️ · 1 ✓ · 19 – | 6 ✅ · 1 ☑️ · 19 – | 10 ✅ · 17 – | 8 ✅ · 1 ✓ · 18 – | 27 ✅ |
-| [ToolbarGroup](controls/ToolbarGroup.md) | 15 | 5 ✅ · 10 – | 5 ✅ · 10 – | 4 ✅ · 1 ☑️ · 10 – | 6 ✅ · 9 – | 5 ✅ · 10 – | 14 ✅ · 1 – |
+| [ToolbarGroup](controls/ToolbarGroup.md) | 16 | 8 – | 6 ✅ · 10 – | 8 – | 8 – | 8 – | 8 ✅ |
+| [ToolbarLabel](controls/ToolbarLabel.md) | 2 |  | 2 ✅ |  |  |  |  |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 108 | 111 | 90 | 136 | 100 | 166 |
+| ✅ |  | 103 | 114 | 86 | 130 | 95 | 160 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
-| – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 209 | **190** | **197** | **186** | **197** | **195** | **196** |
+| – |  | 53 | 61 | 70 | 51 | 71 | 15 |
+| **Met** | 212 | **183** | **200** | **180** | **190** | **188** | **189** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -646,7 +649,8 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [TextField](controls/TextField.md) | `isPassword`, `submitLabel`, `showsClearButton`, `onSubmitted` (`submitted`) | 4 | 2 ✅ · 1 ☑️ · 1 – | 4 ✅ | 3 ✅ · 1 – | 1 ✅ · 2 ☑️ | 2 ✅ · 1 ☑️ · 1 – | 3 ✅ |
 | [TextSpan](controls/TextSpan.md) | `background` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [TimePicker](controls/TimePicker.md) | `onClosed` (`closed`), `format`, `isOpen`, `onOpened` (`opened`), `time`, `onTimeChanged` (`timeChanged`) | 6 | 1 ✅ · 1 ✓ · 4 – | 2 ✅ | 5 ✅ · 1 ✓ | 2 ✅ | 4 ✅ · 1 ✓ | 2 ✅ · 3 – |
-| [ToolbarGroup](controls/ToolbarGroup.md) | `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position`, `spacing`, `standsAlone` | 7 | 5 ✅ · 2 – | 5 ✅ · 2 – | 4 ✅ · 1 ☑️ · 2 – | 6 ✅ · 1 – | 5 ✅ · 2 – | 6 ✅ · 1 – |
+| [ToolbarGroup](controls/ToolbarGroup.md) | `barEdge`, `hidesWithSidebar`, `isEnabled`, `order`, `part`, `position`, `spacing`, `standsAlone` | 8 |  | 6 ✅ · 2 – |  |  |  |  |
+| [ToolbarLabel](controls/ToolbarLabel.md) | `icon`, `text` | 2 |  | 2 ✅ |  |  |  |  |
 | [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `onToggled` (`toggled`) | 3 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
 | [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `resumed`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
@@ -675,15 +679,15 @@ realizes the element and each of its members.
 `Popover`, `ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`,
 `Separator`, `Sheet`, `Slider`, `Space`, `Spinner`, `SplitView`, `Stepper`,
 `Switch`, `TabView`, `Text`, `TextEditor`, `TextField`, `TextSpan`, `TextSpans`,
-`TimePicker`, `TitleView`, `ToolbarButton`, `ToolbarGroup`, `ToolbarToggle`,
-`VStack`, `WebView`, `Window`, `ZStack`.
+`TimePicker`, `TitleView`, `ToolbarButton`, `ToolbarGroup`, `ToolbarLabel`,
+`ToolbarToggle`, `VStack`, `WebView`, `Window`, `ZStack`.
 
 ### Properties
 
 `accessibilityActions`, `accessibilityHeading`, `accessibilityHint`,
 `accessibilityIdentifier`, `accessibilityLabel`, `accessibilityRole`,
 `accessibilityValue`, `allowsDrop`, `area`, `backButtonTitle`, `background`,
-`barBackground`, `barForegroundColor`, `canDrag`, `choosesOpacity`,
+`barBackground`, `barEdge`, `barForegroundColor`, `canDrag`, `choosesOpacity`,
 `clipsContent`, `color`, `columns`, `columnSpacing`, `contentMode`,
 `cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`, `date`,
 `destination`, `dragText`, `drawing`, `droppedFileTypes`, `edge`,

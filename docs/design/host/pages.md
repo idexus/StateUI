@@ -270,6 +270,14 @@ tree (`ChromeActions`), then as declared. Each group behind the overflow is a
 section of it (`overflowSections`). A bar that draws no groups takes the
 trailing actions in reading order (`primary`).
 
+A group declared for the bar at the page's foot (`barEdge`, `.toolbar(.bottom)`)
+stands there by the same rules, and on no top bar: the host layer composes the
+top bar's actions (`chromeActions`) and the foot's (`chromeBottomActions`) from
+one walk, each taking the groups of its edge. A page that hides its top bar
+keeps its foot's. Words on a bar (`ToolbarLabel`) stand among its actions as
+an item does; behind the overflow they are an entry nobody can choose
+(`MenuEntry.isEnabled`).
+
 ## A bar button's menu
 
 A `ToolbarButton` holds a menu as a `Button` does (`ButtonMenuElement`), and

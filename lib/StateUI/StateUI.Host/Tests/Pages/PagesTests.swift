@@ -480,10 +480,11 @@ final class PagesTests: XCTestCase {
     /// A toolbar group of `items`, at `side`, in `order`.
     private func toolbarGroup(
         _ id: String, _ items: [HostPatch], at position: ToolbarPosition = .end, order: Double = 0,
-        part: ToolbarPart? = nil, hidesWithSidebar: Bool = false
+        part: ToolbarPart? = nil, hidesWithSidebar: Bool = false, bar: ToolbarEdge = .top
     ) -> HostPatch {
         var properties: [Prop: HostValue] = [.position: .enumeration(position.rawValue), .order: .number(order)]
         if let part { properties[.part] = .enumeration(part.rawValue) }
+        if bar != .top { properties[.barEdge] = .enumeration(bar.rawValue) }
         if hidesWithSidebar { properties[.hidesWithSidebar] = .bool(true) }
         return node(id, .toolbarGroup, properties, children: items)
     }
@@ -566,6 +567,37 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(page.chromeActions.primary.map(\.id), [
             .manual("save"), .manual("add"), .manual("inspector"), .manual("home"), .manual("share"),
         ])
+    }
+
+    /// A group declared for the bar at the page's foot stands there, by the top bar's rules, and not on the top bar;
+    /// its stack's stand further out there too.
+    func testABottomToolbarsGroupsStandAtThePagesFoot() throws {
+        let runtime = runtime(pageWindow(
+            outer: [toolbarGroup("status", [toolbarAction("count")], bar: .bottom)],
+            inner: [
+                toolbarGroup("page", [toolbarAction("save")]),
+                toolbarGroup("foot", [toolbarAction("clear")], at: .start, bar: .bottom),
+            ],
+            stacked: [toolbarGroup("stacked", [toolbarAction("refresh")], bar: .bottom)])) { _ in }
+        let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
+
+        XCTAssertEqual(bar("detail", in: runtime), "|[save]|", "the top bar keeps its own")
+        XCTAssertEqual(said(page.chromeBottomActions), "[clear]|[count] [refresh]|", "the foot's, by the same rules")
+    }
+
+    /// Words stand on a bar among its actions, by the same rules; behind the overflow they are an entry nobody
+    /// chooses.
+    func testABarsWordsStandAmongItsActions() throws {
+        let runtime = runtime(pageWindow(inner: [
+            toolbarGroup("status", [node("count", .toolbarLabel, [.text: .string("3 items")]), toolbarAction("save")]),
+            toolbarGroup("more", [node("saved", .toolbarLabel, [.text: .string("Saved")])], at: .overflow),
+        ])) { _ in }
+        let page = try XCTUnwrap(runtime.tree.root?.first(id: .manual("detail")))
+
+        XCTAssertEqual(bar("detail", in: runtime), "|[count save]|[saved]")
+        let entry = MenuEntry.entry(of: try XCTUnwrap(page.chromeActions.overflow.first))
+        XCTAssertEqual(entry.title, "Saved")
+        XCTAssertFalse(entry.isEnabled, "words are chosen by nobody")
     }
 
     /// The groups behind the overflow are its sections, in reading order, the outer first.

@@ -68,6 +68,7 @@
         TitleViewTests.self,
         ToolbarButtonTests.self,
         ToolbarGroupTests.self,
+        ToolbarLabelTests.self,
         ToolbarToggleTests.self,
         WindowTests.self,
         AutomationElementTests.self,

@@ -61,7 +61,8 @@ extension AndroidDriver {
 
     /// The bar `page` shows, as Android lays it out: its actions in its menu's order, each run of one group a
     /// group, then the entries behind its overflow. Android's bar has no leading side.
-    func bar(of page: MountedElement) throws -> String {
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
         guard let bar = Self.bar(over: page) else { throw DriverCannot("read the bar of \(page.type.name)") }
         var (groups, overflow, group): ([[String]], [String], Int32?) = ([], [], nil)
         for entry in Self.laidOut(bar) {

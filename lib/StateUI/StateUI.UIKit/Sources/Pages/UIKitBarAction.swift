@@ -23,6 +23,9 @@ struct UIKitBarAction {
     /// A setting's state, on or off; nil for an action.
     var isOn: Bool? = nil
 
+    /// Whether it is words nobody chooses (`ToolbarLabel`).
+    var isLabel = false
+
     /// The menu its button opens; nil for an action holding none.
     var menu: Menu? = nil
 
@@ -53,6 +56,7 @@ struct UIKitBarAction {
         let identifier: String?
         let mount: UInt64?
         let isOn: Bool?
+        var isLabel = false
         var opening: ButtonMenuOpening = .none
         var menu: [MenuEntry.Said] = []
         var inOverflow: [MenuEntry.Said] = []
@@ -61,13 +65,14 @@ struct UIKitBarAction {
     var said: Said {
         Said(
             title: title, icon: icon, isEnabled: isEnabled, isDestructive: isDestructive, identifier: identifier,
-            mount: element?.element.mount, isOn: isOn, opening: menu?.opening ?? .none,
+            mount: element?.element.mount, isOn: isOn, isLabel: isLabel, opening: menu?.opening ?? .none,
             menu: menu?.entries.map(\.said) ?? [], inOverflow: menu?.inOverflow.map(\.said) ?? [])
     }
 
     /// A button of the bar, in `tint` - a painted bar's words, nil for the bar's own - or red where it destroys
     /// something.
     func barItem(tint: UIColor?) -> UIBarButtonItem {
+        if isLabel { return labelItem(tint: tint) }
         let item: UIBarButtonItem
         if let menu {
             // Its tap opens the menu where the button has no click of its own, else holding it does: UIKit's bar
@@ -89,6 +94,16 @@ struct UIKitBarAction {
             item.changesSelectionAsPrimaryAction = true
             item.isSelected = isOn
         }
+        return item
+    }
+
+    /// Words on the bar: its picture and words standing on the bar itself, in `tint` or the secondary color of words.
+    private func labelItem(tint: UIColor?) -> UIBarButtonItem {
+        let label = UIKitBarLabel(title, image: image)
+        label.tint(tint)
+        element?.barLabel = label
+        let item = UIBarButtonItem(customView: label)
+        item.hidesSharedBackground = true
         return item
     }
 

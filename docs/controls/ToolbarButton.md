@@ -42,13 +42,13 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (27)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">✓</td><td>5 ✅ · 2 ✓ · 18 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow</td></tr>
+<tbody><tr></tr><tr><td rowspan="2">AppKit</td><td align="center">✓</td><td>5 ✅ · 2 ✓ · 18 –</td><td><code>NSToolbarItem</code>; <code>NSMenuToolbarItem</code> overflow; at the page's foot a strip of native controls</td></tr>
 <tr><td colspan="3">only through the host's own: activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched</td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 1 ✓ · 19 –</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 19 –</td><td><code>Toolbar</code> <code>MenuItem</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅ · 17 –</td><td>a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>, a group's on a capsule; <code>AppBarButton</code> behind More</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 1 ✓ · 18 –</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>27 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 1 ✓ · 19 –</td><td><code>UIBarButtonItemGroup</code> / <code>UIBarButtonItem</code>; at the page's foot the navigation controller's <code>UIToolbar</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>6 ✅ · 1 ☑️ · 19 –</td><td><code>Toolbar</code> <code>MenuItem</code>; at the page's foot a <code>Toolbar</code> of its own</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>10 ✅ · 17 –</td><td>a <code>CommandBar</code>'s <code>AppBarElementContainer</code> in the <code>TitleBar</code>, a group's on a capsule; <code>AppBarButton</code> behind More; at the page's foot a <code>CommandBar</code> of its own</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>8 ✅ · 1 ✓ · 18 –</td><td><code>GtkButton</code> in an <code>AdwHeaderBar</code>; at the page's foot in a <code>GtkActionBar</code>, <code>AdwToolbarView</code>'s bottom bar</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>27 ✅</td><td><code>&lt;button&gt;</code> in an ARIA <code>toolbar</code>; at the page's foot a <code>toolbar</code> of its own</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarButtonContract.swift`.

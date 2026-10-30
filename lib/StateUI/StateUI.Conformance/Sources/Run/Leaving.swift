@@ -16,7 +16,7 @@
     }
 
     /// The items that come and go on a page's bar.
-    static let onTheBar = ["ToolbarButton", "ToolbarToggle"]
+    static let onTheBar = ["ToolbarButton", "ToolbarToggle", "ToolbarLabel"]
 
     /// Each of `elements` whose views or elements `driver`'s host held on to after it left, with how many; none where
     /// the host let go of everything.
@@ -146,6 +146,10 @@ struct ComingAndGoingOnTheBar: View {
                 guard shown, element == "ToolbarToggle" else { return [] }
                 let setting = ToolbarToggle("Ruler", isOn: false).id("specimen")
                 return [dressed ? setting.onToggled { _ in } : setting]
+            } labels: {
+                guard shown, element == "ToolbarLabel" else { return [] }
+                let label = ToolbarLabel("Saved").id("specimen")
+                return [dressed ? label.icon("test_dot.png") : label]
             }
         } destination: { _ in Text("Pushed") }
     }

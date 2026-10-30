@@ -611,7 +611,8 @@ extension WinUIDriver {
 
     /// The bar `page`'s window shows: its groups at each edge and what stands behind "more", each action by its
     /// item's id, else its words (`BarWords`).
-    func bar(of page: MountedElement) throws -> String {
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
         let titleBar = try window(of: page).titleBar
         var root = page
         while let parent = root.parent { root = parent }

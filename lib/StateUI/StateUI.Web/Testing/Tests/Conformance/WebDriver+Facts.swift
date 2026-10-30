@@ -262,7 +262,8 @@ extension WebDriver {
     }
 
     /// The bar as the user meets it: each edge's groups of actions, then those behind the bar's More.
-    func bar(of page: MountedElement) throws -> String {
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
         guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("read the bar of \(page.type.name)") }
         let buttons = bar.buttons.values
         let groups = { (edge: String) throws -> [[String]] in

@@ -38,7 +38,15 @@ extension UIKitDriver {
             default: break
             }
         }
-        if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type),
+        // Words on a bar: its label, its picture before it.
+        if element.type == .toolbarLabel, let label = (element.native as? UIKitElement)?.barLabel {
+            switch property {
+            case .text: return label.words.text?.propValue
+            case .icon: return label.picture.image?.accessibilityIdentifier.map { .string($0) }
+            default: break
+            }
+        }
+        if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle, .toolbarLabel].contains(element.type),
            let action = menuAction(of: element) {
             switch property {
             case .keyboardShortcut where [.toolbarButton, .toolbarToggle].contains(element.type):
@@ -260,8 +268,7 @@ extension UIKitDriver {
     func barMenu(identified identifier: UIMenu.Identifier) -> UIMenu? {
         guard let window = renderer?.roster.windows.first?.1.window else { return nil }
         func search(_ controller: UIViewController) -> UIMenu? {
-            let groups = controller.navigationItem.leadingItemGroups + controller.navigationItem.trailingItemGroups
-            if let menu = groups.flatMap(\.barButtonItems).compactMap(\.menu).first(where: { $0.identifier == identifier }) {
+            if let menu = Self.barItems(of: controller).compactMap(\.menu).first(where: { $0.identifier == identifier }) {
                 return menu
             }
             return controller.children.lazy.compactMap(search).first
@@ -272,11 +279,17 @@ extension UIKitDriver {
     private func barButton(answering action: UIAction) -> UIBarButtonItem? {
         guard let window = renderer?.roster.windows.first?.1.window else { return nil }
         func search(_ controller: UIViewController) -> UIBarButtonItem? {
-            let groups = controller.navigationItem.leadingItemGroups + controller.navigationItem.trailingItemGroups
-            if let item = groups.flatMap(\.barButtonItems).first(where: { $0.primaryAction === action }) { return item }
+            if let item = Self.barItems(of: controller).first(where: { $0.primaryAction === action }) { return item }
             return controller.children.lazy.compactMap(search).first
         }
         return window.rootViewController.flatMap(search)
+    }
+
+    /// The items on `controller`'s bars: at its top, and at its foot while its stack shows the toolbar.
+    private static func barItems(of controller: UIViewController) -> [UIBarButtonItem] {
+        let top = controller.navigationItem.leadingItemGroups + controller.navigationItem.trailingItemGroups
+        let foot = controller.navigationController?.isToolbarHidden == false ? controller.toolbarItems ?? [] : []
+        return top.flatMap(\.barButtonItems) + foot
     }
 
     /// Every action on the bars the window shows - its buttons', and its overflow menus' entries - and whether the
@@ -285,8 +298,7 @@ extension UIKitDriver {
         guard let window = renderer?.roster.windows.first?.1.window else { return [] }
         var found: [(action: UIAction, enabled: Bool)] = []
         func search(_ controller: UIViewController) {
-            let groups = controller.navigationItem.leadingItemGroups + controller.navigationItem.trailingItemGroups
-            for item in groups.flatMap(\.barButtonItems) {
+            for item in Self.barItems(of: controller) {
                 if let action = item.primaryAction { found.append((action, item.isEnabled)) }
                 for case let entry as UIAction in item.menu?.children ?? [] {
                     found.append((entry, !entry.attributes.contains(.disabled)))

@@ -87,7 +87,10 @@ struct UIKitPageChrome {
                 + menu.map(Self.group) + (close.map { [Self.group($0)] } ?? [])
         } else {
             for (group, actions) in zip(item.leadingItemGroups + item.trailingItemGroups, leadingActions + actions) {
-                for (button, action) in zip(group.barButtonItems, actions) { button.tintColor = action.tint(foreground) }
+                for (button, action) in zip(group.barButtonItems, actions) {
+                    button.tintColor = action.tint(foreground)
+                    (button.customView as? UIKitBarLabel)?.tint(foreground)
+                }
             }
             item.trailingItemGroups.dropFirst(actions.count).flatMap(\.barButtonItems).forEach {
                 $0.tintColor = foreground

@@ -37,12 +37,16 @@ public enum ToolbarGroupContract: ElementContract {
     /// The room between its items, where its host draws the bar itself.
     public static let spacing = ElementProperty<Self, Double>("spacing", layer: .adaptive, moves: .spacing)
 
+    /// The edge of the page whose bar it stands on: the top's, unsaid, or a bar at the page's foot.
+    public static let barEdge = ElementProperty<Self, ToolbarEdge>(
+        "barEdge", layer: .adaptive, travels: false, cleared: false, unsaid: .top)
+
     /// Where on the bar it stands: at an edge, or behind the overflow menu.
     public static let position = ElementProperty<Self, ToolbarPosition>(
         "position", layer: .adaptive, travels: false, cleared: false, unsaid: .end)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        hidesWithSidebar, isEnabled, order, part, position, spacing, standsAlone,
+        barEdge, hidesWithSidebar, isEnabled, order, part, position, spacing, standsAlone,
     ]
 }

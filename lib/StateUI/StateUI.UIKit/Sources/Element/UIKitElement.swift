@@ -46,6 +46,12 @@ final class UIKitElement: NativeElement {
     /// What the buttons on a page's bar say, which the bar keeps them for.
     var barButtonsSaid: [[UIKitBarAction.Said]]?
 
+    /// What the items on the bar at a page's foot say, which the bar keeps them for.
+    var toolbarItemsSaid: [[UIKitBarAction.Said]]?
+
+    /// A bar's words as UIKit was last handed them (`ToolbarLabel`).
+    weak var barLabel: UIKitBarLabel?
+
     /// Whether a layout of StateUI's has placed the view.
     var isPlaced = false
 

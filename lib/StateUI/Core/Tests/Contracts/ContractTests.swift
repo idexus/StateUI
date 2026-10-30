@@ -216,7 +216,7 @@ final class ContractTests: XCTestCase {
             LayoutInput.Axis.vertical,
             ItemDragStart.held,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
-            SelectionMode.multiple, ScrollAnchor.center, ScrollEdge.hard,
+            SelectionMode.multiple, ScrollAnchor.center, ScrollEdge.hard, ToolbarEdge.bottom,
             ItemsEntries(header: "h", sections: [ItemsEntries.Section("0", footer: "f", items: ["1", "2"])]),
             [0, 7, 255] as [UInt8], FileType("Page", extensions: ["html", "htm"]),
             [FileType("Text", extensions: ["txt"]), FileType("Page", extensions: ["html"])] as [FileType],

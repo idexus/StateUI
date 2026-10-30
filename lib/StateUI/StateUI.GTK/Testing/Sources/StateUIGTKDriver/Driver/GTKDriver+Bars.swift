@@ -13,7 +13,8 @@ import CStateUIGTK
 /// Design: docs/design/host/conformance.md#the-driver
 extension GTKDriver {
     /// The bar `page` shows: each edge's groups as their boxes hold them, then the overflow's menu.
-    func bar(of page: MountedElement) throws -> String {
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
         let frame = try frame(of: page)
         let word = { (button: GTKWidget) -> String? in
             guard let item = frame.action(on: button)?.item else { return nil }

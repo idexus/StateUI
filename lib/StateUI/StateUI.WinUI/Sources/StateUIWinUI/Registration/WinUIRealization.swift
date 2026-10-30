@@ -9,7 +9,7 @@
 /// Design: docs/design/contracts/dictionary.md#marks
 enum WinUIRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
-    static let unrealized: [any ElementContract.Type] = []
+    static let unrealized: [any ElementContract.Type] = [ToolbarLabelContract.self]
 
     /// The entries this host leaves to the application, which registers its own control for each: the platform has
     /// no map of its own, and a map needs a provider and its key.

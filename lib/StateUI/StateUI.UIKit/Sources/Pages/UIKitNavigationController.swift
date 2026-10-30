@@ -79,16 +79,24 @@ final class UIKitNavigationController: UINavigationController, UINavigationContr
         if !moves { view.layoutIfNeeded() }
     }
 
-    /// Shows the bar or hides it, as the page on top says.
+    /// Shows the bar or hides it, as the page on top says, and the toolbar while the page holds items for it.
     func showTopsBar() {
         let hidden = !(viewControllers.last.map(showsBar) ?? true)
         if hidden != isNavigationBarHidden { setNavigationBarHidden(hidden, animated: false) }
+        let bare = Self.holdsNoToolbarItems(viewControllers.last)
+        if bare != isToolbarHidden { setToolbarHidden(bare, animated: false) }
+    }
+
+    /// Whether `page` holds nothing for the toolbar.
+    private static func holdsNoToolbarItems(_ page: UIViewController?) -> Bool {
+        page?.toolbarItems?.isEmpty ?? true
     }
 
     func navigationController(
         _ navigation: UINavigationController, willShow shown: UIViewController, animated: Bool
     ) {
         setNavigationBarHidden(!showsBar(shown), animated: animated)
+        setToolbarHidden(Self.holdsNoToolbarItems(shown), animated: animated)
     }
 
     func navigationController(
