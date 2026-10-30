@@ -19,6 +19,7 @@ extension MountedElement {
                 if reason == .navigation { tellPhase(.navigatedTo) }
             } else {
                 if reason == .navigation { tellPhase(.navigatingFrom) }
+                takePointerOff()
                 tellPhase(.disappearing)
                 if reason == .navigation { tellPhase(.navigatedFrom) }
             }
@@ -34,6 +35,17 @@ extension MountedElement {
         default:
             break
         }
+    }
+
+    /// Takes the pointer off every view of this page it stood over, in the page's turn: a toolkit tells no exit to a
+    /// view gone from under the pointer, and a state following the pointer would stay.
+    /// Design: docs/design/host/pages.md#a-pages-phases
+    private func takePointerOff() {
+        if pointerIsOver {
+            pointerIsOver = false
+            tellPhase(.pointerExited)
+        }
+        for child in children { child.takePointerOff() }
     }
 
     /// After what this arrangement shows changed - a push or a pop, another tab, the sidebar shown or hidden - what

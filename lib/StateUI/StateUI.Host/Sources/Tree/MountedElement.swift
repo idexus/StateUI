@@ -54,6 +54,9 @@
     /// Whether this element was last told the focus stands in it.
     var reportedFocus = false
 
+    /// Whether the pointer stands over the element's view, as its toolkit last told it.
+    var pointerIsOver = false
+
     /// The frame report this element last said, which a report the same says again to nobody.
     var reportedFrame: [Double] = []
 

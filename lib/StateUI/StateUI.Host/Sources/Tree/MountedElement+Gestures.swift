@@ -56,6 +56,7 @@ extension MountedElement {
             // Design: docs/design/host/runtime.md#a-finger-hovers-over-nothing
             if byFinger, [.pointerEntered, .pointerMoved, .pointerExited].contains(event) { return false }
             let said: [HostValue] = event == .pointerEntered || event == .pointerExited ? [] : [.numbers([point.x, point.y])]
+            if event == .pointerEntered || event == .pointerExited { pointerIsOver = event == .pointerEntered }
             send(event, said, in: runtime)
         case .drag(let phase, let x, let y):
             dragged(phase, x: x, y: y, in: runtime)

@@ -34,7 +34,10 @@ from, disappearing and navigated from, the move's words around the
 disappearing. An arrangement hands it on to what it shows: a stack to its top
 page, as a move where its window came; a tabbed view to its tab and a split
 view to its detail and its shown sidebar, as appearances. Each phase is
-rendered before the next is heard.
+rendered before the next is heard. A page disappearing first takes the pointer
+off every view of it the pointer stood over (`pointerIsOver`, `pointerExited`):
+a toolkit tells no exit to a view gone from under the pointer, and a state
+following the pointer - a row's highlight - would stay as the page comes back.
 
 When what an arrangement shows changes - a push or a pop, another tab, the
 sidebar shown or hidden - what stopped showing leaves first, then what started
