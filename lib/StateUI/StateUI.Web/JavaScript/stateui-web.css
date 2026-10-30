@@ -788,6 +788,12 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-field { field-sizing: content; }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input::placeholder, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
+/* An editor given a ground of its own stands in it with no frame, focused or not: the platforms' editors draw none. */
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea[data-ground],
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea[data-ground]:focus-visible {
+  border-color: transparent;
+  box-shadow: none;
+}
 /* An editor growing with its words is as tall as they are, from one line. */
 :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea[data-grows] { min-height: 0; }
 /* A select's and a search field's padding - 12 and 34 points either side - yields to a narrower room the layout gives

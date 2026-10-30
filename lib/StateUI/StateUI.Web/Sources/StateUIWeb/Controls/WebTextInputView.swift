@@ -57,6 +57,14 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         attribute("disabled", enabled ? nil : "")
     }
 
+    /// An editor given a ground of its own stands in it with no frame of the page's look, as the platforms' editors
+    /// draw none.
+    /// Design: docs/design/platforms/web/look.md#a-views-background
+    override func setBackground(_ value: HostValue?) {
+        super.setBackground(value)
+        if kind == .editor { attribute("data-ground", value == nil ? nil : "") }
+    }
+
     func setPlaceholder(_ placeholder: String?) {
         self.placeholder = placeholder ?? ""
         attribute("placeholder", placeholder)

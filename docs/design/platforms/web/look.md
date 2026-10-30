@@ -44,7 +44,9 @@ first color; a layout and a button paint theirs as a box
 date or a time is filled where the user writes, as the browser draws a field
 the page colors. The trap: written as the `background` shorthand, the color
 would clear the picture the page's look draws in a field - a picker's chevron,
-a search field's glass. A web view's background shows where the page it shows paints none, and stands white where
+a search field's glass. An editor given a ground of its own stands in it
+with no frame of the page's look, focused or not (`data-ground`), as the
+platforms' editors draw none. A web view's background shows where the page it shows paints none, and stands white where
 the application gives none. The browser draws its slider over the slider's
 whole box and paints no background under it, so a slider has none.
 

@@ -583,6 +583,28 @@ final class WebLookTests: XCTestCase {
         XCTAssertTrue(try WebBrowser.truth("\(sheetBar).hasAttribute('data-under')", on: 0), "its edge")
     }
 
+    /// An editor given a ground of its own stands in it with no frame of the page's look, focused or not - the
+    /// platforms' editors draw none; one given none keeps the frame.
+    func testAnEditorGivenItsOwnGroundStandsWithNoFrame() throws {
+        let host = WebRenderer.running {
+            VStack {
+                TextEditor(State(wrappedValue: "").projectedValue).id("plain")
+                TextEditor(State(wrappedValue: "").projectedValue).background(Color.transparent).id("grounded")
+            }
+        }
+        let editor = { (id: String) in (host.runtime.tree.root?.first(id: .manual(id))?.native as? WebElement)?.view?.node }
+        host.settle { editor("plain") != nil && editor("grounded") != nil }
+        let frame = { (id: String) in
+            try WebBrowser.evaluate("getComputedStyle(e).borderTopColor", on: try XCTUnwrap(editor(id)))
+        }
+        XCTAssertNotEqual(try frame("plain"), "rgba(0, 0, 0, 0)", "the page's frame")
+        XCTAssertEqual(try frame("grounded"), "rgba(0, 0, 0, 0)", "none")
+        try WebBrowser.run("e.focus()", on: try XCTUnwrap(editor("grounded")))
+        XCTAssertEqual(try frame("grounded"), "rgba(0, 0, 0, 0)", "none, focused")
+        XCTAssertEqual(try WebBrowser.evaluate("getComputedStyle(e).boxShadow", on: try XCTUnwrap(editor("grounded"))),
+                       "none", "no ring, focused")
+    }
+
     func testAControlOverEveryPageWearsTheStylesheet() throws {
         let host = WebRenderer.running {
             Text("Beneath").overlays { VStack { Switch(true); Button("Over") } }
