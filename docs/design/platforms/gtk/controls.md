@@ -222,7 +222,12 @@ entry's room around its words. It is as wide as the room it is offered, its
 words wrapping in it; growing with its words it is as tall as they are, and
 not growing it keeps a line's height, whatever it holds - the room its
 layout gives it is the room it scrolls in. GTK allows a scrolled window no
-less than its scrollbar's length, so an editor is never shorter than that.
+less than its scrollbar's length, so an editor that does not grow is never
+shorter than that; a growing one shows no scrollbar (`GTK_POLICY_EXTERNAL`) -
+it grows instead - and stands one line tall at one line, still scrolling to
+its caret where its room is shorter than its words. An editor given a ground
+of its own stands in it with no box of the theme's - no fill, no corners, no
+ring (`stateui-editor-bare`).
 
 A text view has no placeholder: the editor's is a label laid over its first
 line, shown only while it holds no words. A text view has no bound either:

@@ -224,6 +224,15 @@ enum GTKStyleSheet {
         return name
     }
 
+    /// The class of an editor standing on a ground of its own: no box of the theme's - no fill, no corners, no ring -
+    /// the text view on it clear.
+    static var bareEditor: String {
+        let name = "stateui-editor-bare"
+        write(name, "outline: 0 solid transparent;",
+              states: ".\(name) > textview, .\(name) > textview > text { background-color: transparent; }\n")
+        return name
+    }
+
     /// The class of a list or a grid: what stands under it shows behind its rows, and an item chosen is shaded in
     /// the color of its words, as GNOME's sidebars shade theirs - no hue of the theme's own over the page. A row and
     /// a grid's child keep no padding of the theme's: an item stands where StateUI's spacing puts it.
