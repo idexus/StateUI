@@ -21,16 +21,21 @@ final class UIKitScrollClearance {
     func keep(_ clearance: Clearance, on scroller: UIScrollView, programs: (() -> Void) -> Void) {
         guard clearance != self.clearance else { return }
         let (standing, before) = (standing(of: scroller), reach(of: scroller, keeping: self.clearance))
-        self.clearance = clearance
-        let (top, left, bottom, right) = (clearance.top, clearance.left, clearance.bottom, clearance.right)
-        scroller.contentInset = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
-        scroller.verticalScrollIndicatorInsets = UIEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
-        scroller.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: left, bottom: 0, right: right)
+        inset(clearance, on: scroller)
         let native = native(of: standing)
         programs { scroller.contentOffset = native }
         if let end = ScrollArithmetic.keptAtEnd(standing, reach: before, now: reach(of: scroller, keeping: clearance)) {
             scroller.contentOffset = self.native(of: end)
         }
+    }
+
+    /// Takes `clearance` as `scroller`'s insets alone, its offset left as it is - a glide under way going on.
+    func inset(_ clearance: Clearance, on scroller: UIScrollView) {
+        self.clearance = clearance
+        let (top, left, bottom, right) = (clearance.top, clearance.left, clearance.bottom, clearance.right)
+        scroller.contentInset = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
+        scroller.verticalScrollIndicatorInsets = UIEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
+        scroller.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: left, bottom: 0, right: right)
     }
 
     /// The farthest `scroller` stands keeping `clearance` clear: its content and the clearance past its viewport.

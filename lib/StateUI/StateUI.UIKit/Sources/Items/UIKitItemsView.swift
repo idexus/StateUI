@@ -72,9 +72,18 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, U
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
     func keepClear(_ clearance: Clearance) {
         guard clearance != kept.clearance else { return }
-        kept.keep(clearance, on: collection) { $0() }
+        // A new inset ends a glide under way, and UIKit tells that as the glide's end: the glide takes the inset alone,
+        // is owed still, and sets out again to its item in the room the inset leaves.
+        let glides = gliding || glideOwed
+        keeping = true
+        if glides { kept.inset(clearance, on: collection) } else { kept.keep(clearance, on: collection) { $0() } }
+        keeping = false
+        if glides { (gliding, glideOwed) = (false, true) }
         roomChanged()
     }
+
+    /// Whether the list is taking a new inset, which ends a glide with no end of the glide's own.
+    private var keeping = false
 
     /// The list's room changed - its size, or what it keeps clear of the bars over it: the item the program scrolled
     /// to stands again where it put it (`ItemsCells.roomChanged`), a glide the change cut short going on from where it
@@ -82,8 +91,9 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, U
     /// Design: docs/design/platforms/uikit/items.md#scrolling-to-an-item
     private func roomChanged() {
         guard let target = cells.roomChanged() else { return }
+        guard !gliding, !glideOwed else { return glide(to: target) }
         collection.layoutIfNeeded()
-        if gliding { gliding = stand(target, animated: true) } else { stand(target, animated: false) }
+        stand(target, animated: false)
     }
 
     // MARK: - What the tree says
@@ -306,33 +316,44 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, U
     func scroll(to identity: String, anchor: ScrollAnchor) {
         cells.scroll(to: identity, anchor: anchor)
         gliding = false
-        guard !ItemsScrollTarget.glides(reducingMotion: reducesMotion()) else {
-            gliding = stand(ItemsScrollTarget(identity: identity, anchor: anchor), animated: true)
-            return
-        }
+        glideOwed = ItemsScrollTarget.glides(reducingMotion: reducesMotion())
         settle()
     }
 
     /// Stands the item the program scrolled to, lays out what that brings into view, and stands it again from the
-    /// cells measured - and so after every pass that brings cells their entries, while the host layer holds it.
+    /// cells measured - and so after every pass that brings cells their entries, while the host layer holds it. A
+    /// scroll still owing its glide glides there instead.
     /// Design: docs/design/platforms/uikit/items.md#scrolling-to-an-item
     private func settle() {
         guard !asking else { return wait(settles: true) }
         guard !gliding, let target = cells.scrollTarget else { return }
+        guard !glideOwed else { return glide(to: target) }
         stand(target, animated: false)
         collection.layoutIfNeeded()
         if let target = cells.laidOut() { stand(target, animated: false) }
     }
 
+    /// Glides to `target` where it can stand now; owed still where it cannot - an item come a moment ago and not
+    /// laid out yet glides there once it is, never jumps.
+    private func glide(to target: ItemsScrollTarget) {
+        collection.layoutIfNeeded()
+        gliding = stand(target, animated: true)
+        if gliding { glideOwed = false }
+    }
+
     /// Whether a scroll the program asked for glides now, which stands its item again as it stops.
     private var gliding = false
 
+    /// Whether a scroll the program asked for to glide has not set out yet: its item could not stand.
+    private var glideOwed = false
+
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        gliding = false
+        (gliding, glideOwed) = (false, false)
         cells.userScrolled()
     }
 
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        guard !keeping else { return }
         gliding = false
         settle()
     }

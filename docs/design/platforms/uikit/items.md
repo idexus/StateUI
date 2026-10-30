@@ -122,6 +122,8 @@ held or stood since (`ItemsCells.roomChanged`): a sheet lays its list out at
 the screen's size first, where a conversation's messages all fit and its
 last stands at the top, then at its own, and the conversation opened at its
 top. Setting the offset for a new inset cuts a glide short where it is and
-UIKit tells no end of it, so the glide goes on from there - a message sent
-from a field of several lines, the bar shrinking as the field empties, slid
-into view rather than jumped.
+UIKit tells no end of it, so the glide goes on from there. And a scroll asked
+to glide to an item come a moment ago - the collection not having laid it
+out yet - owes its glide until the item can stand, whatever stands it then:
+a message sent from a field of several lines, the bar shrinking as the field
+empties, slid into view rather than jumped there and faded in.

@@ -192,9 +192,13 @@ final class UIKitItemsViewTests: XCTestCase {
     /// of the bar at its foot.
     @MainActor
     func testAScrollStandsItsItemThoughTheBarsChangeAsItGlides() throws {
+        // Under a heading, so the list is no page's scroller and keeps clear only what the test says.
         let host = UIKitRenderer.running {
-            ItemsView(0..<100) { Text("Row \($0)").fontSize(14).padding(10) }
-                .width(300).height(400)
+            VStack {
+                Text("Rows")
+                ItemsView(0..<100) { Text("Row \($0)").fontSize(14).padding(10) }
+                    .width(300).height(400)
+            }
         }
         defer { host.finish() }
         let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
@@ -230,25 +234,55 @@ final class UIKitItemsViewTests: XCTestCase {
     /// then at its own: at the list's end there.
     @MainActor
     func testAnItemScrolledToStandsAgainAsTheListsRoomChanges() throws {
+        let tall = State(wrappedValue: 1_000.0)
         let host = UIKitRenderer.running {
             ItemsView(0..<15) { Text("Row \($0)").fontSize(14).padding(10) }
-                .width(300).height(400)
+                .width(300).height(tall.wrappedValue)
         }
         defer { host.finish() }
         let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
         let collection = items.collection
-        items.frame = CGRect(x: 0, y: 0, width: 300, height: 1_000)
-        items.layoutIfNeeded()
         host.settle { collection.visibleCells.count == 15 }
         items.scroll(to: "14", anchor: .end)
         host.settle { collection.contentOffset.y == 0 }
 
-        items.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
-        items.layoutIfNeeded()
+        tall.wrappedValue = 300
         let foot = { (collection.layoutAttributesForItem(at: IndexPath(item: 14, section: 0))?.frame.maxY ?? 0)
             - collection.contentOffset.y }
-        host.settle { abs(foot() - 300) < 1 }
+        host.settle { collection.bounds.height == 300 && abs(foot() - 300) < 1 }
         XCTAssertEqual(foot(), 300, accuracy: 1, "at the list's end in its room")
+    }
+
+    /// A scroll the program asks for to an item that has just come - before the collection laid it out - glides
+    /// there once it can stand, a change of the bars over the list on the way included: a message sent slides into
+    /// view, never jumps there.
+    @MainActor
+    func testAScrollToAnItemJustComeGlidesThere() throws {
+        let numbers = State(wrappedValue: Array(0..<30))
+        let host = UIKitRenderer.running {
+            VStack {
+                Text("Rows")
+                ItemsView(numbers.wrappedValue) { Text("Row \($0)").fontSize(14).padding(10) }
+                    .width(300).height(400)
+            }
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        let collection = items.collection
+        host.settle { collection.visibleCells.count > 5 }
+        let start = collection.contentOffset.y
+
+        numbers.wrappedValue.append(30)
+        host.runtime.pump.turn()
+        items.scroll(to: "30", anchor: .end)
+        items.keepClear(Clearance(top: 0, left: 0, bottom: 40, right: 0))
+        collection.layoutIfNeeded()
+        // The end as the cells measure it: the layout's estimates give way as the cells take their entries.
+        let reach = { collection.contentSize.height + 40 - collection.bounds.height }
+        XCTAssertLessThan(collection.contentOffset.y, reach() - 1, "on its way, not there at once (from \(start))")
+
+        host.settle { abs(collection.contentOffset.y - reach()) < 1 }
+        XCTAssertEqual(collection.contentOffset.y, reach(), accuracy: 1, "at the new item")
     }
 
     /// Every row moved one place down travels from where it stood to its new place, never above where it stood, and
