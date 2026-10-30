@@ -56,18 +56,19 @@ final class ResourceTests: XCTestCase {
         }
     }
 
-    /// Two styles under one key, or for one role, means one of them is not
-    /// there, and nothing says so.
+    /// Two styles under one key, or for one variant - a role, a presentation -
+    /// means one of them is not there, and nothing says so.
     func testNothingIsFiledTwice() {
         var keys: Set<String> = []
-        var roles: Set<ButtonRole> = []
+        var variants: [StyleVariant] = []
         var implicitTargets: Set<String> = []
 
         for style in styles {
             if let key = style.key {
                 XCTAssertTrue(keys.insert(key).inserted, "two styles answer to \"\(key)\"")
-            } else if let role = style.role {
-                XCTAssertTrue(roles.insert(role).inserted, "two styles for the role \(role)")
+            } else if let variant = style.variant {
+                XCTAssertFalse(variants.contains(variant), "two styles for \(variant.member) \(variant.value)")
+                variants.append(variant)
             } else {
                 XCTAssertTrue(implicitTargets.insert(style.target.name).inserted,
                               "two implicit styles for \(style.target.name)")

@@ -115,6 +115,25 @@ struct DeleteOrKeep: View {
 A button asking for a keyed style, or for the platform's own look, wears none
 of its role's style.
 
+A picker's presentation chooses one the same way: `Style<Picker>(presentation:)`
+is the style every picker of that presentation wears - a picker saying none is
+a menu - over the implicit picker style.
+
+```swift
+@MainActor
+enum PickerStyles {
+    static var sheet: StyleSheet {
+        StyleSheet {
+            Style<Picker>()
+                .fontSize(15)
+
+            Style<Picker>(presentation: .segmented)
+                .tint(.cornflowerBlue)
+        }
+    }
+}
+```
+
 Every control also has the key `.platform`: the platform's own look, wearing
 no style of the sheet - neither the implicit one nor any other. A control
 chooses its style as it is built, and `nil` wears the implicit one, so

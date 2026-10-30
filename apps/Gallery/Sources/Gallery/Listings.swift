@@ -704,6 +704,11 @@ enum Listings {
             #if UIKIT || ANDROID
             .visualState(.pressed) { $0.background(Palette.dangerWashLit) }
             #endif
+
+        // A picker's presentation chooses a style as a button's role
+        // does: the chosen segment in the gallery's violet.
+        Style<Picker>(presentation: .segmented)
+            .tint(Palette.accent)
         """#,
         "AppSwitcherSample": #"""
         // Sources/Samples/MotionLayout/AppSwitcherSample.swift
@@ -11042,6 +11047,7 @@ enum Listings {
         // Sources/Samples/Styles/StyleSample.swift
         @State private var enabled = true
         @State private var platformLook = false
+        @State private var span = "Week"
 
         var body: some View {
             // The gallery's styles, or the platform's own look.
@@ -11085,6 +11091,15 @@ enum Listings {
                     Button("Delete").style(look).role(.destructive)
                 }
                 .horizontalAlignment(.center)
+
+                SectionTitle("A style for a presentation")
+
+                // The segments wear the style their presentation chooses, over the
+                // one every picker wears.
+                Picker(["Day", "Week", "Month"], selection: $span) { $0 }
+                    .presentation(.segmented)
+                    .style(platformLook ? .platform : nil)
+                    .horizontalAlignment(.center)
 
                 SectionTitle("A style asked for by name")
 

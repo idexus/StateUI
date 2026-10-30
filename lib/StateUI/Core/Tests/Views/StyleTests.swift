@@ -608,6 +608,26 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(plain.props["textColor"], Color.black.propValue)
     }
 
+    /// A style for a picker's presentation stands over the one every picker wears, worn by every picker of that
+    /// presentation - a picker saying none is a menu - and by no other.
+    func testAStyleForAPresentationStandsOverTheOneEveryPickerWears() {
+        let sheet = StyleSheet {
+            Style<Picker>(presentation: .segmented).tint(.red)
+            Style<Picker>(presentation: .menu).textColor(.blue)
+            Style<Picker>().fontSize(14).tint(.black)
+        }
+        let picker = { Picker(["A", "B"], selection: State(wrappedValue: "A").projectedValue) { $0 } }
+
+        let segments = Renders().render(picker().presentation(.segmented).node, styles: sheet)
+        let radio = Renders().render(picker().presentation(.radio).node, styles: sheet)
+        let unsaid = Renders().render(picker().node, styles: sheet)
+
+        XCTAssertEqual(segments.props["tint"], Color.red.propValue, "the presentation's own")
+        XCTAssertEqual(segments.props["fontSize"], .number(14), "and the implicit style's rest, written after it")
+        XCTAssertEqual(radio.props["tint"], Color.black.propValue, "another presentation wears the implicit style")
+        XCTAssertEqual(unsaid.props["textColor"], Color.blue.propValue, "a picker saying none is a menu")
+    }
+
     /// A style asked for by its key replaces the role's too, and the platform's look wears neither.
     func testAKeyedStyleOrThePlatformsLookTakesNoRoleStyle() {
         let sheet = StyleSheet {

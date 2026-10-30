@@ -5,6 +5,7 @@ struct StyleSample: SampleContent, ExampleContent {
     // listing: StyleSample
     @State private var enabled = true
     @State private var platformLook = false
+    @State private var span = "Week"
     // listing: end
 
     static let id = "styles"
@@ -60,6 +61,15 @@ struct StyleSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
+            SectionTitle("A style for a presentation")
+
+            // The segments wear the style their presentation chooses, over the
+            // one every picker wears.
+            Picker(["Day", "Week", "Month"], selection: $span) { $0 }
+                .presentation(.segmented)
+                .style(platformLook ? .platform : nil)
+                .horizontalAlignment(.center)
+
             SectionTitle("A style asked for by name")
 
             // A keyed style is asked for; a keyed style REPLACES the implicit
@@ -92,6 +102,11 @@ struct StyleSample: SampleContent, ExampleContent {
 
             Text("\"Keep\" and \"Delete\" wear `Style<Button>(role:)`, the style of their role, standing over "
                 + "`Style<Button>()`: each says only what its role changes.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("The segments wear `Style<Picker>(presentation: .segmented)` the same way, the style of their "
+                + "presentation over `Style<Picker>()`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

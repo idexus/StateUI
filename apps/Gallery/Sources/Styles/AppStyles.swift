@@ -161,6 +161,11 @@ enum AppStyles {
                 #if UIKIT || ANDROID
                 .visualState(.pressed) { $0.background(Palette.dangerWashLit) }
                 #endif
+
+            // A picker's presentation chooses a style as a button's role
+            // does: the chosen segment in the gallery's violet.
+            Style<Picker>(presentation: .segmented)
+                .tint(Palette.accent)
             // listing: end
 
             Style<Button>(.iconButton)

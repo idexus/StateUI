@@ -61,15 +61,20 @@ context filled in, since Swift has no default generic arguments.
   nothing. A chain that comes back round to a style already being flattened
   stops there rather than looping over a mistake there is nowhere to report.
 
-## A style for a role
+## A style for a variant
 
-A button's role chooses a style as its type does: `Style<Button>(role:)` is
-filed by the role, not as the implicit style, and the sheet lays it over the
-implicit button style once it is built - after `basedOn` is flattened, whichever
-was written first - so a role states what it changes and a control finds one
-style in one look-up. A key asked for wins over the role, as it wins over the
-implicit style, and `.platform` wears neither. The sheet's sameness reads the
-role, or two sheets styling two roles alike would be one.
+A value a control holds of one of its members - a button's role, a picker's
+presentation - chooses a style as its type does (`StyleVariant`):
+`Style<Button>(role:)` and `Style<Picker>(presentation:)` are filed by that
+value, not as the implicit style, and the sheet lays each over the implicit
+style of its type once it is built - after `basedOn` is flattened, whichever
+was written first - so a variant states what it changes and a control finds
+one style in one look-up. A control saying nothing of the member holds the
+value its member means unsaid where there is one - a picker saying none is a
+menu - and none where there is not - a button with no role. A key asked for
+wins over the variant, as it wins over the implicit style, and `.platform`
+wears neither. The sheet's sameness reads the variant, or two sheets styling
+two roles alike would be one.
 
 ## Visual states
 
