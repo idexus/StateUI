@@ -9,7 +9,7 @@
 /// Design: docs/design/contracts/dictionary.md#marks
 enum WinUIRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
-    static let unrealized: [any ElementContract.Type] = [ToolbarLabelContract.self]
+    static let unrealized: [any ElementContract.Type] = []
 
     /// The entries this host leaves to the application, which registers its own control for each: the platform has
     /// no map of its own, and a map needs a provider and its key.
@@ -214,6 +214,7 @@ enum WinUIRealization {
             + "or selection: a password field keeps none of these."),
         .partial(TimePickerContract.format,
             missing: "WinUI's time picker writes hours and minutes as the user's clock does, whatever the format asks: no seconds, no pattern."),
+        .complete(ToolbarGroupContract.barEdge),
         .complete(ToolbarGroupContract.order),
         .complete(ToolbarGroupContract.part),
         .complete(ToolbarGroupContract.hidesWithSidebar),
@@ -225,6 +226,8 @@ enum WinUIRealization {
         .complete(ToolbarToggleContract.onIcon),
         .complete(TextAndIconElementContract.showsText, on: ToolbarToggleContract.self),
         .complete(ToolbarToggleContract.toggled),
+        .complete(ToolbarLabelContract.icon),
+        .complete(ToolbarLabelContract.text),
         .notPlanned(VisualElementContract.isEnabled, on: WebViewContract.self,
             reason: "WinUI's WebView2 is no control: it keeps no enabled state, and "
             + "its page takes the user's hand whatever the tree says."),

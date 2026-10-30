@@ -55,9 +55,11 @@ final class WinUIWindowController {
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
         // The pages losing their bottom bar let go of it before the one shown takes it: one view stands in one place.
         for page in element.pages.sorted(by: { $0.chromeBottomBar == nil && $1.chromeBottomBar != nil }) {
-            (page.winUI.view as? WinUISingleChildView)?.showBottomBar(
+            let holder = page.winUI.view as? WinUISingleChildView
+            holder?.showBottomBar(
                 page.chromeBottomBar?.winUI.layoutItem, edge: page.chromeBottomBarEdge,
                 scroller: page.pageScroller?.winUI.view as? WinUIScrollView)
+            holder?.showToolbar(page.chromeBottomActions)
         }
     }
 
@@ -193,7 +195,7 @@ final class WinUIWindowController {
     }
 
     /// A page's action as a button of the chrome, read as a menu's entry is (`MenuEntry`).
-    private static func action(_ item: MountedElement) -> WinUIToolbarAction {
+    static func action(_ item: MountedElement) -> WinUIToolbarAction {
         let entry = MenuEntry.entry(of: item)
         return WinUIToolbarAction(
             title: entry.title, isEnabled: entry.isEnabled, identifier: entry.identifier,
@@ -201,7 +203,7 @@ final class WinUIWindowController {
             showsWords: item.showsActionWords, shortcut: entry.keyboardShortcut, mount: item.mount,
             perform: { [weak item] in item?.winUI.choose() },
             isOn: item.type == .toolbarToggle ? entry.isOn == true : nil, menu: menu(of: item),
-            standsAlone: item.parent?.value(.standsAlone)?.bool == true)
+            standsAlone: item.parent?.value(.standsAlone)?.bool == true, isLabel: item.type == .toolbarLabel)
     }
 
     /// The menu a bar's button opens, read as a button's is (`ButtonMenu`); nil for one holding none.

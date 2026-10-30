@@ -12,7 +12,7 @@ import CStateUIWinUI
 struct WinUIBarActions {
     /// The bar the actions stand on.
     enum Bar {
-        case titleBar, sheet, pane
+        case titleBar, sheet, pane, foot
     }
 
     let bar: Bar
@@ -50,6 +50,7 @@ struct WinUIBarActions {
         case .titleBar: stateui_winui_title_bar_set_actions
         case .sheet: stateui_winui_sheet_set_actions
         case .pane: stateui_winui_split_set_actions
+        case .foot: stateui_winui_foot_bar_set_actions
         }
         // Each button's place on a capsule, its group's on the bar; none behind "more".
         // Design: docs/design/platforms/winui/pages.md#a-bars-buttons
@@ -65,9 +66,11 @@ struct WinUIBarActions {
                     let spelled = actions.map { $0.shortcut.flatMap(WinUIKeys.spelled) ?? (key: 0, modifiers: 0) }
                     set(
                         handle, titles, identifiers, icons, actions.map(\.showsWords), actions.map(\.isDestructive),
-                        places, leading, actions.map(\.isEnabled), spelled.map(\.key), spelled.map(\.modifiers),
+                        // Words on the bar stand as they are; behind "more", an entry nobody can choose.
+                        places, leading, zip(actions, places).map { $0.isLabel ? $1 >= 0 : $0.isEnabled },
+                        spelled.map(\.key), spelled.map(\.modifiers),
                         actions.map { $0.shortcut.map(KeyboardShortcuts.givesWayToTyping) ?? false },
-                        actions.map { $0.isOn.map { $0 ? 1 : 0 } ?? -1 },
+                        actions.map { $0.isLabel ? -2 : $0.isOn.map { $0 ? 1 : 0 } ?? -1 },
                         zip(actions, places).map { action, place in action.menu?.standing(behind: place < 0) ?? 0 },
                         capsules, Int32(actions.count))
                 }
@@ -98,6 +101,7 @@ struct WinUIBarActions {
         case .titleBar: stateui_winui_title_bar_set_action_menu
         case .sheet: stateui_winui_sheet_set_action_menu
         case .pane: stateui_winui_split_set_action_menu
+        case .foot: stateui_winui_foot_bar_set_action_menu
         }
         for (place, held, first, menu) in Self.menus(of: actions, places: places) {
             menu.relayed { set(handle, place, held, first, $0, $1, $2, $3, $4, $5, $6, $7, $8, $9) }

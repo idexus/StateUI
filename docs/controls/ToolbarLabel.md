@@ -39,8 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>2 ✅</td><td>an <code>NSTextField</code> label as an <code>NSToolbarItem</code>'s view; a disabled <code>NSMenuItem</code> in the overflow</td></tr></tbody>
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>2 ✅</td><td>a <code>UIBarButtonItem</code> holding a label, off its shared background; a disabled <code>UIAction</code> in the overflow</td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>2 ✅</td><td>a <code>TextView</code> as a <code>Toolbar</code> <code>MenuItem</code>'s action view</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center"></td><td></td><td>a <code>TextBlock</code> in a <code>CommandBar</code>'s <code>AppBarElementContainer</code></td></tr>
-<tr><td colspan="3">no run of it on these sources</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>2 ✅</td><td>a <code>TextBlock</code> in a <code>CommandBar</code>'s <code>AppBarElementContainer</code></td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center"></td><td></td><td>a <code>GtkLabel</code> in an <code>AdwHeaderBar</code> or a <code>GtkActionBar</code></td></tr>
 <tr><td colspan="3">no run of it on these sources</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>2 ✅</td><td><code>&lt;span&gt;</code> in an ARIA <code>toolbar</code></td></tr></tbody>
@@ -52,6 +51,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Menus/ToolbarLabelContr
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center"></td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>icon</code></td><td>property</td><td><code>ImageSource</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>text</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center"></td><td align="center">✅</td></tr></tbody>
 </table>

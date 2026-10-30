@@ -1207,7 +1207,8 @@ void stateui_winui_title_bar_set(StateUIObjectRef bar, char const *title, char c
 /// words stand beside its picture, whether choosing it destroys something, its group's place - the first
 /// `leadingGroups` at the bar's leading edge, the others at its trailing edge, -1 behind "more" - whether it
 /// can be chosen, its shortcut's key and modifiers (`stateui_winui_set_shortcut`), key 0 for none, a setting's
-/// state - 1 on, 0 off, -1 for an action - which makes its button a two-state one, and how a menu it holds opens:
+/// state - 1 on, 0 off, -1 for an action, -2 for words nobody chooses, which stand on the bar as a label - which
+/// makes its button a two-state one, and how a menu it holds opens:
 /// 0 from WinUI's bar button, 1 by a split button's arrow, its click its own, 2 by a drop-down button's click, its
 /// chevron showing; and its place on a capsule behind the bar's buttons (`StateUIBarCapsule`: 0 none, 1 a whole one, 2
 /// its group's start, 3 middle, 4 end). A group stands apart from the one before it; a press tells the action's place.
@@ -1273,6 +1274,22 @@ void stateui_winui_split_set_action_menu(StateUIObjectRef split, int32_t place, 
                                          char const *const *identifiers, char const *const *icons,
                                          bool const *destructive, int32_t const *keys, int32_t const *modifiers,
                                          bool const *givesWay, int32_t count);
+
+/// A page's bar at its foot (`.toolbar(.bottom)`): its actions at its leading edge, at its trailing edge and behind
+/// "more", and an action's menu, as the title bar's are (`stateui_winui_title_bar_set_actions`,
+/// `stateui_winui_title_bar_set_action_menu`), a press chosen on `view` by its place.
+StateUIObjectRef stateui_winui_foot_bar_make(int64_t view);
+void stateui_winui_foot_bar_set_actions(StateUIObjectRef bar, char const *const *texts, char const *const *identifiers,
+                                        char const *const *icons, bool const *words, bool const *destructive,
+                                        int32_t const *groups, int32_t leadingGroups, bool const *enabled,
+                                        int32_t const *keys, int32_t const *modifiers, bool const *givesWay,
+                                        int32_t const *states, int32_t const *openings, int32_t const *capsules,
+                                        int32_t count);
+void stateui_winui_foot_bar_set_action_menu(StateUIObjectRef bar, int32_t place, bool held, int32_t first,
+                                            int32_t const *kinds, char const *const *titles, bool const *enabled,
+                                            char const *const *identifiers, char const *const *icons,
+                                            bool const *destructive, int32_t const *keys, int32_t const *modifiers,
+                                            bool const *givesWay, int32_t count);
 
 /// Asks WinUI to measure a split view's pane and everything in it again, as its height changes: WinUI applies an
 /// arrange inside the pane only to what it measured in that pass.

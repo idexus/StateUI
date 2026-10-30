@@ -306,6 +306,14 @@ namespace stateui {
     /// The edges of the head of a split view's pane, over its sidebar page.
     ActionEdges paneActionEdges(controls::SplitView const &split);
 
+    /// The edges of a page's bar at its foot.
+    ActionEdges footActionEdges(controls::Grid const &foot);
+
+    /// Whether `control`, one of a bar's, is words nobody chooses rather than a button.
+    inline bool isBarLabel(controls::Control const &control) {
+        return !control.try_as<controls::Primitives::ButtonBase>() && !control.try_as<controls::SplitButton>();
+    }
+
     /// Paints the actions on `edges` and "more" in `foreground`, or the theme's where it is null; a destructive one
     /// keeps the theme's critical color.
     void paintActions(ActionEdges const &edges, xaml::Media::Brush const &foreground);

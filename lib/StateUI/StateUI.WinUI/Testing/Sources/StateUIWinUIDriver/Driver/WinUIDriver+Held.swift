@@ -30,7 +30,7 @@ extension WinUIDriver {
         case .menuItem, .menuToggle, .menu:
             if let held = try menuHolds(property.name, element) { return held }
             throw cannot
-        case .toolbarButton, .toolbarToggle:
+        case .toolbarButton, .toolbarToggle, .toolbarLabel:
             if let held = try actionHolds(property.name, element) { return held }
             throw cannot
         case .toolbarGroup where property.name == "standsAlone":
@@ -612,10 +612,10 @@ extension WinUIDriver {
     /// The bar `page`'s window shows: its groups at each edge and what stands behind "more", each action by its
     /// item's id, else its words (`BarWords`).
     func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
-        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
-        let titleBar = try window(of: page).titleBar
         var root = page
         while let parent = root.parent { root = parent }
+        guard edge == .top else { return try footBar(of: page, in: root) }
+        let titleBar = try window(of: page).titleBar
         // A sidebar's page reads the sidebar's part, on the head of its split view's pane.
         let pane = page.splitBarPart.flatMap { bar in
             bar.part == .sidebar ? ((bar.split.native as? WinUIElement)?.view as? WinUISplitView)?.sidebar : nil
@@ -636,6 +636,43 @@ extension WinUIDriver {
         return BarWords.said(
             leading: groups(.leading), trailing: groups(.trailing),
             overflow: read.filter { $0.edge == SaidAction.Edge.overflow }.compactMap(word))
+    }
+
+    /// The bar at `page`'s foot under `root`, read as the title bar's is; nothing while it shows none.
+    private func footBar(of page: MountedElement, in root: MountedElement) throws -> String {
+        guard let foot = ((page.native as? WinUIElement)?.view as? WinUISingleChildView)?.toolbar else {
+            return BarWords.said(leading: [], trailing: [], overflow: [])
+        }
+        let read = Self.saidActions(try self.read(foot, "footBar"))
+        let word = { (said: SaidAction) -> String? in
+            guard foot.drawn.indices.contains(said.place), let mount = foot.drawn[said.place].mount,
+                  let item = Self.element(mounted: mount, in: root)
+            else { return nil }
+            return BarWords.word(item, enabled: said.enabled)
+        }
+        let groups = { (edge: SaidAction.Edge) -> [[String]] in
+            let atEdge = read.filter { $0.edge == edge }
+            let places = Set(atEdge.map(\.group)).sorted()
+            return places.map { group in atEdge.filter { $0.group == group }.compactMap(word) }.filter { !$0.isEmpty }
+        }
+        return BarWords.said(
+            leading: groups(.leading), trailing: groups(.trailing),
+            overflow: read.filter { $0.edge == SaidAction.Edge.overflow }.compactMap(word))
+    }
+
+    /// The bar at a page's foot showing the toolbar's item `element`, and its place among the actions there; nil where
+    /// none shows it.
+    func footPlace(of element: MountedElement) -> (bar: WinUIFootBarView, place: Int)? {
+        var root = element
+        while let parent = root.parent { root = parent }
+        func search(_ each: MountedElement) -> (bar: WinUIFootBarView, place: Int)? {
+            if each.type == .page, let foot = ((each.native as? WinUIElement)?.view as? WinUISingleChildView)?.toolbar,
+               let place = foot.drawn.firstIndex(where: { $0.mount == element.mount }) {
+                return (foot, place)
+            }
+            return each.children.lazy.compactMap(search).first
+        }
+        return search(root)
     }
 
     /// An action as the chrome's reader says it: its place in the list the chrome was given, its edge, its group

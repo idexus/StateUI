@@ -392,6 +392,41 @@ namespace {
         }));
     }
 
+    /// What a bar's words nobody chooses are told by in place of a setting's state.
+    constexpr int32_t labelState = -2;
+
+    /// Words on the bar nobody chooses (`ToolbarLabel`) at `index`: its picture before its words, in the theme's
+    /// secondary color of words, standing on the bar itself - no fill, no stop for the keyboard - told by its place as
+    /// an action is.
+    /// Design: docs/design/platforms/winui/pages.md#the-bar-at-the-foot
+    controls::Control barLabel(int32_t index, char const *words, char const *icon) {
+        controls::StackPanel content;
+        content.Orientation(controls::Orientation::Horizontal);
+        content.Spacing(6);
+        if (auto picture = pictureIcon(icon)) {
+            picture.Height(16);
+            picture.VerticalAlignment(xaml::VerticalAlignment::Center);
+            content.Children().Append(picture);
+        }
+        auto said = xaml::Markup::XamlReader::Load(
+            L"<TextBlock xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\""
+            L" Foreground=\"{ThemeResource TextFillColorSecondaryBrush}\" VerticalAlignment=\"Center\"/>")
+            .as<controls::TextBlock>();
+        said.Text(text(words));
+        content.Children().Append(said);
+        controls::ContentControl label;
+        label.Content(content);
+        label.Tag(winrt::box_value(index));
+        label.IsTabStop(false);
+        label.FontSize(barWordsSize);
+        label.Height(actionHeight);
+        label.Padding(xaml::Thickness{8, 0, 8, 0});
+        label.VerticalAlignment(xaml::VerticalAlignment::Center);
+        label.VerticalContentAlignment(xaml::VerticalAlignment::Center);
+        xaml::Automation::AutomationProperties::SetName(label, text(words));
+        return label;
+    }
+
     /// The control of an action standing alone on the bar in the container a command bar holds any control in,
     /// told by its place as a bar's button is.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
@@ -558,9 +593,11 @@ void stateui::setActions(
             commands.Append(groupGap());
         bool onCapsule = capsules[index] > 0;
         if (capsules[index] == 1 || capsules[index] == 2) commands.Append(capsule(row));
-        auto action = barAction(owner, view, index, texts[index], identifiers[index], icons[index], words[index],
-                                destructive[index], enabled[index], keys[index], modifiers[index], givesWay[index],
-                                states[index], openings[index], onCapsule);
+        auto action = states[index] == labelState
+            ? barLabel(index, texts[index], icons[index])
+            : barAction(owner, view, index, texts[index], identifiers[index], icons[index], words[index],
+                        destructive[index], enabled[index], keys[index], modifiers[index], givesWay[index],
+                        states[index], openings[index], onCapsule);
         if (onCapsule) row.Children().Append(action);
         else commands.Append(standingAlone(action, index, enabled[index]));
     }
@@ -671,6 +708,64 @@ ActionEdges stateui::paneActionEdges(controls::SplitView const &split) {
     return headEdges(paneHead(split));
 }
 
+extern "C" StateUIObjectRef stateui_winui_foot_bar_make(int64_t view) {
+    try {
+        // A row of its own beneath the page: its leading actions at its start, the rest at its end.
+        controls::Grid foot;
+        foot.Tag(winrt::box_value(view));
+        auto star = xaml::GridLengthHelper::FromValueAndType(1, xaml::GridUnitType::Star);
+        auto fitting = xaml::GridLengthHelper::Auto();
+        for (auto width : {fitting, star, fitting}) {
+            controls::ColumnDefinition each;
+            each.Width(width);
+            foot.ColumnDefinitions().Append(each);
+        }
+        foot.Padding({4, 0, 4, 0});
+        auto leading = actionBar(), trailing = actionBar();
+        controls::Grid::SetColumn(trailing, 2);
+        foot.Children().Append(leading);
+        foot.Children().Append(trailing);
+        return detach(foot);
+    } catch (...) {
+        report("making a page's bar at its foot");
+        return nullptr;
+    }
+}
+
+extern "C" void stateui_winui_foot_bar_set_actions(
+    StateUIObjectRef handle, char const *const *texts, char const *const *identifiers, char const *const *icons,
+    bool const *words, bool const *destructive, int32_t const *groups, int32_t leadingGroups, bool const *enabled,
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t const *states,
+    int32_t const *openings, int32_t const *capsules, int32_t count
+) {
+    try {
+        auto foot = borrow<controls::Grid>(handle);
+        setActions(headEdges(foot), foot, winrt::unbox_value<int64_t>(foot.Tag()), texts, identifiers, icons, words,
+                   destructive, groups, leadingGroups, enabled, keys, modifiers, givesWay, states, openings, capsules,
+                   count);
+    } catch (...) {
+        report("setting the actions of a page's bar at its foot");
+    }
+}
+
+extern "C" void stateui_winui_foot_bar_set_action_menu(
+    StateUIObjectRef handle, int32_t place, bool held, int32_t first, int32_t const *kinds, char const *const *titles,
+    bool const *enabled, char const *const *identifiers, char const *const *icons, bool const *destructive,
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count
+) {
+    try {
+        auto foot = borrow<controls::Grid>(handle);
+        setActionMenu(headEdges(foot), winrt::unbox_value<int64_t>(foot.Tag()), place, held, first, kinds, titles,
+                      enabled, identifiers, icons, destructive, keys, modifiers, givesWay, count);
+    } catch (...) {
+        report("giving an action of a page's bar at its foot its menu");
+    }
+}
+
+ActionEdges stateui::footActionEdges(controls::Grid const &foot) {
+    return headEdges(foot);
+}
+
 extern "C" double stateui_winui_split_pane_width(StateUIObjectRef) {
     try {
         // The theme's width, which a SplitView's style opens its pane at; the pane's own is the slide's.
@@ -717,7 +812,7 @@ void stateui::paintActions(ActionEdges const &edges, media::Brush const &foregro
         for (auto const &command : actions.PrimaryCommands())
             if (auto contained = command.try_as<controls::AppBarElementContainer>())
                 for (auto const &control : composedActions(contained))
-                    if (!isDestructive(control, composedForeground(control).c_str())) paint(control);
+                    if (!isBarLabel(control) && !isDestructive(control, composedForeground(control).c_str())) paint(control);
     }
 }
 

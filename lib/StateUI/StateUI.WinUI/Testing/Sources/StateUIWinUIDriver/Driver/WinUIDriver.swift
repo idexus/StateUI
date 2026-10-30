@@ -333,6 +333,10 @@ final class WinUIDriver: HostDriver {
             stateui_winui_menus_choose(owner.handle, Int32(index))
             return
         }
+        if [.toolbarButton, .toolbarToggle].contains(element.type), let (foot, index) = footPlace(of: element) {
+            foot.chose(index)
+            return
+        }
         if [.toolbarButton, .toolbarToggle].contains(element.type), let index = try actionPlace(of: element) {
             try window().titleBar.chose(index)
             return

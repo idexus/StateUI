@@ -20,6 +20,9 @@ class WinUISingleChildView: WinUILayoutView {
     /// The page's scroller, whose rows going on the line follows.
     private weak var scroller: WinUIScrollView?
 
+    /// The page's bar at its foot, beneath its bottom bar; nil while it holds no action.
+    private(set) var toolbar: WinUIFootBarView?
+
     /// Shows `bar` - the page's bottom bar - beneath its content, with `edge` while `scroller`'s rows go on past it;
     /// nil for none.
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
@@ -33,29 +36,59 @@ class WinUISingleChildView: WinUILayoutView {
         invalidateMeasurements()
     }
 
+    /// Shows `actions` on the bar at the page's foot, beneath its bottom bar; none takes the bar away.
+    func showToolbar(_ actions: ChromeActions) {
+        let made = actions.isEmpty ? nil : toolbar ?? WinUIFootBarView()
+        made?.show(actions)
+        guard made !== toolbar else { return }
+        toolbar?.detach()
+        toolbar = made
+        holdChildren()
+        invalidateMeasurements()
+    }
+
     /// Shows the line while the bar shows an edge and rows go on past it.
     private func showLine() {
-        line.setShown(bottomBar != nil && edge != .none && BottomBarPlace.continues(scroller: scroller?.standing))
+        line.setShown(
+            (bottomBar != nil || toolbar != nil) && edge != .none && BottomBarPlace.continues(scroller: scroller?.standing))
     }
 
     override func heldViews() -> [WinUIView] {
-        super.heldViews() + (bottomBar.map { [$0.view, line] } ?? [])
+        super.heldViews() + (bottomBar.map { [$0.view] } ?? []) + (toolbar.map { [$0] } ?? [])
+            + (bottomBar != nil || toolbar != nil ? [line] : [])
+    }
+
+    override func detach() {
+        super.detach()
+        toolbar?.detach()
+    }
+
+    /// How tall the bottom bar and the bar at the foot stand at `width`; nought for neither.
+    private func footHeight(width: Double?) -> Double {
+        (shownBar.map { SingleChildArithmetic.size(of: $0, width: width).height } ?? 0)
+            + (toolbar?.measured(width: width).height ?? 0)
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
         var child = SingleChildArithmetic.size(of: items.first, width: width)
-        if let bar = shownBar { child = RowEdge.size(page: child, row: SingleChildArithmetic.size(of: bar, width: width).height) }
+        let foot = footHeight(width: width)
+        if foot > 0 { child = RowEdge.size(page: child, row: foot) }
         guard let heading else { return child }
         return RowEdge.size(page: child, row: heading.height(width: width))
     }
 
     override func arrange(in bounds: Rect) {
         var room = heading?.place(in: bounds) ?? bounds
-        if let bar = shownBar {
-            // Measured at the width the measure offered, which WinUI answers inside an arrangement from what it kept.
-            let place = BottomBarPlace(
-                height: SingleChildArithmetic.size(of: bar, width: room.width).height, safe: room, whole: room)
-            bar.view.layout(SingleChildArithmetic.place(of: bar, in: place.bar, direction: direction))
+        // Measured at the width the measure offered, which WinUI answers inside an arrangement from what it kept.
+        let foot = footHeight(width: room.width)
+        if foot > 0 {
+            let place = BottomBarPlace(height: foot, safe: room, whole: room)
+            let barHeight = shownBar.map { SingleChildArithmetic.size(of: $0, width: room.width).height } ?? 0
+            if let bar = shownBar {
+                let barRoom = Rect(x: place.bar.x, y: place.bar.y, width: place.bar.width, height: barHeight)
+                bar.view.layout(SingleChildArithmetic.place(of: bar, in: barRoom, direction: direction))
+            }
+            toolbar?.layout(Rect(x: room.x, y: place.bar.y + barHeight, width: room.width, height: foot - barHeight))
             line.layout(Rect(x: room.x, y: place.bar.y, width: room.width, height: 1))
             room = place.above
         }

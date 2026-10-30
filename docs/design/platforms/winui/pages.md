@@ -139,6 +139,20 @@ publicly:
   `SubtleFillColorTertiary` pressed; 2 of its width stay clear on each side,
   as an `AppBarButton` insets its fill (`AppBarButtonInnerBorderMargin`).
 
+## The bar at the foot
+
+A page's actions for the bar at its foot (`.toolbar(.bottom)`) stand on a row
+of WinUI's command bars beneath the page - its leading groups on one at its
+start, the rest and "more" on one at its end, as a split view's pane's head
+holds them - drawn as the title bar's buttons are, each group on its capsule.
+It stands under the page's view bar (`.bottomBar`), beside the content as
+Windows' bars stand, the line along their top shown while rows go on past
+them. Words on a bar (`ToolbarLabel`), on either bar, stand as a control
+holding its picture and words in the theme's secondary color of words
+(`TextFillColorSecondaryBrush`), with no fill and no stop for the keyboard,
+told by its place as an action is; a painted bar's words color leaves them
+in their theme's; behind "more" they are a button nobody can choose.
+
 ## A navigation stack
 
 A navigation stack shows its top page across its whole frame; the pages below
