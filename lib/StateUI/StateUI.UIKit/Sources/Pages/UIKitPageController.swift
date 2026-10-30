@@ -186,7 +186,7 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
             safe: safe, whole: wholeRect,
             edges: page?.element.contentIgnoresSafeArea ?? .none, direction: page?.element.layoutDirection ?? .leftToRight)
         page?.placedFrame = room
-        let scroller = page?.element.pageScroller?.uiKit.view as? UIKitScrollView
+        let scroller = page?.element.pageScroller?.uiKit.view as? UIKitPageScroller
         scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: safe))
         bottomBar.stand(at: bar, edge: page?.element.chromeBottomBarEdge ?? .automatic, scroller: scroller?.scroller)
         page?.view?.layoutIfNeeded()

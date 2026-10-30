@@ -269,6 +269,48 @@ final class ItemsCellsTests: XCTestCase {
         XCTAssertEqual(cells.laidOut(), ItemsScrollTarget(identity: "20", anchor: .end), "the next scroll's")
     }
 
+    /// The item the program scrolled to stands again as its list's room changes - a sheet laid out at the screen's
+    /// size first, then at its own - stood or held, until anything else moves the list: the user, the next scroll.
+    func testAnItemScrolledToStandsAgainAsItsListsRoomChanges() {
+        let end = ItemsScrollTarget(identity: "19", anchor: .end)
+        cells.hold("19", in: Cell())
+        cells.scroll(to: "19", anchor: .end)
+        XCTAssertEqual(cells.roomChanged(), end, "held")
+        XCTAssertEqual(cells.laidOut(), end)
+        XCTAssertNil(cells.laidOut(), "let go of as its cell shows it")
+        XCTAssertEqual(cells.roomChanged(), end, "stood: its room changed")
+        XCTAssertEqual(cells.roomChanged(), end, "and changed again")
+
+        cells.userScrolled()
+        XCTAssertNil(cells.roomChanged(), "the user moved the list")
+
+        cells.scroll(to: "19", anchor: .end)
+        _ = cells.laidOut()
+        cells.scroll(to: "5", anchor: .start)
+        XCTAssertEqual(cells.roomChanged(), ItemsScrollTarget(identity: "5", anchor: .start), "the next scroll's")
+    }
+
+    /// The item stood is let go of as the list's entries change: an item come or gone moves what stands where.
+    func testAnItemStoodIsLetGoAsTheEntriesChange() throws {
+        Shrinking.count = 10
+        stateUIUseApp(ShrinkingApplication())
+        let runtime = HostRuntime.still()
+        runtime.connectWindow()
+        runtime.pump.turn()
+        let cells = ItemsCells(try XCTUnwrap(runtime.tree.root?.first(type: .itemsView)), in: runtime)
+        cells.takeEntries()
+        cells.hold("2", in: Cell())
+        cells.scroll(to: "2", anchor: .end)
+        _ = cells.laidOut()
+        XCTAssertNotNil(cells.roomChanged())
+
+        Shrinking.count = 5
+        Renderer.shared.setNeedsRender()
+        runtime.pump.turn()
+        cells.takeEntries()
+        XCTAssertNil(cells.roomChanged())
+    }
+
     /// Cells far apart - a jump to another place in the list - build what is within reach of each, nothing between.
     func testCellsFarApartBuildOnlyAroundThemselves() {
         cells.hold("0", in: Cell())

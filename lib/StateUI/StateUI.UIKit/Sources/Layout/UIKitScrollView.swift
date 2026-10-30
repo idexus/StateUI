@@ -10,7 +10,7 @@ import UIKit
 /// to it is said on the display's frames, by the host layer's reading of it (`ScrollMovement`).
 /// Design: docs/design/platforms/uikit/layout.md#scrolling
 @MainActor
-final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefreshing {
+final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefreshing, UIKitPageScroller {
     /// Says, on a display frame, where the user moved the scroller from and to.
     var onOffsetChanged: ((Point, Point) -> Void)?
 
@@ -114,43 +114,23 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
 
     /// What the scroller keeps clear on each edge - the bars a room's scroller reaches under - so its first and last
     /// content scroll out from under them; its offsets are counted from its first content clear of them.
-    private var clearance = Clearance.none
+    private let kept = UIKitScrollClearance()
 
     /// Keeps `clearance` clear, the scroller standing where the tree has it - or at its end still where it stood at
     /// its end, a move of its own told as the user's is (`ScrollArithmetic.keptAtEnd`).
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
     func keepClear(_ clearance: Clearance) {
-        guard clearance != self.clearance else { return }
-        let (standing, before) = (toolkitStanding, reach(keeping: self.clearance))
-        self.clearance = clearance
-        let (top, left, bottom, right) = (clearance.top, clearance.left, clearance.bottom, clearance.right)
-        scroller.contentInset = UIEdgeInsets(top: top, left: left, bottom: bottom, right: right)
-        scroller.verticalScrollIndicatorInsets = UIEdgeInsets(top: top, left: 0, bottom: bottom, right: 0)
-        scroller.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: left, bottom: 0, right: right)
-        let native = SafeAreaArithmetic.native(offset: standing, clearance: clearance)
-        ProgramWrite.perform { scroller.contentOffset = CGPoint(x: native.x, y: native.y) }
-        if let end = ScrollArithmetic.keptAtEnd(standing, reach: before, now: reach(keeping: clearance)) {
-            scroller.contentOffset = self.native(of: end)
-        }
-    }
-
-    /// The farthest the scroller stands keeping `clearance` clear: its content and the clearance past its viewport.
-    private func reach(keeping clearance: Clearance) -> Point {
-        Point(
-            x: max(0, scroller.contentSize.width + clearance.left + clearance.right - scroller.bounds.width),
-            y: max(0, scroller.contentSize.height + clearance.top + clearance.bottom - scroller.bounds.height))
+        kept.keep(clearance, on: scroller) { move in ProgramWrite.perform(move) }
     }
 
     /// The toolkit's offset for the scroller to stand at `offset`, counted from its first content kept clear.
     func native(of offset: Point) -> CGPoint {
-        let native = SafeAreaArithmetic.native(offset: offset, clearance: clearance)
-        return CGPoint(x: native.x, y: native.y)
+        kept.native(of: offset)
     }
 
     /// Where the toolkit shows the scroller standing, counted from its first content clear of what it keeps clear.
     var toolkitStanding: Point {
-        SafeAreaArithmetic.offset(
-            native: Point(x: scroller.contentOffset.x, y: scroller.contentOffset.y), clearance: clearance)
+        kept.standing(of: scroller)
     }
 
     // MARK: - The user's movement
@@ -204,8 +184,8 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
             y: max(0, scroller.contentSize.height + inset.top + inset.bottom - scroller.bounds.height))
         let kept = ScrollArithmetic.kept(target, reach: reach)
         guard scrollerOffset.programMoves(to: kept) else { return }
-        let native = SafeAreaArithmetic.native(offset: kept, clearance: clearance)
-        ProgramWrite.perform { scroller.contentOffset = CGPoint(x: native.x, y: native.y) }
+        let native = native(of: kept)
+        ProgramWrite.perform { scroller.contentOffset = native }
     }
 }
 #endif

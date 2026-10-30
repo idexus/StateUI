@@ -8,9 +8,8 @@ struct BottomBarSample: SampleContent, ExampleContent {
     @State private var path: [Int] = []
     @State private var messages = Self.talk
     @State private var draft = ""
-    @State private var offset = Point(x: 0, y: 0)
-    /// Whether the messages' next frame takes the scroller to their end: they opened, or one was just sent.
-    @State private var toEnd = false
+    /// The list of messages, which opening and Send scroll.
+    @Aim(ItemsView<Int>.self) private var list
     /// How tall the field stands at one line: the least it has stood at.
     @State private var oneLine = 0.0
     @State private var edge = ScrollEdge.automatic
@@ -50,12 +49,8 @@ struct BottomBarSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Edge")
                 .presentation(.segmented)
 
-            // It opens at its end, at the latest message.
             Button("Open the conversation")
-                .onClicked {
-                    toEnd = true
-                    presented = true
-                }
+                .onClicked { presented = true }
                 .sheet(isPresented: $presented) { conversation }
         }
         .spacing(12)
@@ -64,23 +59,18 @@ struct BottomBarSample: SampleContent, ExampleContent {
     private var conversation: some View {
         NavigationStack($path) {
             Grid {
-                ScrollView {
-                    VStack {
-                        // Theirs on the left, ours on the right.
-                        ForEach(Array(messages.indices), id: \.self) { index in
-                            bubble(messages[index])
-                        }
-                    }
-                    .spacing(8)
-                    .padding(16)
-                    .onFrameChanged { frame in
-                        guard toEnd else { return }
-                        toEnd = false
-                        // Past the end is kept at the end: as far as it reaches.
-                        offset = Point(x: 0, y: frame.height)
-                    }
+                // Theirs on the left, ours on the right; the list opens at
+                // its end, and a message sent scrolls there.
+                ItemsView(Array(messages.indices)) { index in
+                    VStack { bubble(messages[index]) }
+                        .padding(horizontal: 16, vertical: 4)
                 }
-                .scrollOffset($offset)
+                .itemsLayout(.list())
+                .aim(list)
+                .onCreated { try await list.scrollTo(messages.count - 1, anchor: .end) }
+                .onChanged(messages.count, policy: .cancelPrevious) {
+                    try await list.scrollTo(messages.count - 1, anchor: .end)
+                }
             }
             .ignoresSafeArea(.all)
             .galleryPage("Conversation")
@@ -108,7 +98,6 @@ struct BottomBarSample: SampleContent, ExampleContent {
                             guard !draft.isEmpty else { return }
                             messages.append(Message(text: draft, mine: true))
                             draft = ""
-                            toEnd = true
                         }
                         .verticalAlignment(.end)
                         .gridColumn(1)

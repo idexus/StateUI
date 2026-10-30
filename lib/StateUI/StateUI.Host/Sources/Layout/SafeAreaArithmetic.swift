@@ -102,11 +102,12 @@ extension MountedElement {
         isRoom ? arrangedChildren.first?.ignoresSafeArea ?? .none : ignoresSafeArea
     }
 
-    /// The scroller a room's content is, or the one it holds alone, layout in layout; nil for none.
+    /// The scroller a room's content is, or the one it holds alone, layout in layout - a ScrollView, or an ItemsView,
+    /// whose native collection scrolls; nil for none.
     public var pageScroller: MountedElement? {
         var held = isRoom ? arrangedChildren.first : self
         while let element = held {
-            if element.type == .scrollView { return element }
+            if element.type == .scrollView || element.type == .itemsView { return element }
             guard element.arrangedChildren.count == 1 else { return nil }
             held = element.arrangedChildren.first
         }

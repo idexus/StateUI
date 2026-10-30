@@ -11,7 +11,7 @@ import UIKit
 /// builds what a cell holds.
 /// Design: docs/design/platforms/uikit/items.md
 @MainActor
-final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
+final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, UIKitPageScroller {
     let cells: ItemsCells
     private(set) var collection: UICollectionView
     private(set) lazy var refresh = UIKitRefresh(collection)
@@ -34,6 +34,8 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
         collection = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         super.init(frame: .zero)
         collection.backgroundColor = .clear
+        // What it keeps clear of the bars over it is the page's word (`keepClear`), never UIKit's own guess.
+        collection.contentInsetAdjustmentBehavior = .never
         collection.allowsSelection = false
         collection.delegate = self
         collection.setCollectionViewLayout(madeLayout(layout), animated: false)
@@ -48,13 +50,40 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        let resized = collection.frame.size != bounds.size
         if collection.frame != bounds { collection.frame = bounds }
         cells.showing(shownIdentities)
+        if resized { roomChanged() }
     }
 
     /// As wide as it is offered and as tall as nothing asks: its room is what its layout gives it.
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         CGSize(width: size.width.isFinite ? size.width : 0, height: 0)
+    }
+
+    // MARK: - A page's scroller
+
+    /// What the list keeps clear of the bars over it, where it is its page's scroller (`UIKitScrollClearance`).
+    private let kept = UIKitScrollClearance()
+
+    var scroller: UIScrollView { collection }
+
+    /// Keeps `clearance` clear: its first and last items scroll out from under the bars, its end kept as they grow.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    func keepClear(_ clearance: Clearance) {
+        guard clearance != kept.clearance else { return }
+        kept.keep(clearance, on: collection) { $0() }
+        roomChanged()
+    }
+
+    /// The list's room changed - its size, or what it keeps clear of the bars over it: the item the program scrolled
+    /// to stands again where it put it (`ItemsCells.roomChanged`), a glide the change cut short going on from where it
+    /// stopped.
+    /// Design: docs/design/platforms/uikit/items.md#scrolling-to-an-item
+    private func roomChanged() {
+        guard let target = cells.roomChanged() else { return }
+        collection.layoutIfNeeded()
+        if gliding { gliding = stand(target, animated: true) } else { stand(target, animated: false) }
     }
 
     // MARK: - What the tree says

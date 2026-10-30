@@ -109,3 +109,19 @@ their entries, while the host layer holds it ([scrolling to an
 item](../../host/items.md#scrolling-to-an-item)). A scroll that glides
 stands its item again as its animation ends; the user's drag lets it go.
 
+
+
+The list a page scrolls by - its content, or the one its content holds alone
+- keeps the bars over it clear as a ScrollView does
+([a bar at the foot](../../host/layout.md#a-bar-at-the-foot)): the clearance
+is the collection's content inset (`UIKitScrollClearance`, the one rule both
+share), its first and last items scroll out from under the bars, and its end
+is kept where they grow. A room that changes - the collection's size, or
+the inset - stands the item the program scrolled to again where it put it,
+held or stood since (`ItemsCells.roomChanged`): a sheet lays its list out at
+the screen's size first, where a conversation's messages all fit and its
+last stands at the top, then at its own, and the conversation opened at its
+top. Setting the offset for a new inset cuts a glide short where it is and
+UIKit tells no end of it, so the glide goes on from there - a message sent
+from a field of several lines, the bar shrinking as the field empties, slid
+into view rather than jumped.

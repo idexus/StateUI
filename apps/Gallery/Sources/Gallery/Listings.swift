@@ -1428,9 +1428,8 @@ enum Listings {
         @State private var path: [Int] = []
         @State private var messages = Self.talk
         @State private var draft = ""
-        @State private var offset = Point(x: 0, y: 0)
-        /// Whether the messages' next frame takes the scroller to their end: they opened, or one was just sent.
-        @State private var toEnd = false
+        /// The list of messages, which opening and Send scroll.
+        @Aim(ItemsView<Int>.self) private var list
         /// How tall the field stands at one line: the least it has stood at.
         @State private var oneLine = 0.0
         @State private var edge = ScrollEdge.automatic
@@ -1463,12 +1462,8 @@ enum Listings {
                 Picker(Self.edges, selection: $edge) { "\($0)".titled }
                     .presentation(.segmented)
 
-                // It opens at its end, at the latest message.
                 Button("Open the conversation")
-                    .onClicked {
-                        toEnd = true
-                        presented = true
-                    }
+                    .onClicked { presented = true }
                     .sheet(isPresented: $presented) { conversation }
             }
         }
@@ -1476,21 +1471,17 @@ enum Listings {
         private var conversation: some View {
             NavigationStack($path) {
                 Grid {
-                    ScrollView {
-                        VStack {
-                            // Theirs on the left, ours on the right.
-                            ForEach(Array(messages.indices), id: \.self) { index in
-                                bubble(messages[index])
-                            }
-                        }
-                        .onFrameChanged { frame in
-                            guard toEnd else { return }
-                            toEnd = false
-                            // Past the end is kept at the end: as far as it reaches.
-                            offset = Point(x: 0, y: frame.height)
-                        }
+                    // Theirs on the left, ours on the right; the list opens at
+                    // its end, and a message sent scrolls there.
+                    ItemsView(Array(messages.indices)) { index in
+                        VStack { bubble(messages[index]) }
                     }
-                    .scrollOffset($offset)
+                    .itemsLayout(.list())
+                    .aim(list)
+                    .onCreated { try await list.scrollTo(messages.count - 1, anchor: .end) }
+                    .onChanged(messages.count, policy: .cancelPrevious) {
+                        try await list.scrollTo(messages.count - 1, anchor: .end)
+                    }
                 }
                 .ignoresSafeArea(.all)
                 .galleryPage("Conversation")
@@ -1514,7 +1505,6 @@ enum Listings {
                                 guard !draft.isEmpty else { return }
                                 messages.append(Message(text: draft, mine: true))
                                 draft = ""
-                                toEnd = true
                             }
                             .verticalAlignment(.end)
                             .gridColumn(1)

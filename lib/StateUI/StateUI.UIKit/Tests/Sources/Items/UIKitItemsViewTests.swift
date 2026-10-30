@@ -50,6 +50,18 @@ private struct ChoicesPage: View {
     }
 }
 
+/// A hundred rows, scrolled to their last as the list is made.
+private struct OpeningAtTheEnd: View {
+    @Aim(ItemsView<Int>.self) private var list
+
+    var body: some View {
+        ItemsView(0..<100) { Text("Row \($0)").fontSize(14).padding(10) }
+            .aim(list)
+            .onCreated { try await list.scrollTo(99, anchor: .end) }
+            .width(300).height(400)
+    }
+}
+
 @MainActor
 final class UIKitItemsViewTests: XCTestCase {
     /// A tap extends a choice of many - UIKit performs no primary action there, which would choose the item alone -
@@ -173,6 +185,70 @@ final class UIKitItemsViewTests: XCTestCase {
 
         let first = collection.cellForItem(at: IndexPath(item: 0, section: 0)) as? UIKitItemCell
         XCTAssertEqual(first?.holding.identity, "999", "the change stands once the cell is returned")
+    }
+
+    /// A scroll the program asks for stands its item though the bars over the list change what it keeps clear while
+    /// it glides there - a list in a sheet still coming in, its page's bars first laid out: at the list's end, clear
+    /// of the bar at its foot.
+    @MainActor
+    func testAScrollStandsItsItemThoughTheBarsChangeAsItGlides() throws {
+        let host = UIKitRenderer.running {
+            ItemsView(0..<100) { Text("Row \($0)").fontSize(14).padding(10) }
+                .width(300).height(400)
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        host.settle { items.collection.visibleCells.count > 5 }
+
+        items.scroll(to: "99", anchor: .end)
+        items.keepClear(Clearance(top: 50, left: 0, bottom: 60, right: 0))
+        let collection = items.collection
+        let foot = { (collection.layoutAttributesForItem(at: IndexPath(item: 99, section: 0))?.frame.maxY ?? 0)
+            - collection.contentOffset.y }
+        host.settle { abs(foot() - (collection.bounds.height - 60)) < 1 }
+
+        XCTAssertEqual(foot(), collection.bounds.height - 60, accuracy: 1, "at the list's end, clear of the foot")
+    }
+
+    /// A scroll the program asks for as the list is made - before UIKit ever laid it out - stands its item once the
+    /// list is laid out: a conversation opening at its last message.
+    @MainActor
+    func testAScrollAskedAsTheListIsMadeStandsOnceItIsLaidOut() throws {
+        let host = UIKitRenderer.running { OpeningAtTheEnd() }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        let collection = items.collection
+        let foot = { (collection.layoutAttributesForItem(at: IndexPath(item: 99, section: 0))?.frame.maxY ?? 0)
+            - collection.contentOffset.y }
+        host.settle { abs(foot() - collection.bounds.height) < 1 }
+
+        XCTAssertEqual(foot(), collection.bounds.height, accuracy: 1, "at the list's end")
+    }
+
+    /// The item the program scrolled to stands again as the list's room changes, until anything else moves it - a
+    /// sheet lays its list out at the screen's size first, where every row fits and the last stands at the top,
+    /// then at its own: at the list's end there.
+    @MainActor
+    func testAnItemScrolledToStandsAgainAsTheListsRoomChanges() throws {
+        let host = UIKitRenderer.running {
+            ItemsView(0..<15) { Text("Row \($0)").fontSize(14).padding(10) }
+                .width(300).height(400)
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        let collection = items.collection
+        items.frame = CGRect(x: 0, y: 0, width: 300, height: 1_000)
+        items.layoutIfNeeded()
+        host.settle { collection.visibleCells.count == 15 }
+        items.scroll(to: "14", anchor: .end)
+        host.settle { collection.contentOffset.y == 0 }
+
+        items.frame = CGRect(x: 0, y: 0, width: 300, height: 300)
+        items.layoutIfNeeded()
+        let foot = { (collection.layoutAttributesForItem(at: IndexPath(item: 14, section: 0))?.frame.maxY ?? 0)
+            - collection.contentOffset.y }
+        host.settle { abs(foot() - 300) < 1 }
+        XCTAssertEqual(foot(), 300, accuracy: 1, "at the list's end in its room")
     }
 
     /// Every row moved one place down travels from where it stood to its new place, never above where it stood, and

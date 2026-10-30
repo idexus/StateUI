@@ -168,6 +168,11 @@ Whether a scroll to an item glides is one rule,
 `ItemsScrollTarget.glides(reducingMotion:)`: it glides unless the user asks
 for less motion, and stands there at once when they do.
 
+
+Once let go, the item stands where the program put it while nothing else
+moves the list: a room that changes - the list's size, or what it keeps
+clear of the bars over it - stands it again (`ItemsCells.roomChanged`), until
+the user scrolls, the program scrolls elsewhere, or an entry comes or goes.
 ## An item's actions
 
 An item's actions are its context menu (`.contextMenu` on the item's view):

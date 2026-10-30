@@ -64,23 +64,25 @@ final class SafeAreaTests: XCTestCase {
         XCTAssertEqual(SafeAreaArithmetic.offset(native: Point(x: 5, y: 7), clearance: .none), Point(x: 5, y: 7))
     }
 
-    /// A page's scroller is its content when that scrolls, or the scroller its content holds alone; content holding
-    /// more than one view has none.
+    /// A page's scroller is its content when that scrolls - a ScrollView, or an ItemsView's collection - or the
+    /// scroller its content holds alone; content holding more than one view has none.
     @MainActor
     func testAPagesScrollerIsTheOneItsContentHoldsAlone() {
-        let runtime = HostRuntime.still()
-        runtime.tree.apply(Self.layout(["rows"]), complete: true)
-        XCTAssertEqual(runtime.tree.root?.pageScroller?.id, .manual("rows"), "the scroller its layout holds alone")
+        for scroller in [NodeType.scrollView, .itemsView] {
+            let runtime = HostRuntime.still()
+            runtime.tree.apply(Self.layout(["rows"], scroller: scroller), complete: true)
+            XCTAssertEqual(runtime.tree.root?.pageScroller?.id, .manual("rows"), "the \(scroller) its layout holds alone")
 
-        runtime.tree.apply(Self.layout(["rows", "foot"]), complete: true)
-        XCTAssertNil(runtime.tree.root?.pageScroller, "a layout holding two views holds no page's scroller")
+            runtime.tree.apply(Self.layout(["rows", "foot"], scroller: scroller), complete: true)
+            XCTAssertNil(runtime.tree.root?.pageScroller, "a layout holding two views holds no page's scroller")
+        }
     }
 
-    /// A stack holding a scroller for each name, the first of them, and text for the rest.
-    private static func layout(_ names: [String]) -> HostPatch {
+    /// A stack holding a `scroller` for the first name and text for the rest.
+    private static func layout(_ names: [String], scroller: NodeType) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.children = .arranged(names.enumerated().map { index, name in
-            HostPatch(id: .manual(name), type: index == 0 ? .scrollView : .text)
+            HostPatch(id: .manual(name), type: index == 0 ? scroller : .text)
         })
         return stack
     }

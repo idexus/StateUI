@@ -6,7 +6,8 @@
 
 /// `BottomBarContract` on a host: the view a page declares at its foot stands there as tall as it lays out, the page's
 /// content clear above it and growing smaller as it grows; a scroller let under it at its end stays at its end, one
-/// elsewhere where it is; the edge it shows over what scrolls under it is the one its view says.
+/// elsewhere where it is - a list's as a ScrollView's, its last item brought to rest clear above it; the edge it shows
+/// over what scrolls under it is the one its view says.
 @_spi(Host) public enum BottomBarTests: ConformanceFamily {
     public static let name = "BottomBar"
 
@@ -76,6 +77,32 @@
                 tall.wrappedValue = 130
                 try s.settle { try abs(standing() - (end + 60)) < 1 }
                 s.expect(abs(try standing() - (end + 60)) < 1, true, "at its end still: \(end) to \(try standing())")
+            },
+            ConformanceCase("aListUnderItsBottomBarBringsItsLastItemClearAboveIt", proves: [
+                Covered(BottomBarContract.self),
+            ], needs: [Covered(ItemsViewContract.scrollTo), Covered(ButtonContract.clicked)]) { s in
+                let aim = Aim(ItemsView<Int>.self)
+                s.start(reducesMotion: true) {
+                    Grid {
+                        ItemsView(0..<60) { Text("Item \($0)").padding(12) }
+                            .aim(aim)
+                            .id("list")
+                    }
+                    .ignoresSafeArea(.all)
+                    .title("Foot")
+                    .bottomBar {
+                        Button("To the end").onClicked(.ignoreWhileRunning) { try await aim.scrollTo(59, anchor: .end) }
+                            .id("go")
+                    }
+                }
+                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
+                let (list, bar) = (try s.place(of: s.element("list")), try s.place(of: s.element("go")))
+                s.expect(list.y + list.height >= bar.y + bar.height - 0.5, true, "the list runs under its bar: \(list), \(bar)")
+
+                try s.perform(.activate, on: s.element("go"))
+                let foot = { (try? s.place(of: s.item("59", of: s.element("list")))).map { $0.y + $0.height } }
+                s.settle { foot().map { abs($0 - bar.y) < 1 } ?? false }
+                s.expect(foot().map { abs($0 - bar.y) < 1 }, true, "the last item at rest on the bar: \(String(describing: foot())), \(bar)")
             },
             ConformanceCase("aStacksBottomBarStandsOnThePageItShows", proves: [Covered(BottomBarContract.self)]) { s in
                 let path = State(wrappedValue: [Int]())
