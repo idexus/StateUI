@@ -299,6 +299,7 @@ final class PhaseLayoutTests: XCTestCase {
 
     /// LET GO STILL, THE RUN COMES ONTO THE NEAREST TARGET, named at once, from where the hand left it.
     func testLetGoStillTheRunComesOntoTheNearestTarget() throws {
+        bench.walks = true
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
@@ -321,6 +322,7 @@ final class PhaseLayoutTests: XCTestCase {
     /// past the next target it sets out at the hand's speed, never faster, and stops on the target - never past the
     /// last target of a run that does not come round.
     func testAThrowGoesOnToTheTargetNearestWhereItWouldEnd() throws {
+        bench.walks = true
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
@@ -377,6 +379,7 @@ final class PhaseLayoutTests: XCTestCase {
     /// A THROW TOO SLOW TO CARRY THE RUN PAST THE TARGET IT STANDS NEAREST COMES BACK ONTO IT, as a run let go
     /// still does - never thrown on past where the hand left it.
     func testAThrowTooSlowToPassItsNearestComesBackOntoIt() throws {
+        bench.walks = true
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()

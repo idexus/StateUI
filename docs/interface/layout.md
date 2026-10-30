@@ -689,9 +689,11 @@ hardly moves - a pile of cards fanned out by another axis.
 A hand let go with speed throws the run: it goes on to the snap nearest
 where the throw would end, and `turn` names that snap at once. How it goes
 on is the input's `throwing:` motion - eased, its length says how far it
-carries and its curve how it slows, a shorter length stopping it sooner; a
-spring carries it as far as its response and settles as springs do. A throw
-sets out at the hand's speed. The landing on the next snap is never slower
+carries, a shorter length stopping it sooner, and it slows onto the snap from
+the hand's speed; a spring carries it as far as its response and settles as
+springs do. A throw sets out at the hand's speed, and goes on as the phase's
+journey does: `$turn.journey` says where the run is and how fast it goes while
+it does, as for any journey. The landing on the next snap is never slower
 than `.motion(_:)` moves a unit: a hand let go still, thrown back, or too slow
 to get there sooner, brings the run onto it under that motion over as much of
 its length as the way left is of a unit - the last tenth of a card takes a

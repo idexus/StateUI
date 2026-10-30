@@ -77,6 +77,7 @@ final class LayoutPinchTests: XCTestCase {
 
     /// PINCHING IN PAST THE SMALLEST GIVES LESS AND LESS, by the logarithm, and let go it comes back onto it.
     func testPinchingInPastTheSmallestGivesLessAndLess() {
+        bench.walks = true
         let (dial, handed, renders) = (State(wrappedValue: Dial()), Handed(), Renders())
         func built() -> Node { tree(dial, handed) }
         _ = bench.laid(renders, built)
@@ -95,6 +96,7 @@ final class LayoutPinchTests: XCTestCase {
     /// TURNING FINGERS MOVE THE ROTATION'S AXIS a unit every `degreesPerUnit`, clockwise on, and let go still it
     /// comes onto the nearest target.
     func testTurningFingersMoveTheRotationsAxis() {
+        bench.walks = true
         let (dial, handed, renders) = (State(wrappedValue: Dial()), Handed(), Renders())
         func built() -> Node { tree(dial, handed) }
         _ = bench.laid(renders, built)
@@ -129,6 +131,7 @@ final class LayoutPinchTests: XCTestCase {
 
     /// LET GO WITH SPEED, AN AXIS GOES ON to the target nearest where it would end; let go still, onto the nearest.
     func testAFlickGoesOnToTheTargetNearestItsEnd() {
+        bench.walks = true
         let (dial, handed, renders) = (State(wrappedValue: Dial()), Handed(), Renders())
         func built() -> Node { tree(dial, handed) }
         _ = bench.laid(renders, built)

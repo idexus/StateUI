@@ -11,7 +11,7 @@ arithmetic; `GalleryView` is one with the arithmetic of four shapes written.
    │             and hearing the hand over it (handMoved, handAxis) ◀── a finger, a pointer,
    ├── holder ── the author's view [ + the shade, second ]   ◀─┐      a trackpad, a wheel
    └── …                                                       ├─ one run of placements,
-         engine(following: room, phase, held, flung, followed…) ┘  written by the engine
+         engine(following: room, phase, held, followed…)        ┘  written by the engine
 ```
 
 ## The element
@@ -369,7 +369,7 @@ Two fingers spreading and turning are inputs of their own:
 every axis either input moves at once, beside the hand they carry by their
 middle ([a pan](#a-pan)), from one stream of the element's `pinchMoved`
 (host/runtime.md, two fingers over a layout), each axis's place its own
-(`held`, `flung` by the axis): the arithmetic is handed every axis where its
+(`held` by the axis): the arithmetic is handed every axis where its
 hand holds it.
 
 A magnification is multiplied by how far the fingers spread: the hand works
@@ -438,19 +438,23 @@ the run comes round, never past the last of one that does not - is where it
 goes. The phase is named that target at once: the state is where the run is
 going.
 
-The way there is carried in the core, on the hand's axis, rather than walked
-by the host under the layout's motion: a motion of fixed length would cover a
-long throw faster than the hand let go of it, and the run would speed up
-after the lift. Eased, the axis follows the curve over a length chosen so it
-sets out at the hand's speed exactly - `D` times the curve's first slope over
-the speed, the motion's own length where the target is where the throw would
-end, shorter where it is nearer - and stops on the target; a spring settles
-there from the hand's speed, as springs do (`HostMotionLaw`). A throw too slow to
-carry the run past the target it stands nearest - that target at or behind
-where the hand let go - comes onto it as a run let go still does: a throw
-never goes back against the hand. The engine runs again each frame while the
-throw goes on (`flung`), and the hand's axis is let go on the target. A
-destination the program writes meanwhile ends the throw.
+The way there is a journey of the phase the host walks on its channel, as
+every journey is: the hand lets go, the phase's journey is set where the hand
+left it, at the hand's speed - by the axis's slope there, a magnification's by
+its scale - and moved to the target under the input's own motion going on: a
+spring settles there from the hand's speed, as springs do; an eased one
+glides (`Motion.glide`, [types/motion.md](../types/motion.md#a-glide)), its
+longest twice the motion's length, so it sets out at the hand's speed exactly
+and slows onto the target - a motion of fixed length would cover a long throw
+faster than the hand let go of it, and the run would speed up after the lift.
+So `$phase.journey` says where the run is and how fast it goes while it goes
+on, a control wearing the phase walks it alike, and the move answers an
+`Arrival`. A throw too slow to carry the run past the target it stands nearest
+- that target at or behind where the hand let go - comes onto it as a run let
+go still does: a throw never goes back against the hand. A destination the
+program writes meanwhile ends the throw, as it ends any journey. The axes
+two fingers or a pan let go at once go on as one journey, each at its hand's
+speed, under the law of the first that goes on.
 
 ## Coming onto a target
 
@@ -459,8 +463,9 @@ next a slow throw reaches, none between - no slower than the layout's motion
 moves a unit. Let go still, thrown back, or by a hand whose throw would reach
 that target later than the motion at a unit a length, the run approaches it
 under the layout's motion over as much of the motion's length as the way left
-is of a unit: 0.4 left of 300 ms is 120 ms on the motion's curve; a spring's
-response is cut alike and sets out at the hand's speed. A throw that gets
+is of a unit: 0.4 left of 300 ms is 120 ms on the motion's curve, setting out
+on the curve's own slope, never slower than the motion; a spring's response is
+cut alike and sets out at the hand's speed toward the target. A throw that gets
 there sooner sets out at the hand's speed, as above. The two meet where they
 take the same time, so a quicker hand never lands later.
 
@@ -477,10 +482,11 @@ leaping ahead of the hand in the first frame and back at the end, the more
 so the faster the hand. A hand slower than a throw is let go still: nothing
 carries it on, and it rests where it was let go.
 
-The approach is carried in the core as a throw is (`flung`), the phase named
-the target at once; under less motion it lands at once, as a journey does. A
-hand taking the run on its way - a throw or an approach - takes it where it is
-shown, never where it is going.
+The approach is a journey of the phase as a throw is, the phase named the
+target at once; under less motion it lands at once, as every journey does on
+the host - a throw too. A hand taking the run on its way - a throw or an
+approach - takes it where it is shown, never where it is going: the journey
+stops there.
 
 ## One view in the hand
 

@@ -62,6 +62,7 @@ final class LayoutPanTests: XCTestCase {
     /// THE HAND MOVES BOTH AXES, each with its own way - left and up both on - and let go still, the run rests on
     /// the nearest square.
     func testTheHandMovesBothAxesAndRestsOnTheNearestSquare() {
+        bench.walks = true
         let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
         func built() -> Node { tree(board, handed) }
         _ = bench.laid(renders, built)

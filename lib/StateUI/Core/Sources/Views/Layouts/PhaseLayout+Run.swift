@@ -117,12 +117,6 @@ extension PhaseLayout {
             nonmutating set { if let index = focus?.index { states.held.wrappedValue[index] = newValue } }
         }
 
-        /// The throw or the approach of the axis in focus going on, where one does.
-        var flung: LayoutFling? {
-            get { focus.flatMap { states.flung.wrappedValue[$0.index] } }
-            nonmutating set { if let index = focus?.index { states.flung.wrappedValue[index] = newValue } }
-        }
-
         /// Where a swiping hand took the axis in focus, while it holds it.
         var grip: LayoutGrip? {
             get { focus.flatMap { states.grip.wrappedValue[$0.index] } }
@@ -228,22 +222,19 @@ extension PhaseLayout {
 
         // MARK: - On the host's frames
 
-        /// Places every view where the arithmetic says - a throw under way carried on to `now` first, a change of
-        /// the description on its way from where each view was shown - again next frame while either goes on.
+        /// Places every view where the arithmetic says - a change of the description on its way from where each view
+        /// was shown - again next frame while it goes on.
         /// Design: docs/design/views/phase-layout.md#the-run
         func place(at now: Double, reducesMotion: Bool) -> EngineAnswer {
-            let flying = hands.reduce(false) { flying, hand in
-                on(hand).fly(at: now, reducesMotion: reducesMotion) || flying
-            }
             let room = states.room.wrappedValue
 
-            // Where the hands, a throw or an approach hold the run is the phase's value, for whatever follows it.
+            // Where the hands hold the run is the phase's value, for whatever follows it.
             phase.journey.show(holding(phase.journey.walked), by: ObjectIdentifier(states.held.storage))
 
             // A room not yet measured places nothing: every view stands in the whole of it until it is.
             guard room.width > 0, room.height > 0 else {
                 states.placements.wrappedValue = PlacedRun()
-                return flying ? .again : .wait
+                return .wait
             }
 
             // A change of the description or of where the motion set out is measured before the run is worked
@@ -254,7 +245,7 @@ extension PhaseLayout {
             let poses = pose(in: Rect(0, 0, room.width, room.height), at: phase, from: from)
             let changing = show(
                 poses, after: memory, at: now, phase: phase, from: from, room: room, reducesMotion: reducesMotion)
-            return flying || changing ? .again : .wait
+            return changing ? .again : .wait
         }
 
         /// Where the run's motion set out, the run standing at `phase`: there, where nothing moves it - no hand, no
@@ -263,8 +254,7 @@ extension PhaseLayout {
         /// Design: docs/design/views/phase-layout.md#where-a-motion-set-out
         func setOut(at phase: Phase) -> Phase {
             let journey = self.phase.journey
-            let resting = states.held.wrappedValue.isEmpty && states.flung.wrappedValue.isEmpty
-                && journey.value == journey.destination
+            let resting = states.held.wrappedValue.isEmpty && journey.value == journey.destination
             var from = states.from.wrappedValue ?? phase
             if resting {
                 from = phase
@@ -285,35 +275,6 @@ extension PhaseLayout {
         func passed(from start: Double, to value: Double) -> Double? {
             let beyond = around(stops, near: value).filter { value > start ? $0 > start && $0 <= value : $0 < start && $0 >= value }
             return value > start ? beyond.max() : beyond.min()
-        }
-
-        /// The throw or the approach under way carried on to `now`: the hand's axis held where its motion has
-        /// brought it, and let go once on the target - at once for an approach under less motion. A destination
-        /// written meanwhile is the program's, and ends it. Whether it goes on.
-        /// Design: docs/design/views/phase-layout.md#a-throw
-        func fly(at now: Double, reducesMotion: Bool) -> Bool {
-            guard var fling = flung else { return false }
-
-            guard Self.same(toHand(onAxis(phase.journey.destination)), fling.to), fling.thrown || !reducesMotion else {
-                flung = nil
-                held = nil
-                return false
-            }
-
-            let began = fling.began ?? now
-            if fling.began == nil {
-                fling.began = now
-                flung = fling
-            }
-
-            guard let at = Self.flown(fling, after: now - began) else {
-                flung = nil
-                held = nil
-                return false
-            }
-
-            held = fromHand(at)
-            return true
         }
 
         /// Whether two places on the hand's axis are one, a logarithm's rounding apart.
@@ -434,26 +395,39 @@ extension PhaseLayout {
             return swiped(from: fromHand(letting.point), thrown: thrown) ?? resting(at: fromHand(letting.end))
         }
 
-        /// The axes `lettings` holds let go at once: each named where it comes to rest, then each going on there
-        /// from where the hand left it. No journey of the phase: one would send the host walking an axis the hand
-        /// held, which nothing named while it held it, from where the host last had it.
+        /// The axes `lettings` holds let go at once: each named where it comes to rest, then the run going on there
+        /// from where the hands left it as one journey of the phase on the host's channel - each axis setting out at
+        /// its hand's speed - under the law the first axis going on takes.
         /// Design: docs/design/views/phase-layout.md#coming-onto-a-target
         func letGo(together lettings: [(run: Run, letting: Letting)]) {
+            let start = live()
             let rests = lettings.map { $0.run.rest(of: $0.letting) }
             for ((run, _), rest) in zip(lettings, rests) {
                 run.grip = nil
                 run.name(rest)
             }
-            for ((run, letting), rest) in zip(lettings, rests) { run.goOn(letting, to: rest) }
+            let goings = zip(lettings, rests).compactMap { lettingRest in
+                lettingRest.0.run.going(lettingRest.0.letting, to: lettingRest.1).map { (run: lettingRest.0.run, going: $0) }
+            }
+            for (run, _) in lettings { run.held = nil }
+            guard let law = goings.first?.going.law else { return }
+
+            let journey = phase.journey
+            var velocity = journey.velocity
+            for (run, going) in goings { velocity = run.placing(going.speed, in: velocity) }
+            journey.value = start
+            journey.velocity = velocity
+            _ = journey.move(to: journey.destination, law)
         }
 
-        /// The axis in focus let go as `letting` says, named already at `value`, where it comes to rest: thrown on to
-        /// a snap ahead, it goes on there as the input throws - onto the next snap no slower than the layout's
-        /// motion moves a unit; with no snaps, on to where its throw ends, always as the input throws; let go still,
-        /// thrown back or slower than that, it approaches the target under that motion over as much of its length
-        /// as the way left is of a unit.
+        /// How the axis in focus goes on to `value`, named there already, let go as `letting` says: thrown on to a
+        /// snap ahead, from the hand's speed under the input's motion - its spring, else a glide no longer than twice
+        /// its length - onto the next snap no slower than the layout's motion moves a unit; with no snaps, on to where
+        /// its throw ends, always so; let go still, thrown back or slower than that, it approaches the target under
+        /// that motion over as much of its length as the way left is of a unit. Its law, and its speed in units of the
+        /// phase a second; nil where it stands there already, or has no law to go by.
         /// Design: docs/design/views/phase-layout.md#coming-onto-a-target
-        func goOn(_ letting: Letting, to value: Double) {
+        func going(_ letting: Letting, to value: Double) -> (law: Motion, speed: Double)? {
             let along = toHand(value)
             let left = along - letting.point
             let motion = resolvedLaw
@@ -462,16 +436,20 @@ extension PhaseLayout {
                 || flight <= abs(left) * Double(motion.milliseconds)
             let isThrow = abs(letting.speed) * letting.per >= Self.throwing && left * letting.speed > 0 && onward
 
-            guard abs(left) * letting.per > Self.settled, motion.kind != .custom || isThrow else {
-                held = nil
-                return
-            }
+            guard abs(left) * letting.per > Self.settled, motion.kind != .custom || isThrow else { return nil }
 
-            flung = isThrow
-                ? LayoutFling(from: letting.point, to: along, speed: letting.speed, motion: throwing, flight: flight, thrown: true)
-                : LayoutFling(
-                    from: letting.point, to: along, speed: letting.speed, motion: Self.approach(motion, over: left),
-                    flight: abs(left) * Double(motion.milliseconds), thrown: false)
+            // The hand's speed as the phase goes: its axis's slope where it let go - a magnification's, by the scale.
+            // An eased approach sets out on its own curve, never slower than the motion; a spring takes the hand's
+            // speed toward the target.
+            let speed = (fromHand(letting.point + letting.speed / 1_000) - fromHand(letting.point)) * 1_000
+            guard isThrow else {
+                let approach = Self.approach(motion, over: left)
+                let springs = if case .spring = approach.kind { true } else { false }
+                return (approach, springs && left * letting.speed > 0 ? speed : 0)
+            }
+            if case .spring = throwing.kind { return (throwing, speed) }
+            let longest = max(Double(Self.timing(of: throwing).milliseconds) * 2, Self.shortest)
+            return (.glide(within: .milliseconds(Int(longest.rounded()))), speed)
         }
 
         /// An axis letting go, where the hand works on it - a magnification's logarithm: where it held the run, how
@@ -599,25 +577,24 @@ extension PhaseLayout {
         /// How far either side of where the run stands the view in front is measured, in units of the phase.
         static var probe: Double { 0.01 }
 
-        /// A wheel's notches over the element: the run goes on from where the axis in focus is going - a throw's or a
-        /// journey's end - to the snap as many on as the notches turned, or, with none, as far as a hand going a
+        /// A wheel's notches over the element: the run goes on from where the axis in focus is going - its journey's
+        /// end, a throw's too - to the snap as many on as the notches turned, or, with none, as far as a hand going a
         /// notch's travel for each moves it, under the layout's motion. A swipe's go one snap from where the run
         /// rests, and wait while it goes. A hand holding the run keeps it.
         /// Design: docs/design/views/phase-layout.md#a-wheels-notch
         func step(_ notches: Point) {
             let count = Int((-(across ? notches.x : notches.y)).rounded())
             guard count != 0 else { return }
-            guard held == nil || flung != nil else { return }
+            guard held == nil else { return }
 
             let journey = phase.journey
             if swipes {
-                guard flung == nil, journey.value == journey.destination else { return }
+                guard journey.value == journey.destination else { return }
             }
             let start = live()
             let from = onAxis(journey.destination)
             let along = stops.isEmpty ? notched(from, by: count) : stepped(from, by: swipes ? count.signum() : count)
 
-            flung = nil
             held = nil
             send(to: placing(along, in: journey.destination), from: start, speed: 0)
         }
@@ -654,11 +631,10 @@ extension PhaseLayout {
         /// How far a wheel's notch moves an axis with no snaps, in device units.
         static var notch: Double { 100 }
 
-        /// The run taken by the hand at `value` on its axis: a journey or a throw under way stops there. A swiping
+        /// The run taken by the hand at `value` on its axis: a journey under way - a throw's too - stops there. A swiping
         /// hand grips it at the target nearest, with the unit the run would have standing there.
         @discardableResult
         func take(at value: Double) -> Double {
-            flung = nil
             held = value
             if swipes {
                 let target = nearest(value)
@@ -714,28 +690,10 @@ extension PhaseLayout {
             return max(HostMotionLaw.slope(easing(of: timing), at: 0), 0.1)
         }
 
-        /// The easing a fling under `motion` follows where it is eased: its own, `cubicOut` for a motion with none.
+        /// The easing a throw under `motion` sets out by where it is eased: its own, `cubicOut` for a motion with none.
         static func easing(of motion: Motion) -> Easing {
             if case .eased(_, let curve) = motion.kind { return curve }
             return .cubicOut
-        }
-
-        /// Where `fling` stands `elapsed` milliseconds in, under `throwing`, or nil once it is on its target. Eased,
-        /// it follows the curve over a length that sets it out at the hand's speed - long as the motion's own where
-        /// the target is where the throw would end, shorter where it is nearer; a spring settles from the hand's
-        /// speed.
-        static func flown(_ fling: LayoutFling, after elapsed: Double) -> Double? {
-            let left = fling.to - fling.from
-
-            if case .spring = fling.motion.kind {
-                let sample = HostMotionLaw.sample(
-                    fling.motion, elapsed: elapsed, from: [fling.from], destination: [fling.to],
-                    velocity: [fling.speed])
-                return sample.rested ? nil : sample.value.first
-            }
-
-            let progress = fling.flight > 0 ? max(elapsed, 0) / fling.flight : 1
-            return progress >= 1 ? nil : fling.from + left * HostMotionLaw.ease(easing(of: fling.motion), at: progress)
         }
 
         /// How long a throw at `speed` units a second takes to go `left` on under `throwing`, in milliseconds: the

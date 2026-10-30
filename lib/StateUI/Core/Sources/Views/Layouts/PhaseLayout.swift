@@ -40,9 +40,6 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
     /// handed then, the phase itself named only as the hand passes a snap.
     @State private var held: [Int: Double] = [:]
 
-    /// Each axis's throw going on after the hand let go, where one does.
-    @State private var flung: [Int: LayoutFling] = [:]
-
     /// Where a swiping hand took each axis, and the unit it moves it by, while it holds it.
     @State private var grip: [Int: LayoutGrip] = [:]
 
@@ -541,7 +538,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         .setValue(PhaseLayoutContract.phase.token, on: run.phase, mode: .inOut, kind: .property)
         .motion(law)
         .frame($room)
-        .engine([$room.followed, run.phase.followed, $held.followed, $flung.followed, $item.followed] + followed,
+        .engine([$room.followed, run.phase.followed, $held.followed, $item.followed] + followed,
                 priority: 0) { cycle in
             run.place(at: cycle.now, reducesMotion: cycle.reducesMotion)
         }
@@ -621,7 +618,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
             dismissal: dismissal,
             phase: phase,
             states: States(
-                held: _held, flung: _flung, placements: _placements, room: _room, shown: _shown, from: _from,
+                held: _held, placements: _placements, room: _room, shown: _shown, from: _from,
                 grip: _grip, item: _item, dismissals: dismissalRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
@@ -631,7 +628,6 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
     /// The layout's states, handed on whole: what its engine and handlers read and write.
     struct States {
         let held: State<[Int: Double]>
-        let flung: State<[Int: LayoutFling]>
         let placements: State<PlacedRun>
         let room: State<Rect>
         let shown: State<LayoutShown<Phase>>
@@ -648,7 +644,7 @@ extension PhaseLayout: WalkedView {
     /// (`PhaseLayoutTests.testTheEngineNamesEveryPartAMirrorWould` holds the list to the fields).
     var walkedParts: [(label: String, value: Any)] {
         [
-            ("_held", _held), ("_flung", _flung), ("_grip", _grip), ("_item", _item),
+            ("_held", _held), ("_grip", _grip), ("_item", _item),
             ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
             ("_dismissalRuns", _dismissalRuns),
             ("source", source), ("phase", phase), ("axes", axes), ("curve", curve as Any),
@@ -661,21 +657,6 @@ extension PhaseLayout: WalkedView {
 
 /// How many descriptions of phase layouts have been made.
 @MainActor private var descriptionsMade = 0
-
-/// A throw of the hand going on after it let go, on the hand's axis: from where it let go, to the target nearest
-/// where it would end, setting out at the hand's speed, units a second; when it set out, once a frame says.
-struct LayoutFling: Equatable {
-    let from: Double
-    let to: Double
-    let speed: Double
-
-    /// The motion it goes on under, how long it takes where that motion is eased, in milliseconds, and whether it is
-    /// a throw - the hand's own motion going on - or an approach, which less motion lands at once.
-    let motion: Motion
-    let flight: Double
-    let thrown: Bool
-    var began: Double?
-}
 
 /// Where a swiping hand took the run - the target nearest, one either side of which it moves it - and the unit it
 /// moves it by, measured there; nil for none the hand can measure.

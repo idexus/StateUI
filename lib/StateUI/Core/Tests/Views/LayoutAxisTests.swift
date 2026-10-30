@@ -117,9 +117,10 @@ final class LayoutAxisTests: XCTestCase {
         }
     }
 
-    /// LET GO, EVERY AXIS IS NAMED WHERE IT RESTS AND THE HOST IS SENT ON NO JOURNEY: a host walking one would carry
-    /// an axis the hand held - not named while it held it - from where the host last had it, a leap back at the lift.
-    func testLetGoEveryAxisIsNamedWhereItRestsAndNoJourneyIsBooked() throws {
+    /// LET GO, EVERY AXIS IS NAMED WHERE IT RESTS AND THE RUN GOES ON THERE AS ONE JOURNEY FROM WHERE THE HANDS LEFT
+    /// IT: the host walks it from there, no leap back at the lift, each axis setting out at its hand's speed - one let
+    /// go still where it rests standing still.
+    func testLetGoEveryAxisIsNamedWhereItRestsAndOneJourneyGoesOnFromTheHands() throws {
         let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
         let built = tree(table, handed, motion: .spring(response: .milliseconds(420), damping: 0.82)) {
             $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3)
@@ -133,14 +134,19 @@ final class LayoutAxisTests: XCTestCase {
         bench.hand(renders, built, .ended, speed: Point(-300, -10))
 
         let lanes = try XCTUnwrap(standing(worn, as: JourneyLanes<Table>.self))
-        XCTAssertEqual(lanes.completion, 0, "no journey for the host to walk")
-        XCTAssertEqual(lanes.value, lanes.destination)
-        XCTAssertEqual(lanes.value.turn, 0.3, accuracy: 0.000_1, "the axis let go still, named where it was let go")
-        XCTAssertEqual(handed.tables.last?.turn ?? 0, 0.3, accuracy: 0.000_1, "and shown there")
+        XCTAssertEqual(lanes.value.x, 1.4, accuracy: 0.000_1, "from where the hand left it")
+        XCTAssertEqual(lanes.destination.x, table.wrappedValue.x, "to where it rests")
+        XCTAssertGreaterThan(lanes.destination.x, 1.4)
+        XCTAssertEqual(lanes.velocity.x, 3, accuracy: 0.000_1, "at the hand's speed: 300 points a second, 100 a unit")
+        XCTAssertEqual(lanes.value.turn, 0.3, accuracy: 0.000_1, "the axis let go still where it was let go")
+        XCTAssertEqual(lanes.destination.turn, 0.3, accuracy: 0.000_1, "and resting there")
+        XCTAssertEqual(lanes.velocity.turn, 0, "standing still")
+        XCTAssertEqual(handed.tables.last?.turn ?? 0, 0.3, accuracy: 0.000_1, "shown there")
     }
 
     /// PAST ITS END THE AXIS GIVES LESS AND LESS, and let go it comes back onto the end.
     func testPastItsEndTheAxisComesBackOntoTheEnd() {
+        bench.walks = true
         let (table, handed, renders) = (State(wrappedValue: Table(x: 3)), Handed(), Renders())
         let built = tree(table, handed) { $0.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3) }
         _ = bench.laid(renders, built)

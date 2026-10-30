@@ -138,6 +138,7 @@ final class LayoutSetOutTests: XCTestCase {
 
     /// A THROW ACROSS SEVERAL TARGETS sets out from each as it passes it, and rests on the last.
     func testAThrowSetsOutFromEachTargetItPasses() {
+        bench.walks = true
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()

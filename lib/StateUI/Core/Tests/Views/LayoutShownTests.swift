@@ -54,6 +54,7 @@ final class LayoutShownTests: XCTestCase {
 
     /// AN ENGINE FOLLOWING THE PHASE GOES WITH THE HAND, move by move, and with the run as it comes onto its target.
     func testAnEngineFollowingThePhaseGoesWithTheHand() {
+        bench.walks = true
         let (phase, read, renders) = (State(wrappedValue: 0.0), Read(), Renders())
         func built() -> Node { tree(phase, read) }
         _ = bench.laid(renders, built)

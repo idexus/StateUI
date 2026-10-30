@@ -7,7 +7,7 @@
 /// `PhaseLayoutContract` on a host: each view stands where the arithmetic puts it, the arithmetic is handed the room
 /// the layout was given and handed it again when it changes, the layout takes no size from its views, the phase the
 /// program sends travels there and is awaited - each axis of it on its own - a scroll comes to rest on a snap
-/// target, and a layout mirrored right to left stands its views and hears the hand turned about its middle.
+/// target, a throw going on as the phase's journey, and a layout mirrored right to left stands its views and hears the hand turned about its middle.
 @_spi(Host) public enum PhaseLayoutTests: ConformanceFamily {
     public static let name = "PhaseLayout"
 
@@ -246,6 +246,25 @@
                 frames(s, clock, until: 1_600)
 
                 s.expect(phase.wrappedValue, 3, "not the nearest to where the hand let go, but to where the throw ends")
+            },
+            ConformanceCase("aThrowGoesOnAsThePhasesJourney", proves: [Covered(PhaseLayoutContract.handMoved)]) { s in
+                let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
+                let layout = try handLayout(s, clock: clock, phase: phase)
+                let journey = phase.projectedValue.journey
+
+                try s.perform(.sweep(by: Point(-10, 0), speed: Point(-2_250, 0)), on: layout)
+                // Each frame read as the host walks it: on its way to the target named already, going on.
+                var (fastest, onItsWay) = (0.0, false)
+                while clock.now < 1_600 {
+                    clock.now += 16
+                    s.frame()
+                    fastest = max(fastest, journey.velocity)
+                    if phase.wrappedValue == 3, journey.value > 0.1, journey.value < 3 { onItsWay = true }
+                }
+                s.expect(fastest > 0, true, "going on, as the host walks the phase")
+                s.expect(onItsWay, true, "on its way to the target it named")
+                s.expect(journey.value, 3, "on its target")
+                s.expect(journey.velocity, 0, "at rest")
             },
             ConformanceCase("aWheelsNotchStepsTheRunToTheNextTarget", proves: [
                 Covered(PhaseLayoutContract.handStepped),

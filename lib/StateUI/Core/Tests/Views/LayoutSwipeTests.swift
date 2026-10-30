@@ -53,6 +53,7 @@ final class LayoutSwipeTests: XCTestCase {
     /// THROWN, A SWIPE GOES ON TO THE NEXT TARGET THAT WAY, however hard - and back to where it took the run when
     /// thrown back from beyond it.
     func testAThrownSwipeGoesOnToTheNextTargetThatWay() {
+        bench.walks = true
         let phase = State(wrappedValue: 1.0)
         let renders = Renders()
         func built() -> Node { row(phase, Handed()) }
