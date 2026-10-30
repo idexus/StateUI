@@ -26,14 +26,14 @@ extension PhaseLayout.Run {
 
             let hand = LayoutItemHand(identity: identity, taken: placement, from: point, at: point)
             states.item.wrappedValue = hand
-            try tell(hand, phase, still: still)
+            try tell(hand, phase, still: still, speed: Point(x: 0, y: 0))
 
         case .changed:
             guard var hand = states.item.wrappedValue, hand.speed == nil else { return }
 
             hand.at = point
             states.item.wrappedValue = hand
-            try tell(hand, phase, still: still)
+            try tell(hand, phase, still: still, speed: speed)
 
         case .ended, .cancelled:
             guard var hand = states.item.wrappedValue, hand.speed == nil else { return }
@@ -42,16 +42,22 @@ extension PhaseLayout.Run {
             hand.speed = phase == .ended ? speed : Point(x: 0, y: 0)
             hand.dismissed = phase == .ended && dismisses(hand)
             states.item.wrappedValue = hand
-            try tell(hand, phase, still: 0)
+            try tell(hand, phase, still: 0, speed: hand.speed ?? Point(x: 0, y: 0))
         }
     }
 
     /// The view drawn on top at `point` in the room, by what the run last showed - its place turned as it is drawn,
     /// a view drawn clear passed over - and that place.
     func view(at point: Point) -> (Int, Placement)? {
-        let shown = states.shown.wrappedValue.shown
+        view(at: point, among: states.shown.wrappedValue.shown)
+    }
+
+    /// The view on top at `point` among `placements`, by identity - a view drawn clear and the view of `passing`
+    /// passed over - and its placement there.
+    private func view(at point: Point, among placements: [Int: Placement], passing: Int? = nil) -> (Int, Placement)? {
         let under = slots.enumerated().compactMap { index, slot -> (Int, Int, Placement)? in
-            guard let placement = shown[slot.identity], placement.opacity > 0, Self.covers(placement, point)
+            guard slot.identity != passing, let placement = placements[slot.identity], placement.opacity > 0,
+                  Self.covers(placement, point)
             else { return nil }
             return (index, slot.identity, placement)
         }
@@ -73,14 +79,30 @@ extension PhaseLayout.Run {
         return abs(along) <= bounds.width / 2 && abs(down) <= bounds.height / 2
     }
 
-    /// Tells the application the view `hand` holds at `phase`, having stood still `still` milliseconds.
-    func tell(_ hand: LayoutItemHand, _ phase: GesturePhase, still: Double) throws {
+    /// Tells the application the view `hand` holds at `phase`, having stood still `still` milliseconds, the hand
+    /// going at `speed` - and the item whose place stands under it: where a view rests, not where it is drawn on its
+    /// way, so a view travelling off from under the hand after it made room answers no second time.
+    /// Design: docs/design/views/phase-layout.md#one-view-in-the-hand
+    func tell(_ hand: LayoutItemHand, _ phase: GesturePhase, still: Double, speed: Point) throws {
         guard let dragged, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
 
         let room = states.room.wrappedValue
+        let over = view(at: hand.at, among: places(), passing: hand.identity).flatMap { under in
+            slots.first { $0.identity == under.0 }?.item
+        }
         try dragged(ItemDrag(
             phase: phase, item: slot.item, at: hand.at, room: Rect(0, 0, room.width, room.height),
-            still: .milliseconds(still)))
+            still: .milliseconds(still), speed: speed, over: over))
+    }
+
+    /// Where each view rests by this description, at the phase the run last showed: the arithmetic asked again, so
+    /// an order the application changed a moment ago stands in it.
+    private func places() -> [Int: Placement] {
+        let memory = states.shown.wrappedValue
+        guard let phase = memory.phase else { return memory.poses }
+
+        let poses = pose(in: Rect(0, 0, memory.room.width, memory.room.height), at: phase, from: memory.from ?? phase)
+        return Dictionary(zip(slots.map(\.identity), poses), uniquingKeysWith: { first, _ in first })
     }
 
     /// Whether letting `hand` go dismisses its view: where the hand took it, and where a throw at its speed would

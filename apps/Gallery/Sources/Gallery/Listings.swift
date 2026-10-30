@@ -4855,8 +4855,12 @@ enum Listings {
                         case .ended, .cancelled:
                             lifted = nil
                         default:
-                            move(drag.item, to: slot(at: drag.at, in: drag.room, fit: fit, of: boards))
-                            if drag.still >= .milliseconds(500) { turn(at: drag.at, in: drag.room, of: boards) }
+                            // The icon under the hand gives the held one its place.
+                            if let over = drag.over, let place = icons.firstIndex(of: over) { move(drag.item, to: place) }
+                            // At an edge, standing there or pushed against it fast, the board turns.
+                            if drag.still >= .milliseconds(500) || Self.pushes(drag) {
+                                turn(at: drag.at, in: drag.room, of: boards)
+                            }
                         }
                     }
                     .motion(Self.turning)
@@ -4894,20 +4898,18 @@ enum Listings {
             if Double(showing) != board { $board.journey.snap(to: Double(showing)) }
         }
 
-        /// The slot under `point` of the board in front, of `boards` in `fit`.
-        private func slot(at point: Point, in room: Rect, fit: Fit, of boards: Int) -> Int {
-            let page = min(max(Int(board.rounded()), 0), boards - 1)
-            let column = min(max(Int((point.x - 8) / ((room.width - 16) / Double(fit.columns))), 0), fit.columns - 1)
-            let row = min(max(Int((point.y - 8) / ((room.height - 16) / Double(fit.rows))), 0), fit.rows - 1)
-            return min(page * fit.perBoard + row * fit.columns + column, icons.count - 1)
-        }
-
         /// `icon` taken out of its place and put at `slot`: a new order, which
         /// the others travel to.
         private func move(_ icon: HomeIcon, to slot: Int) {
             guard let from = icons.firstIndex(of: icon), from != slot else { return }
             icons.remove(at: from)
             icons.insert(icon, at: slot)
+        }
+
+        /// Whether the hand reached the edge it stands at going that way faster
+        /// than 600 points a second.
+        private static func pushes(_ drag: ItemDrag<HomeIcon>) -> Bool {
+            drag.at.x > drag.room.width - 24 && drag.speed.x > 600 || drag.at.x < 24 && drag.speed.x < -600
         }
 
         /// The board on the side of the room `point` stands at the edge of, if

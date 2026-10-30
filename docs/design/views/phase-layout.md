@@ -533,9 +533,9 @@ run's, a view's or the page's - is the host layer's rule, one for every host
 ([the hand over a layout](../host/runtime.md#the-hand-over-a-layout)); a host
 passes the press's point and decides nothing more. The element hears that
 hand as an event of its own, `itemMoved`: its phase, where it is in the
-layout, its speed at the lift, and how long it has stood still - told again
-each long press's time it stands, so an application can turn a board while
-an icon is held at its edge.
+layout, how fast it goes - at the lift, as fast as it lifted - and how long
+it has stood still - told again each long press's time it stands, so an
+application can turn a board while an icon is held at its edge.
 
 The core finds the view under the press from what the run last showed: the
 one drawn on top - the highest `zIndex`, then the later - whose place, turned
@@ -550,7 +550,13 @@ see its view lifted does not know it has it. Its place may change meanwhile
 - the application moves its item in the order as the hand crosses a slot,
 and the others travel to their new places as any change at the current
 phase does - but the held view stays under the hand, so it never leaves the
-finger.
+finger. The core tells which item that is (`ItemDrag.over`): the one whose
+place stands under the hand, on top there, the held view passed over - the
+places the arithmetic gives by the description as it stands, at the phase
+the run last showed, not where the views are drawn on their way, so the view
+that made room, still travelling off from under the hand, never answers a
+second time and swings the order back. An application reorders by the item
+it is over and never works its own arithmetic backwards to a slot.
 
 Let go, the difference between where it is shown and its place becomes a
 change under the layout's motion, setting out at the hand's speed: the view

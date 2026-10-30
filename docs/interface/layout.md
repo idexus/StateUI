@@ -918,8 +918,9 @@ whose first move runs across the layout's axis - a card pulled up out of a
 deck that scrolls sideways; a hand that begins any other way moves the run
 as before. The held view follows the hand over the others, and
 `.onItemDragged` is told whether the hand takes it, moves it or lets it go,
-the item, where the hand is in the room and how long it has stood still -
-each time the hand moves it, and again each long press it stands. Lift the
+the item, where the hand is in the room, how long it has stood still, how
+fast the hand goes, and the item whose view it is over (`drag.over`) - each
+time the hand moves it, and again each long press it stands. Lift the
 view as the hand takes it - `.scale(lifted == item ? 1.18 : 1)` with a
 `.motion(_:_:)` of its own on `.transform` - so the hand knows it has it. Changing the order there makes room: the others travel to
 their new places while the held view stays under the hand. Let go, it
@@ -940,12 +941,11 @@ struct Board: View {
         }
         .itemDrag(begins: .held)
         .onItemDragged { drag in
-            // The slot under the hand: the held name moves there, the others make room.
-            let slot = min(max(Int(drag.at.x / (drag.room.width / 4)), 0), names.count - 1)
-            if let from = names.firstIndex(of: drag.item), from != slot {
-                names.remove(at: from)
-                names.insert(drag.item, at: slot)
-            }
+            // Over another name, the held one takes its place, the others make room.
+            guard let over = drag.over, let from = names.firstIndex(of: drag.item),
+                  let to = names.firstIndex(of: over) else { return }
+            names.remove(at: from)
+            names.insert(drag.item, at: to)
         }
         .height(80)
     }

@@ -8,8 +8,8 @@
 /// the platform tells none. What it answers is the element's `handMoved`.
 /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
 @_spi(Host) public struct HandReading: Sendable {
-    /// One report of the hand: its phase, how far it moved what is under it since the last, and its speed as it
-    /// lifts, per second; a hand holding one view by itself, where it is and how long it has stood still.
+    /// One report of the hand: its phase, how far it moved what is under it since the last, and how fast it goes,
+    /// per second; a hand holding one view by itself, where it is and how long it has stood still.
     public struct Report: Equatable, Sendable {
         /// Where the gesture is: begun, moving, lifted or taken away.
         public let phase: GesturePhase
@@ -17,7 +17,7 @@
         /// How far the hand moved what is under it since the last report.
         public let moved: Point
 
-        /// How fast the hand went as it lifted, per second; nought before.
+        /// How fast the hand goes, per second - as it lifts, as fast as it lifted; nought as it begins.
         public let speed: Point
 
         /// Whether the hand holds one view by itself rather than moving the run.
@@ -256,7 +256,7 @@
 
         trail.moved(moved, at: time)
         last = time
-        return [Report(.changed, moved: moved)]
+        return [Report(.changed, moved: moved, speed: trail.speed(at: time))]
     }
 
     /// The hand lifted at `time`, as fast as the platform says, or as its last moves say where it says nothing.

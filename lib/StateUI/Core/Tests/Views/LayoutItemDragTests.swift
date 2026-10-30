@@ -223,6 +223,59 @@ final class LayoutItemDragTests: XCTestCase {
         XCTAssertEqual(told.drags.last?.still, .milliseconds(500))
     }
 
+    /// A HELD VIEW IS TOLD WHAT IT IS OVER AND HOW FAST THE HAND GOES: the item whose view is drawn on top under the
+    /// hand, the held one passed over, nil over none; the hand's speed as the host layer tells it.
+    func testAHeldViewIsToldWhatItIsOverAndHowFastTheHandGoes() {
+        let told = Told()
+        let renders = Renders()
+        func tree() -> Node { cards(told) }
+        _ = bench.laid(renders, tree)
+
+        bench.item(renders, tree, .began, at: Point(25, 50))
+        bench.item(renders, tree, .changed, at: Point(125, 50), speed: Point(300, 0))
+        bench.item(renders, tree, .changed, at: Point(225, 25), speed: Point(200, -50))
+        bench.item(renders, tree, .changed, at: Point(400, 300))
+        bench.item(renders, tree, .ended, at: Point(400, 300), speed: Point(-500, 0))
+
+        XCTAssertEqual(told.drags.map(\.item), ["A", "A", "A", "A", "A"])
+        XCTAssertEqual(told.drags.map(\.over), [nil, "B", "C", nil, nil], "B over A's place, C turned, then none")
+        XCTAssertEqual(told.drags.map(\.speed), [
+            Point(0, 0), Point(300, 0), Point(200, -50), Point(0, 0), Point(-500, 0),
+        ])
+    }
+
+    /// A VIEW MAKING ROOM IS NOT OVER THE HAND AGAIN: the hand is over the item whose place stands under it, so the
+    /// view that gave the held one its place, still travelling off from under the hand, answers no second time.
+    func testAViewMakingRoomIsNotOverTheHandAgain() {
+        let told = Told()
+        let order = State(wrappedValue: ["A", "B", "C"])
+        let renders = Renders()
+        func tree() -> Node {
+            let names = order.wrappedValue
+            return PhaseLayout(names, phase: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
+                names.indices.map { Placement(Rect(Double($0) * 60, 0, 50, 50)) }
+            }
+            .itemDrag(begins: .held)
+            .onItemDragged { drag in
+                told.drags.append(drag)
+                guard let over = drag.over, let from = order.wrappedValue.firstIndex(of: drag.item),
+                      let to = order.wrappedValue.firstIndex(of: over) else { return }
+                order.wrappedValue.remove(at: from)
+                order.wrappedValue.insert(drag.item, at: to)
+            }
+            .physicsWorld(.spring(response: .milliseconds(400)))
+            .node
+        }
+        _ = bench.laid(renders, tree)
+
+        bench.item(renders, tree, .began, at: Point(25, 25))
+        bench.item(renders, tree, .changed, at: Point(85, 25))
+        XCTAssertEqual(order.wrappedValue, ["B", "A", "C"], "over B, A takes its place")
+        bench.item(renders, tree, .changed, at: Point(86, 25))
+        XCTAssertEqual(told.drags.last?.over, nil, "B goes to A's old place: under the hand stands A's own")
+        XCTAssertEqual(order.wrappedValue, ["B", "A", "C"])
+    }
+
     /// THE LAYOUT SAYS HOW THE HAND TAKES ONE OF ITS VIEWS, and hears that hand; one that says nothing hears none.
     func testTheLayoutSaysHowTheHandTakesOneOfItsViews() {
         let renders = Renders()

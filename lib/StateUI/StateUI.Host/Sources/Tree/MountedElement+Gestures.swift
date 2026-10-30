@@ -261,7 +261,7 @@ extension MountedElement {
             if report.phase == .changed, let last = handOutbox.last, last.phase == .changed, last.item == report.item {
                 handOutbox[handOutbox.count - 1] = HandReading.Report(
                     .changed, moved: Point(last.moved.x + report.moved.x, last.moved.y + report.moved.y),
-                    item: report.item, at: report.at, still: max(last.still, report.still))
+                    speed: report.speed, item: report.item, at: report.at, still: max(last.still, report.still))
             } else {
                 handOutbox.append(report)
             }
