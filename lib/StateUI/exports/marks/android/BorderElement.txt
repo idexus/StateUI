@@ -1,4 +1,4 @@
-# revision 13.1
+# revision 14.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
@@ -17,9 +17,18 @@ MotionLayout.stroke: ◐ cannot read stroke of MotionLayout - Android's driver h
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
+SearchField.lineWidth: ✅
+SearchField.shape: ✅
+SearchField.stroke: ✅
 Space.lineWidth: ✅
 Space.shape: ✅
 Space.stroke: ✅
+TextEditor.lineWidth: ✅
+TextEditor.shape: ✅
+TextEditor.stroke: ✅
+TextField.lineWidth: ✅
+TextField.shape: ✅
+TextField.stroke: ✅
 ToolbarButton.lineWidth: – A toolbar's actions stand in Android's own look.
 ToolbarButton.shape: – A toolbar's actions stand in Android's own look.
 ToolbarButton.stroke: – A toolbar's actions stand in Android's own look.

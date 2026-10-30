@@ -14,6 +14,9 @@ protocol UIKitTextInputView: UIView, UITextInput {
     /// What the view does with the words the user types.
     var typing: UIKitTyping { get }
 
+    /// The outline and the shape the tree gives the view.
+    var outline: UIKitFieldOutline { get }
+
     /// The words the view shows now.
     var words: String { get }
 

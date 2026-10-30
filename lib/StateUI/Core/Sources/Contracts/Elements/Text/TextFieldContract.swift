@@ -12,7 +12,7 @@ public enum TextFieldContract: ElementContract {
     /// A field is an input of text in a font, aligned.
     public static let tiers: [any Contract.Type] = [
         TextInputContract.self, TextualElementContract.self, FontElementContract.self,
-        TextAlignmentElementContract.self,
+        TextAlignmentElementContract.self, BorderElementContract.self,
     ]
 
     /// Whether what is typed is hidden behind the platform's secure-entry

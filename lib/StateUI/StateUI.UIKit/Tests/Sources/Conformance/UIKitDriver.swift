@@ -479,6 +479,14 @@ final class UIKitDriver: HostDriver {
         case (.isSelectable, is UIKitTextView): return false.propValue
         case (.isSelectable, let label as UIKitSelectableTextView): return label.isSelectable.propValue
         case (.text, let field as any UIKitTextInputView): return field.words.propValue
+        // A field's outline as its layer draws it: its color, its width, and its corners - none for a rectangle.
+        case (.stroke, let field as any UIKitTextInputView):
+            guard field.layer.borderWidth > 0 else { return nil }
+            return field.layer.borderColor.map { Brush.solidColor(Self.color(UIColor(cgColor: $0))).propValue }
+        case (.lineWidth, let field as any UIKitTextInputView): return Double(field.layer.borderWidth).propValue
+        case (.shape, let field as any UIKitTextInputView):
+            let radius = Double(field.layer.cornerRadius)
+            return (radius == 0 ? ContainerShape.rectangle : .roundedRectangle(radius)).propValue
         case (.cursorPosition, let field as any UIKitTextInputView): return field.selection.start.propValue
         case (.selectionLength, let field as any UIKitTextInputView): return field.selection.length.propValue
         case (.placeholder, let field as UITextField): return field.attributedPlaceholder?.string.propValue

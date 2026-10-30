@@ -1,4 +1,4 @@
-# revision 13.1
+# revision 14.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
@@ -17,9 +17,18 @@ MotionLayout.stroke: ◐ cannot read stroke of MotionLayout - GTK's driver has n
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
+SearchField.lineWidth: ✓ read lineWidth of SearchField: the class of the host's style sheet the widget wears: GTK reads back no lineWidth
+SearchField.shape: ✓ read shape of SearchField: the class of the host's style sheet the widget wears: GTK reads back no shape
+SearchField.stroke: ✓ read stroke of SearchField: the class of the host's style sheet the widget wears: GTK reads back no stroke
 Space.lineWidth: ✅
 Space.shape: ✅
 Space.stroke: ✅
+TextEditor.lineWidth: ✓ read lineWidth of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no lineWidth
+TextEditor.shape: ✓ read shape of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no shape
+TextEditor.stroke: ✓ read stroke of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no stroke
+TextField.lineWidth: ✓ read lineWidth of TextField: the class of the host's style sheet the widget wears: GTK reads back no lineWidth
+TextField.shape: ✓ read shape of TextField: the class of the host's style sheet the widget wears: GTK reads back no shape
+TextField.stroke: ✓ read stroke of TextField: the class of the host's style sheet the widget wears: GTK reads back no stroke
 ToolbarButton.lineWidth: – A header bar's buttons stand in libadwaita's own look.
 ToolbarButton.shape: – A header bar's buttons stand in libadwaita's own look.
 ToolbarButton.stroke: – A header bar's buttons stand in libadwaita's own look.

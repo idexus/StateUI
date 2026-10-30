@@ -16,6 +16,7 @@ extension WebRegistrations {
             return field
         }, members: { field in
             field.applies(inputMembers) { view, values in applyInput(view, values) }
+            field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.setPassword(hidden ?? false) }
             field.property(TextFieldContract.submitLabel) { view, label in
                 view.setSubmitLabel(InputTraits.submitLabel(label, searching: false))
@@ -31,6 +32,7 @@ extension WebRegistrations {
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
+            search.applies(outlineMembers) { view, values in applyOutline(view, values) }
             search.property(SearchFieldContract.submitLabel) { view, label in
                 view.setSubmitLabel(InputTraits.submitLabel(label, searching: true))
             }
@@ -43,9 +45,20 @@ extension WebRegistrations {
             return editor
         }, members: { editor in
             editor.applies(inputMembers) { view, values in applyInput(view, values) }
+            editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.setGrowsWithText(grows ?? false) }
             editor.raises(TextInputContract.textChanged)
         })
+    }
+
+    /// A field's outline and the shape its ground and outline follow.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
+
+    private static func applyOutline<Realized: ElementContract>(_ view: WebTextInputView, _ values: ElementValues<Realized>) {
+        view.setOutline(
+            stroke: values[BorderElementContract.stroke]?.propValue, lineWidth: values[BorderElementContract.lineWidth],
+            shape: values[BorderElementContract.shape]?.propValue)
     }
 
     private static func hearInput<Realized: ElementContract>(_ view: WebTextInputView, _ reports: Reports<Realized>) {

@@ -66,3 +66,12 @@ The host makes the scroll view itself: it reports through a user transaction
 and asks the host for display frames, and neither is an event of its
 contract, so its registration takes the members alone. Its offset is written
 only where the tree moved it - see [scrolling](input.md#scrolling).
+
+## A field's outline
+
+A field or an editor the tree outlines or shapes (`stroke`, `lineWidth`,
+`shape`) draws it on a layer of its own - the field's view, the editor's
+scroll view - the corners as `BoxArithmetic.cornerRadius` rounds the shape at
+its size (`AppKitFieldOutline`); a field so outlined, as one filled, lays its
+bezel aside and sets its words in as the bezel does. AppKit's search field
+draws its own rounded field, which no outline replaces: it takes none.

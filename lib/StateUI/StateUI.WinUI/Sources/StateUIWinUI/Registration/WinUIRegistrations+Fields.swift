@@ -18,6 +18,7 @@ extension WinUIRegistrations {
             field.property(TextFieldContract.isPassword) { view, password in view.setPassword(password ?? false) }
             field.applies(wordMembers) { view, values in applyWords(view, values) }
             field.applies(boxMembers) { view, values in applyBox(view, values) }
+            field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.raises(TextInputContract.textChanged)
             field.raises(TextFieldContract.submitted)
         })
@@ -28,6 +29,7 @@ extension WinUIRegistrations {
         }, members: { editor in
             editor.applies(wordMembers) { view, values in applyWords(view, values) }
             editor.applies(boxMembers) { view, values in applyBox(view, values) }
+            editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.growsWithText = grows ?? false }
             editor.raises(TextInputContract.textChanged)
         })
@@ -38,6 +40,7 @@ extension WinUIRegistrations {
             return search
         }, members: { search in
             search.applies(wordMembers) { view, values in applyWords(view, values) }
+            search.applies(outlineMembers) { view, values in applyOutline(view, values) }
             search.property(TextInputContract.isReadOnly) { view, readOnly in view.setReadOnly(readOnly ?? false) }
             search.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(alignment ?? .start)
@@ -49,6 +52,16 @@ extension WinUIRegistrations {
             search.raises(TextInputContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })
+    }
+
+    /// A field's outline and the shape its corners take.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
+
+    private static func applyOutline<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
+        view.setOutline(
+            stroke: values[BorderElementContract.stroke]?.propValue, lineWidth: values[BorderElementContract.lineWidth],
+            shape: values[BorderElementContract.shape]?.propValue)
     }
 
     private static func hearInput<Realized: ElementContract>(_ view: WinUITextInputView, _ reports: Reports<Realized>) {

@@ -11,6 +11,7 @@ import CStateUIGTK
 @MainActor
 final class GTKTextEditorView: GTKView, GTKTextInputView {
     var onTextChanged: ((String) -> Void)?
+    var outlineClass: String?
 
     /// Whether the editor takes the height of its words.
     private(set) var growsWithText = false

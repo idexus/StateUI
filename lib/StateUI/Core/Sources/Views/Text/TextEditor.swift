@@ -31,7 +31,8 @@ extension TextEditorProperties {
 /// a field that wraps and keeps the newlines the user types. A Return is
 /// text here, so it has no `onSubmitted`; `isFocused` says when the editing
 /// ends.
-public struct TextEditor: TextInput, TextualElement, FontElement, TextAlignmentElement, TextEditorProperties {
+public struct TextEditor: TextInput, TextualElement, FontElement, TextAlignmentElement, BorderElement,
+    TextEditorProperties {
     /// The node this control describes.
     public var node: Node
 

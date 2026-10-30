@@ -388,3 +388,9 @@ active; a button turned on tells the choice, and the program's writes are
 dropped as every program write is. The words' class stands on the box, and
 GTK's CSS hands the font and color on to the buttons.
 
+## A field's outline
+
+A field, a search field or an editor the tree outlines or shapes (`stroke`,
+`lineWidth`, `shape`) wears it as a box class of the host's style sheet - the
+same as a button's, its border and its corners, a capsule's ends whole - over
+the theme's frame; with neither it keeps the theme's.

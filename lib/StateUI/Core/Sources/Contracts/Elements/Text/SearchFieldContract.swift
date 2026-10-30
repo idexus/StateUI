@@ -12,7 +12,7 @@ public enum SearchFieldContract: ElementContract {
     /// A search field is an input of text in a font, aligned.
     public static let tiers: [any Contract.Type] = [
         TextInputContract.self, TextualElementContract.self, FontElementContract.self,
-        TextAlignmentElementContract.self,
+        TextAlignmentElementContract.self, BorderElementContract.self,
     ]
 
     /// What the keyboard's return key is captioned; Next hands the keyboard on to the next field as it submits.

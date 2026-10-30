@@ -105,6 +105,19 @@ extension AppKitDriver {
     /// A field's and an editor's: its placeholder, whether it hides what is typed, how its words stand, and - on an
     /// editor, which keeps them itself - its spelling, its completion and its selection.
     private static func fieldHolds(_ property: Prop, _ view: NSView) -> HostValue? {
+        // A field's outline as its layer draws it: its color, its width, and its corners - none for a rectangle.
+        let outlined = (view as? AppKitTextEditorView)?.scrollView.layer ?? (view as? AppKitTextFieldView)?.layer
+        if [.stroke, .lineWidth, .shape].contains(property), let layer = outlined {
+            switch property {
+            case .stroke:
+                guard layer.borderWidth > 0 else { return nil }
+                return layer.borderColor.flatMap(NSColor.init(cgColor:)).map { Brush.solidColor(color($0)).propValue }
+            case .lineWidth: return Double(layer.borderWidth).propValue
+            default:
+                let radius = Double(layer.cornerRadius)
+                return (radius == 0 ? ContainerShape.rectangle : .roundedRectangle(radius)).propValue
+            }
+        }
         if let editor = view as? AppKitTextEditorView {
             let text = editor.textView
             let placeholder = editor.subviews.lazy.compactMap { $0 as? NSTextField }.first

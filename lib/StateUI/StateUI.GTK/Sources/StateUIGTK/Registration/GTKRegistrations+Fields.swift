@@ -17,6 +17,7 @@ extension GTKRegistrations {
         }, members: { field in
             field.applies(inputMembers) { view, values in applyInput(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.setPassword(hidden ?? false) }
+            field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.raises(TextInputContract.textChanged)
             field.raises(TextFieldContract.submitted)
         })
@@ -27,6 +28,7 @@ extension GTKRegistrations {
         }, members: { editor in
             editor.applies(inputMembers) { view, values in applyInput(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.setGrowsWithText(grows ?? false) }
+            editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.raises(TextInputContract.textChanged)
         })
         registry.add(SearchFieldContract.self, create: { reports in
@@ -36,9 +38,20 @@ extension GTKRegistrations {
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
+            search.applies(outlineMembers) { view, values in applyOutline(view, values) }
             search.raises(TextInputContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })
+    }
+
+    /// A field's outline and the shape its ground and outline follow.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
+
+    private static func applyOutline<Realized: ElementContract>(_ view: any GTKTextInputView, _ values: ElementValues<Realized>) {
+        view.setOutline(
+            stroke: values[BorderElementContract.stroke]?.propValue, lineWidth: values[BorderElementContract.lineWidth],
+            shape: values[BorderElementContract.shape]?.propValue)
     }
 
     private static func hearInput<Realized: ElementContract>(_ view: any GTKTextInputView, _ reports: Reports<Realized>) {

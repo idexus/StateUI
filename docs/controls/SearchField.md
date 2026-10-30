@@ -16,7 +16,7 @@ SearchField($query)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextInput](tiers/TextInput.md) · [TextualElement](tiers/TextualElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextInput](tiers/TextInput.md) · [TextualElement](tiers/TextualElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [BorderElement](tiers/BorderElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -35,13 +35,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (102)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>56 ✅ · 4 ☑️ · 37 ✓ · 2 –</td><td><code>NSSearchField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>59 ✅ · 2 ☑️ · 39 ✓ · 2 –</td><td><code>UISearchTextField</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>81 ✅ · 5 ☑️ · 12 ✓ · 2 –</td><td>one-line <code>EditText</code> with a search key</td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>74 ✅ · 6 ☑️ · 14 ✓ · 8 –</td><td><code>AutoSuggestBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>66 ✅ · 4 ☑️ · 26 ✓ · 6 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>77 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;input type=search&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (105)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>56 ✅ · 4 ☑️ · 37 ✓ · 5 –</td><td><code>NSSearchField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>62 ✅ · 2 ☑️ · 39 ✓ · 2 –</td><td><code>UISearchTextField</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>84 ✅ · 5 ☑️ · 12 ✓ · 2 –</td><td>one-line <code>EditText</code> with a search key</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>77 ✅ · 6 ☑️ · 14 ✓ · 8 –</td><td><code>AutoSuggestBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>66 ✅ · 4 ☑️ · 29 ✓ · 6 –</td><td><code>GtkSearchEntry</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>80 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;input type=search&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/SearchFieldContract.swift`.
@@ -269,6 +269,20 @@ Where text sits across the space its own element was given.
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td rowspan="2"><code>horizontalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">WinUI 3: The placeholder stands at the start: AutoSuggestBox's text box template aligns only the words typed.</td></tr></tbody>
+</table>
+
+## From [BorderElement](tiers/BorderElement.md)
+
+What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>shape</code></td><td>property</td><td><code>ContainerShape</code></td><td>stateUI</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit's search field draws its own rounded field, which no outline replaces.<br>GTK 4: only through the host's own: read shape of SearchField: the class of the host's style sheet the widget wears: GTK reads back no shape</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit's search field draws its own rounded field, which no outline replaces.<br>GTK 4: only through the host's own: read stroke of SearchField: the class of the host's style sheet the widget wears: GTK reads back no stroke</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: AppKit's search field draws its own rounded field, which no outline replaces.<br>GTK 4: only through the host's own: read lineWidth of SearchField: the class of the host's style sheet the widget wears: GTK reads back no lineWidth</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

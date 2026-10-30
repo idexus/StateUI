@@ -273,6 +273,7 @@ of its own:
 | `isPassword` | `TextField` | what is typed hides behind the platform's secure-entry marks |
 | `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says, and `.next` hands the keyboard on to the next field |
 | `showsClearButton` | `TextField` | whether the native button that empties the field shows, where the platform's field has one; it does unless told otherwise |
+| `stroke`, `lineWidth`, `shape` | every field | an outline of the application's own and the shape the field's ground and outline follow, in place of the platform's frame - as a button's box; AppKit's search field keeps its own |
 
 ```swift
 @State var code = ""

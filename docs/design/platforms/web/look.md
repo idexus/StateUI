@@ -50,6 +50,15 @@ platforms' editors draw none. A web view's background shows where the page it sh
 the application gives none. The browser draws its slider over the slider's
 whole box and paints no background under it, so a slider has none.
 
+## A field's outline
+
+A field the tree outlines (`stroke`, `lineWidth`) stands in that border over
+the page's own frame, and in the shape the tree gives it (`shape`), its
+corners rounded as its ground's - focused or not, as the inline style wins
+over the look's. Only the border and the corners are written: the background
+shorthand would clear the picture the page's look draws in a field. A field
+the tree outlines in nothing keeps the page's frame.
+
 ## Motion
 
 The drawer slides, a pushed page rises into place, a sheet and a question

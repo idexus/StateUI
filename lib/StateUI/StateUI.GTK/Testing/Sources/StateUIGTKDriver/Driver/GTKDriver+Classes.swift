@@ -41,7 +41,8 @@ extension GTKDriver {
         case (.background, is GTKTextualView):
             return .some(named("stateui-fill-").flatMap(Self.color).map { Material.color($0).propValue })
         case (.background, is GTKButtonView), (.stroke, is GTKButtonView), (.lineWidth, is GTKButtonView),
-             (.shape, is GTKButtonView):
+             (.shape, is GTKButtonView), (.stroke, is any GTKTextInputView), (.lineWidth, is any GTKTextInputView),
+             (.shape, is any GTKTextInputView):
             return .some(named("stateui-box").flatMap { Self.box(property, of: $0) })
         // Any other view wears its fill on its own widget.
         case (.background, _) where !(view is GTKLayoutView):

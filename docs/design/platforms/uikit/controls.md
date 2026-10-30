@@ -183,3 +183,12 @@ measured as the label is, wherever down its room the words stand. The
 registration makes one or the other by the value the text is made with,
 and another value makes the text anew. A disabled one selects nothing.
 
+## A field's outline
+
+A field the tree outlines or shapes (`stroke`, `lineWidth`, `shape`) draws
+it on its own layer - the border in the stroke's color and width, the
+corners as `BoxArithmetic.cornerRadius` rounds the shape at the field's size,
+again as the size changes, so a capsule's ends stay whole - and a field on
+one line lays its own frame aside (`borderStyle`), taking it back where the
+tree outlines it no more (`UIKitFieldOutline`). An editor keeps its corners
+of 8 where the tree says no shape.

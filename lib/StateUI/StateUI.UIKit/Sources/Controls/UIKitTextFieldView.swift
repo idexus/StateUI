@@ -10,6 +10,7 @@ import UIKit
 @MainActor
 final class UIKitTextFieldView: UITextField, UIKitTextInputView {
     let typing = UIKitTyping()
+    let outline = UIKitFieldOutline()
 
     init() {
         super.init(frame: .zero)
@@ -17,6 +18,11 @@ final class UIKitTextFieldView: UITextField, UIKitTextInputView {
         font = .stateUI(TextLook())
         adjustsFontForContentSizeCategory = true
         hearTyping()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        outline.draw(on: self, ownRadius: 0)
     }
 
     @available(*, unavailable)

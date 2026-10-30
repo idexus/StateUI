@@ -15,7 +15,7 @@ VStack {
 .lineWidth(1)
 ```
 
-Worn by: [Button](../Button.md) · [Fill](../Fill.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [MotionLayout](../MotionLayout.md) · [ScrollView](../ScrollView.md) · [Space](../Space.md) · [ToolbarButton](../ToolbarButton.md) · [ToolbarGroup](../ToolbarGroup.md) · [ToolbarToggle](../ToolbarToggle.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
+Worn by: [Button](../Button.md) · [Fill](../Fill.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [MotionLayout](../MotionLayout.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Space](../Space.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [ToolbarButton](../ToolbarButton.md) · [ToolbarGroup](../ToolbarGroup.md) · [ToolbarToggle](../ToolbarToggle.md) · [VStack](../VStack.md) · [ZStack](../ZStack.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/BorderElementContract.swift`.
 

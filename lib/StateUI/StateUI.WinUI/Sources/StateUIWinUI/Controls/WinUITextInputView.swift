@@ -34,6 +34,20 @@ class WinUITextInputView: WinUIView {
         words.replacing("\r\n", with: "\n").replacing("\r", with: "\n")
     }
 
+    /// The outline the tree gives the field - its color and width - and the shape its corners take, over the theme's
+    /// frame in every state of the field's; the theme's where it gives none.
+    /// Design: docs/design/platforms/winui/controls.md#a-fields-outline
+    func setOutline(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
+        let outlined = shape.map(BoxArithmetic.outline)
+        let outline = WinUIBrush(stroke)
+        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
+        let rounds = outlined.map { $0 != .rectangle } ?? false
+        paint(.look, followsSize: outline.followsSize || rounds) { [handle] size in
+            let radius = outlined.map { BoxArithmetic.cornerRadius(of: $0, width: size.width, height: size.height) } ?? -1
+            outline.withRelayBrush(over: size) { brush in stateui_winui_field_set_outline(handle, brush, width, radius) }
+        }
+    }
+
     /// Writes the words where they differ from the view's, with the caret after them.
     func setText(_ text: String) {
         stateui_winui_field_set_text(handle, text)

@@ -526,3 +526,11 @@ stand, and tells it as a change, so a change to the choice standing is no
 user's. Only a `ComboBox` has a list to open, a placeholder and choices across
 it.
 
+## A field's outline
+
+A field the tree outlines (`stroke`, `lineWidth`) wears it as its border, and
+its corners as the tree's shape rounds them at the field's size: the field's
+own properties, and the keys its template reads in each of its states -
+`TextControlBorderBrush`, under the pointer, focused and disabled - so the
+outline stands whatever the field is doing. A search box's template hands its
+box what the search box is given.

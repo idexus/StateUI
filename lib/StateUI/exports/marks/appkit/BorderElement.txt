@@ -1,4 +1,4 @@
-# revision 13.1
+# revision 14.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
@@ -17,9 +17,18 @@ MotionLayout.stroke: ◐ cannot read stroke of MotionLayout - AppKit's driver ha
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ☑️ AppKit outlines a scroller in one color: a gradient draws none.
+SearchField.lineWidth: – AppKit's search field draws its own rounded field, which no outline replaces.
+SearchField.shape: – AppKit's search field draws its own rounded field, which no outline replaces.
+SearchField.stroke: – AppKit's search field draws its own rounded field, which no outline replaces.
 Space.lineWidth: ✅
 Space.shape: ✅
 Space.stroke: ✅
+TextEditor.lineWidth: ✅
+TextEditor.shape: ✅
+TextEditor.stroke: ✅
+TextField.lineWidth: ✅
+TextField.shape: ✅
+TextField.stroke: ✅
 ToolbarButton.lineWidth: – The Mac's toolbar draws its items in the Mac's own look.
 ToolbarButton.shape: – The Mac's toolbar draws its items in the Mac's own look.
 ToolbarButton.stroke: – The Mac's toolbar draws its items in the Mac's own look.

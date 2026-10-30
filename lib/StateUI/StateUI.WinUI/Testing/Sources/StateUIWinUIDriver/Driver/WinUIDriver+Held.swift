@@ -325,11 +325,11 @@ extension WinUIDriver {
             let ground = stateui_winui_canvas_ground(view.handle)
             return ground == 0 ? nil : Material.color(Self.color(ground)).propValue
         case "background": return try Self.color(read(view, "background")).map { StandIns.material(painted: $0).propValue }
-        case "stroke" where view is WinUIButtonView:
+        case "stroke" where view is WinUIButtonView || view is WinUITextInputView:
             return try Self.color(read(view, "borderBrush")).map { Brush.solidColor($0).propValue }
-        case "lineWidth" where view is WinUIButtonView:
+        case "lineWidth" where view is WinUIButtonView || view is WinUITextInputView:
             return try Self.insets(read(view, "borderThickness"))?.start.propValue
-        case "shape" where view is WinUIButtonView:
+        case "shape" where view is WinUIButtonView || view is WinUITextInputView:
             let radius = try Self.insets(read(view, "cornerRadius"))?.start ?? 0
             return (radius > 0 ? ContainerShape.roundedRectangle(radius) : .rectangle).propValue
         default: return nil

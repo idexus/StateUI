@@ -47,6 +47,12 @@ extension AppKitRegistrations {
                     selectionLength: values[TextInputContract.selectionLength],
                     writeSelection: Self.writesSelection(values))
             }
+            entry.applies(Self.outlineMembers) { view, values in
+                view.setOutline(
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    lineWidth: values[BorderElementContract.lineWidth],
+                    shape: values[BorderElementContract.shape]?.propValue)
+            }
             entry.raises(TextInputContract.textChanged)
             entry.raises(TextFieldContract.submitted)
         })
@@ -82,6 +88,12 @@ extension AppKitRegistrations {
                     selectionLength: values[TextInputContract.selectionLength],
                     writeSelection: Self.writesSelection(values),
                     growsWithText: values[TextEditorContract.growsWithText] == true)
+            }
+            editor.applies(Self.outlineMembers) { view, values in
+                view.setOutline(
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    lineWidth: values[BorderElementContract.lineWidth],
+                    shape: values[BorderElementContract.shape]?.propValue)
             }
             editor.raises(TextInputContract.textChanged)
         })
@@ -122,6 +134,10 @@ extension AppKitRegistrations {
             search.raises(SearchFieldContract.submitted)
         })
     }
+
+    /// A field's outline and the shape its ground and outline follow.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
 
     /// What every field takes, whatever kind of field it is.
     private static let fieldMembers = PropertyList(

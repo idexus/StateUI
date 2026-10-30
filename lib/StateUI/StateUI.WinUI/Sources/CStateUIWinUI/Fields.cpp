@@ -266,6 +266,32 @@ extern "C" void stateui_winui_search_set_placeholder_color(StateUIObjectRef hand
     }
 }
 
+extern "C" void stateui_winui_field_set_outline(
+    StateUIObjectRef handle, StateUIBrush stroke, double lineWidth, double cornerRadius
+) {
+    try {
+        // A text box, a password box or a search box: a search box's template hands its box what it is given.
+        auto control = as<controls::Control>(handle);
+        auto outline = lineWidth > 0 ? brush(stroke) : xaml::Media::Brush{nullptr};
+        if (outline) {
+            control.BorderBrush(outline);
+            control.BorderThickness({lineWidth, lineWidth, lineWidth, lineWidth});
+        } else {
+            control.ClearValue(controls::Control::BorderBrushProperty());
+            control.ClearValue(controls::Control::BorderThicknessProperty());
+        }
+        // The field's template reads its border from keys of its own in each of its states: the outline stands in all.
+        std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
+        for (std::wstring state : {L"", L"PointerOver", L"Focused", L"Disabled"})
+            brushes.emplace_back(L"TextControlBorderBrush" + state, outline);
+        writeResources(control, brushes);
+        if (cornerRadius >= 0) control.CornerRadius({cornerRadius, cornerRadius, cornerRadius, cornerRadius});
+        else control.ClearValue(controls::Control::CornerRadiusProperty());
+    } catch (...) {
+        report("outlining a field");
+    }
+}
+
 extern "C" void stateui_winui_field_set_look(StateUIObjectRef handle, int32_t alignment, uint32_t placeholderArgb, bool placeholderColored) {
     try {
         // A password box has no alignment of its own, and colors its placeholder from the theme resources its

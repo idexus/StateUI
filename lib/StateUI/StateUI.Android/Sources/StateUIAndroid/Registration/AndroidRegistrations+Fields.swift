@@ -19,6 +19,7 @@ extension AndroidRegistrations {
         }, members: { field in
             field.applies(inputMembers, TextFieldContract.isPassword) { view, values in applyField(view, values) }
             field.property(TextFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
+            field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.raises(TextInputContract.textChanged)
             field.raises(TextFieldContract.submitted)
         })
@@ -33,6 +34,7 @@ extension AndroidRegistrations {
         }, members: { search in
             search.applies(inputMembers) { view, values in applyField(view, values) }
             search.property(SearchFieldContract.submitLabel) { view, key in view.setReturnKey(key) }
+            search.applies(outlineMembers) { view, values in applyOutline(view, values) }
             search.raises(TextInputContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })
@@ -46,8 +48,21 @@ extension AndroidRegistrations {
         }, members: { editor in
             editor.applies(inputMembers) { view, values in applyField(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.setGrows(grows ?? false) }
+            editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.raises(TextInputContract.textChanged)
         })
+    }
+
+    /// A field's outline and the shape its ground and outline follow.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
+
+    private static func applyOutline<Realized: ElementContract>(
+        _ view: AndroidTextFieldView, _ values: ElementValues<Realized>
+    ) {
+        view.setOutline(
+            stroke: values[BorderElementContract.stroke]?.propValue, width: values[BorderElementContract.lineWidth],
+            shape: values[BorderElementContract.shape]?.propValue)
     }
 
     /// What every field takes whole.

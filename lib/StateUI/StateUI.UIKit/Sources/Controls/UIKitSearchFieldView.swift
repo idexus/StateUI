@@ -11,6 +11,7 @@ import UIKit
 @MainActor
 final class UIKitSearchFieldView: UISearchTextField, UIKitTextInputView {
     let typing = UIKitTyping()
+    let outline = UIKitFieldOutline()
 
     init() {
         super.init(frame: .zero)
@@ -18,6 +19,11 @@ final class UIKitSearchFieldView: UISearchTextField, UIKitTextInputView {
         adjustsFontForContentSizeCategory = true
         setReturnKey(InputTraits.submitLabel(nil, searching: true))
         hearTyping()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        outline.draw(on: self, ownRadius: 0)
     }
 
     @available(*, unavailable)

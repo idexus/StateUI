@@ -1,4 +1,4 @@
-# revision 13.1
+# revision 14.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
@@ -17,9 +17,18 @@ MotionLayout.stroke: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
+SearchField.lineWidth: ✅
+SearchField.shape: ✅
+SearchField.stroke: ✅
 Space.lineWidth: ✅
 Space.shape: ✅
 Space.stroke: ✅
+TextEditor.lineWidth: ✅
+TextEditor.shape: ✅
+TextEditor.stroke: ✅
+TextField.lineWidth: ✅
+TextField.shape: ✅
+TextField.stroke: ✅
 ToolbarButton.lineWidth: – The title bar's commands stand in WinUI's own look.
 ToolbarButton.shape: – The title bar's commands stand in WinUI's own look.
 ToolbarButton.stroke: – The title bar's commands stand in WinUI's own look.

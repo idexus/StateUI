@@ -14,7 +14,7 @@ TextEditor($notes)
 
 Layer: `native`. Every base host presents it with its native toolkit.
 
-Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextInput](tiers/TextInput.md) · [TextualElement](tiers/TextualElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
+Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tiers/VisualElement.md) · [View](tiers/View.md) · [TextInput](tiers/TextInput.md) · [TextualElement](tiers/TextualElement.md) · [TextColorElement](tiers/TextColorElement.md) · [FontElement](tiers/FontElement.md) · [TextAlignmentElement](tiers/TextAlignmentElement.md) · [BorderElement](tiers/BorderElement.md) · [KeyboardElement](tiers/KeyboardElement.md) · [FocusElement](tiers/FocusElement.md)
 
 | Mark | Meaning |
 | :---: | --- |
@@ -33,13 +33,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (101)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>59 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>NSTextView</code> in an <code>NSScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>58 ✅ · 2 ☑️ · 39 ✓ · 2 –</td><td><code>UITextView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>80 ✅ · 5 ☑️ · 12 ✓ · 2 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>78 ✅ · 3 ☑️ · 14 ✓ · 6 –</td><td>multi-line <code>TextBox</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>65 ✅ · 4 ☑️ · 26 ✓ · 6 –</td><td><code>GtkTextView</code> in a <code>GtkScrolledWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>76 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (104)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>62 ✅ · 3 ☑️ · 37 ✓ · 2 –</td><td><code>NSTextView</code> in an <code>NSScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>61 ✅ · 2 ☑️ · 39 ✓ · 2 –</td><td><code>UITextView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>83 ✅ · 5 ☑️ · 12 ✓ · 2 –</td><td>multi-line <code>EditText</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>81 ✅ · 3 ☑️ · 14 ✓ · 6 –</td><td>multi-line <code>TextBox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>65 ✅ · 4 ☑️ · 29 ✓ · 6 –</td><td><code>GtkTextView</code> in a <code>GtkScrolledWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>79 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td><code>&lt;textarea&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Text/TextEditorContract.swift`.
@@ -262,6 +262,20 @@ Where text sits across the space its own element was given.
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
 <tbody><tr></tr><tr><td><code>horizontalTextAlignment</code></td><td>property</td><td><code>TextAlignment</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+</table>
+
+## From [BorderElement](tiers/BorderElement.md)
+
+What an element draws of its own box: the shape its background, its outline and its cut follow, and the outline.
+
+<table>
+<thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
+<tbody><tr></tr><tr><td rowspan="2"><code>shape</code></td><td>property</td><td><code>ContainerShape</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: only through the host's own: read shape of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no shape</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>stroke</code></td><td>property</td><td><code>Brush</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: only through the host's own: read stroke of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no stroke</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>lineWidth</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: only through the host's own: read lineWidth of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no lineWidth</td></tr></tbody>
 </table>
 
 ## From [KeyboardElement](tiers/KeyboardElement.md)

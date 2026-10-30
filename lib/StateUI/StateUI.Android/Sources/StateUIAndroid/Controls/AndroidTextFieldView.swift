@@ -74,6 +74,51 @@ final class AndroidTextFieldView: AndroidTextualView {
     }
 
     /// What the field's keyboard and its checking of the words do; the words and their weight stay.
+    // MARK: - Its box
+
+    /// The field's ground and the outline and shape the tree gives it: drawn as a shape in place of the theme's
+    /// underline where it outlines or shapes the field, else the ground alone over it.
+    private var box: (fill: HostValue?, stroke: HostValue?, width: Double?, shape: AndroidShapeDrawable.Shape) =
+        (nil, nil, nil, .rectangle)
+
+    /// The shape its box is drawn in; nil while the theme's look or a plain ground shows.
+    private var drawnBox: AndroidShapeDrawable?
+
+    override func setBackground(_ value: HostValue?) {
+        box.fill = value
+        drawBox()
+    }
+
+    /// The field's outline and shape, the width in points and one where none is said.
+    /// Design: docs/design/platforms/android/controls.md#a-fields-outline
+    func setOutline(stroke: HostValue?, width: Double?, shape: HostValue?) {
+        (box.stroke, box.width, box.shape) = (stroke, width, AndroidShapeDrawable.Shape(container: shape))
+        drawBox()
+    }
+
+    private func drawBox() {
+        guard box.stroke != nil || box.shape != .rectangle else {
+            drawnBox = nil
+            return super.setBackground(box.fill)
+        }
+        let shape = AndroidShapeDrawable()
+        shape.setStroke(box.stroke, width: box.width, density: density)
+        shape.setShape(box.shape, density: density)
+        shape.setFill(box.fill)
+        drawnBox = shape
+        if let size = placedSize { shape.fit(width: size.width, height: size.height) }
+        showBackground(shape.object)
+    }
+
+    override func sized(width: Int32, height: Int32) {
+        drawnBox?.fit(width: width, height: height)
+    }
+
+    /// The outline and the shape its box is drawn with, while it draws one; nil while the theme's look shows.
+    var drawnOutline: (stroke: HostValue?, width: Double, shape: AndroidShapeDrawable.Shape)? {
+        drawnBox == nil ? nil : (box.stroke, BoxArithmetic.outlineWidth(stroke: box.stroke, width: box.width), box.shape)
+    }
+
     func setTraits(_ traits: InputTraits) {
         guard traits != self.traits else { return }
 

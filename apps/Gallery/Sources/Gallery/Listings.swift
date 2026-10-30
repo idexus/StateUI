@@ -11487,6 +11487,7 @@ enum Listings {
         @State private var user = ""
         @State private var newPassword = ""
         @State private var signInCode = ""
+        @State private var outlined = ""
 
         var body: some View {
             VStack {
@@ -11563,6 +11564,13 @@ enum Listings {
                 TextField($signInCode)
                     .placeholder("a code sent to you")
                     .inputPurpose(.oneTimeCode)
+
+                // An outline of the application's own, in place of the
+                // platform's frame, and the shape the field stands in.
+                TextField($outlined)
+                    .placeholder("an outlined capsule")
+                    .stroke(Palette.accent)
+                    .lineWidth(1.5)
             }
         }
         """#,

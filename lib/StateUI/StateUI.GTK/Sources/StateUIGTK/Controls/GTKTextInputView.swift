@@ -12,6 +12,9 @@ protocol GTKTextInputView: GTKView {
     /// What the view does when the user changes its words, handed all of them.
     var onTextChanged: ((String) -> Void)? { get set }
 
+    /// The class drawing the outline and the shape the tree gives the view; nil for the platform's.
+    var outlineClass: String? { get set }
+
     /// The words the view shows now, read back from GTK.
     var text: String { get }
 
@@ -60,5 +63,18 @@ extension GTKTextInputView {
         case .url: GTK_INPUT_PURPOSE_URL
         }
         return (GtkInputHints(rawValue: hints), purpose)
+    }
+}
+
+extension GTKTextInputView {
+    /// The outline the tree gives the view - its color and width - and the shape its ground and outline follow, as a
+    /// class of the host's style sheet over the theme's frame; the theme's where it gives none.
+    /// Design: docs/design/platforms/gtk/controls.md#a-fields-outline
+    func setOutline(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
+        let drawn = GTKStyleSheet.box(
+            fill: nil, stroke: stroke.flatMap { GTKBrush($0).firstColor },
+            lineWidth: stroke == nil ? nil : BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth),
+            shape: shape.map(BoxArithmetic.outline))
+        swapClass(&outlineClass, to: drawn)
     }
 }

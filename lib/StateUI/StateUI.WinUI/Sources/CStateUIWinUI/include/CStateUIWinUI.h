@@ -1022,6 +1022,11 @@ void stateui_winui_search_set_box(StateUIObjectRef search, bool readOnly, int32_
 /// A search box's placeholder in `argb` where `colored`, else the theme's.
 void stateui_winui_search_set_placeholder_color(StateUIObjectRef search, uint32_t argb, bool colored);
 
+/// A field's outline `lineWidth` DIPs wide in every state of its own - the theme's for none - and its corners'
+/// radius, less than 0 for the theme's.
+void stateui_winui_field_set_outline(StateUIObjectRef field, StateUIBrush stroke, double lineWidth,
+                                     double cornerRadius);
+
 /// Its words across it (StateUI's `TextAlignment`) and its placeholder's color, the platform's where not
 /// `placeholderColored`.
 void stateui_winui_field_set_look(StateUIObjectRef field, int32_t alignment, uint32_t placeholderArgb,

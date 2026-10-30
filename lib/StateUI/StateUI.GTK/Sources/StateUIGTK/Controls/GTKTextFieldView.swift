@@ -12,6 +12,7 @@ import CStateUIGTK
 class GTKTextFieldView: GTKView, GTKTextInputView {
     /// What the field does when its words change, handed all of them.
     var onTextChanged: ((String) -> Void)?
+    var outlineClass: String?
 
     /// What the field does when the user presses Enter in it.
     var onSubmitted: (() -> Void)?

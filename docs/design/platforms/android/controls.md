@@ -445,3 +445,10 @@ the family - the platform's where it names none - at the weight's number
 weight, the view's style bits slant the platform's face. A run's weight is a
 `TypefaceSpan` of such a typeface. Digits of one width are the font feature
 `tnum`: a view's `setFontFeatureSettings`, a run's `StateUIDigitsSpan`.
+
+## A field's outline
+
+A field the tree outlines or shapes (`stroke`, `lineWidth`, `shape`) is drawn
+as a shape in place of the theme's underline - its ground, its outline and its
+corners, fitted to each size it is placed at - and with neither stands on its
+ground alone, or on the theme's look.

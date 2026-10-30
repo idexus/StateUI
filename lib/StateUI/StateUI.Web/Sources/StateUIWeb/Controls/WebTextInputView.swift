@@ -57,6 +57,17 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         attribute("disabled", enabled ? nil : "")
     }
 
+    /// The outline the tree gives the field - its color and width - and the shape its ground and outline follow, over
+    /// the page's own frame; the page's where it gives none. Only the border and the corners: the background
+    /// shorthand would clear the picture the page's look draws in a field.
+    /// Design: docs/design/platforms/web/look.md#a-fields-outline
+    func setOutline(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
+        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
+        let color = WebCSS.color(HostBrush(stroke).firstColor) ?? "currentColor"
+        style("border", stroke == nil ? nil : width > 0 ? "\(WebCSS.pixels(width)!) solid \(color)" : "none")
+        style("border-radius", shape == nil ? nil : WebCSS.corners(BoxArithmetic.outline(shape)) ?? "0")
+    }
+
     /// An editor given a ground of its own stands in it with no frame of the page's look, as the platforms' editors
     /// draw none.
     /// Design: docs/design/platforms/web/look.md#a-views-background

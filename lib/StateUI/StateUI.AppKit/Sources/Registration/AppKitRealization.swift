@@ -14,6 +14,9 @@ enum AppKitRealization {
     /// The entries the Mac will not have; none.
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []
 
+    /// Why AppKit's search field takes no outline: it draws its own rounded field, which no outline replaces.
+    static let searchFieldsOwnFrame = "AppKit's search field draws its own rounded field, which no outline replaces."
+
     /// Why a reader's steps reach no element AppKit shows through a view of its own.
     static let ownSteps = "VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - "
         + "which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps."
@@ -82,6 +85,9 @@ enum AppKitRealization {
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: ProgressBarContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: ScrollViewContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: SearchFieldContract.self, reason: Self.ownSteps),
+        .notPlanned(BorderElementContract.shape, on: SearchFieldContract.self, reason: Self.searchFieldsOwnFrame),
+        .notPlanned(BorderElementContract.stroke, on: SearchFieldContract.self, reason: Self.searchFieldsOwnFrame),
+        .notPlanned(BorderElementContract.lineWidth, on: SearchFieldContract.self, reason: Self.searchFieldsOwnFrame),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: SliderContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: StepperContract.self, reason: Self.ownSteps),
         .notPlanned(VisualElementContract.accessibilityAdjusted, on: SwitchContract.self, reason: Self.ownSteps),

@@ -13,6 +13,9 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
     private(set) var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
 
     let scrollView = NSScrollView()
+
+    /// The outline and the shape the tree gives the editor, drawn on its scroll view.
+    let outline = AppKitFieldOutline()
     let textView = NSTextView()
     private let placeholder = AppKitTextEditorPlaceholder()
 
@@ -106,6 +109,18 @@ final class AppKitTextEditorView: NSView, NSTextViewDelegate {
                 options: [.usesLineFragmentOrigin, .usesFontLeading]).height
             : line
         return ceil(max(used, line) + textView.textContainerInset.height * 2)
+    }
+
+    /// Outlines and shapes the editor as the tree says.
+    /// Design: docs/design/platforms/appkit/registrations.md#a-fields-outline
+    func setOutline(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
+        outline.set(stroke: stroke, lineWidth: lineWidth, shape: shape)
+        needsLayout = true
+    }
+
+    override func layout() {
+        super.layout()
+        outline.draw(on: scrollView.layer, size: scrollView.bounds.size, ownRadius: Self.cornerRadius)
     }
 
     func apply(

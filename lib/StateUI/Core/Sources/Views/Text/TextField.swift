@@ -49,7 +49,8 @@ extension TextFieldProperties {
 ///
 /// The handler receives the whole text as it stands after the edit. It runs
 /// beside a binding rather than instead of one, so a field may have both.
-public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentElement, TextFieldProperties {
+public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentElement, BorderElement,
+    TextFieldProperties {
     /// The node this control describes.
     public var node: Node
 

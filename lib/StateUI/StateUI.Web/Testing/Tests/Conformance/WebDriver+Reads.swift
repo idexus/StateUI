@@ -388,6 +388,7 @@ extension WebDriver {
     private func fieldHolds(_ property: Prop, _ field: WebTextInputView) throws -> HostValue?? {
         let e = field.node
         switch property {
+        case .stroke, .lineWidth, .shape: return try boxHolds(property, field)
         case .text: return try WebBrowser.evaluate("e.value", on: e)?.propValue ?? "".propValue
         case .placeholder: return .some(try WebBrowser.evaluate("e.placeholder || null", on: e)?.propValue)
         case .isReadOnly: return try WebBrowser.truth("e.readOnly", on: e).propValue

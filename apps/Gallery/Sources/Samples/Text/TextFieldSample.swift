@@ -13,6 +13,7 @@ struct TextFieldSample: SampleContent, ExampleContent {
     @State private var user = ""
     @State private var newPassword = ""
     @State private var signInCode = ""
+    @State private var outlined = ""
     // listing: end
 
     static let id = "textField"
@@ -120,6 +121,16 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Sign-in code")
                 .placeholder("a code sent to you")
                 .inputPurpose(.oneTimeCode)
+
+            // An outline of the application's own, in place of the
+            // platform's frame, and the shape the field stands in.
+            TextField($outlined)
+                .accessibilityIdentifier("entry.outlined")
+                .accessibilityLabel("Outlined")
+                .placeholder("an outlined capsule")
+                .stroke(Palette.accent)
+                .lineWidth(1.5)
+                .shape(.capsule)
         }
         .spacing(12)
     }
