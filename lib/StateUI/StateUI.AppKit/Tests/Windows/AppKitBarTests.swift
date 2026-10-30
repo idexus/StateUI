@@ -222,7 +222,8 @@ final class AppKitBarTests: XCTestCase {
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let settle = { (done: () -> Bool) in
-            for _ in 0..<100 where !done() {
+            for _ in 0..<100 {
+                guard !done() else { break }
                 RunLoop.current.run(until: Date().addingTimeInterval(0.02))
                 renderer.runtime.pump.turn()
                 renderer.displayFrameForTesting()
