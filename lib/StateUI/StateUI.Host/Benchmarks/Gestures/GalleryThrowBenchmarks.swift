@@ -26,7 +26,7 @@ final class GalleryThrowBenchmarks: XCTestCase {
         }
 
         XCTAssertEqual(work, Work(
-            renders: 1, built: 1, walks: 0, texts: 0, made: 0, applied: 0, arranged: 1, presented: 26, placed: 300,
+            renders: 1, built: 1, walks: 0, texts: 0, made: 0, applied: 0, arranged: 0, presented: 28, placed: 300,
             left: 0))
     }
 }

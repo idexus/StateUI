@@ -647,11 +647,12 @@
 
     /// Presents `changed` on a frame and says what that asks around the element, the same on every host: its own
     /// presentation; its parent's arrangement where it moved in its slot or shows no view of its own, being drawn
-    /// by its parent's; the window's chrome where the chrome shows what moved.
-    /// Design: docs/design/host/runtime.md#one-frame
+    /// by its parent's; the window's chrome where the chrome shows what moved. A phase layout's phase moves its
+    /// children through its run's places alone.
+    /// Design: docs/design/host/tree.md#a-frame-arranges-what-moved
     private func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
         native.presentFrame(changed)
-        let moved = changed.subtracting(ownPlacementRun)
+        let moved = changed.subtracting(ownPlacementRun).subtracting([.phase])
         return FrameImpact(
             arrangesChildren: !moved.subtracting(Self.drawnOverProperties).isEmpty,
             arrangement: !native.presentsView || !moved.isDisjoint(with: Self.arrangedProperties),
