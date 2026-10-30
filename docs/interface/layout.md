@@ -607,9 +607,13 @@ settled on, and a write moves the run. `.onItemActivated` hears the card in
 front opened - a tap on it - with its identity, as a list's item is, and
 `.onPositionChanged` another card coming to
 the middle; a swipe carries the card in front with it, however big the room
-draws the cards, and `.throwing(_:)` says how one let go with speed goes on, as a
-[motion layout's](#a-motion-layout) input does, and `.itemSize(width:height:)`,
-`.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
+draws the cards, and `.throwMotion(_:)` says how one let go with speed goes on, as a
+[motion layout's](#a-motion-layout) does. `.itemBody(_:)` makes every card a
+body of the gallery's world, as `.layoutBody(_:)` makes one view of a motion
+layout - `.itemBody(.followsLayout(.spring(response: .milliseconds(300),
+damping: 0.8)))` and each card lags a breath behind the turn and settles back
+onto its place - and `.itemSize(width:height:)`, `.isSwipeEnabled`,
+`.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size - a `.height`, or a `.fill` row of a `Grid`.
 No view is built again while the run moves. Laid out right to left, the cards
 stand in reading order, as a row's views do: the next one on the left, a

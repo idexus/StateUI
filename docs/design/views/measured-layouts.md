@@ -121,7 +121,9 @@ goes out the way the hand goes and tucks under the next, and it is swiped a
 card at a time (motion-layout.md, a swipe); its cards behind are shaded, never
 faded, as a faded one would show the card under it. A change of shape is read in the
 gallery's body, so it is a change of the description: the cards land where the
-new shape says.
+new shape says. A body the gallery gives its items (`itemBody`) is each card
+holder's `layoutBody`, so every card is a body of the gallery's world as a
+motion layout's view is (motion-layout.md, bodies).
 
 - The asked position is a closure, not a read: read in the gallery's body it
   would make that body a reader, and every card crossed would describe the

@@ -576,6 +576,26 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(shown.wrappedValue, 4, "a card past the last is the last")
     }
 
+    /// EACH CARD FOLLOWS ITS PLACE AS THE BODY ITS GALLERY GIVES ITS ITEMS: carried a card along by the hand, a
+    /// card with a body stands behind where a card with none stands.
+    func testEachCardFollowsItsPlaceAsTheBodyItIsGiven() throws {
+        func carried(_ body: LayoutBody?) throws -> Double {
+            Renderer.shared.clearInvalidation()
+            Renderer.shared.clearStates()
+            let renders = Renders()
+            func tree() -> Node { (body.map { gallery(5).itemBody($0) } ?? gallery(5)).node }
+            _ = laid(renders, tree)
+            hand(renders, tree, .began)
+            hand(renders, tree, .changed, moved: Point(-reach, 0))
+            let run = try XCTUnwrap(standing(try XCTUnwrap(placer), as: PlacedRun.self))
+            return try XCTUnwrap(run.placements.dropFirst().first).bounds.x
+        }
+        let placed = try carried(nil)
+        let following = try carried(.followsLayout(.spring(response: .milliseconds(300), damping: 0.8)))
+
+        XCTAssertGreaterThan(abs(following - placed), 1, "behind its place as the hand carries it")
+    }
+
     /// A ROOM THAT GROWS KEEPS THE CARD IN FRONT: the run stands on the
     /// phase, which a room does not move - a phone turned shows the card the
     /// user left there.

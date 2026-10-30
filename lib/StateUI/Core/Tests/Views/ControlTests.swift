@@ -877,14 +877,15 @@ final class ControlTests: XCTestCase {
             "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
         ]
         // A map's markers are rebuilt with the map; a composed view's configuration changes what it builds, which a
-        // state carried past the tree cannot - a gallery's shape and fading, a list's layout, a layout's drag, its
-        // mirror and its world.
+        // state carried past the tree cannot - a gallery's shape, fading and its cards' body, a list's layout, a
+        // layout's drag, its mirror and its world.
         let perControl = [
             "Views/Mixins/TextualElement.swift|text:String",
             "Views/Controls/Map.swift|label:String", "Views/Controls/Map.swift|subtitle:String",
             "Views/Controls/Map.swift|type:MarkerType",
             "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
             "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
+            "Views/Collections/GalleryView.swift|itemBody:LayoutBody",
             "Views/Collections/GalleryView.swift|throwMotion:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
             "Views/Layouts/MotionLayout.swift|itemDrag:ItemDragStart",
             "Views/Layouts/MotionLayout.swift|mirrorsRightToLeft:Bool",

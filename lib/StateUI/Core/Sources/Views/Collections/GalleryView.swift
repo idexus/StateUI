@@ -83,6 +83,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// How far the fade goes, where the author said. See `fade`.
     private var fades: Double?
 
+    /// How each card moves as a body of the gallery's world, where the author said. See `itemBody`.
+    private var cardBody: LayoutBody?
+
     /// One card per item, the item its identity.
     ///
     ///     GalleryView(covers) { cover in
@@ -241,6 +244,19 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         return copy
     }
 
+    /// How each card moves as a body of the gallery's world: a body following its place lags behind it as the
+    /// gallery turns, and settles back onto it.
+    ///
+    ///     .itemBody(.followsLayout(.spring(response: .milliseconds(300), damping: 0.8)))
+    ///
+    /// - Parameter body: the body every card is, as `layoutBody(_:)` gives one view of a motion layout.
+    /// - Returns: the gallery, its cards moving so.
+    public func itemBody(_ body: LayoutBody) -> Self {
+        var copy = self
+        copy.cardBody = body
+        return copy
+    }
+
     /// Whether the user may swipe at all. A gallery that says no still moves
     /// when its position is assigned.
     ///
@@ -348,6 +364,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         let make = source.card
         let shape = look
         let (width, height) = (cardWidth, cardHeight)
+        let body = cardBody
 
         // The position, read in a closure: read here, it would make this body a reader, and every card crossed
         // would rebuild the deck.
@@ -358,7 +375,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             // The face in a holder of its own, so the press on it is not overwritten by the placement written on
             // the holder every frame. The holder is the card's size: a card the run has not placed yet would fill
             // the room.
-            Grid {
+            let card = Grid {
                 AnyView(node: make(item))
                     // Which card is pressed, never which is in front.
                     .scale(dips.wrappedValue == item[keyPath: path] ? Self.dip : 1)
@@ -366,6 +383,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             }
             .width(width)
             .height(height)
+            if let body { card.layoutBody(body) } else { card }
         } placements: { room, parameters, segmentStart in
             (0..<count).map { place(Double($0) - parameters, setOut: Double($0) == segmentStart, count, room, shape) }
         }
