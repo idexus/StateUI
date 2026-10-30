@@ -188,9 +188,10 @@ final class AppKitDriver: HostDriver {
     /// Where the element's view stands in its window, as AppKit placed it - measured down from the window's top.
     func place(of element: MountedElement) throws -> Rect {
         layOutWindows()
-        guard let view = (element.native as? AppKitElement)?.view, let window = view.window,
-              let content = window.contentView
-        else { throw DriverCannot("read where \(element.type.name) stands") }
+        guard let view = (element.native as? AppKitElement)?.view else {
+            throw DriverCannot("read where \(element.type.name) stands")
+        }
+        guard let content = view.window?.contentView else { throw NotPlaced(element) }
         let frame = view.convert(view.bounds, to: nil)
         return Rect(
             x: frame.minX, y: content.bounds.height - frame.maxY, width: frame.width, height: frame.height)

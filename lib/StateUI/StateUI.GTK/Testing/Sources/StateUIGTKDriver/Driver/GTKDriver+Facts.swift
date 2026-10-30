@@ -60,9 +60,10 @@ extension GTKDriver {
     }
 
     func place(of element: MountedElement) throws -> Rect {
-        guard let view = (element.native as? GTKElement)?.view, let root = gtk_widget_get_root(view.widget) else {
+        guard let view = (element.native as? GTKElement)?.view else {
             throw DriverCannot("read where \(element.type.name) stands")
         }
+        guard let root = gtk_widget_get_root(view.widget) else { throw NotPlaced(element) }
         renderer?.layOut()
         var bounds = graphene_rect_t()
         let window = UnsafeMutableRawPointer(root).assumingMemoryBound(to: GtkWidget.self)

@@ -136,7 +136,7 @@
     func colors(of element: MountedElement, at points: [Point]) throws -> [Color?]
 
     /// Where `element` stands in its window, as the toolkit placed its view - an item in a collection's cell
-    /// included.
+    /// included; `NotPlaced` where its view stands in no window yet.
     func place(of element: MountedElement) throws -> Rect
 
     /// What the host wrote to its log, a line a message, since it started.

@@ -437,9 +437,10 @@ final class UIKitDriver: HostDriver {
 
     /// Where the element's view stands in its window, as UIKit placed it.
     func place(of element: MountedElement) throws -> Rect {
-        guard let view = (element.native as? UIKitElement)?.view, view.window != nil else {
+        guard let view = (element.native as? UIKitElement)?.view else {
             throw DriverCannot("read where \(element.type.name) stands")
         }
+        guard view.window != nil else { throw NotPlaced(element) }
         let frame = view.convert(view.bounds, to: nil)
         return Rect(x: frame.minX, y: frame.minY, width: frame.width, height: frame.height)
     }
