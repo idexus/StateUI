@@ -98,4 +98,4 @@ Popover 4
 TextualElement 2
 Link 2
 TextAndIconElement 2
-BottomBar 4
+BottomBar 5

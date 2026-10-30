@@ -78,6 +78,37 @@
                 try s.settle { try abs(standing() - (end + 60)) < 1 }
                 s.expect(abs(try standing() - (end + 60)) < 1, true, "at its end still: \(end) to \(try standing())")
             },
+            ConformanceCase("aListAtItsEndStaysThereAsTheBarGrows", proves: [
+                Covered(BottomBarContract.self),
+            ], needs: [Covered(ItemsViewContract.scrollTo), Covered(ButtonContract.clicked)]) { s in
+                let tall = State(wrappedValue: 40.0)
+                let aim = Aim(ItemsView<Int>.self)
+                s.start(reducesMotion: true) {
+                    Grid {
+                        ItemsView(0..<60) { Text("Item \($0)").padding(12) }
+                            .aim(aim)
+                            .id("list")
+                    }
+                    .ignoresSafeArea(.all)
+                    .title("Foot")
+                    .bottomBar {
+                        Button("To the end").onClicked(.ignoreWhileRunning) { try await aim.scrollTo(59, anchor: .end) }
+                            .height(tall.wrappedValue)
+                            .id("go")
+                    }
+                }
+                s.settle { (try? s.item("0", of: s.element("list"))) != nil }
+                let foot = { (try? s.place(of: s.item("59", of: s.element("list")))).map { $0.y + $0.height } }
+                let resting = { try foot().map { abs($0 - (try s.place(of: s.element("go")).y)) < 1 } ?? false }
+                try s.perform(.activate, on: s.element("go"))
+                try s.settle { try resting() }
+
+                tall.wrappedValue = 100
+                try s.settle { try s.place(of: s.element("go")).height == 100 }
+                try s.settle { try resting() }
+                s.expect(try resting(), true,
+                         "the last item on the grown bar: \(String(describing: foot())), \(try s.place(of: s.element("go")))")
+            },
             ConformanceCase("aListUnderItsBottomBarBringsItsLastItemClearAboveIt", proves: [
                 Covered(BottomBarContract.self),
             ], needs: [Covered(ItemsViewContract.scrollTo), Covered(ButtonContract.clicked)]) { s in
