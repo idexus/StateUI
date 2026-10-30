@@ -757,6 +757,7 @@ extension PhaseLayout {
             switch motion.kind {
             case .eased(_, let curve): return .eased(length, curve)
             case .spring(_, let damping): return .spring(response: length, damping: damping)
+            case .glide: return .glide(within: length)
             case .inherited, .none, .custom: return .none
             }
         }

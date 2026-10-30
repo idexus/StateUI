@@ -32,6 +32,7 @@ enum StateLaw {
         case .eased(let milliseconds, let curve): [2, Double(milliseconds), Double(curve.rawValue)]
         case .spring(let milliseconds, let damping): [3, Double(milliseconds), damping]
         case .custom: [StateLaw.custom, 0, 0]
+        case .glide(let milliseconds): [5, Double(milliseconds), 0]
         }
     }
 
@@ -48,6 +49,7 @@ enum StateLaw {
             return .eased(.milliseconds(length), curve ?? .cubicOut)
         case 3 where lanes.count > 2: return .spring(response: .milliseconds(length), damping: third)
         case 4: return .custom
+        case 5: return .glide(within: .milliseconds(length))
         default: return Motion.none
         }
     }

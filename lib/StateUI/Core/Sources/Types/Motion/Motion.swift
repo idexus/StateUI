@@ -37,6 +37,9 @@ public struct Motion: Equatable, Sendable {
 
         /// A spring's response, in milliseconds, and its damping.
         case spring(milliseconds: UInt32, damping: Double)
+
+        /// A glide setting out at the value's speed, in milliseconds the longest it takes.
+        case glide(milliseconds: UInt32)
     }
 
     /// What this motion is.
@@ -46,7 +49,7 @@ public struct Motion: Equatable, Sendable {
     /// time.
     @_spi(Host) public var milliseconds: UInt32 {
         switch kind {
-        case .eased(let milliseconds, _), .spring(let milliseconds, _): milliseconds
+        case .eased(let milliseconds, _), .spring(let milliseconds, _), .glide(let milliseconds): milliseconds
         case .inherited, .none, .custom: 0
         }
     }
@@ -55,7 +58,7 @@ public struct Motion: Equatable, Sendable {
     /// own, or the inherited one before it is resolved.
     @_spi(Host) public var animates: Bool {
         switch kind {
-        case .eased, .spring: true
+        case .eased, .spring, .glide: true
         case .inherited, .none, .custom: false
         }
     }
@@ -118,6 +121,15 @@ public struct Motion: Equatable, Sendable {
         let milliseconds = Motion.milliseconds(of: length)
 
         return milliseconds == 0 ? .none : Motion(kind: .eased(milliseconds: milliseconds, curve: curve))
+    }
+
+    /// A glide: the value sets out at the speed it has and slows onto its destination on `cubicOut`, as long as that
+    /// speed takes there - never shorter than `HostMotionLaw.shortestGlide`, nor longer than `longest`.
+    /// Design: docs/design/types/motion.md#a-glide
+    static func glide(within longest: Duration) -> Motion {
+        let milliseconds = Motion.milliseconds(of: longest)
+
+        return milliseconds == 0 ? .none : Motion(kind: .glide(milliseconds: milliseconds))
     }
 
     /// A mass on a spring, which answers a change rather than timing it.

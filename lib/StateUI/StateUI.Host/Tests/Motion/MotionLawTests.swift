@@ -56,6 +56,39 @@ final class MotionLawTests: XCTestCase {
         }
     }
 
+    /// A GLIDE SETS OUT AT ITS SPEED AND SLOWS ONTO ITS DESTINATION: on `cubicOut`, as long as that speed takes there -
+    /// three times the way over the speed - its curve untouched.
+    func testAGlideSetsOutAtItsSpeedAndSlowsOntoItsDestination() {
+        let sample = { (elapsed: Double) in
+            HostMotionLaw.sample(
+                .glide(within: .milliseconds(600)), elapsed: elapsed, from: [0], destination: [100], velocity: [1_000])
+        }
+
+        XCTAssertEqual(sample(0).velocity[0], 1_000, accuracy: 1e-9, "at the speed it had")
+        XCTAssertEqual(sample(150).value[0], 87.5, accuracy: 0.01, "on the curve: 100 at 1000 a second is 300 ms")
+        XCTAssertFalse(sample(299).rested)
+        XCTAssertEqual(sample(300), HostMotionSample(value: [100], velocity: [0], rested: true))
+    }
+
+    /// A GLIDE IS HELD TO ITS SHORTEST AND ITS LONGEST: thrown too fast for its way it still takes the shortest, too
+    /// slow its longest - setting out at its speed either way; set out still or away it takes half its longest; each
+    /// lane by its own way, the glide at rest when the last is.
+    func testAGlideIsHeldToItsShortestAndItsLongest() {
+        let glide = Motion.glide(within: .milliseconds(600))
+        let sample = { (elapsed: Double, speed: [Double]) in
+            HostMotionLaw.sample(glide, elapsed: elapsed, from: [0, 0], destination: [10, 10], velocity: speed)
+        }
+
+        XCTAssertEqual(sample(0, [100_000, 10]).velocity, [100_000, 10])
+        XCTAssertEqual(sample(HostMotionLaw.shortestGlide, [100_000, 100_000]).rested, true, "the shortest")
+        XCTAssertFalse(sample(599, [10, 10]).rested, "the longest")
+        XCTAssertTrue(sample(600, [10, 10]).rested)
+        XCTAssertFalse(sample(299, [0, -50]).rested, "half the longest")
+        XCTAssertTrue(sample(300, [0, -50]).rested)
+        XCTAssertEqual(sample(200, [100_000, 0]).value[0], 10, accuracy: 1e-9, "one lane there")
+        XCTAssertFalse(sample(200, [100_000, 0]).rested, "while the other goes on")
+    }
+
     func testASpringAnswersTheSameValueForTheSameInstant() {
         let first = HostMotionLaw.sample(
             .spring(response: .milliseconds(260), damping: 0.8),
@@ -104,9 +137,10 @@ final class MotionLawTests: XCTestCase {
             }
 
             let eased = if case .eased = motion.kind { true } else { false }
+            let glides = if case .glide = motion.kind { true } else { false }
             for lane in animation.from.indices {
                 XCTAssertEqual(start.value[lane], animation.from[lane], accuracy: 1e-12, named)
-                if animation.velocity[lane] != 0, eased {
+                if animation.velocity[lane] != 0, eased || glides {
                     XCTAssertEqual(start.velocity[lane], animation.velocity[lane], accuracy: 1e-9, named)
                 }
             }
@@ -196,6 +230,14 @@ final class MotionLawTests: XCTestCase {
             motion: .eased(.milliseconds(250), .sineInOut),
             from: [1], destination: [0], velocity: [-4],
             instants: [0, 25, 125, 249, 250]))
+
+        // Glides: thrown on, held to its shortest and to its longest, set out still and away.
+        let glide: [Double] = [0, 16, 40, 80, 150, 299, 300, 600, 700]
+        for velocity in [[1_000.0, 0], [100_000, -10], [10, 900]] {
+            animations.append(Animation(
+                motion: .glide(within: .milliseconds(600)), from: [0, 50], destination: [100, 0], velocity: velocity,
+                instants: glide))
+        }
 
         // Springs: critically damped from rest and moving, ringing, crawling.
         let spring: [Double] = [0, 16, 50, 100, 200, 400, 800, 1_600, 3_200]

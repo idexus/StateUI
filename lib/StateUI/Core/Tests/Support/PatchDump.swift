@@ -116,6 +116,7 @@ enum PatchDump {
         case .inherited: return said + " moves as the application does"
         case .spring(let milliseconds, _): return said + " moves on a spring over \(milliseconds)ms"
         case .eased(let milliseconds, let curve): return said + " moves over \(milliseconds)ms \(curve)"
+        case .glide(let milliseconds): return said + " glides within \(milliseconds)ms"
         case .none, .custom: return said + " moves at once"
         }
     }
@@ -125,6 +126,7 @@ enum PatchDump {
         switch motion.kind {
         case .spring(let milliseconds, let damping): "springs over \(milliseconds)ms, damping \(damping)"
         case .eased(let milliseconds, let curve): "travels over \(milliseconds)ms \(curve)(\(curve.rawValue))"
+        case .glide(let milliseconds): "glides within \(milliseconds)ms"
         case .inherited, .none, .custom: "travels over 0ms \(Easing.cubicOut)(\(Easing.cubicOut.rawValue))"
         }
     }

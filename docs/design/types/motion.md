@@ -31,11 +31,24 @@ can interrupt, such as a card being dragged or a value still being chosen.
 
 ## Every law arrives
 
-Both laws arrive at what the tree said, and that is why there are only two.
-A law with no destination - a throw, bled off, coming to rest wherever its
-speed runs out - would leave the screen showing a value nothing described,
-and because an absent field means unchanged, nothing could ever put it
-right. The physics of a throw lives where a throw is: in the scroller.
+Every law arrives at what the tree said, a glide too. A law with no
+destination - a throw, bled off, coming to rest wherever its speed runs out -
+would leave the screen showing a value nothing described, and because an
+absent field means unchanged, nothing could ever put it right. A throw
+names where it comes to rest first, and glides there.
+
+## A glide
+
+A glide sets out at the speed the value has and slows onto its destination
+on `cubicOut`, as long as that speed takes there - three times the way over
+the speed, where the curve sets out at the value's own speed - never shorter
+than 80 milliseconds nor longer than its longest; held to either, it is bent
+to set out at its speed as an eased lane already moving is. A lane setting
+out still, or away from its destination, takes half its longest. Each lane
+glides by its own way, and the glide rests when the last lane does. It is
+the law a phase layout's throw goes on by, the input's eased motion going on
+from the hand's speed; on the image it is `[5, longest, 0]`. The law is the
+library's own for now: no public spelling names it yet.
 
 ## Custom animates in an engine
 

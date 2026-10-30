@@ -4,7 +4,7 @@
 // The platform's C maths library, for the spring's `exp`, `sin` and `cos`.
 import StateUIFoundation
 
-// The two motion laws as numbers, in closed form in the time since an animation
+// The motion laws as numbers, in closed form in the time since an animation
 // began. Every runtime animates with these; `MotionLawTests` holds them to
 // their promises.
 // Design: docs/design/core/journeys.md#motion-laws
@@ -21,7 +21,7 @@ import StateUIFoundation
     public let rested: Bool
 }
 
-/// The two motion laws, evaluated from the time since an animation began.
+/// The motion laws, evaluated from the time since an animation began.
 ///
 /// Time is in milliseconds, the unit of `Motion`'s numbers; a speed is per
 /// second, as a journey's is, told in and answered.
@@ -34,6 +34,9 @@ import StateUIFoundation
     /// How slow a lane is when it counts as still, per second: a thousandth of a unit
     /// a millisecond.
     public static let stillSpeed = 1.0
+
+    /// The shortest a glide takes, in milliseconds: a hand let go fast slows over no less.
+    public static let shortestGlide = 80.0
 
     /// The longest a spring animates, in milliseconds. A spring has no stated end;
     /// this keeps any animation from holding a display clock awake for ever.
@@ -86,6 +89,10 @@ import StateUIFoundation
                 from: from,
                 destination: destination,
                 velocity: velocity)
+        case .glide(let milliseconds):
+            sample = glide(
+                longest: Double(milliseconds), elapsed: elapsed, from: from, destination: destination,
+                velocity: velocity)
         case .inherited, .none, .custom:
             sample = landed(destination)
         }
@@ -134,6 +141,33 @@ import StateUIFoundation
         }
 
         return HostMotionSample(value: value, velocity: speed, rested: false)
+    }
+
+    /// A glide: each lane on `cubicOut` over the length that sets it out at the speed it had, held to
+    /// `shortestGlide` and `longest` - where held, bent to set out at that speed as an eased lane is; a lane setting
+    /// out still, or away from its destination, over half of `longest`.
+    /// Design: docs/design/types/motion.md#a-glide
+    private static func glide(
+        longest: Double, elapsed: Double, from: [Double], destination: [Double], velocity: [Double]
+    ) -> HostMotionSample {
+        let setsOut = slope(.cubicOut, at: 0)
+        var value = Array(repeating: 0.0, count: from.count)
+        var speed = value
+        var rested = true
+
+        for lane in value.indices {
+            let span = destination[lane] - from[lane]
+            let length = velocity[lane] * span > 0
+                ? min(max(setsOut * abs(span / velocity[lane]), shortestGlide), longest) : longest / 2
+            let one = eased(
+                length: length, curve: .cubicOut, elapsed: elapsed, from: [from[lane]], destination: [destination[lane]],
+                velocity: [velocity[lane]])
+            value[lane] = one.value[0]
+            speed[lane] = one.velocity[0]
+            rested = rested && one.rested
+        }
+
+        return rested ? landed(destination) : HostMotionSample(value: value, velocity: speed, rested: false)
     }
 
     /// A mass on a spring, in closed form about the distance left rather than

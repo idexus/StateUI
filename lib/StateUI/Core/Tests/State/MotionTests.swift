@@ -32,6 +32,14 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(StateLaw.motion(of: [2, 300, 4]), .eased(.milliseconds(300), Easing(rawValue: 4) ?? .cubicOut))
     }
 
+    /// A glide lies on the image as its kind and its longest, and reads back as itself.
+    func testAGlideTravelsAsItsLongest() {
+        let glide = Motion.glide(within: .milliseconds(640))
+
+        XCTAssertEqual(StateLaw.lanes(of: glide), [5, 640, 0])
+        XCTAssertEqual(StateLaw.motion(of: StateLaw.lanes(of: glide)), glide)
+    }
+
     func testAChangedNumberTravelsAtTheApplicationsMotion() {
         let renders = Renders()
 
