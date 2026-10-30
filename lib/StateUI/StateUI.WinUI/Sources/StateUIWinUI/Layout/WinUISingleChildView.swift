@@ -18,7 +18,7 @@ class WinUISingleChildView: WinUILayoutView {
     private(set) var edge = ScrollEdge.automatic
 
     /// The page's scroller, whose rows going on the line follows.
-    private weak var scroller: WinUIScrollView?
+    private weak var scroller: WinUIPageScroller?
 
     /// The page's bar at its foot, beneath its bottom bar; nil while it holds no action.
     private(set) var toolbar: WinUIFootBarView?
@@ -26,7 +26,7 @@ class WinUISingleChildView: WinUILayoutView {
     /// Shows `bar` - the page's bottom bar - beneath its content, with `edge` while `scroller`'s rows go on past it;
     /// nil for none.
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
-    func showBottomBar(_ bar: WinUILayoutItem?, edge: ScrollEdge, scroller: WinUIScrollView?) {
+    func showBottomBar(_ bar: WinUILayoutItem?, edge: ScrollEdge, scroller: WinUIPageScroller?) {
         let held = bar?.view !== bottomBar?.view
         (bottomBar, self.edge, self.scroller) = (bar, edge, scroller)
         scroller?.standingChanged = { [weak self] in self?.showLine() }

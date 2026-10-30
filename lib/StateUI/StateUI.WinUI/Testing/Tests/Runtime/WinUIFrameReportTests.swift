@@ -117,13 +117,13 @@ final class WinUIFrameReportTests: XCTestCase {
 
             // A list asked to move before its first frames are composed stays: asked until it starts moving.
             host.settle {
-                if list.standingForTesting.offset.y > 0 { return true }
+                if list.standing.offset.y > 0 { return true }
                 list.scroll(to: "5", anchor: .nearest)
                 return false
             }
-            host.settle { list.standingForTesting.offset.y == 60 && heard.values.last?[5] == before[5] - 60 }
+            host.settle { list.standing.offset.y == 60 && heard.values.last?[5] == before[5] - 60 }
 
-            XCTAssertEqual(list.standingForTesting.offset.y, 60, "item 5 brought wholly into view")
+            XCTAssertEqual(list.standing.offset.y, 60, "item 5 brought wholly into view")
             XCTAssertEqual(heard.values.last?[5], before[5] - 60, "60 higher in its window")
             XCTAssertEqual(heard.values.last.map { Array($0.prefix(4)) }, Array(before.prefix(4)), "where it was in its cell")
         }

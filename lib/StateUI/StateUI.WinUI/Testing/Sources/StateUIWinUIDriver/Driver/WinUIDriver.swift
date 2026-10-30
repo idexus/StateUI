@@ -384,11 +384,11 @@ final class WinUIDriver: HostDriver {
     /// Scrolls the list to `target` as the user does, as far as it reaches: WinUI's compositor moves the view a moment
     /// later, so the act is done once the view stands there.
     private func scroll(_ items: WinUIItemsView, to target: Point) {
-        let reach = items.standingForTesting.reach
+        let reach = items.standing.reach
         let landing = Point(x: min(max(target.x, 0), reach.x), y: min(max(target.y, 0), reach.y))
         items.scrollForTesting(to: target)
         renderer?.settle {
-            let offset = items.standingForTesting.offset
+            let offset = items.standing.offset
             return abs(offset.x - landing.x) < 0.5 && abs(offset.y - landing.y) < 0.5
         }
     }

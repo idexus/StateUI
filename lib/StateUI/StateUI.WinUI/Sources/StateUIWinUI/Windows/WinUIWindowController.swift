@@ -58,7 +58,7 @@ final class WinUIWindowController {
             let holder = page.winUI.view as? WinUISingleChildView
             holder?.showBottomBar(
                 page.chromeBottomBar?.winUI.layoutItem, edge: page.chromeBottomBarEdge,
-                scroller: page.pageScroller?.winUI.view as? WinUIScrollView)
+                scroller: page.pageScroller?.winUI.view as? WinUIPageScroller)
             holder?.showToolbar(page.chromeBottomActions)
         }
     }
