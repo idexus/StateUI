@@ -9,7 +9,7 @@
 /// Design: docs/design/contracts/dictionary.md#marks
 enum AndroidRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
-    static let unrealized: [any ElementContract.Type] = [ToolbarLabelContract.self]
+    static let unrealized: [any ElementContract.Type] = []
 
     /// The entries this host leaves to the application, which registers its own control for each: the platform has
     /// no map of its own, and a map needs a provider and its key.
@@ -161,6 +161,9 @@ enum AndroidRealization {
         .partial(TextAndIconElementContract.showsText, on: ToolbarToggleContract.self,
             missing: "Android shows the words beside the picture only where the bar has room: an upright phone keeps the picture alone."),
         .complete(ToolbarToggleContract.toggled),
+        .complete(ToolbarLabelContract.icon),
+        .complete(ToolbarLabelContract.text),
+        .complete(ToolbarGroupContract.barEdge),
         .complete(ToolbarGroupContract.order),
         .complete(ToolbarGroupContract.part),
         .complete(ToolbarGroupContract.hidesWithSidebar),

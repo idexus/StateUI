@@ -89,6 +89,20 @@ one, the theme's where the window's visible stack paints none or shows no
 bar (`AndroidRenderer.showStatusWords`, as the window shows and as a bar is
 shown again).
 
+## The bar at the foot
+
+A page's actions for the bar at its foot (`.toolbar(.bottom)`) stand on a
+toolbar of Android's own at the page's foot - the host's `StateUIBar`, as a
+stack's bar is, with no title and no navigation button - its menu written as
+the stack's bar's is: its groups in reading order, Android's bar having no
+leading side, those behind its overflow in its menu. It stands under the
+page's view bar (`.bottomBar`), beside the content as Android's bars stand,
+the two above the system's bars; the line along their top shows while rows
+go on past them. Words on a bar (`ToolbarLabel`), on either bar, are an item
+of the bar's menu holding a label as its action view - its title in the
+theme's secondary color of words, its picture before it - which nobody
+chooses; behind the overflow they are an item nobody can choose.
+
 ## A split view
 
 Each column stands under a bar of its own, Android's toolbar as a stack's

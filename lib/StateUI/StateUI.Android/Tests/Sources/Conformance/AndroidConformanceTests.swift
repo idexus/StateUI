@@ -73,6 +73,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testTitleView", testTitleView),
             ("testToolbarButton", testToolbarButton),
             ("testToolbarGroup", testToolbarGroup),
+            ("testToolbarLabel", testToolbarLabel),
             ("testToolbarToggle", testToolbarToggle),
             ("testWindow", testWindow),
             ("testAutomationElement", testAutomationElement),

@@ -15,8 +15,10 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.SubMenu;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import java.util.ArrayDeque;
 
 /**
@@ -35,12 +37,12 @@ final class StateUIMenus {
 
     /**
      * An entry's flags: not enabled, destructive, standing on the bar beside the title where room allows, showing
-     * its words there beside its picture where room allows, standing checked or not, checked, and - a submenu -
-     * standing for an item, counted among the items.
+     * its words there beside its picture where room allows, standing checked or not, checked, - a submenu -
+     * standing for an item, counted among the items, and words nobody chooses, a label on the bar.
      */
     // Swift: AndroidMenuMark
     static final int DISABLED = 4, DESTRUCTIVE = 8, ON_BAR = 16, WITH_TEXT = 32, CHECKABLE = 64, CHECKED = 128,
-            COUNTED = 2048;
+            COUNTED = 2048, LABEL = 4096;
 
     /** An item's shortcut: the modifiers held with its key, whose character stands in the entry's upper half. */
     // Swift: AndroidMenuModifier
@@ -86,6 +88,8 @@ final class StateUIMenus {
                     int withText = (entry & WITH_TEXT) != 0 ? MenuItem.SHOW_AS_ACTION_WITH_TEXT : 0;
                     added.setShowAsAction(
                             (entry & ON_BAR) != 0 ? MenuItem.SHOW_AS_ACTION_IF_ROOM | withText : MenuItem.SHOW_AS_ACTION_NEVER);
+                    // Words on the bar stand as a label of their own, which nobody chooses.
+                    if ((entry & LABEL) != 0 && (entry & ON_BAR) != 0) added.setActionView(label(context, added));
                     int chosen = item++;
                     added.setOnMenuItemClickListener(clicked -> {
                         StateUIHost.menuChose(view, chosen);
@@ -141,6 +145,22 @@ final class StateUIMenus {
         }
         if ((entry & DISABLED) != 0) drawable.setAlpha(dimmed);
         item.setIcon(drawable);
+    }
+
+    /** A bar's words: the item's title in the theme's secondary color of words, its picture before it. */
+    private static TextView label(Context context, MenuItem item) {
+        TextView label = new TextView(context);
+        label.setText(item.getTitle());
+        TypedArray attributes = context.obtainStyledAttributes(new int[] { android.R.attr.textColorSecondary });
+        label.setTextColor(attributes.getColorStateList(0));
+        attributes.recycle();
+        label.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, 14);
+        label.setGravity(Gravity.CENTER_VERTICAL);
+        int padding = Math.round(12 * context.getResources().getDisplayMetrics().density);
+        label.setPadding(padding, 0, padding, 0);
+        label.setCompoundDrawablesRelativeWithIntrinsicBounds(item.getIcon(), null, null, null);
+        label.setCompoundDrawablePadding(padding / 2);
+        return label;
     }
 
     /**

@@ -29,6 +29,8 @@ enum AndroidMenu {
         var onBar = false
         var withText = false
         var group = 0
+        /// Whether it is words nobody chooses (`ToolbarLabel`), a label where it stands on the bar.
+        var isLabel = false
         /// The entries of the menu it opens where it stands as one - a bar's button whose click opens its menu, or
         /// one behind the overflow; nil for an item that acts.
         var entries: [Entry]?
@@ -70,7 +72,7 @@ enum AndroidMenu {
             switch entry {
             case .item(let item):
                 let marks = (item.isEnabled ? 0 : disabled) | (item.isDestructive ? destructive : 0)
-                    | (item.onBar ? onBar : 0) | (item.withText ? withText : 0)
+                    | (item.onBar ? onBar : 0) | (item.withText ? withText : 0) | (item.isLabel ? label : 0)
                 guard let inner = item.entries else {
                     kinds.append(
                         marks | (item.isOn != nil ? checkable : 0) | (item.isOn == true ? checked : 0)
@@ -110,7 +112,7 @@ enum AndroidMenu {
     private static let disabled = AndroidMenuMark.disabled.rawValue, destructive = AndroidMenuMark.destructive.rawValue
     private static let onBar = AndroidMenuMark.onBar.rawValue, withText = AndroidMenuMark.withText.rawValue
     private static let checkable = AndroidMenuMark.checkable.rawValue, checked = AndroidMenuMark.checked.rawValue
-    private static let counted = AndroidMenuMark.counted.rawValue
+    private static let counted = AndroidMenuMark.counted.rawValue, label = AndroidMenuMark.label.rawValue
     private static let control = AndroidMenuModifier.control.rawValue, shift = AndroidMenuModifier.shift.rawValue
     private static let alt = AndroidMenuModifier.alt.rawValue
 }

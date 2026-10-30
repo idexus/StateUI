@@ -190,18 +190,19 @@
                         VStack { Text("Pushed") }.toolbar(.bottom) { ToolbarButton("Share").id("share") }
                     }
                 }
-                let foot = { try s.bar(of: try shownPage(s), at: .bottom) }
+                // Read as its reader meets it: where an item stands is `position`'s to prove.
+                let foot = { reading(try s.bar(of: try shownPage(s), at: .bottom)) }
 
-                try s.settle { try foot() == "[archive]|[clear]|" }
-                s.expect(try foot(), "[archive]|[clear]|", "at the page's foot, each at its position")
-                s.expect(try s.bar(of: try shownPage(s)), "|[save]|", "and none on the bar at its top")
+                try s.settle { try foot() == "[archive] [clear]|" }
+                s.expect(try foot(), "[archive] [clear]|", "at the page's foot")
+                s.expect(reading(try s.bar(of: try shownPage(s))), "[save]|", "and none on the bar at its top")
                 try s.perform(.activate, on: s.element("clear"))
                 s.settle { heard.values == ["clear"] }
                 s.expect(heard.values, ["clear"], "chosen there")
 
                 path.wrappedValue = [1]
-                try s.settle { try foot() == "|[share]|" }
-                s.expect(try foot(), "|[share]|", "a pushed page's own alone")
+                try s.settle { try foot() == "[share]|" }
+                s.expect(try foot(), "[share]|", "a pushed page's own alone")
             },
             ConformanceCase("aSplitViewsDetailItemsStandBesideTheDetailsOwn", proves: [
                 Covered(ToolbarGroupContract.part),

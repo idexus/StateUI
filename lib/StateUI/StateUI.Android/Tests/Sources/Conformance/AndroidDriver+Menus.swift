@@ -62,8 +62,11 @@ extension AndroidDriver {
     /// The bar `page` shows, as Android lays it out: its actions in its menu's order, each run of one group a
     /// group, then the entries behind its overflow. Android's bar has no leading side.
     func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
-        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
-        guard let bar = Self.bar(over: page) else { throw DriverCannot("read the bar of \(page.type.name)") }
+        let foot = ((page.native as? AndroidElement)?.view as? AndroidPageView)?.toolbar
+        if edge == .bottom, foot == nil { return BarWords.said(leading: [], trailing: [], overflow: []) }
+        guard let bar = edge == .bottom ? foot : Self.bar(over: page) else {
+            throw DriverCannot("read the bar of \(page.type.name)")
+        }
         var (groups, overflow, group): ([[String]], [String], Int32?) = ([], [], nil)
         for entry in Self.laidOut(bar) {
             guard let item = bar.items.first(where: { ($0.native as? AndroidElement)?.menuPlace == Int(entry.id) - 1 })
@@ -159,11 +162,12 @@ extension AndroidDriver {
         return ((each?.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar
     }
 
-    /// The bars of every stack under `root`.
+    /// The bars of every stack under `root`, and of every page's foot.
     private static func bars(in root: MountedElement) -> [AndroidBarView] {
         let view = (root.native as? AndroidElement)?.view
         let split = (view as? AndroidSplitView).map { [$0.drawer.bar] + ($0.framesDetail ? [$0.detailColumn.bar] : []) }
-        let own = (view as? AndroidNavigationView).map { [$0.bar] } ?? split ?? []
+        let foot = (view as? AndroidPageView)?.toolbar.map { [$0] }
+        let own = (view as? AndroidNavigationView).map { [$0.bar] } ?? split ?? foot ?? []
         return own + (root.children + root.slots).flatMap(bars(in:))
     }
 

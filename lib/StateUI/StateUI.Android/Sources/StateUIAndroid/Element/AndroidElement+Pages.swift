@@ -186,6 +186,8 @@ extension AndroidElement {
             action.onBar = onBar.contains { $0 === item }
             action.withText = action.onBar && item.showsActionWords
             action.group = groups.firstIndex { $0.contains { $0 === item } } ?? groups.count
+            // Words nobody chooses: a label on the bar, an entry nobody can choose behind its overflow.
+            if item.type == .toolbarLabel { (action.isLabel, action.isEnabled) = (true, action.onBar) }
             // A bar's button holding a menu: on the bar, its menu where its click opens it, else its action there and
             // its menu behind the overflow; behind the overflow, a submenu of what it offers there.
             // Design: docs/design/platforms/android/pages.md#the-bar
@@ -285,9 +287,17 @@ extension AndroidElement {
         (view as? AndroidSplitView).map { !$0.overlays && $0.isPresented } ?? false
     }
 
-    /// Shows a page's bottom bar - the one declared innermost on its path - at its foot.
+    /// Shows a page's bottom bar - the one declared innermost on its path - at its foot, above its bar at its foot
+    /// (`.toolbar(.bottom)`): Android's toolbar holding its actions as a stack's bar does.
+    /// Design: docs/design/platforms/android/pages.md#the-bar-at-the-foot
     func showBottomBar() {
-        (view as? AndroidPageView)?.showBottomBar(element.chromeBottomBar, edge: element.chromeBottomBarEdge)
+        guard let page = view as? AndroidPageView else { return }
+        var content = AndroidBarView.Content()
+        content.title = nil
+        let items = Self.fill(&content, with: element.chromeBottomActions, menus: [])
+        let toolbar = page.showBottomBar(
+            element.chromeBottomBar, edge: element.chromeBottomBarEdge, toolbar: items.isEmpty ? nil : content)
+        if let toolbar { Self.offer(items, on: toolbar) }
     }
 
     /// Refreshes the bar of every stack and the row of every tabbed view in this arrangement of pages.
