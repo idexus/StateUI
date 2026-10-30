@@ -5837,6 +5837,9 @@ enum Listings {
         /// straight: read in the body.
         @State private var smooth = false
 
+        /// Whether the hand moves through the layouts too, or the buttons alone.
+        @State private var byHand = true
+
         var body: some View {
             Grid {
                 Grid {
@@ -5857,8 +5860,12 @@ enum Listings {
                 SwitchRow("Smooth curve", $smooth)
                     .horizontalAlignment(.center)
                     .gridRow(2)
+
+                SwitchRow("The hand moves it", $byHand)
+                    .horizontalAlignment(.center)
+                    .gridRow(3)
             }
-            .rows(.fill, .auto, .auto)
+            .rows(.fill, .auto, .auto, .auto)
         }
 
         /// The cards: one arithmetic, asked at the keyframes alone.
@@ -5869,10 +5876,11 @@ enum Listings {
                 // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
                 [ring(room), grid(room), pile(room)][Int(arrangement)]
             }
-            // THE HAND MOVES THROUGH THE THREE, resting on each.
+            // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
+            // input, the axis is keyframes alone and the buttons move it.
             .axis(
-                \.self, input: .scroll(.horizontal, pointsPerUnit: 260), range: 0...2, keyframes: .every(1),
-                snaps: .every(1))
+                \.self, input: byHand ? .scroll(.horizontal, pointsPerUnit: 260) : nil, range: 0...2,
+                keyframes: .every(1), snaps: byHand ? .every(1) : nil)
             // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
             .interpolation(smooth ? LayoutCurve.catmullRom : .linear)

@@ -1181,6 +1181,41 @@ struct Arrangements: View {
 }
 ```
 
+An axis needs no input: declared with keyframes alone, the hand passes it by
+and the program moves it - the arithmetic is still asked at the keyframes
+alone and the poses between them blended. Adding `input: .scroll(.horizontal)`
+is all it takes for the hand to move it too:
+
+```swift
+struct Rearranged: View {
+    @State private var arrangement = 0.0
+
+    let names = ["Ada", "Ben", "Cy", "Di", "Eve"]
+
+    var body: some View {
+        VStack {
+            MotionLayout(names, parameters: $arrangement) { name in
+                Text(name)
+            } placements: { room, arrangement in
+                names.indices.map { index in
+                    Int(arrangement) == 0
+                        ? Placement(Rect(Double(index) * 64, room.height / 2 - 20, 60, 40))
+                        : Placement(Rect(room.width / 2 - 30, Double(index) * 48, 60, 40))
+                }
+            }
+            .axis(\.self, range: 0...1, keyframes: .every(1))
+            .motion(.eased(.milliseconds(700), .cubicInOut))
+            .height(300)
+
+            HStack {
+                Button("Row").onClicked { arrangement = 0 }
+                Button("Column").onClicked { arrangement = 1 }
+            }
+        }
+    }
+}
+```
+
 Every view keeps its identity from layout to layout, and where the run rests
 - an end or a snap, which are always keyframes - it shows the arithmetic's
 own answer, never a blend. Each keyframe's answer is asked once and kept

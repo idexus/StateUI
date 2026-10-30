@@ -293,6 +293,41 @@
 
                 s.expect(phase.wrappedValue, 1, "on, the hand going the mirror's way")
             },
+            ConformanceCase("anAxisOfKeyframesAloneLeavesTheHandAlone", proves: [
+                Covered(MotionLayoutContract.self),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let (clock, arrangement, handed) = (TestClock(), State(wrappedValue: 0.0), Received<Double>())
+                s.start(clock: clock) {
+                    VStack {
+                        MotionLayout([0], parameters: arrangement.projectedValue) { _ in
+                            Rectangle()
+                                .fill(.red)
+                        } placements: { _, at in
+                            handed.values.append(at)
+                            return [Placement(Rect(at * 60, 0, 20, 20))]
+                        }
+                        .axis(\.self, range: 0...1, keyframes: .every(1))
+                        .motion(.eased(.milliseconds(200), .linear))
+                        .width(100).height(40)
+                        Button("Go").onClicked { arrangement.wrappedValue = 1 }
+                            .id("go")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                s.settle { handed.values.last == 0 }
+                let layout = try s.element(ofType: .motionLayout)
+
+                // Declared with keyframes and no input: the hand passes it by, the program moves it.
+                try s.perform(.sweep(by: Point(-140, 0), speed: Point(-600, 0)), on: layout)
+                frames(s, clock, until: 1_600)
+                s.expect(arrangement.wrappedValue, 0, "no hand moves an axis of keyframes alone")
+
+                try s.perform(.activate, on: s.element("go"))
+                frames(s, clock, until: 3_200)
+                s.settle { handed.values.last == 1 }
+                s.expect(handed.values.last, 1, "the program moves it to its keyframe")
+            },
             ConformanceCase("aHandAcrossItsAxisLeavesTheRun", proves: [Covered(MotionLayoutContract.translationOrientation)]) { s in
                 let (clock, phase) = (TestClock(), State(wrappedValue: 0.0))
                 let layout = try handLayout(s, clock: clock, phase: phase)

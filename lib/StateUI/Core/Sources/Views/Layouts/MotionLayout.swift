@@ -81,7 +81,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// rests, and whether it comes round.
     private struct Given {
         let axis: WritableKeyPath<Parameters, Double>
-        let input: LayoutInput
+        let input: LayoutInput?
         let range: ClosedRange<Double>
         let keyframes: AxisValues?
         let snaps: AxisValues?
@@ -96,18 +96,25 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             if !low.isFinite || !high.isFinite {
                 return "A MotionLayout's axis was given a range with no end. The hand moves nothing."
             }
-            if input.gesture == .magnification, low <= 0 {
+            if input == nil, keyframes == nil {
+                return "A MotionLayout's axis was given no input and no keyframes: the declaration changes nothing."
+            }
+            if input == nil, snaps != nil {
+                return "A MotionLayout's axis was given snaps and no input: snaps are where the hand rests, and no "
+                    + "hand moves it."
+            }
+            if input?.gesture == .magnification, low <= 0 {
                 return "A MotionLayout's magnification was given a range reaching nought, which no spreading of the "
                     + "fingers reaches. The fingers move nothing."
             }
-            if periodic, input.gesture == .magnification {
+            if periodic, input?.gesture == .magnification {
                 return "A MotionLayout's magnification was told to come round, which a size never does: it stops at "
                     + "the ends of its range."
             }
             if periodic, high <= low {
                 return "A MotionLayout's axis was told to come round over a range of no length: it stays where it is."
             }
-            if snaps == nil, case .hand(_, _, swipes: true) = input.gesture {
+            if snaps == nil, case .hand(_, _, swipes: true)? = input?.gesture {
                 return "A MotionLayout's swipe moves the run one snap a hand, and its axis was given none: it swipes "
                     + "from end to end of its range."
             }
@@ -122,18 +129,19 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         var hand: Hand? {
             let (low, high) = (range.lowerBound, range.upperBound)
             guard let index = Parameters.axes.firstIndex(of: axis), low.isFinite, high.isFinite,
-                  input.gesture != .magnification || low > 0
+                  input?.gesture != .magnification || low > 0
             else { return nil }
 
-            let period = periodic && high > low && input.gesture != .magnification ? high - low : nil
-            let swipes = if case .hand(_, _, swipes: true) = input.gesture { true } else { false }
+            let period = periodic && high > low && input?.gesture != .magnification ? high - low : nil
+            let swipes = if case .hand(_, _, swipes: true)? = input?.gesture { true } else { false }
             let snaps = snaps ?? (swipes ? .endpoints : nil)
             let knots = keyframes.map { keyframes in
                 Array(Set(keyframes.values(in: range, periodic: false) + (snaps?.values(in: range, periodic: false) ?? [])))
                     .sorted()
             }
             return Hand(
-                index: index, axis: axis, gesture: input.gesture, throwing: input.throwing, low: low, high: high,
+                index: index, axis: axis, gesture: input?.gesture, throwing: input?.throwing ?? LayoutInput.scroll(.horizontal).throwing,
+                low: low, high: high,
                 stops: snaps?.values(in: range, periodic: period != nil) ?? [], period: period, knots: knots)
         }
     }
@@ -259,8 +267,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         self.init(items, id: \.self, parameters: parameters, content: content, placements: placements)
     }
 
-    /// One axis of the parameters under the user's hand or fingers: what moves it, how far it runs, where its layout is
-    /// worked out, where it comes to rest and whether it comes round.
+    /// One axis of the parameters: what moves it - the user's hand or fingers, or the program alone - how far it runs,
+    /// where its layout is worked out, where it comes to rest and whether it comes round.
     ///
     ///     .axis(\.self, input: .swipe(.horizontal), range: 0...Double(cards.count - 1), snaps: .every(1))
     ///     .axis(\.zoom, input: .magnification, range: 0.5...2)
@@ -283,10 +291,11 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// keyframe, become one the hand moves through.
     ///
     ///     .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1), snaps: .endpoints)
+    ///     .axis(\.self, range: 0...2, keyframes: .every(1))     // the program moves it
     ///
     /// - Parameters:
     ///   - axis: the axis, one of the parameters' `axes`; `\.self` for `Double` parameters.
-    ///   - input: what moves it.
+    ///   - input: what moves it; none for an axis of keyframes alone, which the program moves.
     ///   - range: how far the hand moves it; above nought for a magnification.
     ///   - keyframes: where the arithmetic is asked beside the ends of the range and the snaps; every frame unless
     ///     said.
@@ -295,7 +304,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// - Returns: the layout, its axis moved by the hand.
     public func axis(
         _ axis: WritableKeyPath<Parameters, Double>,
-        input: LayoutInput,
+        input: LayoutInput? = nil,
         range: ClosedRange<Double>,
         keyframes: AxisValues? = nil,
         snaps: AxisValues? = nil,
@@ -570,7 +579,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.describe(MotionLayoutContract.pans, run.pans ? true : nil)
             // Two fingers spreading and turning are heard as one, each moving its own axes.
             let magnifies = run.hands.contains { $0.gesture == .magnification }
-            let rotates = run.hands.contains { if case .rotation = $0.gesture { true } else { false } }
+            let rotates = run.hands.contains { if case .rotation? = $0.gesture { true } else { false } }
             element.describe(MotionLayoutContract.magnifies, magnifies ? true : nil)
             element.describe(MotionLayoutContract.rotates, rotates ? true : nil)
             if magnifies || rotates {

@@ -15,7 +15,7 @@ extension MotionLayout {
     struct Hand {
         let index: Int
         let axis: WritableKeyPath<Parameters, Double>
-        let gesture: LayoutInput.Gesture
+        let gesture: LayoutInput.Gesture?
         let throwing: Motion
         let low: Double
         let high: Double
@@ -25,7 +25,7 @@ extension MotionLayout {
 
         /// Which way the hand moves the axis, where the hand does rather than two fingers.
         var way: LayoutInput.Orientation? {
-            guard case .hand(let way, _, _) = gesture else { return nil }
+            guard case .hand(let way, _, _)? = gesture else { return nil }
             return way
         }
     }
@@ -110,11 +110,11 @@ extension MotionLayout {
         /// it moves it one snap at most, and how a throw goes on.
         var across: Bool { focus?.way != .vertical }
         var travel: LayoutInput.Travel {
-            guard case .hand(_, let travel, _) = focus?.gesture else { return .front }
+            guard case .hand(_, let travel, _)? = focus?.gesture ?? nil else { return .front }
             return travel
         }
         var swipes: Bool {
-            guard case .hand(_, _, let swipes) = focus?.gesture else { return false }
+            guard case .hand(_, _, let swipes)? = focus?.gesture ?? nil else { return false }
             return swipes
         }
         var throwing: Motion { focus?.throwing ?? LayoutInput.scroll(.horizontal).throwing }
@@ -132,7 +132,7 @@ extension MotionLayout {
         }
 
         /// Whether the axis in focus is moved by its logarithm: a magnification, multiplied by the fingers.
-        var multiplies: Bool { focus?.gesture == .magnification }
+        var multiplies: Bool { (focus?.gesture ?? nil) == .magnification }
 
         /// `value` of the axis in focus where the hand works on it - its logarithm for a magnification - and back.
         func toHand(_ value: Double) -> Double { multiplies ? log(max(value, .leastNormalMagnitude)) : value }
@@ -501,9 +501,9 @@ extension MotionLayout {
                 // How far the fingers moved the axis, how fast in units a second, and how many of theirs a unit is.
                 let (step, rate, per): (Double, Double, Double)
                 switch hand.gesture {
-                case .magnification: (step, rate, per) = (scale > 0 ? log(scale) : 0, speed.x, 100)
-                case .rotation(let unit): (step, rate, per) = (degrees / unit, speed.y / unit, unit)
-                case .hand: continue
+                case .magnification?: (step, rate, per) = (scale > 0 ? log(scale) : 0, speed.x, 100)
+                case .rotation(let unit)?: (step, rate, per) = (degrees / unit, speed.y / unit, unit)
+                case .hand?, nil: continue
                 }
 
                 let run = on(hand)

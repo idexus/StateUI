@@ -286,8 +286,8 @@ final class LayoutAxisTests: XCTestCase {
 
     // MARK: - What is wrong
 
-    /// AN AXIS THE PHASE DOES NOT LIST moves nothing, and says why.
-    func testAnAxisThePhaseDoesNotListMovesNothing() throws {
+    /// AN AXIS THE PARAMETERS DO NOT LIST moves nothing, and says why.
+    func testAnAxisTheParametersDoNotListMovesNothing() throws {
         let (table, handed) = (State(wrappedValue: Table()), Handed())
         let patch = Renders().render(tree(table, handed) {
             $0.axis(\.note, input: .scroll(.horizontal), range: 0...1)
@@ -295,6 +295,17 @@ final class LayoutAxisTests: XCTestCase {
 
         XCTAssertNil(try XCTUnwrap(patch.first(.motionLayout)).events?[.translationUpdated])
         XCTAssertTrue(hasComplained("an axis its parameters' `axes` do not list"))
+    }
+
+    /// AN AXIS NO INPUT MOVES SAYS SOMETHING: with no keyframes it declares nothing, and its snaps would be where no
+    /// hand rests - each is said.
+    func testAnAxisNoInputMovesSaysSomething() throws {
+        let (table, handed) = (State(wrappedValue: Table()), Handed())
+        _ = Renders().render(tree(table, handed) { $0.axis(\.x, range: 0...1) }())
+        XCTAssertTrue(hasComplained("no input and no keyframes"))
+
+        _ = Renders().render(tree(table, handed) { $0.axis(\.sky, range: 0...2, keyframes: .every(1), snaps: .every(1)) }())
+        XCTAssertTrue(hasComplained("snaps and no input"))
     }
 
     /// A MAGNIFICATION'S RANGE STANDS ABOVE NOUGHT: one reaching it moves nothing, and says why.

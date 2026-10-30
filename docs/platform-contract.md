@@ -117,7 +117,7 @@ of its members each meets, and why a cell is empty.
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [MotionLayout](controls/MotionLayout.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [MotionLayout](controls/MotionLayout.md) | stateUI | ◐ | ✅ | ✅ | ✅ | ◐ | ◐ |
 | [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |

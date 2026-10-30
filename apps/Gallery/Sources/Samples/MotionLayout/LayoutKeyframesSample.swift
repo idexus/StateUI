@@ -38,6 +38,9 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
     /// Whether the cards go between the layouts by a smooth curve rather than
     /// straight: read in the body.
     @State private var smooth = false
+
+    /// Whether the hand moves through the layouts too, or the buttons alone.
+    @State private var byHand = true
     // listing: end
 
     // The cards are moved by the hand of their own, so the example is not put
@@ -69,8 +72,12 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
             SwitchRow("Smooth curve", $smooth)
                 .horizontalAlignment(.center)
                 .gridRow(2)
+
+            SwitchRow("The hand moves it", $byHand)
+                .horizontalAlignment(.center)
+                .gridRow(3)
         }
-        .rows(.fill, .auto, .auto)
+        .rows(.fill, .auto, .auto, .auto)
         .rowSpacing(10)
     }
 
@@ -82,10 +89,11 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
             // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
             [ring(room), grid(room), pile(room)][Int(arrangement)]
         }
-        // THE HAND MOVES THROUGH THE THREE, resting on each.
+        // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
+        // input, the axis is keyframes alone and the buttons move it.
         .axis(
-            \.self, input: .scroll(.horizontal, pointsPerUnit: 260), range: 0...2, keyframes: .every(1),
-            snaps: .every(1))
+            \.self, input: byHand ? .scroll(.horizontal, pointsPerUnit: 260) : nil, range: 0...2,
+            keyframes: .every(1), snaps: byHand ? .every(1) : nil)
         // BETWEEN THEM each card goes straight, or by a curve its neighbors
         // shape.
         .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
@@ -179,7 +187,8 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("Drag across, or tap Ring, Grid or Pile: the arithmetic is asked at 0, 1 and 2 alone, and every card goes "
-            + "from its place in one layout to its place in the next.")
+            + "from its place in one layout to its place in the next. Turn the hand off and the axis is keyframes "
+            + "alone - no input - so only the buttons move it.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

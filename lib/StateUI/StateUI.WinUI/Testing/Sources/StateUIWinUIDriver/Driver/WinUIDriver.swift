@@ -222,6 +222,10 @@ final class WinUIDriver: HostDriver {
             _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: Point(x: 0, y: 0))
             _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: offset)
             _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: Point(x: 0, y: 0), speed: speed)
+        // A view that hears no hand - an axis of keyframes alone - is told none: the relay reports a hand only where
+        // the host listens for one, so a user's sweep reaches nothing there.
+        case (.sweep, let view?) where !view.hearing.contains(.hand):
+            break
         case (.pinch(let scale, let point), let view?) where view.hearing.contains(.pinches):
             view.heard(.pinch(.began, scale: 1, at: point))
             view.heard(.pinch(.changed, scale: scale, at: point))

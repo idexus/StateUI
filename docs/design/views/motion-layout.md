@@ -242,12 +242,17 @@ naming no axes is said.
 ## An axis
 
 `.axis(_:input:range:keyframes:snaps:periodic:)` is the one declaration of an
-axis the hand moves: what moves it (a `LayoutInput`), how far (`range`),
-where its layout is worked out (`keyframes`, [keyframes](#keyframes)), where
-it may rest (`snaps`), and whether it comes round (`periodic`) - the keyframes
-and the snaps both an `AxisValues`, places on the axis. One concept, one
-place: an input, a rest and its coming round are never declared apart, so no axis has
-an input with no range or a rest with no input.
+axis: what moves it (a `LayoutInput`, or none), how far (`range`), where its
+layout is worked out (`keyframes`, [keyframes](#keyframes)), where it may rest
+(`snaps`), and whether it comes round (`periodic`) - the keyframes and the
+snaps both an `AxisValues`, places on the axis. One concept, one place: an
+input, a rest and its coming round are never declared apart, so no axis has
+an input with no range or a rest with no input. An axis with no input is
+keyframes alone: the program moves it, the arithmetic is asked at its
+keyframes, and the element says no hand for it (no `translationOrientation`,
+`pans`, `magnifies` or `rotates` from it); one with neither input nor
+keyframes declares nothing, and one with snaps and no input rests no hand -
+each is said.
 
 - THE RANGE is the hand's, not the program's: the hand moves the axis freely
   inside it and less and less past an end ([the hand](#the-hand)); the

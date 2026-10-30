@@ -81,6 +81,25 @@ final class LayoutKeyframeTests: XCTestCase {
         XCTAssertEqual(shown[0].bounds.y, 5, accuracy: 1e-9, "half way from 0 to 10, where the arithmetic says 2.5")
     }
 
+    /// AN AXIS OF KEYFRAMES ALONE MOVES BY THE PROGRAM: declared with no input, its keyframes still say where the
+    /// arithmetic is asked and the poses between them are blended, and the host hears no hand for it.
+    func testAnAxisOfKeyframesAloneMovesByTheProgram() throws {
+        let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
+        let built = tree(phase, asked) { $0.axis(\.self, range: 0...2, keyframes: .every(1)) }
+        let laid = bench.laid(renders, built).patch
+        let worn = try worn(laid)
+        let layout = try XCTUnwrap(laid.first(.motionLayout))
+
+        for value in [0.25, 0.5, 1.5, 1.75] { stand(worn, at: value) }
+        XCTAssertEqual(Set(asked.phases), [0, 1, 2])
+        stand(worn, at: 0.5)
+        XCTAssertEqual(bench.shown(renders.renderFromScratch(built()))[0].bounds.y, 5, accuracy: 1e-9, "blended")
+
+        XCTAssertNil(layout.props[.translationOrientation], "no hand moves it")
+        XCTAssertNil(layout.props[.pans])
+        XCTAssertNil(layout.events?[.translationUpdated], "no hand is heard")
+    }
+
     /// EACH POSE IS ASKED ONCE while what it was worked out with stands: frames to and fro ask nothing again.
     func testEachPoseIsAskedOnce() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
