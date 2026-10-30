@@ -14,8 +14,8 @@ import CStateUIGTK
 extension GTKDriver {
     /// The bar `page` shows: each edge's groups as their boxes hold them, then the overflow's menu.
     func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
-        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
         let frame = try frame(of: page)
+        guard edge == .top else { return foot(of: frame) }
         let word = { (button: GTKWidget) -> String? in
             guard let item = frame.action(on: button)?.item else { return nil }
             return BarWords.word(item, enabled: gtk_widget_get_sensitive(button) != 0)
@@ -28,6 +28,45 @@ extension GTKDriver {
         }
         return BarWords.said(
             leading: groups(frame.leadingGroups), trailing: groups(frame.trailingGroups), overflow: overflow)
+    }
+
+    /// The bar at the foot of `frame`'s page: each edge's groups as their boxes hold them, then its More's menu;
+    /// nothing while it shows none.
+    private func foot(of frame: GTKPageFrame) -> String {
+        guard let foot = frame.footBar, gtk_widget_get_visible(foot.widget) != 0 else {
+            return BarWords.said(leading: [], trailing: [], overflow: [])
+        }
+        let groups = { (atStart: Bool) in
+            foot.groupsForTesting(atStart: atStart).map { group in
+                group.compactMap { widget in
+                    foot.action(on: widget)?.item.map { BarWords.word($0, enabled: gtk_widget_get_sensitive(widget) != 0) }
+                }
+            }.filter { !$0.isEmpty }
+        }
+        let overflow = zip(foot.overflowButtons, foot.actions.overflow).compactMap { button, action in
+            action.item.map { BarWords.word($0, enabled: gtk_widget_get_sensitive(button.widget) != 0) }
+        }
+        return BarWords.said(leading: groups(true), trailing: groups(false), overflow: overflow)
+    }
+
+    /// What the words on a bar standing for the toolbar's label `element` show: its words, and its picture; nil where
+    /// no bar shows it.
+    func labelHolds(_ property: Prop, _ element: MountedElement) -> HostValue? {
+        let labels = frames().flatMap { $0.labels + ($0.footBar?.labels ?? []) }
+        guard let label = labels.first(where: { $0.action.item === element }) else { return nil }
+        switch property {
+        case .text: return String(cString: gtk_label_get_text(label.words.opaque)).propValue
+        case .icon:
+            guard let image = label.picture, let icon = gtk_image_get_gicon(image.opaque),
+                  g_type_check_instance_is_a(UnsafeMutablePointer<GTypeInstance>(icon), g_file_icon_get_type()) != 0,
+                  let file = g_file_icon_get_file(icon), let name = g_file_get_basename(file)
+            else { return nil }
+            defer { g_free(name) }
+            let shown = String(cString: name)
+            let named = element.value(.icon)?.string ?? ""
+            return ImageSource(PictureArithmetic.files(for: named).contains(shown) ? named : shown).propValue
+        default: return nil
+        }
     }
 
     /// Chooses the toolbar item `element` as the user does: its button clicked, on the bar or in the overflow's menu -
@@ -112,7 +151,16 @@ extension GTKDriver {
     /// The button of the toolbar item `element`, on the bar or in the overflow's menu; nil where no bar shows it.
     func actionButton(of element: MountedElement) throws -> GTKButtonView? {
         for frame in frames() {
-            let onBar = (frame.chrome.leading + frame.chrome.trailing).flatMap { $0 }
+            if let foot = frame.footBar {
+                let onBar = (foot.actions.leading + foot.actions.trailing).joined().filter { !$0.isLabel }
+                if let at = onBar.firstIndex(where: { $0.item === element }), at < foot.buttons.count {
+                    return foot.buttons[at]
+                }
+                if let at = foot.actions.overflow.firstIndex(where: { $0.item === element }), at < foot.overflowButtons.count {
+                    return foot.overflowButtons[at]
+                }
+            }
+            let onBar = (frame.chrome.leading + frame.chrome.trailing).flatMap { $0 }.filter { !$0.isLabel }
             if let at = onBar.firstIndex(where: { $0.item === element }), at < frame.buttons.count {
                 return frame.buttons[at]
             }
@@ -145,7 +193,8 @@ extension GTKDriver {
 extension GTKPageFrame {
     /// The action whose button on the bar is `button`.
     fileprivate func action(on button: GTKWidget) -> GTKToolbarAction? {
-        let onBar = (chrome.leading + chrome.trailing).flatMap { $0 }
+        if let label = labels.first(where: { $0.widget == button }) { return label.action }
+        let onBar = (chrome.leading + chrome.trailing).flatMap { $0 }.filter { !$0.isLabel }
         guard let at = buttons.firstIndex(where: { $0.widget == button }), at < onBar.count else { return nil }
         return onBar[at]
     }

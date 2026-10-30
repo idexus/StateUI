@@ -26,6 +26,10 @@ struct GTKToolbarAction {
     /// The menu its button opens; nil for an action holding none.
     let menu: GTKToolbarMenu?
 
+    /// Whether it is words nobody chooses (`ToolbarLabel`): a label on the bar, an entry nobody can choose behind its
+    /// More.
+    let isLabel: Bool
+
     /// The action of `item` as its bar's button shows it, read as a menu's entry is (`MenuEntry`).
     init(_ item: MountedElement) {
         let entry = MenuEntry.entry(of: item)
@@ -36,6 +40,7 @@ struct GTKToolbarAction {
         isEnabled = entry.isEnabled
         isDestructive = entry.isDestructive
         isOn = item.type == .toolbarToggle ? entry.isOn == true : nil
+        isLabel = item.type == .toolbarLabel
         let opening = ButtonMenu.opening(of: item)
         menu = opening == .none ? nil : GTKToolbarMenu(
             opening: opening, showsArrow: ButtonMenu.showsArrow(item), entries: ButtonMenu.entries(of: item),
@@ -51,6 +56,7 @@ struct GTKToolbarAction {
     func draws(like other: GTKToolbarAction) -> Bool {
         title == other.title && icon == other.icon && showsTitle == other.showsTitle && isEnabled == other.isEnabled
             && isDestructive == other.isDestructive && isOn == other.isOn && menu?.said == other.menu?.said
+            && isLabel == other.isLabel
     }
 }
 
@@ -106,6 +112,9 @@ struct GTKPageChrome {
     var trailing: [[GTKToolbarAction]] = []
     var overflow: [GTKToolbarAction] = []
 
+    /// The actions of the bar at the page's foot (`.toolbar(.bottom)`), as the header bar's stand.
+    var foot = GTKFootActions()
+
     /// The menus the page's path declares, which stand in the bar's main menu; none for no main menu.
     var mainMenu: [MenuEntry] = []
     var showsBar = true
@@ -119,4 +128,25 @@ struct GTKPageChrome {
     /// The split view's sidebar, where this page's header bar offers its toggle - the detail's: whether it shows,
     /// and what turns it.
     var sidebar: (shows: Bool, toggle: () -> Void)?
+}
+
+/// The actions of a page's bar at its foot: its groups at its start and at its end, and those behind its More.
+@MainActor
+struct GTKFootActions {
+    var leading: [[GTKToolbarAction]] = []
+    var trailing: [[GTKToolbarAction]] = []
+    var overflow: [GTKToolbarAction] = []
+
+    /// Whether it holds no action.
+    var isEmpty: Bool { leading.isEmpty && trailing.isEmpty && overflow.isEmpty }
+
+    /// Whether it draws as `other` does.
+    func draws(like other: GTKFootActions) -> Bool {
+        let groups = { (one: [[GTKToolbarAction]], two: [[GTKToolbarAction]]) in
+            one.count == two.count && zip(one, two).allSatisfy { pair in
+                pair.0.count == pair.1.count && zip(pair.0, pair.1).allSatisfy { $0.draws(like: $1) }
+            }
+        }
+        return groups(leading, other.leading) && groups(trailing, other.trailing) && groups([overflow], [other.overflow])
+    }
 }

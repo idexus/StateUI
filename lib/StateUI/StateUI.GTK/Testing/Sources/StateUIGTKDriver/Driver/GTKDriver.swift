@@ -291,7 +291,8 @@ final class GTKDriver: HostDriver {
            let page = (element.enclosing(type: .page)?.native as? GTKElement)?.view as? GTKSingleChildView {
             return page.bottomBarEdge?.propValue
         }
-        if [.toolbarButton, .toolbarToggle].contains(element.type) { return try actionHolds(property, element) }
+        if element.type == .toolbarLabel, let held = labelHolds(property, element) { return held }
+        if [.toolbarButton, .toolbarToggle, .toolbarLabel].contains(element.type) { return try actionHolds(property, element) }
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .sheet, property == .background {
             let page = element.children.first

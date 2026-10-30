@@ -78,6 +78,20 @@ A bar's button holding a menu is the button a button's menu makes - GTK's
 menu button, libadwaita's split button, or held - and behind the overflow a
 flat menu button opening what it offers there.
 
+## The bar at the foot
+
+A page's actions for the bar at its foot (`.toolbar(.bottom)`) stand on
+GNOME's action bar (`GtkActionBar`), a bottom bar of the page's toolbar view
+beneath the holder of its view bar (`.bottomBar`): the toolbar view stands
+its bottom bars in the order they came, so the holder and the action bar are
+made together, the holder first, each shown only while it holds anything.
+Its leading groups stand at its start and the rest at its end, as the header
+bar's buttons, and a More menu button of those placed behind it ends it; the
+bottom bars' edge is the view bar's (`showBottomEdge`). Words on a bar
+(`ToolbarLabel`), on either bar, are a label GNOME dims as a secondary one
+(`dim-label`), its picture before it; behind a More they are a flat button
+nobody can choose.
+
 ## The bar's look
 
 A page's header bar is painted in the colors its path declares, the nearest

@@ -36,6 +36,9 @@ final class GTKPageFrame {
 
     /// The actions' buttons on the bar, in reading order: the leading groups', then the trailing groups'.
     private(set) var buttons: [GTKButtonView] = []
+
+    /// The words on the bar (`ToolbarLabel`), in reading order.
+    private(set) var labels: [GTKBarLabel] = []
     private var sidebarButton: GTKButtonView?
 
     /// The groups of actions in reading order - the leading, then the trailing - each a box on the bar; how many of
@@ -130,7 +133,9 @@ final class GTKPageFrame {
         }
         if chrome.tabs !== self.chrome.tabs { showTabs(chrome.tabs) }
         if chrome.bottomBar !== self.chrome.bottomBar { showBottomBar(chrome.bottomBar) }
-        showBottomEdge(chrome.bottomBar == nil ? nil : chrome.bottomBarEdge, following: chrome.bottomBarScroller)
+        showFoot(chrome.foot)
+        showBottomEdge(
+            chrome.bottomBar == nil && chrome.foot.isEmpty ? nil : chrome.bottomBarEdge, following: chrome.bottomBarScroller)
         if chrome.barBackground != self.chrome.barBackground || chrome.barForeground != self.chrome.barForeground {
             paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
         }
@@ -181,8 +186,35 @@ final class GTKPageFrame {
         tabsBar = bar
     }
 
-    /// The holder of the page's bottom bar beneath its content; nil until the page shows one.
+    /// The holder of the page's bottom bar beneath its content; nil until the page shows one or a bar at its foot.
     private var bottomHolder: GTKWidget?
+
+    /// The page's bar at its foot, beneath its bottom bar; nil until the page shows one.
+    private(set) var footBar: GTKFootBar?
+
+    /// The holder of the bottom bar, made with the bar at the foot beneath it: the toolbar view stands its bottom bars
+    /// in the order they came.
+    private func holder() -> GTKWidget {
+        if let bottomHolder { return bottomHolder }
+        let made = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0)!
+        gtk_widget_set_visible(made, 0)
+        adw_toolbar_view_add_bottom_bar(widget.opaque, made)
+        bottomHolder = made
+        let foot = GTKFootBar()
+        gtk_widget_set_visible(foot.widget, 0)
+        adw_toolbar_view_add_bottom_bar(widget.opaque, foot.widget)
+        footBar = foot
+        return made
+    }
+
+    /// Shows `actions` on the bar at the page's foot, beneath its bottom bar; none hides it.
+    /// Design: docs/design/platforms/gtk/pages.md#the-bar-at-the-foot
+    private func showFoot(_ actions: GTKFootActions) {
+        guard !actions.isEmpty || footBar != nil else { return }
+        _ = holder()
+        footBar?.show(actions)
+        if let footBar { gtk_widget_set_visible(footBar.widget, actions.isEmpty ? 0 : 1) }
+    }
 
     /// The page's bottom bar beneath its content, as GNOME's applications stand theirs: beside the content, which
     /// ends above it - in a holder of the frame's own, taken from another frame's where it stood there.
@@ -199,12 +231,7 @@ final class GTKPageFrame {
            g_type_check_instance_is_a(row.of(GTypeInstance.self), gtk_box_get_type()) != 0 {
             gtk_box_remove(row.of(GtkBox.self), bar.widget)
         }
-        let holder = bottomHolder ?? {
-            let made = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0)!
-            adw_toolbar_view_add_bottom_bar(widget.opaque, made)
-            bottomHolder = made
-            return made
-        }()
+        let holder = holder()
         gtk_box_append(holder.of(GtkBox.self), bar.widget)
         gtk_widget_set_visible(holder, 1)
     }
@@ -261,7 +288,7 @@ final class GTKPageFrame {
         guard !groupsLike(leading, chrome.leading) || !groupsLike(trailing, chrome.trailing)
             || !drawsLike(overflow, chrome.overflow)
         else {
-            for (button, action) in zip(buttons, onBar) { button.onClicked = action.perform }
+            for (button, action) in zip(buttons, onBar.filter { !$0.isLabel }) { button.onClicked = action.perform }
             groups = zip(groups, leading + trailing).map { (box: $0.box, actions: $1) }
             placed = overflow
             for (button, action) in zip(overflowButtons, behind.joined()) { button.onClicked = closingOverflow(action) }
@@ -271,12 +298,19 @@ final class GTKPageFrame {
         for edge in [leadingGroups, trailingGroups] {
             while let group = gtk_widget_get_first_child(edge) { gtk_box_remove(edge.of(GtkBox.self), group) }
         }
-        buttons = []
+        (buttons, labels) = ([], [])
         groups = []
         for (edge, edgeGroups) in [(leadingGroups, leading), (trailingGroups, trailing)] {
             for group in edgeGroups {
                 let box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6)!
                 for action in group {
+                    // Words stand on the bar as a label; an action as its button.
+                    if action.isLabel {
+                        let label = GTKBarLabel(action)
+                        gtk_box_append(box.of(GtkBox.self), label.widget)
+                        labels.append(label)
+                        continue
+                    }
                     let button = GTKButtonView.action(action)
                     gtk_box_append(box.of(GtkBox.self), button.widget)
                     buttons.append(button)
