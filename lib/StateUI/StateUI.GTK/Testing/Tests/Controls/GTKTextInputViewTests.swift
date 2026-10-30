@@ -206,8 +206,8 @@ final class GTKTextInputViewTests: XCTestCase {
 
     /// An editor given a ground of its own stands in it with no box of the theme's - no fill, corners or ring; one
     /// given none keeps an entry's.
-    func testAnEditorGivenItsOwnGroundStandsWithNoBox() throws {
-        try onUIThread {
+    func testAnEditorGivenItsOwnGroundStandsWithNoBox() {
+        onUIThread {
             let host = GTKRenderer.running {
                 VStack {
                     TextEditor(State(wrappedValue: "").projectedValue)
