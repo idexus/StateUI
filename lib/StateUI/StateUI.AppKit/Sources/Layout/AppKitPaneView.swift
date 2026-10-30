@@ -37,8 +37,14 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
     /// The column's visible page's bottom bar, over the pane's foot.
     private let bottomBar = AppKitBottomBarView()
 
-    /// The band under the toolbar showing its hard edge while the column's rows pass under it.
+    /// The band under the toolbar showing its edge while the column's rows pass under it.
     private let topEdge = AppKitTopEdgeView()
+
+    /// Whether macOS draws its own automatic edge under the toolbar over this pane - a sidebar's.
+    var macOSDrawsItsEdge: Bool {
+        get { topEdge.macOSDrawsItsEdge }
+        set { topEdge.macOSDrawsItsEdge = newValue }
+    }
 
     /// Shows the column's visible page's bottom bar and its bar at its foot, or takes them away where it declares
     /// neither.

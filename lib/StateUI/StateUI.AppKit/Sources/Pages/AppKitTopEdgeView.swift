@@ -6,9 +6,9 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The band under a room's toolbar, where the page runs under it: its hard edge (`barScrollEdge`) while the page's rows
-/// pass under the toolbar - a blur in the page's hue, a line along its foot - which AppKit's toolbar offers no style
-/// for. The automatic edge and none are macOS's own.
+/// The band under a room's toolbar, where the page runs under it: its edge (`barScrollEdge`) while the page's rows pass
+/// under the toolbar - a blur in the page's hue, a line along its foot where the edge is hard - which AppKit's toolbar
+/// offers no style for and macOS draws itself only over a sidebar, where the automatic edge stays its own.
 /// Design: docs/design/host/layout.md#a-bar-at-the-top
 @MainActor
 final class AppKitTopEdgeView: NSView {
@@ -25,6 +25,9 @@ final class AppKitTopEdgeView: NSView {
     /// Whether the page's content runs under the toolbar, and the scroller whose rows the band follows.
     private var runsUnder = false
     private weak var scroller: AppKitPageScroller?
+
+    /// Whether macOS draws its own automatic edge under the toolbar over this room - a sidebar's.
+    var macOSDrawsItsEdge = false
 
     override var isFlipped: Bool { true }
 
@@ -50,10 +53,12 @@ final class AppKitTopEdgeView: NSView {
         follow()
     }
 
-    /// Shows the hard edge while anything of the page stands under the toolbar (`TopBarEdge.covers`).
+    /// Shows the edge while anything of the page stands under the toolbar (`TopBarEdge.covers`), its line where it is
+    /// hard; the automatic one macOS draws itself it leaves to macOS.
     func follow() {
         let covered = TopBarEdge.covers(contentRunsUnder: runsUnder, scrollerOffset: scroller?.standing.offset)
-        isHidden = !covered || edge != .hard
+        isHidden = !covered || edge == .none || edge == .automatic && macOSDrawsItsEdge
+        line.isHidden = edge != .hard
     }
 
     override func layout() {

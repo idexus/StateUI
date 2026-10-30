@@ -22,7 +22,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     private let overlaySurface = AppKitOverlaySurfaceView()
     private let bottomBar = AppKitBottomBarView()
 
-    /// The band under the toolbar showing its hard edge while the page's rows pass under it.
+    /// The band under the toolbar showing its edge while the page's rows pass under it.
     private let topEdge = AppKitTopEdgeView()
 
     /// The window's own material, under the page, while the window lets the

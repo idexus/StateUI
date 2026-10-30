@@ -204,6 +204,46 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(scroll.contentView.bounds.origin.y, 100 - top, accuracy: 0.5, "counted from its first row")
     }
 
+    /// Under the toolbar over a page, where macOS draws no edge for StateUI's content, the host draws the bars' edge
+    /// while the rows pass under it: none at their start, a blur once they scroll under, a line along it where the edge
+    /// is hard.
+    @MainActor
+    func testTheToolbarShowsItsEdgeWhileRowsPassUnderIt() throws {
+        let (offset, edge) = (State(wrappedValue: Point(0, 0)), State(wrappedValue: ScrollEdge.automatic))
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
+                    .ignoresSafeArea(.all)
+                    .title("Rows")
+            } destination: { _ in Text("Next") }
+            .barScrollEdge(edge.wrappedValue)
+        }
+        defer { renderer.closeForTesting() }
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        let settle = { (done: () -> Bool) in
+            for _ in 0..<100 where !done() {
+                RunLoop.current.run(until: Date().addingTimeInterval(0.02))
+                renderer.runtime.pump.turn()
+                renderer.displayFrameForTesting()
+                window.layoutIfNeeded()
+            }
+        }
+        let band = { content.subviews.lazy.compactMap { $0 as? AppKitTopEdgeView }.first }
+        let line = { band()?.subviews.lazy.compactMap { $0 as? NSBox }.first }
+        content.layoutSubtreeIfNeeded()
+        XCTAssertEqual(band()?.isHidden, true, "the rows at their start")
+
+        offset.wrappedValue = Point(0, 300)
+        settle { band()?.isHidden == false }
+        XCTAssertEqual(band()?.isHidden, false, "a blur once they pass under")
+        XCTAssertEqual(line()?.isHidden, true, "no line for the automatic edge")
+
+        edge.wrappedValue = .hard
+        settle { line()?.isHidden == false }
+        XCTAssertEqual(line()?.isHidden, false, "a line for the hard one")
+    }
+
     /// A split view declaring the bar keeps its sidebar, its stack and a scroll view in the stack inside the native
     /// content.
     @MainActor

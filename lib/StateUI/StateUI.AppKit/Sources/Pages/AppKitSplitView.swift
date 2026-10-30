@@ -48,6 +48,8 @@ final class AppKitSplitView: AppKitHitTestView {
 
         sidebarController.view = sidebarSurface
         detailController.view = detailSurface
+        // A sidebar's toolbar wears macOS's own soft edge; the detail's none, which the pane draws.
+        sidebarSurface.macOSDrawsItsEdge = true
         sidebarItem.canCollapse = true
         sidebarItem.allowsFullHeightLayout = true
         sidebarItem.minimumThickness = 260
