@@ -83,6 +83,7 @@ HStack
   background
   clipsContent
   letsInputThrough
+  lineAlignment
   lineWidth
   padding
   rowSpacing
@@ -241,10 +242,13 @@ SearchField
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   submitLabel
   text
   textCase
@@ -314,10 +318,13 @@ TextEditor
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor
@@ -336,11 +343,14 @@ TextField
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
   showsClearButton
+  stroke
   submitLabel
   text
   textCase

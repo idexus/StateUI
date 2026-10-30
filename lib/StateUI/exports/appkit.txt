@@ -75,6 +75,7 @@ Grid
   rowSpacing
   rows
 HStack
+  lineAlignment
   padding
   rowSpacing
   spacing
@@ -265,10 +266,13 @@ TextEditor
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor
@@ -287,10 +291,13 @@ TextField
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor

@@ -92,6 +92,7 @@ Grid
 HStack
   clipsContent
   letsInputThrough
+  lineAlignment
   lineWidth
   padding
   rowSpacing
@@ -130,6 +131,12 @@ Link
   textCase
   textColor
   clicked()
+MotionLayout
+  clipsContent
+  letsInputThrough
+  lineWidth
+  shape
+  stroke
 Path
   contentMode
   dash
@@ -141,12 +148,6 @@ Path
   lineJoin
   lineWidth
   miterLimit
-  stroke
-MotionLayout
-  clipsContent
-  letsInputThrough
-  lineWidth
-  shape
   stroke
 Picker
   fontAttributes
@@ -222,10 +223,13 @@ SearchField
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor
@@ -291,10 +295,13 @@ TextEditor
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor
@@ -313,10 +320,13 @@ TextField
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor

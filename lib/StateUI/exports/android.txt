@@ -90,6 +90,7 @@ HStack
   clipsContent
   ignoresInput
   letsInputThrough
+  lineAlignment
   lineWidth
   padding
   rowSpacing
@@ -232,10 +233,13 @@ SearchField
   isFontAutoScalingEnabled
   isReadOnly
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   submitLabel
   text
   textCase
@@ -303,10 +307,13 @@ TextEditor
   isFontAutoScalingEnabled
   isReadOnly
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor
@@ -324,10 +331,13 @@ TextField
   isPassword
   isReadOnly
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   submitLabel
   text
   textCase
