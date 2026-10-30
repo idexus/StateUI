@@ -45,7 +45,8 @@ final class AndroidGestureTests: XCTestCase {
         }
     }
 
-    /// A pan says how far it has come in points, from where it began, and moves the state it carries by as much.
+    /// A pan says how far it has come in points, from where it began - its end the totals it reached - and moves the
+    /// state it carries by as much.
     func testAPanSaysHowFarItHasComeAndMovesItsState() throws {
         try onMainActor {
             let heard = Received<String>()
@@ -61,7 +62,7 @@ final class AndroidGestureTests: XCTestCase {
             box.touch(1, x: 170, y: 30, at: 60)
             host.settle { heard.values.count == 4 }
 
-            XCTAssertEqual(heard.values, ["began 0 0", "changed 50 0", "changed 80 10", "ended 0 0"])
+            XCTAssertEqual(heard.values, ["began 0 0", "changed 50 0", "changed 80 10", "ended 80 10"])
             XCTAssertEqual(across.wrappedValue, 85)
         }
     }

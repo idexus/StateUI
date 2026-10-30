@@ -177,7 +177,7 @@ final class AndroidPagesTests: XCTestCase {
     /// The status bar's words over the window's painted bar follow it as the bar's own do: light over a dark bar,
     /// dark over a light one, the theme's where the tree paints none.
     func testTheStatusBarsWordsFollowThePaintedBarUnderThem() throws {
-        try onMainActor {
+        onMainActor {
             let navy = State(wrappedValue: true)
             let host = AndroidRenderer.running(reducesMotion: true) {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {

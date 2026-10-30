@@ -148,7 +148,7 @@ final class AndroidRendererTests: XCTestCase {
     /// pauses and stops on its way, and its window hears nothing of it: the next resumes at once. An activity that
     /// stops for good leaves its window stopped.
     func testAnActivityMadeAgainLeavesItsWindowsPhaseAlone() throws {
-        try onMainActor {
+        onMainActor {
             let first = AndroidRenderer.running { WindowPhasePage() }
             first.setPhase(.active)
             let shown = { (host: AndroidRenderer) -> [String] in
