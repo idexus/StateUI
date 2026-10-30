@@ -748,7 +748,10 @@ makes it follow its place on the spring it names - carried by the run, it
 lags behind its place while the run turns, swings past where a throw stops
 and settles back onto it. The world is worked out at a fixed step, so every
 host and frame rate shows the same motion; under less motion every view
-stands at its place:
+stands at its place. `.onSettled { phase in … }` is told once the run comes to
+rest - no hand holding it, the phase at its destination and every view at its
+place - with the phase it rests at, whatever moved it: the one place to save
+where the user left a run:
 
 ```swift
 struct Swaying: View {
@@ -764,6 +767,7 @@ struct Swaying: View {
             }
         }
         .axis(\.self, input: .scroll(.horizontal), range: 0...3, snaps: .every(1))
+        .onSettled { phase in print("at rest on \(phase)") }
         .height(160)
     }
 }

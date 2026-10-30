@@ -78,6 +78,9 @@ extension PhaseLayout {
         let world: PhysicsWorld
         let body: @MainActor (Int) -> PhysicsBody?
 
+        /// What is told once the run comes to rest.
+        let settled: ValueHandler<Phase>?
+
         /// The law the run moves under: its own, or - `.inherited` - the application's, as a host's channel answers
         /// it, so a change and a program's write of the phase travel alike.
         /// Design: docs/design/views/phase-layout.md#a-change-at-the-current-phase
@@ -250,7 +253,27 @@ extension PhaseLayout {
             let poses = pose(in: Rect(0, 0, room.width, room.height), at: phase, from: from)
             let changing = show(
                 poses, after: memory, at: now, phase: phase, from: from, room: room, reducesMotion: reducesMotion)
+            notice(resting: !changing, at: phase)
             return changing ? .again : .wait
+        }
+
+        /// The run at `phase` this frame, its views `still` or not: coming to rest - no hand holding it, the phase's
+        /// journey at its destination and every view at its place - it tells `settled` once.
+        /// Design: docs/design/views/phase-layout.md#at-rest
+        func notice(resting still: Bool, at phase: Phase) {
+            let journey = self.phase.journey
+            let rests = still && states.held.wrappedValue.isEmpty && states.item.wrappedValue == nil
+                && journey.value == journey.destination
+            guard rests != states.shown.wrappedValue.resting else { return }
+
+            states.shown.wrappedValue.resting = rests
+            guard rests, let settled else { return }
+
+            let runs = states.settles
+            libraryTask {
+                settled.gate.runs(for: runs).start(
+                    { try await settled.run(phase) }, settled.gate.policy, payload: nil, owner: runs)
+            }
         }
 
         /// Where the run's motion set out, the run standing at `phase`: there, where nothing moves it - no hand, no

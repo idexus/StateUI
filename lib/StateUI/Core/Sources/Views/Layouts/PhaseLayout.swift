@@ -64,6 +64,9 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
     /// Who starts the runs of what `onItemDismissed` asked for, ended with the layout.
     @State private var dismissalRuns = RunOwner()
 
+    /// The runs of the handler told the run came to rest.
+    @State private var settledRuns = RunOwner()
+
     /// The items, their views and the arithmetic, behind a class so the state walk stops before them.
     /// Design: docs/design/views/composition.md#items-held-behind-a-class
     private let source: Source
@@ -166,6 +169,9 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
 
     /// What the views move by between where the arithmetic puts them and where they are shown.
     private var world = PhysicsWorld.standard
+
+    /// What is told once the run comes to rest.
+    private var settled: ValueHandler<Phase>?
 
     /// Whether the layout turns about its middle where it lays out right to left.
     private var mirrors = false
@@ -424,6 +430,30 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         return copy
     }
 
+    /// Tells `handler` once the run comes to rest - no hand holding it, the phase at its destination and every view
+    /// at its place - with the phase it rests at: the one event of rest, whatever moved it.
+    ///
+    ///     .onSettled { phase in save(phase) }
+    public func onSettled(_ handler: @escaping @MainActor (Phase) throws -> Void) -> Self {
+        var copy = self
+        copy.settled = ValueHandler(step: handler)
+        return copy
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what a rest does while a run is under way.
+    public func onSettled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Phase>) -> Self {
+        var copy = self
+        copy.settled = ValueHandler(run: handler, gate: .own(policy))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSettled(gate: Gate, _ handler: @escaping ValueEventHandler<Phase>) -> Self {
+        var copy = self
+        copy.settled = ValueHandler(run: handler, gate: .shared(gate))
+        return copy
+    }
+
     /// The hand takes one view by itself, rather than moving the run, when it begins as `start` says: the view drawn
     /// on top under the press follows the hand over the others, and let go goes back to its place under the layout's
     /// motion. A hand that begins any other way moves the run.
@@ -527,6 +557,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
             element.describe(PhaseLayoutContract.mirrorsRightToLeft, mirrors ? true : nil)
             // What a dismissal asked for ends with the layout.
             if run.dismissal != nil { element.destroying.append { run.states.dismissals.orphan() } }
+            if run.settled != nil { element.destroying.append { run.states.settles.orphan() } }
             if run.moves {
                 element.addHandler(PhaseLayoutContract.handMoved) { phase, moved, speed in
                     run.handMoved(phase, moved: moved, speed: speed)
@@ -651,12 +682,13 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
             phase: phase,
             states: States(
                 held: _held, placements: _placements, room: _room, shown: _shown, from: _from,
-                grip: _grip, item: _item, dismissals: dismissalRuns),
+                grip: _grip, item: _item, dismissals: dismissalRuns, settles: settledRuns),
             hands: hands,
             focus: hands.first { $0.way != nil },
             law: law,
             world: world,
-            body: { [source] index in source.body(at: index) })
+            body: { [source] index in source.body(at: index) },
+            settled: settled)
     }
 
     /// The layout's states, handed on whole: what its engine and handlers read and write.
@@ -669,6 +701,7 @@ public struct PhaseLayout<Items: RandomAccessCollection, ID: Hashable, Phase: Ax
         let grip: State<[Int: LayoutGrip]>
         let item: State<LayoutItemHand?>
         let dismissals: RunOwner
+        let settles: RunOwner
     }
 }
 
@@ -680,11 +713,11 @@ extension PhaseLayout: WalkedView {
         [
             ("_held", _held), ("_grip", _grip), ("_item", _item),
             ("_placements", _placements), ("_shown", _shown), ("_from", _from), ("_room", _room), ("_numbers", _numbers),
-            ("_dismissalRuns", _dismissalRuns),
+            ("_dismissalRuns", _dismissalRuns), ("_settledRuns", _settledRuns),
             ("source", source), ("phase", phase), ("axes", axes), ("curve", curve as Any),
             ("followed", followed), ("mask", mask as Any), ("tapped", tapped as Any),
             ("itemStart", itemStart as Any), ("dragged", dragged as Any), ("dismissal", dismissal as Any),
-            ("law", law), ("world", world), ("mirrors", mirrors), ("named", named as Any),
+            ("law", law), ("world", world), ("settled", settled as Any), ("mirrors", mirrors), ("named", named as Any),
         ]
     }
 }
@@ -710,4 +743,7 @@ struct LayoutShown<Phase: AxesPhase>: Equatable {
     var poses: [Int: Placement] = [:]
     var shown: [Int: Placement] = [:]
     var bodies = LayoutBodies()
+
+    /// Whether the run stood at rest the last frame.
+    var resting = true
 }

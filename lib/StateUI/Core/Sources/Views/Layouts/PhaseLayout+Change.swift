@@ -72,7 +72,7 @@ extension PhaseLayout.Run {
         }
         states.shown.wrappedValue = LayoutShown(
             description: description, phase: phase, from: from, room: room, poses: byIdentity(poses),
-            shown: byIdentity(shown), bodies: bodies)
+            shown: byIdentity(shown), bodies: bodies, resting: memory.resting)
         states.placements.wrappedValue = PlacedRun(shown)
         return !bodies.isEmpty || holding
     }

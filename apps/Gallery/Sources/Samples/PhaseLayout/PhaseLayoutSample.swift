@@ -101,6 +101,10 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
     /// turns and swaying back onto it.
     @State private var swaying = false
 
+    /// The card the ring last came to rest on - every card and the ring
+    /// still - told once each rest.
+    @State private var rested = PhaseLayoutSample.cards.count / 2
+
     /// WHICH CARD IS AT THE FRONT - the phase, two-way: `Back` and `Next`
     /// write it and the ring travels there; the hand names the card it passes
     /// and the one it comes to rest on. It starts on the middle card, and it
@@ -139,6 +143,12 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
                 // The ring turns for no build at all: the label says so.
                 DebugInfoLabel()
                     .margin(horizontal: 4, vertical: 0)
+
+                // WHERE THE RING CAME TO REST, told once it is still.
+                Text("At rest on \(Self.cards[rested].name)")
+                    .fontSize(12)
+                    .textColor(Palette.subtle)
+                    .verticalAlignment(.center)
 
                 Button("Back")
                     .margin(horizontal: 4, vertical: 0)
@@ -214,6 +224,11 @@ struct PhaseLayoutSample: SampleContent, ExampleContent {
                 .fill(Color(hex: 0x000000))
                 .cornerRadius(16))
         .motion(.eased(.milliseconds(300), .cubicOut))
+        // AT REST - the ring and every card still - it says where, once.
+        .onSettled { turned in
+            let count = Self.cards.count
+            rested = ((Int(turned.rounded()) % count) + count) % count
+        }
         // RIGHT TO LEFT, MIRRORED: the ring turns about the board's middle,
         // the arithmetic above still written left to right, and the hand turns
         // it the mirror's way. Not mirrored, it keeps the shape it is written in.

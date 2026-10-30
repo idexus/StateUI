@@ -166,6 +166,18 @@ lets go goes back onto its place as a body setting out at the hand's speed.
 comes onto a place is the world's. Under less motion, and in a world of none,
 no body stands: every view at its place.
 
+## At rest
+
+The run is at rest where no hand holds it, the phase's journey stands at its
+destination and no body of the world is on its way - whatever moved it: the
+program's journey, the hand's throw, a change, a view let go. Each frame the
+engine runs, it notes whether the run rests (`LayoutShown.resting`); coming
+to rest after it moved, it tells `.onSettled` once, with the phase it rests
+at, after the frame (as a dismissal is told), its runs owned by the layout
+and orphaned as it leaves. Laid out at rest, it tells nothing. One event of
+rest stands for every way the run moves: there is no rest of the phase apart
+from the bodies' (the journey's own `Arrival` waits for the phase alone).
+
 ## The phase
 
 The phase is where the run rests or is going, two-way: the program writes it,
