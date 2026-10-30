@@ -255,12 +255,8 @@ extension View {
     ) -> Modified {
         modified {
             $0.hearsPans(touchCount)
-            $0.addHandler(ViewContract.panUpdated.token) {
-                if let (phase, totalX, totalY) = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.panUpdated.name,
-                    as: GesturePhase.self, Double.self, Double.self) {
-                    try handler(PanUpdate(phase: phase, totalX: totalX, totalY: totalY))
-                }
+            $0.addHandler(ViewContract.panUpdated) { phase, total, velocity in
+                try handler(PanUpdate(phase: phase, total: total, velocity: velocity))
             }
         }
     }
@@ -270,7 +266,7 @@ extension View {
     public func onPanUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Modified {
         modified {
             $0.hearsPans(nil)
-            $0.addHandler(ViewContract.panUpdated.token, gate: .own(policy), panned(handler))
+            $0.addHandler(ViewContract.panUpdated, policy: policy, panned(handler))
         }
     }
 
@@ -280,7 +276,7 @@ extension View {
     ) -> Modified {
         modified {
             $0.hearsPans(touchCount)
-            $0.addHandler(ViewContract.panUpdated.token, gate: .own(policy), panned(handler))
+            $0.addHandler(ViewContract.panUpdated, policy: policy, panned(handler))
         }
     }
 
@@ -292,7 +288,7 @@ extension View {
     ) -> Modified {
         modified {
             $0.hearsPans(touchCount)
-            $0.addHandler(ViewContract.panUpdated.token, gate: .shared(gate), panned(handler))
+            $0.addHandler(ViewContract.panUpdated, gate: gate, panned(handler))
         }
     }
 
@@ -300,26 +296,63 @@ extension View {
 
     /// Runs as two fingers move apart or together.
     ///
-    /// `scale` is relative - the change since the last report, not since the
-    /// pinch began - so a view being pinched multiplies rather than assigns.
+    /// `scale` is how far they have spread since the pinch began, so a
+    /// handler scales what it held when the pinch began; `velocity` is how
+    /// fast the scale changes.
     public func onPinchUpdated(_ handler: @escaping @MainActor (PinchUpdate) throws -> Void) -> Modified {
-        onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
-            try handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin))
+        onEvent(ViewContract.pinchUpdated) { phase, scale, origin, velocity in
+            try handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin, velocity: velocity))
         }
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
     public func onPinchUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
-        onEvent(ViewContract.pinchUpdated, policy: policy) { phase, scale, origin in
-            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin))
+        onEvent(ViewContract.pinchUpdated, policy: policy) { phase, scale, origin, velocity in
+            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin, velocity: velocity))
         }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onPinchUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
-        onEvent(ViewContract.pinchUpdated, gate: gate) { phase, scale, origin in
-            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin))
+        onEvent(ViewContract.pinchUpdated, gate: gate) { phase, scale, origin, velocity in
+            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin, velocity: velocity))
+        }
+    }
+
+    // MARK: Rotation
+
+    /// Runs as two fingers turn over the view.
+    ///
+    ///     Image("dial.png")
+    ///         .rotation(angle)
+    ///         .onRotationUpdated { turn in
+    ///             if turn.phase == .began { turned = angle }
+    ///             angle = turned + turn.angle
+    ///         }
+    ///
+    /// `angle` is how far they have turned since they began, in degrees
+    /// clockwise, so a handler turns what it held when they began.
+    public func onRotationUpdated(_ handler: @escaping @MainActor (RotationUpdate) throws -> Void) -> Modified {
+        onEvent(ViewContract.rotationUpdated) { phase, angle, velocity in
+            try handler(RotationUpdate(phase: phase, angle: angle, velocity: velocity))
+        }
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way.
+    public func onRotationUpdated(
+        _ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>
+    ) -> Modified {
+        onEvent(ViewContract.rotationUpdated, policy: policy) { phase, angle, velocity in
+            try await handler(RotationUpdate(phase: phase, angle: angle, velocity: velocity))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Modified {
+        onEvent(ViewContract.rotationUpdated, gate: gate) { phase, angle, velocity in
+            try await handler(RotationUpdate(phase: phase, angle: angle, velocity: velocity))
         }
     }
 
@@ -697,14 +730,10 @@ private func swiped(
 }
 
 /// What an awaiting pan's handler runs: `handler`, given where the pan stands.
-@MainActor
-private func panned(_ handler: @escaping ValueEventHandler<PanUpdate>) -> EventHandler {
-    {
-        if let (phase, totalX, totalY) = MemberValues.carried(
-            EventBuffer.current, by: ViewContract.panUpdated.name, as: GesturePhase.self, Double.self, Double.self) {
-            try await handler(PanUpdate(phase: phase, totalX: totalX, totalY: totalY))
-        }
-    }
+private func panned(
+    _ handler: @escaping ValueEventHandler<PanUpdate>
+) -> ValueEventHandler<GesturePhase, Point, Point> {
+    { phase, total, velocity in try await handler(PanUpdate(phase: phase, total: total, velocity: velocity)) }
 }
 
 /// What an awaiting drop's handler runs: `handler`, given the dropped files of `types`, where there are any.

@@ -92,6 +92,17 @@
     /// nil while none is under way.
     var pinchFromStart: Double?
 
+    /// How far the two fingers heard on the element have turned since they began, in degrees; nil while they are not.
+    var rotationFromStart: Double?
+
+    /// How far the pan heard on the element has come since it began, as it last told.
+    var panFromStart = Point(x: 0, y: 0)
+
+    /// How fast the pan, the pinch and the rotation heard on the element go (`SpeedReading`).
+    var panSpeed = SpeedReading()
+    var pinchSpeed = SpeedReading()
+    var rotationSpeed = SpeedReading()
+
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
 

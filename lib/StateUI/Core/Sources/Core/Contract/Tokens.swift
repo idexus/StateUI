@@ -359,6 +359,7 @@ extension NodeType {
     static let refreshRequested = RefreshElementContract.refreshRequested.token
     static let released = ButtonContract.released.token
     static let resumed = WindowContract.resumed.token
+    static let rotationUpdated = ViewContract.rotationUpdated.token
     static let scrollStopped = ScrollViewContract.scrollStopped.token
     static let selectedIndexChanged = PickerContract.selectedIndexChanged.token
     static let stopped = SceneContract.stopped.token

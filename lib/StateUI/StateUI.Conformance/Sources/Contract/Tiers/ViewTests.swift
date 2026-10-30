@@ -17,7 +17,7 @@
         Specimens.wearing(ViewContract.self).flatMap { element in
             [
                 margined(element), aligned(element), inArea(element), inCell(element), acrossCells(element),
-                tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
+                tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), rotated(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
         } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline]
@@ -474,7 +474,8 @@
         }
     }
 
-    /// A press dragged across a view is heard as it starts, runs and ends, carrying the state its pan across moves.
+    /// A press dragged across a view is heard as it starts, runs and ends - each report how far it came and how fast
+    /// it goes, its end where it reached - carrying the state its pan across moves.
     @MainActor
     static func panned(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanIsHeardAndCarriesItsStateAcross", proves: [
@@ -483,13 +484,15 @@
         ]) { s in
             let x = State(wrappedValue: 10.0)
             let heard = Received<String>()
+            let lifted = Received<Point>()
             s.start {
                 VStack {
                     Opened.pannedAcross(Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
                         Write(ViewContract.panTouchCount, 1),
-                        HearThree(ViewContract.panUpdated) { phase, totalX, totalY in
-                            heard.values.append("\(phase) \(Int(totalX)) \(Int(totalY))")
+                        HearThree(ViewContract.panUpdated) { phase, total, velocity in
+                            heard.values.append("\(phase) \(Int(total.x)) \(Int(total.y))")
+                            if phase == .ended { lifted.values.append(velocity) }
                         },
                     ]), carrying: x.projectedValue)
                 }
@@ -498,9 +501,11 @@
 
             try s.perform(.pan(by: Point(-60, 20)), on: s.element("specimen"))
             s.settle { heard.values.last?.hasPrefix("ended") == true }
-            s.expect(heard.values.first?.hasPrefix("began"), true, "heard as it begins")
+            s.expect(heard.values.first, "began 0 0", "heard as it begins")
             s.expect(heard.values.contains("changed -60 20"), true, "changed, with how far it went")
-            s.expect(heard.values.last?.hasPrefix("ended"), true, "and as it ends")
+            s.expect(heard.values.last, "ended -60 20", "and as it ends, where it reached")
+            // How fast is the driver's pace; which way is the hand's.
+            s.expect(lifted.values.last.map { $0.x < 0 && $0.y > 0 }, true, "lifted going left and down")
             s.expect(x.wrappedValue, -50, "the state carried as far as the hand went across")
         }
     }
@@ -566,7 +571,7 @@
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
-                        HearThree(ViewContract.pinchUpdated) { _, scale, origin in
+                        HearFour(ViewContract.pinchUpdated) { _, scale, origin, _ in
                             heard.values.append("\(scale) at \(origin.x),\(origin.y)")
                         },
                     ])
@@ -577,6 +582,36 @@
             try s.perform(.pinch(scale: 1.5, at: Point(0.25, 0.75)), on: s.element("specimen"))
             s.settle { heard.values.contains("1.5 at 0.25,0.75") }
             s.expect(heard.values.contains("1.5 at 0.25,0.75"), true, "its scale and its place, \(heard.values)")
+        }
+    }
+
+    /// Two fingers turning over a view are heard from where they began, and as they lift, as fast as they turned.
+    @MainActor
+    static func rotated(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).twoFingersTurningAreHeardFromTheirStart", proves: [
+            Covered(ViewContract.rotationUpdated, on: element),
+        ]) { s in
+            let heard = Received<String>()
+            let lifted = Received<Double>()
+            s.start {
+                VStack {
+                    Specimens.view(element, [
+                        Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
+                        HearThree(ViewContract.rotationUpdated) { phase, angle, velocity in
+                            heard.values.append("\(phase) \(Int(angle.rounded()))")
+                            if phase == .ended { lifted.values.append(velocity) }
+                        },
+                    ])
+                }
+                .horizontalAlignment(.start)
+            }
+
+            try s.perform(.rotate(degrees: 30, at: Point(0.5, 0.5)), on: s.element("specimen"))
+            s.settle { heard.values.last?.hasPrefix("ended") == true }
+            s.expect(heard.values.first, "began 0", "heard as they begin")
+            s.expect(heard.values.contains("changed 30"), true, "turned as far as they went, \(heard.values)")
+            s.expect(heard.values.last, "ended 30", "and as they lift, where they reached")
+            s.expect(lifted.values.last.map { $0 > 0 }, true, "lifting as they turned, clockwise")
         }
     }
 

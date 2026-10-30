@@ -27,11 +27,18 @@ public struct PinchUpdate: Equatable, Sendable {
     /// left and (1,1) the bottom right.
     public var scaleOrigin: Point
 
-    /// One report, from the three values a pinch carries: phase, scale, and
-    /// the origin.
-    init(phase: GesturePhase, scale: Double, scaleOrigin: Point) {
+    /// How fast the scale changes, a second - at an end, as fast as the
+    /// fingers lifted; nought as the pinch begins.
+    ///
+    /// Design: docs/design/types/gestures.md#a-gestures-speed
+    public var velocity: Double
+
+    /// One report, from the four values a pinch carries: phase, scale, the
+    /// origin and the speed.
+    init(phase: GesturePhase, scale: Double, scaleOrigin: Point, velocity: Double) {
         self.phase = phase
         self.scale = scale
         self.scaleOrigin = scaleOrigin
+        self.velocity = velocity
     }
 }

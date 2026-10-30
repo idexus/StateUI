@@ -19,7 +19,7 @@ extension MountedElement {
             || channel(.panXChannel) != nil || channel(.panYChannel) != nil
         if drags, (number(.panTouchCount) ?? 1) == 1 { hearing.insert(.drags) }
         if handler(.pinchUpdated) != nil || hearsFingers && value(.magnifies)?.bool == true { hearing.insert(.pinches) }
-        if hearsFingers && value(.rotates)?.bool == true { hearing.insert(.rotations) }
+        if handler(.rotationUpdated) != nil || hearsFingers && value(.rotates)?.bool == true { hearing.insert(.rotations) }
         if handler(.handMoved) != nil || handler(.itemMoved) != nil { hearing.insert(.hand) }
         return hearing
     }
@@ -70,7 +70,12 @@ extension MountedElement {
             for each in wheelPinch.turned(scale, at: at, now: runtime.clock.now()) { hear(each, in: runtime) }
             runtime.handPace.opened(self)
         case .rotation(let phase, let degrees):
-            guard hearsFingers else { return false }
+            guard hearsFingers else {
+                guard handler(.rotationUpdated) != nil else { return false }
+
+                rotated(phase, degrees: degrees, in: runtime)
+                return true
+            }
 
             return fingers(pinchReading.rotation(phase, degrees: degrees, at: runtime.clock.now()), in: runtime)
         case .mirrored(let phase, let at, let middle):
@@ -129,17 +134,34 @@ extension MountedElement {
         return true
     }
 
-    /// A pinch's step at `phase`, told as the spread since the pinch began - a step with no beginning heard, as a
-    /// trackpad may tell, beginning one first.
+    /// A pinch's step at `phase`, told as the spread since the pinch began and how fast it changes - a step with no
+    /// beginning heard, as a trackpad may tell, beginning one first.
     /// Design: docs/design/types/gestures.md#a-pinch-from-its-start
     private func pinched(_ phase: GesturePhase, scale: Double, at: Point, in runtime: HostRuntime) {
-        if phase != .began, pinchFromStart == nil {
-            send(.pinchUpdated, [.enumeration(GesturePhase.began.rawValue), .number(1), .numbers([at.x, at.y])],
-                 in: runtime)
-        }
-        let spread = (phase == .began ? 1 : pinchFromStart ?? 1) * scale
+        if phase != .began, pinchFromStart == nil { pinched(.began, scale: 1, at: at, in: runtime) }
+        let now = runtime.clock.now()
+        if phase == .began { pinchSpeed = SpeedReading() }
+        let before = phase == .began ? 1 : pinchFromStart ?? 1
+        let spread = before * scale
+        pinchSpeed.moved(Point(spread - before, 0), at: now)
+        let speed = phase == .cancelled ? 0 : pinchSpeed.speed(at: now).x
         pinchFromStart = phase == .ended || phase == .cancelled ? nil : spread
-        send(.pinchUpdated, [.enumeration(phase.rawValue), .number(spread), .numbers([at.x, at.y])], in: runtime)
+        send(.pinchUpdated, [.enumeration(phase.rawValue), .number(spread), .numbers([at.x, at.y]), .number(speed)],
+             in: runtime)
+    }
+
+    /// Two fingers' turn at `phase`, told as the angle since they began and how fast it changes - a step with no
+    /// beginning heard beginning one first, as a pinch's does.
+    /// Design: docs/design/types/gestures.md#a-gestures-speed
+    private func rotated(_ phase: GesturePhase, degrees: Double, in runtime: HostRuntime) {
+        if phase != .began, rotationFromStart == nil { rotated(.began, degrees: 0, in: runtime) }
+        let now = runtime.clock.now()
+        if phase == .began { rotationSpeed = SpeedReading() }
+        let angle = (phase == .began ? 0 : rotationFromStart ?? 0) + degrees
+        rotationSpeed.moved(Point(degrees, 0), at: now)
+        let speed = phase == .cancelled ? 0 : rotationSpeed.speed(at: now).x
+        rotationFromStart = phase == .ended || phase == .cancelled ? nil : angle
+        send(.rotationUpdated, [.enumeration(phase.rawValue), .number(angle), .number(speed)], in: runtime)
     }
 
     /// Whether two fingers spreading or turning move the layout this element is.
@@ -341,13 +363,23 @@ extension MountedElement {
                 x: across.flatMap(runtime.standingGestureValue(state:)) ?? 0,
                 y: down.flatMap(runtime.standingGestureValue(state:)) ?? 0)
         }
+        // Every report tells how far the pan came since it began and how fast it goes - its end as fast as it lifted.
+        // Design: docs/design/types/gestures.md#a-gestures-speed
+        let now = runtime.clock.now()
+        if phase == .began { (panFromStart, panSpeed) = (Point(x: 0, y: 0), SpeedReading()) }
+        if phase == .changed {
+            panSpeed.moved(Point(x - panFromStart.x, y - panFromStart.y), at: now)
+            panFromStart = Point(x: x, y: y)
+        }
+        let speed = phase == .began || phase == .cancelled ? Point(x: 0, y: 0) : panSpeed.speed(at: now)
         runtime.performUserTransaction {
             if phase == .changed {
                 if let across { runtime.takeGestureValue(dragStart.x + x, state: across) }
                 if let down { runtime.takeGestureValue(dragStart.y + y, state: down) }
             }
-            let moved = phase == .changed ? (x, y) : (0, 0)
-            send(.panUpdated, [.enumeration(phase.rawValue), .number(moved.0), .number(moved.1)], in: runtime)
+            send(.panUpdated, [
+                .enumeration(phase.rawValue), .numbers([panFromStart.x, panFromStart.y]), .numbers([speed.x, speed.y]),
+            ], in: runtime)
         }
 
         guard phase == .ended, handler(.swiped) != nil else { return }

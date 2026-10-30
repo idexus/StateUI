@@ -83,9 +83,9 @@ public enum ViewContract: Contract {
     public static let panTouchCount = ElementProperty<Self, Int>(
         "panTouchCount", layer: .structure, travels: false, cleared: false)
 
-    /// The view is being dragged: the phase, and how far across and down since
-    /// the pan began.
-    public static let panUpdated = ElementEvent<Self, (GesturePhase, Double, Double)>(
+    /// The view is being dragged: the phase, how far across and down since the
+    /// pan began, and how fast, a second.
+    public static let panUpdated = ElementEvent<Self, (GesturePhase, Point, Point)>(
         "panUpdated", layer: .native)
 
     /// The number of the state a drag's distance across is written into.
@@ -97,9 +97,15 @@ public enum ViewContract: Contract {
         "panYChannel", layer: .structure, travels: false)
 
     /// Two fingers moved apart or together: the phase, the scale since the
-    /// last report, and the pinch's center as a fraction of the view.
-    public static let pinchUpdated = ElementEvent<Self, (GesturePhase, Double, Point)>(
+    /// pinch began, the pinch's center as a fraction of the view, and how fast
+    /// the scale changes, a second.
+    public static let pinchUpdated = ElementEvent<Self, (GesturePhase, Double, Point, Double)>(
         "pinchUpdated", layer: .native)
+
+    /// Two fingers turned: the phase, how far since they began, in degrees
+    /// clockwise, and how fast, in degrees a second.
+    public static let rotationUpdated = ElementEvent<Self, (GesturePhase, Double, Double)>(
+        "rotationUpdated", layer: .native)
 
     /// A pointer entered the view.
     public static let pointerEntered = ElementEvent<Self, Void>("pointerEntered", layer: .native)
@@ -144,7 +150,7 @@ public enum ViewContract: Contract {
         dragOver, dragStarting, dragText, drop, droppedFileTypes, dragEnded, filesDropped, frameChanged, gridColumn,
         gridColumnSpan, gridRow, gridRowSpan, held, holdDuration, horizontalAlignment, margin, panTouchCount,
         panUpdated, panXChannel, panYChannel, physicsBody, pinchUpdated, pointerEntered, pointerExited,
-        pointerMoved, pointerPressed, pointerReleased, swipeDirection, swipeThreshold, swiped,
+        pointerMoved, pointerPressed, pointerReleased, rotationUpdated, swipeDirection, swipeThreshold, swiped,
         tapCount, tapped, verticalAlignment,
     ]
 }

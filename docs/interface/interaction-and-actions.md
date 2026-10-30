@@ -116,26 +116,61 @@ Windows tells a hold of a finger or a pen, not of a mouse button; on Android a
 control that takes its own press - a slider, a scroller, a list - is never
 held. The control dictionary says it member by member.
 
-### Pan and pinch
+### Pan, pinch and rotation
 
-`PanUpdate` reports its phase and total displacement from the gesture's start,
-and `PinchUpdate.scale` how far the fingers have spread since the pinch began:
+A continuous gesture reports where it stands since it began: `PanUpdate` its
+phase and total displacement, `PinchUpdate.scale` how far the fingers have
+spread, and `RotationUpdate.angle` how far they have turned, in degrees
+clockwise. A handler keeps what it held when the gesture began and applies
+the gesture to that:
 
 ```swift quote
 @State private var x = 0.0
 @State private var scale = 1.0
 @State private var scaled = 1.0
+@State private var angle = 0.0
+@State private var turned = 0.0
 
 Rectangle()
     .fill(.cornflowerBlue)
     .translationX(x)
     .scale(scale)
+    .rotation(angle)
     .onPanUpdated { update in
         if update.phase == .changed { x = update.totalX }
     }
     .onPinchUpdated { update in
         if update.phase == .began { scaled = scale }
         scale = scaled * update.scale
+    }
+    .onRotationUpdated { update in
+        if update.phase == .began { turned = angle }
+        angle = turned + update.angle
+    }
+```
+
+Each report also says how fast the gesture goes, a second - `velocityX` and
+`velocityY` for a pan, `velocity` for a pinch's scale and a rotation's angle -
+nought as it begins and, at its end, as fast as it lifted, beside where it
+reached. Handing that to a state's journey lets the value go on at the hand's
+speed:
+
+```swift quote
+@State private var x = 0.0
+
+Rectangle()
+    .fill(.cornflowerBlue)
+    .translationX($x)
+    .onPanUpdated { update in
+        switch update.phase {
+        case .changed:
+            $x.journey.snap(to: update.totalX)
+        case .ended:
+            $x.journey.velocity = update.velocityX
+            $x.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+        default:
+            break
+        }
     }
 ```
 

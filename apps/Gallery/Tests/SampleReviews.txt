@@ -89,11 +89,11 @@ NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift dc1582b9377c772d
 OutlineSample.swift 4ee91e4fde45645c
 PacedStateSample.swift e821a58ecd748f76
-PanSample.swift 8db15bbfd3c2b4b7
+PanSample.swift 464d5711df723f14
 PersistentStateSample.swift 4be06bf5d5e98ef8
 PhaseLayoutSample.swift 9abe36b892519bb2
 PickerSample.swift 86c5cbb290e05823
-PinchSample.swift 096ba21a40fbcd00
+PinchSample.swift f823ba30caa5eafa
 PlatformSupportSample.swift 24107a58da1308fc
 PointerSample.swift 3306b3b76379bc70
 PollSample.swift 29d40feb24ecaa77

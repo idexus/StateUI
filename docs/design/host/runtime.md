@@ -503,6 +503,19 @@ a drag ends with nothing. A platform's distance is taken in DIPs; the toolkit
 holds the pointer once the press is a drag, which the host asks for as the
 rule says so.
 
+## A gesture's speed
+
+How fast a gesture goes is read by one rule on every host
+(`SpeedReading`): what it moved over the last tenth of a second
+(`HandReading.reading`), divided by the time between its first move there and
+now, a display frame at least (`HandReading.frame`), so moves a busy thread
+glued into one step read no faster than a frame allows, and a gesture that
+stood still for a tenth reads nought. The hand over a layout lifts at that
+speed where its platform tells none; a pan, a pinch and two fingers turning
+report it on every step, their moves read off the frame clock as the host
+layer hears them - a pan's from its totals, a pinch's from its spread, a
+rotation's from its steps ([the reports](../types/gestures.md#a-gestures-speed)).
+
 ## A press held
 
 A view held is told by the platform's long press - a recognizer, a long

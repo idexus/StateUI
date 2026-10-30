@@ -1772,7 +1772,9 @@ final class CatalogTests: XCTestCase {
 
         // What the element tells of a step and an end with no beginning: one begun for it, the spread from it.
         for (phase, scale) in [(GesturePhase.began, 1.0), (.changed, 1.02), (.ended, 1.02)] {
-            renders.fire(pinchUpdated, with: [.enumeration(phase.rawValue), .number(scale), .numbers([0.5, 0.45])])
+            renders.fire(pinchUpdated, with: [
+                .enumeration(phase.rawValue), .number(scale), .numbers([0.5, 0.45]), .number(0),
+            ])
         }
 
         let second = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)
@@ -1781,7 +1783,9 @@ final class CatalogTests: XCTestCase {
 
         // And a second gesture goes on from where the first left off.
         for (phase, scale) in [(GesturePhase.began, 1.0), (.changed, 1.02)] {
-            renders.fire(pinchUpdated, with: [.enumeration(phase.rawValue), .number(scale), .numbers([0.5, 0.45])])
+            renders.fire(pinchUpdated, with: [
+                .enumeration(phase.rawValue), .number(scale), .numbers([0.5, 0.45]), .number(0),
+            ])
         }
 
         let third = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)

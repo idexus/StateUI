@@ -446,6 +446,7 @@ ZStack
   pointerMoved()
   pointerPressed()
   pointerReleased()
+  rotationUpdated()
   swiped()
   tapped()
 (acts)

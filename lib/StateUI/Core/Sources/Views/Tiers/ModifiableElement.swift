@@ -191,6 +191,48 @@ extension ModifiableElement {
         modified { $0.addHandler(event, gate: gate, handler) }
     }
 
+    /// Hears one of this element's events that carries four values, handed over as the types its contract
+    /// declares in its order. The handler runs whole inside the event.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the values.
+    /// - Returns: the element, with the handler on it.
+    public func onEvent<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        _ handler: @escaping @MainActor (First, Second, Third, Fourth) throws -> Void
+    ) -> Modified {
+        modified { $0.addHandler(event, handler) }
+    }
+
+    /// The same, with a handler that awaits; its `policy` says what the event does when it comes again while a
+    /// run is under way.
+    public func onEvent<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        policy: GatePolicy,
+        _ handler: @escaping ValueEventHandler<First, Second, Third, Fourth>
+    ) -> Modified {
+        modified { $0.addHandler(event, policy: policy, handler) }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onEvent<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second, Third, Fourth>
+    ) -> Modified {
+        modified { $0.addHandler(event, gate: gate, handler) }
+    }
+
     /// Adds a handler beside any already there, by token - on this tier, so
     /// nothing reachable from a `Style` can put one in a bag of values.
     /// Design: docs/design/views/modifiers.md#a-handler-runs-beside-the-one-before

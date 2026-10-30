@@ -104,8 +104,8 @@
         isWheeling || holdsItem || (press != nil && itemStart == .held && claimed == nil)
     }
 
-    /// The moves of the last `reading` milliseconds, with when each was made.
-    private var moves: [(time: Double, moved: Point)] = []
+    /// How fast the hand goes, by its moves of the last `reading` milliseconds.
+    private var trail = SpeedReading()
 
     /// When the hand last moved.
     private var last = 0.0
@@ -245,7 +245,7 @@
 
         open = true
         coasting = false
-        moves = []
+        trail = SpeedReading()
         last = time
         return ended + [Report(.began)]
     }
@@ -254,7 +254,7 @@
     public mutating func moved(_ moved: Point, at time: Double) -> [Report] {
         guard open else { return began(at: time) + self.moved(moved, at: time) }
 
-        moves = moves.filter { time - $0.time <= Self.reading } + [(time, moved)]
+        trail.moved(moved, at: time)
         last = time
         return [Report(.changed, moved: moved)]
     }
@@ -263,14 +263,11 @@
     public mutating func lifted(at time: Double, speed: Point?) -> [Report] {
         guard open else { return [] }
 
-        let recent = moves.filter { time - $0.time <= Self.reading }
-        let span = max(time - (recent.first?.time ?? time), Self.frame)
-        let went = recent.reduce(Point.zero) { Point($0.x + $1.moved.x, $0.y + $1.moved.y) }
-        let read = recent.isEmpty ? Point.zero : Point(went.x / span * 1_000, went.y / span * 1_000)
+        let read = trail.speed(at: time)
 
         open = false
         isWheeling = false
-        moves = []
+        trail = SpeedReading()
         return [Report(.ended, speed: speed ?? read)]
     }
 
@@ -280,7 +277,7 @@
 
         open = false
         isWheeling = false
-        moves = []
+        trail = SpeedReading()
         return [Report(.cancelled)]
     }
 

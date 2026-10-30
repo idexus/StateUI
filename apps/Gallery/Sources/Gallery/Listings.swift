@@ -8137,6 +8137,9 @@ enum Listings {
         /// Whether the reading written on every report is a SNAP.
         @State private var snaps = true
 
+        /// Whether the box let go springs home at the hand's speed.
+        @State private var springsHome = false
+
         /// Where the box IS, driven - the host reads the translation off these on
         /// its own frames, so a drag costs the arithmetic and no renders at all.
         @State private var liveX = 0.0
@@ -8166,6 +8169,14 @@ enum Listings {
                             switch update.phase {
                             case .changed:
                                 follow(panX + update.totalX, panY + update.totalY)
+                            case .ended where springsHome:
+                                // The hand's speed is the box's as it lets go: it
+                                // goes on that way, and the spring brings it home.
+                                (panX, panY) = (0, 0)
+                                $liveX.journey.velocity = update.velocityX
+                                $liveY.journey.velocity = update.velocityY
+                                $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+                                $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                             case .ended:
                                 panX = $liveX.journey.value
                                 panY = $liveY.journey.value
@@ -8189,6 +8200,7 @@ enum Listings {
                     })
 
                 SwitchRow("The drag snaps", $snaps)
+                SwitchRow("Springs home at the hand's speed", $springsHome)
 
                 Button("Put it back")
                     .horizontalAlignment(.center)
@@ -8714,12 +8726,14 @@ enum Listings {
         // Sources/Samples/Gestures/PinchSample.swift
         @State private var pinch = 1.0
         @State private var pinchedFrom = 1.0
+        @State private var turn = 0.0
+        @State private var turnedFrom = 0.0
         @State private var reports = 0
 
         var body: some View {
             VStack {
-                // The scale and the report count are read here, so every report a
-                // pinch makes builds this closure.
+                // The scale, the angle and the report count are read here, so every
+                // report the fingers make builds this closure.
                 DebugInfoLabel()
 
                 // The recognizer is on the ZStack; the rectangle inside it is what
@@ -8733,6 +8747,7 @@ enum Listings {
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                         .scale(pinch)
+                        .rotation(turn)
                 }
                 .style(.card)
                 .stroke(Palette.outline)
@@ -8746,18 +8761,27 @@ enum Listings {
                     if update.phase == .began { pinchedFrom = pinch }
                     pinch = max(0.5, min(3, pinchedFrom * update.scale))
                 }
+                .onRotationUpdated { update in
+                    reports += 1
+
+                    // The angle since the fingers began turns the view from where
+                    // it stood then.
+                    if update.phase == .began { turnedFrom = turn }
+                    turn = turnedFrom + update.angle
+                }
 
                 // Per cent rather than a formatted double: String(format:) is
                 // Foundation, which this sample does not import.
                 //
                 // The count is here on purpose: a pinch that reports once is a pinch
                 // that has been interrupted, and the number says so at a glance.
-                Text("Scale \(Int(pinch * 100))% - \(reports) report(s)")
+                Text("Scale \(Int(pinch * 100))%, turned \(Int(turn))° - \(reports) report(s)")
 
-                Button("Back to life size")
+                Button("Back as it was")
                     .horizontalAlignment(.center)
                     .onClicked {
                         pinch = 1
+                        turn = 0
                         reports = 0
                     }
             }

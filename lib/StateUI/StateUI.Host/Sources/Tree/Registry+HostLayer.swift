@@ -96,6 +96,7 @@ extension Registry {
         everyElementRealizes(ViewContract.swipeThreshold)
         everyElementRaises(ViewContract.panUpdated)
         everyElementRaises(ViewContract.pinchUpdated)
+        everyElementRaises(ViewContract.rotationUpdated)
         everyElementRaises(ViewContract.swiped)
         everyElementRaises(ViewContract.pointerEntered)
         everyElementRaises(ViewContract.pointerExited)

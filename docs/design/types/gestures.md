@@ -59,3 +59,21 @@ steps itself. A step with no beginning heard - a trackpad's magnification may
 come as steps and an end alone - begins the pinch first, at 1, so the
 beginning a handler keeps its size at always comes. The origin is where the pinch is centered, as a fraction of the
 view.
+
+## A gesture's speed
+
+Every continuous gesture reports where it stands since it began and how fast
+it goes: a pan its totals and its velocity across and down, in device units a
+second; a pinch its scale and how fast the scale changes, a second; two
+fingers turning their angle, in degrees clockwise, and how fast it changes, in
+degrees a second. The speed is nought as a gesture begins and, at its end, as
+fast as it lifted, beside the totals it reached - so a handler hands a
+journey both on one line, `$offset.journey.velocity = pan.velocityX`, and the
+state goes on from where the hand left it at the hand's speed. The host layer
+reads every speed by one rule, the speed a hand over a layout lifts at
+([its reading](../host/runtime.md#a-gestures-speed)); a platform's own
+velocity is never mixed in, so the same gesture tells the same speed on every
+host. A pan's end carries the totals it reached, whatever the platform tells
+of its end, as a pinch's end carries its whole spread. Two fingers turning
+are told as a pinch is: steps from the platform, summed from their start, a
+step with no beginning heard beginning them first, at nought.

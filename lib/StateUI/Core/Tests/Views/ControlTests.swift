@@ -625,6 +625,7 @@ final class ControlTests: XCTestCase {
                 .onSwiped(direction: [.left, .up], threshold: 60) { _ in }
                 .onPanUpdated(touchCount: 1) { _ in }
                 .onPinchUpdated { _ in }
+                .onRotationUpdated { _ in }
                 .onPointerEntered {}
                 .onPointerExited {}
                 .onPointerMoved { _ in }

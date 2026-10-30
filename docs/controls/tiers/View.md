@@ -44,16 +44,17 @@ How each of them realizes these members is on its own page.
 | `horizontalAlignment` | property | `Alignment` | native |
 | `margin` | property | `Insets` | native |
 | `panTouchCount` | property | `Int` | structure |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Point, Point)` | native |
 | `panXChannel` | property | `Int` | structure |
 | `panYChannel` | property | `Int` | structure |
 | `physicsBody` | property | `PhysicsBody` | stateUI |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point, Double)` | native |
 | `onPointerEntered` (`pointerEntered`) | event |  | native |
 | `onPointerExited` (`pointerExited`) | event |  | native |
 | `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |
 | `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |
 | `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |
+| `onRotationUpdated` (`rotationUpdated`) | event | `(GesturePhase, Double, Double)` | native |
 | `swipeDirection` | property | `SwipeDirection` | structure |
 | `swipeThreshold` | property | `Double` | structure |
 | `onSwiped` (`swiped`) | event | `SwipeDirection` | native |

@@ -13,8 +13,13 @@
 ///             if pan.phase == .changed { offsetX = pan.totalX }
 ///         }
 ///
-/// One of these arrives per movement, each carrying `phase` and how far the
-/// finger has come since the pan began.
+/// One of these arrives per movement, each carrying `phase`, how far the
+/// finger has come since the pan began, and how fast it goes - what a
+/// journey goes on at once the finger lifts:
+///
+///     .onPanUpdated { pan in
+///         if pan.phase == .ended { $offsetX.journey.velocity = pan.velocityX }
+///     }
 public struct PanUpdate: Equatable, Sendable {
     /// How far along the pan is.
     public var phase: GesturePhase
@@ -31,10 +36,21 @@ public struct PanUpdate: Equatable, Sendable {
     /// Design: docs/design/types/gestures.md#a-pan-is-measured-from-its-start
     public var totalY: Double
 
-    /// One report, from the three values a pan carries: phase, totalX, totalY.
-    init(phase: GesturePhase, totalX: Double, totalY: Double) {
+    /// How fast the pointer moves sideways, in device units a second - at an
+    /// end, as fast as it lifted; nought as the pan begins.
+    ///
+    /// Design: docs/design/types/gestures.md#a-gestures-speed
+    public var velocityX: Double
+
+    /// The same, vertically.
+    public var velocityY: Double
+
+    /// One report, from the three values a pan carries: its phase, how far it came and how fast it goes.
+    init(phase: GesturePhase, total: Point, velocity: Point) {
         self.phase = phase
-        self.totalX = totalX
-        self.totalY = totalY
+        totalX = total.x
+        totalY = total.y
+        velocityX = velocity.x
+        velocityY = velocity.y
     }
 }

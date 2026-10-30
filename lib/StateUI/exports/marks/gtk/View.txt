@@ -1,4 +1,4 @@
-# revision 18.1
+# revision 19.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -30,6 +30,7 @@ Button.pointerExited: ✅
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
+Button.rotationUpdated: ✓ rotate on Button: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Button.swipeDirection: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
@@ -67,6 +68,7 @@ Canvas.pointerExited: ✅
 Canvas.pointerMoved: ✅
 Canvas.pointerPressed: ✅
 Canvas.pointerReleased: ✅
+Canvas.rotationUpdated: ✓ rotate on Canvas: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Canvas.swipeDirection: ✅
 Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
@@ -104,6 +106,7 @@ Capsule.pointerExited: ✅
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
+Capsule.rotationUpdated: ✓ rotate on Capsule: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Capsule.swipeDirection: ✅
 Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
@@ -141,6 +144,7 @@ CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
+CheckBox.rotationUpdated: ✓ rotate on CheckBox: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 CheckBox.swipeDirection: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
@@ -178,6 +182,7 @@ ColorPicker.pointerExited: ✅
 ColorPicker.pointerMoved: ✅
 ColorPicker.pointerPressed: ✅
 ColorPicker.pointerReleased: ✅
+ColorPicker.rotationUpdated: ✓ rotate on ColorPicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 ColorPicker.swipeDirection: ✅
 ColorPicker.swipeThreshold: ✅
 ColorPicker.swiped: ✅
@@ -215,6 +220,7 @@ DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
+DatePicker.rotationUpdated: ✓ rotate on DatePicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 DatePicker.swipeDirection: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
@@ -252,6 +258,7 @@ Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
+Ellipse.rotationUpdated: ✓ rotate on Ellipse: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Ellipse.swipeDirection: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
@@ -289,6 +296,7 @@ Fill.pointerExited: ✅
 Fill.pointerMoved: ✅
 Fill.pointerPressed: ✅
 Fill.pointerReleased: ✅
+Fill.rotationUpdated: ✓ rotate on Fill: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Fill.swipeDirection: ✅
 Fill.swipeThreshold: ✅
 Fill.swiped: ✅
@@ -326,6 +334,7 @@ Grid.pointerExited: ✅
 Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
+Grid.rotationUpdated: ✓ rotate on Grid: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Grid.swipeDirection: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
@@ -363,6 +372,7 @@ HStack.pointerExited: ✅
 HStack.pointerMoved: ✅
 HStack.pointerPressed: ✅
 HStack.pointerReleased: ✅
+HStack.rotationUpdated: ✓ rotate on HStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 HStack.swipeDirection: ✅
 HStack.swipeThreshold: ✅
 HStack.swiped: ✅
@@ -400,6 +410,7 @@ Image.pointerExited: ✅
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
+Image.rotationUpdated: ✓ rotate on Image: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Image.swipeDirection: ✅
 Image.swipeThreshold: ✅
 Image.swiped: ✅
@@ -437,6 +448,7 @@ ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
+ItemsView.rotationUpdated: ✓ rotate on ItemsView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 ItemsView.swipeDirection: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
@@ -474,6 +486,7 @@ Line.pointerExited: ✅
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
+Line.rotationUpdated: ✓ rotate on Line: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Line.swipeDirection: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
@@ -511,6 +524,7 @@ Link.pointerExited: ✅
 Link.pointerMoved: ✅
 Link.pointerPressed: ✅
 Link.pointerReleased: ✅
+Link.rotationUpdated: ✓ rotate on Link: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Link.swipeDirection: ✅
 Link.swipeThreshold: ✅
 Link.swiped: ✅
@@ -548,6 +562,7 @@ Map.pointerExited: 🧩
 Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
+Map.rotationUpdated: 🧩
 Map.swipeDirection: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
@@ -585,6 +600,7 @@ Path.pointerExited: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
+Path.rotationUpdated: ✓ rotate on Path: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Path.swipeDirection: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
@@ -622,6 +638,7 @@ PhaseLayout.pointerExited: ✅
 PhaseLayout.pointerMoved: ✅
 PhaseLayout.pointerPressed: ✅
 PhaseLayout.pointerReleased: ✅
+PhaseLayout.rotationUpdated: ✓ rotate on PhaseLayout: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 PhaseLayout.swipeDirection: ✅
 PhaseLayout.swipeThreshold: ✅
 PhaseLayout.swiped: ✅
@@ -659,6 +676,7 @@ Picker.pointerExited: ✅
 Picker.pointerMoved: ✅
 Picker.pointerPressed: ✅
 Picker.pointerReleased: ✅
+Picker.rotationUpdated: ✓ rotate on Picker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Picker.swipeDirection: ✅
 Picker.swipeThreshold: ✅
 Picker.swiped: ✅
@@ -696,6 +714,7 @@ Polygon.pointerExited: ✅
 Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
+Polygon.rotationUpdated: ✓ rotate on Polygon: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Polygon.swipeDirection: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
@@ -733,6 +752,7 @@ Polyline.pointerExited: ✅
 Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
+Polyline.rotationUpdated: ✓ rotate on Polyline: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Polyline.swipeDirection: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
@@ -770,6 +790,7 @@ ProgressBar.pointerExited: ✅
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
+ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 ProgressBar.swipeDirection: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
@@ -807,6 +828,7 @@ Rectangle.pointerExited: ✅
 Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
+Rectangle.rotationUpdated: ✓ rotate on Rectangle: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Rectangle.swipeDirection: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
@@ -844,6 +866,7 @@ ScrollView.pointerExited: ✅
 ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
+ScrollView.rotationUpdated: ✓ rotate on ScrollView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 ScrollView.swipeDirection: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
@@ -881,6 +904,7 @@ SearchField.pointerExited: ✅
 SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
+SearchField.rotationUpdated: ✓ rotate on SearchField: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 SearchField.swipeDirection: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
@@ -918,6 +942,7 @@ Separator.pointerExited: ✅
 Separator.pointerMoved: ✅
 Separator.pointerPressed: ✅
 Separator.pointerReleased: ✅
+Separator.rotationUpdated: ✓ rotate on Separator: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Separator.swipeDirection: ✅
 Separator.swipeThreshold: ✅
 Separator.swiped: ✅
@@ -955,6 +980,7 @@ Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
+Slider.rotationUpdated: ✓ rotate on Slider: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Slider.swipeDirection: ✅
 Slider.swipeThreshold: ✅
 Slider.swiped: ✅
@@ -992,6 +1018,7 @@ Space.pointerExited: ✅
 Space.pointerMoved: ✅
 Space.pointerPressed: ✅
 Space.pointerReleased: ✅
+Space.rotationUpdated: ✓ rotate on Space: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Space.swipeDirection: ✅
 Space.swipeThreshold: ✅
 Space.swiped: ✅
@@ -1029,6 +1056,7 @@ Spinner.pointerExited: ✅
 Spinner.pointerMoved: ✅
 Spinner.pointerPressed: ✅
 Spinner.pointerReleased: ✅
+Spinner.rotationUpdated: ✓ rotate on Spinner: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Spinner.swipeDirection: ✅
 Spinner.swipeThreshold: ✅
 Spinner.swiped: ✅
@@ -1066,6 +1094,7 @@ Stepper.pointerExited: ✅
 Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
+Stepper.rotationUpdated: ✓ rotate on Stepper: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Stepper.swipeDirection: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
@@ -1103,6 +1132,7 @@ Switch.pointerExited: ✅
 Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
+Switch.rotationUpdated: ✓ rotate on Switch: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Switch.swipeDirection: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
@@ -1140,6 +1170,7 @@ Text.pointerExited: ✅
 Text.pointerMoved: ✅
 Text.pointerPressed: ✅
 Text.pointerReleased: ✅
+Text.rotationUpdated: ✓ rotate on Text: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Text.swipeDirection: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
@@ -1177,6 +1208,7 @@ TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
+TextEditor.rotationUpdated: ✓ rotate on TextEditor: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 TextEditor.swipeDirection: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
@@ -1214,6 +1246,7 @@ TextField.pointerExited: ✅
 TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅
+TextField.rotationUpdated: ✓ rotate on TextField: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 TextField.swipeDirection: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
@@ -1251,6 +1284,7 @@ TimePicker.pointerExited: ✅
 TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
+TimePicker.rotationUpdated: ✓ rotate on TimePicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 TimePicker.swipeDirection: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
@@ -1288,6 +1322,7 @@ VStack.pointerExited: ✅
 VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
+VStack.rotationUpdated: ✓ rotate on VStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 VStack.swipeDirection: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
@@ -1325,6 +1360,7 @@ WebView.pointerExited: ✅
 WebView.pointerMoved: ✅
 WebView.pointerPressed: ✅
 WebView.pointerReleased: ✅
+WebView.rotationUpdated: ✓ rotate on WebView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 WebView.swipeDirection: ✅
 WebView.swipeThreshold: ✅
 WebView.swiped: ✅
@@ -1362,6 +1398,7 @@ ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅
+ZStack.rotationUpdated: ✓ rotate on ZStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 ZStack.swipeDirection: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅
