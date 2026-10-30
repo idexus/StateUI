@@ -1162,6 +1162,7 @@ swift.init PositionDots.init(_:content:): @MainActor init<Items, Content>(_ item
 swift.init ProgressBar.init(): @MainActor init()
 swift.init ProgressBar.init(_:): @MainActor init(_ progress: Double)
 swift.init PropValue.init(propValue:): init?(propValue: PropValue)
+swift.init Proxy.init(_:): @MainActor init(_ value: some TwoWay<Value>)
 swift.init Proxy.init(get:set:): @MainActor init(get: @escaping () -> Value, set: @escaping (Value) -> Void)
 swift.init Proxy.init(projectedValue:): @MainActor init(projectedValue: Proxy<Value>)
 swift.init Rect.init(_:_:_:_:): init(_ x: Double, _ y: Double, _ width: Double, _ height: Double)

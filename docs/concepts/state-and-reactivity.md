@@ -262,8 +262,10 @@ the host's channel with no body rebuilt, has a journey (`$x.journey`), or wakes
 an engine. Those take `Binding` alone, so a proxy handed to them does not
 compile. Give each value the host carries on its own its own `@State`.
 
-A child that accepts a part borrows it with `@Proxy`. A parent lending
-a whole state to such a child says so with `.proxy`:
+A child that accepts a part borrows it with `@Proxy`. Its memberwise
+initializer takes a `Proxy`, so a parent lending it a whole state writes
+`$nickname.proxy`; a child of its own initializer, with `Proxy(_:)`, takes
+either:
 
 ```swift
 struct Contact {
@@ -272,6 +274,10 @@ struct Contact {
 
 struct NameRow: View {
     @Proxy var name: String
+
+    init(name: some TwoWay<String>) {
+        _name = Proxy(name)
+    }
 
     var body: some View {
         TextField($name)
@@ -285,11 +291,16 @@ struct People: View {
     var body: some View {
         VStack {
             NameRow(name: $contact.name)
-            NameRow(name: $nickname.proxy)
+            NameRow(name: $nickname)
         }
     }
 }
 ```
+
+Inside the child the value is a proxy whatever it was handed: read while the
+body is built, and the child built again as it changes. A row of fields and
+switches pays nothing for it; a child that animates a value, or hands it to
+the host, borrows with `@Binding`.
 
 For a model held in state, the two useful spellings have different owners:
 

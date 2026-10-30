@@ -20,6 +20,9 @@
 ///     NameRow(name: $profile.name)
 ///     NameRow(name: $name.proxy)
 ///
+/// A child of its own initializer taking `some TwoWay` and making it
+/// `Proxy(_:)` takes a whole state with no `.proxy`.
+///
 /// It promises reading and writing, never a notification: a part of a
 /// state rebuilds what reads that state, while closures over a store of
 /// another kind rebuild nothing when the store changes. The host carries
@@ -170,6 +173,28 @@ extension Proxy {
 
     /// Whether what this reaches still stands - false for an element a list no longer has.
     func reaches() -> Bool { reach() }
+}
+
+extension Proxy {
+    /// A proxy to whatever reads and writes `value` - a whole state, a part of
+    /// one, or another proxy - so a view borrowing with `@Proxy` takes either
+    /// through an initializer of its own:
+    ///
+    ///     init(name: some TwoWay<String>) { _name = Proxy(name) }
+    ///
+    /// A whole state keeps who it is borrowed from, so the view is carried
+    /// while the state is the same; it is described, as every proxy is.
+    ///
+    /// - Parameter value: what the proxy reads and writes.
+    public init(_ value: some TwoWay<Value>) {
+        if let whole = value.whole {
+            self = whole.proxy
+        } else if let proxy = value as? Proxy<Value> {
+            self = proxy
+        } else {
+            self.init(get: { value.wrappedValue }, set: { value.wrappedValue = $0 })
+        }
+    }
 }
 
 extension Proxy: PostTarget {}

@@ -169,8 +169,8 @@ struct Mixer: View {
   engine that never wakes.
 - **One language.** The three words say who holds the value, and each type is
   one of them; a child says which it accepts - `@Binding` a whole state,
-  `@Proxy` a part as well, a parent lending it a whole state writing
-  `$x.proxy`.
+  `@Proxy` a part as well, through `$x.proxy` or an initializer of its own
+  taking `some TwoWay` and making it `Proxy(_:)`.
 - **A proxy promises reading and writing, never a notification.** A part
   reads through the whole state, so a body reading it is rebuilt when the state
   changes; closures over a store StateUI does not own rebuild nothing when that

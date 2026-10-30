@@ -29,6 +29,23 @@ private struct Settings {
     var name: Proxy<String> { $profile.name }
 }
 
+/// What a test's own `TwoWay` holds.
+@MainActor
+private final class HeldBox {
+    var value = 0
+}
+
+/// A `TwoWay` of the test's own, neither a state nor a proxy.
+@MainActor
+private struct Held: TwoWay {
+    let box: HeldBox
+
+    var wrappedValue: Int {
+        get { box.value }
+        nonmutating set { box.value = newValue }
+    }
+}
+
 @MainActor
 private struct Borrower {
     @Binding var counter: Int
@@ -158,6 +175,25 @@ final class StateTests: XCTestCase {
             Whether the write asks for a render is then the setter's business - \
             this one owns nothing, so nothing was asked for.
             """)
+    }
+
+    /// `Proxy(_:)` keeps who a value is borrowed from: a whole state's storage, a proxy as it stands, and anything
+    /// else through its own reading and writing.
+    func testAProxyMadeFromAnyTwoWayKeepsWhoItBorrowsFrom() {
+        let state = State(wrappedValue: 1)
+        let whole = Proxy(state.projectedValue)
+        XCTAssertTrue(whole.lends.lender === state.projectedValue.storage, "a whole state lends its storage")
+        XCTAssertNil(whole.lends.lent, "and all of it")
+        whole.wrappedValue = 2
+        XCTAssertEqual(state.wrappedValue, 2)
+
+        let part = State(wrappedValue: [1, 2]).projectedValue[1]
+        XCTAssertEqual(Proxy(part).lends.lent, part.lends.lent, "a proxy stands as it is")
+
+        let box = HeldBox()
+        let through = Proxy(Held(box: box))
+        through.wrappedValue = 5
+        XCTAssertEqual(box.value, 5, "anything else reads and writes through itself")
     }
 
     func testABindingReachesOnePropertyOfAValue() {

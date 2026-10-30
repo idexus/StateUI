@@ -140,7 +140,9 @@ over a store StateUI does not own rebuild nothing when the store changes.
 
 A child borrows a proxy with `@Proxy`. Swift's memberwise initializer
 takes the wrapper's type, so a parent lending a whole state to such a child
-writes `$x.proxy`.
+writes `$x.proxy` - or the child's own initializer takes `some TwoWay` and
+makes it `Proxy(_:)`, which keeps who a whole state or a proxy borrows from,
+so the child is carried while that stays the same.
 
 ## Reading without recording
 

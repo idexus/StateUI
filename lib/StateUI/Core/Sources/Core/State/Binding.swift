@@ -106,7 +106,8 @@ public struct Binding<Value>: TwoWay {
     ///
     ///     NameRow(name: $name.proxy)
     ///
-    /// The proxy reads and writes the state; the host does not carry it.
+    /// The proxy reads and writes the state; the host does not carry it. A
+    /// child's own initializer can take either, with `Proxy(_:)`.
     public var proxy: Proxy<Value> {
         Proxy(read: read, write: write, standing: { [storage] in storage.value }, reaches: { true },
               lender: storage, lent: nil, mailroom: mailroom)

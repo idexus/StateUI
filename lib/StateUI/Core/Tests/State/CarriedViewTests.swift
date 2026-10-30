@@ -141,6 +141,25 @@ final class CarriedViewTests: XCTestCase {
         XCTAssertEqual(texts(in: patch).last, .string("caption 2"))
     }
 
+    /// A view borrowing with `@Proxy`, lent a WHOLE state through `Proxy(_:)`, is compared by that state: a parent
+    /// built again for another reason carries it.
+    func testAProxyMadeFromAWholeStateIsCarriedWithIt() {
+        let renders = Renders()
+        let builds = Builds()
+        let text = State("a")
+
+        func tree(_ n: Int) -> Node {
+            VStack {
+                Text("n \(n)")
+                ShownPart(text: Proxy(text.projectedValue), builds: builds)
+            }.node
+        }
+
+        renders.render(tree(1))
+        renders.render(tree(2))
+        XCTAssertEqual(builds.count, 1, "the same state is lent, so nothing here moved")
+    }
+
     /// A view lent ANOTHER ELEMENT'S PROPERTY is described again: `$rows[0].title`
     /// and `$rows[1].title` are two parts of one state, each the whole road from it.
     func testAViewLentAnotherElementsPropertyIsDescribedAgain() {

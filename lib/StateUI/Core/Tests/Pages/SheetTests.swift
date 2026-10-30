@@ -16,6 +16,10 @@ private struct Note: Hashable {
 private struct Presenting: View {
     let editing: Proxy<Bool>
 
+    init(editing: some TwoWay<Bool>) {
+        self.editing = Proxy(editing)
+    }
+
     var body: some View {
         Button("Edit")
             .sheet(isPresented: editing) {
@@ -27,6 +31,10 @@ private struct Presenting: View {
 /// A view presenting a page of the note its state holds.
 private struct PresentingANote: View {
     let note: Proxy<Note?>
+
+    init(note: some TwoWay<Note?>) {
+        self.note = Proxy(note)
+    }
 
     var body: some View {
         Text("Notes")
@@ -76,7 +84,7 @@ private struct Leaving: View {
     var body: some View {
         VStack {
             if stands.wrappedValue {
-                Presenting(editing: editing.proxy)
+                Presenting(editing: editing)
             }
         }
     }
@@ -100,7 +108,7 @@ final class SheetTests: XCTestCase {
     /// makes.
     func testASheetHoldsItsPageWhileItShows() throws {
         let editing = State(wrappedValue: false)
-        let hidden = Presenting(editing: editing.projectedValue.proxy).node.built
+        let hidden = Presenting(editing: editing.projectedValue).node.built
         let sheet = try XCTUnwrap(hidden.children.first { $0.type == .sheet })
 
         XCTAssertNil(sheet.driven[.isPresented], "described, not carried")
@@ -108,7 +116,7 @@ final class SheetTests: XCTestCase {
         XCTAssertTrue(sheet.children.isEmpty, "nothing built while it does not show")
 
         editing.wrappedValue = true
-        let patch = Renders().render(Presenting(editing: editing.projectedValue.proxy).node)
+        let patch = Renders().render(Presenting(editing: editing.projectedValue).node)
         let shown = try XCTUnwrap(patch.subtree.first { $0.type == .sheet })
         XCTAssertEqual(shown.children.map(\.type), [.page])
         XCTAssertEqual(shown.children.first?.props[.title], .string("Editor"))
@@ -142,12 +150,12 @@ final class SheetTests: XCTestCase {
     /// Another value presents another page, standing in the place of the first.
     func testAnotherItemIsAnotherPage() throws {
         let note = State<Note?>(wrappedValue: Note(name: "Inbox"))
-        let first = try XCTUnwrap(PresentingANote(note: note.projectedValue.proxy).node.built.children.first { $0.type == .sheet })
+        let first = try XCTUnwrap(PresentingANote(note: note.projectedValue).node.built.children.first { $0.type == .sheet })
         note.wrappedValue = Note(name: "Sent")
-        let second = try XCTUnwrap(PresentingANote(note: note.projectedValue.proxy).node.built.children.first { $0.type == .sheet })
+        let second = try XCTUnwrap(PresentingANote(note: note.projectedValue).node.built.children.first { $0.type == .sheet })
 
         XCTAssertNotEqual(first.children.first?.identity, second.children.first?.identity)
-        let patch = Renders().render(PresentingANote(note: note.projectedValue.proxy).node)
+        let patch = Renders().render(PresentingANote(note: note.projectedValue).node)
         XCTAssertEqual(patch.subtree.first { $0.type == .sheet }?.children.first?.props[.title], .string("Sent"))
     }
 
