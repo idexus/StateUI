@@ -6,7 +6,7 @@
 
 /// `HStackContract` on a host: a horizontal stack stands its children side by side, in the order the tree gives them,
 /// a child the tree takes away leaves its room to the next, a row short of room takes it from its words, and a row that
-/// wraps goes on onto further lines.
+/// wraps goes on onto further lines, each standing where its line alignment says.
 @_spi(Host) public enum HStackTests: ConformanceFamily {
     public static let name = "HStack"
 
@@ -110,6 +110,40 @@
                 try s.perform(.activate, on: s.element("change"))
                 s.settle { place() == [140, 0, 60, 20] }
                 s.expect(place(), [140, 0, 60, 20], "unwrapped, on one line past its room")
+            },
+            ConformanceCase("aWrappedRowsLinesStandWhereItsLineAlignmentSays", proves: [
+                Covered(HStackContract.lineAlignment),
+            ], needs: [Covered(HStackContract.wraps), Covered(ButtonContract.clicked)]) { s in
+                let alignment = State(wrappedValue: TextAlignment.center)
+                let third = Received<[Double]>()
+                s.start {
+                    VStack {
+                        HStack {
+                            ForEach(0..<3, id: \.self) { index in
+                                Rectangle()
+                                    .fill(.blue)
+                                    .width(60)
+                                    .height(20)
+                                    .onEvent(ViewContract.frameChanged) { if index == 2 { third.values.append($0) } }
+                            }
+                        }
+                        .wraps(true)
+                        .lineAlignment(alignment.wrappedValue)
+                        .spacing(10)
+                        .rowSpacing(6)
+                        .width(150)
+                        Button("End").onClicked { alignment.wrappedValue = .end }.id("end")
+                    }
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+                }
+                let place = { third.values.last.map(FrameReport.place) }
+                s.settle { place() == [45, 26, 60, 20] }
+                s.expect(place(), [45, 26, 60, 20], "the second line, one of 60 in 150, in the middle")
+
+                try s.perform(.activate, on: s.element("end"))
+                s.settle { place() == [90, 26, 60, 20] }
+                s.expect(place(), [90, 26, 60, 20], "at the end")
             },
         ]
     }

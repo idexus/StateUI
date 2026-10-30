@@ -18,6 +18,9 @@ public enum HStackContract: ElementContract {
     /// Whether the row goes on onto a further line where its room ends, rather than standing on one line.
     public static let wraps = ElementProperty<Self, Bool>("wraps", layer: .stateUI)
 
+    /// Where each line of a row that wraps stands across the row: at its start, in its middle or at its end.
+    public static let lineAlignment = ElementProperty<Self, TextAlignment>("lineAlignment", layer: .stateUI)
+
     /// The element's own members.
-    public static let members: [any ContractMember] = [rowSpacing, wraps]
+    public static let members: [any ContractMember] = [lineAlignment, rowSpacing, wraps]
 }

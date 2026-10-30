@@ -21,12 +21,17 @@
         /// One line, however long.
         case one
 
-        /// Each line as many children as its room takes, at least one, the lines `spacing` apart.
-        case wrapped(spacing: Double)
+        /// Each line as many children as its room takes, at least one, the lines `spacing` apart, each standing
+        /// across the row where `alignment` says.
+        case wrapped(spacing: Double, alignment: TextAlignment = .start)
 
-        /// What a row's members say: wrapped where it `wraps`, its lines `rowSpacing` apart.
+        /// What a row's members say: wrapped where it `wraps`, its lines `rowSpacing` apart and standing as its
+        /// `lineAlignment` says.
         public init(_ values: ElementValues<HStackContract>) {
-            self = values[HStackContract.wraps] == true ? .wrapped(spacing: values[HStackContract.rowSpacing] ?? 0) : .one
+            self = values[HStackContract.wraps] == true
+                ? .wrapped(spacing: values[HStackContract.rowSpacing] ?? 0,
+                           alignment: values[HStackContract.lineAlignment] ?? .start)
+                : .one
         }
     }
 
@@ -37,7 +42,7 @@
         of items: [Child], axis: Axis, spacing: Double, lines: Lines = .one, padding: Insets, width offered: Double?
     ) -> LayoutSize {
         let visible = items.filter(\.isShown)
-        if axis == .horizontal, case .wrapped(let lineSpacing) = lines, let offered {
+        if axis == .horizontal, case .wrapped(let lineSpacing, _) = lines, let offered {
             let room = max(0, offered - padding.start - padding.end)
             let sizes = broken(visible, spacing: spacing, room: room).map { line in
                 size(of: line.map { visible[$0] }, axis: .horizontal, spacing: spacing, padding: Insets(0), width: room)
@@ -110,7 +115,7 @@
     private static func leftToRight<Child: LayoutChild>(
         of items: [Child], axis: Axis, spacing: Double, lines: Lines, padding: Insets, in bounds: Rect
     ) -> [Rect?] {
-        guard axis == .horizontal, case .wrapped(let lineSpacing) = lines else {
+        guard axis == .horizontal, case .wrapped(let lineSpacing, let alignment) = lines else {
             return oneLine(of: items, axis: axis, spacing: spacing, padding: padding, in: bounds)
         }
         let content = bounds.inset(padding)
@@ -121,8 +126,16 @@
             let height = size(of: children, axis: .horizontal, spacing: spacing, padding: Insets(0), width: content.width)
                 .height
             let room = Rect(x: content.x, y: y, width: content.width, height: height)
-            for (index, place) in zip(line, oneLine(of: children, axis: .horizontal, spacing: spacing, padding: Insets(0), in: room)) {
-                places[index] = place
+            let placed = oneLine(of: children, axis: .horizontal, spacing: spacing, padding: Insets(0), in: room)
+            // A line shorter than the row stands where its alignment says; one a growing child fills, as it fills.
+            let end = zip(children, placed).compactMap { child, place in
+                place.map { $0.x + $0.width + child.values.margin.end }
+            }.max() ?? content.x
+            let fills = children.contains { $0.isShown && $0.values.grows(along: .horizontal) }
+            let left = fills ? 0 : max(0, content.x + content.width - end)
+            let shift = alignment == .center ? left / 2 : alignment == .end ? left : 0
+            for (index, place) in zip(line, placed) {
+                places[index] = place.map { Rect(x: $0.x + shift, y: $0.y, width: $0.width, height: $0.height) }
             }
             y += height + lineSpacing
         }

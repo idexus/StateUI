@@ -302,7 +302,8 @@ final class ControlTests: XCTestCase {
                 }
                 .spacing(6)
                 .wraps(true)
-                .rowSpacing(4)),
+                .rowSpacing(4)
+                .lineAlignment(.center)),
 
             ControlCase("ZStack", source: "ZStack.swift",
                 ZStack {

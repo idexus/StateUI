@@ -282,6 +282,30 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(spread[3]?.x, 120)
     }
 
+    /// A WRAPPED ROW'S LINES STAND WHERE ITS LINE ALIGNMENT SAYS: a line shorter than the row in its middle or at its
+    /// end - right to left, the end the left - and a line a growing child fills stands as it fills.
+    func testAWrappedRowsLinesStandWhereItsLineAlignmentSays() {
+        let row = [Child(width: 60, height: 20), Child(width: 60, height: 20), Child(width: 60, height: 20)]
+        let bounds = Rect(0, 0, 130, 46)
+        func places(_ alignment: TextAlignment, _ direction: LayoutDirection = .leftToRight) -> [Double?] {
+            StackArithmetic.places(
+                of: row, axis: .horizontal, spacing: 10, lines: .wrapped(spacing: 6, alignment: alignment),
+                padding: Insets(0), in: bounds, direction: direction).map { $0?.x }
+        }
+
+        XCTAssertEqual(places(.start), [0, 70, 0], "the second line at the start")
+        XCTAssertEqual(places(.center), [0, 70, 35], "the second line in the middle")
+        XCTAssertEqual(places(.end), [0, 70, 70], "the second line at the end")
+        XCTAssertEqual(places(.end, .rightToLeft), [70, 0, 0], "right to left, the end the left")
+
+        var space = Child(width: 0, height: 0)
+        space.values.grows = true
+        let filled = StackArithmetic.places(
+            of: [Child(width: 120, height: 10), Child(width: 60, height: 10), space], axis: .horizontal, spacing: 10,
+            lines: .wrapped(spacing: 6, alignment: .center), padding: Insets(0), in: bounds, direction: .leftToRight)
+        XCTAssertEqual(filled[1]?.x, 0, "a line a growing child fills stands as it fills")
+    }
+
     func testARowShortOfRoomTakesItFromItsWords() {
         let row = Self.row(title: 300, note: 100)
 

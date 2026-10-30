@@ -487,7 +487,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Ellipse](controls/Ellipse.md) | 83 | 44 ✅ · 2 ☑️ · 37 ✓ | 42 ✅ · 3 ☑️ · 37 ✓ · 1 – | 65 ✅ · 6 ☑️ · 10 ✓ · 1 – | 59 ✅ · 2 ☑️ · 15 ✓ · 7 – | 51 ✅ · 3 ☑️ · 23 ✓ · 6 – | 57 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Fill](controls/Fill.md) | 78 | 40 ✅ · 1 ☑️ · 37 ✓ | 38 ✅ · 2 ☑️ · 37 ✓ · 1 – | 62 ✅ · 5 ☑️ · 10 ✓ · 1 – | 57 ✅ · 2 ☑️ · 15 ✓ · 4 – | 48 ✅ · 2 ☑️ · 22 ✓ · 6 – | 53 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Grid](controls/Grid.md) | 88 | 49 ✅ · 1 ☑️ · 37 ✓ | 44 ✅ · 3 ☑️ · 39 ✓ · 1 – | 70 ✅ · 5 ☑️ · 12 ✓ · 1 – | 66 ✅ · 2 ☑️ · 14 ✓ · 5 – | 55 ✅ · 2 ☑️ · 24 ✓ · 7 – | 63 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| [HStack](controls/HStack.md) | 87 | 48 ✅ · 1 ☑️ · 37 ✓ | 43 ✅ · 3 ☑️ · 39 ✓ · 1 – | 69 ✅ · 5 ☑️ · 12 ✓ · 1 – | 65 ✅ · 2 ☑️ · 14 ✓ · 5 – | 54 ✅ · 2 ☑️ · 24 ✓ · 7 – | 62 ✅ · 1 ☑️ · 21 ✓ · 3 – |
+| [HStack](controls/HStack.md) | 88 | 49 ✅ · 1 ☑️ · 37 ✓ | 44 ✅ · 3 ☑️ · 39 ✓ · 1 – | 70 ✅ · 5 ☑️ · 12 ✓ · 1 – | 66 ✅ · 2 ☑️ · 14 ✓ · 5 – | 55 ✅ · 2 ☑️ · 24 ✓ · 7 – | 63 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Image](controls/Image.md) | 78 | 38 ✅ · 2 ☑️ · 37 ✓ | 37 ✅ · 2 ☑️ · 37 ✓ · 1 – | 59 ✅ · 5 ☑️ · 10 ✓ · 1 – | 54 ✅ · 1 ☑️ · 15 ✓ · 7 – | 46 ✅ · 2 ☑️ · 23 ✓ · 6 – | 52 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [ItemsView](controls/ItemsView.md) | 93 | 45 ✅ · 2 ☑️ · 41 ✓ · 4 – | 42 ✅ · 2 ☑️ · 43 ✓ · 5 – | 71 ✅ · 5 ☑️ · 13 ✓ · 2 – | 67 ✅ · 2 ☑️ · 14 ✓ · 9 – | 56 ✅ · 2 ☑️ · 24 ✓ · 9 – | 63 ✅ · 1 ☑️ · 22 ✓ · 6 – |
 | [Line](controls/Line.md) | 86 | 47 ✅ · 2 ☑️ · 37 ✓ | 46 ✅ · 2 ☑️ · 37 ✓ · 1 – | 69 ✅ · 5 ☑️ · 10 ✓ · 1 – | 63 ✅ · 1 ☑️ · 15 ✓ · 7 – | 55 ✅ · 2 ☑️ · 23 ✓ · 6 – | 61 ✅ · 1 ☑️ · 21 ✓ · 3 – |
@@ -515,10 +515,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 85 | 46 ✅ · 1 ☑️ · 37 ✓ | 42 ✅ · 3 ☑️ · 38 ✓ · 1 – | 68 ✅ · 5 ☑️ · 11 ✓ · 1 – | 63 ✅ · 2 ☑️ · 14 ✓ · 5 – | 53 ✅ · 2 ☑️ · 23 ✓ · 7 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 91 | 50 ✅ · 2 ☑️ · 38 ✓ · 1 – | 47 ✅ · 2 ☑️ · 40 ✓ · 2 – | 69 ✅ · 5 ☑️ · 12 ✓ · 4 – | 50 ✅ · 13 ✓ · 27 – | 58 ✅ · 2 ☑️ · 25 ✓ · 6 – | 60 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 84 | 45 ✅ · 1 ☑️ · 37 ✓ | 40 ✅ · 3 ☑️ · 39 ✓ · 1 – | 66 ✅ · 5 ☑️ · 12 ✓ · 1 – | 62 ✅ · 2 ☑️ · 14 ✓ · 5 – | 51 ✅ · 2 ☑️ · 24 ✓ · 7 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1695 | 1593 | 2361 | 2281 | 1946 | 2210 |
+| ✅ |  | 1696 | 1594 | 2362 | 2282 | 1947 | 2211 |
 | ✓ |  | 1395 | 1437 | 403 | 531 | 880 | 762 |
 | – |  | 54 | 106 | 162 | 250 | 238 | 134 |
-| **Met** | 3242 | **3144** | **3136** | **2926** | **3062** | **3064** | **3106** |
+| **Met** | 3243 | **3145** | **3137** | **2927** | **3063** | **3065** | **3107** |
 | 🧩 |  | 0 | 0 | 83 | 83 | 83 | 83 |
 
 ### Application structure
@@ -617,7 +617,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ColorPicker](controls/ColorPicker.md) | `choosesOpacity`, `color`, `onColorChanged` (`colorChanged`) | 3 | 3 ✅ | 3 ✅ | 3 – | 3 ✅ | 3 ✅ | 2 ✅ · 1 – |
 | [DatePicker](controls/DatePicker.md) | `onClosed` (`closed`), `date`, `onDateChanged` (`dateChanged`), `format`, `isOpen`, `maximumDate`, `minimumDate`, `onOpened` (`opened`) | 8 | 3 ✅ · 1 ✓ · 4 – | 4 ✅ | 5 ✅ · 3 ✓ | 7 ✅ · 1 ☑️ | 5 ✅ · 1 ☑️ · 2 ✓ | 4 ✅ · 3 – |
 | [Grid](controls/Grid.md) | `columnSpacing`, `columns`, `rowSpacing`, `rows` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
-| [HStack](controls/HStack.md) | `rowSpacing`, `wraps` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
+| [HStack](controls/HStack.md) | `lineAlignment`, `rowSpacing`, `wraps` | 3 | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [Image](controls/Image.md) | `isAnimating`, `source` | 2 | 1 ✅ | 1 ✅ |  | 1 ✅ | 1 ✅ | 1 ✅ |
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 9 ✅ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
@@ -707,10 +707,10 @@ realizes the element and each of its members.
 `isSelectable`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`,
 `isZoomEnabled`, `itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`,
 `keysTaken`, `label`, `layoutBody`, `layoutDirection`, `letsInputThrough`,
-`lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`, `location`,
-`magnifies`, `mapType`, `margin`, `maximum`, `maximumDate`, `maximumHeight`,
-`maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`, `minimum`,
-`minimumDate`, `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`,
+`lineAlignment`, `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`,
+`location`, `magnifies`, `mapType`, `margin`, `maximum`, `maximumDate`,
+`maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`,
+`minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`,
 `miterLimit`, `onIcon`, `opacity`, `options`, `order`, `orientation`, `padding`,
 `pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `parameters`, `part`,
 `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,

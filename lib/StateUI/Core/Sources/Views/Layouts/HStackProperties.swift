@@ -23,6 +23,15 @@ extension HStackProperties {
     /// The gap between one line and the next of a row that wraps, in device
     /// units; `.spacing` is the gap between children on a line.
     public func rowSpacing(_ value: Double) -> Modified { setValue(HStackContract.rowSpacing, value) }
+
+    /// Where each line of a row that wraps stands across the row: at its
+    /// start unless said, in its middle, or at its end - the far edge in a
+    /// left-to-right language. A line a growing child fills stands as it fills.
+    ///
+    ///     HStack { … }
+    ///         .wraps(true)
+    ///         .lineAlignment(.center)
+    public func lineAlignment(_ value: TextAlignment) -> Modified { setValue(HStackContract.lineAlignment, value) }
 }
 
 extension HStack {
@@ -36,5 +45,11 @@ extension HStack {
     /// new value, and no view is rebuilt for it.
     public func rowSpacing(_ state: Binding<Double>) -> Modified {
         twin(HStackContract.rowSpacing, by: state)
+    }
+
+    /// `lineAlignment` from a state, `$x`: the host sets each new value as it
+    /// stands, and no view is rebuilt for it.
+    public func lineAlignment(_ state: Binding<TextAlignment>) -> Modified {
+        twin(HStackContract.lineAlignment, by: state)
     }
 }

@@ -145,8 +145,10 @@ does - words giving up width where a lone child is wider than its line, a
 space taking what its line leaves, children resting on a first baseline -
 it does line by line, with the same arithmetic. The lines stand from the
 top, `rowSpacing` apart, and the row is as wide as its widest line; offered
-no width, it stands on one line. Right to left, each line fills from the
-right. Only a row wraps: a column is measured as tall as its children for a
+no width, it stands on one line. A line shorter than the row stands where
+`lineAlignment` says - its start, its middle or its end, the room it leaves
+on the other side or split - unless a growing child fills it. Right to left,
+each line fills from the right, and its start is the right. Only a row wraps: a column is measured as tall as its children for a
 width it is offered, and no height is offered to break it at. The Web hands
 the row to the browser's flexbox, which breaks its lines the same way
 ([web layout](../platforms/web/layout.md#a-row-that-wraps)).

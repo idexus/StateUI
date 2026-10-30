@@ -78,15 +78,17 @@ class WebLayoutView: WebDOMView {
         style(arrangement == .stack(.vertical) ? "row-gap" : "column-gap", spacing == 0 ? nil : WebCSS.pixels(spacing))
     }
 
-    /// Whether a row wraps, its lines from its top the room between them apart.
+    /// Whether a row wraps, its lines from its top the room between them apart, each standing as its alignment says.
     /// Design: docs/design/platforms/web/layout.md#a-row-that-wraps
     func setLines(_ lines: StackArithmetic.Lines) {
-        guard case .wrapped(let spacing) = lines else {
-            return ["flex-wrap", "align-content", "row-gap"].forEach { style($0, nil) }
+        guard case .wrapped(let spacing, let alignment) = lines else {
+            return ["flex-wrap", "align-content", "row-gap", "justify-content"].forEach { style($0, nil) }
         }
         style("flex-wrap", "wrap")
         style("align-content", "flex-start")
         style("row-gap", spacing == 0 ? nil : WebCSS.pixels(spacing))
+        // Each line across the row as its alignment says; a growing child fills its line all the same.
+        style("justify-content", alignment == .center ? "center" : alignment == .end ? "flex-end" : nil)
     }
 
     /// The room left between a grid's rows and between its columns.

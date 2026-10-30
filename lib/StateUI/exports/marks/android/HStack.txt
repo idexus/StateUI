@@ -1,4 +1,5 @@
-# revision 4.1
+# revision 5.1
 HStack: ✅
+HStack.lineAlignment: ✅
 HStack.rowSpacing: ✅
 HStack.wraps: ✅

@@ -22,5 +22,5 @@
     public static let stackMembers = PropertyList(StackContract.spacing, PaddingElementContract.padding)
 
     /// What a row takes besides: whether it wraps, and the space between its lines (`StackArithmetic.Lines`).
-    public static let rowMembers = PropertyList(HStackContract.wraps, HStackContract.rowSpacing)
+    public static let rowMembers = PropertyList(HStackContract.wraps, HStackContract.rowSpacing, HStackContract.lineAlignment)
 }

@@ -6,6 +6,9 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     @State private var spaced = true
     @State private var onBaseline = true
     @State private var wraps = true
+
+    /// Where a wrapped line shorter than the row stands.
+    @State private var lines = TextAlignment.start
     static let tags = [
         "Button", "Toggle", "Slider", "Picker", "Text", "Image", "Stack", "Grid",
         "Scroll", "List", "Map", "Sheet", "Menu", "Toolbar", "Tab", "Split",
@@ -114,12 +117,18 @@ struct StackLayoutSample: SampleContent, ExampleContent {
                 ForEach(Self.tags, id: \.self) { StackCell(text: $0) }
             }
             .wraps(wraps)
+            .lineAlignment(lines)
             .spacing(8)
             .rowSpacing(8)
 
             Switch($wraps)
                 .text("Wraps")
                 .accessibilityIdentifier("stackLayout.wraps")
+
+            // Where a line shorter than the row stands.
+            Picker([TextAlignment.start, .center, .end], selection: $lines) { "\($0)".titled }
+                .accessibilityLabel("Lines")
+                .presentation(.segmented)
 
             SectionTitle("Separator")
 
@@ -147,8 +156,8 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         Text("`.horizontalAlignment` places a child across the room its stack gives it; `.firstBaseline` rests "
             + "words of other sizes on one line. A `Space` takes the room its siblings leave; a row short of room "
-            + "takes it from its words, and `.wraps(true)` goes on onto further lines; a `Separator` draws the "
-            + "platform's line across its stack.")
+            + "takes it from its words, and `.wraps(true)` goes on onto further lines, each standing where "
+            + "`.lineAlignment` says; a `Separator` draws the platform's line across its stack.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

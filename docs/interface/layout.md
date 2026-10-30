@@ -142,7 +142,8 @@ states its own width keeps it.
 A row told `.wraps(true)` goes on onto a further line instead: each line
 holds as many children as its room takes at their natural widths, at least
 one, and the lines stand `.rowSpacing` apart, the spacing between children
-on a line staying `.spacing`:
+on a line staying `.spacing`. `.lineAlignment(_:)` says where a line shorter
+than the row stands - at its start unless said, `.center`, or `.end`:
 
 ```swift
 struct Tags: View {
@@ -157,6 +158,7 @@ struct Tags: View {
             }
         }
         .wraps(true)
+        .lineAlignment(.center)
         .spacing(8)
         .rowSpacing(8)
     }

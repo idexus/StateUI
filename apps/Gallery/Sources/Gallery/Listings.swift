@@ -10726,6 +10726,9 @@ enum Listings {
         @State private var spaced = true
         @State private var onBaseline = true
         @State private var wraps = true
+
+        /// Where a wrapped line shorter than the row stands.
+        @State private var lines = TextAlignment.start
         static let tags = [
             "Button", "Toggle", "Slider", "Picker", "Text", "Image", "Stack", "Grid",
             "Scroll", "List", "Map", "Sheet", "Menu", "Toolbar", "Tab", "Split",
@@ -10817,9 +10820,14 @@ enum Listings {
                     ForEach(Self.tags, id: \.self) { StackCell(text: $0) }
                 }
                 .wraps(wraps)
+                .lineAlignment(lines)
 
                 Switch($wraps)
                     .text("Wraps")
+
+                // Where a line shorter than the row stands.
+                Picker([TextAlignment.start, .center, .end], selection: $lines) { "\($0)".titled }
+                    .presentation(.segmented)
 
                 SectionTitle("Separator")
 
