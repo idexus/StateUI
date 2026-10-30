@@ -123,8 +123,8 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
 
         return MotionLayout(cards, id: \.name, parameters: $turn) { card in
             face(card, large: !fanned)
-        } placements: { room, turn, from in
-            (0..<count).map { fanned ? fan($0, turn, room) : pile($0, turn, from, room) }
+        } placements: { room, turn, segmentStart in
+            (0..<count).map { fanned ? fan($0, turn, room) : pile($0, turn, segmentStart, room) }
         }
         // The pile is swiped a card at a time, the fan scrolled through.
         .axis(
@@ -134,8 +134,11 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         // out of the deck and leaves it; short of that, it goes back.
         .itemDrag(begins: .perpendicular)
         .onItemDismissed(.up, beyond: 120) { card in remove(card) }
-        // ONE MOTION for the turn and for every change where the parameters stand.
+        // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
+        // where the parameters stand; `.dynamics` THE CARDS reaching their new
+        // places after a card joins, leaves or the order changes.
         .motion(.spring(response: .milliseconds(380), damping: 0.82))
+        .dynamics(.spring(response: .milliseconds(300), damping: 1))
     }
 
     /// Where one card stands in the fan: along an arc and turned with it, the
@@ -158,7 +161,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
     /// are. The card the run set out from goes out the way it goes, under the
     /// finger, until it stands beside the pile, then tucks under the new front
     /// card.
-    private func pile(_ index: Int, _ turn: Double, _ from: Double, _ room: Rect) -> Placement {
+    private func pile(_ index: Int, _ turn: Double, _ segmentStart: Double, _ room: Rect) -> Placement {
         let step = Double(index) - turn
         let width = min(room.width * 0.62, room.height * 0.75 / 1.33, 320)
         let height = width * 1.33
@@ -166,7 +169,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         let behind = min(abs(step), 4)
 
         // Out over most of a card - nought to one - then back under at once.
-        let leaving = Double(index) == from && abs(step) < 1
+        let leaving = Double(index) == segmentStart && abs(step) < 1
         let outward = abs(step) < 0.8
         let out = leaving ? (outward ? abs(step) / 0.8 : (1 - abs(step)) / 0.2) : 0
 
@@ -227,7 +230,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("In the pile, swipe the front card either way - one card a swipe: it goes out under "
-                + "your finger and under the next. The arithmetic is handed `from`, the card the "
+                + "your finger and under the next. The arithmetic is handed `segmentStart`, the card the "
                 + "swipe set out from, and the way it goes is the parameters' side of it. Pull a card up "
                 + "and let go to send it out of the deck.")
                 .fontSize(12)

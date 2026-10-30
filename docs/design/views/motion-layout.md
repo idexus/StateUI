@@ -196,7 +196,7 @@ builds nothing; a change of room moves no parameters.
 ## Where a motion set out
 
 Beside the parameters, the arithmetic may be handed where the run's motion set
-out (`placements: { room, parameters, from in }`): the parameters the run stood at
+out (`placements: { room, parameters, segmentStart in }`): the parameters the run stood at
 when the hand took it, a throw or a journey of the parameters carried it away. A
 pose drawn from the parameters alone cannot tell which card set out - parameters at
 1.3 are the first card going on or the second coming back - and the parameters'

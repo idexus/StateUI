@@ -21,7 +21,7 @@ ButtonMenuSample.swift d4e17af0531f4452
 ButtonRoleSample.swift 36d33f316a462966
 ButtonSample.swift 07e87a36914e4779
 CanvasSample.swift 52db70adead39b9b
-ChangingDeckSample.swift c3e2f089098d771d
+ChangingDeckSample.swift 7cce79a824148b3e
 CheckBoxSample.swift 70837379658f7ee0
 ChoosingItemsSample.swift 1a8449147a34b6dc
 ClipboardSample.swift 51f030ebe6f9b4dc
@@ -70,7 +70,7 @@ LayoutKeyframesSample.swift 2beb0ee156ad9d42
 LayoutParametersSample.swift cc0cb54a7757631f
 LifecycleSample.swift ba0a75804664098e
 LifetimeSample.swift 388647e356facd79
-LightTableSample.swift 93613db391ed6784
+LightTableSample.swift 8cba8eaccdf418ed
 LinkSample.swift 422f6cbd2a97bec3
 LinksSample.swift c7be640bac2fa5be
 LivingLayoutSample.swift 9027b77224ed6a31

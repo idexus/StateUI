@@ -234,12 +234,13 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     /// stood at when the hand, a throw or a journey took it away, then each snap the run passes on an axis the hand
     /// moves.
     ///
-    ///     MotionLayout(cards, id: \.name, parameters: $turn) { card in Face(card) } placements: { room, turn, from in
-    ///         // The card that stood in front leaves the way the run goes - `turn` above `from` or below it.
+    ///     MotionLayout(cards, id: \.name, parameters: $turn) { card in Face(card) } placements: { room, turn, segmentStart in
+    ///         // The card that stood in front leaves the way the run goes - `turn` above `segmentStart` or below.
     ///     }
     ///
-    /// The way the run goes is the parameters' side of `from`; back past it, the run goes the other way from the same
-    /// place, and at `from` itself every view stands where it stood, so nothing drawn from it jumps.
+    /// The way the run goes is the parameters' side of the segment's start (`segmentStart` here); back past it, the
+    /// run goes the other way from the same place, and at the start itself every view stands where it stood, so
+    /// nothing drawn from it jumps.
     ///
     /// - Parameters:
     ///   - items: what to place, one view each.

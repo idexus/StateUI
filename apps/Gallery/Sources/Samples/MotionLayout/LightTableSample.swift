@@ -67,8 +67,14 @@ struct LightTableSample: SampleContent, ExampleContent {
                     }))
             .horizontalAlignment(.center)
             .gridRow(1)
+
+            // THE PROGRAM MOVES ONE COORDINATE: the zoom travels, the pan and
+            // the turn stay as they stand - no model of its own for each.
+            Button("Closer").onClicked { table.zoom = 1 }
+                .horizontalAlignment(.center)
+                .gridRow(2)
         }
-        .rows(.fill, .auto)
+        .rows(.fill, .auto, .auto)
         .rowSpacing(10)
     }
 

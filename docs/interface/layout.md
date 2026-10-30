@@ -754,8 +754,9 @@ switch between a fan and a pile - takes every view from where it was to its
 new place as a body of the layout's world, while the parameters go on as they
 go. `.dynamics(_:)` says how: each view on a spring to its place,
 `.standard` - 300 milliseconds, never past it - unless said, `.none` for
-views standing at their places at once; `.motion(_:)` is the parameters' law
-alone:
+views standing at their places at once - the parameters still travel; `.motion(_:)`
+is the parameters' law alone, moving between the views' rests, and `.dynamics`
+the views reaching their new places:
 
 ```swift
 struct Hand: View {
@@ -838,10 +839,10 @@ struct Pile: View {
     var body: some View {
         MotionLayout(names, parameters: $turn) { name in
             Text(name)
-        } placements: { room, turn, from in
+        } placements: { room, turn, segmentStart in
             names.indices.map { index in
                 let step = Double(index) - turn
-                let leaving = Double(index) == from && abs(step) < 1
+                let leaving = Double(index) == segmentStart && abs(step) < 1
                 // Out the way the run goes and back, under the others past halfway.
                 let out = leaving ? sin(abs(step) * .pi) * (step < 0 ? -1 : 1) : 0
                 let behind = leaving ? 0 : abs(step)
