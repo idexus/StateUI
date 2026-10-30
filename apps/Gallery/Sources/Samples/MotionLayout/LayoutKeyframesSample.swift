@@ -31,9 +31,9 @@ struct LayoutKeyframesSample: SampleContent, ExampleContent {
         Card(name: "Dune", color: Color(hex: 0xCA8A04), icon: .clock),
     ]
 
-    /// Which layout stands: 0 the ring, 1 the grid, 2 the pile - handed on
-    /// with `$`, never read in the body.
-    @State private var arrangement = 0.0
+    /// Which layout stands: 0 the ring, 1 the grid - the one it opens on, in
+    /// the middle - 2 the pile; handed on with `$`, never read in the body.
+    @State private var arrangement = 1.0
 
     /// Whether the cards go between the layouts by a smooth curve rather than
     /// straight: read in the body.

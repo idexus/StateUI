@@ -5830,9 +5830,9 @@ enum Listings {
             Card(name: "Dune", color: Color(hex: 0xCA8A04), icon: .clock),
         ]
 
-        /// Which layout stands: 0 the ring, 1 the grid, 2 the pile - handed on
-        /// with `$`, never read in the body.
-        @State private var arrangement = 0.0
+        /// Which layout stands: 0 the ring, 1 the grid - the one it opens on, in
+        /// the middle - 2 the pile; handed on with `$`, never read in the body.
+        @State private var arrangement = 1.0
 
         /// Whether the cards go between the layouts by a smooth curve rather than
         /// straight: read in the body.
@@ -7498,7 +7498,11 @@ enum Listings {
 
         /// Whether each card follows its place as a body, lagging as the ring
         /// turns and swaying back onto it.
-        @State private var swaying = false
+        @State private var swaying = true
+
+        /// Whether the ring grows as it turns - the cards flung outward, as a
+        /// weight on a string is - read by the arithmetic below, never the body.
+        @State private var flungOut = false
 
         /// The card the ring last came to rest on - every card and the ring
         /// still - told once each rest.
@@ -7520,6 +7524,12 @@ enum Listings {
                 Grid {
                     // THE CARDS, and what moves them - the whole of the example.
                     ring
+
+                    // The ring turns for no build at all: the label says so, at
+                    // the board's top corner.
+                    DebugInfoLabel()
+                        .horizontalAlignment(.end)
+                        .verticalAlignment(.start)
                 }
                 .layoutDirection(rightToLeft ? .rightToLeft : .inherited)
                 .gridRow(0)
@@ -7527,14 +7537,12 @@ enum Listings {
                 // is cut at the board's edge rather than painted over the page.
                 .clipsContent(true)
 
+                // WHERE THE RING CAME TO REST, told once it is still.
+                Text("At rest on \(Self.cards[rested].name)")
+                    .horizontalAlignment(.center)
+                    .gridRow(1)
+
                 HStack {
-                    // The ring turns for no build at all: the label says so.
-                    DebugInfoLabel()
-
-                    // WHERE THE RING CAME TO REST, told once it is still.
-                    Text("At rest on \(Self.cards[rested].name)")
-                        .verticalAlignment(.center)
-
                     Button("Back")
                         .onClicked { move(-1) }
 
@@ -7543,11 +7551,11 @@ enum Listings {
 
                 }
                 .horizontalAlignment(.center)
-                .gridRow(1)
+                .gridRow(2)
 
                 Picker(Throwing.allCases, selection: $throwing) { $0.title }
                     .horizontalAlignment(.center)
-                    .gridRow(2)
+                    .gridRow(3)
 
                 HStack {
                     SwitchRow("Right to left", $rightToLeft)
@@ -7555,11 +7563,17 @@ enum Listings {
                     SwitchRow("Mirrored", $mirrored)
 
                     SwitchRow("Cards sway", $swaying)
+
+                    SwitchRow("Flung outward", $flungOut)
                 }
+                // On a narrow screen the switches go on onto further lines, each
+                // line in the middle.
+                .wraps(true)
+                .lineAlignment(.center)
                 .horizontalAlignment(.center)
-                .gridRow(3)
+                .gridRow(4)
             }
-            .rows(.fill, .auto, .auto, .auto)
+            .rows(.fill, .auto, .auto, .auto, .auto)
         }
 
         /// The ring of cards and its dots, placed by the arithmetic below.
@@ -7583,7 +7597,9 @@ enum Listings {
             } placements: { room, turn in
                 // THE WHOLE LAYOUT, run on the display's own frames whenever the
                 // room or the parameters have moved, with no view built.
-                Self.cards.indices.map { place($0, turn, room) }
+                // FLUNG OUTWARD, the ring grows with how fast it turns.
+                let flung = flungOut ? min(abs($turn.journey.velocity) * 0.05, 0.35) : 0
+                return Self.cards.indices.map { place($0, turn, room, flung: flung) }
                     + Self.cards.indices.map { dot($0, turn, room) }
             }
             // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
@@ -7677,7 +7693,7 @@ enum Listings {
         /// A RING IN SPACE, turned to `at` - the cards standing upright on a
         /// circle that lies flat, seen from in front and above, the chosen card
         /// nearest the eye. The whole of the layout.
-        private func place(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
+        private func place(_ index: Int, _ at: Double, _ room: Rect, flung: Double = 0) -> Placement {
             let count = Self.cards.count
             let fit = fit(in: room)
             let step = Double(index) - at
@@ -7695,8 +7711,10 @@ enum Listings {
             // stands in the middle of the room above the dots.
             let radius = min(wide * 1.75, (room.width / 2 - 8 - wide * 0.33) / 0.65)
             let horizon = (room.height - 30 - tall * Self.ringHeight) / 2 - tall * Self.back * (Self.above - 1)
-            let across = room.width / 2 + sin(angle) * radius * drawn
-            let foot = horizon + tall * Self.above * drawn
+            // Flung outward, every card farther from the ring's middle - across,
+            // and nearer or farther from the eye.
+            let across = room.width / 2 + sin(angle) * radius * drawn * (1 + flung)
+            let foot = horizon + tall * Self.above * (1 + (drawn - 1) * (1 + flung))
 
             // THE CARD AT ITS OWN SIZE, a little smaller than its place, standing
             // on the ring where its place does.
