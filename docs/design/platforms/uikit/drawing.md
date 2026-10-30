@@ -94,3 +94,20 @@ opaque as the run makes it - over the child's own transform and opacity. The
 run's order is the drawing order: the ZStack holds its children back to front
 in that order, and the one drawn in front takes the touch. A placed grid's
 second child is its shade, drawn as opaque as the run says.
+
+## Interactive glass
+
+Interactive glass (`Glass.isInteractive`) answers the touch on what stands
+in it: UIKit's glass effect lights and swells under a finger on its own view
+and its content view's, not on a sibling standing over it. So a layout whose
+box is interactive glass stands its children in the glass's content view -
+the same room, the backdrop's frame being the layout's bounds - and a touch
+on a child, a field taking it, is the glass's too; every other layout stands
+its children in itself, above the backdrop. A layout letting a touch beside
+its children through counts the glass as beside them.
+
+UIKit keeps whether glass answers the touch as it was where one glass effect
+gives way to another of the same style: turned interactive alone, the glass
+stayed still under the finger until its clarity changed, and then answered
+on both clarities. A change of interactivity alone takes the old effect away
+before the new one stands.

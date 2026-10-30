@@ -33,7 +33,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     }
 
     /// What the layout paints of its own box, and whether it cuts what it shows to the box's outline.
-    private(set) var box = UIKitBox()
+    let box = UIKitBox()
 
     /// Whether a touch beside every child goes on to what stands under the layout.
     var passesBeside = false
@@ -52,18 +52,31 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         guard items.count != self.items.count || !zip(items, self.items).allSatisfy({ $0.arranges(like: $1) })
         else { return }
 
-        for gone in self.items where gone.view.superview === self && !items.contains(where: { $0.view === gone.view }) {
+        let host = childrenHost
+        for gone in self.items where gone.view.superview === host && !items.contains(where: { $0.view === gone.view }) {
             gone.view.removeFromSuperview()
         }
-        // The backdrop stands beneath the children.
-        let first = box.backdropView == nil ? 0 : 1
-        for (index, item) in items.enumerated()
-        where item.view.superview !== self || subviews.firstIndex(of: item.view) != first + index {
-            insertSubview(item.view, at: first + index)
-        }
         self.items = items
+        standChildren()
         forgetMeasurements()
         setNeedsLayout()
+    }
+
+    /// Where the children stand: in the box's interactive glass, so a touch on them is the glass's as well - else in
+    /// the layout, above its backdrop.
+    /// Design: docs/design/platforms/uikit/drawing.md#interactive-glass
+    private var childrenHost: UIView {
+        box.backdropView.flatMap { $0.holdsChildren ? $0.contentView : nil } ?? self
+    }
+
+    /// Stands each child in the children's host, in the tree's order - the backdrop beneath them in the layout.
+    private func standChildren() {
+        let host = childrenHost
+        let first = host === self && box.backdropView != nil ? 1 : 0
+        for (index, item) in items.enumerated()
+        where item.view.superview !== host || host.subviews.firstIndex(of: item.view) != first + index {
+            host.insertSubview(item.view, at: first + index)
+        }
     }
 
     func forgetMeasurements() {
@@ -103,6 +116,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     override func layoutSubviews() {
         super.layoutSubviews()
         box.paint(on: self)
+        standChildren()
         let room = arrangementRoom ?? bounds.size
         places.begin(width: room.width)
         arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
@@ -114,6 +128,7 @@ class UIKitLayoutView: UIView, UIKitSteppable {
     func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
         box.set(background: background, stroke: stroke, width: width, shape: shape, clips: clips)
         box.paint(on: self)
+        standChildren()
     }
 
     /// A touch outside the shape the layout cuts to reaches nothing of it: UIKit tests a touch against the bounds.
@@ -123,7 +138,8 @@ class UIKitLayoutView: UIView, UIKitSteppable {
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let hit = super.hitTest(point, with: event)
-        return passesBeside && hit === self ? nil : hit
+        let beside = hit === self || hit === box.backdropView || hit === box.backdropView?.contentView
+        return passesBeside && beside ? nil : hit
     }
 
     /// Stands `item` at `place`, or on its way there.

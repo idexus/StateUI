@@ -76,14 +76,23 @@ final class UIKitBackdropView: UIVisualEffectView {
         }
     }
 
+    /// Whether its glass answers the touch: the layout's children then stand in it, so a touch on them is the glass's.
+    /// Design: docs/design/platforms/uikit/drawing.md#interactive-glass
+    var holdsChildren: Bool { isUserInteractionEnabled && effect is UIGlassEffect }
+
     /// Shows `material` - glass, in its tint, where it asks for glass, else its blur - where it changed.
     private func showEffect(_ material: HostMaterial) {
         guard material != shown, let thickness = material.blur else { return }
+        let before = shown?.glass
         shown = material
         if let glass = material.glass {
             let effect = UIGlassEffect(style: glass.isClear ? .clear : .regular)
             effect.tintColor = material.paint.flatMap(UIColor.init(stateUI:))
             effect.isInteractive = glass.isInteractive
+            // UIKit keeps whether glass answers the touch as it was where glass gives way to glass of the same style:
+            // a change of that alone takes the old glass away first.
+            // Design: docs/design/platforms/uikit/drawing.md#interactive-glass
+            if let before, before.isInteractive != glass.isInteractive { self.effect = nil }
             self.effect = effect
         } else {
             effect = UIBlurEffect(style: Self.style(thickness))

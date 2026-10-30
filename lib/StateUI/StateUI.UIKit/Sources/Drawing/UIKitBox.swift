@@ -9,10 +9,11 @@ import UIKit
 /// A layout's box: its background within its outline - a color or a gradient, or a blur or glass with its tint - the
 /// outline's stroke inside its edge, all behind the children - by their depth, whatever their order - and the cut
 /// of what the layout shows to the outline, each made only while there is something to paint. Over a blur or glass
-/// the stroke is the effect's.
+/// the stroke is the effect's. A class: painting may lay its view out again at once - glass given way to glass - and
+/// that pass finds the box painted already.
 /// Design: docs/design/platforms/uikit/drawing.md#a-layouts-box
 @MainActor
-struct UIKitBox {
+final class UIKitBox {
     private var fill = UIKitBrush()
     private var stroke = UIKitBrush()
     private var width = 0.0
@@ -27,7 +28,7 @@ struct UIKitBox {
     private var generation = 0
 
     /// Takes what the tree says of the box, by the host layer's reading of it (`BoxArithmetic`).
-    mutating func set(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
+    func set(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
         material = HostMaterial(background)
         fill = UIKitBrush(material.paint)
         self.stroke = UIKitBrush(stroke)
@@ -38,7 +39,7 @@ struct UIKitBox {
     }
 
     /// Paints the box on `view` for its size, where the size or the box changed since it last did.
-    mutating func paint(on view: UIView) {
+    func paint(on view: UIView) {
         let size = view.bounds.size
         guard painted.map({ $0.size != size || $0.generation != generation }) ?? (generation > 0) else { return }
         painted = (size, generation)
