@@ -452,10 +452,17 @@ its edge while the page's rows pass under it (`TopBarEdge.covers`): where its
 content runs under the room's top, its scroller's rows once they scroll past
 their start - at their start the first row stands clear below the bar - and
 anything else it holds always. Beside a sidebar each part of the bar follows
-its own page. The edge is the automatic one: the platform's own where its
-bars draw one, else - on the Web - the bottom bar's blur in the page's hue
-(`BottomBarPlace.blur`, `tint`), which hides while nothing passes under the
-bar.
+its own page. The arrangement says which edge (`barScrollEdge`), as a bottom
+bar says its own: `.automatic`, the platform's own where its bars draw one -
+UIKit's top edge effect, macOS's under the toolbar, GNOME's flat header bar -
+else the bottom bar's blur in the page's hue (`BottomBarPlace.blur`, `tint`)
+on the Web, which hides while nothing passes under the bar, and the hard one
+where the bar stands beside the page (Android, WinUI); `.hard`, UIKit's hard
+edge, the blur with a line along the bar's foot on the Web and - drawn by the
+host, as AppKit's toolbar takes no style - on AppKit, the theme's line under a
+bar beside the page while the rows go on past its foot
+(`TopBarEdge.continues`), GNOME's raised border; `.none`, the rows as they
+are, but macOS and GNOME keep their own edge.
 
 ## Words on a painted band
 

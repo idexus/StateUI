@@ -60,6 +60,7 @@ final class WinUIWindowController {
                 page.chromeBottomBar?.winUI.layoutItem, edge: page.chromeBottomBarEdge,
                 scroller: page.pageScroller?.winUI.view as? WinUIPageScroller)
             holder?.showToolbar(page.chromeBottomActions)
+            holder?.showTopEdge(page.barScrollEdge, scroller: page.pageScroller?.winUI.view as? WinUIPageScroller)
         }
     }
 

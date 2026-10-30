@@ -20,6 +20,13 @@ class WinUISingleChildView: WinUILayoutView {
     /// The page's scroller, whose rows going on the line follows.
     private weak var scroller: WinUIPageScroller?
 
+    /// The line along the page's top, under the bar standing over it, while rows go on past the bar's foot - its edge
+    /// (`barScrollEdge`), the hard one where the edge is the platform's.
+    private lazy var topLine = WinUIStackPartView.separator()
+
+    /// The edge the bar over the page shows while rows go on past its foot.
+    private(set) var topEdge = ScrollEdge.automatic
+
     /// The page's bar at its foot, beneath its bottom bar; nil while it holds no action.
     private(set) var toolbar: WinUIFootBarView?
 
@@ -36,6 +43,14 @@ class WinUISingleChildView: WinUILayoutView {
         invalidateMeasurements()
     }
 
+    /// Shows `edge` under the bar over the page while `scroller`'s rows go on past its foot.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-top
+    func showTopEdge(_ edge: ScrollEdge, scroller: WinUIPageScroller?) {
+        (topEdge, self.scroller) = (edge, scroller)
+        scroller?.standingChanged = { [weak self] in self?.showLine() }
+        showLine()
+    }
+
     /// Shows `actions` on the bar at the page's foot, beneath its bottom bar; none takes the bar away.
     func showToolbar(_ actions: ChromeActions) {
         let made = actions.isEmpty ? nil : toolbar ?? WinUIFootBarView()
@@ -47,15 +62,16 @@ class WinUISingleChildView: WinUILayoutView {
         invalidateMeasurements()
     }
 
-    /// Shows the line while the bar shows an edge and rows go on past it.
+    /// Shows each line while its bar shows an edge and rows go on past it.
     private func showLine() {
         line.setShown(
             (bottomBar != nil || toolbar != nil) && edge != .none && BottomBarPlace.continues(scroller: scroller?.standing))
+        topLine.setShown(topEdge != .none && TopBarEdge.continues(scrollerOffset: scroller?.standing.offset))
     }
 
     override func heldViews() -> [WinUIView] {
         super.heldViews() + (bottomBar.map { [$0.view] } ?? []) + (toolbar.map { [$0] } ?? [])
-            + (bottomBar != nil || toolbar != nil ? [line] : [])
+            + (bottomBar != nil || toolbar != nil ? [line] : []) + [topLine]
     }
 
     override func detach() {
@@ -79,6 +95,7 @@ class WinUISingleChildView: WinUILayoutView {
 
     override func arrange(in bounds: Rect) {
         var room = heading?.place(in: bounds) ?? bounds
+        topLine.layout(Rect(x: room.x, y: room.y, width: room.width, height: 1))
         // Measured at the width the measure offered, which WinUI answers inside an arrangement from what it kept.
         let foot = footHeight(width: room.width)
         if foot > 0 {

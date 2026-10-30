@@ -151,6 +151,9 @@ extension WebDriver {
             let style: ToolbarStyle = look == "plain" ? .plain : look == "rounded" ? .rounded : .glass
             return .some(style.propValue)
         case (_, .barForegroundColor): return .some(try barColor("--stateui-bar-foreground", over: element))
+        case (_, .barScrollEdge):
+            let edge = try WebBrowser.evaluate("e.dataset.edge ?? ''", on: standingBar(over: element).node) ?? ""
+            return .some((edge == "none" ? ScrollEdge.none : edge == "hard" ? .hard : .automatic).propValue)
         case (.page, .showsNavigationBar):
             guard let bar = try? bar(over: element) else { return nil }
             return try (!WebBrowser.truth("e.hidden", on: bar)).propValue

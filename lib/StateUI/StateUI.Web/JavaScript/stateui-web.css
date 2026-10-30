@@ -184,8 +184,9 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
 }
 /* A clear bar stands on what is under it while nothing of the page is, and on a blur in the page's hue while the
-   page's rows pass under it - the bottom bar's automatic edge (data-under, layout.md#a-bar-at-the-top). */
-.stateui-bar[data-clear][data-under]::before {
+   page's rows pass under it - the bottom bar's automatic edge (data-under, layout.md#a-bar-at-the-top); a hard edge
+   adds a line along its foot, and none shows the rows as they are (data-edge). */
+.stateui-bar[data-clear][data-under]:not([data-edge="none"])::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -195,6 +196,7 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   backdrop-filter: blur(20px) saturate(1.6);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
 }
+.stateui-bar[data-clear][data-under][data-edge="hard"]::before { border-bottom: 0.5px solid var(--stateui-separator); }
 /* The room between the bar's parts, its own buttons and its groups: the application's (toolbarSpacing), else these. */
 .stateui-bar-lead, .stateui-bar-side, .stateui-bar-start {
   display: flex; align-items: center; gap: var(--stateui-bar-spacing, 10px); min-width: 0;
@@ -289,7 +291,7 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
     -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
   }
   .stateui-bar[data-sidebar="shown"][data-clear][data-under]::before { inset-inline-start: var(--stateui-sidebar-width); }
-  .stateui-bar[data-sidebar="shown"][data-clear][data-side-under] .stateui-bar-side::before {
+  .stateui-bar[data-sidebar="shown"][data-clear][data-side-under]:not([data-edge="none"]) .stateui-bar-side::before {
     content: "";
     position: absolute;
     inset-block: 0;
@@ -299,6 +301,9 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
     background: color-mix(in srgb, var(--stateui-page, var(--stateui-surface)) 50%, transparent);
     backdrop-filter: blur(20px) saturate(1.6);
     -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  }
+  .stateui-bar[data-sidebar="shown"][data-clear][data-side-under][data-edge="hard"] .stateui-bar-side::before {
+    border-bottom: 0.5px solid var(--stateui-separator);
   }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-start { padding-inline-start: 10px; }
   /* The part over the sidebar stands its name at its start, in line with the icons of the rows under it - 20 from

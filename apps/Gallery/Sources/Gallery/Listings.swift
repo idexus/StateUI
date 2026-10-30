@@ -1334,7 +1334,7 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // How the rows show at the bar's edge as they pass under it.
+                // How the rows show at the bars' edges as they pass under them.
                 Picker(Self.edges, selection: $edge) { "\($0)".titled }
                     .presentation(.segmented)
 
@@ -1390,6 +1390,8 @@ enum Listings {
             } destination: { _ in
                 Text("")
             }
+            // The bar at the top shows the same edge as the bar at the foot.
+            .barScrollEdge(edge)
         }
 
         /// A message in its bubble, at its side of the conversation.

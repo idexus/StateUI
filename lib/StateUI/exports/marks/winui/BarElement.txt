@@ -1,13 +1,16 @@
-# revision 14.1
+# revision 15.1
 NavigationStack.barBackground: ☑️ WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient out from a point is drawn over the bar's box as an ellipse.
 NavigationStack.barForegroundColor: ✅
+NavigationStack.barScrollEdge: ✅
 NavigationStack.toolbarSpacing: – The title bar's commands stand in WinUI's own look.
 NavigationStack.toolbarStyle: – The bar's buttons keep WinUI's own look.
 SplitView.barBackground: ☑️ WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient out from a point is drawn over the bar's box as an ellipse.
 SplitView.barForegroundColor: ✅
+SplitView.barScrollEdge: ✅
 SplitView.toolbarSpacing: – The title bar's commands stand in WinUI's own look.
 SplitView.toolbarStyle: – The bar's buttons keep WinUI's own look.
 TabView.barBackground: ☑️ WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient out from a point is drawn over the bar's box as an ellipse.
 TabView.barForegroundColor: ✅
+TabView.barScrollEdge: ✅
 TabView.toolbarSpacing: – The title bar's commands stand in WinUI's own look.
 TabView.toolbarStyle: – The bar's buttons keep WinUI's own look.

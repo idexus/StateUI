@@ -795,6 +795,20 @@ beside the page, the page ends above it. Declared on a stack or a window's
 page, a bottom bar stands on every page shown there that declares none of its
 own; the innermost declaration wins.
 
+The bar at the top shows its edge the same way. A stack, tabs or a split view
+says it with `.barScrollEdge(_:)`, beside its bar's look: `.automatic` is the
+platform's own, and where it draws none a blur that hides while nothing
+passes under the bar; `.hard` adds a line along its foot on every platform;
+`.none` shows the rows as they are where the platform lets it:
+
+```swift quote
+NavigationStack($path) {
+    ScrollView { messages }
+        .ignoresSafeArea(.all)
+} destination: { _ in Text("") }
+.barScrollEdge(.hard)
+```
+
 ## Menu bars and context menus
 
 A page's menus are declared like its actions, with `.menuBar { }` on the

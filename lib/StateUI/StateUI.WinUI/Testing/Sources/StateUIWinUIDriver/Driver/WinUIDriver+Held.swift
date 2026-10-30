@@ -17,6 +17,9 @@ extension WinUIDriver {
             throw DriverCannot(reading: property, of: element)
         }
         if let value = backendHolds(property, on: element) { return value }
+        if property == .barScrollEdge {
+            return ((element.visiblePage?.native as? WinUIElement)?.view as? WinUISingleChildView)?.topEdge.propValue
+        }
         if property == .edge,
            let page = (element.enclosing(type: .page)?.native as? WinUIElement)?.view as? WinUISingleChildView {
             return page.edge.propValue

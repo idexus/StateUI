@@ -48,6 +48,17 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         UIKitKeyboardPlace.follow(view)
     }
 
+    /// The edge the page's scroller shows under the bar at its top, as the bar's path declares it.
+    private(set) var topEdge = ScrollEdge.automatic
+
+    /// Has the page's scroller show `edge` under the bar at its top, from its next layout.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-top
+    func showTopEdge(_ edge: ScrollEdge) {
+        guard edge != topEdge else { return }
+        topEdge = edge
+        view.setNeedsLayout()
+    }
+
     /// Shows `bar` - the page's bottom bar - over its foot; nil for none.
     func showBottomBar(_ bar: MountedElement?) {
         loadViewIfNeeded()
@@ -189,6 +200,7 @@ final class UIKitPageController: UIViewController, UIKitSheetStanding {
         let scroller = page?.element.pageScroller?.uiKit.view as? UIKitPageScroller
         scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: safe))
         bottomBar.stand(at: bar, edge: page?.element.chromeBottomBarEdge ?? .automatic, scroller: scroller?.scroller)
+        scroller?.scroller.topEdgeEffect.show(topEdge)
         page?.view?.layoutIfNeeded()
         // What reads a frame says where it stands within this pass, and what that moves is laid out again: a room
         // UIKit alone narrowed - a sidebar sliding - places its layout in the frame that measured it.

@@ -10,6 +10,9 @@ class GTKSingleChildView: GTKLayoutView {
     /// The edge a page's bottom bar shows while rows go on past it, as its frame stands it; nil for no bar.
     var bottomBarEdge: ScrollEdge?
 
+    /// The edge the header bar over a page shows while rows go on past its foot, as its frame stands it.
+    var barScrollEdge: ScrollEdge?
+
     override func contentSize(width: Double?) -> LayoutSize {
         SingleChildArithmetic.size(of: items.first, width: width)
     }

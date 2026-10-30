@@ -181,6 +181,18 @@ final class AppKitDriver: HostDriver {
         renderer?.runtime.pump.turn()
     }
 
+    /// The edge the band under the toolbar shows over `page`: the band of the room nearest the page's view.
+    static func bandEdge(over page: MountedElement?) -> HostValue? {
+        var view = (page?.native as? AppKitElement)?.view
+        while let standing = view {
+            if let band = standing.superview?.subviews.lazy.compactMap({ $0 as? AppKitTopEdgeView }).first {
+                return band.edge.propValue
+            }
+            view = standing.superview
+        }
+        return nil
+    }
+
     func frame() {
         renderer?.displayFrameForTesting()
     }
@@ -199,6 +211,7 @@ final class AppKitDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         layOutWindows()
+        if property == .barScrollEdge { return Self.bandEdge(over: element.visiblePage) }
         if element.type == .window { return try windowHolds(property, element) }
         if element.type == .sheet, property == .background { return try sheetGround(element) }
         if element.type == .popover, property == .isPresented {

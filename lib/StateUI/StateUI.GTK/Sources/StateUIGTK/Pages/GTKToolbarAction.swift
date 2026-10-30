@@ -107,6 +107,9 @@ struct GTKPageChrome {
     var bottomBarEdge = ScrollEdge.automatic
     var bottomBarScroller: GTKPageScroller?
 
+    /// The edge the header bar shows while the page's rows go on past its foot.
+    var barScrollEdge = ScrollEdge.automatic
+
     /// The groups of actions at the bar's start and at its end, each in reading order.
     var leading: [[GTKToolbarAction]] = []
     var trailing: [[GTKToolbarAction]] = []

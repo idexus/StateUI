@@ -13,7 +13,7 @@ AppearanceSample.swift 27279f899c5d72bd
 ApplicationSessionSample.swift 5e888fc7cfd589fc
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
-BottomBarSample.swift c130f1c2eee9440d
+BottomBarSample.swift bcce016628204202
 BoundPropertiesSample.swift 52240d3e367abe61
 BrushSample.swift 9bcd94f7f88fe7af
 BuilderSample.swift eda47ffd0dda692b

@@ -107,6 +107,7 @@ extension UIKitElement {
                     buttons: &barButtonsSaid)
                 toolbar.show(on: controller, items: &toolbarItemsSaid)
                 (controller as? UIKitPageController)?.showBottomBar(element.chromeBottomBar)
+                (controller as? UIKitPageController)?.showTopEdge(element.barScrollEdge)
             }
         case .tabView:
             if let controller {

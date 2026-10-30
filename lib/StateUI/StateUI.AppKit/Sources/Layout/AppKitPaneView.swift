@@ -37,6 +37,9 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
     /// The column's visible page's bottom bar, over the pane's foot.
     private let bottomBar = AppKitBottomBarView()
 
+    /// The band under the toolbar showing its hard edge while the column's rows pass under it.
+    private let topEdge = AppKitTopEdgeView()
+
     /// Shows the column's visible page's bottom bar and its bar at its foot, or takes them away where it declares
     /// neither.
     func showBottomBar() {
@@ -73,6 +76,14 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
         let scroller = column?.visiblePage?.pageScroller?.appKit.view as? AppKitPageScroller
         scroller?.keepClear(SafeAreaArithmetic.clearance(room: childRoom, safe: place?.safe ?? safeAreaRect.placed))
         bottomBar.stand(at: place, over: column?.visiblePage, scroller: scroller)
+        if topEdge.superview !== self { addSubview(topEdge, positioned: .above, relativeTo: item?.view) }
+        topEdge.stand(
+            in: Rect(x: 0, y: 0, width: bounds.width, height: max(0, safeAreaRect.minY)), over: column?.visiblePage,
+            scroller: scroller)
+        scroller?.standingChanged = { [weak self] in
+            self?.bottomBar.follow()
+            self?.topEdge.follow()
+        }
         if barBrush.paints { needsDisplay = true }
         layOutReporting(item?.view)
     }

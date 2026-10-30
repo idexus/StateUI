@@ -349,6 +349,7 @@ final class AndroidRenderer {
         // The pages losing their bottom bar let go of it before the one shown takes it: one view stands in one place.
         for page in window.pages.sorted(by: { $0.chromeBottomBar == nil && $1.chromeBottomBar != nil }) {
             (page.native as? AndroidElement)?.showBottomBar()
+            (page.native as? AndroidElement)?.showTopEdge()
         }
 
         // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no

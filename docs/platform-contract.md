@@ -536,14 +536,14 @@ Every control, and every part an application, its windows and its pages are made
 | [MenuItem](controls/MenuItem.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 4 ✅ · 3 – | 7 ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | 7 | 6 ✅ · 1 ☑️ | 6 ✅ · 1 ☑️ | 5 ✅ · 2 – | 7 ✅ | 5 ✅ · 2 – | 7 ✅ |
-| [NavigationStack](controls/NavigationStack.md) | 10 | 3 ✅ · 2 ☑️ · 2 ✓ · 2 – | 7 ✅ · 1 ✓ · 2 – | 5 ✅ · 2 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 1 ✓ · 2 – | 3 ✅ · 2 ✓ · 4 – | 8 ✅ · 1 ☑️ · 1 ✓ |
+| [NavigationStack](controls/NavigationStack.md) | 11 | 3 ✅ · 3 ☑️ · 2 ✓ · 2 – | 8 ✅ · 1 ✓ · 2 – | 6 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 3 ✅ · 1 ☑️ · 2 ✓ · 4 – | 9 ✅ · 1 ☑️ · 1 ✓ |
 | [Overlay](controls/Overlay.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | 15 | 11 ✅ · 1 ✓ | 14 ✅ · 1 ✓ | 13 ✅ · 1 ✓ · 1 – | 13 ✅ · 1 ✓ · 1 – | 11 ✅ · 1 ✓ · 2 – | 13 ✅ · 1 ✓ |
 | [Popover](controls/Popover.md) | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |
 | [Scene](controls/Scene.md) | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
 | [Sheet](controls/Sheet.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [SplitView](controls/SplitView.md) | 15 | 8 ✅ · 2 ☑️ · 1 ✓ · 3 – | 10 ✅ · 3 ✓ · 2 – | 5 ✅ · 3 ☑️ · 5 ✓ · 2 – | 9 ✅ · 3 ☑️ · 1 ✓ · 2 – | 6 ✅ · 1 ☑️ · 3 ✓ · 4 – | 11 ✅ · 3 ☑️ · 1 ✓ |
-| [TabView](controls/TabView.md) | 11 | 4 ✅ · 2 ☑️ · 2 ✓ · 2 – | 8 ✅ · 1 ✓ · 2 – | 6 ✅ · 2 ☑️ · 1 ✓ · 2 – | 7 ✅ · 1 ☑️ · 1 ✓ · 2 – | 4 ✅ · 1 ☑️ · 1 ✓ · 4 – | 9 ✅ · 1 ☑️ · 1 ✓ |
+| [SplitView](controls/SplitView.md) | 16 | 8 ✅ · 3 ☑️ · 1 ✓ · 3 – | 11 ✅ · 3 ✓ · 2 – | 6 ✅ · 3 ☑️ · 5 ✓ · 2 – | 10 ✅ · 3 ☑️ · 1 ✓ · 2 – | 6 ✅ · 2 ☑️ · 3 ✓ · 4 – | 12 ✅ · 3 ☑️ · 1 ✓ |
+| [TabView](controls/TabView.md) | 12 | 4 ✅ · 3 ☑️ · 2 ✓ · 2 – | 9 ✅ · 1 ✓ · 2 – | 7 ✅ · 2 ☑️ · 1 ✓ · 2 – | 8 ✅ · 1 ☑️ · 1 ✓ · 2 – | 4 ✅ · 2 ☑️ · 1 ✓ · 4 – | 10 ✅ · 1 ☑️ · 1 ✓ |
 | [TextSpan](controls/TextSpan.md) | 12 | 11 ✅ · 1 – | 12 ✅ | 10 ✅ · 1 – | 11 ✅ · 1 – | 12 ✅ | 12 ✅ |
 | [TextSpans](controls/TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](controls/TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -552,10 +552,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarLabel](controls/ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 111 | 114 | 93 | 139 | 103 | 169 |
+| ✅ |  | 111 | 117 | 96 | 142 | 103 | 172 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
 | – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 212 | **193** | **200** | **189** | **200** | **198** | **199** |
+| **Met** | 215 | **193** | **203** | **192** | **203** | **198** | **202** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -597,7 +597,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [KeyboardElement](controls/tiers/KeyboardElement.md) | `keyPressed`, `keysTaken` | 2 |
 | [FocusElement](controls/tiers/FocusElement.md) | `isFocusedChanged` | 1 |
 | [RefreshElement](controls/tiers/RefreshElement.md) | `isRefreshEnabled`, `isRefreshing`, `onRefreshRequested` (`refreshRequested`) | 3 |
-| [BarElement](controls/tiers/BarElement.md) | `barBackground`, `barForegroundColor`, `toolbarStyle`, `toolbarSpacing` | 4 |
+| [BarElement](controls/tiers/BarElement.md) | `barBackground`, `barForegroundColor`, `barScrollEdge`, `toolbarStyle`, `toolbarSpacing` | 5 |
 | [BarItemElement](controls/tiers/BarItemElement.md) | `style`, `background`, `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`) | 4 |
 | [BarButtonElement](controls/tiers/BarButtonElement.md) | `onPressed` (`pressed`), `onReleased` (`released`) | 2 |
 | [MenuItemElement](controls/tiers/MenuItemElement.md) | `icon`, `isEnabled`, `keyboardShortcut`, `text` | 4 |
@@ -690,10 +690,10 @@ realizes the element and each of its members.
 `accessibilityActions`, `accessibilityHeading`, `accessibilityHint`,
 `accessibilityIdentifier`, `accessibilityLabel`, `accessibilityRole`,
 `accessibilityValue`, `allowsDrop`, `area`, `backButtonTitle`, `background`,
-`barBackground`, `barEdge`, `barForegroundColor`, `canDrag`, `choosesOpacity`,
-`clipsContent`, `color`, `columns`, `columnSpacing`, `contentMode`,
-`cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`, `date`,
-`destination`, `dragText`, `drawing`, `droppedFileTypes`, `edge`,
+`barBackground`, `barEdge`, `barForegroundColor`, `barScrollEdge`, `canDrag`,
+`choosesOpacity`, `clipsContent`, `color`, `columns`, `columnSpacing`,
+`contentMode`, `cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`,
+`date`, `destination`, `dragText`, `drawing`, `droppedFileTypes`, `edge`,
 `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
 `fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`, `geometryTransform`,
 `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`,

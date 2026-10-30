@@ -41,6 +41,10 @@ final class AppKitBottomBarView: AppKitSingleChildView {
     /// Where the bar's view stands on its ground.
     private var barRoom = Rect(x: 0, y: 0, width: 0, height: 0)
 
+    /// Whether the page's content runs under the room's foot, and the scroller whose rows the bar follows.
+    private var runsUnder = false
+    private weak var scroller: AppKitPageScroller?
+
     /// Shows `page`'s bottom bar and its bar at its foot in place of what it showed; nothing for none.
     func show(_ page: MountedElement?) {
         self.page = page
@@ -74,7 +78,8 @@ final class AppKitBottomBarView: AppKitSingleChildView {
     }
 
     /// Stands the bar at `place` - across the room's foot, its view in the bar's place above the bar at the foot - and
-    /// follows what of `page` stands under it: its content, `scroller`'s rows as they move. Nowhere for no place.
+    /// shows what of `page` stands under it: its content, `scroller`'s rows, which its room has it `follow` as they
+    /// move. Nowhere for no place.
     func stand(at place: BottomBarPlace?, over page: MountedElement?, scroller: AppKitPageScroller?) {
         guard let place else { return frame = .zero }
         edge = page?.chromeBottomBarEdge ?? .automatic
@@ -88,17 +93,18 @@ final class AppKitBottomBarView: AppKitSingleChildView {
         barRoom = Rect(x: place.bar.x - place.ground.x, y: 0, width: place.bar.width, height: view)
         toolbar.frame = NSRect(x: barRoom.x, y: view, width: place.bar.width, height: toolbarHeight)
         needsLayout = true
-        let runsUnder = page.map {
+        runsUnder = page.map {
             SafeAreaArithmetic.under($0.contentIgnoresSafeArea, direction: $0.layoutDirection).bottom
         } ?? false
-        let follow: () -> Void = { [weak self, weak scroller] in
-            guard let self else { return }
-            let covered = BottomBarPlace.covers(contentRunsUnder: runsUnder, scroller: scroller?.standing)
-            ground.isHidden = !covered || edge == .none
-            line.isHidden = ground.isHidden || edge != .hard
-        }
-        scroller?.standingChanged = follow
+        self.scroller = scroller
         follow()
+    }
+
+    /// Shows the edge while anything of the page stands under the bar (`BottomBarPlace.covers`).
+    func follow() {
+        let covered = BottomBarPlace.covers(contentRunsUnder: runsUnder, scroller: scroller?.standing)
+        ground.isHidden = !covered || edge == .none
+        line.isHidden = ground.isHidden || edge != .hard
     }
 
     override var childRoom: Rect { barRoom }

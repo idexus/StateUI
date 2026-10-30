@@ -24,6 +24,9 @@ extension AndroidDriver {
         if property == .title || property == .icon, let tabs = element.parent, tabs.type == .tabView {
             return try tabHolds(property, of: element, in: tabs)
         }
+        if property == .barScrollEdge {
+            return ((element.visiblePage?.native as? AndroidElement)?.view as? AndroidPageView)?.topEdge.propValue
+        }
         if property == .edge,
            let page = (element.enclosing(type: .page)?.native as? AndroidElement)?.view as? AndroidPageView {
             return page.edge.propValue

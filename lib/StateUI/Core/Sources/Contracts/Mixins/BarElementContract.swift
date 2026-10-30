@@ -20,6 +20,11 @@ public enum BarElementContract: Contract {
     /// The room between the bar's groups and its own buttons, where the host draws the bar itself.
     public static let toolbarSpacing = ElementProperty<Self, Double>("toolbarSpacing", layer: .adaptive)
 
+    /// How what scrolls under the bar shows at its edge.
+    public static let barScrollEdge = ElementProperty<Self, ScrollEdge>("barScrollEdge", layer: .adaptive)
+
     /// The tier's own members.
-    public static let members: [any ContractMember] = [barBackground, barForegroundColor, toolbarStyle, toolbarSpacing]
+    public static let members: [any ContractMember] = [
+        barBackground, barForegroundColor, barScrollEdge, toolbarStyle, toolbarSpacing,
+    ]
 }

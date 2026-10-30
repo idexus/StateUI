@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 
 /// `BarElementContract` on a host: the bar an arrangement declares holds the look the tree gives it, and the look the
-/// tree changes it to - a color, a blur, a gradient, on every element wearing the tier - and the look crosses a sheet
-/// a view in it presents.
+/// tree changes it to - a color, a blur, a gradient, its edge, on every element wearing the tier - and the look crosses
+/// a sheet a view in it presents.
 @_spi(Host) public enum BarElementTests: ConformanceFamily {
     public static let name = "BarElement"
 
@@ -25,6 +25,7 @@
                 holds(
                     BarElementContract.barForegroundColor, on: element, .white, then: .black,
                     over: [Write(BarElementContract.barBackground, Material.color(.steelBlue))]),
+                holds(BarElementContract.barScrollEdge, on: element, .hard, then: ScrollEdge.none),
                 holds(BarElementContract.toolbarStyle, on: element, .glass, then: .rounded),
                 holds(BarElementContract.toolbarSpacing, on: element, 6, then: 14),
                 crossesASheet(on: element),

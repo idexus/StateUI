@@ -134,8 +134,9 @@ final class GTKPageFrame {
         if chrome.tabs !== self.chrome.tabs { showTabs(chrome.tabs) }
         if chrome.bottomBar !== self.chrome.bottomBar { showBottomBar(chrome.bottomBar) }
         showFoot(chrome.foot)
-        showBottomEdge(
-            chrome.bottomBar == nil && chrome.foot.isEmpty ? nil : chrome.bottomBarEdge, following: chrome.bottomBarScroller)
+        showEdges(
+            bottom: chrome.bottomBar == nil && chrome.foot.isEmpty ? nil : chrome.bottomBarEdge,
+            top: chrome.barScrollEdge, following: chrome.bottomBarScroller)
         if chrome.barBackground != self.chrome.barBackground || chrome.barForeground != self.chrome.barForeground {
             paintBar(background: chrome.barBackground, foreground: chrome.barForeground)
         }
@@ -236,16 +237,19 @@ final class GTKPageFrame {
         gtk_widget_set_visible(holder, 1)
     }
 
-    /// The bottom bar's edge, GNOME's own: its flat bar, which shows its shadow while the content scrolls, for the
-    /// platform's; a border on its own ground while `scroller`'s rows go on past it, for a hard one. GNOME's flat bar
-    /// shows its shadow whatever the edge says.
+    /// The bars' edges, GNOME's own: a flat bar, which shows its shadow while the content scrolls, for the platform's;
+    /// a border on its own ground while `scroller`'s rows go on past it, for a hard one - the bottom bar's past its
+    /// top, the header bar's past its foot. A flat bar shows its shadow whatever the edge says.
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
-    private func showBottomEdge(_ edge: ScrollEdge?, following scroller: GTKPageScroller?) {
-        (page as? GTKSingleChildView)?.bottomBarEdge = edge
+    private func showEdges(bottom: ScrollEdge?, top: ScrollEdge, following scroller: GTKPageScroller?) {
+        (page as? GTKSingleChildView)?.bottomBarEdge = bottom
+        (page as? GTKSingleChildView)?.barScrollEdge = top
         let show: () -> Void = { [weak self, weak scroller] in
             guard let self else { return }
-            let hard = edge == .hard && BottomBarPlace.continues(scroller: scroller?.standing)
-            adw_toolbar_view_set_bottom_bar_style(widget.opaque, hard ? ADW_TOOLBAR_RAISED_BORDER : ADW_TOOLBAR_FLAT)
+            let hardFoot = bottom == .hard && BottomBarPlace.continues(scroller: scroller?.standing)
+            adw_toolbar_view_set_bottom_bar_style(widget.opaque, hardFoot ? ADW_TOOLBAR_RAISED_BORDER : ADW_TOOLBAR_FLAT)
+            let hardTop = top == .hard && TopBarEdge.continues(scrollerOffset: scroller?.standing.offset)
+            adw_toolbar_view_set_top_bar_style(widget.opaque, hardTop ? ADW_TOOLBAR_RAISED_BORDER : ADW_TOOLBAR_FLAT)
         }
         scroller?.standingChanged = show
         show()

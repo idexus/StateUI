@@ -31,6 +31,21 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(runtime.tree.root).pages.map(\.id), [.manual("root"), .manual("pushed")])
     }
 
+    /// The bars' scroll edge is the nearest declared on the visible page's path - a stack inside tabs saying its own over the
+    /// tabs' - and `.automatic` where none is.
+    func testTheBarsScrollEdgeIsTheNearestOnThePath() throws {
+        let runtime = HostRuntime.still()
+        let inner = node("inner", .navigationStack, [.barScrollEdge: ScrollEdge.none.propValue], children: [node("page", .page)])
+        let tabs = node("tabs", .tabView, [.barScrollEdge: ScrollEdge.hard.propValue], children: [inner, node("b", .page)])
+        runtime.tree.apply(node("window", .window, children: [tabs]), complete: true)
+        let window = try XCTUnwrap(runtime.tree.root)
+        let arrangement = try XCTUnwrap(window.first(id: .manual("tabs")))
+
+        XCTAssertEqual(WindowChrome(window: window, arrangement: arrangement).barScrollEdge, ScrollEdge.none, "the stack's own")
+        XCTAssertEqual(WindowChrome(window: window, arrangement: nil).barScrollEdge, .automatic, "none declared")
+        XCTAssertEqual(try XCTUnwrap(window.first(id: .manual("b"))).barScrollEdge, .hard, "the tabs' on the other page")
+    }
+
     /// A sheet has no bar of its own: a stack on its visible path brings one, where its top page keeps it.
     func testASheetShowsABarOnlyWhereAStackBringsOne() throws {
         let runtime = HostRuntime.still()

@@ -15,4 +15,11 @@
         guard let scrollerOffset else { return true }
         return scrollerOffset.y > 0.5
     }
+
+    /// Whether a page's rows go on past the foot of its top bar standing beside the page: its scroller's, once they
+    /// scroll past their start; none for no scroller.
+    public static func continues(scrollerOffset: Point?) -> Bool {
+        guard let scrollerOffset else { return false }
+        return scrollerOffset.y > 0.5
+    }
 }

@@ -551,6 +551,32 @@ final class WebLookTests: XCTestCase {
         XCTAssertEqual(try edge("content"), "none", "a bar of a color")
     }
 
+    /// The bar's edge is the arrangement's: a hard one draws a line along the bar's foot while rows pass under it, and
+    /// none draws nothing even then.
+    func testABarsEdgeIsTheOneItsArrangementSays() throws {
+        let edge = State(wrappedValue: ScrollEdge.hard)
+        let host = WebRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Grid { ScrollView { Text("rows").height(2000) }.id("rows") }.ignoresSafeArea(.all).title("Edge")
+            } destination: { _ in Text("Pushed") }
+            .barBackground(.transparent)
+            .barScrollEdge(edge.wrappedValue)
+        }
+        let rows = { (host.runtime.tree.root?.first(id: .manual("rows"))?.native as? WebElement)?.view?.node }
+        host.settle { rows() != nil }
+        let before = { (property: String) in
+            try WebBrowser.evaluate(
+                "getComputedStyle(document.querySelector('.stateui-window > .stateui-bar'), '::before').\(property)", on: 0)
+        }
+        try WebBrowser.run("e.scrollTop = 300", on: try XCTUnwrap(rows()))
+        host.settle { (try? before("borderBottomStyle")) == "solid" }
+        XCTAssertEqual(try before("borderBottomStyle"), "solid", "a line along its foot")
+
+        edge.wrappedValue = .none
+        host.settle { (try? before("content")) == "none" }
+        XCTAssertEqual(try before("content"), "none", "nothing drawn, rows under it or not")
+    }
+
     /// A sheet's bar stands over the top of its room, as the window's does: a page's content stands below it, and its
     /// rows let under it scroll under it, the bar showing its edge once they pass under it.
     func testASheetsRowsScrollUnderItsBar() throws {

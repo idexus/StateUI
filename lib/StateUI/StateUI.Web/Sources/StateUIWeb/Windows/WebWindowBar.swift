@@ -187,6 +187,8 @@ final class WebWindowBar: WebDOMView {
         let clear = HostBrush(chrome.background).isClear
         style("--stateui-bar-filter", clear ? "none" : styles["backdrop-filter"] ?? nil)
         attribute("data-clear", clear ? "" : nil)
+        // How what scrolls under the bar shows at its edge: a line along its foot where it is hard, nothing for none.
+        attribute("data-edge", chrome.barScrollEdge == .none ? "none" : chrome.barScrollEdge == .hard ? "hard" : nil)
         // Words the tree gives no color stand light on a dark band and dark on a light one.
         style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
         // The buttons on glass unless said otherwise: the Web's own look for them, `.system`, is plain.

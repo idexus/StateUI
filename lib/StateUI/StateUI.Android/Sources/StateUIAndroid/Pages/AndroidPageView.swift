@@ -25,6 +25,13 @@ final class AndroidPageView: AndroidSingleChildView {
     /// The edge the bar shows while rows go on past it.
     private(set) var edge = ScrollEdge.automatic
 
+    /// The line along the page's top, under the bar standing beside it, while rows go on past the bar's foot - its
+    /// edge (`barScrollEdge`), the hard one where the edge is the platform's.
+    private let topLine = AndroidSeparatorView()
+
+    /// The edge the bar over the page shows while rows go on past its foot.
+    private(set) var topEdge = ScrollEdge.automatic
+
     /// The page's bar at its foot, Android's toolbar holding its actions; nil while it holds none.
     private(set) var toolbar: AndroidBarView?
 
@@ -49,6 +56,14 @@ final class AndroidPageView: AndroidSingleChildView {
         return made
     }
 
+    /// Shows `edge` under the bar over the page while rows go on past its foot.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-top
+    func showTopEdge(_ edge: ScrollEdge) {
+        guard edge != topEdge else { return }
+        topEdge = edge
+        requestLayout()
+    }
+
     override func detach() {
         super.detach()
         toolbar?.detach()
@@ -56,7 +71,7 @@ final class AndroidPageView: AndroidSingleChildView {
 
     override func heldViews() -> [AndroidView] {
         super.heldViews() + (barView.map { [$0] } ?? []) + (toolbar.map { [$0] } ?? [])
-            + (barView != nil || toolbar != nil ? [line] : [])
+            + (barView != nil || toolbar != nil ? [line] : []) + [topLine]
     }
 
     override func arrange(in bounds: Rect) {
@@ -83,11 +98,13 @@ final class AndroidPageView: AndroidSingleChildView {
             toolbar?.layout(Rect(x: bounds.x, y: place.bar.y + viewHeight, width: bounds.width, height: toolbarHeight))
             line.layout(Rect(x: bounds.x, y: place.bar.y, width: bounds.width, height: 1))
         }
+        topLine.layout(Rect(x: bounds.x, y: safe.y, width: bounds.width, height: 1))
         let scroller = page?.pageScroller?.android.view as? AndroidPageScroller
         scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: clear))
         let follow: () -> Void = { [weak self, weak scroller] in
             guard let self else { return }
             line.setShown(edge != .none && BottomBarPlace.continues(scroller: scroller?.standing))
+            topLine.setShown(topEdge != .none && TopBarEdge.continues(scrollerOffset: scroller?.standing.offset))
         }
         scroller?.standingChanged = follow
         follow()

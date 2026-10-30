@@ -67,6 +67,7 @@ enum WinUIRealization {
         .partial(BarElementContract.barBackground,
             missing: "WinUI has no glass: a bar of glass shows the in-app acrylic at its fallback thickness. A gradient "
                 + "out from a point is drawn over the bar's box as an ellipse."),
+        .complete(BarElementContract.barScrollEdge),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep WinUI's own look."),
         .complete(BarElementContract.barForegroundColor),
         .complete(MenuToggleContract.isOn),

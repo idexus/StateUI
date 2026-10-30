@@ -73,6 +73,15 @@ extension BarElement {
         setValue(BarElementContract.toolbarSpacing, value)
     }
 
+    /// How what scrolls under the bar shows at its edge: `.automatic` unless said - the platform's own, and where
+    /// it draws none a blur that shows only while something passes under the bar - `.hard`, the rows cut off at the
+    /// bar on every platform, or `.none`.
+    ///
+    ///     .barScrollEdge(.hard)
+    public func barScrollEdge(_ value: ScrollEdge) -> Modified {
+        setValue(BarElementContract.barScrollEdge, value)
+    }
+
     /// The color of what stands on the bar: the title and the native
     /// navigation and toolbar affordances. Destructive actions keep the
     /// platform's warning color.

@@ -44,7 +44,7 @@ struct BottomBarSample: SampleContent, ExampleContent {
     // listing: BottomBarSample
     var body: some View {
         VStack {
-            // How the rows show at the bar's edge as they pass under it.
+            // How the rows show at the bars' edges as they pass under them.
             Picker(Self.edges, selection: $edge) { "\($0)".titled }
                 .accessibilityLabel("Edge")
                 .presentation(.segmented)
@@ -109,6 +109,8 @@ struct BottomBarSample: SampleContent, ExampleContent {
         } destination: { _ in
             Text("")
         }
+        // The bar at the top shows the same edge as the bar at the foot.
+        .barScrollEdge(edge)
     }
 
     /// A message in its bubble, at its side of the conversation.
@@ -128,7 +130,7 @@ struct BottomBarSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Choose how the rows show at the bar's edge, open the conversation and scroll; at its end write a few "
+        Text("Choose how the rows show at the bars' edges, open the conversation and scroll; at its end write a few "
             + "lines: the bar grows with them, and the last message stays in sight. Send adds yours on the right "
             + "and takes the conversation to its end.")
             .fontSize(12)

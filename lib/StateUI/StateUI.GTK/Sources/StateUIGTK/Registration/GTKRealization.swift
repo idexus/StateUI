@@ -53,6 +53,8 @@ enum GTKRealization {
         .partial(BarElementContract.barBackground,
             missing: "GNOME blurs nothing inside a window: a blur or glass shows its color. A gradient across a corner "
                 + "or out from a point keeps the header bar's proportions as it was painted, not as the window resizes."),
+        .partial(BarElementContract.barScrollEdge,
+                 missing: "No edge: GNOME's flat header bar shows its shadow while the content scrolls."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The header bar's buttons keep libadwaita's own look."),
         .complete(BarElementContract.barForegroundColor),
         .complete(MenuBarContract.order),

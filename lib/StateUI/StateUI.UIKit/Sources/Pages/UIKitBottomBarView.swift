@@ -35,17 +35,13 @@ final class UIKitBottomBarView: UIKitLayoutView {
             return made
         }()
         if interaction.scrollView !== scroller { interaction.scrollView = scroller }
-        guard let effect = scroller?.bottomEdgeEffect else { return }
-        let style: UIScrollEdgeEffect.Style = edge == .hard ? .hard : .automatic
-        if effect.style != style { effect.style = style }
-        if effect.isHidden != (edge == .none) { effect.isHidden = edge == .none }
+        scroller?.bottomEdgeEffect.show(edge)
     }
 
     /// The edge the scroller under the bar shows, read off the scroller: what a test reads.
     var shownEdge: ScrollEdge? {
         let scroller = interactions.compactMap { ($0 as? UIScrollEdgeElementContainerInteraction)?.scrollView }.first
-        guard let effect = scroller?.bottomEdgeEffect else { return nil }
-        return effect.isHidden ? ScrollEdge.none : effect.style == .hard ? .hard : .automatic
+        return scroller?.bottomEdgeEffect.shown
     }
 
     override func contentSize(width: Double?) -> LayoutSize {

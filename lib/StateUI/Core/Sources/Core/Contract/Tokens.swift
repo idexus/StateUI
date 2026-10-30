@@ -102,6 +102,7 @@ extension NodeType {
     static let subtitle = MarkerContract.subtitle.token
     static let allowsDrop = ViewContract.allowsDrop.token
     static let area = ViewContract.area.token
+    static let barScrollEdge = BarElementContract.barScrollEdge.token
     static let barForegroundColor = BarElementContract.barForegroundColor.token
     static let endReachedWithin = ItemsViewContract.endReachedWithin.token
     static let hidesWhenInactive = WindowContract.hidesWhenInactive.token

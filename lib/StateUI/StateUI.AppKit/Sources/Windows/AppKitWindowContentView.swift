@@ -22,6 +22,9 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     private let overlaySurface = AppKitOverlaySurfaceView()
     private let bottomBar = AppKitBottomBarView()
 
+    /// The band under the toolbar showing its hard edge while the page's rows pass under it.
+    private let topEdge = AppKitTopEdgeView()
+
     /// The window's own material, under the page, while the window lets the
     /// desktop show through it.
     private var material: AppKitMaterialView?
@@ -194,6 +197,12 @@ extension AppKitWindowContentView {
         let scroller = visiblePage?.pageScroller?.appKit.view as? AppKitPageScroller
         scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: safe))
         bottomBar.stand(at: place, over: visiblePage, scroller: scroller)
+        if topEdge.superview !== self, let page { addSubview(topEdge, positioned: .above, relativeTo: page) }
+        topEdge.stand(in: Rect(x: 0, y: 0, width: whole.width, height: max(0, safe.y)), over: visiblePage, scroller: scroller)
+        scroller?.standingChanged = { [weak self] in
+            self?.bottomBar.follow()
+            self?.topEdge.follow()
+        }
     }
 }
 

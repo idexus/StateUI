@@ -27,6 +27,15 @@ extension AppKitWindowController {
         let foreground = chrome.foreground.flatMap(nsColor)
         window.title = chrome.title ?? element.appKit.core.applicationName
         window.subtitle = chrome.subtitle ?? ""
+        // The bars' edge is shown as the rooms lay out, the band under the toolbar with them.
+        if chrome.barScrollEdge != shownBarScrollEdge {
+            shownBarScrollEdge = chrome.barScrollEdge
+            func layOutAgain(_ view: NSView) {
+                view.needsLayout = true
+                view.subviews.forEach(layOutAgain)
+            }
+            layOutAgain(content)
+        }
         // A page's title view stands in for its title, over a painted band the
         // title stands in the bar's foreground, and a page may show none:
         // the window keeps its name for the system and hides the one it would

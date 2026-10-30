@@ -33,6 +33,8 @@ enum AppKitRealization {
             reason: "The user's accent stands on the Mac: StateUI does not override it with the application's."),
         .partial(BarElementContract.barBackground,
             missing: "The bars' band is painted under the toolbar's own material: a blur or glass shows its color."),
+        .partial(BarElementContract.barScrollEdge,
+                 missing: "No edge: AppKit's toolbar keeps macOS's own edge over what scrolls under it."),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The toolbar's items keep the Mac's own look."),
         .partial(BarElementContract.barForegroundColor,
             missing: "Only the title takes it, over a band painted in a bar color; the toolbar's items keep the system's color."),

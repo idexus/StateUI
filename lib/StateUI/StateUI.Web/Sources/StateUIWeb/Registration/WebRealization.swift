@@ -36,6 +36,7 @@ enum WebRealization {
             reason: "A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own."),
         .partial(BarElementContract.barBackground,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
+        .complete(BarElementContract.barScrollEdge),
         .complete(BarElementContract.toolbarStyle),
         .complete(BarElementContract.barForegroundColor),
         .complete(MenuBarContract.order),

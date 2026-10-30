@@ -287,6 +287,12 @@ extension AndroidElement {
         (view as? AndroidSplitView).map { !$0.overlays && $0.isPresented } ?? false
     }
 
+    /// Shows the edge the bar over a page stands at while its rows go on past the bar's foot, as its path declares it.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-top
+    func showTopEdge() {
+        (view as? AndroidPageView)?.showTopEdge(element.barScrollEdge)
+    }
+
     /// Shows a page's bottom bar - the one declared innermost on its path - at its foot, above its bar at its foot
     /// (`.toolbar(.bottom)`): Android's toolbar holding its actions as a stack's bar does.
     /// Design: docs/design/platforms/android/pages.md#the-bar-at-the-foot

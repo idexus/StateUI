@@ -16,4 +16,12 @@ final class TopBarEdgeTests: XCTestCase {
         XCTAssertTrue(TopBarEdge.covers(contentRunsUnder: true, scrollerOffset: nil), "content with no scroller")
         XCTAssertFalse(TopBarEdge.covers(contentRunsUnder: false, scrollerOffset: Point(x: 0, y: 120)), "content clear of it")
     }
+
+    /// Rows go on past a top bar standing beside the page once its scroller leaves its start; a page with no scroller
+    /// has none to go on.
+    func testRowsGoOnPastABarBesideThePageOnceTheyLeaveTheirStart() {
+        XCTAssertTrue(TopBarEdge.continues(scrollerOffset: Point(x: 0, y: 120)))
+        XCTAssertFalse(TopBarEdge.continues(scrollerOffset: .zero), "at its start")
+        XCTAssertFalse(TopBarEdge.continues(scrollerOffset: nil), "no scroller")
+    }
 }

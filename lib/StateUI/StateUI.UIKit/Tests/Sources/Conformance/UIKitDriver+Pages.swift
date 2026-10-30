@@ -63,6 +63,10 @@ extension UIKitDriver {
             default: break
             }
         }
+        if property == .barScrollEdge {
+            // The edge the page the arrangement shows has its scroller draw under the bar at its top.
+            return ((element.visiblePage?.native as? UIKitElement)?.controller as? UIKitPageController)?.topEdge.propValue
+        }
         if [.barBackground, .barForegroundColor].contains(property)
             || property == .subtitle && element.type == .page {
             return Self.barHolds(property, of: element)

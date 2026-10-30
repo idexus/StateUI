@@ -50,6 +50,9 @@
     /// How the bars' buttons stand: the nearest declared on the visible page's path, `.system` where none is.
     public var toolbarStyle = ToolbarStyle.system
 
+    /// How what scrolls under the bars shows at their edge: the nearest declared on the visible page's path.
+    public var barScrollEdge = ScrollEdge.automatic
+
     /// The room between the bars' groups: the nearest declared on the visible page's path; nil for the host's own.
     public var toolbarSpacing: Double?
 
@@ -81,6 +84,7 @@
         material = page?.barMaterial ?? HostMaterial(nil)
         toolbarStyle = page?.toolbarStyle ?? .system
         toolbarSpacing = page?.toolbarSpacing
+        barScrollEdge = page?.barScrollEdge ?? .automatic
         if let page { menus = page.chromeMenus }
         splitView = arrangement?.type == .splitView ? arrangement : nil
         showsSidebarToggle = splitView?.offersSidebarToggle ?? false

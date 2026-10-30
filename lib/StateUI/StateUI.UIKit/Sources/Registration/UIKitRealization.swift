@@ -29,6 +29,7 @@ enum UIKitRealization {
         .complete(BottomBarContract.edge),
         // MARK: Tiers - a member every wearer realizes alike
         .complete(BarElementContract.barBackground),
+        .complete(BarElementContract.barScrollEdge),
         .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep iOS's own look."),
         .complete(BarElementContract.barForegroundColor),
         .complete(ButtonContract.keyboardShortcut),

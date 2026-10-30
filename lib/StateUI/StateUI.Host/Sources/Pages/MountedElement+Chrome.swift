@@ -127,6 +127,12 @@ extension MountedElement {
         barValue(.toolbarStyle)?.enumeration.flatMap(ToolbarStyle.init(rawValue:)) ?? .system
     }
 
+    /// How what scrolls under this element's bar shows at its edge, found as its bar's colors; `.automatic` where
+    /// none is declared.
+    public var barScrollEdge: ScrollEdge {
+        barValue(.barScrollEdge).flatMap(ScrollEdge.init(propValue:)) ?? .automatic
+    }
+
     /// The room between this element's bar's groups, found as its bar's colors; nil for the host's own.
     public var toolbarSpacing: Double? {
         barValue(.toolbarSpacing)?.number

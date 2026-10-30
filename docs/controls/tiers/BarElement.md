@@ -30,5 +30,6 @@ How each of them realizes these members is on its own page.
 | --- | --- | --- | --- |
 | `barBackground` | property | `Material` | adaptive |
 | `barForegroundColor` | property | `Color` | adaptive |
+| `barScrollEdge` | property | `ScrollEdge` | adaptive |
 | `toolbarStyle` | property | `ToolbarStyle` | adaptive |
 | `toolbarSpacing` | property | `Double` | adaptive |

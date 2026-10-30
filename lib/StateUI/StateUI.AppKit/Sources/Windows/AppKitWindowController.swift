@@ -75,6 +75,9 @@ final class AppKitWindowController: NSWindowController {
     /// opaque window. See `AppKitWindowContentView.backdrop`.
     var backdrop: Blur.Thickness?
 
+    /// The bars' edge the rooms were last laid out for.
+    var shownBarScrollEdge = ScrollEdge.automatic
+
     var pageMenuItemsForTesting: [NSMenuItem] { AppKitMenus.items(pageMenus) }
     var modalCountForTesting: Int { modals.count }
     var modalsForTesting: [AppKitModalWindowController] { modals }
