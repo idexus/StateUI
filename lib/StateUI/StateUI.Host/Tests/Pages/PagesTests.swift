@@ -577,9 +577,9 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(bar("detail", in: runtime), "||[export] [clear reset]")
     }
 
-    /// A page owns its bar's actions, and a split view's stand beside them in their part - by default the detail's -
-    /// at the edge; a group standing on a stack, which no core sends, stands on no bar.
-    func testEachPageShowsItsOwnAndItsSplitViewsPart() throws {
+    /// A page's own actions stand nearest the title, its stack's for every page it shows further out, and a split
+    /// view's in their part - by default the detail's - at the edge.
+    func testEachPageShowsItsOwnItsStacksAndItsSplitViewsPart() throws {
         let runtime = runtime(pageWindow(
             outer: [toolbarGroup("page", [toolbarAction("more")])],
             sidebar: [toolbarGroup("menu.group", [toolbarAction("folder")])],
@@ -587,11 +587,12 @@ final class PagesTests: XCTestCase {
                 toolbarGroup("toSidebar", [toolbarAction("add")], part: .sidebar),
                 toolbarGroup("toDetail", [toolbarAction("inspector")]),
             ],
-            stacked: [toolbarGroup("stacked", [toolbarAction("lost")])])) { _ in }
+            stacked: [toolbarGroup("stacked", [toolbarAction("shared")])])) { _ in }
 
-        XCTAssertEqual(bar("detail", in: runtime), "|[more] [inspector]|", "the detail's own, then its part's")
+        XCTAssertEqual(bar("detail", in: runtime), "|[more] [shared] [inspector]|",
+                       "the detail's own, its stack's, then its part's")
         XCTAssertEqual(bar("menu", in: runtime), "|[folder] [add]|", "the sidebar's own, then its part's")
-        XCTAssertEqual(bar("home", in: runtime), "|[inspector]|", "a page under the top: its part's alone")
+        XCTAssertEqual(bar("home", in: runtime), "|[shared] [inspector]|", "a page under the top: its stack's and its part's")
     }
 
     /// A page's group naming the other part stands there, beside that part's own.

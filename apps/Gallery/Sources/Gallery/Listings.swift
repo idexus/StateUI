@@ -10529,7 +10529,8 @@ enum Listings {
             }
         }
 
-        /// A draft's stack in a sheet: the bar's actions are its pages'.
+        /// A draft's stack in a sheet: the bar's actions are its pages', and Help is
+        /// the stack's own, on every page it shows.
         private struct DraftSheet: View {
             @Binding var said: String
             @State private var path: [Int] = []
@@ -10586,6 +10587,12 @@ enum Listings {
                                 .id("sheet.share")
                                 .onClicked { said = "Shared page \(number)." }
                         }
+                }
+                // The stack's own action, on the bar of every page it shows.
+                .toolbar {
+                    ToolbarButton("Help")
+                        .id("sheet.help")
+                        .onClicked { said = "Help for every page." }
                 }
             }
         }

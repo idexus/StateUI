@@ -353,13 +353,10 @@ bar offers the sheet's close button unless the page it shows says not
   its own padding.
 - No builder of tab pages: a builder hands back an anonymous list whose only
   identity is position.
-- No toolbar on a stack or tabs: a page owns its bar's actions - each page of a
-  stack or of tabs its own, a pushed page none of the page under it. `.toolbar`
-  written on a `NavigationStack` or a `TabView` is left out and said once
-  (`complain`): every view offers `.toolbar`, and Swift calls an unavailable
-  overload on the arrangement's type no closer than the view's own, so no type
-  refuses it. A split view declares its own, for the parts of its bar ([a split
-  view's bar](#a-split-views-bar)).
+- A toolbar on a stack or tabs stands over every page they show, as a split
+  view's stands over the pages of the part it names ([a split view's
+  bar](#a-split-views-bar)): each page of a stack or of tabs its own beside it,
+  a pushed page none of the page under it.
 - No sidebar item type, template, header or footer: the sidebar is a page, and
   a header is a view at its top. No way to keep a split view with its sidebar
   turned off for good: an application with nothing for a sidebar does not use

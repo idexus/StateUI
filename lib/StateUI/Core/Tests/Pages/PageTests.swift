@@ -462,9 +462,9 @@ final class PageTests: XCTestCase {
         XCTAssertNotNil(patch.props["barBackground"])
     }
 
-    /// A page owns its bar's actions: a toolbar reaching a stack through a composed view's body is left out, said
-    /// once, and the stack's pages keep their own.
-    func testAToolbarOnAStackIsLeftOut() {
+    /// A toolbar reaching a stack through a composed view's body stands on the stack, for every page it shows, and
+    /// the stack's pages keep their own.
+    func testAToolbarOnAStackStandsOnTheStack() {
         struct Arranged: View {
             let path: State<[Int]>
             var body: some View {
@@ -478,9 +478,9 @@ final class PageTests: XCTestCase {
         let patch = Renders().render(Node.page(Arranged(path: State<[Int]>([])).toolbar { ToolbarButton("Shared") }))
 
         XCTAssertEqual(patch.type, .navigationStack)
-        XCTAssertFalse(patch.children.contains { $0.type == group }, "none on the stack")
-        XCTAssertEqual(patch.subtree.filter { $0.type == group }.count, 1, "the root page's own")
-        XCTAssertTrue(hasComplained("NavigationStack takes no toolbar - a page owns its bar's actions"))
+        XCTAssertTrue(patch.children.contains { $0.type == group }, "the stack's own")
+        XCTAssertEqual(patch.subtree.filter { $0.type == group }.count, 2, "and the root page's")
+        XCTAssertFalse(hasComplained("NavigationStack takes no toolbar"))
     }
 
     // MARK: - The guards

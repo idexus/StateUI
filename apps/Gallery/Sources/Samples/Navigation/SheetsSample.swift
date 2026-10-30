@@ -42,14 +42,16 @@ private struct StackInASheet: ExampleContent {
     var notes: (any View)? {
         Text("A stack in a sheet brings its bar, and each page puts its actions there as it would in a window: "
             + "Undo at the start, Save and Add as one group at the end, the pin a setting, Delete in the "
-            + "overflow, beside the sheet's close button. A pushed page brings its own.")
+            + "overflow, beside the sheet's close button. A pushed page brings its own; Help, the stack's own, "
+            + "stands on every page.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
 }
 
 // listing: StackInASheet
-/// A draft's stack in a sheet: the bar's actions are its pages'.
+/// A draft's stack in a sheet: the bar's actions are its pages', and Help is
+/// the stack's own, on every page it shows.
 private struct DraftSheet: View {
     @Binding var said: String
     @State private var path: [Int] = []
@@ -111,6 +113,12 @@ private struct DraftSheet: View {
                         .id("sheet.share")
                         .onClicked { said = "Shared page \(number)." }
                 }
+        }
+        // The stack's own action, on the bar of every page it shows.
+        .toolbar {
+            ToolbarButton("Help")
+                .id("sheet.help")
+                .onClicked { said = "Help for every page." }
         }
     }
 }

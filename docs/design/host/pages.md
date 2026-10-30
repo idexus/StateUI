@@ -239,10 +239,10 @@ stood: nothing is restored, because nothing was overwritten.
 
 ## A page's actions
 
-A page owns its bar's actions: the groups its own tree declares
-(`declarations`), none from the arrangements around it - a page pushed onto a
-stack carries none of the page under it; the core declares none on a stack or
-tabs. Under a split view the page stands under one part of the split view's one
+A page's bar holds the groups its own tree declares (`declarations`) - a page
+pushed onto a stack carries none of the page under it - and those the stacks
+and tabs around it declare for every page they show (`arrangementsGroups`),
+further out than its own, the outermost at the edge. Under a split view the page stands under one part of the split view's one
 bar (`splitBarPart`), which holds the split view's groups naming that part, the
 page's own and those the other column's shown page names for it; a group's part
 unsaid is its declarer's - a sidebar page's the sidebar's, a detail page's and

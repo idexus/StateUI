@@ -18,7 +18,7 @@ appkit TextInput 3
 android TextInput 2
 ToolbarButton 6
 ToolbarToggle 2
-ToolbarGroup 7
+ToolbarGroup 8
 TitleView 3
 MenuBar 3
 MenuItem 4

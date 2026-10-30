@@ -154,6 +154,25 @@
                 try s.settle { try bar() == "|[!bold !italic]|" }
                 s.expect(try bar(), "|[!bold !italic]|")
             },
+            ConformanceCase("aStacksItemsStandOnEveryPageItShows", proves: [
+                Covered(ToolbarGroupContract.self),
+            ]) { s in
+                let path = State(wrappedValue: [Int]())
+                s.start {
+                    NavigationStack(path.projectedValue) {
+                        DeclaringPage { [ToolbarButton("Save").id("save")] }
+                    } destination: { _ in DeclaringPage { [ToolbarButton("Share").id("share")] } }
+                    .toolbar { ToolbarButton("Home").id("home") }
+                }
+                let items = { everyItem(try s.bar(of: try shownPage(s))) }
+
+                try s.settle { try items() == "save home" }
+                s.expect(try items(), "save home", "the page's own nearer the title, its stack's at the edge")
+
+                path.wrappedValue = [1]
+                try s.settle { try items() == "share home" }
+                s.expect(try items(), "share home", "a pushed page's own, and its stack's still")
+            },
             ConformanceCase("aSplitViewsDetailItemsStandBesideTheDetailsOwn", proves: [
                 Covered(ToolbarGroupContract.part),
             ]) { s in

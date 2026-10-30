@@ -470,8 +470,9 @@ The items are built with the body declaring them, so an item follows the state
 it reads - Save enables itself as `hasChanges` moves, with nothing written by
 hand. They stand on the bar while their page is shown, and when the page goes
 its actions go with it: a page pushed onto a stack shows its own and none of
-the page under it, and a `NavigationStack` or a `TabView` declares none -
-`.toolbar` written on one is left out, and said once.
+the page under it. Written on a `NavigationStack` or a `TabView`, `.toolbar`
+declares items for every page it shows, standing further out than each page's
+own.
 
 Each item says where it stands with `.placement` - at the bar's `.start`, its
 `.end`, unsaid, or behind its `.overflow` menu - and an `order` among the

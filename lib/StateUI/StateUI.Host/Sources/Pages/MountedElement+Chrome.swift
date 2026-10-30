@@ -14,15 +14,29 @@ extension MountedElement {
         guard value(.showsNavigationBar)?.bool != false else { return ChromeActions() }
 
         guard let (split, part) = splitBarPart else {
-            return ChromeActions(ownGroups(as: .detail), part: nil, sidebarShown: true)
+            return ChromeActions(arrangementsGroups(as: .detail) + ownGroups(as: .detail), part: nil, sidebarShown: true)
         }
         let other = (part == .sidebar ? split.arrangedChildren.dropFirst().first : split.arrangedChildren.first)?
             .visiblePage
+        let stacks = arrangementsGroups(as: part)
         let around = split.slots.filter { $0.type == .toolbarGroup }.map {
-            ChromeActions.Declared($0, depth: -1, declarersPart: .detail)
+            ChromeActions.Declared($0, depth: -1 - stacks.count, declarersPart: .detail)
         }
         let others = other?.ownGroups(as: part == .sidebar ? .detail : .sidebar) ?? []
-        return ChromeActions(around + ownGroups(as: part) + others, part: part, sidebarShown: split.sidebarIsVisible)
+        return ChromeActions(
+            around + stacks + ownGroups(as: part) + others, part: part, sidebarShown: split.sidebarIsVisible)
+    }
+
+    /// The groups the stacks and tabs around this page declare for every page they show, their part unsaid being
+    /// `part`: further out than the page's own, the outermost at the edge.
+    /// Design: docs/design/host/pages.md#a-pages-actions
+    private func arrangementsGroups(as part: ToolbarPart) -> [ChromeActions.Declared] {
+        let arrangements = arrangementsAround.filter { $0.type == .navigationStack || $0.type == .tabView }
+        return arrangements.enumerated().flatMap { index, arrangement in
+            arrangement.slots.filter { $0.type == .toolbarGroup }.map {
+                ChromeActions.Declared($0, depth: index - arrangements.count, declarersPart: part)
+            }
+        }
     }
 
     /// The groups this page's own tree declares, their part unsaid being `part`.
