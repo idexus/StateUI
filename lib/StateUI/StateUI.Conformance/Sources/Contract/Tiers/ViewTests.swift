@@ -164,6 +164,11 @@
                 .verticalAlignment(.start)
             }
             s.settle { laid.values.last == 0 }
+            // Where the host stands it once its frames have laid it out.
+            while clock.now < 200 {
+                clock.now += 16
+                s.frame()
+            }
             let start = try s.place(of: s.element("specimen")).x
             let moved = { (try? s.place(of: s.element("specimen")).x).map { $0 - start } ?? .nan }
 
@@ -171,7 +176,7 @@
             try s.perform(.activate, on: s.element("leap"))
             s.settle { laid.values.last == 1 }
             var (first, farthest) = (moved(), 0.0)
-            while clock.now < 3_000 {
+            while clock.now < 3_200 {
                 clock.now += 16
                 s.frame()
                 if first.isNaN { first = moved() }

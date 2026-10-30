@@ -1,4 +1,4 @@
-# revision 16.1
+# revision 17.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -23,6 +23,7 @@ Button.panTouchCount: ✅
 Button.panUpdated: ✅
 Button.panXChannel: ✅
 Button.panYChannel: ✅
+Button.physicsBody: ✅
 Button.pinchUpdated: ✅
 Button.pointerEntered: ✅
 Button.pointerExited: ✅
@@ -59,6 +60,7 @@ Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
 Canvas.panXChannel: ✅
 Canvas.panYChannel: ✅
+Canvas.physicsBody: ✅
 Canvas.pinchUpdated: ✅
 Canvas.pointerEntered: ✅
 Canvas.pointerExited: ✅
@@ -95,6 +97,7 @@ Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
 Capsule.panXChannel: ✅
 Capsule.panYChannel: ✅
+Capsule.physicsBody: ✅
 Capsule.pinchUpdated: ✅
 Capsule.pointerEntered: ✅
 Capsule.pointerExited: ✅
@@ -131,6 +134,7 @@ CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅
 CheckBox.panYChannel: ✅
+CheckBox.physicsBody: ✅
 CheckBox.pinchUpdated: ✅
 CheckBox.pointerEntered: ✅
 CheckBox.pointerExited: ✅
@@ -167,6 +171,7 @@ ColorPicker.panTouchCount: ✅
 ColorPicker.panUpdated: ✅
 ColorPicker.panXChannel: ✅
 ColorPicker.panYChannel: ✅
+ColorPicker.physicsBody: ✅
 ColorPicker.pinchUpdated: ✅
 ColorPicker.pointerEntered: ✅
 ColorPicker.pointerExited: ✅
@@ -203,6 +208,7 @@ DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
 DatePicker.panXChannel: ✅
 DatePicker.panYChannel: ✅
+DatePicker.physicsBody: ✅
 DatePicker.pinchUpdated: ✅
 DatePicker.pointerEntered: ✅
 DatePicker.pointerExited: ✅
@@ -239,6 +245,7 @@ Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
 Ellipse.panYChannel: ✅
+Ellipse.physicsBody: ✅
 Ellipse.pinchUpdated: ✅
 Ellipse.pointerEntered: ✅
 Ellipse.pointerExited: ✅
@@ -275,6 +282,7 @@ Fill.panTouchCount: ✅
 Fill.panUpdated: ✅
 Fill.panXChannel: ✅
 Fill.panYChannel: ✅
+Fill.physicsBody: ✅
 Fill.pinchUpdated: ✅
 Fill.pointerEntered: ✅
 Fill.pointerExited: ✅
@@ -311,6 +319,7 @@ Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
 Grid.panXChannel: ✅
 Grid.panYChannel: ✅
+Grid.physicsBody: ✅
 Grid.pinchUpdated: ✅
 Grid.pointerEntered: ✅
 Grid.pointerExited: ✅
@@ -347,6 +356,7 @@ HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
 HStack.panXChannel: ✅
 HStack.panYChannel: ✅
+HStack.physicsBody: ✅
 HStack.pinchUpdated: ✅
 HStack.pointerEntered: ✅
 HStack.pointerExited: ✅
@@ -383,6 +393,7 @@ Image.panTouchCount: ✅
 Image.panUpdated: ✅
 Image.panXChannel: ✅
 Image.panYChannel: ✅
+Image.physicsBody: ✅
 Image.pinchUpdated: ✅
 Image.pointerEntered: ✅
 Image.pointerExited: ✅
@@ -419,6 +430,7 @@ ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 ItemsView.panYChannel: ✅
+ItemsView.physicsBody: ✅
 ItemsView.pinchUpdated: ✅
 ItemsView.pointerEntered: ✅
 ItemsView.pointerExited: ✅
@@ -455,6 +467,7 @@ Line.panTouchCount: ✅
 Line.panUpdated: ✅
 Line.panXChannel: ✅
 Line.panYChannel: ✅
+Line.physicsBody: ✅
 Line.pinchUpdated: ✅
 Line.pointerEntered: ✅
 Line.pointerExited: ✅
@@ -491,6 +504,7 @@ Link.panTouchCount: ✅
 Link.panUpdated: ✅
 Link.panXChannel: ✅
 Link.panYChannel: ✅
+Link.physicsBody: ✅
 Link.pinchUpdated: ✅
 Link.pointerEntered: ✅
 Link.pointerExited: ✅
@@ -527,6 +541,7 @@ Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
 Map.panXChannel: 🧩
 Map.panYChannel: 🧩
+Map.physicsBody: 🧩
 Map.pinchUpdated: 🧩
 Map.pointerEntered: 🧩
 Map.pointerExited: 🧩
@@ -563,6 +578,7 @@ Path.panTouchCount: ✅
 Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.panYChannel: ✅
+Path.physicsBody: ✅
 Path.pinchUpdated: ✅
 Path.pointerEntered: ✅
 Path.pointerExited: ✅
@@ -599,6 +615,7 @@ PhaseLayout.panTouchCount: ✅
 PhaseLayout.panUpdated: ✅
 PhaseLayout.panXChannel: ✅
 PhaseLayout.panYChannel: ✅
+PhaseLayout.physicsBody: ✅
 PhaseLayout.pinchUpdated: ✅
 PhaseLayout.pointerEntered: ✅
 PhaseLayout.pointerExited: ✅
@@ -635,6 +652,7 @@ Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
 Picker.panXChannel: ✅
 Picker.panYChannel: ✅
+Picker.physicsBody: ✅
 Picker.pinchUpdated: ✅
 Picker.pointerEntered: ✅
 Picker.pointerExited: ✅
@@ -671,6 +689,7 @@ Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
 Polygon.panXChannel: ✅
 Polygon.panYChannel: ✅
+Polygon.physicsBody: ✅
 Polygon.pinchUpdated: ✅
 Polygon.pointerEntered: ✅
 Polygon.pointerExited: ✅
@@ -707,6 +726,7 @@ Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
 Polyline.panXChannel: ✅
 Polyline.panYChannel: ✅
+Polyline.physicsBody: ✅
 Polyline.pinchUpdated: ✅
 Polyline.pointerEntered: ✅
 Polyline.pointerExited: ✅
@@ -743,6 +763,7 @@ ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
 ProgressBar.panXChannel: ✅
 ProgressBar.panYChannel: ✅
+ProgressBar.physicsBody: ✅
 ProgressBar.pinchUpdated: ✅
 ProgressBar.pointerEntered: ✅
 ProgressBar.pointerExited: ✅
@@ -779,6 +800,7 @@ Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
 Rectangle.panXChannel: ✅
 Rectangle.panYChannel: ✅
+Rectangle.physicsBody: ✅
 Rectangle.pinchUpdated: ✅
 Rectangle.pointerEntered: ✅
 Rectangle.pointerExited: ✅
@@ -815,6 +837,7 @@ ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
 ScrollView.panXChannel: ✅
 ScrollView.panYChannel: ✅
+ScrollView.physicsBody: ✅
 ScrollView.pinchUpdated: ✅
 ScrollView.pointerEntered: ✅
 ScrollView.pointerExited: ✅
@@ -851,6 +874,7 @@ SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
 SearchField.panXChannel: ✅
 SearchField.panYChannel: ✅
+SearchField.physicsBody: ✅
 SearchField.pinchUpdated: ✅
 SearchField.pointerEntered: ✅
 SearchField.pointerExited: ✅
@@ -887,6 +911,7 @@ Separator.panTouchCount: ✅
 Separator.panUpdated: ✅
 Separator.panXChannel: ✅
 Separator.panYChannel: ✅
+Separator.physicsBody: ✅
 Separator.pinchUpdated: ✅
 Separator.pointerEntered: ✅
 Separator.pointerExited: ✅
@@ -923,6 +948,7 @@ Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
 Slider.panXChannel: ✅
 Slider.panYChannel: ✅
+Slider.physicsBody: ✅
 Slider.pinchUpdated: ✅
 Slider.pointerEntered: ✅
 Slider.pointerExited: ✅
@@ -959,6 +985,7 @@ Space.panTouchCount: ✅
 Space.panUpdated: ✅
 Space.panXChannel: ✅
 Space.panYChannel: ✅
+Space.physicsBody: ✅
 Space.pinchUpdated: ✅
 Space.pointerEntered: ✅
 Space.pointerExited: ✅
@@ -995,6 +1022,7 @@ Spinner.panTouchCount: ✅
 Spinner.panUpdated: ✅
 Spinner.panXChannel: ✅
 Spinner.panYChannel: ✅
+Spinner.physicsBody: ✅
 Spinner.pinchUpdated: ✅
 Spinner.pointerEntered: ✅
 Spinner.pointerExited: ✅
@@ -1031,6 +1059,7 @@ Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅
 Stepper.panYChannel: ✅
+Stepper.physicsBody: ✅
 Stepper.pinchUpdated: ✅
 Stepper.pointerEntered: ✅
 Stepper.pointerExited: ✅
@@ -1067,6 +1096,7 @@ Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
 Switch.panXChannel: ✅
 Switch.panYChannel: ✅
+Switch.physicsBody: ✅
 Switch.pinchUpdated: ✅
 Switch.pointerEntered: ✅
 Switch.pointerExited: ✅
@@ -1103,6 +1133,7 @@ Text.panTouchCount: ✅
 Text.panUpdated: ✅
 Text.panXChannel: ✅
 Text.panYChannel: ✅
+Text.physicsBody: ✅
 Text.pinchUpdated: ✅
 Text.pointerEntered: ✅
 Text.pointerExited: ✅
@@ -1139,6 +1170,7 @@ TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
 TextEditor.panXChannel: ✅
 TextEditor.panYChannel: ✅
+TextEditor.physicsBody: ✅
 TextEditor.pinchUpdated: ✅
 TextEditor.pointerEntered: ✅
 TextEditor.pointerExited: ✅
@@ -1175,6 +1207,7 @@ TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
 TextField.panXChannel: ✅
 TextField.panYChannel: ✅
+TextField.physicsBody: ✅
 TextField.pinchUpdated: ✅
 TextField.pointerEntered: ✅
 TextField.pointerExited: ✅
@@ -1211,6 +1244,7 @@ TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
 TimePicker.panXChannel: ✅
 TimePicker.panYChannel: ✅
+TimePicker.physicsBody: ✅
 TimePicker.pinchUpdated: ✅
 TimePicker.pointerEntered: ✅
 TimePicker.pointerExited: ✅
@@ -1247,6 +1281,7 @@ VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.panYChannel: ✅
+VStack.physicsBody: ✅
 VStack.pinchUpdated: ✅
 VStack.pointerEntered: ✅
 VStack.pointerExited: ✅
@@ -1283,6 +1318,7 @@ WebView.panTouchCount: ✅
 WebView.panUpdated: ✅
 WebView.panXChannel: ✅
 WebView.panYChannel: ✅
+WebView.physicsBody: ✅
 WebView.pinchUpdated: ✅
 WebView.pointerEntered: ✅
 WebView.pointerExited: ✅
@@ -1319,6 +1355,7 @@ ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅
 ZStack.panXChannel: ✅
 ZStack.panYChannel: ✅
+ZStack.physicsBody: ✅
 ZStack.pinchUpdated: ✅
 ZStack.pointerEntered: ✅
 ZStack.pointerExited: ✅

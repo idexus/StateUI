@@ -1,4 +1,4 @@
-# revision 16.1
+# revision 17.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -23,6 +23,7 @@ Button.panTouchCount: ✅
 Button.panUpdated: ✅
 Button.panXChannel: ✅
 Button.panYChannel: ✅
+Button.physicsBody: ✅
 Button.pinchUpdated: ✓ pinch on Button: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Button.pointerEntered: ✅
 Button.pointerExited: ✅
@@ -59,6 +60,7 @@ Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
 Canvas.panXChannel: ✅
 Canvas.panYChannel: ✅
+Canvas.physicsBody: ✅
 Canvas.pinchUpdated: ✓ pinch on Canvas: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Canvas.pointerEntered: ✅
 Canvas.pointerExited: ✅
@@ -95,6 +97,7 @@ Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
 Capsule.panXChannel: ✅
 Capsule.panYChannel: ✅
+Capsule.physicsBody: ✅
 Capsule.pinchUpdated: ✓ pinch on Capsule: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Capsule.pointerEntered: ✅
 Capsule.pointerExited: ✅
@@ -131,6 +134,7 @@ CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
 CheckBox.panXChannel: ✅
 CheckBox.panYChannel: ✅
+CheckBox.physicsBody: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 CheckBox.pointerEntered: ✅
 CheckBox.pointerExited: ✅
@@ -167,6 +171,7 @@ ColorPicker.panTouchCount: ✅
 ColorPicker.panUpdated: ✅
 ColorPicker.panXChannel: ✅
 ColorPicker.panYChannel: ✅
+ColorPicker.physicsBody: ✅
 ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ColorPicker.pointerEntered: ✅
 ColorPicker.pointerExited: ✅
@@ -203,6 +208,7 @@ DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
 DatePicker.panXChannel: ✅
 DatePicker.panYChannel: ✅
+DatePicker.physicsBody: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 DatePicker.pointerEntered: ✅
 DatePicker.pointerExited: ✅
@@ -239,6 +245,7 @@ Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
 Ellipse.panXChannel: ✅
 Ellipse.panYChannel: ✅
+Ellipse.physicsBody: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Ellipse.pointerEntered: ✅
 Ellipse.pointerExited: ✅
@@ -275,6 +282,7 @@ Fill.panTouchCount: ✅
 Fill.panUpdated: ✅
 Fill.panXChannel: ✅
 Fill.panYChannel: ✅
+Fill.physicsBody: ✅
 Fill.pinchUpdated: ✓ pinch on Fill: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Fill.pointerEntered: ✅
 Fill.pointerExited: ✅
@@ -311,6 +319,7 @@ Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
 Grid.panXChannel: ✅
 Grid.panYChannel: ✅
+Grid.physicsBody: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Grid.pointerEntered: ✅
 Grid.pointerExited: ✅
@@ -347,6 +356,7 @@ HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
 HStack.panXChannel: ✅
 HStack.panYChannel: ✅
+HStack.physicsBody: ✅
 HStack.pinchUpdated: ✓ pinch on HStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 HStack.pointerEntered: ✅
 HStack.pointerExited: ✅
@@ -383,6 +393,7 @@ Image.panTouchCount: ✅
 Image.panUpdated: ✅
 Image.panXChannel: ✅
 Image.panYChannel: ✅
+Image.physicsBody: ✅
 Image.pinchUpdated: ✓ pinch on Image: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Image.pointerEntered: ✅
 Image.pointerExited: ✅
@@ -419,6 +430,7 @@ ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
 ItemsView.panXChannel: ✅
 ItemsView.panYChannel: ✅
+ItemsView.physicsBody: ✅
 ItemsView.pinchUpdated: ✓ pinch on ItemsView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ItemsView.pointerEntered: ✅
 ItemsView.pointerExited: ✅
@@ -455,6 +467,7 @@ Line.panTouchCount: ✅
 Line.panUpdated: ✅
 Line.panXChannel: ✅
 Line.panYChannel: ✅
+Line.physicsBody: ✅
 Line.pinchUpdated: ✓ pinch on Line: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Line.pointerEntered: ✅
 Line.pointerExited: ✅
@@ -491,6 +504,7 @@ Link.panTouchCount: ✅
 Link.panUpdated: ✅
 Link.panXChannel: ✅
 Link.panYChannel: ✅
+Link.physicsBody: ✅
 Link.pinchUpdated: ✓ pinch on Link: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Link.pointerEntered: ✅
 Link.pointerExited: ✅
@@ -527,6 +541,7 @@ Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
 Map.panXChannel: 🧩
 Map.panYChannel: 🧩
+Map.physicsBody: 🧩
 Map.pinchUpdated: 🧩
 Map.pointerEntered: 🧩
 Map.pointerExited: 🧩
@@ -563,6 +578,7 @@ Path.panTouchCount: ✅
 Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.panYChannel: ✅
+Path.physicsBody: ✅
 Path.pinchUpdated: ✓ pinch on Path: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Path.pointerEntered: ✅
 Path.pointerExited: ✅
@@ -599,6 +615,7 @@ PhaseLayout.panTouchCount: ✅
 PhaseLayout.panUpdated: ✅
 PhaseLayout.panXChannel: ✅
 PhaseLayout.panYChannel: ✅
+PhaseLayout.physicsBody: ✅
 PhaseLayout.pinchUpdated: ✓ pinch on PhaseLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 PhaseLayout.pointerEntered: ✅
 PhaseLayout.pointerExited: ✅
@@ -635,6 +652,7 @@ Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
 Picker.panXChannel: ✅
 Picker.panYChannel: ✅
+Picker.physicsBody: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Picker.pointerEntered: ✅
 Picker.pointerExited: ✅
@@ -671,6 +689,7 @@ Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
 Polygon.panXChannel: ✅
 Polygon.panYChannel: ✅
+Polygon.physicsBody: ✅
 Polygon.pinchUpdated: ✓ pinch on Polygon: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Polygon.pointerEntered: ✅
 Polygon.pointerExited: ✅
@@ -707,6 +726,7 @@ Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
 Polyline.panXChannel: ✅
 Polyline.panYChannel: ✅
+Polyline.physicsBody: ✅
 Polyline.pinchUpdated: ✓ pinch on Polyline: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Polyline.pointerEntered: ✅
 Polyline.pointerExited: ✅
@@ -743,6 +763,7 @@ ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
 ProgressBar.panXChannel: ✅
 ProgressBar.panYChannel: ✅
+ProgressBar.physicsBody: ✅
 ProgressBar.pinchUpdated: ✓ pinch on ProgressBar: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ProgressBar.pointerEntered: ✅
 ProgressBar.pointerExited: ✅
@@ -779,6 +800,7 @@ Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
 Rectangle.panXChannel: ✅
 Rectangle.panYChannel: ✅
+Rectangle.physicsBody: ✅
 Rectangle.pinchUpdated: ✓ pinch on Rectangle: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Rectangle.pointerEntered: ✅
 Rectangle.pointerExited: ✅
@@ -815,6 +837,7 @@ ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
 ScrollView.panXChannel: ✅
 ScrollView.panYChannel: ✅
+ScrollView.physicsBody: ✅
 ScrollView.pinchUpdated: ✓ pinch on ScrollView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ScrollView.pointerEntered: ✅
 ScrollView.pointerExited: ✅
@@ -851,6 +874,7 @@ SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
 SearchField.panXChannel: ✅
 SearchField.panYChannel: ✅
+SearchField.physicsBody: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 SearchField.pointerEntered: ✅
 SearchField.pointerExited: ✅
@@ -887,6 +911,7 @@ Separator.panTouchCount: ✅
 Separator.panUpdated: ✅
 Separator.panXChannel: ✅
 Separator.panYChannel: ✅
+Separator.physicsBody: ✅
 Separator.pinchUpdated: ✓ pinch on Separator: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Separator.pointerEntered: ✅
 Separator.pointerExited: ✅
@@ -923,6 +948,7 @@ Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
 Slider.panXChannel: ✅
 Slider.panYChannel: ✅
+Slider.physicsBody: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Slider.pointerEntered: ✅
 Slider.pointerExited: ✅
@@ -959,6 +985,7 @@ Space.panTouchCount: ✅
 Space.panUpdated: ✅
 Space.panXChannel: ✅
 Space.panYChannel: ✅
+Space.physicsBody: ✅
 Space.pinchUpdated: ✓ pinch on Space: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Space.pointerEntered: ✅
 Space.pointerExited: ✅
@@ -995,6 +1022,7 @@ Spinner.panTouchCount: ✅
 Spinner.panUpdated: ✅
 Spinner.panXChannel: ✅
 Spinner.panYChannel: ✅
+Spinner.physicsBody: ✅
 Spinner.pinchUpdated: ✓ pinch on Spinner: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Spinner.pointerEntered: ✅
 Spinner.pointerExited: ✅
@@ -1031,6 +1059,7 @@ Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
 Stepper.panXChannel: ✅
 Stepper.panYChannel: ✅
+Stepper.physicsBody: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Stepper.pointerEntered: ✅
 Stepper.pointerExited: ✅
@@ -1067,6 +1096,7 @@ Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
 Switch.panXChannel: ✅
 Switch.panYChannel: ✅
+Switch.physicsBody: ✅
 Switch.pinchUpdated: ✓ pinch on Switch: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Switch.pointerEntered: ✅
 Switch.pointerExited: ✅
@@ -1103,6 +1133,7 @@ Text.panTouchCount: ✅
 Text.panUpdated: ✅
 Text.panXChannel: ✅
 Text.panYChannel: ✅
+Text.physicsBody: ✅
 Text.pinchUpdated: ✓ pinch on Text: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 Text.pointerEntered: ✅
 Text.pointerExited: ✅
@@ -1139,6 +1170,7 @@ TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
 TextEditor.panXChannel: ✅
 TextEditor.panYChannel: ✅
+TextEditor.physicsBody: ✅
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 TextEditor.pointerEntered: ✅
 TextEditor.pointerExited: ✅
@@ -1175,6 +1207,7 @@ TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
 TextField.panXChannel: ✅
 TextField.panYChannel: ✅
+TextField.physicsBody: ✅
 TextField.pinchUpdated: ✓ pinch on TextField: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 TextField.pointerEntered: ✅
 TextField.pointerExited: ✅
@@ -1211,6 +1244,7 @@ TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
 TimePicker.panXChannel: ✅
 TimePicker.panYChannel: ✅
+TimePicker.physicsBody: ✅
 TimePicker.pinchUpdated: ✓ pinch on TimePicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 TimePicker.pointerEntered: ✅
 TimePicker.pointerExited: ✅
@@ -1247,6 +1281,7 @@ VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
 VStack.panXChannel: ✅
 VStack.panYChannel: ✅
+VStack.physicsBody: ✅
 VStack.pinchUpdated: ✓ pinch on VStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 VStack.pointerEntered: ✅
 VStack.pointerExited: ✅
@@ -1283,6 +1318,7 @@ WebView.panTouchCount: ✅
 WebView.panUpdated: ✅
 WebView.panXChannel: ✅
 WebView.panYChannel: ✅
+WebView.physicsBody: ✅
 WebView.pinchUpdated: ✓ pinch on WebView: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 WebView.pointerEntered: ✅
 WebView.pointerExited: ✅
@@ -1319,6 +1355,7 @@ ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅
 ZStack.panXChannel: ✅
 ZStack.panYChannel: ✅
+ZStack.physicsBody: ✅
 ZStack.pinchUpdated: ✓ pinch on ZStack: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
 ZStack.pointerEntered: ✅
 ZStack.pointerExited: ✅
