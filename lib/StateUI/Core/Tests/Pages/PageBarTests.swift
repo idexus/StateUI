@@ -173,6 +173,20 @@ final class PageBarTests: XCTestCase {
         XCTAssertEqual(built.children[2].children.map { $0.type }, ["Text"])
     }
 
+    /// A toolbar at a page's foot says so on each of its groups, a label's among them; one at the top says nothing.
+    func testAToolbarAtThePagesFootSaysItOnEachGroup() {
+        let page = Text("one")
+            .toolbar(.bottom) {
+                ToolbarButton("Share")
+                ToolbarLabel("3 items").id("count")
+            }
+            .toolbar { ToolbarButton("Edit") }
+
+        XCTAssertEqual(page.node.children.map(\.type), ["ToolbarGroup", "ToolbarGroup", "ToolbarGroup"])
+        XCTAssertEqual(page.node.children.map { $0.props["barEdge"] }, [.enumeration(1), .enumeration(1), nil])
+        XCTAssertEqual(page.node.children[1].children.map(\.type), ["ToolbarLabel"])
+    }
+
     /// An item in a group stands where its group does: its own placement is
     /// left out, and said once.
     func testAnItemsPlacementInAGroupIsLeftOut() {

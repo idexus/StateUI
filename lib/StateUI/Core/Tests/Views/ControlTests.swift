@@ -351,7 +351,10 @@ final class ControlTests: XCTestCase {
             // The phase layout as its view writes it: the views, the arithmetic, the
             // phase and the hand over them. A composed view, so the case is its body built.
             ControlCase("PhaseLayout", sources: ["PlacedStack.swift", "PhaseLayout.swift"],
-                PhaseLayout(["one", "two"], phase: turn.projectedValue) { Text($0) } placements: { room, phase in
+                PhaseLayout(["one", "two"], phase: turn.projectedValue) {
+                    Text($0)
+                        .physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
+                } placements: { room, phase in
                     [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
                 }
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .every(1))
@@ -360,6 +363,7 @@ final class ControlTests: XCTestCase {
                     Rectangle()
                         .fill(.black))
                 .motion(.spring(response: .milliseconds(240)))
+                .physicsWorld(.standard)
                 .mirrorsRightToLeft(true)
                 .onItemTapped { _ in }
                 .itemDrag(begins: .held)
@@ -813,7 +817,7 @@ final class ControlTests: XCTestCase {
             "background", "pageBackground", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
             "minimumDate", "dash", "points", "options", "columns",
-            "rows", "shape", "geometryTransform", "transform", "motion", "id",
+            "rows", "shape", "geometryTransform", "transform", "motion", "physicsBody", "id",
             "assign", "area",
             // Tiers no view wears.
             "barBackground", "barForegroundColor", "toolbarStyle", "toolbarSpacing",
@@ -865,12 +869,12 @@ final class ControlTests: XCTestCase {
         // driven text): the tier holds the value form.
         let tiersNoViewWears = [
             "Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarButton.swift", "Views/Menus/ToolbarGroup.swift",
-            "Views/Menus/ToolbarToggle.swift", "Views/Menus/Menu.swift",
+            "Views/Menus/ToolbarLabel.swift", "Views/Menus/ToolbarToggle.swift", "Views/Menus/Menu.swift",
             "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
         ]
         // A map's markers are rebuilt with the map; a composed view's configuration changes what it builds, which a
-        // state carried past the tree cannot - a gallery's shape and fading, a list's layout, a layout's drag and its
-        // mirror.
+        // state carried past the tree cannot - a gallery's shape and fading, a list's layout, a layout's drag, its
+        // mirror and its world.
         let perControl = [
             "Views/Mixins/TextualElement.swift|text:String",
             "Views/Controls/Map.swift|label:String", "Views/Controls/Map.swift|subtitle:String",
@@ -880,6 +884,7 @@ final class ControlTests: XCTestCase {
             "Views/Collections/GalleryView.swift|throwing:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
             "Views/Layouts/PhaseLayout.swift|itemDrag:ItemDragStart",
             "Views/Layouts/PhaseLayout.swift|mirrorsRightToLeft:Bool",
+            "Views/Layouts/PhaseLayout.swift|physicsWorld:PhysicsWorld",
         ]
         let missing = values
             .filter { value in
