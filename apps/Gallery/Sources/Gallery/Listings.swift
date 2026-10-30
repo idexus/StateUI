@@ -1466,7 +1466,8 @@ enum Listings {
                                 .placeholder("Message")
                                 .growsWithText(true)
                         }
-                        // The field's own ground is the capsule's glass.
+                        // The field's own ground is the capsule's glass, its words
+                        // clear of the capsule's round ends.
                         Button("Send")
                             .onClicked {
                                 guard !draft.isEmpty else { return }

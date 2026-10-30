@@ -57,7 +57,9 @@ struct BottomBarSample: SampleContent, ExampleContent {
                             .growsWithText(true)
                             .background(Color.transparent)
                     }
-                    // The field's own ground is the capsule's glass.
+                    // The field's own ground is the capsule's glass, its words
+                    // clear of the capsule's round ends.
+                    .padding(horizontal: 10, vertical: 0)
                     .background(.glass(.regular))
                     .shape(.capsule)
                     Button("Send")
