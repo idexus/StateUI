@@ -622,6 +622,33 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         }
     }
 
+    /// The body each view says it is (`layoutBody(_:)`), by its index: read off the view the first time a frame
+    /// asks, and again after the view is built again - a state the view reads, a switch turning its body on, builds
+    /// it again without the layout.
+    /// Design: docs/design/views/motion-layout.md#bodies
+    private final class Bodies {
+        private let read: @MainActor (Int) -> LayoutBody?
+        private var bodies: [Int: LayoutBody?] = [:]
+
+        init(_ read: @escaping @MainActor (Int) -> LayoutBody?) {
+            self.read = read
+        }
+
+        /// The body the view at `index` says it is; nil for one of the world's own.
+        @MainActor
+        func callAsFunction(_ index: Int) -> LayoutBody? {
+            if let body = bodies[index] { return body }
+            let body = read(index)
+            bodies[index] = .some(body)
+            return body
+        }
+
+        /// The view at `index` was built again: its body is read anew the next time a frame asks.
+        func rebuilt(_ index: Int) {
+            bodies[index] = nil
+        }
+    }
+
     /// What the initializer was handed, behind a reference. See `source`.
     private final class Source {
         /// What to place, one view each.
@@ -645,20 +672,6 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         /// while this description stands.
         let readsFrom: Bool
         let kept = LayoutPoses()
-
-        /// The body each view says it is (`layoutBody(_:)`), in the items' order: read off the views the first time a
-        /// frame asks, once for this description.
-        private var bodies: [LayoutBody?]?
-
-        /// The body the view at `index` says it is; nil for one of the world's own.
-        @MainActor
-        func body(at index: Int) -> LayoutBody? {
-            let bodies = self.bodies ?? items.map { item in
-                view(item).props[ViewContract.layoutBody.token].flatMap(LayoutBody.init(propValue:))
-            }
-            self.bodies = bodies
-            return bodies.indices.contains(index) ? bodies[index] : nil
-        }
 
         /// What the initializer was handed.
         @MainActor
@@ -688,6 +701,10 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
         // Closures, not key paths: one written in a generic type is made anew at every call.
         let hands = axes.compactMap { $0.hand }
         let identities = numbers.numbered(items.map { AnyHashable($0[keyPath: path]) })
+        let bodies = Bodies { [items, view = source.view] index in
+            guard items.indices.contains(index) else { return nil }
+            return view(items[index]).props[ViewContract.layoutBody.token].flatMap(LayoutBody.init(propValue:))
+        }
 
         return Run(
             items: items,
@@ -717,7 +734,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             law: law,
             throwing: throwLaw,
             world: world,
-            body: { [source] index in source.body(at: index) },
+            body: { [bodies] index in bodies(index) },
+            rebuilt: { [bodies] index in bodies.rebuilt(index) },
             settled: settled)
     }
 

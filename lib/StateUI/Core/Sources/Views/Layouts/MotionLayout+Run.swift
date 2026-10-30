@@ -80,6 +80,9 @@ extension MotionLayout {
         let world: LayoutDynamics
         let body: @MainActor (Int) -> LayoutBody?
 
+        /// The view at an index was built again: its body is read anew.
+        let rebuilt: @MainActor (Int) -> Void
+
         /// What is told once the run comes to rest.
         let settled: ValueHandler<Parameters>?
 
@@ -317,9 +320,12 @@ extension MotionLayout {
         func wrapped(_ slot: Slot) -> AnyView {
             // With no shade and no tap, the holder is a view of its own: a new order carries every one.
             // Design: docs/design/views/motion-layout.md#a-view-in-its-holder
-            if mask == nil, tapped == nil { return AnyView(node: holder(slot.item)) }
+            if mask == nil, tapped == nil {
+                rebuilt(slot.index)
+                return AnyView(node: holder(slot.item))
+            }
 
-            let holder = Grid { BuiltViews(nodes: [make(slot.item)] + (mask.map { [$0] } ?? [])) }
+            let holder = Grid { BuiltViews(nodes: [built(slot)] + (mask.map { [$0] } ?? [])) }
 
             guard let tapped else { return AnyView(holder.letsInputThrough(true)) }
 
@@ -329,6 +335,13 @@ extension MotionLayout {
             case .own(let policy): AnyView(holder.onTapped(policy, tap))
             case .shared(let gate): AnyView(holder.onTapped(gate: gate, tap))
             }
+        }
+
+        /// The view of `slot`, built now - again where a state it reads moved, the holder around it standing: its
+        /// body is read anew the next time a frame asks.
+        func built(_ slot: Slot) -> Node {
+            rebuilt(slot.index)
+            return make(slot.item)
         }
 
         /// One placement a view: a run that answered fewer or more is said once and made to fit.

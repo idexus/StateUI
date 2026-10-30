@@ -118,6 +118,47 @@ final class LayoutFollowerTests: XCTestCase {
         XCTAssertEqual(short.props[.layoutBody], LayoutBody.followsLayout(spring).propValue)
     }
 
+    /// A VIEW'S BODY FOLLOWS THE STATE ITS VIEW READS: a switch the views' own closure reads turns their bodies on,
+    /// the layout described again for that alone - nothing around it built.
+    func testAViewsBodyFollowsTheStateItsViewReads() throws {
+        try bodyFollowsTheStateItsViewReads(shaded: false)
+        try bodyFollowsTheStateItsViewReads(shaded: true)
+    }
+
+    /// The same, the views held as a shaded layout holds them.
+    private func bodyFollowsTheStateItsViewReads(shaded: Bool) throws {
+        Renderer.shared.clearInvalidation()
+        Renderer.shared.clearStates()
+        let (phase, sways) = (State(wrappedValue: 0.0), State(wrappedValue: false))
+        let renders = Renders()
+        func built() -> Node {
+            let layout = MotionLayout([0], parameters: phase.projectedValue) { index in
+                if sways.wrappedValue {
+                    Text("\(index)").followsLayout(.spring(response: .milliseconds(400), damping: 0.5))
+                } else {
+                    Text("\(index)")
+                }
+            } placements: { _, at in
+                [Placement(Rect(at * 100, 0, 10, 10))]
+            }
+            .motion(.none)
+            return (shaded ? layout.shade(Rectangle()) : layout).node
+        }
+        let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout))
+        let (worn, area) = (try XCTUnwrap(layout.driven?[.parameters]?.state), try XCTUnwrap(layout.driven?[.area]?.state))
+        // Read off the run as the host does, no tree described again: a new description would read the bodies anew.
+        func shown() -> Double { standing(area, as: PlacedRun.self)?.placements.first?.bounds.x ?? -1 }
+        moved(worn, to: [1, 1, 0], mask: 0b111)
+        bench.cycle()
+        XCTAssertEqual(shown(), 100, accuracy: 0.000_1, "no body yet: with its place (shaded \(shaded))")
+
+        sways.wrappedValue = true
+        renders.revisit(changed: Renderer.shared.pendingChanges)
+        moved(worn, to: [2, 2, 0], mask: 0b111)
+        bench.cycle()
+        XCTAssertLessThan(shown(), 150, "a body now: behind its place as it leaps (shaded \(shaded))")
+    }
+
     /// A BODY FOLLOWING ITS PLACE LAGS BEHIND IT, PASSES IT AND SETTLES ONTO IT; the world's own goes with its place.
     func testABodyFollowingItsPlaceLagsPassesAndSettles() throws {
         let phase = State(wrappedValue: 0.0)

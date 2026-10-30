@@ -147,7 +147,10 @@ Each view the run shows a shift of is a body of the layout's world
 shift's lanes and how fast each goes (`LayoutBodies`), pulled onto nought -
 the world's spring, `.standard` 300 ms critically damped, or the body's own
 (`.layoutBody(_:)`, `ViewContract.layoutBody`, read off each item's view
-once a description, the first time a frame asks). The world is worked out at
+the first time a frame asks, and again once that view is built again - a
+state the view reads, a switch turning its body on, builds the view without
+the layout or its holder, so the layout forgets that view's body as it
+builds it, shade or none). The world is worked out at
 a fixed step - 240 a second, semi-implicit, the spring's frequency as
 `HostMotionLaw`'s - with an accumulator, so other frames, another host or
 another rate bring a body to the same place; a frame works out at most 32
