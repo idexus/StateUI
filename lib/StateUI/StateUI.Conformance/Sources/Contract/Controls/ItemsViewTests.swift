@@ -183,6 +183,23 @@
                 let item = try s.place(of: s.item("80", of: s.element("list")))
                 s.expect(item.y, list.y, within: 1, "at the list's start")
             },
+            ConformanceCase("aScrollAskedAsTheListIsMadeStandsItsItemOnceLaidOut", proves: [
+                Covered(ItemsViewContract.scrollTo),
+            ]) { s in
+                // Before the toolkit ever laid the list out, with motion: a conversation opening at its last message.
+                let aim = Aim(ItemsView<Int>.self)
+                s.start {
+                    VStack {
+                        numbers().aim(aim).width(300).height(300).id("list")
+                    }
+                    .onCreated { try await aim.scrollTo(999, anchor: .end) }
+                }
+                let list = try s.place(of: s.element("list"))
+                let foot = { (try? s.place(of: s.item("999", of: s.element("list")))).map { $0.y + $0.height } }
+                s.settle { foot().map { abs($0 - (list.y + list.height)) < 1 } ?? false }
+                s.expect(foot().map { abs($0 - (list.y + list.height)) < 1 }, true,
+                         "the last item at the list's end: \(String(describing: foot())), \(list)")
+            },
         ]
     }
 

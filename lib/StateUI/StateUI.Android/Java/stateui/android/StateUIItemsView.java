@@ -176,7 +176,8 @@ final class StateUIItemsView extends RecyclerView {
             Integer position = positions.get(identity);
             LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
             if (position == null || manager == null) return;
-            if (animated) {
+            // A list not laid out yet has nowhere to glide from: it stands the item once it is.
+            if (animated && isLaidOut() && getChildCount() > 0) {
                 LinearSmoothScroller scroller = new LinearSmoothScroller(getContext()) {
                     @Override
                     public int calculateDtToFit(int viewStart, int viewEnd, int boxStart, int boxEnd, int snap) {

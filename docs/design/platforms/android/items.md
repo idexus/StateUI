@@ -78,7 +78,9 @@ With motion, the recycler's smooth scroller glides to the item and asks
 the host layer's rule where it stands ([scrolling to an
 item](../../host/items.md#scrolling-to-an-item)). Without, an item laid out
 is moved there at once; one far off is brought to the start first and
-stood where it was asked once the recycler has laid it out.
+stood where it was asked once the recycler has laid it out. A list the
+recycler has not laid out yet - a scroll asked as it is made - has nowhere
+to glide from: it stands the item as one far off is, motion or not.
 
 The list a page scrolls by keeps the bars over it clear as a ScrollView does
 ([a bar at the foot](../../host/layout.md#a-bar-at-the-foot)): the clearance
