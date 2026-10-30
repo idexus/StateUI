@@ -120,7 +120,7 @@ ShortcutSample.swift 613e9bc5911f4fc5
 SizingSample.swift 505216705d5b9909
 SliderSample.swift de5c388891de8278
 SpinnerSample.swift e38153fa2576bf0f
-SplitViewSample.swift 6f29e02ef0bc8dd2
+SplitViewSample.swift c933d59cf67952ba
 StackLayoutSample.swift 5f82478083f9d4fe
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
