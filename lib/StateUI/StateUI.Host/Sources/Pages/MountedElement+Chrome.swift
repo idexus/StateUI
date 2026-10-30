@@ -62,9 +62,22 @@ extension MountedElement {
         declared(.titleView).last?.element.children.lazy.compactMap(\.presentingElement).first
     }
 
-    /// What stands at this page's foot: the bottom bar declared innermost on its path; nil where none.
+    /// What stands at this page's foot: the bottom bar declared innermost on its path; nil where none, and for a page
+    /// its stack or tabs do not show - a bar declared around the pages stands on the one shown, the one view in one
+    /// place.
     public var chromeBottomBar: MountedElement? {
-        declared(.bottomBar).last?.element.children.lazy.compactMap(\.presentingElement).first
+        guard isShownByItsArrangements else { return nil }
+        return declared(.bottomBar).last?.element.children.lazy.compactMap(\.presentingElement).first
+    }
+
+    /// Whether every stack and tabs around this page show it: the top of each stack, the chosen tab.
+    private var isShownByItsArrangements: Bool {
+        var each = parent
+        while let element = each, element.type != .window, element.type != .sheet {
+            if element.type == .navigationStack || element.type == .tabView, element.visiblePage !== self { return false }
+            each = element.parent
+        }
+        return true
     }
 
     /// How what scrolls under this page's bottom bar shows at its edge, as the bar declared innermost says.

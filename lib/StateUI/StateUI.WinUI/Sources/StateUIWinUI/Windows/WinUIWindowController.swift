@@ -53,7 +53,8 @@ final class WinUIWindowController {
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
         showSheets(presentation.sheets, in: runtime)
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
-        for page in element.pages {
+        // The pages losing their bottom bar let go of it before the one shown takes it: one view stands in one place.
+        for page in element.pages.sorted(by: { $0.chromeBottomBar == nil && $1.chromeBottomBar != nil }) {
             (page.winUI.view as? WinUISingleChildView)?.showBottomBar(
                 page.chromeBottomBar?.winUI.layoutItem, edge: page.chromeBottomBarEdge,
                 scroller: page.pageScroller?.winUI.view as? WinUIScrollView)

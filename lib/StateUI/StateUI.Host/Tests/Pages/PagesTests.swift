@@ -878,21 +878,30 @@ final class PagesTests: XCTestCase {
         XCTAssertEqual(root.first(id: .manual("home"))?.chromeTitleView?.id, .manual("shared"))
     }
 
-    /// The bottom bar declared innermost on a page's path stands at its foot: the page's own, else its stack's.
-    func testTheInnermostBottomBarStandsAtThePagesFoot() throws {
+    /// The bottom bar declared innermost on a page's path stands at its foot: the page's own, else its stack's - on
+    /// the page the stack shows, and on none under it.
+    func testTheInnermostBottomBarStandsAtTheShownPagesFoot() throws {
         let runtime = runtime(node("window", .window, children: [
-            node("stack", .navigationStack, children: [
-                node("home", .page),
-                node("detail", .page, children: [
-                    node("content", .vStack, children: [node("bar", .bottomBar, children: [node("own", .text)])]),
+            node("tabs", .tabView, [.selectedTab: .number(0)], children: [
+                node("stack", .navigationStack, children: [
+                    node("home", .page),
+                    node("detail", .page, children: [
+                        node("content", .vStack, children: [node("bar", .bottomBar, children: [node("own", .text)])]),
+                    ]),
+                    node("outer", .bottomBar, children: [node("shared", .text)]),
                 ]),
-                node("outer", .bottomBar, children: [node("shared", .text)]),
+                node("plain", .navigationStack, children: [
+                    node("root", .page),
+                    node("top", .page),
+                    node("around", .bottomBar, children: [node("stacks", .text)]),
+                ]),
             ]),
         ])) { _ in }
         let root = try XCTUnwrap(runtime.tree.root)
 
-        XCTAssertEqual(root.first(id: .manual("detail"))?.chromeBottomBar?.id, .manual("own"))
-        XCTAssertEqual(root.first(id: .manual("home"))?.chromeBottomBar?.id, .manual("shared"))
+        XCTAssertEqual(root.first(id: .manual("detail"))?.chromeBottomBar?.id, .manual("own"), "the page's own")
+        XCTAssertNil(root.first(id: .manual("home"))?.chromeBottomBar, "a page under the top")
+        XCTAssertNil(root.first(id: .manual("top"))?.chromeBottomBar, "the top of a tab not chosen")
     }
 
     /// The bar's look a path declares is its nearest arrangement's, one value at a time: a stack further in paints

@@ -346,7 +346,10 @@ final class AndroidRenderer {
         modals.standAtTheirSizes()
         standUnderTheWindowsInsets()
         showStatusWords()
-        for page in window.pages { (page.native as? AndroidElement)?.showBottomBar() }
+        // The pages losing their bottom bar let go of it before the one shown takes it: one view stands in one place.
+        for page in window.pages.sorted(by: { $0.chromeBottomBar == nil && $1.chromeBottomBar != nil }) {
+            (page.native as? AndroidElement)?.showBottomBar()
+        }
 
         // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no
         // touch beside what they hold, which goes on to the page under them.

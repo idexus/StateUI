@@ -77,6 +77,32 @@
                 try s.settle { try abs(standing() - (end + 60)) < 1 }
                 s.expect(abs(try standing() - (end + 60)) < 1, true, "at its end still: \(end) to \(try standing())")
             },
+            ConformanceCase("aStacksBottomBarStandsOnThePageItShows", proves: [Covered(BottomBarContract.self)]) { s in
+                let path = State(wrappedValue: [Int]())
+                s.start {
+                    NavigationStack(path.projectedValue) {
+                        Rectangle().fill(.red).id("root").title("Root")
+                    } destination: { _ in
+                        Rectangle().fill(.green).id("pushed").title("Pushed")
+                    }
+                    .bottomBar {
+                        Rectangle()
+                            .fill(.blue)
+                            .height(40)
+                            .id("bar")
+                    }
+                }
+                try s.settle { try s.place(of: s.element("bar")).height == 40 }
+                s.expect(try s.place(of: s.element("bar")).height, 40, "under the root")
+
+                path.wrappedValue = [1]
+                try s.settle { try s.isShown("pushed") && s.place(of: s.element("bar")).height == 40 }
+                s.expect(try s.place(of: s.element("bar")).height, 40, "under the page pushed")
+
+                path.wrappedValue = []
+                try s.settle { try !s.isShown("pushed") && s.place(of: s.element("bar")).height == 40 }
+                s.expect(try s.place(of: s.element("bar")).height, 40, "under the root again")
+            },
             ConformanceCase("aBottomBarsEdgeHoldsWhatItsViewSays", proves: [Covered(BottomBarContract.edge)]) { s in
                 let edge = State(wrappedValue: ScrollEdge.hard)
                 s.start {

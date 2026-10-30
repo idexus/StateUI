@@ -362,7 +362,10 @@ the safe area's foot (`BottomBarPlace`): above a phone's home indicator, its
 ground running down to the room's edge, and on the keyboard while one shows.
 What stands over a room's foot is the keyboard while it is the higher, else
 the system's bar - never both (`SafeAreaArithmetic.bottom`). The innermost
-declaration on a page's path wins, as a title view's does.
+declaration on a page's path wins, as a title view's does, and a bar declared
+on a stack or tabs stands on the one page they show (`chromeBottomBar`): one
+view stands in one place, so a host hands it from the page losing it to the
+page taking it in that order.
 
 The page's safe area ends above the bar: its content stands clear of it, and
 a scroller let under scrolls under it, its last row stopping clear. A host
