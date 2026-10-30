@@ -641,11 +641,12 @@ final class GalleryViewTests: XCTestCase {
         let sent = try XCTUnwrap(standing(phase, as: JourneyLanes<Double>.self))
         XCTAssertEqual(sent.destination, 1, accuracy: 0.001, "the nearer card")
 
-        // The run comes onto it, and the hand lets go of it on the card.
+        // The run comes onto it - the host's animator lands its phase there - and the hand lets go of it on the card.
         for _ in 0..<30 {
             turned += 16
             _ = HostBoundary.cycle(now: turned, reducesMotion: false)
         }
+        HostAnimatorReport.land(phase)
         hand(renders, tree, .began)
         hand(renders, tree, .ended)
 

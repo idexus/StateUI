@@ -43,12 +43,8 @@ final class LayoutBench {
     /// destination or law than the walk under way, a value or a speed written since - walked from there under its
     /// law, set out at `setOut`; where its law puts it reported back, and the walk over once it rests.
     private func walk(_ worn: Int32, setOut: Double) {
-        guard let storage = Renderer.shared.storage(of: worn), let kind = storage.door else { return }
-
-        let binding = HostStateBinding(state: worn, mode: .inOut, kind: kind, laneKind: storage.laneKind)
         // What the board wrote since, read as a host reads it: a report speaks of the journey it last read.
-        _ = Renderer.shared.board.dirty()
-        guard let standing = HostBoundary.value(for: binding).flatMap(HostBoundary.journey(from:)) else { return }
+        guard let (binding, standing) = HostAnimatorReport.standing(worn) else { return }
 
         let anew = walk.map { $0.from.destination != standing.destination || $0.from.motion != standing.motion } ?? true
         let written = reported.map { $0.value != standing.value || $0.velocity != standing.velocity } ?? true
