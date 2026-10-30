@@ -216,6 +216,25 @@ final class StateUIItemsView extends RecyclerView {
         return shape == ROW ? computeHorizontalScrollOffset() : computeVerticalScrollOffset();
     }
 
+    /**
+     * How far along the list stands at its farthest, in pixels, its last item clear of its padding: exact while the
+     * last item is laid out, the recycler's estimate from the items it measured before.
+     */
+    int reach() {
+        LayoutManager manager = getLayoutManager();
+        int count = manager == null ? 0 : manager.getItemCount();
+        View last = count == 0 ? null : manager.findViewByPosition(count - 1);
+        if (last != null) {
+            int beyond = shape == ROW
+                    ? manager.getDecoratedRight(last) - (getWidth() - getPaddingRight())
+                    : manager.getDecoratedBottom(last) - (getHeight() - getPaddingBottom());
+            return scrolled() + Math.max(0, beyond);
+        }
+        return shape == ROW
+                ? Math.max(0, computeHorizontalScrollRange() - computeHorizontalScrollExtent())
+                : Math.max(0, computeVerticalScrollRange() - computeVerticalScrollExtent());
+    }
+
     /** The items the cells on screen show chosen, in the order they show. */
     String[] chosen() {
         HashSet<String> shown = new HashSet<>();

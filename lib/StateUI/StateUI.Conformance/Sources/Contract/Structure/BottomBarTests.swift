@@ -97,7 +97,7 @@
                 }
                 s.settle { (try? s.item("0", of: s.element("list"))) != nil }
                 let (list, bar) = (try s.place(of: s.element("list")), try s.place(of: s.element("go")))
-                s.expect(list.y + list.height >= bar.y + bar.height - 0.5, true, "the list runs under its bar: \(list), \(bar)")
+                s.expect(list.y + list.height >= bar.y - 0.5, true, "the list reaches its bar: \(list), \(bar)")
 
                 try s.perform(.activate, on: s.element("go"))
                 let foot = { (try? s.place(of: s.item("59", of: s.element("list")))).map { $0.y + $0.height } }

@@ -475,6 +475,7 @@ enum JavaAPI {
     static let releaseItems = Java.method(itemsView, "release", "()V")
     static let scrollItemsAlong = Java.method(itemsView, "scrollAlong", "(I)V")
     static let itemsScrolled = Java.method(itemsView, "scrolled", "()I")
+    static let itemsReach = Java.method(itemsView, "reach", "()I")
     static let itemsChosen = Java.method(itemsView, "chosen", "()[Ljava/lang/String;")
     static let itemsMode = Java.method(itemsView, "mode", "()I")
 

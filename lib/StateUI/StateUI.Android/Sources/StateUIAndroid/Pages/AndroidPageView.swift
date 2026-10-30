@@ -83,7 +83,7 @@ final class AndroidPageView: AndroidSingleChildView {
             toolbar?.layout(Rect(x: bounds.x, y: place.bar.y + viewHeight, width: bounds.width, height: toolbarHeight))
             line.layout(Rect(x: bounds.x, y: place.bar.y, width: bounds.width, height: 1))
         }
-        let scroller = page?.pageScroller?.android.view as? AndroidScrollView
+        let scroller = page?.pageScroller?.android.view as? AndroidPageScroller
         scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: clear))
         let follow: () -> Void = { [weak self, weak scroller] in
             guard let self else { return }

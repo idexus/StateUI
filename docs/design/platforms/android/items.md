@@ -79,3 +79,14 @@ the host layer's rule where it stands ([scrolling to an
 item](../../host/items.md#scrolling-to-an-item)). Without, an item laid out
 is moved there at once; one far off is brought to the start first and
 stood where it was asked once the recycler has laid it out.
+
+The list a page scrolls by keeps the bars over it clear as a ScrollView does
+([a bar at the foot](../../host/layout.md#a-bar-at-the-foot)): the clearance
+is the recycler's own padding, its items drawn through it, so its offsets and
+its reach count from its first item clear. A bottom bar stands beside it, and
+the recycler lays out again from its first item as its room changes: where it
+stood at its end, it scrolls on to its end (`ScrollArithmetic.keptAtEnd`). Its
+reach is exact while its last item is laid out - the recycler's own range is an
+estimate from the items it measured. It says where it stands as each scroll or
+layout ends, so the bar's line shows while items go on past it. The recycler
+fits an item scrolled to within its padding itself.
