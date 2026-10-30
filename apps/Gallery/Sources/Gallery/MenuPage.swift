@@ -110,7 +110,13 @@ struct MenuPage: View {
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)
+            #if UIKIT
+            // Above the home indicator's strip, which stands under it: none
+            // of its own beneath.
+            .padding(start: 12, top: 6, end: 12, bottom: 0)   // listing: keep
+            #else
             .padding(horizontal: 12, vertical: 6)   // listing: keep
+            #endif
     }
 }
 // listing: end

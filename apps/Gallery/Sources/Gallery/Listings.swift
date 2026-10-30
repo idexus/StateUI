@@ -7321,7 +7321,13 @@ enum Listings {
             /// answered before the first render, and the StateUI release it is built on.
             private var footer: some View {
                 Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
+                    #if UIKIT
+                    // Above the home indicator's strip, which stands under it: none
+                    // of its own beneath.
+                    .padding(start: 12, top: 6, end: 12, bottom: 0)
+                    #else
                     .padding(horizontal: 12, vertical: 6)
+                    #endif
             }
         }
         """#,
