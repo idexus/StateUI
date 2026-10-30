@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.physicsBody: ✅
 Button.tapped: ✓ pressDown on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.panYChannel: ✓ pan on Canvas: the view's listening handed the recognizer's states, no touch sent

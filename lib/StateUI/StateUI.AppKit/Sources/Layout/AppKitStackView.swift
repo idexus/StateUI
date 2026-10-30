@@ -8,7 +8,7 @@ import AppKit
 
 /// A deterministic frame-based stack shared by horizontal and vertical stacks.
 @MainActor
-final class AppKitStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuring,
+final class AppKitStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuring, AppKitBaselineMeasuring,
     AppKitMeasurementCaching {
     let axis: StackArithmetic.Axis
     let measurements = MeasurementCache()
@@ -57,6 +57,13 @@ final class AppKitStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasur
         NSSize(StackArithmetic.size(
             of: items, axis: axis, spacing: Double(spacing), padding: padding,
             width: availableWidth.map(Double.init)))
+    }
+
+    func firstBaseline(width: CGFloat?) -> CGFloat? {
+        let size = fittingContentSize(width: width)
+        return StackArithmetic.firstBaseline(
+            of: items, axis: axis, spacing: Double(spacing), padding: padding,
+            in: Rect(x: 0, y: 0, width: Double(size.width), height: Double(size.height))).map { CGFloat($0) }
     }
 
     override func layout() {

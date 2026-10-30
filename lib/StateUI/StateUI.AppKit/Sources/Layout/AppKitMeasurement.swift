@@ -15,6 +15,14 @@ protocol AppKitWidthConstrainedMeasuring: AnyObject {
     func fittingContentSize(width: CGFloat?) -> NSSize
 }
 
+/// A view that answers where its first line of words rests, laid out `width` wide - a label, a stack - rather than
+/// AppKit's own reading of a control.
+/// Design: docs/design/host/layout.md#a-first-baseline
+@MainActor
+protocol AppKitBaselineMeasuring: AnyObject {
+    func firstBaseline(width: CGFloat?) -> CGFloat?
+}
+
 extension MeasurementCache {
     /// The size measured for `width`, in AppKit's units, measuring only when none is kept.
     func size(offering width: CGFloat?, measure: () -> NSSize) -> NSSize {

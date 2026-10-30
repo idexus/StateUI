@@ -48,9 +48,19 @@
                 let room = max(0, offered - padding.start - padding.end)
                 naturals = wrapped(visible, naturals, rowWidths(of: visible, naturals: naturals, spacing: spacing, room: room))
             }
+            // The children on a first baseline take what stands above the line and what below it.
+            var (above, below) = (0.0, 0.0)
             for (item, size) in zip(visible, naturals) {
-                across = max(across, (size?.height ?? 0) + item.values.margin.top + item.values.margin.bottom)
+                let margin = item.values.margin
+                guard item.values.vertical == Self.firstBaseline, let size else {
+                    across = max(across, (size?.height ?? 0) + margin.top + margin.bottom)
+                    continue
+                }
+                let baseline = item.firstBaseline(offered: size.width) ?? size.height
+                above = max(above, margin.top + baseline)
+                below = max(below, size.height - baseline + margin.bottom)
             }
+            across = max(across, above + below)
             return LayoutSize(
                 width: padding.start + padding.end + gaps + along,
                 height: padding.top + padding.bottom + across)
@@ -88,6 +98,14 @@
         let share = row?.yielded == true
             ? 0 : growingShare(of: items, naturals: naturals, axis: axis, spacing: spacing, in: content)
         var offset = axis == .vertical ? content.y : content.x
+        // In a row, each child on a first baseline at the width it is placed, and the line they rest on.
+        let baselines: [Double?] = axis == .vertical ? [] : zip(items, naturals).enumerated().map { index, pair in
+            guard pair.0.values.vertical == Self.firstBaseline, let natural = pair.1 else { return nil }
+            let width = row?.widths[index] ?? natural.width
+            return pair.0.firstBaseline(offered: width) ?? natural.height
+        }
+        let line = zip(items, baselines).compactMap { item, baseline in baseline.map { item.values.margin.top + $0 } }
+            .max() ?? 0
 
         return zip(items, naturals).enumerated().map { index, pair in
             let (item, natural) = pair
@@ -115,7 +133,7 @@
                 let height = Extent.of(
                     option: values.vertical, stated: values.height, natural: natural.height,
                     available: available, minimum: values.minimumHeight, maximum: values.maximumHeight)
-                let y = Extent.start(
+                let y = baselines[index].map { content.y + line - $0 } ?? Extent.start(
                     option: values.vertical, extent: height, start: content.y + margin.top, available: available)
                 let width = values.grows(along: axis)
                     ? values.boundedWidth(share) : row?.widths[index] ?? values.boundedWidth(natural.width)
@@ -124,6 +142,24 @@
                 return place
             }
         }
+    }
+
+    /// What a child's vertical alignment says where it rests on a row's first baseline.
+    static let firstBaseline = Alignment.firstBaseline.rawValue
+
+    /// How far below a stack's top its first line of words rests, laid out in `bounds`: its first shown child's
+    /// with one - in a row, on the line its first-baseline children rest on; nil where no child has words.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    @MainActor
+    public static func firstBaseline<Child: LayoutChild>(
+        of items: [Child], axis: Axis, spacing: Double, padding: Insets, in bounds: Rect
+    ) -> Double? {
+        let places = leftToRight(of: items, axis: axis, spacing: spacing, padding: padding, in: bounds)
+        for (item, place) in zip(items, places) {
+            guard let place, let baseline = item.firstBaseline(offered: place.width) else { continue }
+            return place.y - bounds.y + baseline
+        }
+        return nil
     }
 
     /// Each child's width along a row: its natural width - and, where the row has less room than its shown children,

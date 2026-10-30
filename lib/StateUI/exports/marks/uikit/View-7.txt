@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.panYChannel: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
 Canvas.canDrag: ✓ dragAndDrop on Canvas: the drag and drop interactions' handlers called, no drag session
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag and drop interactions' handlers called, no drag session

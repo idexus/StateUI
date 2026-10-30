@@ -122,6 +122,11 @@
     /// The child's own size for the width offered to it, its margin already taken out - the layout owns the
     /// margin, both ways; its stated sizes and bounds applied.
     func size(offered width: Double?) -> LayoutSize
+
+    /// How far below its top the child's first line of words rests, laid out `width` wide; nil for a child with no
+    /// words, which rests its foot on a baseline.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(offered width: Double?) -> Double?
 }
 
 /// The arithmetic of one child's extent and place along one axis of its slot.

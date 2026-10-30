@@ -44,6 +44,15 @@ struct AppKitLayoutItem: LayoutChild {
         LayoutSize(fittingSize(width: width.map { CGFloat($0) }))
     }
 
+    func firstBaseline(offered width: Double?) -> Double? {
+        if let measuring = view as? AppKitBaselineMeasuring {
+            return measuring.firstBaseline(width: width.map { CGFloat($0) }).map(Double.init)
+        }
+        // A control's own, as AppKit reads it; a view AppKit reads none of has no words.
+        let offset = view.firstBaselineOffsetFromTop
+        return offset > 0 ? Double(offset) : nil
+    }
+
     /// The view's size for the width offered to it, its margin already taken out: measured at the width it takes of
     /// the offer, its stated sizes and bounds applied (`LayoutValues.offer`, `sized`).
     /// Design: docs/design/host/layout.md#a-child-measured

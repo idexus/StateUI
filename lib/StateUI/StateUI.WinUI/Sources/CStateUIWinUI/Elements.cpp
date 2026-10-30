@@ -61,6 +61,23 @@ extern "C" void stateui_winui_measure(StateUIObjectRef handle, double width, dou
     }
 }
 
+extern "C" double stateui_winui_first_baseline(StateUIObjectRef handle) {
+    try {
+        // A label's words stand in a border; the border's padding and edge stand above them.
+        auto element = as<xaml::FrameworkElement>(handle);
+        double above = 0;
+        if (auto border = element.try_as<controls::Border>()) {
+            above = border.Padding().Top + border.BorderThickness().Top;
+            element = border.Child().try_as<xaml::FrameworkElement>();
+        }
+        auto text = element ? element.try_as<controls::TextBlock>() : nullptr;
+        return text ? above + text.Padding().Top + text.BaselineOffset() : -1;
+    } catch (...) {
+        report("reading a first baseline");
+        return -1;
+    }
+}
+
 extern "C" void stateui_winui_arrange(StateUIObjectRef handle, double x, double y, double width, double height) {
     try {
         as<xaml::UIElement>(handle).Arrange(Rect(

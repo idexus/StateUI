@@ -75,6 +75,12 @@ final class UIKitTextView: UILabel, UIKitLabel, UIKitSteppable {
         setNeedsDisplay()
     }
 
+    /// How far below its top its first line of words rests: the padding, and the font's rise above its baseline.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    var firstBaseline: Double {
+        Double(padding.top + (font?.ascender ?? 0))
+    }
+
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         // A layout measures with no bound below: the words' size for the width offered, kept.
         guard size.height >= .greatestFiniteMagnitude else { return fitted(size) }

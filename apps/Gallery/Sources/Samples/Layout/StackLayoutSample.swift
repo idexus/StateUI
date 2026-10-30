@@ -4,6 +4,7 @@ import StateUI
 struct StackLayoutSample: SampleContent, ExampleContent {
     // listing: StackLayoutSample
     @State private var spaced = true
+    @State private var onBaseline = true
     // listing: end
 
     static let id = "stackLayout"
@@ -48,6 +49,25 @@ struct StackLayoutSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.fill)
             }
             .spacing(8)
+
+            SectionTitle("First baseline")
+
+            // A label and a value of other sizes reading as one line: each
+            // rests its first line of words on the row's baseline.
+            HStack {
+                Text("Total")
+                    .fontSize(13)
+                    .verticalAlignment(onBaseline ? .firstBaseline : .center)
+                Text("€120")
+                    .fontSize(34)
+                    .fontWeight(.bold)
+                    .verticalAlignment(onBaseline ? .firstBaseline : .center)
+            }
+            .spacing(8)
+
+            Switch($onBaseline)
+                .text("On one baseline")
+                .accessibilityIdentifier("stackLayout.baseline")
 
             SectionTitle("Space")
 
@@ -105,9 +125,9 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("`.horizontalAlignment` places a child across the room its stack gives it. A `Space` takes the room "
-            + "its siblings leave; a row short of room takes it from its words; a `Separator` draws the platform's "
-            + "line across its stack.")
+        Text("`.horizontalAlignment` places a child across the room its stack gives it; `.firstBaseline` rests "
+            + "words of other sizes on one line. A `Space` takes the room its siblings leave; a row short of room "
+            + "takes it from its words; a `Separator` draws the platform's line across its stack.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

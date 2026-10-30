@@ -22,6 +22,7 @@ enum JavaAPI {
     static let getLeft = Java.method(view, "getLeft", "()I")
     static let getTop = Java.method(view, "getTop", "()I")
     static let getWidth = Java.method(view, "getWidth", "()I")
+    static let getBaseline = Java.method(view, "getBaseline", "()I")
     static let getHeight = Java.method(view, "getHeight", "()I")
     static let getRight = Java.method(view, "getRight", "()I")
     static let getBottom = Java.method(view, "getBottom", "()I")

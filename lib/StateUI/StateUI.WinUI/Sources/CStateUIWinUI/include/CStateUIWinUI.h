@@ -589,6 +589,9 @@ void stateui_winui_replace(StateUIObjectRef element, StateUIObjectRef replacemen
 
 /// Every element: measured and placed by its parent's panel, shown or collapsed, drawn how opaque.
 void stateui_winui_measure(StateUIObjectRef element, double width, double height, double *size);
+/// How far below `element`'s top its first line of words rests, once measured - a text block's, or the one a border
+/// holds, the border's padding and edge included; -1 for an element with no words of its own.
+double stateui_winui_first_baseline(StateUIObjectRef element);
 void stateui_winui_arrange(StateUIObjectRef element, double x, double y, double width, double height);
 void stateui_winui_invalidate_measure(StateUIObjectRef element);
 void stateui_winui_set_shown(StateUIObjectRef element, bool shown);

@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.frameChanged: ✅
 Button.margin: ✅
 Button.swipeDirection: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent

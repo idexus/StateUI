@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.panYChannel: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Canvas.canDrag: ✓ dragAndDrop on Canvas: the drag source and the window's drop routing told by the driver, no dragging session
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag source and the window's drop routing told by the driver, no dragging session

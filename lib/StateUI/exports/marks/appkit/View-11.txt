@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.canDrag: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session
 Button.dragStarting: ✓ dragAndDrop on Button: the drag source and the window's drop routing told by the driver, no dragging session

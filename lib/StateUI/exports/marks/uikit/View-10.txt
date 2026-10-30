@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.area: ✅
 Button.frameChanged: ✅
 Button.pointerEntered: ✓ hover on Button: the view's listening handed the recognizer's states, no touch sent
@@ -117,6 +117,7 @@ Stepper.gridRowSpan: ✅
 Switch.holdDuration: ✅
 Text.physicsBody: ✅
 Text.tapped: ✓ pressDown on Text: the view's listening handed the recognizer's states, no touch sent
+Text.verticalAlignment: ✅
 TextEditor.frameChanged: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: the view's listening handed the recognizer's states, no touch sent

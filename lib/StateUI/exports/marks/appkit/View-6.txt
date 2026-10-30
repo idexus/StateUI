@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.panTouchCount: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.panUpdated: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.panXChannel: ✓ pan on Button: handed to the host's recognizer or handler, no NSEvent sent

@@ -20,7 +20,7 @@
                 tapped(element), pressedAsAButton(element), held(element), heldAfterItsTime(element), panned(element), pannedDown(element), swiped(element), pinched(element), pointed(element),
                 dragged(element), droppedOn(element), filesDroppedOn(element), bodied(element),
             ]
-        } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner]
+        } + [scrolledInItsWindow, scrolledInAList, atItsPagesCorner, onAFirstBaseline]
     }
 
     /// A scroll moves where a view stands in its window, though nothing lays it out anew: its place in its parent
@@ -130,6 +130,35 @@
 
             s.settle { frames.values.last.map(FrameReport.inContent) == [0, 0] }
             s.expect(frames.values.last.map(FrameReport.inContent), [0, 0], "at the safe area's corner, under the bar")
+        }
+    }
+
+    /// Two lines of words of other sizes in a row, each on its first baseline, rest on one line: the smaller stands
+    /// lower by the larger's taller rise above the line - far more than it stands above the larger's foot, which a
+    /// row centering them would give alike.
+    @MainActor
+    static var onAFirstBaseline: ConformanceCase {
+        ConformanceCase("wordsOfOtherSizesInARowRestOnOneFirstBaseline", proves: [
+            Covered(ViewContract.verticalAlignment, on: "Text"),
+        ], needs: [Covered(HStackContract.self)]) { s in
+            s.start {
+                VStack {
+                    HStack {
+                        Text("Total").fontSize(12).verticalAlignment(.firstBaseline).id("small")
+                        Text("120").fontSize(40).verticalAlignment(.firstBaseline).id("large")
+                    }
+                    .spacing(8)
+                }
+                .horizontalAlignment(.start)
+                .verticalAlignment(.start)
+            }
+            let places = { (try? s.place(of: s.element("small")), try? s.place(of: s.element("large"))) }
+            s.settle { places().0.map { $0.height > 0 } ?? false }
+            guard case let (small?, large?) = places() else { return s.expect(false, true, "both placed") }
+
+            let above = small.y - large.y
+            let below = (large.y + large.height) - (small.y + small.height)
+            s.expect(above > 2 * below, true, "lower by the larger's rise: \(above) above, \(below) below")
         }
     }
 

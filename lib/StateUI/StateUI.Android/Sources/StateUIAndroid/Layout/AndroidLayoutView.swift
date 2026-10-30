@@ -198,6 +198,13 @@ class AndroidLayoutView: AndroidView {
         .zero
     }
 
+    /// How far below its top its first line of words rests, laid out `width` wide, in points; nil for a layout that
+    /// answers none.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(width: Double?) -> Double? {
+        nil
+    }
+
     /// Places the children in `bounds`, in points.
     func arrange(in bounds: Rect) {}
 

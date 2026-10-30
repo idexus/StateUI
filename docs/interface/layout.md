@@ -41,6 +41,23 @@ slot that would stretch it. A filling view that stops short of its slot,
 because of an explicit size or a maximum, stands in the middle of the slot.
 Without either, `.fill` takes the whole slot.
 
+Down a row, `.firstBaseline` rests a view's first line of words on one line
+with the row's other views aligned so - a label and a value of other sizes
+read as one line; a view with no words rests its foot there, and a stack its
+first child's line. Anywhere else it is the near edge:
+
+```swift
+HStack {
+    Text("Total")
+        .fontSize(13)
+        .verticalAlignment(.firstBaseline)
+    Text("€120")
+        .fontSize(34)
+        .verticalAlignment(.firstBaseline)
+}
+.spacing(8)
+```
+
 `layoutDirection` lays a view and everything under it out right to left or
 left to right: a row fills from the right, a view aligned to `.start` stands
 at the right, a grid's first column is the rightmost, a `GalleryView`'s cards

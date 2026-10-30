@@ -18,6 +18,11 @@ public enum Alignment: Int32, Sendable {
 
     /// Taking all of it. The default.
     case fill = 3
+
+    /// In a row, standing so its first line of words rests on the line the others aligned so rest on - a label and
+    /// a value of other sizes reading as one line; a view with no words rests its foot there. Anywhere else, at the
+    /// near edge.
+    case firstBaseline = 4
 }
 
 extension Alignment: HostRepresentable {}

@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began

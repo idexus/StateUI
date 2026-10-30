@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Button.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session

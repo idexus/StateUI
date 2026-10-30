@@ -242,7 +242,8 @@ class WebLayoutView: WebDOMView {
         case .single, .grid, .layers:
             view.style("flex", nil)
             view.style("justify-self", across)
-            view.style("align-self", down)
+            // A first baseline is a row's: anywhere else, the near edge.
+            view.style("align-self", values.vertical == Alignment.firstBaseline.rawValue ? "start" : down)
         }
         switch arrangement {
         case .grid:

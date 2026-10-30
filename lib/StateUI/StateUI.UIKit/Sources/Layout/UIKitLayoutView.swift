@@ -85,6 +85,12 @@ class UIKitLayoutView: UIView, UIKitSteppable {
         .zero
     }
 
+    /// How far below its top its first line of words rests, laid out `width` wide; nil for a layout that answers none.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(width: Double?) -> Double? {
+        nil
+    }
+
     /// Stands every child in `bounds`, by this layout's arithmetic.
     func arrange(in bounds: Rect) {}
 

@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.droppedFileTypes: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.filesDropped: ✓ dropFiles on Button: the drop interaction's handler told the driver's files, no drag session
 Button.tapCount: ✓ tap on Button: the view's listening handed the recognizer's states, no touch sent

@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.area: ✅
 Button.frameChanged: ✅
 Button.pointerEntered: ✓ hover on Button: handed to the host's recognizer or handler, no NSEvent sent
@@ -117,6 +117,7 @@ Stepper.gridRowSpan: ✅
 Switch.holdDuration: ✅
 Text.physicsBody: ✅
 Text.tapped: ✓ pressDown on Text: handed to the host's recognizer or handler, no NSEvent sent
+Text.verticalAlignment: ✅
 TextEditor.frameChanged: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: handed to the host's recognizer or handler, no NSEvent sent

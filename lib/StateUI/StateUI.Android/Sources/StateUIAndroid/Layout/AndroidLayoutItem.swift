@@ -34,6 +34,16 @@ struct AndroidLayoutItem: LayoutChild {
             LayoutSize(width: Double(measured.width) / view.density, height: Double(measured.height) / view.density))
     }
 
+    /// How far below its top its first line of words rests at the width offered it: a layout's by its arithmetic, a
+    /// view's as Android reads it once measured there; nil for a view with none.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(offered width: Double?) -> Double? {
+        if let layout = view as? AndroidLayoutView { return layout.firstBaseline(width: values.offer(width)) }
+        _ = size(offered: width)
+        let baseline = Java.callInt(view.reference, JavaAPI.getBaseline)
+        return baseline >= 0 ? Double(baseline) / view.density : nil
+    }
+
     /// Whether a parent would place this item as it places `other`.
     func arranges(like other: AndroidLayoutItem) -> Bool {
         view === other.view && values == other.values && isShown == other.isShown

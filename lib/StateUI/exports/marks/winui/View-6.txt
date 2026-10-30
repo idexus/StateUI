@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.frameChanged: ✅
 Button.gridColumn: ✅
 Button.gridRow: ✅
@@ -194,6 +194,7 @@ Text.gridRow: ✅
 Text.swipeDirection: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
+Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 TextEditor.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 TextEditor.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began

@@ -28,6 +28,11 @@ struct GTKLayoutItem: LayoutChild {
         return values.sized(view.measure(width: values.offer(width), height: nil))
     }
 
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(offered width: Double?) -> Double? {
+        view.firstBaseline(width: values.offer(width))
+    }
+
     /// Whether a parent would place this item as it places `other`.
     func arranges(like other: GTKLayoutItem) -> Bool {
         view === other.view && values == other.values && isShown == other.isShown

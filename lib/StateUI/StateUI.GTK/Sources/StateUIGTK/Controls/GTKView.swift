@@ -230,6 +230,16 @@ class GTKView {
         return LayoutSize(width: measuredWidth, height: Double(natural))
     }
 
+    /// How far below its top its first line of words rests, measured `width` wide, as GTK measures a widget's
+    /// natural baseline; nil for a widget with none.
+    func firstBaseline(width: Double?) -> Double? {
+        let measured = measure(width: width, height: nil)
+        var (least, natural, leastBaseline, naturalBaseline): (Int32, Int32, Int32, Int32) = (0, 0, -1, -1)
+        gtk_widget_measure(
+            widget, GTK_ORIENTATION_VERTICAL, Int32(measured.width), &least, &natural, &leastBaseline, &naturalBaseline)
+        return naturalBaseline >= 0 ? Double(naturalBaseline) : nil
+    }
+
     /// Where the view stands, in logical pixels: its frame in its parent, its place in the window, and that place
     /// from the top left of its page's content, beneath the page's header bar; nil while it stands in no window
     /// or no layout has placed it yet.

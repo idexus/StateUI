@@ -10627,6 +10627,7 @@ enum Listings {
         "StackLayoutSample": #"""
         // Sources/Samples/Layout/StackLayoutSample.swift
         @State private var spaced = true
+        @State private var onBaseline = true
 
         var body: some View {
             VStack {
@@ -10662,6 +10663,21 @@ enum Listings {
                     StackCell(text: "fill")
                         .horizontalAlignment(.fill)
                 }
+
+                SectionTitle("First baseline")
+
+                // A label and a value of other sizes reading as one line: each
+                // rests its first line of words on the row's baseline.
+                HStack {
+                    Text("Total")
+                        .verticalAlignment(onBaseline ? .firstBaseline : .center)
+                    Text("€120")
+                        .fontWeight(.bold)
+                        .verticalAlignment(onBaseline ? .firstBaseline : .center)
+                }
+
+                Switch($onBaseline)
+                    .text("On one baseline")
 
                 SectionTitle("Space")
 

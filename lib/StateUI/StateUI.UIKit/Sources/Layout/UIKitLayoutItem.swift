@@ -43,6 +43,11 @@ struct UIKitLayoutItem: LayoutChild {
         return values.sized(LayoutSize(width: fitted.width, height: fitted.height))
     }
 
+    func firstBaseline(offered width: Double?) -> Double? {
+        if let layout = view as? UIKitLayoutView { return layout.firstBaseline(width: values.offer(width)) }
+        return (view as? UIKitTextView)?.firstBaseline
+    }
+
     func arranges(like other: UIKitLayoutItem) -> Bool {
         view === other.view && values == other.values && isShown == other.isShown
     }

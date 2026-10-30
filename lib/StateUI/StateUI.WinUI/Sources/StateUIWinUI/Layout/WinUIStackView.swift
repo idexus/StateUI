@@ -25,6 +25,13 @@ final class WinUIStackView: WinUITravelingLayout {
         super.init()
     }
 
+    override func firstBaseline(width: Double?) -> Double? {
+        let size = naturalSize(width: width)
+        return StackArithmetic.firstBaseline(
+            of: items, axis: axis, spacing: spacing, padding: padding,
+            in: Rect(x: 0, y: 0, width: size.width, height: size.height))
+    }
+
     override func contentSize(width: Double?) -> LayoutSize {
         StackArithmetic.size(of: items, axis: axis, spacing: spacing, padding: padding, width: width)
     }

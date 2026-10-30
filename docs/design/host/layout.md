@@ -132,6 +132,25 @@ Web, which hands its rows to the browser: a label there is a flex item that
 shrinks by its natural width down to nothing (`flex: 0 1 auto`, `min-width:
 0`), the same share.
 
+## A first baseline
+
+A child aligned `.firstBaseline` down a row rests its first line of words on
+one line with the row's other children aligned so: each answers how far below
+its top that line rests at the width the row places it
+(`LayoutChild.firstBaseline(offered:)`, a requirement, so every host's item
+answers), a child with no words its foot; the line stands as low as the
+lowest of them, margins included, and the row is as tall as what stands above
+the line and below it beside its other children (`StackArithmetic`). A stack
+answers its own as its first shown child with one does, where that child
+stands (`StackArithmetic.firstBaseline`), so a column holding a label rests on
+a row's line by that label. In a column, and in a grid, a ZStack or one child's
+room, it reads as the near edge. Each host reads a child's own from its
+toolkit: AppKit a control's `firstBaselineOffsetFromTop` (a label below its
+padding), UIKit a label's font's rise below its padding, Android `getBaseline`
+once measured, WinUI a text block's `BaselineOffset` below its border, GTK a
+widget's natural baseline as `gtk_widget_measure` answers it; the Web lays a
+row out as the browser's flexbox, `align-self: first baseline`.
+
 ## A space
 
 A child that grows - a `Space` - takes the room the stack's shown children

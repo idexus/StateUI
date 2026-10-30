@@ -200,6 +200,8 @@ enum WebCSS {
         case 0: "start"
         case 1: "center"
         case 2: "end"
+        // On a row's first baseline, as the browser's flexbox lines its items up.
+        case 4: "first baseline"
         default: stated ? "center" : "stretch"
         }
     }

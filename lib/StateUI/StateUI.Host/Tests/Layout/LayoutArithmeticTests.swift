@@ -211,6 +211,41 @@ final class LayoutArithmeticTests: XCTestCase {
     /// A ROW SHORT OF ROOM TAKES IT FROM ITS WORDS: the controls keep their width, and the words share what the
     /// others and the spacing leave, in proportion to their natural widths.
     @MainActor
+    /// A ROW STANDS ITS FIRST-BASELINE CHILDREN ON ONE LINE: each rests its first line of words on the lowest of
+    /// theirs, one with none its foot; the row is as tall as what stands above the line and below it; the stack's
+    /// own baseline is that line.
+    func testARowStandsItsFirstBaselineChildrenOnOneLine() {
+        var small = Child(width: 40, height: 16)
+        small.baseline = 12
+        var large = Child(width: 60, height: 40)
+        large.baseline = 30
+        var box = Child(width: 20, height: 10)
+        var top = Child(width: 10, height: 50)
+        small.values.vertical = Alignment.firstBaseline.rawValue
+        large.values.vertical = Alignment.firstBaseline.rawValue
+        box.values.vertical = Alignment.firstBaseline.rawValue
+        top.values.vertical = Alignment.start.rawValue
+        let row = [small, large, box, top]
+
+        let size = StackArithmetic.size(of: row, axis: .horizontal, spacing: 0, padding: Insets(0), width: nil)
+        XCTAssertEqual(size.height, 50, "the tallest child on the top, beside 30 above the line and 10 below")
+        let places = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 0, padding: Insets(0), in: Rect(x: 0, y: 0, width: 200, height: 50),
+            direction: .leftToRight)
+        XCTAssertEqual(places.map { $0?.y }, [18, 0, 20, 0], "12, 30 and the box's foot on 30; the other at the top")
+        XCTAssertEqual(
+            StackArithmetic.firstBaseline(
+                of: row, axis: .horizontal, spacing: 0, padding: Insets(0), in: Rect(x: 0, y: 0, width: 200, height: 50)),
+            30)
+
+        var column = [small, large]
+        column[0].values.vertical = Alignment.firstBaseline.rawValue
+        let stacked = StackArithmetic.places(
+            of: column, axis: .vertical, spacing: 4, padding: Insets(0), in: Rect(x: 0, y: 0, width: 100, height: 60),
+            direction: .leftToRight)
+        XCTAssertEqual(stacked.map { $0?.y }, [0, 20], "a column reads it as the near edge")
+    }
+
     func testARowShortOfRoomTakesItFromItsWords() {
         let row = Self.row(title: 300, note: 100)
 
@@ -542,6 +577,11 @@ private struct Child: LayoutChild {
         natural = LayoutSize(width: width, height: height)
         isShown = shown
     }
+
+    /// How far below its top its first line of words rests; nil for none.
+    var baseline: Double?
+
+    func firstBaseline(offered width: Double?) -> Double? { baseline }
 
     func size(offered width: Double?) -> LayoutSize {
         offers?.widths.append(width)

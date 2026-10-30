@@ -1,4 +1,4 @@
-# revision 17.1
+# revision 18.1
 Button.frameChanged: ✅
 Button.margin: ✅
 Button.swipeDirection: ✓ pan on Button: the view's listening handed the recognizer's states, no touch sent
