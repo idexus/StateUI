@@ -105,7 +105,7 @@ struct GTKPageChrome {
 
     /// The edge the bottom bar shows while rows go on past it, and the page's scroller whose rows it follows.
     var bottomBarEdge = ScrollEdge.automatic
-    var bottomBarScroller: GTKScrollView?
+    var bottomBarScroller: GTKPageScroller?
 
     /// The groups of actions at the bar's start and at its end, each in reading order.
     var leading: [[GTKToolbarAction]] = []

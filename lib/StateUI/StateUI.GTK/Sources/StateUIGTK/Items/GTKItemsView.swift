@@ -11,7 +11,7 @@ import CStateUIGTK
 /// StateUI builds what a cell holds. The list is a room: it asks for none, and stands where it is put.
 /// Design: docs/design/platforms/gtk/items.md
 @MainActor
-final class GTKItemsView: GTKLayoutView {
+final class GTKItemsView: GTKLayoutView, GTKPageScroller {
     let cells: ItemsCells
 
     private let scroller = GTKWidgetView { gtk_scrolled_window_new() }
@@ -74,7 +74,7 @@ final class GTKItemsView: GTKLayoutView {
         for adjustment in [gtk_scrolled_window_get_hadjustment(scrolled), gtk_scrolled_window_get_vadjustment(scrolled)] {
             guard let adjustment else { continue }
             connectSignal(UnsafeMutableRawPointer(adjustment), "value-changed", number: number) { (_: UnsafeMutableRawPointer?, data: gpointer?) in
-                MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.tellShowing() }
+                MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKItemsView)?.scrolled() }
             }
         }
         // The user taking the list: where it stands is theirs.
@@ -277,13 +277,56 @@ final class GTKItemsView: GTKLayoutView {
         LayoutSize(width: width ?? 0, height: 0)
     }
 
-    /// Stands the scrolled window over the whole room; a grid's columns follow the width.
+    /// Stands the scrolled window over the whole room; a grid's columns follow the width. As the room changes - a
+    /// bottom bar growing beside it - a list at its end stays at its end, its reach grown by what the room lost
+    /// (`ScrollArithmetic.keptAtEnd`), and the item the program scrolled to stands again (`ItemsCells.roomChanged`).
+    /// Design: docs/design/platforms/gtk/items.md#scrolling-to-an-item
     override func arrange(in bounds: Rect) {
         if bounds.width != width {
             width = bounds.width
             place()
         }
+        let (before, was) = (standing, laidOutIn)
+        laidOutIn = bounds
         scroller.layout(bounds)
+        if owesScroll {
+            owesScroll = false
+            bring(glides: false)
+        }
+        guard let was, was.width != bounds.width || was.height != bounds.height else { return }
+        let now = Point(
+            x: max(0, before.reach.x + was.width - bounds.width), y: max(0, before.reach.y + was.height - bounds.height))
+        if let end = ScrollArithmetic.keptAtEnd(before.offset, reach: before.reach, now: now) {
+            let scrolled = scroller.widget.opaque
+            if let across = gtk_scrolled_window_get_hadjustment(scrolled) { gtk_adjustment_set_value(across, end.x) }
+            if let down = gtk_scrolled_window_get_vadjustment(scrolled) { gtk_adjustment_set_value(down, end.y) }
+        }
+        if let target = cells.roomChanged() { _ = stand(target.identity, anchor: target.anchor) }
+    }
+
+    /// The room the list last stood in; nil before its first arrangement.
+    private var laidOutIn: Rect?
+
+    // MARK: - A page's scroller
+
+    var standingChanged: (() -> Void)?
+
+    var standing: (offset: Point, reach: Point) {
+        let scrolled = scroller.widget.opaque
+        let read = { (adjustment: UnsafeMutablePointer<GtkAdjustment>?) -> (Double, Double) in
+            guard let adjustment else { return (0, 0) }
+            return (gtk_adjustment_get_value(adjustment),
+                    max(0, gtk_adjustment_get_upper(adjustment) - gtk_adjustment_get_page_size(adjustment)))
+        }
+        let (across, down) = (read(gtk_scrolled_window_get_hadjustment(scrolled)),
+                              read(gtk_scrolled_window_get_vadjustment(scrolled)))
+        return (Point(x: across.0, y: down.0), Point(x: across.1, y: down.1))
+    }
+
+    /// The scrolled window moved: the entries in view are told, and a bottom bar beside the page follows.
+    private func scrolled() {
+        tellShowing()
+        standingChanged?()
     }
 
     // MARK: - What the list says
@@ -374,14 +417,24 @@ final class GTKItemsView: GTKLayoutView {
     /// Scrolls until the item of `identity` stands where `anchor` says: one laid out already glides there, unless the
     /// user asks for less motion (`ItemsScrollTarget.glides`); else GTK brings it into view, and once it is laid
     /// out the scrolled window stands where the anchor says (`ScrollAnchor.place`) - again on every frame its cells
-    /// are laid out, while the host layer holds it.
+    /// are laid out, while the host layer holds it. A list not given its room yet brings it once it is.
     /// Design: docs/design/platforms/gtk/items.md#scrolling-to-an-item
     func scroll(to identity: String, anchor: ScrollAnchor) {
-        guard let list, let place = cells.identities.firstIndex(of: identity) else { return }
+        guard list != nil, cells.identities.contains(identity) else { return }
         stopGliding()
         cells.scroll(to: identity, anchor: anchor)
-        if ItemsScrollTarget.glides(reducingMotion: reducesMotion()),
-           let standing = standing(of: identity, anchor: anchor), let to = standing.to {
+        guard laidOutIn != nil else { return owesScroll = true }
+        bring(glides: ItemsScrollTarget.glides(reducingMotion: reducesMotion()))
+    }
+
+    /// Whether a scroll asked before the list was given its room waits for it.
+    private var owesScroll = false
+
+    /// Brings the item the host layer holds scrolled to into view, gliding there where it is laid out and `glides`.
+    private func bring(glides: Bool) {
+        guard let list, let target = cells.scrollTarget, let place = cells.identities.firstIndex(of: target.identity)
+        else { return }
+        if glides, let standing = standing(of: target.identity, anchor: target.anchor), let to = standing.to {
             glide(standing.adjustment, to: to)
             return
         }
@@ -497,6 +550,8 @@ final class GTKItemsView: GTKLayoutView {
         guard let adjustment = across
             ? gtk_scrolled_window_get_hadjustment(scrolled) : gtk_scrolled_window_get_vadjustment(scrolled)
         else { return nil }
+        // A list GTK has not given its room yet has laid nothing out.
+        guard gtk_adjustment_get_page_size(adjustment) > 0 else { return nil }
         let now = gtk_adjustment_get_value(adjustment)
         let start = now + Double(across ? bounds.origin.x : bounds.origin.y)
         let length = Double(across ? bounds.size.width : bounds.size.height)

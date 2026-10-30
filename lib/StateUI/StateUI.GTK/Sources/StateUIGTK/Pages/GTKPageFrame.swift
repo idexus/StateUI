@@ -240,7 +240,7 @@ final class GTKPageFrame {
     /// platform's; a border on its own ground while `scroller`'s rows go on past it, for a hard one. GNOME's flat bar
     /// shows its shadow whatever the edge says.
     /// Design: docs/design/host/layout.md#a-bar-at-the-foot
-    private func showBottomEdge(_ edge: ScrollEdge?, following scroller: GTKScrollView?) {
+    private func showBottomEdge(_ edge: ScrollEdge?, following scroller: GTKPageScroller?) {
         (page as? GTKSingleChildView)?.bottomBarEdge = edge
         let show: () -> Void = { [weak self, weak scroller] in
             guard let self else { return }

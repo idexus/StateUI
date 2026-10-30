@@ -39,7 +39,7 @@ See [the dictionary](README.md) for how a mark is given.
 <tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>1 ✅</td><td>custom <code>UIView</code> over the page's foot, its edge <code>UIScrollEdgeElementContainerInteraction</code></td></tr></tbody>
 <tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>1 ✅</td><td>custom <code>ViewGroup</code> child of the page, beneath its content</td></tr></tbody>
 <tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td></td><td>custom <code>Panel</code> child of the page, beneath its content</td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td></td><td><code>AdwToolbarView</code> bottom bar</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>1 ☑️</td><td><code>AdwToolbarView</code> bottom bar</td></tr></tbody>
 <tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>1 ✅</td><td><code>&lt;div&gt;</code> over the page's foot</td></tr></tbody>
 </table>
 
@@ -49,5 +49,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/BottomBarContract
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>edge</code></td><td>property</td><td><code>ScrollEdge</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>edge</code></td><td>property</td><td><code>ScrollEdge</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">⌛</td><td align="center">☑️</td><td align="center">✅</td></tr>
+<tr><td colspan="9">GTK 4: No edge: GNOME's flat bottom bar shows its shadow while the content scrolls, whatever the edge says.</td></tr></tbody>
 </table>

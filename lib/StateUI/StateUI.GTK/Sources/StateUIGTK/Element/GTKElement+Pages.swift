@@ -54,7 +54,7 @@ extension GTKElement {
         chrome.titleView = element.chromeTitleView?.gtk.view
         chrome.bottomBar = element.chromeBottomBar?.gtk.view
         chrome.bottomBarEdge = element.chromeBottomBarEdge
-        chrome.bottomBarScroller = element.pageScroller?.gtk.view as? GTKScrollView
+        chrome.bottomBarScroller = element.pageScroller?.gtk.view as? GTKPageScroller
         chrome.showsBar = value(.showsNavigationBar)?.bool != false
         chrome.offersBack = value(.showsBackButton)?.bool != false
         chrome.offersClose = element.enclosing(type: .sheet) == nil || element.offersItsSheetsClose
