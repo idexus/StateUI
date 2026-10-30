@@ -169,10 +169,10 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 }
 
 extension AppKitWindowContentView {
-    /// Shows `bar` - the visible page's bottom bar - over the page's foot; nil for none.
-    func showBottomBar(_ bar: MountedElement?) {
-        bottomBar.show(bar)
-        if bar == nil {
+    /// Shows `page`'s bottom bar and its bar at its foot over the page's foot; nothing for no page.
+    func showBottomBar(of page: MountedElement?) {
+        bottomBar.show(page)
+        if !bottomBar.showsAnything {
             bottomBar.removeFromSuperview()
         } else if bottomBar.superview !== self {
             addSubview(bottomBar, positioned: .below, relativeTo: overlaySurface.superview === self ? overlaySurface : nil)

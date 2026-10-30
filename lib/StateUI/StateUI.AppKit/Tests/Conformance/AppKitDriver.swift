@@ -202,7 +202,7 @@ final class AppKitDriver: HostDriver {
         if element.type == .popover, property == .isPresented {
             return ((element.native as? AppKitElement)?.shownPopover?.isShown ?? false).propValue
         }
-        if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type) {
+        if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle, .toolbarLabel].contains(element.type) {
             return try itemHolds(property, element)
         }
         if element.type == .marker { return try markerHolds(property, element) }

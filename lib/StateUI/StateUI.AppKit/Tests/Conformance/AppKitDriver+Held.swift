@@ -181,6 +181,19 @@ extension AppKitDriver {
             default: break
             }
         }
+        // Words on a bar: the label its toolbar item or its foot's strip shows.
+        if element.type == .toolbarLabel {
+            let identifier = "StateUI.action.\(element.mount)"
+            let item = try controller(of: element).toolbarForTesting.itemForTesting(NSToolbarItem.Identifier(identifier))
+            let foot = element.enclosing(type: .page).flatMap { bottomToolbar(of: $0)?.controlForTesting(identifier) }
+            if let label = item?.view as? AppKitBarLabel ?? foot as? AppKitBarLabel {
+                switch property {
+                case .text: return label.words.stringValue.propValue
+                case .icon: return pictureName(label.picture.image)
+                default: break
+                }
+            }
+        }
         if [.toolbarButton, .toolbarToggle].contains(element.type),
            let item = try controller(of: element).toolbarForTesting
                .itemForTesting(NSToolbarItem.Identifier("StateUI.action.\(element.mount)")) {

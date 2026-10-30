@@ -74,6 +74,9 @@ extension AppKitWindowController {
                 bar.paints ? Self.foreground(on: band, written: foreground) : nil
             })
         synchronizeTabRow(window, windowTabs(arrangement))
+        // The bars at the pages' feet follow their actions as the top bar does.
+        content.showBottomBar(of: arrangement?.type == .splitView ? nil : arrangement?.visiblePage)
+        split?.columnsChanged()
     }
 
     /// A page's action as a toolbar item.
@@ -87,7 +90,8 @@ extension AppKitWindowController {
             perform: { [weak item] in item?.appKit.clicked(nil) },
             isOn: isOn,
             standsOut: isOn == true && item.value(.onIcon) == nil,
-            menu: menu(of: item))
+            menu: menu(of: item),
+            isLabel: item.type == .toolbarLabel)
     }
 
     /// The menu a toolbar's button opens, read as a button's is (`ButtonMenu`); nil for one holding none.

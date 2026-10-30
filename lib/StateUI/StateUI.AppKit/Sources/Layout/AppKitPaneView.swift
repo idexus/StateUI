@@ -37,11 +37,11 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
     /// The column's visible page's bottom bar, over the pane's foot.
     private let bottomBar = AppKitBottomBarView()
 
-    /// Shows the column's visible page's bottom bar, or takes it away where it declares none.
+    /// Shows the column's visible page's bottom bar and its bar at its foot, or takes them away where it declares
+    /// neither.
     func showBottomBar() {
-        let bar = column?.visiblePage?.chromeBottomBar
-        bottomBar.show(bar)
-        if bar == nil {
+        bottomBar.show(column?.visiblePage)
+        if !bottomBar.showsAnything {
             bottomBar.removeFromSuperview()
         } else if bottomBar.superview !== self {
             addSubview(bottomBar, positioned: .above, relativeTo: nil)
@@ -51,7 +51,7 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
 
     override func setItem(_ item: AppKitLayoutItem?) {
         super.setItem(item)
-        if bottomBar.item != nil, bottomBar.superview !== self { addSubview(bottomBar, positioned: .above, relativeTo: nil) }
+        if bottomBar.showsAnything, bottomBar.superview !== self { addSubview(bottomBar, positioned: .above, relativeTo: nil) }
     }
 
     /// Where the bottom bar stands at the pane's foot; nil where it shows none.

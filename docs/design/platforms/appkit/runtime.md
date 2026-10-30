@@ -160,6 +160,24 @@ indicator, the menu opens as it is held. Each item keeps one menu, and an
 entry is taken out of the menu it stood in before it is added - AppKit refuses
 an item standing in two menus.
 
+## The bar at the foot
+
+A page's actions for the bar at its foot (`.toolbar(.bottom)`) stand in a
+strip of AppKit's accessory bar controls, 28 points tall, at the foot of the
+page's room - a window, a sheet, a split view's pane - under the page's view
+bar (`.bottomBar`) and on the same ground: both stand over the page in its
+safe area, on the page while nothing passes under them and on the bar's
+edge while rows do. The strip's leading groups stand at its start and the
+rest at its end, each group's controls close together and the groups apart;
+an action or a setting is an `NSButton` of the accessory bar's bezel, small,
+a setting a push-on push-off button; a button holding a menu an
+`NSComboButton`, split, or a button popping its menu where its click opens
+it; behind the overflow a More button pops a menu of the rest. Words
+(`ToolbarLabel`) are a small label in the secondary color of words, its
+picture before it - the same view a word item on the window's toolbar
+holds. The strip is made again only where an action draws otherwise, and
+follows the page's actions whenever the window's chrome is composed.
+
 ## Sheets
 
 A page a view presents is a sheet on the window - over the top of its sheets

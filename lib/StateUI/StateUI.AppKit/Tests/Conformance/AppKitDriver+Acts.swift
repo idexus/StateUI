@@ -190,6 +190,17 @@ extension AppKitDriver {
                 menu.performActionForItem(at: menu.index(of: item))
                 return
             }
+            if [.toolbarButton, .toolbarToggle].contains(element.type),
+               let page = element.enclosing(type: .page),
+               let foot = bottomToolbar(of: page)?.controlForTesting("StateUI.action.\(element.mount)") {
+                switch foot {
+                case let button as NSButton: button.performClick(nil)
+                case let combo as NSComboButton: combo.sendAction(combo.action, to: combo.target)
+                case let item as NSMenuItem: bottomToolbar(of: page)?.chooseForTesting(item)
+                default: throw DriverCannot(.activate, on: element)
+                }
+                return
+            }
             if [.toolbarButton, .toolbarToggle].contains(element.type) {
                 let identifier = NSToolbarItem.Identifier("StateUI.action.\(element.mount)")
                 try controller(of: element).toolbarForTesting.performForTesting(identifier)

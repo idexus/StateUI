@@ -62,7 +62,7 @@ final class AppKitModalWindowController: NSWindowController, NSWindowDelegate {
         guard let window else { return }
 
         content.visiblePage = element.visiblePage
-        content.showBottomBar(element.visiblePage?.chromeBottomBar)
+        content.showBottomBar(of: element.visiblePage)
         content.set(page: node.presentablePageView, overlays: [])
         let chrome = WindowChrome(window: element, arrangement: element)
         window.title = chrome.title ?? node.core.applicationName

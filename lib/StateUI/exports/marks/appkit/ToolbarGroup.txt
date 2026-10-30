@@ -1,5 +1,6 @@
-# revision 8.1
+# revision 9.1
 ToolbarGroup: ✅
+ToolbarGroup.barEdge: ✅
 ToolbarGroup.hidesWithSidebar: ✅
 ToolbarGroup.isEnabled: ✅
 ToolbarGroup.order: ✅

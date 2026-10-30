@@ -200,7 +200,7 @@ final class AppKitWindowController: NSWindowController {
 
         let arrangement = presentation.arrangement
         content.visiblePage = arrangement?.visiblePage
-        content.showBottomBar(arrangement?.type == .splitView ? nil : arrangement?.visiblePage?.chromeBottomBar)
+        content.showBottomBar(of: arrangement?.type == .splitView ? nil : arrangement?.visiblePage)
         (arrangement?.appKit.view as? AppKitSplitView)?.columnsChanged()
         content.set(
             page: arrangement?.appKit.presentableViews.first,

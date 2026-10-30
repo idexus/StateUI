@@ -9,7 +9,7 @@
 /// Design: docs/design/contracts/dictionary.md#marks
 enum AppKitRealization {
     /// The entries this host realizes none of: those it shows as unsupported, and the parts of one.
-    static let unrealized: [any ElementContract.Type] = [ToolbarLabelContract.self]
+    static let unrealized: [any ElementContract.Type] = []
 
     /// The entries the Mac will not have; none.
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []
@@ -194,10 +194,13 @@ enum AppKitRealization {
         .complete(ToolbarToggleContract.isOn),
         .complete(ToolbarToggleContract.onIcon),
         .complete(ToolbarToggleContract.toggled),
+        .complete(ToolbarLabelContract.icon),
+        .complete(ToolbarLabelContract.text),
         .unrealized(AutomationElementContract.accessibilityIdentifier, on: ToolbarButtonContract.self,
             why: "An NSToolbarItem holds no accessibility identifier."),
         .unrealized(AutomationElementContract.accessibilityIdentifier, on: ToolbarToggleContract.self,
             why: "An NSToolbarItem holds no accessibility identifier."),
+        .complete(ToolbarGroupContract.barEdge),
         .complete(ToolbarGroupContract.order),
         .complete(ToolbarGroupContract.part),
         .complete(ToolbarGroupContract.hidesWithSidebar),

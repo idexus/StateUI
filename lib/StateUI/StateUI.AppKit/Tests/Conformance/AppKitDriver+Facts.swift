@@ -35,14 +35,28 @@ extension AppKitDriver {
         return Self.said(view.offeredItems)
     }
 
-    /// The bar the window of `page` shows, read from its toolbar: the actions before the first flexible space and
-    /// after the last, each run between two spaces a group, then the overflow's actions.
+    /// The bar at `edge` of `page`: at its top the window's toolbar - the actions before the first flexible space and
+    /// after the last, each run between two spaces a group, then the overflow's actions - at its foot the strip of
+    /// its room's bottom bar.
     func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
-        guard edge == .top else { throw DriverCannot("read the bar at the foot of \(page.type.name)") }
-        let toolbar = try controller(of: page).toolbarForTesting
-        let identifiers = toolbar.identifiersForTesting
         var root = page
         while let parent = root.parent { root = parent }
+        guard edge == .top else {
+            guard let shown = bottomToolbar(of: page)?.shownForTesting else {
+                return BarWords.said(leading: [], trailing: [], overflow: [])
+            }
+            let word = { (identifier: String, enabled: Bool) -> String? in
+                guard let mount = UInt64(identifier.dropFirst("StateUI.action.".count)),
+                      let element = Self.element(mounted: mount, in: root)
+                else { return nil }
+                return BarWords.word(element, enabled: enabled)
+            }
+            let groups = { (groups: [[(String, Bool)]]) in groups.map { $0.compactMap(word) }.filter { !$0.isEmpty } }
+            return BarWords.said(
+                leading: groups(shown.leading), trailing: groups(shown.trailing), overflow: shown.overflow.compactMap(word))
+        }
+        let toolbar = try controller(of: page).toolbarForTesting
+        let identifiers = toolbar.identifiersForTesting
         let word = { (identifier: NSToolbarItem.Identifier, enabled: Bool) -> String? in
             guard identifier.rawValue.hasPrefix("StateUI.action."),
                   let mount = UInt64(identifier.rawValue.dropFirst("StateUI.action.".count)),
@@ -65,6 +79,15 @@ extension AppKitDriver {
         return BarWords.said(
             leading: groups(part[..<first]), trailing: groups(part[last...]),
             overflow: overflow.compactMap { word($0.identifier, $0.isEnabled) })
+    }
+
+    /// The strip at the foot of `page`, standing in its room's bottom bar in any window the host shows; nil for none.
+    func bottomToolbar(of page: MountedElement) -> AppKitBottomToolbar? {
+        func search(_ view: NSView) -> AppKitBottomToolbar? {
+            if let bar = view as? AppKitBottomBarView, bar.page === page, bar.showsAnything { return bar.toolbar }
+            return view.subviews.lazy.compactMap(search).first
+        }
+        return NSApp.windows.lazy.compactMap { $0.contentView.flatMap(search) }.first
     }
 
     /// The element of `mount` in the tree under `root`, its slots included.

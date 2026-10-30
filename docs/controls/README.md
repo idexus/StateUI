@@ -103,14 +103,14 @@ The scene, the window and the page an application is made of, the arrangements a
 | [TextSpans](TextSpans.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [TitleView](TitleView.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ToolbarButton](ToolbarButton.md) | 27 | 5 ✅ · 2 ✓ · 18 – | 6 ✅ · 1 ☑️ · 1 ✓ · 19 – | 6 ✅ · 1 ☑️ · 19 – | 10 ✅ · 17 – | 8 ✅ · 1 ✓ · 18 – | 27 ✅ |
-| [ToolbarGroup](ToolbarGroup.md) | 16 | 8 – | 6 ✅ · 10 – | 8 – | 8 – | 8 – | 8 ✅ |
-| [ToolbarLabel](ToolbarLabel.md) | 2 |  | 2 ✅ |  |  |  |  |
+| [ToolbarGroup](ToolbarGroup.md) | 16 | 6 ✅ · 10 – | 6 ✅ · 10 – | 8 – | 8 – | 8 – | 8 ✅ |
+| [ToolbarLabel](ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ |  |  |  |  |
 | [ToolbarToggle](ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 103 | 114 | 86 | 130 | 95 | 160 |
+| ✅ |  | 111 | 114 | 86 | 130 | 95 | 160 |
 | ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
-| – |  | 53 | 61 | 70 | 51 | 71 | 15 |
-| **Met** | 212 | **183** | **200** | **180** | **190** | **188** | **189** |
+| – |  | 55 | 61 | 70 | 51 | 71 | 15 |
+| **Met** | 212 | **193** | **200** | **180** | **190** | **188** | **189** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 

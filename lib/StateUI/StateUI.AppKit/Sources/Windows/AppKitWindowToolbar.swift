@@ -20,6 +20,8 @@ struct AppKitToolbarAction {
     var standsOut = false
     /// The menu it opens; nil for an action holding none.
     var menu: AppKitToolbarMenu? = nil
+    /// Whether it is words nobody chooses (`ToolbarLabel`).
+    var isLabel = false
 
     /// Whether two actions draw the same toolbar item. What an action
     /// performs is taken again on every composition.
@@ -31,6 +33,7 @@ struct AppKitToolbarAction {
             && isOn == other.isOn
             && standsOut == other.standsOut
             && menu?.said == other.menu?.said
+            && isLabel == other.isLabel
     }
 }
 
@@ -407,6 +410,13 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
         }
 
         guard let action = actions[identifier] else { return }
+        if action.isLabel {
+            item.label = action.title
+            item.paletteLabel = action.title
+            item.view = AppKitBarLabel(action.title, image: action.image)
+            item.isBordered = false
+            return
+        }
         item.label = action.title
         item.paletteLabel = action.title
         item.toolTip = action.title
@@ -481,7 +491,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
             item.target = self
             item.tag = first + index
             item.image = action.image
-            item.isEnabled = action.isEnabled
+            item.isEnabled = action.isEnabled && !action.isLabel
             item.state = action.isOn == true ? .on : .off
             if let opened = action.menu {
                 item.target = nil
@@ -520,12 +530,12 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
 
     /// The actions behind the overflow, each by its identifier and whether it can be chosen.
     var overflowForTesting: [(identifier: NSToolbarItem.Identifier, isEnabled: Bool)] {
-        overflowActions.map { ($0.identifier, $0.isEnabled) }
+        overflowActions.map { ($0.identifier, $0.isEnabled && !$0.isLabel) }
     }
 
     /// The actions behind the sidebar's part's overflow, each by its identifier and whether it can be chosen.
     var sidebarOverflowForTesting: [(identifier: NSToolbarItem.Identifier, isEnabled: Bool)] {
-        sidebarOverflowActions.map { ($0.identifier, $0.isEnabled) }
+        sidebarOverflowActions.map { ($0.identifier, $0.isEnabled && !$0.isLabel) }
     }
 
     func itemForTesting(_ identifier: NSToolbarItem.Identifier) -> NSToolbarItem? {
@@ -539,7 +549,7 @@ final class AppKitWindowToolbar: NSObject, NSToolbarDelegate {
     /// Chooses the action `identifier` as the user does - on the bar or in its overflow - where it can be chosen.
     func performForTesting(_ identifier: NSToolbarItem.Identifier) {
         guard let action = actions[identifier] ?? overflowActions.first(where: { $0.identifier == identifier }),
-              action.isEnabled
+              action.isEnabled, !action.isLabel
         else { return }
         action.perform()
     }
