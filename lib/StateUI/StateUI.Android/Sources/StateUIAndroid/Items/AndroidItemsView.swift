@@ -94,11 +94,15 @@ final class AndroidItemsView: AndroidView, AndroidRefreshing, AndroidPageScrolle
         }
         let (before, was) = (standing, placedSize)
         super.layout(place)
-        // The recycler lays out from its first item. Design: docs/design/platforms/android/items.md#scrolling-to-an-item
+        // The recycler lays out from its first item; its reach grows by what its room lost, an item come meanwhile
+        // left to its own scroll. Design: docs/design/platforms/android/items.md#scrolling-to-an-item
         guard let was, let now = placedSize, was != now else { return }
-        let after = standing
-        guard let end = ScrollArithmetic.keptAtEnd(before.offset, reach: before.reach, now: after.reach) else { return }
-        let along = layout.isAcross ? end.x - after.offset.x : end.y - after.offset.y
+        let reach = Point(
+            x: max(0, before.reach.x + Double(was.width - now.width) / density),
+            y: max(0, before.reach.y + Double(was.height - now.height) / density))
+        guard let end = ScrollArithmetic.keptAtEnd(before.offset, reach: before.reach, now: reach) else { return }
+        let after = standing.offset
+        let along = layout.isAcross ? end.x - after.x : end.y - after.y
         Java.call(reference, JavaAPI.scrollItemsAlong, .int(pixels(along)))
     }
 

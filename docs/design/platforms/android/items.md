@@ -74,9 +74,14 @@ recycler while it scrolls.
 
 ## Scrolling to an item
 
-With motion, the recycler's smooth scroller glides to the item and asks
-the host layer's rule where it stands ([scrolling to an
-item](../../host/items.md#scrolling-to-an-item)). Without, an item laid out
+With motion, an item laid out glides where the host layer's rule says
+([scrolling to an item](../../host/items.md#scrolling-to-an-item)) by the
+recycler's own glide over a distance, its length the recycler's. An item not
+laid out yet - a message come a moment ago past the end - is laid out first,
+the next layout reaching a room past the list's own each way, and glides
+there the same; the recycler's smooth scroller, made to fly to a far
+position, crosses a row in a frame. Only an item farther than that flies,
+the smooth scroller asking the rule where it stands as it comes. Without, an item laid out
 is moved there at once; one far off is brought to the start first and
 stood where it was asked once the recycler has laid it out. A list the
 recycler has not laid out yet - a scroll asked as it is made - has nowhere
@@ -87,7 +92,9 @@ The list a page scrolls by keeps the bars over it clear as a ScrollView does
 is the recycler's own padding, its items drawn through it, so its offsets and
 its reach count from its first item clear. A bottom bar stands beside it, and
 the recycler lays out again from its first item as its room changes: where it
-stood at its end, it scrolls on to its end (`ScrollArithmetic.keptAtEnd`). Its
+stood at its end, it scrolls on to its end (`ScrollArithmetic.keptAtEnd`), its
+reach grown by what its room lost - an item come meanwhile is left to the
+scroll the program asks for, never jumped to. Its
 reach is exact while its last item is laid out - the recycler's own range is an
 estimate from the items it measured. It says where it stands as each scroll or
 layout ends, so the bar's line shows while items go on past it. The recycler
