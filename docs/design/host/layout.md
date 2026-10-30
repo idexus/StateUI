@@ -379,11 +379,14 @@ where they run under the room's foot (`BottomBarPlace.covers`), beyond its top
 where it stands beside the page (`continues`), its scroller short of its end.
 `.automatic` is the platform's: UIKit's own scroll edge effect under the bar
 (`UIScrollEdgeElementContainerInteraction`, soft on iOS 26, hard on iOS 27),
-GNOME's flat bottom bar, which shows its shadow while the content scrolls, and
-where the platform draws none - AppKit, Android, WinUI, the Web - the hard
-one. `.hard` cuts the rows off at the bar: UIKit's hard edge, a blur in the
-page's hue with a line along its top on AppKit and the Web, the theme's line
-along the bar where it stands beside the page, GNOME's bar with its border.
+GNOME's flat bottom bar, which shows its shadow while the content scrolls; on
+AppKit and the Web, which draw none, a blur in the page's hue under the bar
+(`BottomBarPlace.blur`, `tint`), and where the bar stands beside the page -
+Android, WinUI - the hard one. `.hard` cuts the rows off at the bar: UIKit's
+hard edge, the same blur with a line along its top on AppKit and the Web, the
+theme's line along the bar where it stands beside the page, GNOME's bar with
+its border. On iOS 27 the automatic edge takes its shape from the glass the
+bar holds; a view StateUI draws shapes nothing.
 `.none` shows the rows as they are - all but GNOME's flat bar, whose shadow
 stays. A soft edge drawn by StateUI itself is no road yet: a masked blur
 crossfades sharp rows into blurred ones rather than blurring them more, and

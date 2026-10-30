@@ -117,8 +117,8 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
 [data-pads~="bottom"] > :not(.stateui-bottom-bar) { --stateui-over-bottom: 0px; }
 [data-pads~="right"] > :not(.stateui-bottom-bar) { --stateui-over-right: 0px; }
 /* A page's bottom bar over the foot of its room, as the window's bar is over its top: the page stands clear of it, its
-   rows scrolling under it where the page says so. It stands on the page while nothing passes under it, and shows its
-   edge while the rows do - the Web draws none, so the hard one (data-under, data-edge, layout.md#a-bar-at-the-foot). */
+   rows scrolling under it where the page says so. It stands on the page while nothing passes under it, and on a blur
+   while the rows do, a line along it where the edge is hard (data-under, data-edge, layout.md#a-bar-at-the-foot). */
 .stateui-bottom-bar {
   position: absolute;
   left: 0;
@@ -135,12 +135,13 @@ button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: no
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  /* The page's own hue over the blur in BottomBarPlace.tint's share, a line along the top: the hard edge. */
+  /* The page's own hue over the blur in BottomBarPlace.tint's share. */
   background: color-mix(in srgb, var(--stateui-page, var(--stateui-surface)) 50%, transparent);
   backdrop-filter: blur(20px) saturate(1.6);
   -webkit-backdrop-filter: blur(20px) saturate(1.6);
-  border-top: 0.5px solid var(--stateui-separator);
 }
+/* A hard edge draws a line along the top. */
+.stateui-bottom-bar[data-under][data-edge="hard"]::before { border-top: 0.5px solid var(--stateui-separator); }
 
 /* The window: its bar over the room its pages stand in. */
 .stateui-window {

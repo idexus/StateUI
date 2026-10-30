@@ -9,11 +9,11 @@ import AppKit
 /// A page's bottom bar in its room - a window's, a sheet's, a split view's pane: the bar's view at the room's foot over
 /// the page, as tall as it lays out across the safe area (`BottomBarPlace`); on the page while nothing stands under
 /// it, and at its edge (`ScrollEdge`) while the page's rows pass under it - AppKit drawing none for a view of its own,
-/// the hard one the window's bars wear, a blur in the page's hue with a line along its top, down to the room's edge.
+/// a blur in the page's hue down to the room's edge, a line along its top where the edge is hard.
 /// Design: docs/design/host/layout.md#a-bar-at-the-foot
 @MainActor
 final class AppKitBottomBarView: AppKitSingleChildView {
-    /// The blur under a hard edge, in the page's own hue (`bottomBarTint`).
+    /// The blur under the edge, in the page's own hue (`bottomBarTint`).
     private let ground: AppKitMaterialView = {
         let ground = AppKitMaterialView(BottomBarPlace.blur, behindWindow: false)
         ground.isHidden = true
@@ -72,7 +72,7 @@ final class AppKitBottomBarView: AppKitSingleChildView {
             guard let self else { return }
             let covered = BottomBarPlace.covers(contentRunsUnder: runsUnder, scroller: scroller?.standing)
             ground.isHidden = !covered || edge == .none
-            line.isHidden = ground.isHidden
+            line.isHidden = ground.isHidden || edge != .hard
         }
         scroller?.standingChanged = follow
         follow()
