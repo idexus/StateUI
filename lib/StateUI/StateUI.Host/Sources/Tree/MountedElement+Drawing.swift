@@ -46,8 +46,8 @@ extension MountedElement {
         return HostPlacementRun(placements: run.placements, direction: runDirection)
     }
 
-    /// The direction a phase layout's run and the hand over it stand in: right to left only where the layout mirrors
-    /// (`PhaseLayoutContract.mirrorsRightToLeft`) and lays out right to left - as written otherwise.
+    /// The direction a motion layout's run and the hand over it stand in: right to left only where the layout mirrors
+    /// (`MotionLayoutContract.mirrorsRightToLeft`) and lays out right to left - as written otherwise.
     /// Design: docs/design/host/layout.md#right-to-left
     public var runDirection: LayoutDirection {
         value(.mirrorsRightToLeft)?.bool == true ? layoutDirection : .leftToRight

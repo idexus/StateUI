@@ -23,7 +23,7 @@ final class LayoutSwipeTests: XCTestCase {
 
     /// Five views a hundred points apart, swiped a hundred points a unit.
     private func row(_ phase: State<Double>, _ handed: Handed) -> Node {
-        PhaseLayout([0, 1, 2, 3, 4], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+        MotionLayout([0, 1, 2, 3, 4], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             handed.phases.append(at)
             return (0..<5).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
@@ -91,7 +91,7 @@ final class LayoutSwipeTests: XCTestCase {
         let phase = State(wrappedValue: 1.0)
         let renders = Renders()
         func built() -> Node { row(phase, Handed()) }
-        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.phaseLayout)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout)?.driven?[.parameters]?.state)
 
         bench.step(renders, built, Point(-1, 0))
         bench.step(renders, built, Point(-1, 0))
@@ -119,7 +119,7 @@ final class LayoutSwipeTests: XCTestCase {
         let handed = Handed()
         let renders = Renders()
         func built() -> Node {
-            PhaseLayout([0, 1, 2], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 handed.phases.append(at)
                 return (0..<3).map { _ in Placement(Rect(0, 0, 10, 10)) }
             }
@@ -143,7 +143,7 @@ final class LayoutSwipeTests: XCTestCase {
         let handed = Handed()
         let renders = Renders()
         func built() -> Node {
-            PhaseLayout([0], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 handed.phases.append(at)
                 // Two hundred points a unit for half a unit either side of 1, fifty beyond.
                 let away = abs(at - 1)

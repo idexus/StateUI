@@ -79,15 +79,15 @@ Map.frameChanged: 🧩
 Map.gridColumnSpan: 🧩
 Map.gridRowSpan: 🧩
 Map.pinchUpdated: 🧩
+MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: the relay's report of the manipulation handed to the host, no touch sent
+MotionLayout.tapCount: ✅
+MotionLayout.tapped: ✅
 Path.pointerEntered: ✅
 Path.pointerExited: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
 Path.tapped: ✅
-PhaseLayout.rotationUpdated: ✓ rotate on PhaseLayout: the relay's report of the manipulation handed to the host, no touch sent
-PhaseLayout.tapCount: ✅
-PhaseLayout.tapped: ✅
 Picker.frameChanged: ✅
 Picker.gridColumn: ✅
 Picker.gridRow: ✅

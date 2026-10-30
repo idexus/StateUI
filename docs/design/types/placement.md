@@ -1,6 +1,6 @@
 # Placement
 
-A `PhaseLayout` puts each of its views where an application's arithmetic
+A `MotionLayout` puts each of its views where an application's arithmetic
 says. A `Placement` is that answer for one view, its twelve numbers what a
 host reads of it, and a `PlacedRun` the answer for the whole run as the host is
 handed it.
@@ -17,7 +17,7 @@ view's place is, said once for each.
 ## Written onto the placed view
 
 Each field is drawn onto the container the layout wraps the view in, over
-what the view's own properties say. A view inside a `PhaseLayout` is turned,
+what the view's own properties say. A view inside a `MotionLayout` is turned,
 scaled and faded by its placement, and what the closure that builds it writes
 stays its own: the placement composes with it and never overwrites it.
 

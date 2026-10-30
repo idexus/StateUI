@@ -97,16 +97,16 @@ enum UIKitRealization {
         .partial(VisualElementContract.background, on: ZStackContract.self, missing: Self.ovalGlass),
         .partial(VisualElementContract.background, on: FillContract.self, missing: Self.ovalGlass),
         .partial(VisualElementContract.background, on: SpaceContract.self, missing: Self.ovalGlass),
-        .partial(VisualElementContract.background, on: PhaseLayoutContract.self, missing: Self.ovalGlass),
-        .complete(PhaseLayoutContract.handAxis),
-        .complete(PhaseLayoutContract.handMoved),
-        .complete(PhaseLayoutContract.handStepped),
-        .complete(PhaseLayoutContract.itemDrag),
-        .complete(PhaseLayoutContract.itemMoved),
-        .complete(PhaseLayoutContract.magnifies),
-        .complete(PhaseLayoutContract.pans),
-        .complete(PhaseLayoutContract.rotates),
-        .complete(PhaseLayoutContract.pinchMoved),
+        .partial(VisualElementContract.background, on: MotionLayoutContract.self, missing: Self.ovalGlass),
+        .complete(MotionLayoutContract.translationOrientation),
+        .complete(MotionLayoutContract.translationUpdated),
+        .complete(MotionLayoutContract.wheelStepped),
+        .complete(MotionLayoutContract.itemDrag),
+        .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.magnifies),
+        .complete(MotionLayoutContract.pans),
+        .complete(MotionLayoutContract.rotates),
+        .complete(MotionLayoutContract.pinchRotationUpdated),
         .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
             why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
@@ -208,7 +208,7 @@ enum UIKitRealization {
         .notPlanned(WindowContract.width, reason: Self.sizedBySystem),
         .notPlanned(WindowContract.x, reason: Self.placedBySystem),
         .notPlanned(WindowContract.y, reason: Self.placedBySystem),
-    ] + pickerWords + HostRecord.phaseLayout
+    ] + pickerWords + HostRecord.motionLayout
         + BarItemLook.notPlanned(reason: "A bar's items stand in the system's own look.")
 
     /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.

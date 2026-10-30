@@ -1,0 +1,13 @@
+# revision 14.1
+MotionLayout: ✅
+MotionLayout.itemDrag: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.itemDragUpdated: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.magnifies: ✓ pinch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.mirrorsRightToLeft: ✅
+MotionLayout.pans: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.parameters: ✅
+MotionLayout.pinchRotationUpdated: ✓ pinch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.rotates: ✓ rotate on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.translationOrientation: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.translationUpdated: ✓ sweep on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.wheelStepped: ✓ notch on MotionLayout: the view's listening handed the recognizer's states, no touch sent

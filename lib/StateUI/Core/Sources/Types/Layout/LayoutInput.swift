@@ -1,23 +1,23 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What moves an axis of a phase layout's phase under the user's hand. This library's own.
+/// What moves an axis of a motion layout's parameters under the user's hand. This library's own.
 ///
-///     PhaseLayout(cards, id: \.name, phase: $turn) { … } placements: { room, phase in … }
+///     MotionLayout(cards, id: \.name, parameters: $turn) { … } placements: { room, parameters in … }
 ///         .axis(\.self, input: .scroll(.horizontal), range: 0...6, snaps: .every(1))
 ///
-/// Design: docs/design/views/phase-layout.md#the-hand
+/// Design: docs/design/views/motion-layout.md#the-hand
 public struct LayoutInput: Equatable, Sendable {
-    /// Which way the hand moves the phase.
-    public enum Axis: Int32, Equatable, Sendable {
-        /// Across: the hand moving sideways, the phase growing as it moves to the left.
+    /// Which way the hand moves the parameters.
+    public enum Orientation: Int32, Equatable, Sendable {
+        /// Across: the hand moving sideways, the parameters growing as it moves to the left.
         case horizontal = 0
 
-        /// Down: the hand moving up and down, the phase growing as it moves up.
+        /// Down: the hand moving up and down, the parameters growing as it moves up.
         case vertical = 1
     }
 
-    /// How far the hand travels for one unit of the phase.
+    /// How far the hand travels for one unit of the parameters.
     public enum Travel: Equatable, Sendable {
         /// So many device units, one at least.
         case points(Double)
@@ -30,11 +30,11 @@ public struct LayoutInput: Equatable, Sendable {
     }
 
     /// What moves the axis: a hand one way, two fingers spreading or two fingers turning.
-    /// Design: docs/design/views/phase-layout.md#two-fingers
+    /// Design: docs/design/views/motion-layout.md#two-fingers
     enum Gesture: Equatable, Sendable {
         /// A finger or a pointer dragged, a trackpad's two fingers and a wheel along `axis`, so far for a unit,
         /// one snap a hand where it `swipes`.
-        case hand(Axis, Travel, swipes: Bool)
+        case hand(Orientation, Travel, swipes: Bool)
 
         /// Two fingers spreading: the axis multiplied by how far they spread.
         case magnification
@@ -43,7 +43,7 @@ public struct LayoutInput: Equatable, Sendable {
         case rotation(degreesPerUnit: Double)
     }
 
-    /// What moves the phase.
+    /// What moves the parameters.
     let gesture: Gesture
 
     /// How a throw goes on once the hand lets go: how far it carries, and the curve it slows on.
@@ -60,9 +60,9 @@ public struct LayoutInput: Equatable, Sendable {
     ///     .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...3)
     ///
     /// - Parameters:
-    ///   - axis: which way it scrolls.
-    ///   - pointsPerUnit: how far the hand travels for one unit of the phase, in device units; one at least. Unless
-    ///     said, as far as the view drawn in front moves for one unit where the run stands - the hand carries it
+    ///   - orientation: which way it scrolls, horizontally or vertically.
+    ///   - pointsPerUnit: how far the hand travels for one unit of the parameters, in device units; one at least.
+    ///     Unless said, as far as the view drawn in front moves for one unit where the run stands - the hand carries it
     ///     with it, whatever size the room makes it.
     ///   - throwing: how a throw goes on. Eased, its length says how far it carries - the hand's speed for that long,
     ///     over how steeply the curve sets out - and the curve how it slows; a spring carries the hand's speed for
@@ -70,9 +70,9 @@ public struct LayoutInput: Equatable, Sendable {
     ///     speeds up after the lift. A light friction unless said.
     /// - Returns: the input.
     public static func scroll(
-        _ axis: Axis, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
+        _ orientation: Orientation, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
     ) -> LayoutInput {
-        LayoutInput(gesture: .hand(axis, travel(pointsPerUnit), swipes: false), throwing: throwing)
+        LayoutInput(gesture: .hand(orientation, travel(pointsPerUnit), swipes: false), throwing: throwing)
     }
 
     /// One snap a hand: the hand moves the run with it, but one snap at most either way from where it took it,
@@ -83,30 +83,30 @@ public struct LayoutInput: Equatable, Sendable {
     ///     .axis(\.self, input: .swipe(.horizontal), range: 0...6, snaps: .every(1))
     ///
     /// - Parameters:
-    ///   - axis: which way it swipes.
-    ///   - pointsPerUnit: how far the hand travels for one unit of the phase, in device units; one at least. Unless
-    ///     said, as far as the view drawn in front moves for one unit as the hand takes the run - measured as if the
+    ///   - orientation: which way it swipes, horizontally or vertically.
+    ///   - pointsPerUnit: how far the hand travels for one unit of the parameters, in device units; one at least.
+    ///     Unless said, as far as the view drawn in front moves for one unit as the hand takes the run - measured as if the
     ///     run stood on the snap nearest, and kept while the hand holds it.
     ///   - throwing: how the run goes on to the next snap once thrown; a light friction unless said.
     /// - Returns: the input.
     public static func swipe(
-        _ axis: Axis, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
+        _ orientation: Orientation, pointsPerUnit: Double? = nil, throwing: Motion = .eased(.milliseconds(400), .cubicOut)
     ) -> LayoutInput {
-        LayoutInput(gesture: .hand(axis, travel(pointsPerUnit), swipes: true), throwing: throwing)
+        LayoutInput(gesture: .hand(orientation, travel(pointsPerUnit), swipes: true), throwing: throwing)
     }
 
-    /// A page a hand: a swipe whose hand travels the room's length along `axis` for one unit of the phase, so a
-    /// board is a screen however the room turns - the hand moves the run one snap at most, and thrown, on to the
-    /// next page and no farther.
+    /// A page a hand: a swipe whose hand travels the room's length in `orientation` for one unit of the parameters, so
+    /// a board is a screen however the room turns - the hand moves the run one snap at most, and thrown, on to the next
+    /// page and no farther.
     ///
     ///     .axis(\.self, input: .pages(.horizontal), range: 0...3, snaps: .every(1))
     ///
     /// - Parameters:
-    ///   - axis: which way the pages turn.
+    ///   - orientation: which way the pages turn, horizontally or vertically.
     ///   - throwing: how the run goes on to the next page once thrown; a light friction unless said.
     /// - Returns: the input.
-    public static func pages(_ axis: Axis, throwing: Motion = .eased(.milliseconds(400), .cubicOut)) -> LayoutInput {
-        LayoutInput(gesture: .hand(axis, .room, swipes: true), throwing: throwing)
+    public static func pages(_ orientation: Orientation, throwing: Motion = .eased(.milliseconds(400), .cubicOut)) -> LayoutInput {
+        LayoutInput(gesture: .hand(orientation, .room, swipes: true), throwing: throwing)
     }
 
     /// Two fingers spreading or pinching - on a touch screen, or a trackpad's pinch: the axis is a magnification,
@@ -138,8 +138,8 @@ public struct LayoutInput: Equatable, Sendable {
     /// would end - the snap nearest it, where the axis has snaps - as `throwing` says; let go still, onto the
     /// nearest.
     ///
-    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, circular: true)
-    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), circular: true)
+    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, periodic: true)
+    ///     .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), periodic: true)
     ///
     /// - Parameters:
     ///   - degreesPerUnit: how far the fingers turn for one unit of the axis, in degrees; above nought.
@@ -158,4 +158,4 @@ public struct LayoutInput: Equatable, Sendable {
     }
 }
 
-extension LayoutInput.Axis: HostRepresentable {}
+extension LayoutInput.Orientation: HostRepresentable {}

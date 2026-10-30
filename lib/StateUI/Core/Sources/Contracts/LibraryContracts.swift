@@ -49,7 +49,7 @@
         EllipseContract.self, FillContract.self, GridContract.self, HStackContract.self, ImageContract.self,
         ItemsViewContract.self,
         TextContract.self,
-        PhaseLayoutContract.self, LineContract.self, LinkContract.self, MapContract.self, MenuBarContract.self,
+        MotionLayoutContract.self, LineContract.self, LinkContract.self, MapContract.self, MenuBarContract.self,
         MenuContract.self, MenuItemContract.self, MenuToggleContract.self, MenuSeparatorContract.self, SeparatorContract.self,
         NavigationStackContract.self, OverlayContract.self, PageContract.self, PathContract.self,
         PickerContract.self, PopoverContract.self, SheetContract.self, MarkerContract.self, PolygonContract.self, PolylineContract.self,

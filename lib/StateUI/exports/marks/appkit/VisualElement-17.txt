@@ -21,10 +21,10 @@ Line.accessibilityHeading: does not apply - read a heading's level - AppKit mark
 Link.zIndex: ✅
 Map.isVisible: ✅
 Map.rotation: ✓ read rotation of Map: the host's own transform, checked against the layer it composed itself
+MotionLayout.ignoresInput: ✅
+MotionLayout.scaleY: ✓ read scaleY of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.isEnabled: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.zIndex: ✅
-PhaseLayout.ignoresInput: ✅
-PhaseLayout.scaleY: ✓ read scaleY of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.pivotY: ✓ read pivotY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.accessibilityAdjusted: ✅
 Polyline.frame: ✅

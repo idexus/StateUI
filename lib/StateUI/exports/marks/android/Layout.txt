@@ -5,9 +5,9 @@ Grid.letsInputThrough: ✅
 HStack.clipsContent: ✅
 HStack.ignoresSafeArea: ✅
 HStack.letsInputThrough: ✅
-PhaseLayout.clipsContent: ✅
-PhaseLayout.ignoresSafeArea: ✅
-PhaseLayout.letsInputThrough: ✅
+MotionLayout.clipsContent: ✅
+MotionLayout.ignoresSafeArea: ✅
+MotionLayout.letsInputThrough: ✅
 VStack.clipsContent: ✅
 VStack.ignoresSafeArea: ✅
 VStack.letsInputThrough: ✅

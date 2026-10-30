@@ -1579,7 +1579,7 @@ final class CatalogTests: XCTestCase {
 
         // TWO rooms: the page's own, which that height is arithmetic over,
         // and the gallery's, which its cards are placed in.
-        XCTAssertEqual(rooms, ["Grid", "PhaseLayout"],
+        XCTAssertEqual(rooms, ["Grid", "MotionLayout"],
                        "the page and its run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room
@@ -1802,7 +1802,7 @@ final class CatalogTests: XCTestCase {
 
         let first = renders.render(tree())
         let remove = try XCTUnwrap(buttons(in: first).first { $0.props[.text] == .string("Remove") })
-        let phase = try XCTUnwrap(driven(.phase, in: first))
+        let phase = try XCTUnwrap(driven(.parameters, in: first))
 
         // From the second of four cards: twice the card at the front leaves
         // and the one behind stands there, the second of two - the last.
@@ -1829,13 +1829,13 @@ final class CatalogTests: XCTestCase {
 
         let first = renders.render(tree())
         func layout(in patch: HostPatch) -> HostPatch? {
-            patch.type == .phaseLayout ? patch : patch.children.lazy.compactMap(layout).first
+            patch.type == .motionLayout ? patch : patch.children.lazy.compactMap(layout).first
         }
         let engine = try XCTUnwrap(layout(in: first))
         guard case .replace(let driven)? = engine.driven, let room = driven[.frame] else {
             return XCTFail("the boards report no room")
         }
-        let moved = try XCTUnwrap(engine.events?[.itemMoved])
+        let moved = try XCTUnwrap(engine.events?[.itemDragUpdated])
 
         // The boards placed in a room of 360 by 600: four icons across, five down.
         var now = 50_000_000.0

@@ -21,7 +21,7 @@ private struct Tile: View {
     }
 }
 
-/// A change of a phase layout's description at the current phase - a view joining or leaving, a new order, a value
+/// A change of a motion layout's description at the current phase - a view joining or leaving, a new order, a value
 /// read in the body - comes onto its new places as bodies of the layout's world, from where each view was shown: the
 /// phase, the room and a followed state move the views as they always do.
 @MainActor
@@ -43,7 +43,7 @@ final class LayoutChangeTests: XCTestCase {
     ) -> Node {
         let apart = gap?.wrappedValue ?? 100
         let count = items.wrappedValue.count
-        return PhaseLayout(items.wrappedValue, phase: (phase ?? turn).projectedValue) { Text("\($0)") } placements: { _, at in
+        return MotionLayout(items.wrappedValue, parameters: (phase ?? turn).projectedValue) { Text("\($0)") } placements: { _, at in
             (0..<count).map { Placement(Rect((Double($0) - at) * apart, 0, 10, 10)) }
         }
         .physicsWorld(world)
@@ -101,7 +101,7 @@ final class LayoutChangeTests: XCTestCase {
         let (items, builds, renders) = (State(wrappedValue: [0, 1, 2]), Builds(), Renders())
         func tree() -> Node {
             let count = items.wrappedValue.count
-            return PhaseLayout(items.wrappedValue, phase: turn.projectedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
+            return MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
                 (0..<count).map { Placement(Rect(Double($0) * 100, 0, 10, 10)) }
             }
             .node
@@ -120,7 +120,7 @@ final class LayoutChangeTests: XCTestCase {
         let (items, builds, renders) = (State(wrappedValue: [0, 1, 2]), Builds(), Renders())
         func tree() -> Node {
             let count = items.wrappedValue.count
-            return PhaseLayout(items.wrappedValue, phase: turn.projectedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
+            return MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
                 (0..<count).map { Placement(Rect(Double($0) * 100, 0, 10, 10)) }
             }
             .node
@@ -173,7 +173,7 @@ final class LayoutChangeTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node { row(items, gap: gap, phase: phase) }
         let laid = bench.laid(renders, tree)
-        let worn = try XCTUnwrap(laid.patch.first(.phaseLayout)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(laid.patch.first(.motionLayout)?.driven?[.parameters]?.state)
 
         moved(worn, to: 0.5)
         bench.cycle()
@@ -246,7 +246,7 @@ final class LayoutChangeTests: XCTestCase {
         let phase = State(wrappedValue: 1.0)
         let renders = Renders()
         func tree() -> Node {
-            PhaseLayout([0], phase: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
+            MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
                 .physicsWorld(.spring(response: .milliseconds(160)))
                 .node
@@ -265,14 +265,14 @@ final class LayoutChangeTests: XCTestCase {
         let renders = Renders()
         let items = State(wrappedValue: [0, 1])
         func tree() -> Node {
-            PhaseLayout(items.wrappedValue, phase: turn.projectedValue) { Text("\($0)") } placements: { room, _ in
+            MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Text("\($0)") } placements: { room, _ in
                 [Placement(Rect(0, 0, room.width, 10)), Placement(Rect(room.width, 0, 10, 10))]
             }
             .physicsWorld(.spring(response: .milliseconds(160)))
             .node
         }
         let laid = bench.laid(renders, tree)
-        let fed = try XCTUnwrap(laid.patch.first(.phaseLayout)?.driven?[.frame]?.state)
+        let fed = try XCTUnwrap(laid.patch.first(.motionLayout)?.driven?[.frame]?.state)
 
         moved(fed, to: [10, 20, 500, 200])
 

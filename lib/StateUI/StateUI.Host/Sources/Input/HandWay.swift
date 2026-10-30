@@ -15,8 +15,8 @@
     /// Every way: a pan, whose first move is the layout's whichever way it goes.
     case everyWay
 
-    /// The way of a hand along `axis`.
-    public init(_ axis: LayoutInput.Axis) {
-        self = axis == .horizontal ? .horizontal : .vertical
+    /// The way of a hand moving in `orientation`.
+    public init(_ orientation: LayoutInput.Orientation) {
+        self = orientation == .horizontal ? .horizontal : .vertical
     }
 }

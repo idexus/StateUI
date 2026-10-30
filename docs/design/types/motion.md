@@ -46,7 +46,7 @@ than 80 milliseconds nor longer than its longest; held to either, it is bent
 to set out at its speed as an eased lane already moving is. A lane setting
 out still, or away from its destination, takes half its longest. Each lane
 glides by its own way, and the glide rests when the last lane does. It is
-the law a phase layout's throw goes on by, the input's eased motion going on
+the law a motion layout's throw goes on by, the input's eased motion going on
 from the hand's speed, and an application's (`Motion.glide(longest:)`); on
 the image it is `[5, longest, 0]`. It glides on `cubicOut` alone: a glide's
 length is the one that sets the curve out at the value's speed, which a curve
@@ -60,7 +60,7 @@ the law sets out (`HostMotionLaw.setsOut`): an eased law on its curve's first
 slope, never under a tenth; a glide and a spring as `cubicOut` does - a
 spring's length its response. A law that does not animate carries it
 nowhere. `journey.reach(_:)` is that, lane by lane, from where the value
-stands at the speed it has; a phase layout's throw finds the snap it goes on
+stands at the speed it has; a motion layout's throw finds the snap it goes on
 to by the same rule, so a value an application throws and a run the hand
 throws reach alike.
 

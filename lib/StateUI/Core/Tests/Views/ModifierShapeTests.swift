@@ -64,7 +64,7 @@ final class ModifierShapeTests: XCTestCase {
     private static let entry = "an entry of a menu, a bar or a map that wears no tier, so has no `Modified`"
 
     private static let configuresItself: [String: String] = [
-        "GalleryView": composed, "ItemsView": composed, "PhaseLayout": composed, "PositionDots": composed,
+        "GalleryView": composed, "ItemsView": composed, "MotionLayout": composed, "PositionDots": composed,
         "Section": "a list's group, which is no view",
         "Window": scene, "WindowGroup": scene,
         "Menu": entry, "MenuSeparator": entry, "Marker": entry, "ToolbarGroup": entry,

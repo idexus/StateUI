@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The curve a phase layout's views follow between the poses its arithmetic answers at an axis's keyframes, one
+/// The curve a motion layout's views follow between the poses its arithmetic answers at an axis's keyframes, one
 /// number at a time: each view's place, size, turn, opacity and shade.
 ///
-///     PhaseLayout(cards, id: \.name, phase: $arrangement) { … } placements: { room, phase in … }
+///     MotionLayout(cards, id: \.name, parameters: $arrangement) { … } placements: { room, parameters in … }
 ///         .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1))
 ///         .interpolation(.catmullRom)
 ///
 /// The library's curves are `.linear`, `.catmullRom` and `.monotone`; a curve of your own is a type conforming to
 /// this protocol. Every curve passes through each keyframe, so a pose at a keyframe is the arithmetic's own.
-/// Design: docs/design/views/phase-layout.md#keyframes
+/// Design: docs/design/views/motion-layout.md#keyframes
 public protocol LayoutInterpolation: Sendable {
     /// How many keyframes either side of the two around a place the curve reads: none for straight lines between
     /// them, one for a curve their neighbors shape.
@@ -75,7 +75,7 @@ public struct LayoutCurve: LayoutInterpolation, Equatable {
 
     /// The slope at a keyframe that keeps the curve between its neighbors: none where the values turn back there,
     /// at most twice the gentler side's.
-    /// Design: docs/design/views/phase-layout.md#the-curves
+    /// Design: docs/design/views/motion-layout.md#the-curves
     private static func steffen(at index: Int, _ knots: [Double], _ values: [Double]) -> Double {
         guard index > 0, index < knots.count - 1 else { return slope(at: index, knots, values) }
 

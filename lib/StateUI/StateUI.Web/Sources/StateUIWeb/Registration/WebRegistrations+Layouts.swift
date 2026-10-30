@@ -56,10 +56,10 @@ extension WebRegistrations {
             fill.applies(LayoutMembers.regionMembers) { view, values in applyBox(view, values) }
         }
 
-        // A phase layout stands on the layers: its children where its run of placements puts them. It has no size
+        // A motion layout stands on the layers: its children where its run of placements puts them. It has no size
         // of its own, which CSS's size containment says.
-        // Design: docs/design/host/layout.md#a-phase-layout
-        registry.add(PhaseLayoutContract.self, create: { _ in
+        // Design: docs/design/host/layout.md#a-motion-layout
+        registry.add(MotionLayoutContract.self, create: { _ in
             let layers = WebLayoutView(arrangement: .layers)
             layers.style("contain", "size")
             return layers

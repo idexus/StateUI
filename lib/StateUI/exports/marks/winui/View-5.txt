@@ -86,16 +86,16 @@ Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
 Map.panXChannel: 🧩
 Map.verticalAlignment: 🧩
+MotionLayout.area: ✅
+MotionLayout.frameChanged: ✅
+MotionLayout.panYChannel: ✅
+MotionLayout.physicsBody: ✅
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
 Path.swipeDirection: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
-PhaseLayout.area: ✅
-PhaseLayout.frameChanged: ✅
-PhaseLayout.panYChannel: ✅
-PhaseLayout.physicsBody: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began

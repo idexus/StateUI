@@ -100,7 +100,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         case .hand:
             // A finger and a trackpad's two fingers: one pan; a wheel turned notch by notch, which touches nothing:
             // another, each of its steps a notch.
-            let pan = UIKitHandPan(target: self, action: #selector(handMoved(_:)))
+            let pan = UIKitHandPan(target: self, action: #selector(translationUpdated(_:)))
             pan.allowedScrollTypesMask = .continuous
             pan.onPress = { [weak self] at in self?.hand(.began, moved: .zero, point: at) }
             pan.onLift = { [weak self] cancelled in self?.hand(cancelled ? .cancelled : .ended, moved: .zero) }
@@ -200,7 +200,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
 
     /// The hand over a layout: what it moved since the last report, from the top left, and as it lifts, its speed.
     /// Design: docs/design/platforms/uikit/input.md#the-hand-over-a-layout
-    @objc func handMoved(_ recognizer: UIPanGestureRecognizer) {
+    @objc func translationUpdated(_ recognizer: UIPanGestureRecognizer) {
         let total = recognizer.translation(in: view)
         switch recognizer.state {
         case .began:

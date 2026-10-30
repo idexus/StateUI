@@ -72,7 +72,7 @@ final class GTKZStackViewTests: XCTestCase {
         }
     }
 
-    /// A phase layout's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
+    /// A motion layout's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
     /// it says, the higher rank drawn over the lower.
     func testAPlacementRunStandsAndDrawsEachChildAsItSays() throws {
         try onUIThread {
@@ -80,7 +80,7 @@ final class GTKZStackViewTests: XCTestCase {
             let placed = State(wrappedValue: 0.0)
             let host = GTKRenderer.running(clock: clock) {
                 VStack {
-                    PhaseLayout(["back", "front"], phase: placed.projectedValue) { name in
+                    MotionLayout(["back", "front"], parameters: placed.projectedValue) { name in
                         Rectangle()
                             .fill(name == "back" ? .red : .blue)
                     } placements: { room, phase in

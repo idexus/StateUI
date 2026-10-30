@@ -48,7 +48,7 @@ final class WinUIDriver: HostDriver {
         "read isEnabled of Text": WinUIDriver.noEnabledState,
         "read isEnabled of VStack": WinUIDriver.noEnabledState,
         "read isEnabled of ZStack": WinUIDriver.noEnabledState,
-        "read isEnabled of PhaseLayout": WinUIDriver.noEnabledState,
+        "read isEnabled of MotionLayout": WinUIDriver.noEnabledState,
         "read growsWithText of TextEditor":
             "an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it",
         "read contentMode of Rectangle": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",

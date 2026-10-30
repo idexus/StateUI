@@ -95,7 +95,7 @@ final class UIKitFrameReportTests: XCTestCase {
     @MainActor
     func testAPageNarrowedByUIKitPlacesItsLayoutWithinThatPass() throws {
         let host = UIKitRenderer.running {
-            PhaseLayout([0], phase: State(wrappedValue: 0.0).projectedValue) { _ in
+            MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
             } placements: { room, _ in

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- The dark twin of nav_motionlayout.svg: the same shape, drawn white. Edit both. -->
+  <!-- Cards fanned out by arithmetic, and the turn that moves them: views placed by a phase. -->
+  <g fill="#FFFFFF">
+    <rect x="4.7" y="21.3" width="9" height="14" rx="2" transform="rotate(-32 9.2 28.3)"/>
+    <rect x="34.3" y="21.3" width="9" height="14" rx="2" transform="rotate(32 38.8 28.3)"/>
+    <rect x="18" y="15" width="12" height="18" rx="3"/>
+    <polygon points="40.6,12.5 34.3,11.4 37.3,6.2"/>
+  </g>
+  <path d="M9 11 Q24 3 36.5 10.2" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

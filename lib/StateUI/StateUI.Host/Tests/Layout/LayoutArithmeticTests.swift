@@ -473,16 +473,16 @@ final class LayoutArithmeticTests: XCTestCase {
             LayoutSize(width: 60, height: 40), "half of the room holds the child only in twice its size")
     }
 
-    /// A phase layout has no size of its own: whatever its views need, it takes only its padding and the room its
+    /// A motion layout has no size of its own: whatever its views need, it takes only its padding and the room its
     /// layout gives it.
     @MainActor
-    func testAPhaseLayoutHasNoSizeOfItsOwn() {
+    func testAMotionLayoutHasNoSizeOfItsOwn() {
         var badge = Child(width: 20, height: 10)
         badge.values.area = .absolute(10, 5, 40, 30)
         let views = [Child(width: 30, height: 20), badge]
 
-        XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(0), width: 100, phaseLayout: true), LayoutSize(width: 0, height: 0))
-        XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(2), width: nil, phaseLayout: true), LayoutSize(width: 4, height: 4))
+        XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(0), width: 100, motionLayout: true), LayoutSize(width: 0, height: 0))
+        XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(2), width: nil, motionLayout: true), LayoutSize(width: 4, height: 4))
     }
 
     /// A child that fills both ways takes the room within its margin, whatever it would measure.

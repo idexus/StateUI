@@ -59,6 +59,7 @@ Link.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handler
 Link.tapCount: ✓ tap on Link: the view's listening handed the recognizer's states, no touch sent
 Link.tapped: ✓ tap on Link: the view's listening handed the recognizer's states, no touch sent
 Map.holdDuration: ✅
+MotionLayout.panYChannel: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
@@ -67,7 +68,6 @@ Path.pointerExited: ✓ hover on Path: the view's listening handed the recognize
 Path.pointerMoved: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerPressed: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
 Path.pointerReleased: ✓ hover on Path: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.panYChannel: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the drop interaction's handler told the driver's files, no drag session
 Picker.filesDropped: ✓ dropFiles on Picker: the drop interaction's handler told the driver's files, no drag session
 Picker.tapped: ✓ pressDown on Picker: the view's listening handed the recognizer's states, no touch sent

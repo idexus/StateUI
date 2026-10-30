@@ -26,8 +26,8 @@ Line.opacity: ✅
 Line.rotationX: ✓ read rotationX of Line: the host's own transform, checked against the layer it composed itself
 Link.tooltip: ✅
 Map.zIndex: ✅
+MotionLayout.accessibilityValue: ✅
 Path.tooltip: ✅
-PhaseLayout.accessibilityValue: ✅
 Picker.style: ✅
 Picker.translationY: ✓ read translationY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.pivotY: ✓ read pivotY of Polygon: the host's own transform, checked against the layer it composed itself

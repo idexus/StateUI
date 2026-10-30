@@ -9,7 +9,7 @@
 /// hears of the user's hand - taps counted, a press held, a pan carrying its states and ending as a swipe, a pinch, the pointer
 /// coming, moving, pressing and going, a drag and a drop; each case made for every element wearing the tier. And
 /// where a view stands in its window as a scroller's or a list's scroll moves it, and from the safe area at its page's
-/// corner; and how a view of a phase layout moves as a body following its place.
+/// corner; and how a view of a motion layout moves as a body following its place.
 @_spi(Host) public enum ViewTests: ConformanceFamily {
     public static let name = "View"
 
@@ -162,20 +162,20 @@
         }
     }
 
-    /// A view of a phase layout following its place as a body lags behind it as the phase moves it, passes it on a
+    /// A view of a motion layout following its place as a body lags behind it as the phase moves it, passes it on a
     /// spring damped below 1, and settles onto it.
     @MainActor
     static func bodied(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aBodyFollowingItsPlaceLagsAndSettles", proves: [
             Covered(ViewContract.physicsBody, on: element),
-        ], needs: [Covered(PhaseLayoutContract.self), Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(MotionLayoutContract.self), Covered(ButtonContract.clicked)]) { s in
             let clock = TestClock()
             let phase = State(wrappedValue: 0.0)
             let laid = Received<Double>()
             let body = PhysicsBody.followsLayout(.spring(response: .milliseconds(400), damping: 0.5))
             s.start(clock: clock) {
                 VStack {
-                    PhaseLayout([0], phase: phase.projectedValue) { _ in
+                    MotionLayout([0], parameters: phase.projectedValue) { _ in
                         Specimens.view(element, [
                             Write(VisualElementContract.width, 40), Write(VisualElementContract.height, 40),
                             Write(ViewContract.physicsBody, body),

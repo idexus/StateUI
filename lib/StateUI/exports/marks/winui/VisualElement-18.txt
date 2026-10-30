@@ -29,9 +29,9 @@ Link.layoutDirection: ✅
 Link.width: ✅
 Map.rotationX: 🧩
 Map.style: 🧩
+MotionLayout.isAccessibilityHidden: ✅
+MotionLayout.isVisible: ✅
 Path.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
-PhaseLayout.isAccessibilityHidden: ✅
-PhaseLayout.isVisible: ✅
 Picker.isAccessibilityHidden: ✅
 Picker.isVisible: ✅
 Polygon.maximumHeight: ✅

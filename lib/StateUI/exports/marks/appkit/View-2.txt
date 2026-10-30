@@ -59,6 +59,7 @@ Link.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop r
 Link.tapCount: ✓ tap on Link: handed to the host's recognizer or handler, no NSEvent sent
 Link.tapped: ✓ tap on Link: handed to the host's recognizer or handler, no NSEvent sent
 Map.holdDuration: ✅
+MotionLayout.panYChannel: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.frameChanged: ✅
 Path.gridColumn: ✅
 Path.gridRow: ✅
@@ -67,7 +68,6 @@ Path.pointerExited: ✓ hover on Path: handed to the host's recognizer or handle
 Path.pointerMoved: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.pointerPressed: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.pointerReleased: ✓ hover on Path: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.panYChannel: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the window's drop routing told the driver's files, no dragging session
 Picker.filesDropped: ✓ dropFiles on Picker: the window's drop routing told the driver's files, no dragging session
 Picker.tapped: ✓ pressDown on Picker: handed to the host's recognizer or handler, no NSEvent sent

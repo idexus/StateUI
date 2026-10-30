@@ -9,9 +9,9 @@
     /// The arrangements of pages a window shows: a page, a stack of them, tabs, a split view.
     public static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabView, .splitView]
 
-    /// The views that take the room they are given rather than asking one: a list, a phase layout, a map, a web
+    /// The views that take the room they are given rather than asking one: a list, a motion layout, a map, a web
     /// view - a sheet holding one stands at its platform's standard size (`SheetSize`).
-    public static let roomTakingTypes: Set<NodeType> = [.itemsView, .phaseLayout, .map, .webView]
+    public static let roomTakingTypes: Set<NodeType> = [.itemsView, .motionLayout, .map, .webView]
 
     /// The entries that have no view of their own: structure, and the parts of another's view.
     public static let viewlessTypes: Set<NodeType> = [

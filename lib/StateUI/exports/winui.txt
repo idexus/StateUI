@@ -140,7 +140,7 @@ Path
   lineWidth
   miterLimit
   stroke
-PhaseLayout
+MotionLayout
   clipsContent
   lineWidth
   shape

@@ -1,17 +1,17 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a phase layout's views move by between where its arithmetic puts them and where they are shown: each view a
+/// What a motion layout's views move by between where its arithmetic puts them and where they are shown: each view a
 /// body on a spring to its place.
 ///
-///     PhaseLayout(cards, id: \.name) { CardFace($0) } placements: { room, phase in … }
+///     MotionLayout(cards, id: \.name) { CardFace($0) } placements: { room, parameters in … }
 ///         .physicsWorld(.spring(response: .milliseconds(420), damping: 0.8))
 ///
 /// A view whose place a change moves - a card joining, the run arranged anew - sets out from where it was shown
 /// and comes onto its place on the world's spring; a body of its own (`.physicsBody(_:)`) says otherwise. The world
 /// is worked out at a fixed step, so every host and every frame rate shows the same motion; under less motion every
 /// view lands on its place at once.
-/// Design: docs/design/views/phase-layout.md#bodies
+/// Design: docs/design/views/motion-layout.md#bodies
 public struct PhysicsWorld: Equatable, Sendable {
     /// The spring every body comes onto its place on, unless its own says another; nil for a world whose views land
     /// at once.

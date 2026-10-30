@@ -22,8 +22,8 @@ Line.minimumWidth: ✅
 Line.scaleX: ✓ read scaleX of Line: the host's own transform, checked against the layer it composed itself
 Link.hidesChildrenFromAccessibility: ✅
 Map.accessibilityHint: ✅
+MotionLayout.tooltip: ✅
 Path.hidesChildrenFromAccessibility: ✅
-PhaseLayout.tooltip: ✅
 Picker.accessibilityLabel: ✅
 Polygon.isEnabled: ✅
 Polygon.rotationY: ✓ read rotationY of Polygon: the host's own transform, checked against the layer it composed itself

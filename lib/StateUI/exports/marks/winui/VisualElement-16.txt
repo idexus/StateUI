@@ -32,10 +32,10 @@ Link.hidesChildrenFromAccessibility: ✅
 Link.opacity: ✅
 Map.ignoresInput: 🧩
 Map.pivotY: 🧩
+MotionLayout.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+MotionLayout.tooltip: ✅
 Path.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Path.translationY: ✅
-PhaseLayout.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-PhaseLayout.tooltip: ✅
 Picker.tooltip: ✅
 Polygon.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Polygon.isEnabled: does not apply - read isEnabled of Polygon - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it

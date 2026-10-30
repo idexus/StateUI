@@ -23,9 +23,9 @@ Line.pivotX: ✓ read pivotX of Line: the host's own transform, checked against 
 Link.accessibilityValue: ✅
 Map.ignoresInput: ✅
 Map.scaleY: ✓ read scaleY of Map: the host's own transform, checked against the layer it composed itself
+MotionLayout.accessibilityLabel: ✅
+MotionLayout.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Path.accessibilityValue: ✅
-PhaseLayout.accessibilityLabel: ✅
-PhaseLayout.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Picker.maximumHeight: ✅
 Picker.maximumWidth: ✅
 Picker.minimumHeight: ✅

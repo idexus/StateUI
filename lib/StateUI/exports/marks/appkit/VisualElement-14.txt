@@ -27,10 +27,10 @@ Line.accessibilityActions: ✅
 Link.ignoresInput: ✅
 Link.scaleY: ✓ read scaleY of Link: the host's own transform, checked against the layer it composed itself
 Map.layoutDirection: ✅
+MotionLayout.isEnabled: ✅
+MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.ignoresInput: ✅
 Path.scaleY: ✓ read scaleY of Path: the host's own transform, checked against the layer it composed itself
-PhaseLayout.isEnabled: ✅
-PhaseLayout.rotationY: ✓ read rotationY of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.background: ☑️ AppKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
 Polygon.accessibilityRole: ✅
 Polyline.height: ✅

@@ -77,6 +77,13 @@ Map.dragEnded: 🧩
 Map.dragStarting: 🧩
 Map.dragText: 🧩
 Map.held: 🧩
+MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.frameChanged: ✅
+MotionLayout.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
+MotionLayout.margin: ✅
 Path.droppedFileTypes: ✓ dropFiles on Path: the relay's drop report told the driver's files, no drag WinUI began
 Path.filesDropped: ✓ dropFiles on Path: the relay's drop report told the driver's files, no drag WinUI began
 Path.frameChanged: ✅
@@ -85,13 +92,6 @@ Path.panTouchCount: ✅
 Path.panUpdated: ✅
 Path.panXChannel: ✅
 Path.verticalAlignment: ✅
-PhaseLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-PhaseLayout.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-PhaseLayout.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-PhaseLayout.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
-PhaseLayout.frameChanged: ✅
-PhaseLayout.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
-PhaseLayout.margin: ✅
 Picker.pointerEntered: ✅
 Picker.pointerExited: ✅
 Picker.pointerMoved: ✅

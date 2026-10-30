@@ -51,14 +51,14 @@ Link.panYChannel: ✓ pan on Link: the view's listening handed the recognizer's 
 Map.area: ✅
 Map.frameChanged: ✅
 Map.rotationUpdated: ✓ rotate on Map: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.canDrag: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
+MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
+MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
+MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the drag and drop interactions' handlers called, no drag session
+MotionLayout.frameChanged: ✅
+MotionLayout.gridColumnSpan: ✅
+MotionLayout.gridRowSpan: ✅
 Path.holdDuration: ✅
-PhaseLayout.canDrag: ✓ dragAndDrop on PhaseLayout: the drag and drop interactions' handlers called, no drag session
-PhaseLayout.dragEnded: ✓ dragAndDrop on PhaseLayout: the drag and drop interactions' handlers called, no drag session
-PhaseLayout.dragStarting: ✓ dragAndDrop on PhaseLayout: the drag and drop interactions' handlers called, no drag session
-PhaseLayout.dragText: ✓ dragAndDrop on PhaseLayout: the drag and drop interactions' handlers called, no drag session
-PhaseLayout.frameChanged: ✅
-PhaseLayout.gridColumnSpan: ✅
-PhaseLayout.gridRowSpan: ✅
 Picker.frameChanged: ✅
 Picker.margin: ✅
 Picker.swipeDirection: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent

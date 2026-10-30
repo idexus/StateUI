@@ -30,10 +30,10 @@ Line.scaleX: ✅
 Link.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Link.translationY: ✅
 Map.accessibilityHeading: 🧩
+MotionLayout.accessibilityLabel: ✅
+MotionLayout.scaleX: ✅
 Path.rotationX: ✓ read rotationX of Path: the host's own tip, checked against the projection it laid on the element
 Path.style: ✅
-PhaseLayout.accessibilityLabel: ✅
-PhaseLayout.scaleX: ✅
 Picker.accessibilityLabel: ✅
 Picker.scaleX: ✅
 Polygon.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.

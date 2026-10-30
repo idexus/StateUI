@@ -24,8 +24,8 @@ Line.translationY: ✓ read translationY of Line: the host's own transform, chec
 Link.pivotX: ✓ read pivotX of Link: the host's own transform, checked against the layer it composed itself
 Map.accessibilityActionPerformed: ✅
 Map.accessibilityActions: ✅
+MotionLayout.hidesChildrenFromAccessibility: ✅
 Path.pivotX: ✓ read pivotX of Path: the host's own transform, checked against the layer it composed itself
-PhaseLayout.hidesChildrenFromAccessibility: ✅
 Picker.accessibilityValue: ✅
 Polygon.ignoresInput: ✅
 Polygon.scaleY: ✓ read scaleY of Polygon: the host's own transform, checked against the layer it composed itself

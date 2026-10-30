@@ -623,10 +623,10 @@ extension ControlDictionary {
             }
             """#),
 
-        (PhaseLayoutContract.self, #"""
+        (MotionLayoutContract.self, #"""
             @State var turn = 0.0
 
-            PhaseLayout(["Mural", "Nebula", "Ridge"], phase: $turn) { name in
+            MotionLayout(["Mural", "Nebula", "Ridge"], parameters: $turn) { name in
                 Text(name)
             } placements: { room, phase in
                 (0..<3).map { index in

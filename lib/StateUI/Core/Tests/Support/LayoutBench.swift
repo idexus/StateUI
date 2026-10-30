@@ -5,7 +5,7 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
-/// A phase layout on a bench: rendered, told its room as the host tells it, and turned frame by frame on a display
+/// A motion layout on a bench: rendered, told its room as the host tells it, and turned frame by frame on a display
 /// clock of its own, so two turns in one test are two instants.
 @MainActor
 final class LayoutBench {
@@ -30,7 +30,7 @@ final class LayoutBench {
 
     /// Where the layout of `patch` shows its views, in the items' order, as the host reads the run.
     func shown(_ patch: HostPatch) -> [Placement] {
-        guard let placed = patch.first(.phaseLayout)?.driven?[.area]?.state else { return [] }
+        guard let placed = patch.first(.motionLayout)?.driven?[.area]?.state else { return [] }
         return standing(placed, as: PlacedRun.self)?.placements ?? []
     }
 
@@ -78,7 +78,7 @@ final class LayoutBench {
         file: StaticString = #filePath, line: UInt = #line
     ) {
         // The whole description: a patch says nothing of a handler that did not change.
-        guard let heard = renders.renderFromScratch(tree()).first(.phaseLayout)?.events?[.handMoved] else {
+        guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.translationUpdated] else {
             return XCTFail("the layout hears no hand", file: file, line: line)
         }
 
@@ -92,7 +92,7 @@ final class LayoutBench {
         _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, scale: Double = 1, degrees: Double = 0,
         speed: Point = .zero, file: StaticString = #filePath, line: UInt = #line
     ) {
-        guard let heard = renders.renderFromScratch(tree()).first(.phaseLayout)?.events?[.pinchMoved] else {
+        guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.pinchRotationUpdated] else {
             return XCTFail("the layout hears no fingers", file: file, line: line)
         }
 
@@ -107,7 +107,7 @@ final class LayoutBench {
         _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, at: Point, speed: Point = .zero,
         still: Double = 0, file: StaticString = #filePath, line: UInt = #line
     ) {
-        guard let heard = renders.renderFromScratch(tree()).first(.phaseLayout)?.events?[.itemMoved] else {
+        guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.itemDragUpdated] else {
             return XCTFail("the layout hears no hand on its views", file: file, line: line)
         }
 
@@ -120,7 +120,7 @@ final class LayoutBench {
     func step(
         _ renders: Renders, _ tree: () -> Node, _ notches: Point, file: StaticString = #filePath, line: UInt = #line
     ) {
-        guard let heard = renders.renderFromScratch(tree()).first(.phaseLayout)?.events?[.handStepped] else {
+        guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.wheelStepped] else {
             return XCTFail("the layout hears no wheel's notch", file: file, line: line)
         }
 
@@ -136,7 +136,7 @@ final class LayoutBench {
     ) -> (patch: HostPatch, run: [Placement]) {
         let patch = renders.render(tree())
 
-        guard let layout = patch.first(.phaseLayout),
+        guard let layout = patch.first(.motionLayout),
               let fed = layout.driven?[.frame]?.state,
               let placed = layout.driven?[.area]?.state
         else {
@@ -145,7 +145,7 @@ final class LayoutBench {
         }
 
         // THE FIRST CYCLE OF ALL LATCHES rather than runs, so the room is fed after it.
-        worn = layout.driven?[.phase]?.state
+        worn = layout.driven?[.parameters]?.state
         cycle()
         moved(fed, to: [room.x, room.y, room.width, room.height])
         cycle()

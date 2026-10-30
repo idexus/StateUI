@@ -149,14 +149,14 @@ final class PlacedRunTests: XCTestCase {
 
     // MARK: - The tree
 
-    /// A PHASE LAYOUT DESCRIBES NO PLACEMENT AT ALL: its own `area` says
+    /// A MOTION LAYOUT DESCRIBES NO PLACEMENT AT ALL: its own `area` says
     /// which number carries the run, and not one of the twelve properties is
     /// on any child - every view wrapped.
-    func testAPhaseLayoutDescribesNothingAboutWhereItsViewsGo() {
+    func testAMotionLayoutDescribesNothingAboutWhereItsViewsGo() {
         let renders = Renders()
 
         let patch = renders.render(
-            PhaseLayout([1, 2], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
+            MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
                 .id("run")
                 .node)
 
@@ -181,7 +181,7 @@ final class PlacedRunTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            PhaseLayout([1], phase: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
+            MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
                 .shade(
                     Rectangle()
                         .fill(.black))
@@ -197,9 +197,9 @@ final class PlacedRunTests: XCTestCase {
         XCTAssertNil(wrapper.children[1].props[.opacity], "the shade's own fade is the number's")
     }
 
-    /// The phase layout's element in a message.
+    /// The motion layout's element in a message.
     private static func layout(_ patch: HostPatch) -> HostPatch? {
-        if patch.type == .phaseLayout { return patch }
+        if patch.type == .motionLayout { return patch }
 
         for child in patch.children {
             if let found = layout(child) { return found }

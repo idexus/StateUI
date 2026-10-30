@@ -62,6 +62,11 @@ Link.tapped: ✓ pressDown on Link: handed to the host's recognizer or handler, 
 Map.panTouchCount: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.panUpdated: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.panXChannel: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.frameChanged: ✅
+MotionLayout.margin: ✅
+MotionLayout.swipeDirection: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.swipeThreshold: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.swiped: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.canDrag: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
 Path.dragEnded: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
 Path.dragStarting: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
@@ -69,11 +74,6 @@ Path.dragText: ✓ dragAndDrop on Path: the drag source and the window's drop ro
 Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
-PhaseLayout.frameChanged: ✅
-PhaseLayout.margin: ✅
-PhaseLayout.swipeDirection: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.swipeThreshold: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.swiped: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.held: ✓ hold on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.physicsBody: ✅
 Polygon.panYChannel: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent

@@ -15,8 +15,8 @@ ItemsView.keyPressed: ✅
 ItemsView.keysTaken: ✅
 Link.keyPressed: ✅
 Link.keysTaken: ✅
-PhaseLayout.keyPressed: ✅
-PhaseLayout.keysTaken: ✅
+MotionLayout.keyPressed: ✅
+MotionLayout.keysTaken: ✅
 Picker.keyPressed: ✅
 Picker.keysTaken: ✅
 ScrollView.keyPressed: ✅

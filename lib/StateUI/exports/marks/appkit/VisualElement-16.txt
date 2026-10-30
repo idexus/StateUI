@@ -26,13 +26,13 @@ Line.tooltip: ✅
 Link.style: ✅
 Link.translationY: ✓ read translationY of Link: the host's own transform, checked against the layer it composed itself
 Map.pivotY: ✓ read pivotY of Map: the host's own transform, checked against the layer it composed itself
+MotionLayout.maximumHeight: ✅
+MotionLayout.maximumWidth: ✅
+MotionLayout.minimumHeight: ✅
+MotionLayout.minimumWidth: ✅
+MotionLayout.scaleX: ✓ read scaleX of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.style: ✅
 Path.translationY: ✓ read translationY of Path: the host's own transform, checked against the layer it composed itself
-PhaseLayout.maximumHeight: ✅
-PhaseLayout.maximumWidth: ✅
-PhaseLayout.minimumHeight: ✅
-PhaseLayout.minimumWidth: ✅
-PhaseLayout.scaleX: ✓ read scaleX of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.pivotX: ✓ read pivotX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.accessibilityActionPerformed: ✅
 Polygon.accessibilityActions: ✅

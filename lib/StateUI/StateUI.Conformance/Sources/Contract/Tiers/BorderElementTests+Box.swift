@@ -10,7 +10,7 @@
 extension BorderElementTests {
     /// The layouts, a space and a fill, whose box StateUI draws, and a button.
     static let drawnBoxes: Set<String> = [
-        "Button", "Fill", "Grid", "HStack", "PhaseLayout", "ScrollView", "Space", "VStack", "ZStack",
+        "Button", "Fill", "Grid", "HStack", "MotionLayout", "ScrollView", "Space", "VStack", "ZStack",
     ]
 
     /// Whether `color`, inside `element`'s outline, is none of the outline: nothing at all in a layout, anything but

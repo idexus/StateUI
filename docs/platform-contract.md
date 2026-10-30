@@ -117,11 +117,11 @@ of its members each meets, and why a cell is empty.
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [MotionLayout](controls/MotionLayout.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Path](controls/Path.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [PhaseLayout](controls/PhaseLayout.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Picker](controls/Picker.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Polygon](controls/Polygon.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Polyline](controls/Polyline.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -192,8 +192,8 @@ verdict on that host, as for every element.
 `ForEach`, `GeometryReader` and `GalleryView` are StateUI compositions or
 readers rather than additional platform controls. The core implements them
 once; their platform behavior depends only on the rows they use.
-`PhaseLayout` is an element of StateUI's own - its arithmetic, its phase and
-the hand that moves it are the core's - which every host stands on its ZStack,
+`MotionLayout` is an element of StateUI's own - its arithmetic, its parameters
+and the hand that moves them are the core's - which every host stands on its ZStack,
 and its row below says how far each host carries it.
 
 ## Native control mapping
@@ -228,7 +228,7 @@ contract.
 | `ToolbarGroup` / `ToolbarButton` | `NSToolbarItem`; `NSMenuToolbarItem` overflow; at the page's foot a strip of native controls | `UIBarButtonItemGroup` / `UIBarButtonItem`; at the page's foot the navigation controller's `UIToolbar` | `Toolbar` `MenuItem`; at the page's foot a `Toolbar` of its own | a `CommandBar`'s `AppBarElementContainer` in the `TitleBar`, a group's on a capsule; `AppBarButton` behind More; at the page's foot a `CommandBar` of its own | `GtkButton` in an `AdwHeaderBar`; at the page's foot in a `GtkActionBar`, `AdwToolbarView`'s bottom bar | `<button>` in an ARIA `toolbar`; at the page's foot a `toolbar` of its own |
 | `ToolbarToggle` | an `NSToolbarItem` showing its on picture, prominent while on with none; a checked `NSMenuItem` in the overflow | a `UIBarButtonItem` with `changesSelectionAsPrimaryAction`, `isSelected` while on | a checkable `Toolbar` `MenuItem`, its state on the bar by its on picture | a `ToggleButton` in a `CommandBar`'s `AppBarElementContainer` in the `TitleBar`; `AppBarToggleButton` behind More | `GtkToggleButton` in an `AdwHeaderBar` | `<button aria-pressed>` in an ARIA `toolbar` |
 | `ToolbarLabel` | an `NSTextField` label as an `NSToolbarItem`'s view; a disabled `NSMenuItem` in the overflow | a `UIBarButtonItem` holding a label, off its shared background; a disabled `UIAction` in the overflow | a `TextView` as a `Toolbar` `MenuItem`'s action view | a `TextBlock` in a `CommandBar`'s `AppBarElementContainer` | a `GtkLabel` in an `AdwHeaderBar` or a `GtkActionBar` | `<span>` in an ARIA `toolbar` |
-| `ZStack` / `PhaseLayout` / `Fill` / `Space` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
+| `ZStack` / `MotionLayout` / `Fill` / `Space` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid, one shared cell |
 | `VStack` / `HStack` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | flexbox |
 | `Grid` | custom `NSView` | custom `UIView` | custom `ViewGroup` | custom `Panel` | custom `GtkWidget` | CSS grid |
 | `ScrollView` | `NSScrollView` | `UIScrollView` | `ScrollView` / `HorizontalScrollView` | `ScrollViewer` | `GtkScrolledWindow` | `overflow: auto` |
@@ -493,8 +493,8 @@ Every control, and every part an application, its windows and its pages are made
 | [Line](controls/Line.md) | 86 | 47 ✅ · 2 ☑️ · 37 ✓ | 46 ✅ · 2 ☑️ · 37 ✓ · 1 – | 69 ✅ · 5 ☑️ · 10 ✓ · 1 – | 63 ✅ · 1 ☑️ · 15 ✓ · 7 – | 55 ✅ · 2 ☑️ · 23 ✓ · 6 – | 61 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Link](controls/Link.md) | 85 | 44 ✅ · 2 ☑️ · 38 ✓ · 1 – | 38 ✅ · 2 ☑️ · 40 ✓ · 5 – | 62 ✅ · 5 ☑️ · 13 ✓ · 4 – | 62 ✅ · 2 ☑️ · 15 ✓ · 6 – | 51 ✅ · 2 ☑️ · 26 ✓ · 6 – | 59 ✅ · 1 ☑️ · 22 ✓ · 3 – |
 | [Map](controls/Map.md) | 83 | 42 ✅ · 2 ☑️ · 38 ✓ · 1 – | 41 ✅ · 2 ☑️ · 38 ✓ · 2 – | 83 🧩 | 83 🧩 | 83 🧩 | 83 🧩 |
+| [MotionLayout](controls/MotionLayout.md) | 95 | 42 ✅ · 1 ☑️ · 46 ✓ · 1 – | 39 ✅ · 3 ☑️ · 48 ✓ · 2 – | 68 ✅ · 5 ☑️ · 16 ✓ · 2 – | 55 ✅ · 2 ☑️ · 27 ✓ · 9 – | 49 ✅ · 2 ☑️ · 31 ✓ · 8 – | 63 ✅ · 2 ☑️ · 25 ✓ · 4 – |
 | [Path](controls/Path.md) | 86 | 47 ✅ · 2 ☑️ · 37 ✓ | 45 ✅ · 3 ☑️ · 37 ✓ · 1 – | 68 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 2 ☑️ · 15 ✓ · 7 – | 54 ✅ · 3 ☑️ · 23 ✓ · 6 – | 60 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [PhaseLayout](controls/PhaseLayout.md) | 95 | 42 ✅ · 1 ☑️ · 46 ✓ · 1 – | 39 ✅ · 3 ☑️ · 48 ✓ · 2 – | 68 ✅ · 5 ☑️ · 16 ✓ · 2 – | 55 ✅ · 2 ☑️ · 27 ✓ · 9 – | 49 ✅ · 2 ☑️ · 31 ✓ · 8 – | 63 ✅ · 2 ☑️ · 25 ✓ · 4 – |
 | [Picker](controls/Picker.md) | 97 | 52 ✅ · 2 ☑️ · 38 ✓ · 2 – | 44 ✅ · 3 ☑️ · 42 ✓ · 5 – | 69 ✅ · 6 ☑️ · 13 ✓ · 4 – | 75 ✅ · 2 ☑️ · 14 ✓ · 6 – | 58 ✅ · 2 ☑️ · 25 ✓ · 12 – | 67 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [Polygon](controls/Polygon.md) | 87 | 48 ✅ · 2 ☑️ · 37 ✓ | 46 ✅ · 3 ☑️ · 37 ✓ · 1 – | 69 ✅ · 6 ☑️ · 10 ✓ · 1 – | 63 ✅ · 2 ☑️ · 15 ✓ · 7 – | 55 ✅ · 3 ☑️ · 23 ✓ · 6 – | 61 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Polyline](controls/Polyline.md) | 87 | 48 ✅ · 2 ☑️ · 37 ✓ | 46 ✅ · 3 ☑️ · 37 ✓ · 1 – | 69 ✅ · 6 ☑️ · 10 ✓ · 1 – | 63 ✅ · 2 ☑️ · 15 ✓ · 7 – | 55 ✅ · 3 ☑️ · 23 ✓ · 6 – | 61 ✅ · 2 ☑️ · 21 ✓ · 3 – |
@@ -627,10 +627,10 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuToggle](controls/MenuToggle.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
+| [MotionLayout](controls/MotionLayout.md) | `itemDrag`, `itemDragUpdated`, `magnifies`, `mirrorsRightToLeft`, `pans`, `parameters`, `pinchRotationUpdated`, `rotates`, `translationOrientation`, `translationUpdated`, `wheelStepped` | 11 | 2 ✅ · 9 ✓ | 2 ✅ · 9 ✓ | 7 ✅ · 4 ✓ | 2 ✅ · 8 ✓ · 1 – | 4 ✅ · 7 ✓ | 6 ✅ · 1 ☑️ · 4 ✓ |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 9 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [PhaseLayout](controls/PhaseLayout.md) | `handAxis`, `handMoved`, `handStepped`, `itemDrag`, `itemMoved`, `magnifies`, `mirrorsRightToLeft`, `pans`, `phase`, `pinchMoved`, `rotates` | 11 | 2 ✅ · 9 ✓ | 2 ✅ · 9 ✓ | 7 ✅ · 4 ✓ | 2 ✅ · 8 ✓ · 1 – | 4 ✅ · 7 ✓ | 6 ✅ · 1 ☑️ · 4 ✓ |
 | [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `presentation`, `selectedIndex`, `selectedIndexChanged` | 8 | 4 ✅ · 1 ✓ | 1 ✅ · 1 ☑️ · 3 ✓ | 3 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ | 4 ✅ · 4 – | 5 ✅ · 3 – |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -677,8 +677,8 @@ realizes the element and each of its members.
 `Anchor`, `Application`, `BottomBar`, `Button`, `ButtonMenu`, `Canvas`,
 `Capsule`, `CheckBox`, `ColorPicker`, `ContextMenu`, `DatePicker`, `Ellipse`,
 `Fill`, `Grid`, `HStack`, `Image`, `ItemsView`, `Line`, `Link`, `Map`, `Marker`,
-`Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `MenuToggle`, `NavigationStack`,
-`Overlay`, `Page`, `Path`, `PhaseLayout`, `Picker`, `Polygon`, `Polyline`,
+`Menu`, `MenuBar`, `MenuItem`, `MenuSeparator`, `MenuToggle`, `MotionLayout`,
+`NavigationStack`, `Overlay`, `Page`, `Path`, `Picker`, `Polygon`, `Polyline`,
 `Popover`, `ProgressBar`, `Rectangle`, `Scene`, `ScrollView`, `SearchField`,
 `Separator`, `Sheet`, `Slider`, `Space`, `Spinner`, `SplitView`, `Stepper`,
 `Switch`, `TabView`, `Text`, `TextEditor`, `TextField`, `TextSpan`, `TextSpans`,
@@ -697,7 +697,7 @@ realizes the element and each of its members.
 `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
 `fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`, `geometryTransform`,
 `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`,
-`handAxis`, `height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
+`height`, `hidesChildrenFromAccessibility`, `hidesWhenInactive`,
 `hidesWithSidebar`, `holdDuration`, `horizontalAlignment`,
 `horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
 `iconSpacing`, `ignoresInput`, `ignoresSafeArea`, `inputPurpose`,
@@ -712,9 +712,9 @@ realizes the element and each of its members.
 `maximumLines`, `maximumWidth`, `menuKind`, `minimum`, `minimumDate`,
 `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`, `miterLimit`, `onIcon`,
 `opacity`, `options`, `order`, `orientation`, `padding`, `pans`,
-`panTouchCount`, `panXChannel`, `panYChannel`, `part`, `phase`, `physicsBody`,
-`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
-`presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
+`panTouchCount`, `panXChannel`, `panYChannel`, `parameters`, `part`,
+`physicsBody`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`,
+`position`, `presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
 `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
@@ -725,10 +725,10 @@ realizes the element and each of its members.
 `style`, `submitLabel`, `subtitle`, `swipeDirection`, `swipeThreshold`,
 `tapCount`, `text`, `textCase`, `textColor`, `textDecorations`, `textStyle`,
 `time`, `tint`, `title`, `toolbarSpacing`, `toolbarStyle`, `tooltip`,
-`tracking`, `translationX`, `translationY`, `type`, `userAgent`, `value`,
-`verticalAlignment`, `verticalScrollIndicator`, `verticalTextAlignment`,
-`width`, `windowType`, `windowValue`, `wraps`, `x`, `x1`, `x2`, `y`, `y1`, `y2`,
-`zIndex`.
+`tracking`, `translationOrientation`, `translationX`, `translationY`, `type`,
+`userAgent`, `value`, `verticalAlignment`, `verticalScrollIndicator`,
+`verticalTextAlignment`, `width`, `windowType`, `windowValue`, `wraps`, `x`,
+`x1`, `x2`, `y`, `y1`, `y2`, `zIndex`.
 
 ### Events
 
@@ -737,17 +737,17 @@ realizes the element and each of its members.
 `colorChanged`, `created`, `dateChanged`, `deactivated`, `destroying`,
 `detailsClicked`, `disappearing`, `dragEnded`, `dragged`, `dragLeave`,
 `dragOver`, `dragStarting`, `drop`, `endReached`, `filesDropped`,
-`frameChanged`, `handMoved`, `handStepped`, `held`, `isFocusedChanged`,
-`isPresentedChanged`, `itemActivated`, `itemMoved`, `keyPressed`, `linkOpened`,
-`mapClicked`, `navigated`, `navigatedFrom`, `navigatedTo`, `navigating`,
-`navigatingFrom`, `opened`, `panUpdated`, `pinchMoved`, `pinchUpdated`,
+`frameChanged`, `held`, `isFocusedChanged`, `isPresentedChanged`,
+`itemActivated`, `itemDragUpdated`, `keyPressed`, `linkOpened`, `mapClicked`,
+`navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
+`opened`, `panUpdated`, `pinchRotationUpdated`, `pinchUpdated`,
 `pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
 `pointerReleased`, `popped`, `pressed`, `processTerminated`, `realizedChanged`,
 `refreshRequested`, `released`, `resumed`, `rotationUpdated`, `scrollStopped`,
 `selected`, `selectedIndexChanged`, `selectedItemsChanged`,
 `selectedTabChanged`, `showsSidebarChanged`, `stopped`, `submitted`, `swiped`,
-`tapped`, `textChanged`, `timeChanged`, `toggled`, `valueChanged`,
-`windowClosed`.
+`tapped`, `textChanged`, `timeChanged`, `toggled`, `translationUpdated`,
+`valueChanged`, `wheelStepped`, `windowClosed`.
 
 ### Acts
 

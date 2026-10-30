@@ -1,0 +1,13 @@
+# revision 14.1
+MotionLayout: ✅
+MotionLayout.itemDrag: ✅
+MotionLayout.itemDragUpdated: ✅
+MotionLayout.magnifies: ✅
+MotionLayout.mirrorsRightToLeft: ✅
+MotionLayout.pans: ✓ sweep on MotionLayout: the hand handed to the host's entry with its speed, no pointer sent
+MotionLayout.parameters: ✅
+MotionLayout.pinchRotationUpdated: ✅
+MotionLayout.rotates: ☑️ Chrome and Firefox tell no trackpad's rotation: two fingers turn a layout on a touch screen, and on a trackpad in Safari.
+MotionLayout.translationOrientation: ✓ sweep on MotionLayout: the hand handed to the host's entry with its speed, no pointer sent
+MotionLayout.translationUpdated: ✓ sweep on MotionLayout: the hand handed to the host's entry with its speed, no pointer sent
+MotionLayout.wheelStepped: ✓ notch on MotionLayout: a wheel's notches handed to the host's entry, no wheel sent

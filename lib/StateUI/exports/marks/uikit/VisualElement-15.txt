@@ -22,11 +22,11 @@ Line.accessibilityAdjusted: ✅
 Link.frame: ✅
 Link.translationX: ✓ read translationX of Link: the host's own transform, checked against the layer it composed itself
 Map.pivotX: ✓ read pivotX of Map: the host's own transform, checked against the layer it composed itself
+MotionLayout.height: ✅
+MotionLayout.scale: ✓ read scale of MotionLayout: the host's own transform, checked against the layer it composed itself
+MotionLayout.width: ✅
 Path.frame: ✅
 Path.translationX: ✓ read translationX of Path: the host's own transform, checked against the layer it composed itself
-PhaseLayout.height: ✅
-PhaseLayout.scale: ✓ read scale of PhaseLayout: the host's own transform, checked against the layer it composed itself
-PhaseLayout.width: ✅
 Picker.layoutDirection: ✅
 Polygon.accessibilityValue: ✅
 Polyline.maximumHeight: ✅

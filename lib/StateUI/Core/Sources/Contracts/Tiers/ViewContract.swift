@@ -76,7 +76,7 @@ public enum ViewContract: Contract {
     /// The space kept outside the view, between it and its neighbors.
     public static let margin = ElementProperty<Self, Insets>("margin", layer: .native, moves: .spacing)
 
-    /// How the view moves as a body of its phase layout's world, inside one; where it is none, the world's own.
+    /// How the view moves as a body of its motion layout's world, inside one; where it is none, the world's own.
     public static let physicsBody = ElementProperty<Self, PhysicsBody>("physicsBody", layer: .stateUI, travels: false)
 
     /// How many pointers a pan must have.

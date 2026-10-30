@@ -77,16 +77,16 @@ Map.area: 🧩
 Map.frameChanged: 🧩
 Map.panYChannel: 🧩
 Map.physicsBody: 🧩
+MotionLayout.frameChanged: ✅
+MotionLayout.gridColumn: ✅
+MotionLayout.gridRow: ✅
+MotionLayout.swipeDirection: ✅
+MotionLayout.swipeThreshold: ✅
+MotionLayout.swiped: ✅
 Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
 Path.pinchUpdated: ✓ pinch on Path: the relay's report of the manipulation handed to the host, no touch sent
-PhaseLayout.frameChanged: ✅
-PhaseLayout.gridColumn: ✅
-PhaseLayout.gridRow: ✅
-PhaseLayout.swipeDirection: ✅
-PhaseLayout.swipeThreshold: ✅
-PhaseLayout.swiped: ✅
 Picker.droppedFileTypes: ✓ dropFiles on Picker: the relay's drop report told the driver's files, no drag WinUI began
 Picker.filesDropped: ✓ dropFiles on Picker: the relay's drop report told the driver's files, no drag WinUI began
 Picker.frameChanged: ✅

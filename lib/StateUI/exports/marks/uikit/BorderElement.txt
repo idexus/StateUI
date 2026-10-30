@@ -11,9 +11,9 @@ Grid.stroke: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-PhaseLayout.lineWidth: ✅
-PhaseLayout.shape: ◐ cannot read shape of PhaseLayout - UIKit's driver has no path for it yet
-PhaseLayout.stroke: ✅
+MotionLayout.lineWidth: ✅
+MotionLayout.shape: ◐ cannot read shape of MotionLayout - UIKit's driver has no path for it yet
+MotionLayout.stroke: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅

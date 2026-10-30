@@ -20,7 +20,7 @@ extension MountedElement {
         if drags, (number(.panTouchCount) ?? 1) == 1 { hearing.insert(.drags) }
         if handler(.pinchUpdated) != nil || hearsFingers && value(.magnifies)?.bool == true { hearing.insert(.pinches) }
         if handler(.rotationUpdated) != nil || hearsFingers && value(.rotates)?.bool == true { hearing.insert(.rotations) }
-        if handler(.handMoved) != nil || handler(.itemMoved) != nil { hearing.insert(.hand) }
+        if handler(.translationUpdated) != nil || handler(.itemDragUpdated) != nil { hearing.insert(.hand) }
         return hearing
     }
 
@@ -29,11 +29,11 @@ extension MountedElement {
         number(.holdDuration)
     }
 
-    /// The user's input the view heard, as the element's events: a tap each time a run reaches the count asked
-    /// for - at once for a press assistive technology made; a press held; the pointer where it is; a press dragged moving the
-    /// states it carries, a swipe as it ends far enough; a pinch's step; the hand over a layout; a drag between
-    /// views by `DropTarget`. Whether the element took it: a hand over a layout across its axis it leaves to
-    /// whatever holds it.
+    /// The user's input the view heard, as the element's events: a tap each time a run reaches the count asked for - at
+    /// once for a press assistive technology made; a press held; the pointer where it is; a press dragged moving the
+    /// states it carries, a swipe as it ends far enough; a pinch's step; the hand over a layout; a drag between views
+    /// by `DropTarget`. Whether the element took it: a hand over a layout across its axis it leaves to whatever holds
+    /// it.
     @discardableResult
     public func hear(_ input: HeardInput, in runtime: HostRuntime) -> Bool {
         // A disabled branch hears nothing of the hand; a drag it began still ends there, and a press it began goes out.
@@ -105,7 +105,7 @@ extension MountedElement {
             return heard.taken
         case .notch(let notches):
             let heard = handReading.notches(notches, way: handWay)
-            if let steps = heard.steps { send(.handStepped, [.numbers(alongRun(steps))], in: runtime) }
+            if let steps = heard.steps { send(.wheelStepped, [.numbers(alongRun(steps))], in: runtime) }
             return heard.taken
         case .dragStarted:
             send(.dragStarting, [], in: runtime)
@@ -165,7 +165,7 @@ extension MountedElement {
     }
 
     /// Whether two fingers spreading or turning move the layout this element is.
-    private var hearsFingers: Bool { handler(.pinchMoved) != nil }
+    private var hearsFingers: Bool { handler(.pinchRotationUpdated) != nil }
 
     /// Whether a press dragged with ⌥/Alt over the element is two fingers: where it hears a pinch or a rotation.
     public var hearsMirroredFingers: Bool { !hearing.isDisjoint(with: [.pinches, .rotations]) }
@@ -218,7 +218,7 @@ extension MountedElement {
     /// Which way the hand moves the layout this element is, where a hand does: along its axis, or every way.
     public var handWay: HandWay? {
         if value(.pans)?.bool == true { return .everyWay }
-        return value(.handAxis)?.enumeration.flatMap(LayoutInput.Axis.init(rawValue:)).map(HandWay.init)
+        return value(.translationOrientation)?.enumeration.flatMap(LayoutInput.Orientation.init(rawValue:)).map(HandWay.init)
     }
 
     /// Whether the hand over the layout this element is holds one of its views by itself.
@@ -244,7 +244,7 @@ extension MountedElement {
         pinchOutbox = []
         let turn = runDirection == .rightToLeft ? -1.0 : 1
         for report in fingers {
-            send(.pinchMoved, [
+            send(.pinchRotationUpdated, [
                 .enumeration(report.phase.rawValue), .number(report.scale), .number(report.degrees * turn),
                 .numbers([report.speed.x, report.speed.y * turn]),
             ], in: runtime)
@@ -269,11 +269,11 @@ extension MountedElement {
         runtime.handPace.opened(self)
     }
 
-    /// The hand's reports, as the element's `handMoved` - or `itemMoved`, the hand holding one view.
+    /// The hand's reports, as the element's `translationUpdated` - or `itemDragUpdated`, the hand holding one view.
     private func said(_ reports: [HandReading.Report], in runtime: HostRuntime) {
         for report in reports {
             if report.item {
-                send(.itemMoved, [
+                send(.itemDragUpdated, [
                     .enumeration(report.phase.rawValue),
                     .numbers(inRun(report.at)),
                     .numbers(alongRun(report.speed)),
@@ -281,7 +281,7 @@ extension MountedElement {
                 ], in: runtime)
                 continue
             }
-            send(.handMoved, [
+            send(.translationUpdated, [
                 .enumeration(report.phase.rawValue),
                 .numbers(alongRun(report.moved)),
                 .numbers(alongRun(report.speed)),

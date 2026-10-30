@@ -22,8 +22,8 @@ Line.isEnabled: ✓ tap on Line: the view's listening handed the recognizer's st
 Line.zIndex: ✅
 Link.pivotY: ✓ read pivotY of Link: the host's own transform, checked against the layer it composed itself
 Map.accessibilityAdjusted: – VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+MotionLayout.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Path.pivotY: ✓ read pivotY of Path: the host's own transform, checked against the layer it composed itself
-PhaseLayout.background: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths stands on the blur as clear as the glass is.
 Picker.accessibilityActionPerformed: ✅
 Picker.accessibilityActions: ✅
 Polygon.frame: ✅

@@ -12,7 +12,7 @@
         CanvasTests.self,
         CapsuleTests.self,
         FillTests.self,
-        PhaseLayoutTests.self,
+        MotionLayoutTests.self,
         CheckBoxTests.self,
         ColorPickerTests.self,
         LinkTests.self,

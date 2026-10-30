@@ -61,10 +61,10 @@ Map.dragText: ✓ dragAndDrop on Map: the drag source and the window's drop rout
 Map.frameChanged: ✅
 Map.gridColumnSpan: ✅
 Map.gridRowSpan: ✅
+MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the window's drop routing told the driver's files, no dragging session
+MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the window's drop routing told the driver's files, no dragging session
+MotionLayout.tapped: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.panYChannel: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.droppedFileTypes: ✓ dropFiles on PhaseLayout: the window's drop routing told the driver's files, no dragging session
-PhaseLayout.filesDropped: ✓ dropFiles on PhaseLayout: the window's drop routing told the driver's files, no dragging session
-PhaseLayout.tapped: ✓ pressDown on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.area: ✅
 Picker.frameChanged: ✅
 Picker.rotationUpdated: ✓ rotate on Picker: handed to the host's recognizer or handler, no NSEvent sent

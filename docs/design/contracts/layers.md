@@ -10,7 +10,7 @@ work, and the dictionary prints it beside every row.
 | --- | --- | --- |
 | `native` | every base host, with its toolkit's own control | Spinner, Button, Canvas, DatePicker, Separator, HStack, Image, ItemsView, Picker, ProgressBar, ScrollView, SearchField, Slider, Stepper, Switch, Text, TextEditor, TextField, TimePicker, VStack, WebView, ZStack |
 | `adaptive` | every base host, by its platform's conventions, keeping StateUI's state contract | CheckBox, NavigationStack, Page, Sheet, SplitView, TabView |
-| `stateUI` | StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided | Capsule, Ellipse, Fill, Grid, PhaseLayout, Line, Path, Polygon, Polyline, Rectangle, Space |
+| `stateUI` | StateUI decides its geometry, its arrangement or its composition - in the core or the shared host layer - and a host draws what was decided | Capsule, Ellipse, Fill, Grid, MotionLayout, Line, Path, Polygon, Polyline, Rectangle, Space |
 | `structure` | nobody draws it: it carries structure or protocol data | Application, Scene, Window, the menus, the slots and collections, TextSpan |
 | `provider` | an optional provider: a package, or the application that registers it | Map, Marker, and an application's own elements |
 

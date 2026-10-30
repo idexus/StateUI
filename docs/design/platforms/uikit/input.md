@@ -70,7 +70,7 @@ tap and drags nothing, and a press dragged first is no hold.
 ## The hand over a layout
 
 A layout an engine moves hears the hand by one pan (`UIKitListening`,
-`handMoved`): a finger, and with `allowedScrollTypesMask` `.continuous` a
+`translationUpdated`): a finger, and with `allowedScrollTypesMask` `.continuous` a
 trackpad's two fingers, each step what moved under the hand since the last
 and, at the lift, the speed UIKit reads. A wheel turned notch by notch is a
 second pan, `.discrete` and touching nothing (`handNotched`): each of its

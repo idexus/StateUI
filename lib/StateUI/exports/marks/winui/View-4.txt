@@ -80,18 +80,18 @@ Map.drop: 🧩
 Map.frameChanged: 🧩
 Map.holdDuration: 🧩
 Map.margin: 🧩
+MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the relay's drop report told the driver's files, no drag WinUI began
+MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the relay's drop report told the driver's files, no drag WinUI began
+MotionLayout.frameChanged: ✅
+MotionLayout.horizontalAlignment: ✅
+MotionLayout.panTouchCount: ✅
+MotionLayout.panUpdated: ✅
+MotionLayout.panXChannel: ✅
+MotionLayout.verticalAlignment: ✅
 Path.area: ✅
 Path.frameChanged: ✅
 Path.panYChannel: ✅
 Path.physicsBody: ✅
-PhaseLayout.droppedFileTypes: ✓ dropFiles on PhaseLayout: the relay's drop report told the driver's files, no drag WinUI began
-PhaseLayout.filesDropped: ✓ dropFiles on PhaseLayout: the relay's drop report told the driver's files, no drag WinUI began
-PhaseLayout.frameChanged: ✅
-PhaseLayout.horizontalAlignment: ✅
-PhaseLayout.panTouchCount: ✅
-PhaseLayout.panUpdated: ✅
-PhaseLayout.panXChannel: ✅
-PhaseLayout.verticalAlignment: ✅
 Picker.canDrag: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragEnded: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began
 Picker.dragStarting: ✓ dragAndDrop on Picker: the relay's drag reports told by the driver, no drag WinUI began

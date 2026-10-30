@@ -63,12 +63,12 @@ Link.gridColumnSpan: ✅
 Link.gridRowSpan: ✅
 Map.held: ✓ hold on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.physicsBody: ✅
+MotionLayout.panTouchCount: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.panUpdated: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.panXChannel: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.area: ✅
 Path.frameChanged: ✅
 Path.rotationUpdated: ✓ rotate on Path: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.panTouchCount: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.panUpdated: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.panXChannel: ✓ pan on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session

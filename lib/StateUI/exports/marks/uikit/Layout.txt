@@ -5,9 +5,9 @@ Grid.letsInputThrough: ◐ cannot read letsInputThrough of Grid - UIKit's driver
 HStack.clipsContent: ✅
 HStack.ignoresSafeArea: ☑️ The safe area holds no keyboard: a page stands under it whatever edges it ignores.
 HStack.letsInputThrough: ◐ cannot read letsInputThrough of HStack - UIKit's driver has no path for it yet
-PhaseLayout.clipsContent: ✅
-PhaseLayout.ignoresSafeArea: ☑️ The safe area holds no keyboard: a page stands under it whatever edges it ignores.
-PhaseLayout.letsInputThrough: ◐ cannot read letsInputThrough of PhaseLayout - UIKit's driver has no path for it yet
+MotionLayout.clipsContent: ✅
+MotionLayout.ignoresSafeArea: ☑️ The safe area holds no keyboard: a page stands under it whatever edges it ignores.
+MotionLayout.letsInputThrough: ◐ cannot read letsInputThrough of MotionLayout - UIKit's driver has no path for it yet
 VStack.clipsContent: ✅
 VStack.ignoresSafeArea: ☑️ The safe area holds no keyboard: a page stands under it whatever edges it ignores.
 VStack.letsInputThrough: ◐ cannot read letsInputThrough of VStack - UIKit's driver has no path for it yet

@@ -539,6 +539,42 @@ Map.translationX: 🧩
 Map.translationY: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
+MotionLayout.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+MotionLayout.accessibilityActions: – ARIA offers no action of an application's own words.
+MotionLayout.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+MotionLayout.accessibilityHeading: ✅
+MotionLayout.accessibilityHint: ✅
+MotionLayout.accessibilityLabel: ✅
+MotionLayout.accessibilityRole: ✅
+MotionLayout.accessibilityValue: ✅
+MotionLayout.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+MotionLayout.frame: ✅
+MotionLayout.height: ✅
+MotionLayout.hidesChildrenFromAccessibility: ✅
+MotionLayout.ignoresInput: ✅
+MotionLayout.isAccessibilityHidden: ✅
+MotionLayout.isEnabled: ✅
+MotionLayout.isVisible: ✅
+MotionLayout.layoutDirection: ✅
+MotionLayout.maximumHeight: ✅
+MotionLayout.maximumWidth: ✅
+MotionLayout.minimumHeight: ✅
+MotionLayout.minimumWidth: ✅
+MotionLayout.opacity: ✅
+MotionLayout.pivotX: ✓ read pivotX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.pivotY: ✓ read pivotY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.rotation: ✓ read rotation of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.rotationX: ✓ read rotationX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.scale: ✓ read scale of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.scaleX: ✓ read scaleX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.scaleY: ✓ read scaleY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.style: not realized
+MotionLayout.tooltip: ✅
+MotionLayout.translationX: ✓ read translationX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.translationY: ✓ read translationY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.width: ✅
+MotionLayout.zIndex: ✅
 Path.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Path.accessibilityActions: – ARIA offers no action of an application's own words.
 Path.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -575,42 +611,6 @@ Path.translationX: ✓ read translationX of Path: the host's own transform: the 
 Path.translationY: ✓ read translationY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.width: ✅
 Path.zIndex: ✅
-PhaseLayout.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
-PhaseLayout.accessibilityActions: – ARIA offers no action of an application's own words.
-PhaseLayout.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
-PhaseLayout.accessibilityHeading: ✅
-PhaseLayout.accessibilityHint: ✅
-PhaseLayout.accessibilityLabel: ✅
-PhaseLayout.accessibilityRole: ✅
-PhaseLayout.accessibilityValue: ✅
-PhaseLayout.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
-PhaseLayout.frame: ✅
-PhaseLayout.height: ✅
-PhaseLayout.hidesChildrenFromAccessibility: ✅
-PhaseLayout.ignoresInput: ✅
-PhaseLayout.isAccessibilityHidden: ✅
-PhaseLayout.isEnabled: ✅
-PhaseLayout.isVisible: ✅
-PhaseLayout.layoutDirection: ✅
-PhaseLayout.maximumHeight: ✅
-PhaseLayout.maximumWidth: ✅
-PhaseLayout.minimumHeight: ✅
-PhaseLayout.minimumWidth: ✅
-PhaseLayout.opacity: ✅
-PhaseLayout.pivotX: ✓ read pivotX of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.pivotY: ✓ read pivotY of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.rotation: ✓ read rotation of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.rotationX: ✓ read rotationX of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.rotationY: ✓ read rotationY of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.scale: ✓ read scale of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.scaleX: ✓ read scaleX of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.scaleY: ✓ read scaleY of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.style: not realized
-PhaseLayout.tooltip: ✅
-PhaseLayout.translationX: ✓ read translationX of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.translationY: ✓ read translationY of PhaseLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-PhaseLayout.width: ✅
-PhaseLayout.zIndex: ✅
 Picker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Picker.accessibilityActions: – ARIA offers no action of an application's own words.
 Picker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.

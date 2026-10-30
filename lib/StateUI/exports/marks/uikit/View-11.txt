@@ -61,11 +61,11 @@ Link.pointerReleased: ✓ hover on Link: the view's listening handed the recogni
 Map.droppedFileTypes: ✓ dropFiles on Map: the drop interaction's handler told the driver's files, no drag session
 Map.filesDropped: ✓ dropFiles on Map: the drop interaction's handler told the driver's files, no drag session
 Map.tapped: ✓ pressDown on Map: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.holdDuration: ✅
 Path.frameChanged: ✅
 Path.horizontalAlignment: ✅
 Path.pinchUpdated: ✓ pinch on Path: the view's listening handed the recognizer's states, no touch sent
 Path.verticalAlignment: ✅
-PhaseLayout.holdDuration: ✅
 Picker.canDrag: ✓ dragAndDrop on Picker: the drag and drop interactions' handlers called, no drag session
 Picker.dragEnded: ✓ dragAndDrop on Picker: the drag and drop interactions' handlers called, no drag session
 Picker.dragStarting: ✓ dragAndDrop on Picker: the drag and drop interactions' handlers called, no drag session

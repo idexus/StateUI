@@ -1,0 +1,13 @@
+# revision 14.1
+MotionLayout: ✅
+MotionLayout.itemDrag: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
+MotionLayout.itemDragUpdated: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
+MotionLayout.magnifies: ✓ pinch on MotionLayout: the relay's report of the manipulation handed to the host, no touch sent
+MotionLayout.mirrorsRightToLeft: ✅
+MotionLayout.pans: ✓ sweep on MotionLayout: the relay's report of the hand handed to the host with its speed, no pointer sent
+MotionLayout.parameters: ✅
+MotionLayout.pinchRotationUpdated: ✓ pinch on MotionLayout: the relay's report of the manipulation handed to the host, no touch sent
+MotionLayout.rotates: ✓ rotate on MotionLayout: the relay's report of the manipulation handed to the host, no touch sent
+MotionLayout.translationOrientation: ✓ sweep on MotionLayout: the relay's report of the hand handed to the host with its speed, no pointer sent
+MotionLayout.translationUpdated: ✓ sweep on MotionLayout: the relay's report of the hand handed to the host with its speed, no pointer sent
+MotionLayout.wheelStepped: – A wheel reaches the layout as WinUI's own scroller takes it, its tracker's: a notch goes as far as the platform scrolls for it, and the tracker tells no notch.

@@ -359,7 +359,7 @@ final class MountedTreeTests: XCTestCase {
         let locale = StandardEnvironment.locale
         defer { locale.layoutDirection = .leftToRight }
         func layout(_ name: String, mirrors: Bool) -> HostPatch {
-            var layout = HostPatch(id: .manual(name), type: .phaseLayout)
+            var layout = HostPatch(id: .manual(name), type: .motionLayout)
             layout.driven = .replace([.area: HostStateBinding(state: name == "mirrored" ? 901 : 902, mode: .out,
                                                               kind: .placement, laneKind: .number)])
             if mirrors { layout.properties[.mirrorsRightToLeft] = .bool(true) }

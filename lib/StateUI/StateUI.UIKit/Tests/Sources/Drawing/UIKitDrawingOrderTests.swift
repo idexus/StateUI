@@ -10,11 +10,11 @@ import XCTest
 /// A layout's children stand back to front as it draws them, whatever passes of UIKit's layout come after.
 @MainActor
 final class UIKitDrawingOrderTests: XCTestCase {
-    /// A PHASE LAYOUT'S FRONT VIEW STAYS IN FRONT AS UIKIT LAYS IT OUT AGAIN: the view its placements rank highest
+    /// A MOTION LAYOUT'S FRONT VIEW STAYS IN FRONT AS UIKIT LAYS IT OUT AGAIN: the view its placements rank highest
     /// stands last, the views after it in the tree's order behind it.
-    func testAPhaseLayoutsFrontViewStaysInFrontAsUIKitLaysItOutAgain() throws {
+    func testAMotionLayoutsFrontViewStaysInFrontAsUIKitLaysItOutAgain() throws {
         let host = UIKitRenderer.running {
-            PhaseLayout([0, 1, 2], phase: State(wrappedValue: 0.0).projectedValue) { _ in
+            MotionLayout([0, 1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
                 Rectangle()
                     .fill(.red)
             } placements: { _, _ in

@@ -25,7 +25,7 @@ final class AnchorsTests: XCTestCase {
     }
 
     /// A layout places what an anchor holds in the anchor's place, and nothing it presents.
-    func testALayoutPlacesWhatAnAnchorHoldsInItsPlace() throws {
+    func testAAxisValuesWhatAnAnchorHoldsInItsPlace() throws {
         let (_, window) = try mounted(node("window", .window, [node("page", .page, [
             node("stack", .vStack, [
                 node("before", .text),

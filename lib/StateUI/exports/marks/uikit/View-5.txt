@@ -56,12 +56,12 @@ Map.margin: ✅
 Map.swipeDirection: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Map.swipeThreshold: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Map.swiped: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.area: ✅
+MotionLayout.frameChanged: ✅
+MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.droppedFileTypes: ✓ dropFiles on Path: the drop interaction's handler told the driver's files, no drag session
 Path.filesDropped: ✓ dropFiles on Path: the drop interaction's handler told the driver's files, no drag session
 Path.tapped: ✓ pressDown on Path: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.area: ✅
-PhaseLayout.frameChanged: ✅
-PhaseLayout.rotationUpdated: ✓ rotate on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.panTouchCount: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.panUpdated: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.panXChannel: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent

@@ -26,7 +26,7 @@ final class LayoutShownTests: XCTestCase {
     /// A run of three views moved a hundred points a unit, and beside it a view whose engine follows the phase.
     private func tree(_ phase: State<Double>, _ read: Read) -> Node {
         ZStack {
-            PhaseLayout([0, 1, 2], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
             .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))

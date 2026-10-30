@@ -55,16 +55,16 @@ Line.gridRowSpan: ✅
 Link.held: ✓ hold on Link: the view's listening handed the recognizer's states, no touch sent
 Link.physicsBody: ✅
 Map.panYChannel: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.frameChanged: ✅
+MotionLayout.horizontalAlignment: ✅
+MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Path.tapCount: ✓ tap on Path: the view's listening handed the recognizer's states, no touch sent
 Path.tapped: ✓ tap on Path: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.frameChanged: ✅
-PhaseLayout.horizontalAlignment: ✅
-PhaseLayout.pinchUpdated: ✓ pinch on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.verticalAlignment: ✅
 Picker.holdDuration: ✅
 Polygon.frameChanged: ✅
 Polygon.margin: ✅

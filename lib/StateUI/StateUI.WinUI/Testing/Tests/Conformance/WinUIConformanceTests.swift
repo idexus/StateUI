@@ -21,7 +21,7 @@ final class WinUIConformanceTests: XCTestCase {
     func testCanvas() { conform(CanvasTests.self) }
     func testCapsule() { conform(CapsuleTests.self) }
     func testFill() { conform(FillTests.self) }
-    func testPhaseLayout() { conform(PhaseLayoutTests.self) }
+    func testMotionLayout() { conform(MotionLayoutTests.self) }
     func testCheckBox() { conform(CheckBoxTests.self) }
     func testColorPicker() { conform(ColorPickerTests.self) }
     func testSpace() { conform(SpaceTests.self) }

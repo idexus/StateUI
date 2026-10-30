@@ -33,9 +33,9 @@ Link.minimumWidth: ✅
 Link.pivotX: ✅
 Map.rotationY: 🧩
 Map.zIndex: 🧩
+MotionLayout.hidesChildrenFromAccessibility: ✅
+MotionLayout.opacity: ✅
 Path.tooltip: ✅
-PhaseLayout.hidesChildrenFromAccessibility: ✅
-PhaseLayout.opacity: ✅
 Picker.hidesChildrenFromAccessibility: ✅
 Picker.opacity: ✅
 Polygon.ignoresInput: ✅

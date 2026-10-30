@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A layout's views between the poses its arithmetic answered at keyframes, channel by channel.
-// Design: docs/design/views/phase-layout.md#blending-a-pose
+// Design: docs/design/views/motion-layout.md#blending-a-pose
 
-/// The poses at an axis's keyframes, blended where the phase stands between them.
+/// The poses at an axis's keyframes, blended where the parameters stand between them.
 enum LayoutBlend {
     /// `runs` - every view's pose, in the views' order, at each of `knots` - blended at `place`, between
     /// `knots[segment]` and the next, along `curve`: each view's bounds, its transform's five drawn numbers,
@@ -54,7 +54,7 @@ enum LayoutBlend {
 
     /// The transforms blended as the five numbers a view draws - the turn from each to the next the short way; one
     /// transform at every keyframe stays as it is.
-    /// Design: docs/design/views/phase-layout.md#blending-a-pose
+    /// Design: docs/design/views/motion-layout.md#blending-a-pose
     private static func transform(_ transforms: [ViewTransform], along: ([Double]) -> Double) -> ViewTransform {
         guard let first = transforms.first, transforms.contains(where: { $0 != first }) else {
             return transforms.first ?? .identity

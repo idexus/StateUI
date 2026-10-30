@@ -182,7 +182,7 @@ final class HandHearingTests: XCTestCase {
 
     /// The page's layout, where the tree mounted it.
     private func ring(in runtime: HostRuntime) throws -> MountedElement {
-        try XCTUnwrap(runtime.tree.root?.first(type: .phaseLayout))
+        try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
     }
 }
 
@@ -208,7 +208,7 @@ private struct HandPage: View {
     @State private var turn = 0.0
 
     var body: some View {
-        PhaseLayout([0, 1, 2, 3, 4], phase: $turn) { Text("\($0)") } placements: { _, phase in
+        MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)") } placements: { _, phase in
             handed.append(phase)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
@@ -226,7 +226,7 @@ private struct TappedHandPage: View {
     @State private var turn = 0.0
 
     var body: some View {
-        PhaseLayout([0, 1, 2, 3, 4], phase: $turn) { Text("\($0)").onTapped { tapped += 1 } } placements: { _, _ in
+        MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)").onTapped { tapped += 1 } } placements: { _, _ in
             (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
@@ -244,14 +244,14 @@ private struct RightToLeftPage: View {
     @State private var turn = 0.0
 
     var body: some View {
-        PhaseLayout([0, 1, 2, 3, 4], phase: $turn) { Text("\($0)") } placements: { _, phase in
+        MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)") } placements: { _, phase in
             handed.append(phase)
             return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
         .motion(.eased(.milliseconds(200), .linear))
         .mirrorsRightToLeft(mirrors)
-        .itemDrag(begins: .across)
+        .itemDrag(begins: .perpendicular)
         .onItemDragged { drag in dragged.append((drag.item, drag.at)) }
         .layoutDirection(.rightToLeft)
     }

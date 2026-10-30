@@ -106,7 +106,7 @@ on a child, a field taking it, is the glass's too; every other layout stands
 its children in itself, above the backdrop. A layout letting a touch beside
 its children through counts the glass as beside them. The children move only
 as the glass comes or goes, and then stand in the order the layout draws them
-(`orderChildren`) - a phase layout's front view in front - never in the
+(`orderChildren`) - a motion layout's front view in front - never in the
 tree's order on every pass of UIKit's layout.
 
 UIKit keeps whether glass answers the touch as it was where one glass effect

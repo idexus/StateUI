@@ -61,7 +61,7 @@ final class IdentityTests: XCTestCase {
                 VStack {
                     if shown { Text("then") } else { Text("else") }
                     ForEach([Ticket(1), Ticket(2)], id: \.self) { ticket in Text("\(ticket.number)") }
-                    PhaseLayout(["a", "b"], phase: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
+                    MotionLayout(["a", "b"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
                     Converting()
                     Text("marked").id(Restless(number: 1))
                 }

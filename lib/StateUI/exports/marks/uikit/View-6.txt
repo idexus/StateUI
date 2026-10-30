@@ -53,16 +53,16 @@ Map.frameChanged: ✅
 Map.horizontalAlignment: ✅
 Map.pinchUpdated: ✓ pinch on Map: the view's listening handed the recognizer's states, no touch sent
 Map.verticalAlignment: ✅
+MotionLayout.frameChanged: ✅
+MotionLayout.gridColumn: ✅
+MotionLayout.gridRow: ✅
+MotionLayout.pointerEntered: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.pointerExited: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.pointerMoved: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.pointerPressed: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.pointerReleased: ✓ hover on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.held: ✓ hold on Path: the view's listening handed the recognizer's states, no touch sent
 Path.physicsBody: ✅
-PhaseLayout.frameChanged: ✅
-PhaseLayout.gridColumn: ✅
-PhaseLayout.gridRow: ✅
-PhaseLayout.pointerEntered: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.pointerExited: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.pointerMoved: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.pointerPressed: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.pointerReleased: ✓ hover on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.panYChannel: ✓ pan on Picker: the view's listening handed the recognizer's states, no touch sent
 Polygon.area: ✅
 Polygon.frameChanged: ✅

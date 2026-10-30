@@ -64,8 +64,8 @@ at the right, a grid's first column is the rightmost, a `GalleryView`'s cards
 stand in the mirror, and padding and margins swap sides. A view left at
 `.inherited`, the default, takes its parent's direction, and the top of the
 tree the direction the user's language is written in. A transform, a drawing
-and a `PhaseLayout` keep the shape they are written in, unless the layout
-says `.mirrorsRightToLeft(true)` ([a phase layout](#a-phase-layout)). `zIndex` orders the overlapping children of a `Grid` or a
+and a `MotionLayout` keep the shape they are written in, unless the layout
+says `.mirrorsRightToLeft(true)` ([a motion layout](#a-motion-layout)). `zIndex` orders the overlapping children of a `Grid` or a
 `ZStack` without changing their places: a higher one is drawn over a lower
 one, and children of the same `zIndex` in the order they are written.
 
@@ -380,7 +380,7 @@ page continues moving under vertical input.
 
 A layout whose views the hand moves without moving its content - a run of
 cards turned by a finger, a wheel or a trackpad, endless if need be - is a
-[phase layout](#a-phase-layout) whose axis the hand scrolls:
+[motion layout](#a-motion-layout) whose axis the hand scrolls:
 `.axis(_:input:range:snaps:)` with `.scroll(_:)`.
 
 ## Repeated content and collections
@@ -557,8 +557,8 @@ The [platform contract](../platform-contract.md) says where each is realized.
 
 ## StateUI-authored layouts
 
-`PhaseLayout` and `GalleryView` are StateUI's own layouts: the core
-implements them once - a `GalleryView` is a `PhaseLayout` with the
+`MotionLayout` and `GalleryView` are StateUI's own layouts: the core
+implements them once - a `GalleryView` is a `MotionLayout` with the
 arithmetic of four shapes written - and the Gallery exercises both on every
 host.
 
@@ -606,21 +606,21 @@ front opened - a tap on it - with its identity, as a list's item is, and
 `.onPositionChanged` another card coming to
 the middle; a swipe carries the card in front with it, however big the room
 draws the cards, and `.throwing(_:)` says how one let go with speed goes on, as a
-[phase layout's](#a-phase-layout) input does, and `.itemSize(width:height:)`,
+[motion layout's](#a-motion-layout) input does, and `.itemSize(width:height:)`,
 `.isSwipeEnabled`, `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size - a `.height`, or a `.fill` row of a `Grid`.
 No view is built again while the run moves. Laid out right to left, the cards
 stand in reading order, as a row's views do: the next one on the left, a
 swipe to the right moving the run on.
 
-### A phase layout
+### A motion layout
 
-`PhaseLayout` places its views by arithmetic of the application's own,
-worked out from the room and a phase - a state of the application's, lent
-with `phase:`. The arithmetic answers one `Placement`
+`MotionLayout` places its views by arithmetic of the application's own,
+worked out from the room and parameters - a state of the application's, lent
+with `parameters:`. The arithmetic answers one `Placement`
 per view, in the items' order - its bounds from the layout's top left, and a
 transform, an opacity, a shade and a `zIndex` - and runs on the host's frames
-whenever the room or the phase moves, with no view built again. The layout
+whenever the room or the parameters move, with no view built again. The layout
 has no size of its own: it takes the room its own layout gives it, whatever
 its views need, so give it one - a `.height`, or a `.fill` row of a `Grid`:
 
@@ -631,7 +631,7 @@ struct Shelf: View {
     let names = ["Mural", "Nebula", "Ridge"]
 
     var body: some View {
-        PhaseLayout(names, phase: $turn) { name in
+        MotionLayout(names, parameters: $turn) { name in
             Text(name)
         } placements: { room, _ in
             names.indices.map { index in
@@ -645,7 +645,7 @@ struct Shelf: View {
 }
 ```
 
-The phase is where the run rests or is going: the program moves the run by
+The parameters are where the run rests or is going: the program moves the run by
 writing it; declare its axis
 with `.axis(_:input:range:snaps:)` and the hand moves it too - a finger or a
 pointer dragged, a trackpad's two fingers, a wheel - on its own, with no
@@ -660,11 +660,11 @@ struct Carousel: View {
 
     var body: some View {
         VStack {
-            PhaseLayout(names, phase: $turn) { name in
+            MotionLayout(names, parameters: $turn) { name in
                 Text(name)
-            } placements: { room, phase in
+            } placements: { room, turn in
                 names.indices.map { index in
-                    let step = Double(index) - phase
+                    let step = Double(index) - turn
 
                     return Placement(
                         Rect(room.width / 2 - 60 + step * 140, 0, 120, room.height),
@@ -682,8 +682,8 @@ struct Carousel: View {
 }
 ```
 
-The arithmetic is handed the phase as it stands each frame, and each
-placement lands as written: what moves smoothly is the phase, so every view
+The arithmetic is handed the parameters as they stand each frame, and each
+placement lands as written: what moves smoothly are the parameters, so every view
 keeps to the path the arithmetic draws - an arc, a fan opening - rather than
 cutting across it. `turn` is the snap the run rests on: written by the
 program, the run travels there under `.motion(_:)` - with a hand or none -
@@ -693,7 +693,7 @@ a hand taking the run on its way stops the journey. A tap reaches the view
 drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
 the `shade` its placement answers.
 
-Laid out right to left, a phase layout keeps the shape its arithmetic writes:
+Laid out right to left, a motion layout keeps the shape its arithmetic writes:
 a dial, a clock or a table of photos reads alike in every language. A layout
 in reading order says `.mirrorsRightToLeft(true)`: each view's place turns
 about the middle of the room, with its move along and its turn, and the hand
@@ -704,7 +704,7 @@ An axis's range is how far the hand moves it: past an end, less and less,
 and let go there, it comes back onto the end. Its snaps are where it may rest
 beside the range's ends, which it always may: `[1, 2]` lists them,
 `.every(1)` puts one every unit from the lower end, `.at(stops)` takes a list
-worked out, and `.limits` leaves the ends alone - a drawer is open or closed,
+worked out, and `.endpoints` leaves the ends alone - a drawer is open or closed,
 nothing between. Given no snaps, the axis rests wherever the hand leaves it
 or its throw ends, inside the range, and is named only once it rests:
 
@@ -713,20 +713,20 @@ struct Drawer: View {
     @State private var open = 0.0
 
     var body: some View {
-        PhaseLayout(["Notes"], phase: $open) { name in
+        MotionLayout(["Notes"], parameters: $open) { name in
             Text(name)
-        } placements: { room, phase in
-            [Placement(Rect(0, room.height - 60 - phase * 200, room.width, 260))]
+        } placements: { room, open in
+            [Placement(Rect(0, room.height - 60 - open * 200, room.width, 260))]
         }
         // Pulled up, it opens; let go, it is open or closed.
-        .axis(\.self, input: .scroll(.vertical, pointsPerUnit: 200), range: 0...1, snaps: .limits)
+        .axis(\.self, input: .scroll(.vertical, pointsPerUnit: 200), range: 0...1, snaps: .endpoints)
         .height(300)
     }
 }
 ```
 
 The hand carries the view in front: it travels as far for one unit of the
-phase as the front view of those the phase moves goes for it, so a carousel
+parameters as the front view of those the parameters move goes for it, so a carousel
 that grows with its window turns as far under the finger as on a phone.
 `pointsPerUnit:` gives the distance instead, for a run whose front view
 hardly moves - a pile of cards fanned out by another axis.
@@ -736,7 +736,7 @@ where the throw would end, and `turn` names that snap at once. How it goes
 on is the input's `throwing:` motion - eased, its length says how far it
 carries, a shorter length stopping it sooner, and it slows onto the snap from
 the hand's speed; a spring carries it as far as its response and settles as
-springs do. A throw sets out at the hand's speed, and goes on as the phase's
+springs do. A throw sets out at the hand's speed, and goes on as the parameters'
 journey does: `$turn.journey` says where the run is and how fast it goes while
 it does, as for any journey. The landing on the next snap is never slower
 than `.motion(_:)` moves a unit: a hand let go still, thrown back, or too slow
@@ -746,14 +746,14 @@ tenth of the motion. A mouse's wheel turned notch by notch steps
 the run a snap a notch, under `.motion(_:)`, however far apart the snaps
 stand - an axis with none, a hundred points' worth of the hand.
 
-A change of the layout at the phase it stands at travels too. A view
+A change of the layout where its parameters stand travels too. A view
 joining fades in where the arithmetic puts it; one leaving goes at once and
 the others close up; a new order slides; and a value read in the body - a
 switch between a fan and a pile - takes every view from where it was to its
-new place as a body of the layout's world, while the phase goes on as it
-goes. `.physicsWorld(_:)` says how: each view on a spring to its place,
+new place as a body of the layout's world, while the parameters go on as they
+go. `.physicsWorld(_:)` says how: each view on a spring to its place,
 `.standard` - 300 milliseconds, never past it - unless said, `.none` for
-views standing at their places at once; `.motion(_:)` is the phase's law
+views standing at their places at once; `.motion(_:)` is the parameters' law
 alone:
 
 ```swift
@@ -766,7 +766,7 @@ struct Hand: View {
         let gap = fanned ? 140.0 : 12.0
 
         VStack {
-            PhaseLayout(names, phase: $turn) { name in
+            MotionLayout(names, parameters: $turn) { name in
                 Text(name)
             } placements: { room, _ in
                 names.indices.map { index in
@@ -784,7 +784,7 @@ struct Hand: View {
 ```
 
 Removing the card at the front brings the one behind it there, as the
-others close up. Where the front card was the last, the phase itself has to
+others close up. Where the front card was the last, the parameters themselves have to
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
 before it, under `.motion(_:)`.
 
@@ -793,9 +793,9 @@ makes it follow its place on the spring it names - carried by the run, it
 lags behind its place while the run turns, swings past where a throw stops
 and settles back onto it. The world is worked out at a fixed step, so every
 host and frame rate shows the same motion; under less motion every view
-stands at its place. `.onSettled { phase in … }` is told once the run comes to
-rest - no hand holding it, the phase at its destination and every view at its
-place - with the phase it rests at, whatever moved it: the one place to save
+stands at its place. `.onSettled { parameters in … }` is told once the run comes to
+rest - no hand holding it, the parameters at its destination and every view at its
+place - with the parameters it rests at, whatever moved it: the one place to save
 where the user left a run:
 
 ```swift
@@ -803,24 +803,24 @@ struct Swaying: View {
     @State private var turn = 0.0
 
     var body: some View {
-        PhaseLayout(["Mural", "Nebula", "Ridge", "Bloom"], phase: $turn) { name in
+        MotionLayout(["Mural", "Nebula", "Ridge", "Bloom"], parameters: $turn) { name in
             Text(name)
                 .physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.55)))
-        } placements: { room, phase in
+        } placements: { room, turn in
             (0..<4).map { index in
-                Placement(Rect(room.width / 2 - 60 + (Double(index) - phase) * 140, 0, 120, room.height))
+                Placement(Rect(room.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, room.height))
             }
         }
         .axis(\.self, input: .scroll(.horizontal), range: 0...3, snaps: .every(1))
-        .onSettled { phase in print("at rest on \(phase)") }
+        .onSettled { turn in print("at rest on \(turn)") }
         .height(160)
     }
 }
 ```
 
-The arithmetic can also be handed where the run's motion set out: the phase
+The arithmetic can also be handed where the run's motion set out: the parameters
 it stood at when the hand, a throw or a journey took it away, then each
-snap the run passes. The phase's side of it is the way the run goes, so a pile can
+snap the run passes. The parameters' side of it is the way the run goes, so a pile can
 send the card that stood in front out that way - left as the hand moves the
 run on, right as it takes it back - and under the others, while the next
 comes up from beneath:
@@ -835,11 +835,11 @@ struct Pile: View {
     let names = ["Mural", "Nebula", "Ridge", "Bloom"]
 
     var body: some View {
-        PhaseLayout(names, phase: $turn) { name in
+        MotionLayout(names, parameters: $turn) { name in
             Text(name)
-        } placements: { room, phase, from in
+        } placements: { room, turn, from in
             names.indices.map { index in
-                let step = Double(index) - phase
+                let step = Double(index) - turn
                 let leaving = Double(index) == from && abs(step) < 1
                 // Out the way the run goes and back, under the others past halfway.
                 let out = leaving ? sin(abs(step) * .pi) * (step < 0 ? -1 : 1) : 0
@@ -860,7 +860,7 @@ struct Pile: View {
 `.swipe(_:)` moves the run one card a hand, however far the hand goes - a
 trackpad's flick speeds up to well past a card - and a throw goes on to the
 next card that way, no farther - so its axis needs snaps; its unit is
-measured as the hand takes the run, so the card in front moves under it. At the phase it set out from,
+measured as the hand takes the run, so the card in front moves under it. At the parameters it set out from,
 every view stands where it stood, so a hand taking the run back past it
 changes nothing drawn - the same card goes out
 the other way. A hand catching the card on its way goes on with it; a long
@@ -879,30 +879,30 @@ struct Boards: View {
 
     var body: some View {
         VStack {
-            PhaseLayout(names, phase: $board) { name in
+            MotionLayout(names, parameters: $board) { name in
                 Text(name)
-            } placements: { room, phase in
+            } placements: { room, board in
                 names.indices.map { index in
                     // Three a board, the boards a room's width apart.
                     let (page, slot) = index.quotientAndRemainder(dividingBy: 3)
                     let width = room.width / 3
 
                     return Placement(
-                        Rect((Double(page) - phase) * room.width + Double(slot) * width, 0, width, room.height))
+                        Rect((Double(page) - board) * room.width + Double(slot) * width, 0, width, room.height))
                 }
             }
             .axis(\.self, input: .pages(.horizontal), range: 0...1, snaps: .every(1))
             .height(80)
 
-            PhaseLayout([0, 1], phase: $board) { _ in
+            MotionLayout([0, 1], parameters: $board) { _ in
                 Rectangle()
                     .fill(.gray)
                     .cornerRadius(4)
-            } placements: { room, phase in
+            } placements: { room, board in
                 [0, 1].map { page in
                     Placement(
                         Rect(room.width / 2 - 12 + Double(page) * 16, 4, 8, 8),
-                        opacity: 0.3 + 0.7 * max(1 - abs(phase - Double(page)), 0))
+                        opacity: 0.3 + 0.7 * max(1 - abs(board - Double(page)), 0))
                 }
             }
             .height(16)
@@ -911,9 +911,9 @@ struct Boards: View {
 }
 ```
 
-The hand can also take one view by itself. `.itemDrag(begins: .held)` gives
+The hand can also take one view by itself. `.itemDrag(begins: .longPress)` gives
 it the view under a press that stands still a long press's time - an icon
-lifted off a board - and `.itemDrag(begins: .across)` the view under a press
+lifted off a board - and `.itemDrag(begins: .perpendicular)` the view under a press
 whose first move runs across the layout's axis - a card pulled up out of a
 deck that scrolls sideways; a hand that begins any other way moves the run
 as before. The held view follows the hand over the others, and
@@ -932,14 +932,14 @@ struct Board: View {
     @State private var turn = 0.0
 
     var body: some View {
-        PhaseLayout(names, phase: $turn) { name in
+        MotionLayout(names, parameters: $turn) { name in
             Text(name)
         } placements: { room, _ in
             names.indices.map { index in
                 Placement(Rect(Double(index) * room.width / 4, 0, room.width / 4, room.height))
             }
         }
-        .itemDrag(begins: .held)
+        .itemDrag(begins: .longPress)
         .onItemDragged { drag in
             // Over another name, the held one takes its place, the others make room.
             guard let over = drag.over, let from = names.firstIndex(of: drag.item),
@@ -960,10 +960,10 @@ a gate, as an event's does - `.onItemDismissed(.up, beyond: 120, policy:
 .ignoreWhileRunning) { card in try await archive(card) }` - and what it runs
 ends with the layout.
 
-A run with no ends comes round: `circular: true` makes one turn of the range
+A run with no ends comes round: `periodic: true` makes one turn of the range
 bring the layout back where it was - its upper end is its lower one a turn
 on, its snaps repeated each turn - so the hand and the program both move it
-on forever. The arithmetic folds the phase itself:
+on forever. The arithmetic folds the parameters themselves:
 
 ```swift
 struct Ring: View {
@@ -972,11 +972,11 @@ struct Ring: View {
     let names = ["Mural", "Nebula", "Ridge", "Bloom", "Dune"]
 
     var body: some View {
-        PhaseLayout(names, phase: $turn) { name in
+        MotionLayout(names, parameters: $turn) { name in
             Text(name)
-        } placements: { room, phase in
+        } placements: { room, turn in
             names.indices.map { index in
-                let step = (Double(index) - phase).remainder(dividingBy: Double(names.count))
+                let step = (Double(index) - turn).remainder(dividingBy: Double(names.count))
 
                 return Placement(
                     Rect(room.width / 2 - 60 + step * 140, 0, 120, room.height),
@@ -985,18 +985,18 @@ struct Ring: View {
         }
         .axis(
             \.self, input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(400), damping: 0.8)),
-            range: 0...Double(names.count), snaps: .every(1), circular: true)
+            range: 0...Double(names.count), snaps: .every(1), periodic: true)
         .height(200)
     }
 }
 ```
 
-A phase of several axes is a `AxesPhase` of your own: a struct of numbers
+Parameters of several axes are a `LayoutParameters` of your own: a struct of numbers
 listing its axes. Each axis moves on its own - one under the hand, another
 written by the program - and travels under the same `.motion(_:)`:
 
 ```swift
-struct Orbit: AxesPhase {
+struct Orbit: LayoutParameters {
     var turn = 0.0
     var zoom = 1.0
 
@@ -1010,7 +1010,7 @@ struct Planets: View {
 
     var body: some View {
         VStack {
-            PhaseLayout(names, phase: $orbit) { name in
+            MotionLayout(names, parameters: $orbit) { name in
                 Text(name)
             } placements: { room, orbit in
                 names.indices.map { index in
@@ -1030,14 +1030,14 @@ struct Planets: View {
 }
 ```
 
-`.axis(_:input:range:keyframes:snaps:circular:)` declares one axis whole - what
+`.axis(_:input:range:keyframes:snaps:periodic:)` declares one axis whole - what
 moves it, how far it runs, where its layout is worked out, where it rests,
 whether it comes round - and the hand moves
 that one alone, resting it on its own snaps whatever the others do. One input
 may move several axes, each by its own unit and range, resting its own way:
 a hand that turns the cards and, slower, the sky behind them. Declared again,
 an axis takes the new declaration; an axis declared none goes on as the
-program sends it. A `Double` is the phase of one axis, `\.self`.
+program sends it. A `Double` is the parameters of one axis, `\.self`.
 
 Two fingers are inputs of their own: `.magnification` multiplies an axis
 by how far they spread - on a touch screen, or a trackpad's pinch - and
@@ -1051,7 +1051,7 @@ the fingers' middle while they spread and turn:
 import StateUIFoundation
 import StateUI
 
-struct Dial: AxesPhase {
+struct Dial: LayoutParameters {
     var turn = 0.0
     var size = 1.0
 
@@ -1064,7 +1064,7 @@ struct Compass: View {
     let names = ["North", "East", "South", "West"]
 
     var body: some View {
-        PhaseLayout(names, phase: $dial) { name in
+        MotionLayout(names, parameters: $dial) { name in
             Text(name)
         } placements: { room, dial in
             names.indices.map { index in
@@ -1078,7 +1078,7 @@ struct Compass: View {
                     24))
             }
         }
-        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), circular: true)
+        .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...4, snaps: .every(1), periodic: true)
         .axis(\.size, input: .magnification, range: 0.5...2, snaps: [1])
         .height(240)
     }
@@ -1101,7 +1101,7 @@ pan, a magnification and a rotation move at once - here the zoom resting
 anywhere between half and whole:
 
 ```swift
-struct Sheet: AxesPhase {
+struct Sheet: LayoutParameters {
     var x = 0.0
     var y = 0.0
     var zoom = 1.0
@@ -1115,7 +1115,7 @@ struct Contacts: View {
     let names = ["Ada", "Ben", "Cy", "Di"]
 
     var body: some View {
-        PhaseLayout(names, phase: $sheet) { name in
+        MotionLayout(names, parameters: $sheet) { name in
             Text(name)
         } placements: { room, sheet in
             names.indices.map { index in
@@ -1151,11 +1151,11 @@ struct Arrangements: View {
     let names = ["Ada", "Ben", "Cy", "Di", "Eve"]
 
     var body: some View {
-        PhaseLayout(names, phase: $arrangement) { name in
+        MotionLayout(names, parameters: $arrangement) { name in
             Text(name)
-        } placements: { room, phase in
+        } placements: { room, arrangement in
             // Asked at 0, 1 and 2 alone: a row, a column, a pile.
-            [row(in: room), column(in: room), pile(in: room)][Int(phase)]
+            [row(in: room), column(in: room), pile(in: room)][Int(arrangement)]
         }
         .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1), snaps: .every(1))
         .interpolation(.catmullRom)
@@ -1201,7 +1201,7 @@ On an axis nothing bounds - inside a scroller - keep the answer bounded:
 placements that grow with the room grow the room, and the layout never
 settles.
 
-`PhaseLayout` has its own row in the
+`MotionLayout` has its own row in the
 [Platform contract](../platform-contract.md); `GalleryView` behaves as far as
-the rows it uses - the phase layout and frame reporting - are checked
+the rows it uses - the motion layout and frame reporting - are checked
 there.

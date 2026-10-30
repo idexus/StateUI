@@ -350,10 +350,10 @@ final class ControlTests: XCTestCase {
                     .onRefreshRequested {}
                     .node.built),
 
-            // The phase layout as its view writes it: the views, the arithmetic, the
+            // The motion layout as its view writes it: the views, the arithmetic, the
             // phase and the hand over them. A composed view, so the case is its body built.
-            ControlCase("PhaseLayout", sources: ["PlacedStack.swift", "PhaseLayout.swift"],
-                PhaseLayout(["one", "two"], phase: turn.projectedValue) {
+            ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
+                MotionLayout(["one", "two"], parameters: turn.projectedValue) {
                     Text($0)
                         .physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
                 } placements: { room, phase in
@@ -368,20 +368,20 @@ final class ControlTests: XCTestCase {
                 .physicsWorld(.standard)
                 .mirrorsRightToLeft(true)
                 .onItemTapped { _ in }
-                .itemDrag(begins: .held)
+                .itemDrag(begins: .longPress)
                 .onItemDragged { _ in }
                 .onItemDismissed(.up, beyond: 80) { _ in }
                 .node.built),
 
-            // A pan and two fingers over the phase layout: a rotation and a magnification, each driving its axis.
-            ControlCase("PhaseLayout", sources: ["PlacedStack.swift", "PhaseLayout.swift"],
-                PhaseLayout(["one", "two"], phase: dial.projectedValue) { Text($0) } placements: { room, dial in
+            // A pan and two fingers over the motion layout: a rotation and a magnification, each driving its axis.
+            ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
+                MotionLayout(["one", "two"], parameters: dial.projectedValue) { Text($0) } placements: { room, dial in
                     [Placement(Rect(dial.turn, 0, room.width / 2 * dial.size, room.height)), Placement(.zero)]
                 }
-                .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .limits)
-                .axis(\.size, input: .magnification, range: 1...2, snaps: .limits)
-                .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .limits)
-                .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 90), range: 0...1, snaps: .limits)
+                .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .endpoints)
+                .axis(\.size, input: .magnification, range: 1...2, snaps: .endpoints)
+                .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .endpoints)
+                .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 90), range: 0...1, snaps: .endpoints)
                 .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is
@@ -885,9 +885,9 @@ final class ControlTests: XCTestCase {
             "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
             "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
             "Views/Collections/GalleryView.swift|throwing:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
-            "Views/Layouts/PhaseLayout.swift|itemDrag:ItemDragStart",
-            "Views/Layouts/PhaseLayout.swift|mirrorsRightToLeft:Bool",
-            "Views/Layouts/PhaseLayout.swift|physicsWorld:PhysicsWorld",
+            "Views/Layouts/MotionLayout.swift|itemDrag:ItemDragStart",
+            "Views/Layouts/MotionLayout.swift|mirrorsRightToLeft:Bool",
+            "Views/Layouts/MotionLayout.swift|physicsWorld:PhysicsWorld",
         ]
         let missing = values
             .filter { value in
@@ -1499,7 +1499,7 @@ final class ControlTests: XCTestCase {
 }
 
 /// A phase a pan and two fingers move: where a layout is panned to, how far it is turned, and how large it stands.
-private struct ControlDial: AxesPhase {
+private struct ControlDial: LayoutParameters {
     var x = 0.0
     var y = 0.0
     var turn = 0.0

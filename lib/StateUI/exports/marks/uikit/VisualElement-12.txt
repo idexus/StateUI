@@ -24,11 +24,11 @@ Link.height: ✅
 Link.scale: ✓ read scale of Link: the host's own transform, checked against the layer it composed itself
 Link.width: ✅
 Map.hidesChildrenFromAccessibility: ✅
+MotionLayout.isVisible: ✅
+MotionLayout.rotation: ✓ read rotation of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.height: ✅
 Path.scale: ✓ read scale of Path: the host's own transform, checked against the layer it composed itself
 Path.width: ✅
-PhaseLayout.isVisible: ✅
-PhaseLayout.rotation: ✓ read rotation of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.isAccessibilityHidden: ✅
 Polygon.accessibilityLabel: ✅
 Polyline.opacity: ✅

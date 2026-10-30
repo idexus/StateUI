@@ -20,9 +20,9 @@ Line.hidesChildrenFromAccessibility: ✅
 Link.accessibilityLabel: ✅
 Map.isEnabled: ✅
 Map.rotationY: ✓ read rotationY of Map: the host's own transform, checked against the layer it composed itself
+MotionLayout.style: not realized
+MotionLayout.translationY: ✓ read translationY of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.accessibilityLabel: ✅
-PhaseLayout.style: not realized
-PhaseLayout.translationY: ✓ read translationY of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.opacity: ✅
 Picker.rotationX: ✓ read rotationX of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.accessibilityHeading: does not apply - read a heading's level - AppKit marks a heading, not its level

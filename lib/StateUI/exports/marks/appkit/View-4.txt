@@ -55,16 +55,16 @@ Line.gridRowSpan: ✅
 Link.held: ✓ hold on Link: handed to the host's recognizer or handler, no NSEvent sent
 Link.physicsBody: ✅
 Map.panYChannel: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.frameChanged: ✅
+MotionLayout.horizontalAlignment: ✅
+MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Path.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Path.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Path.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Path.tapCount: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.tapped: ✓ tap on Path: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.frameChanged: ✅
-PhaseLayout.horizontalAlignment: ✅
-PhaseLayout.pinchUpdated: ✓ pinch on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.verticalAlignment: ✅
 Picker.holdDuration: ✅
 Polygon.frameChanged: ✅
 Polygon.margin: ✅

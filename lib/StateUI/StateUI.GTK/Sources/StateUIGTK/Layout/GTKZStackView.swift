@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A ZStack: its children one over another, each in its area, or where a phase layout's placements put it.
+/// A ZStack: its children one over another, each in its area, or where a motion layout's placements put it.
 /// Design: docs/design/platforms/gtk/drawing.md#a-placed-child
 @MainActor
 final class GTKZStackView: GTKTravelingLayout {
@@ -33,8 +33,8 @@ final class GTKZStackView: GTKTravelingLayout {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
-    /// Whether the ZStack stands a phase layout, which has no size of its own.
-    var phaseLayout = false
+    /// Whether the ZStack stands a motion layout, which has no size of its own.
+    var motionLayout = false
 
     /// The children back to front as the run ranks them, or in their order without one: GTK draws a panel's
     /// children in that order and a click reaches the last first.
@@ -43,7 +43,7 @@ final class GTKZStackView: GTKTravelingLayout {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width, phaseLayout: phaseLayout)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout)
     }
 
     override func arrange(in bounds: Rect) {

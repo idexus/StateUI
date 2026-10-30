@@ -500,7 +500,7 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(children.map(\.moves), standing, "and none taken out to get there")
     }
 
-    /// A blur behind a phase layout's children stays under them through a run turning their order.
+    /// A blur behind a motion layout's children stays under them through a run turning their order.
     @MainActor
     func testARunKeepsTheBlurBehindItsChildren() {
         func run(_ ranks: [Int]) -> HostPlacementRun {

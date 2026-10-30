@@ -1,0 +1,13 @@
+# revision 14.1
+MotionLayout: ✅
+MotionLayout.itemDrag: ✅
+MotionLayout.itemDragUpdated: ✅
+MotionLayout.magnifies: ✅
+MotionLayout.mirrorsRightToLeft: ✅
+MotionLayout.pans: ✓ sweep on MotionLayout: the listener's report of the hand handed to the host, no touch sent
+MotionLayout.parameters: ✅
+MotionLayout.pinchRotationUpdated: ✅
+MotionLayout.rotates: ✅
+MotionLayout.translationOrientation: ✓ sweep on MotionLayout: the listener's report of the hand handed to the host, no touch sent
+MotionLayout.translationUpdated: ✓ sweep on MotionLayout: the listener's report of the hand handed to the host, no touch sent
+MotionLayout.wheelStepped: ✓ notch on MotionLayout: the listener's report of a wheel's notches handed to the host, no scroll sent

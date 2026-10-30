@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A run of cards the user swipes through, in a shape one word chooses: a phase layout with the arithmetic of a
+// A run of cards the user swipes through, in a shape one word chooses: a motion layout with the arithmetic of a
 // wheel, a fan, a row and a deck, its phase the card in front.
 // Design: docs/design/views/measured-layouts.md#gallery-view
 
@@ -354,7 +354,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // Design: docs/design/views/composition.md#a-watcher-is-a-view-of-its-own
         let asked = { min(max(pin?.wrappedValue ?? showns.wrappedValue, 0), count - 1) }
 
-        var layout = PhaseLayout(items, id: path, phase: turns.projectedValue) { item in
+        var layout = MotionLayout(items, id: path, parameters: turns.projectedValue) { item in
             // The face in a holder of its own, so the press on it is not overwritten by the placement written on
             // the holder every frame. The holder is the card's size: a card the run has not placed yet would fill
             // the room.

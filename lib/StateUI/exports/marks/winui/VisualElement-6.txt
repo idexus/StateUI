@@ -31,11 +31,11 @@ Link.accessibilityHeading: ✅
 Link.scale: ✅
 Map.accessibilityValue: 🧩
 Map.translationY: 🧩
+MotionLayout.frame: ✅
+MotionLayout.rotation: ✅
 Path.height: ✅
 Path.layoutDirection: ✓ read layoutDirection of Path: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
 Path.width: ✅
-PhaseLayout.frame: ✅
-PhaseLayout.rotation: ✅
 Picker.frame: ✅
 Picker.rotation: ✅
 Polygon.accessibilityLabel: ✅

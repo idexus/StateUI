@@ -21,9 +21,9 @@ Link.accessibilityHint: ✅
 Map.height: ✅
 Map.scale: ✓ read scale of Map: the host's own transform, checked against the layer it composed itself
 Map.width: ✅
+MotionLayout.isEnabled: ✅
+MotionLayout.zIndex: ✅
 Path.accessibilityHint: ✅
-PhaseLayout.isEnabled: ✅
-PhaseLayout.zIndex: ✅
 Picker.isEnabled: ✅
 Picker.rotationY: ✓ read rotationY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.isAccessibilityHidden: ✅

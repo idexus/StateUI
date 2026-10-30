@@ -5,9 +5,9 @@ Grid.letsInputThrough: ✅
 HStack.clipsContent: ✅
 HStack.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 HStack.letsInputThrough: ✅
-PhaseLayout.clipsContent: ✅
-PhaseLayout.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
-PhaseLayout.letsInputThrough: ✅
+MotionLayout.clipsContent: ✅
+MotionLayout.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
+MotionLayout.letsInputThrough: ✅
 VStack.clipsContent: ✅
 VStack.ignoresSafeArea: – A GNOME window keeps no area of its content clear: its header bar stands above the content, over none of it.
 VStack.letsInputThrough: ✅

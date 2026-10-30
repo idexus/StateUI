@@ -21,9 +21,9 @@ Line.isAccessibilityHidden: ✅
 Link.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
 Map.opacity: ✅
 Map.rotationX: ✓ read rotationX of Map: the host's own transform, checked against the layer it composed itself
+MotionLayout.frame: ✅
+MotionLayout.translationX: ✓ read translationX of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-PhaseLayout.frame: ✅
-PhaseLayout.translationX: ✓ read translationX of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.isVisible: ✅
 Picker.rotation: ✓ read rotation of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.tooltip: ✅

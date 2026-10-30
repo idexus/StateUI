@@ -6,7 +6,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A ZStack: its children one over another, each in its area (`ZStackArithmetic`), or where a phase layout's placement
+/// A ZStack: its children one over another, each in its area (`ZStackArithmetic`), or where a motion layout's placement
 /// run puts it.
 /// Design: docs/design/platforms/uikit/drawing.md#a-placed-child
 @MainActor
@@ -39,11 +39,11 @@ final class UIKitZStackView: UIKitLayoutView {
         }
     }
 
-    /// Whether the ZStack stands a phase layout, which has no size of its own.
-    var phaseLayout = false
+    /// Whether the ZStack stands a motion layout, which has no size of its own.
+    var motionLayout = false
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width, phaseLayout: phaseLayout)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout)
     }
 
     override func arrange(in bounds: Rect) {

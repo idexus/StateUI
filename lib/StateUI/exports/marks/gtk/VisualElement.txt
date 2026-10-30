@@ -539,6 +539,42 @@ Map.translationX: 🧩
 Map.translationY: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
+MotionLayout.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
+MotionLayout.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
+MotionLayout.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
+MotionLayout.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
+MotionLayout.accessibilityHint: ✅
+MotionLayout.accessibilityLabel: ✅
+MotionLayout.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
+MotionLayout.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
+MotionLayout.background: ◐ cannot read background of MotionLayout - GTK's driver has no path for it yet
+MotionLayout.frame: ✅
+MotionLayout.height: ✅
+MotionLayout.hidesChildrenFromAccessibility: ✅
+MotionLayout.ignoresInput: ✅
+MotionLayout.isAccessibilityHidden: ✅
+MotionLayout.isEnabled: ✅
+MotionLayout.isVisible: ✅
+MotionLayout.layoutDirection: ✅
+MotionLayout.maximumHeight: ✅
+MotionLayout.maximumWidth: ✅
+MotionLayout.minimumHeight: ✅
+MotionLayout.minimumWidth: ✅
+MotionLayout.opacity: ✅
+MotionLayout.pivotX: ✓ read pivotX of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.pivotY: ✓ read pivotY of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.rotation: ✓ read rotation of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.rotationX: ✓ read rotationX of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.scale: ✓ read scale of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.scaleX: ✓ read scaleX of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.scaleY: ✓ read scaleY of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.style: not realized
+MotionLayout.tooltip: ✅
+MotionLayout.translationX: ✓ read translationX of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.translationY: ✓ read translationY of MotionLayout: the host's own transform: GTK reads back no part of one
+MotionLayout.width: ✅
+MotionLayout.zIndex: ✅
 Path.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Path.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Path.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
@@ -575,42 +611,6 @@ Path.translationX: ✓ read translationX of Path: the host's own transform: GTK 
 Path.translationY: ✓ read translationY of Path: the host's own transform: GTK reads back no part of one
 Path.width: ✅
 Path.zIndex: ✅
-PhaseLayout.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
-PhaseLayout.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
-PhaseLayout.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.
-PhaseLayout.accessibilityHeading: ☑️ GTK fixes a widget's role once it is shown: a view becomes a heading, or stops being one, only as it is made; its level changes.
-PhaseLayout.accessibilityHint: ✅
-PhaseLayout.accessibilityLabel: ✅
-PhaseLayout.accessibilityRole: – GTK fixes a widget's role as it is made, and a widget is the kind its class says.
-PhaseLayout.accessibilityValue: – GTK says a value only of a range, a role a widget takes as it is made.
-PhaseLayout.background: ◐ cannot read background of PhaseLayout - GTK's driver has no path for it yet
-PhaseLayout.frame: ✅
-PhaseLayout.height: ✅
-PhaseLayout.hidesChildrenFromAccessibility: ✅
-PhaseLayout.ignoresInput: ✅
-PhaseLayout.isAccessibilityHidden: ✅
-PhaseLayout.isEnabled: ✅
-PhaseLayout.isVisible: ✅
-PhaseLayout.layoutDirection: ✅
-PhaseLayout.maximumHeight: ✅
-PhaseLayout.maximumWidth: ✅
-PhaseLayout.minimumHeight: ✅
-PhaseLayout.minimumWidth: ✅
-PhaseLayout.opacity: ✅
-PhaseLayout.pivotX: ✓ read pivotX of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.pivotY: ✓ read pivotY of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.rotation: ✓ read rotation of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.rotationX: ✓ read rotationX of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.rotationY: ✓ read rotationY of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.scale: ✓ read scale of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.scaleX: ✓ read scaleX of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.scaleY: ✓ read scaleY of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.style: not realized
-PhaseLayout.tooltip: ✅
-PhaseLayout.translationX: ✓ read translationX of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.translationY: ✓ read translationY of PhaseLayout: the host's own transform: GTK reads back no part of one
-PhaseLayout.width: ✅
-PhaseLayout.zIndex: ✅
 Picker.accessibilityActionPerformed: – GTK's accessibility offers no action of an application's own words.
 Picker.accessibilityActions: – GTK's accessibility offers no action of an application's own words.
 Picker.accessibilityAdjusted: – GTK steps only a range, a role a widget takes as it is made.

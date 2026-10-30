@@ -3,9 +3,9 @@
 
 @_spi(Host) import StateUI
 
-/// The hand over a phase layout, read alike on every host: a press dragged or a trackpad's fingers reported as they
+/// The hand over a motion layout, read alike on every host: a press dragged or a trackpad's fingers reported as they
 /// move, a wheel's notches with no lift - ended after a pause on the frame clock - and the speed at the lift where
-/// the platform tells none. What it answers is the element's `handMoved`.
+/// the platform tells none. What it answers is the element's `translationUpdated`.
 /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
 @_spi(Host) public struct HandReading: Sendable {
     /// One report of the hand: its phase, how far it moved what is under it since the last, and how fast it goes,
@@ -101,7 +101,7 @@
     /// Whether the hand asks the frames for something: a wheel to let go, a press to hold a view, a held view
     /// standing still.
     public var wantsFrames: Bool {
-        isWheeling || holdsItem || (press != nil && itemStart == .held && claimed == nil)
+        isWheeling || holdsItem || (press != nil && itemStart == .longPress && claimed == nil)
     }
 
     /// How fast the hand goes, by its moves of the last `reading` milliseconds.
@@ -136,19 +136,19 @@
         return along > 0 && along >= across
     }
 
-    /// Whether a hand whose first move is `moved` is taken over a layout moved `way` whose views are taken as
-    /// `items` says - the run's its way, a view's across it with `.across` - and any way where it already holds a
-    /// view: what a toolkit asks before its drag begins.
+    /// Whether a hand whose first move is `moved` is taken over a layout moved `way` whose views are taken as `items`
+    /// says - the run's its way, a view's across it with `.perpendicular` - and any way where it already holds a view:
+    /// what a toolkit asks before its drag begins.
     public static func takes(_ moved: Point, way: HandWay?, items: ItemDragStart?, holding: Bool) -> Bool {
-        holding || way.map { claims(moved, way: $0) } == true || (items == .across && moved != .zero)
+        holding || way.map { claims(moved, way: $0) } == true || (items == .perpendicular && moved != .zero)
     }
 
     /// The hand at `phase` - a press dragged or a trackpad's fingers - moving what is under it by `moved` at `time`,
     /// lifting at `speed` where the platform tells one, a press going down at `point`: a layout moved `way` takes a
-    /// gesture whose first move goes its way; one whose views are taken as `items` says gives the view under
-    /// the press a first move across it (`.across`) or a press standing still `hold` (`.held`, by the frames); the
-    /// rest is left to whatever holds the layout. A hold and a held view's standing are measured on the frames'
-    /// clock, `now`; the hand's pace on the platform's, `time`. Whether it took this step, and what it says.
+    /// gesture whose first move goes its way; one whose views are taken as `items` says gives the view under the press
+    /// a first move across it (`.perpendicular`) or a press standing still `hold` (`.longPress`, by the frames); the
+    /// rest is left to whatever holds the layout. A hold and a held view's standing are measured on the frames' clock,
+    /// `now`; the hand's pace on the platform's, `time`. Whether it took this step, and what it says.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func hand(
         _ phase: GesturePhase, moved: Point, speed: Point?, at time: Double, way: HandWay?,
@@ -164,7 +164,7 @@
             return (true, [])
 
         case .changed:
-            if holdsItem { return (true, itemMoved(moved, at: time, now: now)) }
+            if holdsItem { return (true, itemDragUpdated(moved, at: time, now: now)) }
             if claimed == nil {
                 guard moved != .zero else { return (true, []) }
 
@@ -173,11 +173,11 @@
                     press = nil
                     return (true, began(at: time) + self.moved(moved, at: time))
                 }
-                guard itemStart == .across, let press else {
+                guard itemStart == .perpendicular, let press else {
                     self.press = nil
                     return (false, [])
                 }
-                return (true, itemTaken(at: press.point, time: time, now: now) + itemMoved(moved, at: time, now: now))
+                return (true, itemTaken(at: press.point, time: time, now: now) + itemDragUpdated(moved, at: time, now: now))
             }
             guard claimed == true else { return (false, []) }
 
@@ -208,7 +208,7 @@
     }
 
     /// The hand holding a view moved it by `moved` at `time`, `now` on the frames' clock.
-    private mutating func itemMoved(_ moved: Point, at time: Double, now: Double) -> [Report] {
+    private mutating func itemDragUpdated(_ moved: Point, at time: Double, now: Double) -> [Report] {
         itemAt = Point(itemAt.x + moved.x, itemAt.y + moved.y)
         itemMovedAt = now
         stood = 0
@@ -324,7 +324,7 @@
     /// stands still.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func paced(at time: Double) -> [Report] {
-        if let press, claimed == nil, itemStart == .held, time - press.time >= Self.hold {
+        if let press, claimed == nil, itemStart == .longPress, time - press.time >= Self.hold {
             return itemTaken(at: press.point, time: time, now: time)
         }
         if holdsItem, time - itemMovedAt >= Double(stood + 1) * Self.hold {

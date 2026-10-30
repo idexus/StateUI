@@ -31,10 +31,10 @@ Link.rotationY: ✓ read rotationY of Link: the host's own tip, checked against 
 Link.zIndex: ✅
 Map.accessibilityRole: 🧩
 Map.translationX: 🧩
+MotionLayout.ignoresInput: ✅
+MotionLayout.pivotY: ✅
 Path.background: – A WinUI shape is its figure alone: it paints no ground around it.
 Path.isEnabled: does not apply - read isEnabled of Path - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
-PhaseLayout.ignoresInput: ✅
-PhaseLayout.pivotY: ✅
 Picker.ignoresInput: ✅
 Picker.pivotY: ✅
 Polygon.accessibilityHeading: ✅

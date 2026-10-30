@@ -27,10 +27,10 @@ Line.zIndex: ✅
 Link.accessibilityHint: ✅
 Link.scaleY: ✅
 Map.accessibilityAdjusted: 🧩
+MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own tip, checked against the projection it laid on the element
+MotionLayout.zIndex: ✅
 Path.ignoresInput: ✅
 Path.pivotY: ✅
-PhaseLayout.rotationY: ✓ read rotationY of PhaseLayout: the host's own tip, checked against the projection it laid on the element
-PhaseLayout.zIndex: ✅
 Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
 Picker.zIndex: ✅
 Polygon.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.

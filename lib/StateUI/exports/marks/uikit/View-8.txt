@@ -57,15 +57,15 @@ Map.pointerExited: ✓ hover on Map: the view's listening handed the recognizer'
 Map.pointerMoved: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Map.pointerPressed: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
 Map.pointerReleased: ✓ hover on Map: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+MotionLayout.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
+MotionLayout.tapCount: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.tapped: ✓ tap on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.panTouchCount: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.panUpdated: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
 Path.panXChannel: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-PhaseLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-PhaseLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-PhaseLayout.drop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
-PhaseLayout.tapCount: ✓ tap on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.tapped: ✓ tap on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.frameChanged: ✅
 Picker.horizontalAlignment: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: the view's listening handed the recognizer's states, no touch sent

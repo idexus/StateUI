@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The bodies of a phase layout's world: how far each view stands from where its arithmetic puts it, lane by lane as
+/// The bodies of a motion layout's world: how far each view stands from where its arithmetic puts it, lane by lane as
 /// a shift's (`LayoutShift`), and how fast each lane goes - each body a mass on a spring to its place, worked out at a
 /// fixed step, so the same frames or other ones bring it to the same place.
-/// Design: docs/design/views/phase-layout.md#bodies
+/// Design: docs/design/views/motion-layout.md#bodies
 struct LayoutBodies: Equatable, Sendable {
     /// One body: its shift's lanes, how fast each goes, per second, and the spring that pulls it onto its place.
     struct Body: Equatable, Sendable {

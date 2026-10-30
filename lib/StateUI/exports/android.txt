@@ -131,6 +131,13 @@ Link
   textCase
   textColor
   clicked()
+MotionLayout
+  clipsContent
+  ignoresInput
+  letsInputThrough
+  lineWidth
+  shape
+  stroke
 Path
   contentMode
   dash
@@ -142,13 +149,6 @@ Path
   lineJoin
   lineWidth
   miterLimit
-  stroke
-PhaseLayout
-  clipsContent
-  ignoresInput
-  letsInputThrough
-  lineWidth
-  shape
   stroke
 Picker
   fontAttributes

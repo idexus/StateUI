@@ -1,19 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// How the hand takes one view of a phase layout by itself rather than moving the run.
+/// How the hand takes one view of a motion layout by itself rather than moving its parameters.
 ///
-///     .itemDrag(begins: .held)
+///     .itemDrag(begins: .longPress)
 ///
-/// Design: docs/design/views/phase-layout.md#one-view-in-the-hand
+/// Design: docs/design/views/motion-layout.md#one-view-in-the-hand
 public enum ItemDragStart: Int32, Equatable, Sendable {
-    /// A first move across the layout's axis: a card pulled up out of a deck that scrolls sideways. A first move
-    /// along it moves the run.
-    case across = 0
+    /// A first move perpendicular to the layout's scrolling axis: a card pulled up out of a deck that scrolls
+    /// sideways. A first move along it moves the parameters.
+    case perpendicular = 0
 
     /// A press standing still a long press's time, then any way: an icon lifted off a board of icons. A move before
-    /// it moves the run.
-    case held = 1
+    /// it moves the parameters.
+    case longPress = 1
 }
 
 extension ItemDragStart: HostRepresentable {}

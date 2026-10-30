@@ -32,7 +32,7 @@ StateUI knows are meaningless out of the patch.
   a state's number         panXChannel, panYChannel, scrollOffset
   a list drawn whole       a polygon's or a polyline's points, a stroke's dash pattern
   a gesture's threshold    swipeThreshold
-  what the hand is let do  a phase layout's hand axis, item drag, pan, magnification
+  what the hand is let do  a motion layout's hand axis, item drag, pan, magnification
                            and rotation; the keys a control takes (keysTaken)
   where the host puts it   a toolbar item's placement, a toolbar group's side and order,
                            whether a toolbar item shows its text, a menu bar's order

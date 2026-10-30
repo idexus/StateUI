@@ -160,20 +160,20 @@ enum WebRealization {
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(VisualElementContract.background, on: SpaceContract.self,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
-        .partial(VisualElementContract.background, on: PhaseLayoutContract.self,
+        .partial(VisualElementContract.background, on: MotionLayoutContract.self,
             missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
-        .complete(PhaseLayoutContract.handAxis),
+        .complete(MotionLayoutContract.translationOrientation),
         .complete(LayoutContract.ignoresSafeArea),
-        .complete(PhaseLayoutContract.handMoved),
-        .complete(PhaseLayoutContract.handStepped),
-        .complete(PhaseLayoutContract.itemDrag),
-        .complete(PhaseLayoutContract.itemMoved),
-        .complete(PhaseLayoutContract.magnifies),
-        .complete(PhaseLayoutContract.pans),
-        .partial(PhaseLayoutContract.rotates,
+        .complete(MotionLayoutContract.translationUpdated),
+        .complete(MotionLayoutContract.wheelStepped),
+        .complete(MotionLayoutContract.itemDrag),
+        .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.magnifies),
+        .complete(MotionLayoutContract.pans),
+        .partial(MotionLayoutContract.rotates,
             missing: "Chrome and Firefox tell no trackpad's rotation: two fingers turn "
             + "a layout on a touch screen, and on a trackpad in Safari."),
-        .complete(PhaseLayoutContract.pinchMoved),
+        .complete(MotionLayoutContract.pinchRotationUpdated),
         .partial(WindowContract.background,
             missing: "A page draws its window opaque: a blur or glass shows its color."),
         .notPlanned(WindowContract.maximumHeight, reason: "A page bounds no browser window: the user sizes it."),
@@ -187,7 +187,7 @@ enum WebRealization {
         .notPlanned(WindowContract.y, reason: "A page places no browser window: the system does."),
         .notPlanned(ColorPickerContract.choosesOpacity,
             reason: "The browser's color input chooses no opacity: every color it gives is opaque."),
-    ] + pickerOpening + dayFields + HostRecord.phaseLayout + BarItemLook.realized
+    ] + pickerOpening + dayFields + HostRecord.motionLayout + BarItemLook.realized
 
     /// A day's and a time's field: left to right, whatever the direction around them.
     private static let dayFields: [HostRecord] = ([DatePickerContract.self, TimePickerContract.self] as [any ElementContract.Type]).map {

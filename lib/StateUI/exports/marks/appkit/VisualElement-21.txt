@@ -23,9 +23,9 @@ Map.maximumWidth: ✅
 Map.minimumHeight: ✅
 Map.minimumWidth: ✅
 Map.scaleX: ✓ read scaleX of Map: the host's own transform, checked against the layer it composed itself
+MotionLayout.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
+MotionLayout.layoutDirection: ✅
 Path.accessibilityRole: ✅
-PhaseLayout.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every level is a heading.
-PhaseLayout.layoutDirection: ✅
 Picker.height: ✅
 Picker.scale: ✓ read scale of Picker: the host's own transform, checked against the layer it composed itself
 Picker.width: ✅

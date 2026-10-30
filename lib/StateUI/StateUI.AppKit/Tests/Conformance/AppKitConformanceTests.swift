@@ -18,7 +18,7 @@ final class AppKitConformanceTests: XCTestCase {
     @MainActor func testCanvas() { conform(CanvasTests.self) }
     @MainActor func testCapsule() { conform(CapsuleTests.self) }
     @MainActor func testFill() { conform(FillTests.self) }
-    @MainActor func testPhaseLayout() { conform(PhaseLayoutTests.self) }
+    @MainActor func testMotionLayout() { conform(MotionLayoutTests.self) }
     @MainActor func testCheckBox() { conform(CheckBoxTests.self) }
     @MainActor func testColorPicker() { conform(ColorPickerTests.self) }
     @MainActor func testSpace() { conform(SpaceTests.self) }

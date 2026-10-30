@@ -5,7 +5,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 
-/// The hand over a phase layout, read alike on every host: a press dragged or a trackpad's fingers reported as they
+/// The hand over a motion layout, read alike on every host: a press dragged or a trackpad's fingers reported as they
 /// move, a wheel's notches with no lift, and the speed at the lift where the platform tells none.
 final class HandReadingTests: XCTestCase {
     /// A HAND IS REPORTED AS IT MOVES: its beginning, each move, and its lift with the speed the platform told.
@@ -271,7 +271,7 @@ final class HandReadingTests: XCTestCase {
         func heard(_ phase: GesturePhase, _ moved: Point, at time: Double, speed: Point? = nil, point: Point? = nil)
             -> (taken: Bool, reports: [HandReading.Report])
         {
-            hand.hand(phase, moved: moved, speed: speed, at: time, way: .horizontal, point: point, items: .across)
+            hand.hand(phase, moved: moved, speed: speed, at: time, way: .horizontal, point: point, items: .perpendicular)
         }
 
         XCTAssertEqual(heard(.began, .zero, at: 0, point: Point(50, 60)).reports, [])
@@ -290,7 +290,7 @@ final class HandReadingTests: XCTestCase {
     func testAFirstMoveAlongIsTheRunsAndAcrossThePagesWithNoViewTaken() {
         var hand = HandReading()
 
-        _ = hand.hand(.began, moved: .zero, speed: nil, at: 0, way: .horizontal, point: Point(50, 60), items: .across)
+        _ = hand.hand(.began, moved: .zero, speed: nil, at: 0, way: .horizontal, point: Point(50, 60), items: .perpendicular)
         let along = hand.hand(.changed, moved: Point(12, 2), speed: nil, at: 16, way: .horizontal)
         XCTAssertEqual(along.reports, [.init(.began), .init(.changed, moved: Point(12, 2), speed: Point(750, 125))])
 
@@ -304,7 +304,7 @@ final class HandReadingTests: XCTestCase {
     func testAPressStandingStillAHoldHoldsTheViewUnderIt() {
         var hand = HandReading()
 
-        _ = hand.hand(.began, moved: .zero, speed: nil, at: 0, way: .horizontal, point: Point(40, 40), items: .held)
+        _ = hand.hand(.began, moved: .zero, speed: nil, at: 0, way: .horizontal, point: Point(40, 40), items: .longPress)
         XCTAssertTrue(hand.wantsFrames, "the frames find the hold")
         XCTAssertEqual(hand.paced(at: 480), [])
         XCTAssertEqual(hand.paced(at: 500), [.init(.began, item: true, at: Point(40, 40))])
@@ -312,7 +312,7 @@ final class HandReadingTests: XCTestCase {
                        [.init(.changed, moved: Point(0, 30), speed: Point(0, 1_875), item: true, at: Point(40, 70))], "then any way")
 
         _ = hand.hand(.ended, moved: .zero, speed: nil, at: 540, way: .horizontal)
-        _ = hand.hand(.began, moved: .zero, speed: nil, at: 600, way: .horizontal, point: Point(40, 40), items: .held)
+        _ = hand.hand(.began, moved: .zero, speed: nil, at: 600, way: .horizontal, point: Point(40, 40), items: .longPress)
         XCTAssertEqual(hand.hand(.changed, moved: Point(20, 0), speed: nil, at: 700, way: .horizontal).reports,
                        [.init(.began), .init(.changed, moved: Point(20, 0), speed: Point(1_250, 0))], "moved before the hold: the run's")
         XCTAssertEqual(hand.paced(at: 1_200), [], "and no hold after")
@@ -322,7 +322,7 @@ final class HandReadingTests: XCTestCase {
     func testAHeldViewStandingStillIsToldEachHold() {
         var hand = HandReading()
 
-        _ = hand.hand(.began, moved: .zero, speed: nil, at: 0, way: .horizontal, point: Point(40, 40), items: .held)
+        _ = hand.hand(.began, moved: .zero, speed: nil, at: 0, way: .horizontal, point: Point(40, 40), items: .longPress)
         _ = hand.paced(at: 500)
         XCTAssertEqual(hand.paced(at: 900), [])
         XCTAssertEqual(hand.paced(at: 1_000), [.init(.changed, item: true, at: Point(40, 40), still: 500)])

@@ -20,8 +20,8 @@ Line.frame: ✅
 Line.translationX: ✓ read translationX of Line: the host's own transform, checked against the layer it composed itself
 Link.layoutDirection: ✅
 Map.accessibilityValue: ✅
+MotionLayout.isAccessibilityHidden: ✅
 Path.layoutDirection: ✅
-PhaseLayout.isAccessibilityHidden: ✅
 Picker.accessibilityRole: ✅
 Polygon.maximumHeight: ✅
 Polygon.maximumWidth: ✅

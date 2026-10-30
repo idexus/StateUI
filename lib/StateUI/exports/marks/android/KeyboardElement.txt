@@ -15,8 +15,8 @@ ItemsView.keyPressed: ✓ pressKeys on ItemsView: the key event no view took han
 ItemsView.keysTaken: ✓ pressKeys on ItemsView: the key event no view took handed to the host as the application's activity hands it
 Link.keyPressed: ✓ pressKeys on Link: the key event no view took handed to the host as the application's activity hands it
 Link.keysTaken: ✓ pressKeys on Link: the key event no view took handed to the host as the application's activity hands it
-PhaseLayout.keyPressed: ✓ pressKeys on PhaseLayout: the key event no view took handed to the host as the application's activity hands it
-PhaseLayout.keysTaken: ✓ pressKeys on PhaseLayout: the key event no view took handed to the host as the application's activity hands it
+MotionLayout.keyPressed: ✓ pressKeys on MotionLayout: the key event no view took handed to the host as the application's activity hands it
+MotionLayout.keysTaken: ✓ pressKeys on MotionLayout: the key event no view took handed to the host as the application's activity hands it
 Picker.keyPressed: ✓ pressKeys on Picker: the key event no view took handed to the host as the application's activity hands it
 Picker.keysTaken: ✓ pressKeys on Picker: the key event no view took handed to the host as the application's activity hands it
 ScrollView.keyPressed: ✓ pressKeys on ScrollView: the key event no view took handed to the host as the application's activity hands it

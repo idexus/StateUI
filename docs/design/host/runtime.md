@@ -150,7 +150,7 @@ The turn always runs in the same order.
 The acts come last, so an act lands on the interface its handler just changed.
 
 The cycle a render asks for runs in the same turn, once, before anything is
-drawn: a phase layout's run of the views the render put in stands with them.
+drawn: a motion layout's run of the views the render put in stands with them.
 Left to the next frame, the toolkit would draw the new views by a run worked
 out for the old - each placed by position, so a view put in at the front
 would stand where the one now after it is, and the last in no place at all,
@@ -530,11 +530,11 @@ view's tap and pan, a click the relay takes.
 
 ## The hand over a layout
 
-A phase layout a hand moves hears the hand itself (`Hearing.hand`, its
-`handAxis`): a press dragged - a finger or a pointer - a trackpad's two
+A motion layout a hand moves hears the hand itself (`Hearing.hand`, its
+`translationOrientation`): a press dragged - a finger or a pointer - a trackpad's two
 fingers and a wheel, each as the platform tells it, said as `HeardInput.hand`
 or `.wheel`. `HandReading` makes them one stream of the element's
-`handMoved` - a beginning, each move of what is under the hand, and a lift
+`translationUpdated` - a beginning, each move of what is under the hand, and a lift
 with its speed - alike on every host. Where the platform tells no speed at
 the lift, the moves of its last tenth of a second say it. A wheel tells no
 beginning and no lift: its first notch opens a gesture, and a frame finding
@@ -553,7 +553,7 @@ points at least - a hand pushing again - or a gap of more than six frames, a
 hand that stopped it and moves again. A wheel the platform says turns notch by
 notch is no stream: it is said as notches (`HeardInput.notch`), a fine
 wheel's parts adding up to whole ones (`HandReading.notches`), each a step
-of the run to the next target (`handStepped`). What the hand says is kept
+of the run to the next target (`wheelStepped`). What the hand says is kept
 for the next frame and said at its start, before the cycle - its moves since
 the last frame as one (`HandPace`): a toolkit telling the hand faster than
 the display draws, 120 times a second or in a burst a busy thread held back,
@@ -567,8 +567,8 @@ down begins it where it went down in the view, the fingers' middle moving it
 slop all round, WinUI's drag rectangle and the browser's four points along
 either axis (`DragRecognition.Distance`) - asks the layout; a hand taken says
 every move after; the last finger up ends it, taken or not. What the hand does to the run -
-the phase moving with it, a throw to the target nearest its end - is the
-core's (views/phase-layout.md, the hand).
+the parameters moving with it, a throw to the target nearest its end - is the
+core's (views/motion-layout.md, the hand).
 
 A layout whose views the hand takes by themselves (`itemDrag`) gives the
 hand one of three owners, by one rule every host shares: a first move along
@@ -581,20 +581,20 @@ every move and lift as it does for the run, and its end always - a press that
 held a view and never moved still lets it go; it decides nothing more. The
 hold is found by the frames, since nothing moves: a press waiting for it holds
 the clock (`HandReading.wantsFrames`), as an open wheel does. The view's hand
-is said as the element's `itemMoved` - where it is in the layout, from the
+is said as the element's `itemDragUpdated` - where it is in the layout, from the
 press's point and every move since, its speed at the lift as the run's is
 read, and how long it has stood still - told again each hold it stands, so
 an application can turn a board under an icon held at its edge.
 
 ## Two fingers over a layout
 
-A phase layout that `magnifies` or `rotates` hears two fingers itself
+A motion layout that `magnifies` or `rotates` hears two fingers itself
 (`Hearing.pinches`, `Hearing.rotations`): a pinch and a rotation, each as
 the platform tells it - its own gesture where the toolkit has one, two
 pointers where it tells only pointers (`TwoFingers`: how far apart they
 stand and which way the line between them turns, clockwise in a view whose
 y grows down, the short way round). `PinchReading` makes the two one stream
-of the element's `pinchMoved`: begun with the first, ended with the last -
+of the element's `pinchRotationUpdated`: begun with the first, ended with the last -
 a move with no beginning heard begins it, a cancel of the last cancels it -
 each move a scale and degrees since the last, said at the next frame's
 start as one, and as the fingers lift their speed, read from the last

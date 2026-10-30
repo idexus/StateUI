@@ -34,10 +34,10 @@ Line.translationX: ✅
 Link.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
 Map.hidesChildrenFromAccessibility: 🧩
 Map.opacity: 🧩
+MotionLayout.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+MotionLayout.translationX: ✅
 Path.accessibilityHeading: ✅
 Path.scale: ✅
-PhaseLayout.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
-PhaseLayout.translationX: ✅
 Picker.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
 Picker.translationX: ✅
 Polygon.tooltip: ✅

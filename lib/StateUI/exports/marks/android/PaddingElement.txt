@@ -2,7 +2,7 @@
 Button.padding: ✅
 Grid.padding: ✅
 HStack.padding: ✅
-PhaseLayout.padding: – A phase layout stands its views where its arithmetic says, from its own top left: it takes no padding.
+MotionLayout.padding: – A motion layout stands its views where its arithmetic says, from its own top left: it takes no padding.
 ScrollView.padding: ✅
 Text.padding: ✅
 ToolbarButton.padding: – A toolbar's actions stand in Android's own look.

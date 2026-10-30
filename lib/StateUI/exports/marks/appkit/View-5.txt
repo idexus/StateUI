@@ -56,12 +56,12 @@ Map.margin: ✅
 Map.swipeDirection: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.swipeThreshold: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.swiped: ✓ pan on Map: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.area: ✅
+MotionLayout.frameChanged: ✅
+MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.droppedFileTypes: ✓ dropFiles on Path: the window's drop routing told the driver's files, no dragging session
 Path.filesDropped: ✓ dropFiles on Path: the window's drop routing told the driver's files, no dragging session
 Path.tapped: ✓ pressDown on Path: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.area: ✅
-PhaseLayout.frameChanged: ✅
-PhaseLayout.rotationUpdated: ✓ rotate on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.panTouchCount: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.panUpdated: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.panXChannel: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent

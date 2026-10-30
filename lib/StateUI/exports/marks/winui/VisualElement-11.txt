@@ -31,10 +31,10 @@ Link.accessibilityActionPerformed: – UI Automation offers no action of an appl
 Link.accessibilityActions: – UI Automation offers no action of an application's own words.
 Map.isAccessibilityHidden: 🧩
 Map.isVisible: 🧩
+MotionLayout.accessibilityHint: ✅
+MotionLayout.scaleY: ✅
 Path.rotationY: ✓ read rotationY of Path: the host's own tip, checked against the projection it laid on the element
 Path.zIndex: ✅
-PhaseLayout.accessibilityHint: ✅
-PhaseLayout.scaleY: ✅
 Picker.accessibilityHint: ✅
 Picker.scaleY: ✅
 Polygon.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.

@@ -61,10 +61,10 @@ Map.dragText: ✓ dragAndDrop on Map: the drag and drop interactions' handlers c
 Map.frameChanged: ✅
 Map.gridColumnSpan: ✅
 Map.gridRowSpan: ✅
+MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the drop interaction's handler told the driver's files, no drag session
+MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the drop interaction's handler told the driver's files, no drag session
+MotionLayout.tapped: ✓ pressDown on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.panYChannel: ✓ pan on Path: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.droppedFileTypes: ✓ dropFiles on PhaseLayout: the drop interaction's handler told the driver's files, no drag session
-PhaseLayout.filesDropped: ✓ dropFiles on PhaseLayout: the drop interaction's handler told the driver's files, no drag session
-PhaseLayout.tapped: ✓ pressDown on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.area: ✅
 Picker.frameChanged: ✅
 Picker.rotationUpdated: ✓ rotate on Picker: the view's listening handed the recognizer's states, no touch sent

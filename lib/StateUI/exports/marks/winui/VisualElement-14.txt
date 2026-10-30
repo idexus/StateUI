@@ -31,11 +31,11 @@ Link.accessibilityHeading: ✅
 Map.height: 🧩
 Map.layoutDirection: 🧩
 Map.width: 🧩
+MotionLayout.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+MotionLayout.accessibilityActions: – UI Automation offers no action of an application's own words.
+MotionLayout.isEnabled: ✅
 Path.accessibilityHint: ✅
 Path.scaleY: ✅
-PhaseLayout.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
-PhaseLayout.accessibilityActions: – UI Automation offers no action of an application's own words.
-PhaseLayout.isEnabled: ✅
 Picker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
 Picker.accessibilityActions: – UI Automation offers no action of an application's own words.
 Polygon.isAccessibilityHidden: ✅

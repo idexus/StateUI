@@ -5,7 +5,7 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
-/// A phase layout tells once that its run came to rest - no hand holding it, the phase at its destination, every view
+/// A motion layout tells once that its run came to rest - no hand holding it, the phase at its destination, every view
 /// at its place - with the phase it rests at, whatever moved it; laid out at rest, it tells nothing.
 @MainActor
 final class LayoutSettleTests: XCTestCase {
@@ -25,7 +25,7 @@ final class LayoutSettleTests: XCTestCase {
     /// Views a hundred apart a unit of the phase, snapping to each unit, telling `told` each rest.
     private func tree(_ phase: State<Double>, _ items: State<[Int]>, _ told: Told) -> Node {
         let count = items.wrappedValue.count
-        return PhaseLayout(items.wrappedValue, phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+        return MotionLayout(items.wrappedValue, parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             (0..<count).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))

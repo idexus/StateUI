@@ -61,7 +61,7 @@ frame.
 
 ## The gestures
 
-- **A held icon moved across a home screen.** A phase layout of 48 icons,
+- **A held icon moved across a home screen.** A motion layout of 48 icons,
   twenty a board; a press held 600 ms takes an icon, and twelve moves take it
   a cell on each time, 100 ms of frames apart. A new order builds the board
   again and no icon.

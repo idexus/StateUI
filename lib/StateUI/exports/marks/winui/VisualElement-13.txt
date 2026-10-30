@@ -36,10 +36,10 @@ Line.translationY: ✅
 Link.tooltip: ✅
 Map.background: 🧩
 Map.isEnabled: 🧩
+MotionLayout.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+MotionLayout.translationY: ✅
 Path.accessibilityLabel: ✅
 Path.scaleX: ✅
-PhaseLayout.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
-PhaseLayout.translationY: ✅
 Picker.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Picker.translationY: ✅
 Polygon.accessibilityHeading: ✅

@@ -57,15 +57,15 @@ Map.pointerExited: ✓ hover on Map: handed to the host's recognizer or handler,
 Map.pointerMoved: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.pointerPressed: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.pointerReleased: ✓ hover on Map: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+MotionLayout.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
+MotionLayout.tapCount: ✓ tap on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.tapped: ✓ tap on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.panTouchCount: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.panUpdated: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.panXChannel: ✓ pan on Path: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-PhaseLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-PhaseLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-PhaseLayout.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
-PhaseLayout.tapCount: ✓ tap on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.tapped: ✓ tap on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.frameChanged: ✅
 Picker.horizontalAlignment: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: handed to the host's recognizer or handler, no NSEvent sent

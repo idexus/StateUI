@@ -41,7 +41,7 @@ final class Catalog {
             Self.basicInputGroup(nav: nav, style: style, bar: bar, log: log),
             Self.textGroup(nav: nav, style: style, bar: bar, log: log),
             Self.layoutGroup(nav: nav, style: style, bar: bar, log: log),
-            Self.phaseLayoutGroup(nav: nav, style: style, bar: bar, log: log),
+            Self.motionLayoutGroup(nav: nav, style: style, bar: bar, log: log),
             Self.stylesGroup(nav: nav, style: style, bar: bar, log: log),
             Self.shapesGroup(nav: nav, style: style, bar: bar, log: log),
             Self.collectionsGroup(nav: nav, style: style, bar: bar, log: log),
@@ -259,20 +259,20 @@ final class Catalog {
             ])
     }
 
-    /// The group at `phaseLayout`.
-    private static func phaseLayoutGroup(
+    /// The group at `motionLayout`.
+    private static func motionLayoutGroup(
         nav: Navigation, style: SessionStyle, bar: WindowBarState, log: WindowLog
     ) -> SampleGroup {
         SampleGroup(
-            route: "phaseLayout",
-            title: "Phase Layout",
+            route: "motionLayout",
+            title: "Motion Layout",
             summary: "Views placed by arithmetic of your own, worked out from a phase the hand or the "
                 + "program moves: a ring, a deck, pages of icons, a table panned, pinched and turned.",
-            icon: ImageSource(light: "nav_phaselayout.png", dark: "nav_phaselayout_dark.png"),
-            card: ImageSource("cat_phaselayout.png"),
+            icon: ImageSource(light: "nav_motionlayout.png", dark: "nav_motionlayout_dark.png"),
+            card: ImageSource("cat_motionlayout.png"),
             samples: [
-                Sample(PhaseLayoutSample()),
-                Sample(AxesPhaseSample()),
+                Sample(MotionLayoutSample()),
+                Sample(LayoutParametersSample()),
                 Sample(LayoutAxesSample()),
                 Sample(LayoutKeyframesSample()),
                 Sample(ChangingDeckSample()),

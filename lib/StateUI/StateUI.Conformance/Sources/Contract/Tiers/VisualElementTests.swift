@@ -58,7 +58,7 @@
     ]
 
     /// The layouts, a space and a fill drawing their own box, whose background may be a blur or glass.
-    static let boxes: Set<String> = ["Fill", "Grid", "HStack", "PhaseLayout", "Space", "VStack", "ZStack"]
+    static let boxes: Set<String> = ["Fill", "Grid", "HStack", "MotionLayout", "Space", "VStack", "ZStack"]
 
     /// A box's background is the blur the tree gives it and then the glass it changes it to - or what stands in for
     /// the glass, the blur as clear as it is, whose color a host that blurs nothing paints.
@@ -160,7 +160,7 @@
     }
 
     /// The views holding others: their `isEnabled` is their branch's, and they lay their child out in their direction.
-    static let layouts: Set<String> = ["Grid", "HStack", "PhaseLayout", "ScrollView", "VStack", "ZStack"]
+    static let layouts: Set<String> = ["Grid", "HStack", "MotionLayout", "ScrollView", "VStack", "ZStack"]
 
     /// A view is shown or not as the tree says, and hides when the tree says so.
     @MainActor

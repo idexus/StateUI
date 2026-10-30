@@ -194,16 +194,16 @@ enum AndroidRealization {
         .partial(WindowContract.background,
             missing: "An activity is opaque by the theme it starts in: a blur or glass shows its color."),
         .complete(LayoutContract.ignoresSafeArea),
-        .complete(PhaseLayoutContract.handAxis),
-        .complete(PhaseLayoutContract.handMoved),
-        .complete(PhaseLayoutContract.handStepped),
-        .complete(PhaseLayoutContract.itemDrag),
-        .complete(PhaseLayoutContract.itemMoved),
-        .complete(PhaseLayoutContract.magnifies),
-        .complete(PhaseLayoutContract.pans),
-        .complete(PhaseLayoutContract.rotates),
-        .complete(PhaseLayoutContract.pinchMoved),
-    ] + windowRoom + HostRecord.phaseLayout
+        .complete(MotionLayoutContract.translationOrientation),
+        .complete(MotionLayoutContract.translationUpdated),
+        .complete(MotionLayoutContract.wheelStepped),
+        .complete(MotionLayoutContract.itemDrag),
+        .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.magnifies),
+        .complete(MotionLayoutContract.pans),
+        .complete(MotionLayoutContract.rotates),
+        .complete(MotionLayoutContract.pinchRotationUpdated),
+    ] + windowRoom + HostRecord.motionLayout
         + BarItemLook.notPlanned(reason: "A toolbar's actions stand in Android's own look.")
 
     /// What Android leaves out of a blur.

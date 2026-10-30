@@ -5,7 +5,7 @@
 // `Placement` and once for the host as twelve numbers.
 // Design: docs/design/types/placement.md#where-one-view-goes
 
-/// Where one view goes and how it is turned: what a `PhaseLayout`'s
+/// Where one view goes and how it is turned: what a `MotionLayout`'s
 /// arithmetic answers for each of its views.
 ///
 ///     Placement(Rect(x, 0, 120, 170), transform: .turn(40).scale(0.8), zIndex: 2)

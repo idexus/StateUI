@@ -119,16 +119,16 @@ enum GTKRealization {
         .complete(VisualElementContract.background, on: ZStackContract.self),
         .complete(VisualElementContract.background, on: FillContract.self),
         .complete(VisualElementContract.background, on: SpaceContract.self),
-        .complete(VisualElementContract.background, on: PhaseLayoutContract.self),
-        .complete(PhaseLayoutContract.handAxis),
-        .complete(PhaseLayoutContract.handMoved),
-        .complete(PhaseLayoutContract.handStepped),
-        .complete(PhaseLayoutContract.itemDrag),
-        .complete(PhaseLayoutContract.itemMoved),
-        .complete(PhaseLayoutContract.magnifies),
-        .complete(PhaseLayoutContract.pans),
-        .complete(PhaseLayoutContract.rotates),
-        .complete(PhaseLayoutContract.pinchMoved),
+        .complete(VisualElementContract.background, on: MotionLayoutContract.self),
+        .complete(MotionLayoutContract.translationOrientation),
+        .complete(MotionLayoutContract.translationUpdated),
+        .complete(MotionLayoutContract.wheelStepped),
+        .complete(MotionLayoutContract.itemDrag),
+        .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.magnifies),
+        .complete(MotionLayoutContract.pans),
+        .complete(MotionLayoutContract.rotates),
+        .complete(MotionLayoutContract.pinchRotationUpdated),
         .partial(DatePickerContract.format,
             missing: "GTK writes the long and the short day in the user's own way, and the medium as the short."),
         .partial(DatePickerContract.maximumDate,
@@ -253,7 +253,7 @@ enum GTKRealization {
         .complete(WindowContract.windowValue),
         .notPlanned(WindowContract.x, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
         .notPlanned(WindowContract.y, reason: "GNOME places its windows itself: GTK 4 asks no place of the desktop."),
-    ] + HostRecord.phaseLayout
+    ] + HostRecord.motionLayout
         + BarItemLook.notPlanned(reason: "A header bar's buttons stand in libadwaita's own look.")
 
     /// What GTK's registry says it realizes: the export's content.

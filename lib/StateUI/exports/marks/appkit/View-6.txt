@@ -53,16 +53,16 @@ Map.frameChanged: ✅
 Map.horizontalAlignment: ✅
 Map.pinchUpdated: ✓ pinch on Map: handed to the host's recognizer or handler, no NSEvent sent
 Map.verticalAlignment: ✅
+MotionLayout.frameChanged: ✅
+MotionLayout.gridColumn: ✅
+MotionLayout.gridRow: ✅
+MotionLayout.pointerEntered: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.pointerExited: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.pointerMoved: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.pointerPressed: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.pointerReleased: ✓ hover on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 Path.held: ✓ hold on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.physicsBody: ✅
-PhaseLayout.frameChanged: ✅
-PhaseLayout.gridColumn: ✅
-PhaseLayout.gridRow: ✅
-PhaseLayout.pointerEntered: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.pointerExited: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.pointerMoved: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.pointerPressed: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
-PhaseLayout.pointerReleased: ✓ hover on PhaseLayout: handed to the host's recognizer or handler, no NSEvent sent
 Picker.panYChannel: ✓ pan on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.area: ✅
 Polygon.frameChanged: ✅

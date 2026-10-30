@@ -539,6 +539,42 @@ Map.translationX: 🧩
 Map.translationY: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
+MotionLayout.accessibilityActionPerformed: ✅
+MotionLayout.accessibilityActions: ✅
+MotionLayout.accessibilityAdjusted: ✅
+MotionLayout.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+MotionLayout.accessibilityHint: ✅
+MotionLayout.accessibilityLabel: ✅
+MotionLayout.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+MotionLayout.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+MotionLayout.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+MotionLayout.frame: ✅
+MotionLayout.height: ✅
+MotionLayout.hidesChildrenFromAccessibility: ✅
+MotionLayout.ignoresInput: ✅
+MotionLayout.isAccessibilityHidden: ✅
+MotionLayout.isEnabled: ✅
+MotionLayout.isVisible: ✅
+MotionLayout.layoutDirection: ✅
+MotionLayout.maximumHeight: ✅
+MotionLayout.maximumWidth: ✅
+MotionLayout.minimumHeight: ✅
+MotionLayout.minimumWidth: ✅
+MotionLayout.opacity: ✅
+MotionLayout.pivotX: ✅
+MotionLayout.pivotY: ✅
+MotionLayout.rotation: ✅
+MotionLayout.rotationX: ✅
+MotionLayout.rotationY: ✅
+MotionLayout.scale: ✅
+MotionLayout.scaleX: ✅
+MotionLayout.scaleY: ✅
+MotionLayout.style: not realized
+MotionLayout.tooltip: ✅
+MotionLayout.translationX: ✅
+MotionLayout.translationY: ✅
+MotionLayout.width: ✅
+MotionLayout.zIndex: ✅
 Path.accessibilityActionPerformed: ✅
 Path.accessibilityActions: ✅
 Path.accessibilityAdjusted: ✅
@@ -575,42 +611,6 @@ Path.translationX: ✅
 Path.translationY: ✅
 Path.width: ✅
 Path.zIndex: ✅
-PhaseLayout.accessibilityActionPerformed: ✅
-PhaseLayout.accessibilityActions: ✅
-PhaseLayout.accessibilityAdjusted: ✅
-PhaseLayout.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-PhaseLayout.accessibilityHint: ✅
-PhaseLayout.accessibilityLabel: ✅
-PhaseLayout.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
-PhaseLayout.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
-PhaseLayout.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
-PhaseLayout.frame: ✅
-PhaseLayout.height: ✅
-PhaseLayout.hidesChildrenFromAccessibility: ✅
-PhaseLayout.ignoresInput: ✅
-PhaseLayout.isAccessibilityHidden: ✅
-PhaseLayout.isEnabled: ✅
-PhaseLayout.isVisible: ✅
-PhaseLayout.layoutDirection: ✅
-PhaseLayout.maximumHeight: ✅
-PhaseLayout.maximumWidth: ✅
-PhaseLayout.minimumHeight: ✅
-PhaseLayout.minimumWidth: ✅
-PhaseLayout.opacity: ✅
-PhaseLayout.pivotX: ✅
-PhaseLayout.pivotY: ✅
-PhaseLayout.rotation: ✅
-PhaseLayout.rotationX: ✅
-PhaseLayout.rotationY: ✅
-PhaseLayout.scale: ✅
-PhaseLayout.scaleX: ✅
-PhaseLayout.scaleY: ✅
-PhaseLayout.style: not realized
-PhaseLayout.tooltip: ✅
-PhaseLayout.translationX: ✅
-PhaseLayout.translationY: ✅
-PhaseLayout.width: ✅
-PhaseLayout.zIndex: ✅
 Picker.accessibilityActionPerformed: ✅
 Picker.accessibilityActions: ✅
 Picker.accessibilityAdjusted: ✅

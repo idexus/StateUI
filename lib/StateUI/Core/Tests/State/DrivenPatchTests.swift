@@ -308,22 +308,22 @@ final class DrivenPatchTests: XCTestCase {
     /// The wrapper around each face is the library's own and is always there,
     /// shaded or not - which is what keeps the host's writes off the author's
     /// view. A shaded run wraps two, the shade second.
-    func testAPhaseLayoutRegistersOnTheLayoutAlone() throws {
+    func testAMotionLayoutRegistersOnTheLayoutAlone() throws {
         let page = try page(
-            PhaseLayout(["a", "b"], phase: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
+            MotionLayout(["a", "b"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
                 .shade(
                     Rectangle()
                         .fill(.black))
                 .node)
-        let layout = try XCTUnwrap(page.subtree.first { $0.type == .phaseLayout })
+        let layout = try XCTUnwrap(page.subtree.first { $0.type == .motionLayout })
         let ties = layout.driven?.bindings ?? [:]
 
         XCTAssertEqual(ties[.area]?.kind, .placement)
         XCTAssertEqual(ties[.area]?.mode, .out)
         XCTAssertEqual(ties[.frame]?.kind, .feed)
         XCTAssertEqual(ties[.frame]?.mode, .in)
-        XCTAssertEqual(ties[.phase]?.kind, .property, "the phase worn, so the host walks it")
-        XCTAssertEqual(ties[.phase]?.mode, .inOut)
+        XCTAssertEqual(ties[.parameters]?.kind, .property, "the phase worn, so the host walks it")
+        XCTAssertEqual(ties[.parameters]?.mode, .inOut)
         XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "each face wrapped")
         XCTAssertEqual(layout.children.prefix(2).map(\.children.count), [2, 2], "the face, then its shade")
         XCTAssertTrue(

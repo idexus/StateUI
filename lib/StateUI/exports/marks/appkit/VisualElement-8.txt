@@ -22,8 +22,8 @@ Line.isEnabled: ✓ tap on Line: handed to the host's recognizer or handler, no 
 Line.zIndex: ✅
 Link.pivotY: ✓ read pivotY of Link: the host's own transform, checked against the layer it composed itself
 Map.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
+MotionLayout.background: ✅
 Path.pivotY: ✓ read pivotY of Path: the host's own transform, checked against the layer it composed itself
-PhaseLayout.background: ✅
 Picker.accessibilityActionPerformed: ✅
 Picker.accessibilityActions: ✅
 Polygon.frame: ✅

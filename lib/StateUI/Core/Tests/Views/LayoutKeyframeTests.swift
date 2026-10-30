@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A phase layout's arithmetic asked at an axis's keyframes alone - its ends, its snaps and the keyframes given -
+// A motion layout's arithmetic asked at an axis's keyframes alone - its ends, its snaps and the keyframes given -
 // the poses between them blended by identity, each asked once while what it was worked out with stands.
 
 import XCTest
@@ -9,7 +9,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// A phase of two axes, both blended where both have keyframes.
-private struct Square: AxesPhase {
+private struct Square: LayoutParameters {
     var x = 0.0
     var y = 0.0
 
@@ -41,10 +41,10 @@ final class LayoutKeyframeTests: XCTestCase {
     /// The two views over `phase`, its axis declared as the test says.
     private func tree(
         _ phase: State<Double>, _ asked: Asked, gap: State<Double>? = nil,
-        _ declared: @escaping (PhaseLayout<[Int], Int, Double>) -> PhaseLayout<[Int], Int, Double>
+        _ declared: @escaping (MotionLayout<[Int], Int, Double>) -> MotionLayout<[Int], Int, Double>
     ) -> () -> Node {
         {
-            let layout = PhaseLayout([0, 1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+            let layout = MotionLayout([0, 1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 asked.phases.append(at)
                 return Self.poses(at, gap: gap?.wrappedValue ?? 10)
             }
@@ -60,7 +60,7 @@ final class LayoutKeyframeTests: XCTestCase {
     }
 
     private func worn(_ patch: HostPatch) throws -> Int32 {
-        try XCTUnwrap(patch.first(.phaseLayout)?.driven?[.phase]?.state)
+        try XCTUnwrap(patch.first(.motionLayout)?.driven?[.parameters]?.state)
     }
 
     // MARK: - Asked at the keyframes
@@ -107,7 +107,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testTheSnapsAndTheEndsAreKeyframes() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) {
-            $0.axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .limits, snaps: [1.5])
+            $0.axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .endpoints, snaps: [1.5])
         }
         let worn = try worn(bench.laid(renders, built).patch)
 
@@ -135,7 +135,7 @@ final class LayoutKeyframeTests: XCTestCase {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) { $0.axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1)) }
         let patch = bench.laid(renders, built).patch
-        let (worn, fed) = (try worn(patch), try XCTUnwrap(patch.first(.phaseLayout)?.driven?[.frame]?.state))
+        let (worn, fed) = (try worn(patch), try XCTUnwrap(patch.first(.motionLayout)?.driven?[.frame]?.state))
 
         stand(worn, at: 0.5)
         let before = asked.phases.count
@@ -181,11 +181,11 @@ final class LayoutKeyframeTests: XCTestCase {
             let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
             func built() -> Node {
                 let layout = readsFrom
-                    ? PhaseLayout([0, 1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at, _ in
+                    ? MotionLayout([0, 1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at, _ in
                         asked.phases.append(at)
                         return Self.poses(at)
                     }
-                    : PhaseLayout([0, 1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+                    : MotionLayout([0, 1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                         asked.phases.append(at)
                         return Self.poses(at)
                     }
@@ -197,7 +197,7 @@ final class LayoutKeyframeTests: XCTestCase {
             _ = bench.laid(renders, built)
 
             // One description, as the hand moving builds none: the bench's own hand builds one a report.
-            guard let heard = renders.renderFromScratch(built()).first(.phaseLayout)?.events?[.handMoved] else {
+            guard let heard = renders.renderFromScratch(built()).first(.motionLayout)?.events?[.translationUpdated] else {
                 return XCTFail("the layout hears no hand")
             }
             func hand(_ gesture: GesturePhase, moved: Point = .zero) {
@@ -245,7 +245,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAnAxisThatComesRoundBlendsAcrossItsSeam() throws {
         let (phase, asked, renders) = (State(wrappedValue: 0.0), Asked(), Renders())
         let built = tree(phase, asked) {
-            $0.axis(\.self, input: .scroll(.horizontal), range: 0...3, keyframes: .every(1), circular: true)
+            $0.axis(\.self, input: .scroll(.horizontal), range: 0...3, keyframes: .every(1), periodic: true)
         }
         let worn = try worn(bench.laid(renders, built).patch)
 
@@ -263,12 +263,12 @@ final class LayoutKeyframeTests: XCTestCase {
     func testTwoAxesWithKeyframesAreALattice() throws {
         let (square, asked, renders) = (State(wrappedValue: Square()), Asked(), Renders())
         func built() -> Node {
-            PhaseLayout([0], phase: square.projectedValue) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0], parameters: square.projectedValue) { Text("\($0)") } placements: { _, at in
                 asked.squares.append(at)
                 return [Placement(Rect(100 * (at.x * at.x + at.y * at.y), 0, 10, 10))]
             }
-            .axis(\.x, input: .scroll(.horizontal), range: 0...1, keyframes: .limits)
-            .axis(\.y, input: .scroll(.vertical), range: 0...1, keyframes: .limits)
+            .axis(\.x, input: .scroll(.horizontal), range: 0...1, keyframes: .endpoints)
+            .axis(\.y, input: .scroll(.vertical), range: 0...1, keyframes: .endpoints)
             .node
         }
         let worn = try worn(bench.laid(renders, built).patch)
@@ -283,11 +283,11 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAnAxisWithoutKeyframesStaysLive() throws {
         let (square, asked, renders) = (State(wrappedValue: Square()), Asked(), Renders())
         func built() -> Node {
-            PhaseLayout([0], phase: square.projectedValue) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0], parameters: square.projectedValue) { Text("\($0)") } placements: { _, at in
                 asked.squares.append(at)
                 return [Placement(Rect(100 * at.x, 100 * at.y, 10, 10))]
             }
-            .axis(\.x, input: .scroll(.horizontal), range: 0...1, keyframes: .limits)
+            .axis(\.x, input: .scroll(.horizontal), range: 0...1, keyframes: .endpoints)
             .axis(\.y, input: .scroll(.vertical), range: 0...1)
             .node
         }
@@ -317,7 +317,7 @@ final class LayoutKeyframeTests: XCTestCase {
     func testAWrappingAxisWithKeyframesAtItsEndsAloneIsSaid() {
         let (phase, asked) = (State(wrappedValue: 0.0), Asked())
         _ = Renders().render(tree(phase, asked) {
-            $0.axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .limits, circular: true)
+            $0.axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .endpoints, periodic: true)
         }())
 
         XCTAssertTrue(hasComplained("keyframes at its ends alone"))

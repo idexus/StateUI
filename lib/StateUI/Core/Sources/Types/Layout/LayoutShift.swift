@@ -6,8 +6,8 @@
 import StateUIFoundation
 
 /// How far a view stands from where its arithmetic puts it, channel by channel: what a change of a layout's
-/// description at the current phase leaves, laid over the view's pose - a body's lanes (`LayoutBodies`).
-/// Design: docs/design/views/phase-layout.md#a-change-at-the-current-phase
+/// description at the current parameters leaves, laid over the view's pose - a body's lanes (`LayoutBodies`).
+/// Design: docs/design/views/motion-layout.md#a-change-where-the-parameters-stand
 struct LayoutShift: Equatable, Sendable {
     /// The numbers, lane by lane: the bounds' place and size; the transform's five drawn numbers apart - its move
     /// across and down, its turn in degrees, its width and height; the opacity; the shade.

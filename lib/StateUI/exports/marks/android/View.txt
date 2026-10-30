@@ -569,6 +569,44 @@ Map.swiped: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 Map.verticalAlignment: 🧩
+MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.area: ✅
+MotionLayout.canDrag: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the view's drag listener's report told the driver's documents, no drag started
+MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the view's drag listener's report told the driver's documents, no drag started
+MotionLayout.frameChanged: ✅
+MotionLayout.gridColumn: ✅
+MotionLayout.gridColumnSpan: ✅
+MotionLayout.gridRow: ✅
+MotionLayout.gridRowSpan: ✅
+MotionLayout.held: ✅
+MotionLayout.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
+MotionLayout.horizontalAlignment: ✅
+MotionLayout.margin: ✅
+MotionLayout.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+MotionLayout.panUpdated: ✅
+MotionLayout.panXChannel: ✅
+MotionLayout.panYChannel: ✅
+MotionLayout.physicsBody: ✅
+MotionLayout.pinchUpdated: ✅
+MotionLayout.pointerEntered: ✅
+MotionLayout.pointerExited: ✅
+MotionLayout.pointerMoved: ✅
+MotionLayout.pointerPressed: ✅
+MotionLayout.pointerReleased: ✅
+MotionLayout.rotationUpdated: ✅
+MotionLayout.swipeDirection: ✅
+MotionLayout.swipeThreshold: ✅
+MotionLayout.swiped: ✅
+MotionLayout.tapCount: ✅
+MotionLayout.tapped: ✅
+MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Path.area: ✅
 Path.canDrag: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
@@ -607,44 +645,6 @@ Path.swiped: ✅
 Path.tapCount: ✅
 Path.tapped: ✅
 Path.verticalAlignment: ✅
-PhaseLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-PhaseLayout.area: ✅
-PhaseLayout.canDrag: ✓ dragAndDrop on PhaseLayout: the views' drag listeners' reports told by the driver, no drag started
-PhaseLayout.dragEnded: ✓ dragAndDrop on PhaseLayout: the views' drag listeners' reports told by the driver, no drag started
-PhaseLayout.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-PhaseLayout.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-PhaseLayout.dragStarting: ✓ dragAndDrop on PhaseLayout: the views' drag listeners' reports told by the driver, no drag started
-PhaseLayout.dragText: ✓ dragAndDrop on PhaseLayout: the views' drag listeners' reports told by the driver, no drag started
-PhaseLayout.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-PhaseLayout.droppedFileTypes: ✓ dropFiles on PhaseLayout: the view's drag listener's report told the driver's documents, no drag started
-PhaseLayout.filesDropped: ✓ dropFiles on PhaseLayout: the view's drag listener's report told the driver's documents, no drag started
-PhaseLayout.frameChanged: ✅
-PhaseLayout.gridColumn: ✅
-PhaseLayout.gridColumnSpan: ✅
-PhaseLayout.gridRow: ✅
-PhaseLayout.gridRowSpan: ✅
-PhaseLayout.held: ✅
-PhaseLayout.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
-PhaseLayout.horizontalAlignment: ✅
-PhaseLayout.margin: ✅
-PhaseLayout.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-PhaseLayout.panUpdated: ✅
-PhaseLayout.panXChannel: ✅
-PhaseLayout.panYChannel: ✅
-PhaseLayout.physicsBody: ✅
-PhaseLayout.pinchUpdated: ✅
-PhaseLayout.pointerEntered: ✅
-PhaseLayout.pointerExited: ✅
-PhaseLayout.pointerMoved: ✅
-PhaseLayout.pointerPressed: ✅
-PhaseLayout.pointerReleased: ✅
-PhaseLayout.rotationUpdated: ✅
-PhaseLayout.swipeDirection: ✅
-PhaseLayout.swipeThreshold: ✅
-PhaseLayout.swiped: ✅
-PhaseLayout.tapCount: ✅
-PhaseLayout.tapped: ✅
-PhaseLayout.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Picker.area: ✅
 Picker.canDrag: ✓ dragAndDrop on Picker: the views' drag listeners' reports told by the driver, no drag started

@@ -2,7 +2,7 @@
 Button.padding: cannot read padding of Button - AppKit's driver has no path for it yet
 Grid.padding: ✅
 HStack.padding: ✅
-PhaseLayout.padding: – A phase layout stands its views where its arithmetic says, from its own top left: it takes no padding.
+MotionLayout.padding: – A motion layout stands its views where its arithmetic says, from its own top left: it takes no padding.
 ScrollView.padding: ✅
 Text.padding: ✅
 ToolbarButton.padding: – The Mac's toolbar draws its items in the Mac's own look.

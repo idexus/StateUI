@@ -61,11 +61,11 @@ Link.pointerReleased: ✓ hover on Link: handed to the host's recognizer or hand
 Map.droppedFileTypes: ✓ dropFiles on Map: the window's drop routing told the driver's files, no dragging session
 Map.filesDropped: ✓ dropFiles on Map: the window's drop routing told the driver's files, no dragging session
 Map.tapped: ✓ pressDown on Map: handed to the host's recognizer or handler, no NSEvent sent
+MotionLayout.holdDuration: ✅
 Path.frameChanged: ✅
 Path.horizontalAlignment: ✅
 Path.pinchUpdated: ✓ pinch on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.verticalAlignment: ✅
-PhaseLayout.holdDuration: ✅
 Picker.canDrag: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.dragEnded: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.dragStarting: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session

@@ -21,9 +21,9 @@ Line.accessibilityHeading: ☑️ AppKit marks a heading, not its level: every l
 Link.isVisible: ✅
 Link.rotation: ✓ read rotation of Link: the host's own transform, checked against the layer it composed itself
 Map.tooltip: ✅
+MotionLayout.layoutDirection: ✅
 Path.isVisible: ✅
 Path.rotation: ✓ read rotation of Path: the host's own transform, checked against the layer it composed itself
-PhaseLayout.layoutDirection: ✅
 Picker.accessibilityAdjusted: – VoiceOver meets AppKit's own view here - a control, a box, a scroller, a map, a page - which steps as its own kind does, or not at all; a view StateUI draws takes a reader's steps.
 Polygon.style: ✅
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform, checked against the layer it composed itself

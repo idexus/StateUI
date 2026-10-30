@@ -199,7 +199,7 @@ final class AndroidGestureTests: XCTestCase {
             let turn = State(wrappedValue: 0.0)
             let tapped = Received<Int>()
             let host = AndroidRenderer.running {
-                PhaseLayout([0, 1, 2, 3], phase: turn.projectedValue) { card in
+                MotionLayout([0, 1, 2, 3], parameters: turn.projectedValue) { card in
                     Rectangle()
                         .fill(.red)
                         .onTapped { tapped.values.append(card) }

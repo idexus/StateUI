@@ -1,15 +1,15 @@
 # Measured layouts
 
 Some views place their children by arithmetic over a measurement rather than
-by a layout the host knows: a frame report, a phase layout, and the gallery
+by a layout the host knows: a frame report, a motion layout, and the gallery
 built on one. The arithmetic runs in engines on the host's frames, so a run of
 views can follow a finger with no view built.
 
 ```text
   GalleryView
-   ├── PhaseLayout: the cards, the wheel's, fan's, row's or deck's
+   ├── MotionLayout: the cards, the wheel's, fan's, row's or deck's
    │     arithmetic, the phase the card in front, a scroll the hand
-   │     (phase-layout.md)
+   │     (motion-layout.md)
    └── Watcher: an empty view watching the asked position
 ```
 
@@ -86,11 +86,11 @@ several passes, and a place left to animate to its answer sets off from
 whatever the first pass made of it - and where nothing else on the page moves
 there are no frames to carry it the rest of the way.
 
-## Phase layout
+## Motion layout
 
 A run of views placed by an application's arithmetic, worked out from a phase
-the hand or the program moves, is a `PhaseLayout`: its element, its run, its
-phase and its hand are phase-layout.md.
+the hand or the program moves, is a `MotionLayout`: its element, its run, its
+phase and its hand are motion-layout.md.
 
 ## Bounded arithmetic
 
@@ -105,20 +105,20 @@ stated size for this reason.
 
 ## Gallery view
 
-`GalleryView` is a `PhaseLayout` with the arithmetic of four shapes written,
+`GalleryView` is a `MotionLayout` with the arithmetic of four shapes written,
 its phase the card in front and its snaps one a card. The run follows a
 finger, a trackpad and a wheel with no view built, nothing compared and no
 message sent; the one render is the card crossing, which tells the rest of the
 page which card the user is on. What the hand does - naming a card as the run
 passes it, coming to rest on the nearest, a pointer's drag, a change of room -
-is the phase layout's (phase-layout.md, the hand).
+is the motion layout's (motion-layout.md, the hand).
 
 The four shapes are four functions of the same numbers - which card, how
 many, and the room - each answering where the card goes, how far it is turned,
 how big it looks and how opaque it is. The deck reads one more: where the
-run's motion set out (phase-layout.md, where a motion set out), the card that
+run's motion set out (motion-layout.md, where a motion set out), the card that
 goes out the way the hand goes and tucks under the next, and it is swiped a
-card at a time (phase-layout.md, a swipe); its cards behind are shaded, never
+card at a time (motion-layout.md, a swipe); its cards behind are shaded, never
 faded, as a faded one would show the card under it. A change of shape is read in the
 gallery's body, so it is a change of the description: the cards land where the
 new shape says.
@@ -141,7 +141,7 @@ new shape says.
 
 The hand carries the card in front: it turns the run by one card as it travels
 as far as that card moves for one, whatever size the room draws the run - the
-phase layout's own unit ([the hand](phase-layout.md#the-hand)), with no
+motion layout's own unit ([the hand](motion-layout.md#the-hand)), with no
 number of the gallery's.
 
 The run is fitted to its room by a scale, not a rectangle. A card takes at most
@@ -169,7 +169,7 @@ platform (modifiers.md, turning out of the screen plane).
 
 
 The gallery's cards stand in reading order, as a stack's views do: its
-layout mirrors right to left (`mirrorsRightToLeft(true)`, phase-layout.md,
+layout mirrors right to left (`mirrorsRightToLeft(true)`, motion-layout.md,
 right to left), the next card on the left and a swipe to the right moving the
 run on.
 ## Position dots

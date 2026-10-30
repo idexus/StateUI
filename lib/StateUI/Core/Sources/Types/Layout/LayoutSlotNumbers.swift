@@ -4,7 +4,7 @@
 /// A layout's own number for each identity its items carry: given in the order identities first appear, kept while
 /// the identity stands in the layout and never given again - what a frame keys its views by, each identity compared
 /// as its value once a render.
-/// Design: docs/design/views/phase-layout.md#a-view-is-its-items-identity
+/// Design: docs/design/views/motion-layout.md#a-view-is-its-items-identity
 @MainActor
 final class LayoutSlotNumbers {
     private var numbers: [AnyHashable: Int] = [:]

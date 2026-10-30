@@ -82,6 +82,11 @@ Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
 Map.tapped: 🧩
+MotionLayout.canDrag: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the relay's drag reports told by the driver, no drag WinUI began
+MotionLayout.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Path.dragLeave: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
 Path.dragOver: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the driver, no drag WinUI began
@@ -89,11 +94,6 @@ Path.drop: ✓ dragAndDrop on Rectangle: the relay's drag reports told by the dr
 Path.frameChanged: ✅
 Path.holdDuration: – WinUI's hold comes after the system's own time: a view keeps no time of its own.
 Path.margin: ✅
-PhaseLayout.canDrag: ✓ dragAndDrop on PhaseLayout: the relay's drag reports told by the driver, no drag WinUI began
-PhaseLayout.dragEnded: ✓ dragAndDrop on PhaseLayout: the relay's drag reports told by the driver, no drag WinUI began
-PhaseLayout.dragStarting: ✓ dragAndDrop on PhaseLayout: the relay's drag reports told by the driver, no drag WinUI began
-PhaseLayout.dragText: ✓ dragAndDrop on PhaseLayout: the relay's drag reports told by the driver, no drag WinUI began
-PhaseLayout.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
 Picker.rotationUpdated: ✓ rotate on Picker: the relay's report of the manipulation handed to the host, no touch sent
 Picker.tapCount: ✅
 Picker.tapped: ✅

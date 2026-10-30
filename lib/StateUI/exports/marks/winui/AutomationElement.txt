@@ -16,9 +16,9 @@ Link.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: 🧩
 MenuItem.accessibilityIdentifier: ✅
 MenuToggle.accessibilityIdentifier: ✅
+MotionLayout.accessibilityIdentifier: ✅
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
-PhaseLayout.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
 Polygon.accessibilityIdentifier: ✅
 Polyline.accessibilityIdentifier: ✅

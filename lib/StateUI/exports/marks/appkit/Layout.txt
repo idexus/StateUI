@@ -5,9 +5,9 @@ Grid.letsInputThrough: ◐ cannot read letsInputThrough of Grid - AppKit's drive
 HStack.clipsContent: ✅
 HStack.ignoresSafeArea: ✅
 HStack.letsInputThrough: ◐ cannot read letsInputThrough of HStack - AppKit's driver has no path for it yet
-PhaseLayout.clipsContent: ✅
-PhaseLayout.ignoresSafeArea: ✅
-PhaseLayout.letsInputThrough: ◐ cannot read letsInputThrough of PhaseLayout - AppKit's driver has no path for it yet
+MotionLayout.clipsContent: ✅
+MotionLayout.ignoresSafeArea: ✅
+MotionLayout.letsInputThrough: ◐ cannot read letsInputThrough of MotionLayout - AppKit's driver has no path for it yet
 VStack.clipsContent: ✅
 VStack.ignoresSafeArea: ✅
 VStack.letsInputThrough: ◐ cannot read letsInputThrough of VStack - AppKit's driver has no path for it yet

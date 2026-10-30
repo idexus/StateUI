@@ -111,7 +111,7 @@ final class AppKitGestureTests: XCTestCase {
     func testAnOptionDragIsTwoFingers() throws {
         let zoom = State(wrappedValue: 1.0)
         let renderer = AppKitRenderer.running {
-            PhaseLayout([0, 1], phase: zoom.projectedValue) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0, 1], parameters: zoom.projectedValue) { Text("\($0)") } placements: { _, at in
                 [Placement(Rect(0, 0, 10 * at, 10)), Placement(Rect(20, 0, 10, 10))]
             }
             .axis(\.self, input: .magnification, range: 1...3, snaps: [2])

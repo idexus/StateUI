@@ -5,7 +5,7 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
-/// A phase layout's world worked out at a fixed step: the same time in other frames brings a body to the same place, a
+/// A motion layout's world worked out at a fixed step: the same time in other frames brings a body to the same place, a
 /// critically damped one comes onto its place without passing it and leaves the world there, a lighter damped one
 /// passes it and comes back, a world far behind works out no more than its most steps, and a body carried keeps where
 /// it was shown.
@@ -81,7 +81,7 @@ final class LayoutBodiesTests: XCTestCase {
     }
 }
 
-/// A view of a phase layout following its place as a body: it lags behind its place as the phase moves it, passes it
+/// A view of a motion layout following its place as a body: it lags behind its place as the phase moves it, passes it
 /// on a spring damped below 1, and settles onto it; a view of the world's own goes with its place exactly.
 @MainActor
 final class LayoutFollowerTests: XCTestCase {
@@ -94,7 +94,7 @@ final class LayoutFollowerTests: XCTestCase {
 
     /// Two views a hundred apart a unit of the phase: the first following its place, the second the world's own.
     private func tree(_ phase: State<Double>) -> Node {
-        PhaseLayout([0, 1], phase: phase.projectedValue) { index in
+        MotionLayout([0, 1], parameters: phase.projectedValue) { index in
             if index == 0 {
                 Text("\(index)").physicsBody(.followsLayout(.spring(response: .milliseconds(400), damping: 0.5)))
             } else {
@@ -112,7 +112,7 @@ final class LayoutFollowerTests: XCTestCase {
         let phase = State(wrappedValue: 0.0)
         let renders = Renders()
         func built() -> Node { tree(phase) }
-        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.phaseLayout)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout)?.driven?[.parameters]?.state)
 
         moved(worn, to: [1, 1, 0], mask: 0b111)
         bench.cycle()

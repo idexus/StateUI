@@ -150,17 +150,17 @@ enum WinUIRealization {
         .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
             why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
-        .complete(PhaseLayoutContract.handAxis),
-        .complete(PhaseLayoutContract.handMoved),
-        .notPlanned(PhaseLayoutContract.handStepped,
+        .complete(MotionLayoutContract.translationOrientation),
+        .complete(MotionLayoutContract.translationUpdated),
+        .notPlanned(MotionLayoutContract.wheelStepped,
             reason: "A wheel reaches the layout as WinUI's own scroller takes it, "
             + "its tracker's: a notch goes as far as the platform scrolls for it, and the tracker tells no notch."),
-        .complete(PhaseLayoutContract.itemDrag),
-        .complete(PhaseLayoutContract.itemMoved),
-        .complete(PhaseLayoutContract.magnifies),
-        .complete(PhaseLayoutContract.pans),
-        .complete(PhaseLayoutContract.rotates),
-        .complete(PhaseLayoutContract.pinchMoved),
+        .complete(MotionLayoutContract.itemDrag),
+        .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.magnifies),
+        .complete(MotionLayoutContract.pans),
+        .complete(MotionLayoutContract.rotates),
+        .complete(MotionLayoutContract.pinchRotationUpdated),
         .complete(MenuContract.isEnabled),
         .complete(MenuContract.text),
         .complete(MenuBarContract.order),
@@ -272,7 +272,7 @@ enum WinUIRealization {
         .complete(WindowContract.windowValue),
         .complete(WindowContract.x),
         .complete(WindowContract.y),
-    ] + HostRecord.phaseLayout
+    ] + HostRecord.motionLayout
         + BarItemLook.notPlanned(reason: "The title bar's commands stand in WinUI's own look.")
 
     /// What a split view's pane leaves out of a material.

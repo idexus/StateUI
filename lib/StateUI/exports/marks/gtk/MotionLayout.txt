@@ -1,0 +1,13 @@
+# revision 14.1
+MotionLayout: ✅
+MotionLayout.itemDrag: ✅
+MotionLayout.itemDragUpdated: ✅
+MotionLayout.magnifies: ✓ pinch on MotionLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+MotionLayout.mirrorsRightToLeft: ✅
+MotionLayout.pans: ✓ sweep on MotionLayout: the hand handed to the host's entry with its speed, no event
+MotionLayout.parameters: ✅
+MotionLayout.pinchRotationUpdated: ✓ pinch on MotionLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+MotionLayout.rotates: ✓ rotate on MotionLayout: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
+MotionLayout.translationOrientation: ✓ sweep on MotionLayout: the hand handed to the host's entry with its speed, no event
+MotionLayout.translationUpdated: ✓ sweep on MotionLayout: the hand handed to the host's entry with its speed, no event
+MotionLayout.wheelStepped: ✓ notch on MotionLayout: a wheel's notches handed to the host's entry, no event

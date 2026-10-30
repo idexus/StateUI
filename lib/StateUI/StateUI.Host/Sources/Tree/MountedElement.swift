@@ -18,7 +18,7 @@
     /// The element that holds this one.
     public private(set) weak var parent: MountedElement?
 
-    /// The elements this one holds, in order - a grid's, a ZStack's and a phase layout's in the order they are
+    /// The elements this one holds, in order - a grid's, a ZStack's and a motion layout's in the order they are
     /// drawn, by `zIndex`, ties in the order written.
     public private(set) var children: [MountedElement] = []
 
@@ -439,7 +439,7 @@
     /// Design: docs/design/host/layout.md#right-to-left
     func directionTurned(arrangingItself: Bool) {
         native.directionChanged()
-        // A phase layout's run stands in its direction: presented again, it turns with it.
+        // A motion layout's run stands in its direction: presented again, it turns with it.
         if !ownPlacementRun.isEmpty { native.presentFrame(ownPlacementRun) }
         if arrangingItself, !children.isEmpty { native.arrangeChildren() }
         for child in children where child.inheritsDirection {
@@ -456,7 +456,7 @@
     private var zIndex: Double { number(.zIndex) ?? 0 }
 
     /// The layouts whose children can overlap, drawn in `zIndex` order.
-    private static let layered: Set<NodeType> = [.grid, .zStack, .phaseLayout]
+    private static let layered: Set<NodeType> = [.grid, .zStack, .motionLayout]
 
     /// Detaches every one of `previous` that is no longer a child.
     private func leave(_ previous: [MountedElement]) {
@@ -658,12 +658,12 @@
 
     /// Presents `changed` on a frame and says what that asks around the element, the same on every host: its own
     /// presentation; its parent's arrangement where it moved in its slot or shows no view of its own, being drawn
-    /// by its parent's; the window's chrome where the chrome shows what moved. A phase layout's phase moves its
+    /// by its parent's; the window's chrome where the chrome shows what moved. A motion layout's phase moves its
     /// children through its run's places alone.
     /// Design: docs/design/host/tree.md#a-frame-arranges-what-moved
     private func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
         native.presentFrame(changed)
-        let moved = changed.subtracting(ownPlacementRun).subtracting([.phase])
+        let moved = changed.subtracting(ownPlacementRun).subtracting([.parameters])
         return FrameImpact(
             arrangesChildren: !moved.subtracting(Self.drawnOverProperties).isEmpty,
             arrangement: !native.presentsView || !moved.isDisjoint(with: Self.arrangedProperties),

@@ -29,11 +29,11 @@ Link.frame: ✅
 Link.rotation: ✅
 Map.accessibilityLabel: 🧩
 Map.scaleX: 🧩
+MotionLayout.height: ✅
+MotionLayout.layoutDirection: ✓ read layoutDirection of MotionLayout: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+MotionLayout.width: ✅
 Path.isAccessibilityHidden: ✅
 Path.isVisible: ✅
-PhaseLayout.height: ✅
-PhaseLayout.layoutDirection: ✓ read layoutDirection of PhaseLayout: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
-PhaseLayout.width: ✅
 Picker.height: ✅
 Picker.layoutDirection: ✅
 Picker.width: ✅

@@ -16,9 +16,9 @@ Link.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: ✅
 MenuItem.accessibilityIdentifier: ☑️ Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.
 MenuToggle.accessibilityIdentifier: ☑️ Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.
+MotionLayout.accessibilityIdentifier: ✅
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
-PhaseLayout.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
 Polygon.accessibilityIdentifier: ✅
 Polyline.accessibilityIdentifier: ✅

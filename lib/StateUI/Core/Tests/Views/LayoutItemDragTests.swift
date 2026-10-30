@@ -5,7 +5,7 @@ import XCTest
 
 @_spi(Host) @testable import StateUI
 
-/// One view of a phase layout taken by the hand by itself: the view drawn on top under the press, kept to the hand
+/// One view of a motion layout taken by the hand by itself: the view drawn on top under the press, kept to the hand
 /// over the others whatever its place becomes, let go back to its place under the layout's motion, or - past a
 /// dismissal - flown on out of the room and its item told.
 @MainActor
@@ -33,12 +33,12 @@ final class LayoutItemDragTests: XCTestCase {
             "B": Placement(Rect(50, 0, 100, 100), zIndex: 1),
             "C": Placement(Rect(200, 0, 50, 50), transform: .rotate(45)),
         ]
-        let layout = PhaseLayout(names, phase: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
+        let layout = MotionLayout(names, parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
             names.enumerated().map { index, name in
                 order == nil ? places[name] ?? Placement(.zero) : Placement(Rect(Double(index) * 60, 120, 50, 50))
             }
         }
-        .itemDrag(begins: .held)
+        .itemDrag(begins: .longPress)
         .onItemDragged { told.drags.append($0) }
         .physicsWorld(.spring(response: .milliseconds(160)))
         if awaiting {
@@ -188,10 +188,10 @@ final class LayoutItemDragTests: XCTestCase {
         let (lift, turn) = (State(wrappedValue: 1.0), State(wrappedValue: 0.0))
         let renders = Renders()
         func tree() -> Node {
-            PhaseLayout(["A", "B"], phase: turn.projectedValue) { Text($0) } placements: { _, _ in
+            MotionLayout(["A", "B"], parameters: turn.projectedValue) { Text($0) } placements: { _, _ in
                 [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), transform: .scale(lift.wrappedValue))]
             }
-            .itemDrag(begins: .held)
+            .itemDrag(begins: .longPress)
             .onItemDragged { told.drags.append($0) }
             .following(lift.projectedValue)
             .node
@@ -252,10 +252,10 @@ final class LayoutItemDragTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node {
             let names = order.wrappedValue
-            return PhaseLayout(names, phase: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
+            return MotionLayout(names, parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
                 names.indices.map { Placement(Rect(Double($0) * 60, 0, 50, 50)) }
             }
-            .itemDrag(begins: .held)
+            .itemDrag(begins: .longPress)
             .onItemDragged { drag in
                 told.drags.append(drag)
                 guard let over = drag.over, let from = order.wrappedValue.firstIndex(of: drag.item),
@@ -279,13 +279,13 @@ final class LayoutItemDragTests: XCTestCase {
     /// THE LAYOUT SAYS HOW THE HAND TAKES ONE OF ITS VIEWS, and hears that hand; one that says nothing hears none.
     func testTheLayoutSaysHowTheHandTakesOneOfItsViews() {
         let renders = Renders()
-        let taking = renders.render(cards(Told())).first(.phaseLayout)
-        let plain = Renders().render(PhaseLayout(["A"], phase: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [Placement(.zero)] }.node)
-            .first(.phaseLayout)
+        let taking = renders.render(cards(Told())).first(.motionLayout)
+        let plain = Renders().render(MotionLayout(["A"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [Placement(.zero)] }.node)
+            .first(.motionLayout)
 
-        XCTAssertEqual(taking?.props[.itemDrag], ItemDragStart.held.propValue)
-        XCTAssertNotNil(taking?.events?[.itemMoved])
+        XCTAssertEqual(taking?.props[.itemDrag], ItemDragStart.longPress.propValue)
+        XCTAssertNotNil(taking?.events?[.itemDragUpdated])
         XCTAssertNil(plain?.props[.itemDrag])
-        XCTAssertNil(plain?.events?[.itemMoved])
+        XCTAssertNil(plain?.events?[.itemDragUpdated])
     }
 }

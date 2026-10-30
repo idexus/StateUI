@@ -35,9 +35,9 @@ Link.ignoresInput: ✅
 Link.pivotY: ✅
 Map.accessibilityHeading: 🧩
 Map.scale: 🧩
+MotionLayout.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+MotionLayout.isEnabled: does not apply - read isEnabled of MotionLayout - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Path.accessibilityHeading: ✅
-PhaseLayout.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
-PhaseLayout.isEnabled: does not apply - read isEnabled of PhaseLayout - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it
 Picker.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
 Picker.isEnabled: ✅
 Polygon.frame: ✅

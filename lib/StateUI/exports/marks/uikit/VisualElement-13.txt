@@ -25,13 +25,13 @@ Link.minimumHeight: ✅
 Link.minimumWidth: ✅
 Link.scaleX: ✓ read scaleX of Link: the host's own transform, checked against the layer it composed itself
 Map.background: ☑️ UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in.
+MotionLayout.opacity: ✅
+MotionLayout.rotationX: ✓ read rotationX of MotionLayout: the host's own transform, checked against the layer it composed itself
 Path.maximumHeight: ✅
 Path.maximumWidth: ✅
 Path.minimumHeight: ✅
 Path.minimumWidth: ✅
 Path.scaleX: ✓ read scaleX of Path: the host's own transform, checked against the layer it composed itself
-PhaseLayout.opacity: ✅
-PhaseLayout.rotationX: ✓ read rotationX of PhaseLayout: the host's own transform, checked against the layer it composed itself
 Picker.hidesChildrenFromAccessibility: ✅
 Polygon.accessibilityHint: ✅
 Polyline.isEnabled: ✅

@@ -63,12 +63,12 @@ Link.gridColumnSpan: ✅
 Link.gridRowSpan: ✅
 Map.held: ✓ hold on Map: the view's listening handed the recognizer's states, no touch sent
 Map.physicsBody: ✅
+MotionLayout.panTouchCount: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.panUpdated: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.panXChannel: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.area: ✅
 Path.frameChanged: ✅
 Path.rotationUpdated: ✓ rotate on Path: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.panTouchCount: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.panUpdated: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.panXChannel: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Picker.dragLeave: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
 Picker.dragOver: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session

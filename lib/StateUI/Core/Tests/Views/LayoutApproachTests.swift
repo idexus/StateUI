@@ -28,7 +28,7 @@ final class LayoutApproachTests: XCTestCase {
     private func tree(_ phase: State<Double>, _ handed: Handed, _ motion: Motion = .eased(.milliseconds(320), .linear))
         -> Node
     {
-        PhaseLayout([1], phase: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+        MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             handed.phases.append(at)
             return [Placement(Rect(0, 0, 10, 10))]
         }

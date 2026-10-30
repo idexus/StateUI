@@ -28,10 +28,10 @@ Link.accessibilityActionPerformed: ✅
 Link.accessibilityActions: ✅
 Map.frame: ✅
 Map.translationX: ✓ read translationX of Map: the host's own transform, checked against the layer it composed itself
+MotionLayout.accessibilityHint: ✅
+MotionLayout.background: ✅
 Path.accessibilityActionPerformed: ✅
 Path.accessibilityActions: ✅
-PhaseLayout.accessibilityHint: ✅
-PhaseLayout.background: ✅
 Picker.ignoresInput: ✅
 Picker.scaleY: ✓ read scaleY of Picker: the host's own transform, checked against the layer it composed itself
 Polygon.layoutDirection: ✅

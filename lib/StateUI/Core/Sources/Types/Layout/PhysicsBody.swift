@@ -1,13 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// How one view of a phase layout moves as a body of its layout's world (`PhysicsWorld`).
+/// How one view of a motion layout moves as a body of its layout's world (`PhysicsWorld`).
 ///
-///     PhaseLayout(cards, id: \.name) { card in
+///     MotionLayout(cards, id: \.name) { card in
 ///         CardFace(card).physicsBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
-///     } placements: { room, phase in … }
+///     } placements: { room, parameters in … }
 ///
-/// Design: docs/design/views/phase-layout.md#bodies
+/// Design: docs/design/views/motion-layout.md#bodies
 public struct PhysicsBody: Equatable, Sendable {
     /// The spring it follows its place on.
     let spring: LayoutBodies.Spring

@@ -62,6 +62,11 @@ Link.tapped: ✓ pressDown on Link: the view's listening handed the recognizer's
 Map.panTouchCount: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Map.panUpdated: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
 Map.panXChannel: ✓ pan on Map: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.frameChanged: ✅
+MotionLayout.margin: ✅
+MotionLayout.swipeDirection: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.swipeThreshold: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
+MotionLayout.swiped: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
 Path.canDrag: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
 Path.dragEnded: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
 Path.dragStarting: ✓ dragAndDrop on Path: the drag and drop interactions' handlers called, no drag session
@@ -69,11 +74,6 @@ Path.dragText: ✓ dragAndDrop on Path: the drag and drop interactions' handlers
 Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
-PhaseLayout.frameChanged: ✅
-PhaseLayout.margin: ✅
-PhaseLayout.swipeDirection: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.swipeThreshold: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
-PhaseLayout.swiped: ✓ pan on PhaseLayout: the view's listening handed the recognizer's states, no touch sent
 Picker.held: ✓ hold on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.physicsBody: ✅
 Polygon.panYChannel: ✓ pan on Polygon: the view's listening handed the recognizer's states, no touch sent
