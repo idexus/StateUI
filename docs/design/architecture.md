@@ -126,6 +126,12 @@ diff as lines added and taken away, and passes only once
 `STATEUI_UPDATE_EXPORTS=1` has written it. `@_spi(Host)` declarations are the
 hosts' and stay out; documentation changes nothing there.
 
+The record is the same on every system. The extractor reads the standard
+library from the SDK - Xcode's on macOS, the one `SDKROOT` names on Windows -
+and a member the standard library's own regex parser lends every describable
+type or integer (`halfWidthCornerQuoted`, `init(asserting:)`) stays out: only
+Windows' extractor loads that module, and none of its members is StateUI's.
+
 ## Where to read next
 
 - [Glossary](glossary.md): StateUI's words and the common term for each.

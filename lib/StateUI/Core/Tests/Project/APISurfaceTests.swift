@@ -57,6 +57,10 @@ final class APISurfaceTests: XCTestCase {
             let extended = graph.dropFirst("StateUI".count).dropLast(".symbols.json".count)
             let json = try JSONSerialization.jsonObject(with: Data(contentsOf: output.appendingPathComponent(graph)))
             for symbol in (json as? [String: Any])?["symbols"] as? [[String: Any]] ?? [] {
+                // A member the regex parser's own extension lends is the standard library's, loaded on Windows alone.
+                // Design: docs/design/architecture.md#the-public-surface
+                let precise = (symbol["identifier"] as? [String: Any])?["precise"] as? String ?? ""
+                if precise.contains("::SYNTHESIZED::"), precise.contains("12_RegexParserE") { continue }
                 let kind = (symbol["kind"] as? [String: Any])?["identifier"] as? String ?? "?"
                 let path = (symbol["pathComponents"] as? [String] ?? []).joined(separator: ".")
                 let fragments = symbol["declarationFragments"] as? [[String: Any]] ?? []
@@ -90,12 +94,14 @@ final class APISurfaceTests: XCTestCase {
         return triple
     }
 
-    /// The SDK the toolchain compiles against on this system, where one is needed.
+    /// The SDK the toolchain compiles against on this system, where one is needed: Xcode's on macOS, the one
+    /// `SDKROOT` names elsewhere - Windows' standard library stands there; Linux names none.
     private static func sdk() throws -> String? {
         #if os(macOS)
         return try run("xcrun", ["--show-sdk-path"]).trimmingCharacters(in: .whitespacesAndNewlines)
         #else
-        return nil
+        let named = ProcessInfo.processInfo.environment["SDKROOT"] ?? ""
+        return named.isEmpty ? nil : named
         #endif
     }
 
