@@ -103,6 +103,7 @@ ProgressBarSample.swift ab4452099069a51a
 PropertyReadsSample.swift e16e08fd0fa40d8a
 ReaderSample.swift 778670ce97ad7532
 RebuildSample.swift 68155193fabdfebd
+RecordEditingSample.swift 1f1fd316900012da
 RefreshSample.swift 889d8e4b627756e6
 RemovingRowSample.swift 3737dc3829abfd1c
 SafeAreaSample.swift 1056f5df9698d8db

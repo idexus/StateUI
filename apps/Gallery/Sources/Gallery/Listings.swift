@@ -9466,6 +9466,124 @@ enum Listings {
             }
         }
         """#,
+        "RecordEditingSample": #"""
+        // Sources/Samples/State/RecordEditingSample.swift
+        /// A row edited live: each field a state of its own, which the host carries.
+        @MainActor
+        private final class Todo {
+            let id: Int
+            @State var title: String
+            @State var done = false
+
+            init(id: Int, title: String) {
+                self.id = id
+                // The state made here: a wrapped property is not assigned in `init`.
+                _title = State(wrappedValue: title)
+            }
+        }
+
+        /// A row that borrows its fields whole.
+        private struct TodoRow: View {
+            @Binding var title: String
+            @Binding var done: Bool
+
+            var body: some View {
+                HStack {
+                    CheckBox($done)
+                    TextField($title)
+                }
+            }
+        }
+
+        /// The rows of a class of states: typing writes that row's own state, and
+        /// nothing here is built again.
+        private struct LiveTodos: View {
+            @State private var todos = [Todo(id: 1, title: "Milk"), Todo(id: 2, title: "Bread")]
+
+            var body: some View {
+                VStack {
+                    SectionTitle("A class of states")
+                    DebugInfoLabel()
+
+                    ForEach(todos, id: \.id) { todo in
+                        TodoRow(title: todo.$title, done: todo.$done)
+                    }
+                }
+            }
+        }
+
+        /// A row kept as a value - what a file holds, or a scene keeps.
+        private struct Chore {
+            let id: Int
+            var title: String
+            var priority = Priority.normal
+        }
+
+        private enum Priority: CaseIterable, Equatable {
+            case low, normal, high
+        }
+
+        /// The rows of a value: every control shows its value, and its event writes
+        /// the user's change into the whole list - which builds this again.
+        private struct KeptChores: View {
+            @State private var chores = [Chore(id: 1, title: "Dishes"), Chore(id: 2, title: "Laundry", priority: .high)]
+            @State private var chosen: Int? = 1
+            @State private var refreshing = false
+
+            var body: some View {
+                Grid {
+                    VStack {
+                        SectionTitle("A value and its event")
+                        DebugInfoLabel()
+                    }
+                    .gridRow(0)
+
+                    ItemsView(chores, id: \.id) { chore in
+                        Text("\(chore.title) · \(chore.priority)")
+                    }
+                    .selection(chosen)
+                    .onSelectionChanged { chosen = $0.first }
+                    .isRefreshing(refreshing)
+                    .onRefreshRequested(.ignoreWhileRunning) {
+                        refreshing = true
+                        defer { refreshing = false }
+                        try await Task.sleep(for: .seconds(1))
+                    }
+                    .gridRow(1)
+
+                    VStack {
+                        if let chore = chores.first(where: { $0.id == chosen }) {
+                            TextField(chore.title)
+                                .onTextChanged { title in edit(chore.id) { $0.title = title } }
+
+                            Picker(Priority.allCases, selection: chore.priority)
+                                .presentation(.segmented)
+                                .onSelectedIndexChanged { index in edit(chore.id) { $0.priority = Priority.allCases[index] } }
+                        }
+                    }
+                    .gridRow(2)
+                }
+                .rows(.auto, .fill, .auto)
+            }
+
+            /// The chore of `id`, changed in place - found by its identity, never by
+            /// where it stands.
+            private func edit(_ id: Int, _ change: (inout Chore) -> Void) {
+                if let row = chores.firstIndex(where: { $0.id == id }) { change(&chores[row]) }
+            }
+        }
+
+        var body: some View {
+            Grid {
+                LiveTodos()
+                    .gridRow(0)
+
+                KeptChores()
+                    .gridRow(1)
+            }
+            .rows(.auto, .fill)
+        }
+        """#,
         "RefreshingList": #"""
         // Sources/Samples/Collections/RefreshSample.swift
         @State private var items = ["Weekly notes", "Old news"]
