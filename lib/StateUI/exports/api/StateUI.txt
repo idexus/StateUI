@@ -1145,8 +1145,6 @@ swift.init PersistentValue.init(persisted:): init?(persisted: PropValue)
 swift.init Picker.init(): @MainActor init()
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Binding<Item>, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Binding<Item?>, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
-swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Item, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
-swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Item?, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
 swift.init PickerPresentation.init(propValue:): init?(propValue: PropValue)
 swift.init PickerPresentation.init(rawValue:): init?(rawValue: Int32)
 swift.init Placement.init(_:transform:opacity:shade:zIndex:): init(_ bounds: Rect, transform: ViewTransform = .identity, opacity: Double = 1, shade: Double = 0, zIndex: Int = 0)
@@ -5921,7 +5919,6 @@ swift.method ItemsView.isFocused(_:): @MainActor func isFocused(_ state: Binding
 swift.method ItemsView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> ItemsView<ID>
 swift.method ItemsView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ value: Bool) -> ItemsView<ID>
 swift.method ItemsView.isRefreshing(_:): @MainActor func isRefreshing(_ state: Binding<Bool>) -> ItemsView<ID>
-swift.method ItemsView.isRefreshing(_:): @MainActor func isRefreshing(_ value: Bool) -> ItemsView<ID>
 swift.method ItemsView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.itemsLayout(_:): @MainActor func itemsLayout(_ layout: ItemsLayout) -> ItemsView<ID>
 swift.method ItemsView.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -6092,8 +6089,6 @@ swift.method ItemsView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Doubl
 swift.method ItemsView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.selection(_:): @MainActor func selection(_ state: Binding<ID?>) -> ItemsView<ID>
 swift.method ItemsView.selection(_:): @MainActor func selection(_ state: Binding<Set<ID>>) -> ItemsView<ID>
-swift.method ItemsView.selection(_:): @MainActor func selection(_ value: ID?) -> ItemsView<ID>
-swift.method ItemsView.selection(_:): @MainActor func selection(_ value: Set<ID>) -> ItemsView<ID>
 swift.method ItemsView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method ItemsView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method ItemsView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
@@ -9397,7 +9392,6 @@ swift.method RectangleProperties.cornerRadius(topLeft:topRight:bottomLeft:bottom
 swift.method RefreshElement.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method RefreshElement.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ value: Bool) -> Self.Modified
 swift.method RefreshElement.isRefreshing(_:): @MainActor func isRefreshing(_ state: Binding<Bool>) -> Self.Modified
-swift.method RefreshElement.isRefreshing(_:): @MainActor func isRefreshing(_ value: Bool) -> Self.Modified
 swift.method RefreshElement.onRefreshRequested(_:): @MainActor func onRefreshRequested(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method RefreshElement.onRefreshRequested(_:_:): @MainActor func onRefreshRequested(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method RefreshElement.onRefreshRequested(gate:_:): @MainActor func onRefreshRequested(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9469,7 +9463,6 @@ swift.method ScrollView.isFocused(_:): @MainActor func isFocused(_ state: Bindin
 swift.method ScrollView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ value: Bool) -> Self.Modified
 swift.method ScrollView.isRefreshing(_:): @MainActor func isRefreshing(_ state: Binding<Bool>) -> Self.Modified
-swift.method ScrollView.isRefreshing(_:): @MainActor func isRefreshing(_ value: Bool) -> Self.Modified
 swift.method ScrollView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method ScrollView.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified

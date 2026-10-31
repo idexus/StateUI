@@ -53,17 +53,13 @@ private struct LiveTodos: View {
 private struct Chore {
     let id: Int
     var title: String
-    var priority = Priority.normal
-}
-
-private enum Priority: CaseIterable, Equatable {
-    case low, normal, high
+    var done = false
 }
 
 /// The rows of a value: every control shows its value, and its event writes
 /// the user's change into the whole list - which builds this again.
 private struct KeptChores: View {
-    @State private var chores = [Chore(id: 1, title: "Dishes"), Chore(id: 2, title: "Laundry", priority: .high)]
+    @State private var chores = [Chore(id: 1, title: "Dishes"), Chore(id: 2, title: "Laundry", done: true)]
     @State private var chosen: Int? = 1
     @State private var refreshing = false
 
@@ -77,14 +73,12 @@ private struct KeptChores: View {
             .gridRow(0)
 
             ItemsView(chores, id: \.id) { chore in
-                Text("\(chore.title) · \(chore.priority)")
+                Text(chore.done ? "\(chore.title) ✓" : chore.title)
                     .padding(horizontal: 14, vertical: 10)
             }
-            .selection(chosen)
-            .onSelectionChanged { chosen = $0.first }
-            .isRefreshing(refreshing)
+            .selection($chosen)
+            .isRefreshing($refreshing)
             .onRefreshRequested(.ignoreWhileRunning) {
-                refreshing = true
                 defer { refreshing = false }
                 try await Task.sleep(for: .seconds(1))
             }
@@ -96,10 +90,9 @@ private struct KeptChores: View {
                         .accessibilityLabel("Chore")
                         .onTextChanged { title in edit(chore.id) { $0.title = title } }
 
-                    Picker(Priority.allCases, selection: chore.priority)
-                        .accessibilityLabel("Priority")
-                        .presentation(.segmented)
-                        .onSelectedIndexChanged { index in edit(chore.id) { $0.priority = Priority.allCases[index] } }
+                    CheckBox(chore.done)
+                        .text("Done")
+                        .onToggled { done in edit(chore.id) { $0.done = done } }
                 }
             }
             .spacing(8)

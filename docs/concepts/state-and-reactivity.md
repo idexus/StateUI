@@ -336,9 +336,12 @@ its row by identity, not by place.
 | A journey, an animation, an engine on a field | yes | no |
 | Suits | live editing, values that move | lists and records saved or compared |
 
-Every two-way control takes both forms: `TextField($name)` or
-`TextField(name).onTextChanged { … }`, `Picker(items, selection: $item)` or
-`Picker(items, selection: item).onSelectedIndexChanged { … }`.
+A value that crosses to the host as it is - text, on or off, a number, a day,
+a time, a color - takes either form: `TextField($name)` or
+`TextField(name).onTextChanged { … }`. A choice the library translates for the
+host - a picker's place in its list, a list's chosen items, a tab - takes the
+state alone, `Picker(sizes, selection: $size)`: a choice kept in a value is a
+field made a state of its own.
 
 ### A part of a state: `StatePart`
 

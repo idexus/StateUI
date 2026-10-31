@@ -177,26 +177,10 @@ extension ItemsView {
         return copy
     }
 
-    /// One item chosen at a time, shown as `value` - nil for none - and written
-    /// nowhere: the user's choice comes as `onSelectionChanged`.
-    public func selection(_ value: ID?) -> Self {
-        var copy = self
-        copy.choice = Choice(mode: .single, chosen: { value.map { [$0] } ?? [] }, write: { _ in })
-        return copy
-    }
-
-    /// As many items chosen as the user likes, shown as `value` and written
-    /// nowhere: the user's choice comes as `onSelectionChanged`.
-    public func selection(_ value: Set<ID>) -> Self {
-        var copy = self
-        copy.choice = Choice(mode: .multiple, chosen: { Array(value) }, write: { _ in })
-        return copy
-    }
-
     /// Hears the user change what is chosen, handed the ids chosen now - at
     /// most one where one is chosen at a time, none where they let it go -
-    /// after a state's write, where the selection is one. A list with no
-    /// selection chooses nothing, so reports nothing.
+    /// after the selection's write. A list with no selection chooses nothing,
+    /// so reports nothing.
     public func onSelectionChanged(_ handler: @escaping @MainActor (Set<ID>) throws -> Void) -> Self {
         var copy = self
         copy.selected = ValueHandler(step: handler)
@@ -346,13 +330,7 @@ extension ItemsView {
     /// application writes false once the items are fresh - or true, to show a refresh it began itself, which runs
     /// no `onRefreshRequested`. Without it, the spinner a pull shows goes at once.
     public func isRefreshing(_ state: Binding<Bool>) -> Self {
-        wearing(.refreshingBy(state))
-    }
-
-    /// Whether the refresh is under way, as a value: the spinner shows while it is true, and the pull writes
-    /// nothing - `onRefreshRequested` hears it, for the application to write its own value.
-    public func isRefreshing(_ value: Bool) -> Self {
-        wearing(.refreshing(value))
+        wearing(.refreshing(state))
     }
 
     /// Whether the user can pull to refresh - by default wherever the list hears the pull; `false` withholds it

@@ -26,18 +26,53 @@ extension SceneKey where Value == String {
     static let font = SceneKey("gallery.font")
 }
 
-extension SceneKey where Value == LookChoice {
-    /// The look chosen for the light theme and for the dark: the gallery's own,
-    /// or one the user composed.
-    static let lightLook = SceneKey("gallery.look.light")
-    static let darkLook = SceneKey("gallery.look.dark")
+extension SceneKey where Value == Bool {
+    /// Whether the light theme's look is the user's own composition, and the dark's.
+    static let lightComposed = SceneKey("gallery.look.light.composed")
+    static let darkComposed = SceneKey("gallery.look.dark.composed")
+}
+
+extension SceneKey where Value == SurfaceMaterial {
+    /// What each surface of each theme is made of.
+    static let lightBarsMaterial = SceneKey("gallery.look.light.bars.material")
+    static let lightWindowMaterial = SceneKey("gallery.look.light.window.material")
+    static let lightSidebarMaterial = SceneKey("gallery.look.light.sidebar.material")
+    static let lightSidebarOverlayMaterial = SceneKey("gallery.look.light.sidebarOverlay.material")
+    static let darkBarsMaterial = SceneKey("gallery.look.dark.bars.material")
+    static let darkWindowMaterial = SceneKey("gallery.look.dark.window.material")
+    static let darkSidebarMaterial = SceneKey("gallery.look.dark.sidebar.material")
+    static let darkSidebarOverlayMaterial = SceneKey("gallery.look.dark.sidebarOverlay.material")
+}
+
+extension SceneKey where Value == AccentChoice {
+    /// The color each surface of each theme wears.
+    static let lightBarsColor = SceneKey("gallery.look.light.bars.color")
+    static let lightWindowColor = SceneKey("gallery.look.light.window.color")
+    static let lightSidebarColor = SceneKey("gallery.look.light.sidebar.color")
+    static let lightSidebarOverlayColor = SceneKey("gallery.look.light.sidebarOverlay.color")
+    static let darkBarsColor = SceneKey("gallery.look.dark.bars.color")
+    static let darkWindowColor = SceneKey("gallery.look.dark.window.color")
+    static let darkSidebarColor = SceneKey("gallery.look.dark.sidebar.color")
+    static let darkSidebarOverlayColor = SceneKey("gallery.look.dark.sidebarOverlay.color")
+}
+
+extension SceneKey where Value == Int {
+    /// How thick a blur each surface of each theme is - its place in `SurfaceLook.blurs`.
+    static let lightBarsBlur = SceneKey("gallery.look.light.bars.blur")
+    static let lightWindowBlur = SceneKey("gallery.look.light.window.blur")
+    static let lightSidebarBlur = SceneKey("gallery.look.light.sidebar.blur")
+    static let lightSidebarOverlayBlur = SceneKey("gallery.look.light.sidebarOverlay.blur")
+    static let darkBarsBlur = SceneKey("gallery.look.dark.bars.blur")
+    static let darkWindowBlur = SceneKey("gallery.look.dark.window.blur")
+    static let darkSidebarBlur = SceneKey("gallery.look.dark.sidebar.blur")
+    static let darkSidebarOverlayBlur = SceneKey("gallery.look.dark.sidebarOverlay.blur")
 }
 // listing: end
 
 // listing: Gallery.SessionStyle
 /// A color a gallery wears - on its bars, or behind its pages, where its look
 /// asks for one.
-enum AccentChoice: String, CaseIterable {
+enum AccentChoice: String, CaseIterable, Codable {
     case gallery
     case system
     case violet
@@ -109,23 +144,143 @@ final class SessionStyle {
     /// The font the preview is set in - empty for the platform's own.
     @State(sceneKey: .font) var font = ""
 
-    /// The look chosen for each theme - the gallery's own, until the
-    /// Appearance sample composes another.
-    @State(sceneKey: .lightLook) var lightChoice = LookChoice.own
-    @State(sceneKey: .darkLook) var darkChoice = LookChoice.own
+    /// Whether the light theme wears the user's composition, field by field, or the gallery's own look.
+    @State(sceneKey: .lightComposed) var lightComposed = false
 
-    /// The look the gallery wears in the light theme; a look written here is
-    /// the user's own composition.
+    /// What each surface of the light theme is made of, in which color, and how thick a blur.
+    @State(sceneKey: .lightBarsMaterial)
+    var lightBarsMaterial = ThemeLook.light.bars.material
+    @State(sceneKey: .lightBarsColor)
+    var lightBarsColor = ThemeLook.light.bars.color
+    @State(sceneKey: .lightBarsBlur)
+    var lightBarsBlur = SurfaceLook.place(of: ThemeLook.light.bars.blur)
+    @State(sceneKey: .lightWindowMaterial)
+    var lightWindowMaterial = ThemeLook.light.window.material
+    @State(sceneKey: .lightWindowColor)
+    var lightWindowColor = ThemeLook.light.window.color
+    @State(sceneKey: .lightWindowBlur)
+    var lightWindowBlur = SurfaceLook.place(of: ThemeLook.light.window.blur)
+    @State(sceneKey: .lightSidebarMaterial)
+    var lightSidebarMaterial = ThemeLook.light.sidebar.material
+    @State(sceneKey: .lightSidebarColor)
+    var lightSidebarColor = ThemeLook.light.sidebar.color
+    @State(sceneKey: .lightSidebarBlur)
+    var lightSidebarBlur = SurfaceLook.place(of: ThemeLook.light.sidebar.blur)
+    @State(sceneKey: .lightSidebarOverlayMaterial)
+    var lightSidebarOverlayMaterial = ThemeLook.light.sidebarOverlay.material
+    @State(sceneKey: .lightSidebarOverlayColor)
+    var lightSidebarOverlayColor = ThemeLook.light.sidebarOverlay.color
+    @State(sceneKey: .lightSidebarOverlayBlur)
+    var lightSidebarOverlayBlur = SurfaceLook.place(of: ThemeLook.light.sidebarOverlay.blur)
+
+    /// Whether the dark theme wears the user's composition, field by field, or the gallery's own look.
+    @State(sceneKey: .darkComposed) var darkComposed = false
+
+    /// What each surface of the dark theme is made of, in which color, and how thick a blur.
+    @State(sceneKey: .darkBarsMaterial)
+    var darkBarsMaterial = ThemeLook.dark.bars.material
+    @State(sceneKey: .darkBarsColor)
+    var darkBarsColor = ThemeLook.dark.bars.color
+    @State(sceneKey: .darkBarsBlur)
+    var darkBarsBlur = SurfaceLook.place(of: ThemeLook.dark.bars.blur)
+    @State(sceneKey: .darkWindowMaterial)
+    var darkWindowMaterial = ThemeLook.dark.window.material
+    @State(sceneKey: .darkWindowColor)
+    var darkWindowColor = ThemeLook.dark.window.color
+    @State(sceneKey: .darkWindowBlur)
+    var darkWindowBlur = SurfaceLook.place(of: ThemeLook.dark.window.blur)
+    @State(sceneKey: .darkSidebarMaterial)
+    var darkSidebarMaterial = ThemeLook.dark.sidebar.material
+    @State(sceneKey: .darkSidebarColor)
+    var darkSidebarColor = ThemeLook.dark.sidebar.color
+    @State(sceneKey: .darkSidebarBlur)
+    var darkSidebarBlur = SurfaceLook.place(of: ThemeLook.dark.sidebar.blur)
+    @State(sceneKey: .darkSidebarOverlayMaterial)
+    var darkSidebarOverlayMaterial = ThemeLook.dark.sidebarOverlay.material
+    @State(sceneKey: .darkSidebarOverlayColor)
+    var darkSidebarOverlayColor = ThemeLook.dark.sidebarOverlay.color
+    @State(sceneKey: .darkSidebarOverlayBlur)
+    var darkSidebarOverlayBlur = SurfaceLook.place(of: ThemeLook.dark.sidebarOverlay.blur)
+
+    /// The look the gallery wears in the light theme: the user's composition, or the gallery's own.
     var lightLook: ThemeLook {
-        get { lightChoice.look(dark: false) }
-        set { lightChoice = .composed(newValue) }
+        guard lightComposed else { return .light }
+
+        return ThemeLook(
+            bars: SurfaceLook(
+                material: lightBarsMaterial, color: lightBarsColor, blur: SurfaceLook.blurs[lightBarsBlur]),
+            window: SurfaceLook(
+                material: lightWindowMaterial, color: lightWindowColor, blur: SurfaceLook.blurs[lightWindowBlur]),
+            sidebar: SurfaceLook(
+                material: lightSidebarMaterial, color: lightSidebarColor, blur: SurfaceLook.blurs[lightSidebarBlur]),
+            sidebarOverlay: SurfaceLook(
+                material: lightSidebarOverlayMaterial, color: lightSidebarOverlayColor,
+                blur: SurfaceLook.blurs[lightSidebarOverlayBlur]))
     }
 
-    /// The look the gallery wears in the dark theme; a look written here is
-    /// the user's own composition.
+    /// The look the gallery wears in the dark theme: the user's composition, or the gallery's own.
     var darkLook: ThemeLook {
-        get { darkChoice.look(dark: true) }
-        set { darkChoice = .composed(newValue) }
+        guard darkComposed else { return .dark }
+
+        return ThemeLook(
+            bars: SurfaceLook(
+                material: darkBarsMaterial, color: darkBarsColor, blur: SurfaceLook.blurs[darkBarsBlur]),
+            window: SurfaceLook(
+                material: darkWindowMaterial, color: darkWindowColor, blur: SurfaceLook.blurs[darkWindowBlur]),
+            sidebar: SurfaceLook(
+                material: darkSidebarMaterial, color: darkSidebarColor, blur: SurfaceLook.blurs[darkSidebarBlur]),
+            sidebarOverlay: SurfaceLook(
+                material: darkSidebarOverlayMaterial, color: darkSidebarOverlayColor,
+                blur: SurfaceLook.blurs[darkSidebarOverlayBlur]))
+    }
+
+    /// One color on every surface of both themes, which makes both looks the user's composition.
+    func wearColor(_ accent: AccentChoice) {
+        lightBarsColor = accent
+        lightWindowColor = accent
+        lightSidebarColor = accent
+        lightSidebarOverlayColor = accent
+        darkBarsColor = accent
+        darkWindowColor = accent
+        darkSidebarColor = accent
+        darkSidebarOverlayColor = accent
+        lightComposed = true
+        darkComposed = true
+    }
+
+    /// Back to the gallery's own look in a theme, `dark` or not: the next composition starts from it.
+    func wearOwnLook(dark: Bool) {
+        let own = dark ? ThemeLook.dark : ThemeLook.light
+        if !dark {
+            lightComposed = false
+            lightBarsMaterial = own.bars.material
+            lightBarsColor = own.bars.color
+            lightBarsBlur = SurfaceLook.place(of: own.bars.blur)
+            lightWindowMaterial = own.window.material
+            lightWindowColor = own.window.color
+            lightWindowBlur = SurfaceLook.place(of: own.window.blur)
+            lightSidebarMaterial = own.sidebar.material
+            lightSidebarColor = own.sidebar.color
+            lightSidebarBlur = SurfaceLook.place(of: own.sidebar.blur)
+            lightSidebarOverlayMaterial = own.sidebarOverlay.material
+            lightSidebarOverlayColor = own.sidebarOverlay.color
+            lightSidebarOverlayBlur = SurfaceLook.place(of: own.sidebarOverlay.blur)
+        }
+        if dark {
+            darkComposed = false
+            darkBarsMaterial = own.bars.material
+            darkBarsColor = own.bars.color
+            darkBarsBlur = SurfaceLook.place(of: own.bars.blur)
+            darkWindowMaterial = own.window.material
+            darkWindowColor = own.window.color
+            darkWindowBlur = SurfaceLook.place(of: own.window.blur)
+            darkSidebarMaterial = own.sidebar.material
+            darkSidebarColor = own.sidebar.color
+            darkSidebarBlur = SurfaceLook.place(of: own.sidebar.blur)
+            darkSidebarOverlayMaterial = own.sidebarOverlay.material
+            darkSidebarOverlayColor = own.sidebarOverlay.color
+            darkSidebarOverlayBlur = SurfaceLook.place(of: own.sidebarOverlay.blur)
+        }
     }
 
     /// The look the gallery wears in a theme, `dark` or not.

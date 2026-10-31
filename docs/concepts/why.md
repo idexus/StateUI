@@ -171,6 +171,12 @@ struct Mixer: View {
 - **One language.** Two words say who holds the value, and the part's name
   says what it is: a child borrowing a state says `@Binding`, a child given a
   value takes the value.
+- **A translated value is a state, read by its element.** A value that
+  crosses to the host as it is - text, on or off, a number, a day, a color -
+  takes a value or a state. A value the library translates to the host's
+  shape - a picker's place, a list's chosen items, a tab, a stack's pages, a
+  sheet - takes the state alone, and the element reads it as it is described:
+  handing a state over never makes the body its reader.
 
 **Deliberately rejected:** one protocol a whole state and a part both keep,
 through which a control takes either - a part then compiles into a control and

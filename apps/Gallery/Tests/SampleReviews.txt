@@ -9,7 +9,7 @@ AnimatedPropertySample.swift 3e32ce6e1efaac36
 AnimationSample.swift c490402644539ae0
 AppSwitcherSample.swift 8572c4ecb3c90bb3
 AppThemeSample.swift e3467cfdec02937b
-AppearanceSample.swift bde7e4a3bbf60c6f
+AppearanceSample.swift 0aad32ac0a4df9c8
 ApplicationSessionSample.swift 02b610eb8ee6a1b1
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
@@ -84,7 +84,7 @@ MenuBarSample.swift feaefec006cc6607
 ModalSample.swift 67f7242eaa710537
 MotionLayoutSample.swift 3e725d0950ff7c00
 MotionSample.swift 37c6f1ae5c962e49
-MultiWindowSample.swift 98db0fa6f187c585
+MultiWindowSample.swift 593d7a7dd9609e7f
 NavigationSample.swift d3e0587edb1ebef8
 NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift dc1582b9377c772d
@@ -92,7 +92,7 @@ OutlineSample.swift 4ee91e4fde45645c
 PacedStateSample.swift e821a58ecd748f76
 PanSample.swift 6fdd4eb9a5672208
 PersistentStateSample.swift 4be06bf5d5e98ef8
-PickerSample.swift ca21f1b4bad0eebc
+PickerSample.swift 86c5cbb290e05823
 PinchSample.swift f823ba30caa5eafa
 PlatformSupportSample.swift 24107a58da1308fc
 PointerSample.swift 3306b3b76379bc70
@@ -103,7 +103,7 @@ ProgressBarSample.swift ab4452099069a51a
 PropertyReadsSample.swift e16e08fd0fa40d8a
 ReaderSample.swift 778670ce97ad7532
 RebuildSample.swift 68155193fabdfebd
-RecordEditingSample.swift 1f1fd316900012da
+RecordEditingSample.swift bbb1075dadc147ea
 RefreshSample.swift 889d8e4b627756e6
 RemovingRowSample.swift 3737dc3829abfd1c
 SafeAreaSample.swift 1056f5df9698d8db

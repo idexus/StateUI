@@ -6,8 +6,7 @@
 enum RefreshWorn {
     case requested(@MainActor () throws -> Void)
     case awaited(Gating, EventHandler)
-    case refreshing(Bool)
-    case refreshingBy(Binding<Bool>)
+    case refreshing(Binding<Bool>)
     case enabled(Bool)
     case enabledBy(Binding<Bool>)
 
@@ -20,8 +19,7 @@ enum RefreshWorn {
             case .requested(let handler): element.onRefreshRequested(handler)
             case .awaited(.own(let policy), let handler): element.onRefreshRequested(policy, handler)
             case .awaited(.shared(let gate), let handler): element.onRefreshRequested(gate: gate, handler)
-            case .refreshing(let value): element.isRefreshing(value)
-            case .refreshingBy(let state): element.isRefreshing(state)
+            case .refreshing(let state): element.isRefreshing(state)
             case .enabled(let value): element.isRefreshEnabled(value)
             case .enabledBy(let state): element.isRefreshEnabled(state)
             }

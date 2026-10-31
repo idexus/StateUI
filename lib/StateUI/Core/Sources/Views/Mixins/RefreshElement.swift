@@ -43,15 +43,6 @@ extension RefreshElement {
         plain(RefreshElementContract.isRefreshing.token, by: state, mode: .inOut)
     }
 
-    /// Whether the refresh is under way, as a value: the spinner shows while it is true, and the pull writes
-    /// nothing - `onRefreshRequested` hears it, for the application to write its own value.
-    ///
-    /// - Parameter value: whether the spinner shows.
-    /// - Returns: the element, showing that value.
-    public func isRefreshing(_ value: Bool) -> Modified {
-        setValue(RefreshElementContract.isRefreshing, value)
-    }
-
     /// Whether the user can pull to refresh - by default wherever the element hears the pull, through
     /// `onRefreshRequested` or `isRefreshing`; `false` withholds it while what it shows cannot be refreshed.
     public func isRefreshEnabled(_ value: Bool) -> Modified {

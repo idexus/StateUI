@@ -5,7 +5,7 @@ import StateUI
 // listing: Gallery.Looks
 /// What one surface of the gallery is made of - its bars, its window, its
 /// sidebar, its sidebar sliding over the page.
-enum SurfaceMaterial: String, CaseIterable {
+enum SurfaceMaterial: String, CaseIterable, Codable {
     /// The platform's own.
     case platform
 
@@ -69,6 +69,11 @@ struct SurfaceLook: Equatable {
     /// The blurs offered, thinnest first.
     static let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
 
+    /// Where `blur` stands among the blurs offered - a thick one where it is none of them.
+    static func place(of blur: Blur) -> Int {
+        blurs.firstIndex(of: blur) ?? 3
+    }
+
     /// The platform's own surface - the gallery's own color, or a thick
     /// blur, once one is chosen.
     static let platform = SurfaceLook(material: .platform, color: .gallery, blur: .thick)
@@ -109,9 +114,9 @@ struct SurfaceLook: Equatable {
 }
 
 /// The look the gallery wears in one theme: its bars, and what its window, its
-/// sidebar and its sidebar sliding over the page are made of. Kept as one line
-/// of words, so a scene keeps a theme's whole look under one key.
-struct ThemeLook: Equatable, RawRepresentable {
+/// sidebar and its sidebar sliding over the page are made of. A scene keeps
+/// each of its fields under a key of its own (SessionStyle).
+struct ThemeLook: Equatable {
     var bars: SurfaceLook
     var window: SurfaceLook
     var sidebar: SurfaceLook
@@ -160,67 +165,6 @@ struct ThemeLook: Equatable, RawRepresentable {
         #endif
     }
 
-    /// The look as words: each surface's material, color and blur - the
-    /// bars', the window's, the sidebar's beside the page and over it.
-    var rawValue: String {
-        [bars, window, sidebar, sidebarOverlay].flatMap { surface in
-            [surface.material.rawValue, surface.color.rawValue,
-             String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
-        }.joined(separator: " ")
-    }
-
-    /// The look its words say; nil for words another version wrote.
-    init?(rawValue: String) {
-        let words = rawValue.split(separator: " ").map(String.init)
-        guard words.count == 12 else { return nil }
-        var surfaces: [SurfaceLook] = []
-        for at in stride(from: 0, to: 12, by: 3) {
-            guard let material = SurfaceMaterial(rawValue: words[at]), let color = AccentChoice(rawValue: words[at + 1]),
-                  let blur = Int(words[at + 2]), SurfaceLook.blurs.indices.contains(blur)
-            else { return nil }
-            surfaces.append(SurfaceLook(material: material, color: color, blur: SurfaceLook.blurs[blur]))
-        }
-        self.init(bars: surfaces[0], window: surfaces[1], sidebar: surfaces[2], sidebarOverlay: surfaces[3])
-    }
 }
 
-/// A theme's look as the user chose it: the gallery's own, or one composed in
-/// the Appearance sample. A scene keeps the CHOICE - the gallery's own is drawn
-/// afresh at every start, as this version of the gallery makes it, never kept
-/// as what it was when the scene was.
-enum LookChoice: Equatable, RawRepresentable, Codable {
-    /// The look that suits the platform best: `ThemeLook.light` or `.dark`.
-    case own
-
-    /// A look the user put together.
-    case composed(ThemeLook)
-
-    /// The look the choice wears in a theme, `dark` or not.
-    func look(dark: Bool) -> ThemeLook {
-        switch self {
-        case .own: return dark ? .dark : .light
-        case .composed(let look): return look
-        }
-    }
-
-    /// "own", or "composed" and the look's words.
-    var rawValue: String {
-        switch self {
-        case .own: return "own"
-        case .composed(let look): return "composed " + look.rawValue
-        }
-    }
-
-    /// The choice its words say; nil for words another version wrote - a look
-    /// kept whole - so the gallery starts in its own.
-    init?(rawValue: String) {
-        if rawValue == "own" {
-            self = .own
-        } else if rawValue.hasPrefix("composed "), let look = ThemeLook(rawValue: String(rawValue.dropFirst(9))) {
-            self = .composed(look)
-        } else {
-            return nil
-        }
-    }
-}
 // listing: end

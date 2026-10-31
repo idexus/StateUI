@@ -48,13 +48,6 @@ struct ColorsPage: View {
             .textColor(accent.carriesThemesWords ? Palette.text : .white)
             .background(accent.color(system: application.info.accentColor, for: .bar))
             .shape(.roundedRectangle(8))
-            .onClicked {
-                for look in [\SessionStyle.lightLook, \.darkLook] {
-                    style[keyPath: look].bars.color = accent
-                    style[keyPath: look].window.color = accent
-                    style[keyPath: look].sidebar.color = accent
-                    style[keyPath: look].sidebarOverlay.color = accent
-                }
-            }
+            .onClicked { style.wearColor(accent) }
     }
 }

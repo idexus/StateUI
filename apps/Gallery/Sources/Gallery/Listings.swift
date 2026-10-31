@@ -943,13 +943,13 @@ enum Listings {
                 // force, and changes with it. Side by side where there is room,
                 // one under the other on a phone.
                 if device.info.formFactor == .phone {
-                    LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
-                    LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
+                    LookColumn(title: "Light", dark: false, style: style)
+                    LookColumn(title: "Dark", dark: true, style: style)
                 } else {
                     Grid {
-                        LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
+                        LookColumn(title: "Light", dark: false, style: style)
                             .gridColumn(0)
-                        LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
+                        LookColumn(title: "Dark", dark: true, style: style)
                             .gridColumn(1)
                     }
                     .columns(.fill, .fill)
@@ -958,25 +958,17 @@ enum Listings {
         }
 
         /// One theme's look: its bars, and what its window, its sidebar and its
-        /// sidebar over the page are made of - written where `look` says, which makes
-        /// it the user's own; the gallery's own again where `choice` says.
+        /// sidebar over the page are made of - each field a state the scene keeps,
+        /// written by its picker, which makes the look the user's own.
         private struct LookColumn: View {
             let title: String
+            let dark: Bool
             let style: SessionStyle
-            let look: ReferenceWritableKeyPath<SessionStyle, ThemeLook>
-            let choice: ReferenceWritableKeyPath<SessionStyle, LookChoice>
 
             var body: some View {
-                // Read here, so a choice made anywhere builds each picker again at its
-                // new place.
-                let style = self.style
-                let key = self.look
+                let (style, dark) = (self.style, self.dark)
                 let name = title.lowercased()
-                // Each surface's choices write that part of the theme's look.
-                let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in key.appending(path: part) }
-
-                let choice = self.choice
-                let composed = style[keyPath: choice] != .own
+                let composed = dark ? style.$darkComposed : style.$lightComposed
 
                 return VStack {
                     SectionTitle(title)
@@ -984,60 +976,67 @@ enum Listings {
                     // Back to the look this gallery draws on this platform, whatever
                     // it was when the user composed another.
                     Button("The gallery's own")
-                        .isEnabled(composed)
-                        .onClicked { style[keyPath: choice] = .own }
+                        .isEnabled(composed.wrappedValue)
+                        .onClicked { style.wearOwnLook(dark: dark) }
 
                     SurfacePickers(
-                        title: "The bars", label: "Bars", theme: name, part: .bar, style: style, surface: surface(\.bars))
+                        title: "The bars", label: "Bars", theme: name, part: .bar, composed: composed,
+                        material: dark ? style.$darkBarsMaterial : style.$lightBarsMaterial,
+                        color: dark ? style.$darkBarsColor : style.$lightBarsColor,
+                        blur: dark ? style.$darkBarsBlur : style.$lightBarsBlur)
                     SurfacePickers(
-                        title: "The window", label: "Window", theme: name, part: .window, style: style,
-                        surface: surface(\.window))
+                        title: "The window", label: "Window", theme: name, part: .window, composed: composed,
+                        material: dark ? style.$darkWindowMaterial : style.$lightWindowMaterial,
+                        color: dark ? style.$darkWindowColor : style.$lightWindowColor,
+                        blur: dark ? style.$darkWindowBlur : style.$lightWindowBlur)
                     SurfacePickers(
-                        title: "The sidebar", label: "Sidebar", theme: name, part: .sidebar, style: style,
-                        surface: surface(\.sidebar))
+                        title: "The sidebar", label: "Sidebar", theme: name, part: .sidebar, composed: composed,
+                        material: dark ? style.$darkSidebarMaterial : style.$lightSidebarMaterial,
+                        color: dark ? style.$darkSidebarColor : style.$lightSidebarColor,
+                        blur: dark ? style.$darkSidebarBlur : style.$lightSidebarBlur)
                     SurfacePickers(
                         title: "The sidebar over the page", label: "Overlay", theme: name, part: .sidebarOverlay,
-                        style: style, surface: surface(\.sidebarOverlay))
+                        composed: composed,
+                        material: dark ? style.$darkSidebarOverlayMaterial : style.$lightSidebarOverlayMaterial,
+                        color: dark ? style.$darkSidebarOverlayColor : style.$lightSidebarOverlayColor,
+                        blur: dark ? style.$darkSidebarOverlayBlur : style.$lightSidebarOverlayBlur)
                 }
             }
         }
 
         /// One surface's choices: what it is made of, in which color, and how thick
-        /// a blur - each shown as the look holds it and written into it by hand, as
-        /// the look is a value the scene keeps.
+        /// a blur - each a state of its own; a choice makes the theme's look the
+        /// user's composition.
         private struct SurfacePickers: View {
             let title: String
             let label: String
             let theme: String
             let part: GallerySurface
-            let style: SessionStyle
-            let surface: ReferenceWritableKeyPath<SessionStyle, SurfaceLook>
+            let composed: Binding<Bool>
+            let material: Binding<SurfaceMaterial>
+            let color: Binding<AccentChoice>
+            let blur: Binding<Int>
 
             var body: some View {
-                let style = self.style
-                let surface = self.surface
-                let look = style[keyPath: surface]
-                let materials = SurfaceMaterial.offered(on: part)
-                let accents = AccentChoice.allCases
-                let blurs = SurfaceLook.blurs
+                let composed = self.composed
+                let made = material.wrappedValue
+                let blurs = ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"]
                 let id = "appearance.\(theme).\(label.lowercased())"
 
                 return VStack {
                     Text(title)
-                    Picker(materials, selection: look.material) {
+                    Picker(SurfaceMaterial.offered(on: part), selection: material) {
                         $0.name
                     }
-                        .onSelectedIndexChanged { style[keyPath: surface].material = materials[$0] }
-                    Picker(accents, selection: look.color) {
+                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                    Picker(AccentChoice.allCases, selection: color) {
                         $0.name
                     }
-                        .onSelectedIndexChanged { style[keyPath: surface].color = accents[$0] }
-                        .isEnabled(look.material.showsColor)
-                    Picker(blurs, selection: look.blur) { blur in
-                        ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
-                    }
-                        .onSelectedIndexChanged { style[keyPath: surface].blur = blurs[$0] }
-                        .isEnabled(look.material.showsBlur)
+                        .isEnabled(made.showsColor)
+                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                    Picker(Array(SurfaceLook.blurs.indices), selection: blur) { blurs[$0] }
+                        .isEnabled(made.showsBlur)
+                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
                 }
             }
         }
@@ -3596,7 +3595,7 @@ enum Listings {
         // Sources/Gallery/Looks.swift
         /// What one surface of the gallery is made of - its bars, its window, its
         /// sidebar, its sidebar sliding over the page.
-        enum SurfaceMaterial: String, CaseIterable {
+        enum SurfaceMaterial: String, CaseIterable, Codable {
             /// The platform's own.
             case platform
 
@@ -3660,6 +3659,11 @@ enum Listings {
             /// The blurs offered, thinnest first.
             static let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
 
+            /// Where `blur` stands among the blurs offered - a thick one where it is none of them.
+            static func place(of blur: Blur) -> Int {
+                blurs.firstIndex(of: blur) ?? 3
+            }
+
             /// The platform's own surface - the gallery's own color, or a thick
             /// blur, once one is chosen.
             static let platform = SurfaceLook(material: .platform, color: .gallery, blur: .thick)
@@ -3700,9 +3704,9 @@ enum Listings {
         }
 
         /// The look the gallery wears in one theme: its bars, and what its window, its
-        /// sidebar and its sidebar sliding over the page are made of. Kept as one line
-        /// of words, so a scene keeps a theme's whole look under one key.
-        struct ThemeLook: Equatable, RawRepresentable {
+        /// sidebar and its sidebar sliding over the page are made of. A scene keeps
+        /// each of its fields under a key of its own (SessionStyle).
+        struct ThemeLook: Equatable {
             var bars: SurfaceLook
             var window: SurfaceLook
             var sidebar: SurfaceLook
@@ -3751,69 +3755,8 @@ enum Listings {
                 #endif
             }
 
-            /// The look as words: each surface's material, color and blur - the
-            /// bars', the window's, the sidebar's beside the page and over it.
-            var rawValue: String {
-                [bars, window, sidebar, sidebarOverlay].flatMap { surface in
-                    [surface.material.rawValue, surface.color.rawValue,
-                     String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
-                }.joined(separator: " ")
-            }
-
-            /// The look its words say; nil for words another version wrote.
-            init?(rawValue: String) {
-                let words = rawValue.split(separator: " ").map(String.init)
-                guard words.count == 12 else { return nil }
-                var surfaces: [SurfaceLook] = []
-                for at in stride(from: 0, to: 12, by: 3) {
-                    guard let material = SurfaceMaterial(rawValue: words[at]), let color = AccentChoice(rawValue: words[at + 1]),
-                          let blur = Int(words[at + 2]), SurfaceLook.blurs.indices.contains(blur)
-                    else { return nil }
-                    surfaces.append(SurfaceLook(material: material, color: color, blur: SurfaceLook.blurs[blur]))
-                }
-                self.init(bars: surfaces[0], window: surfaces[1], sidebar: surfaces[2], sidebarOverlay: surfaces[3])
-            }
         }
 
-        /// A theme's look as the user chose it: the gallery's own, or one composed in
-        /// the Appearance sample. A scene keeps the CHOICE - the gallery's own is drawn
-        /// afresh at every start, as this version of the gallery makes it, never kept
-        /// as what it was when the scene was.
-        enum LookChoice: Equatable, RawRepresentable, Codable {
-            /// The look that suits the platform best: `ThemeLook.light` or `.dark`.
-            case own
-
-            /// A look the user put together.
-            case composed(ThemeLook)
-
-            /// The look the choice wears in a theme, `dark` or not.
-            func look(dark: Bool) -> ThemeLook {
-                switch self {
-                case .own: return dark ? .dark : .light
-                case .composed(let look): return look
-                }
-            }
-
-            /// "own", or "composed" and the look's words.
-            var rawValue: String {
-                switch self {
-                case .own: return "own"
-                case .composed(let look): return "composed " + look.rawValue
-                }
-            }
-
-            /// The choice its words say; nil for words another version wrote - a look
-            /// kept whole - so the gallery starts in its own.
-            init?(rawValue: String) {
-                if rawValue == "own" {
-                    self = .own
-                } else if rawValue.hasPrefix("composed "), let look = ThemeLook(rawValue: String(rawValue.dropFirst(9))) {
-                    self = .composed(look)
-                } else {
-                    return nil
-                }
-            }
-        }
 
         // Sources/Styles/GalleryColors.swift
         /// A part of the gallery a color paints - each has a color of the gallery's
@@ -3860,16 +3803,51 @@ enum Listings {
             static let font = SceneKey("gallery.font")
         }
 
-        extension SceneKey where Value == LookChoice {
-            /// The look chosen for the light theme and for the dark: the gallery's own,
-            /// or one the user composed.
-            static let lightLook = SceneKey("gallery.look.light")
-            static let darkLook = SceneKey("gallery.look.dark")
+        extension SceneKey where Value == Bool {
+            /// Whether the light theme's look is the user's own composition, and the dark's.
+            static let lightComposed = SceneKey("gallery.look.light.composed")
+            static let darkComposed = SceneKey("gallery.look.dark.composed")
+        }
+
+        extension SceneKey where Value == SurfaceMaterial {
+            /// What each surface of each theme is made of.
+            static let lightBarsMaterial = SceneKey("gallery.look.light.bars.material")
+            static let lightWindowMaterial = SceneKey("gallery.look.light.window.material")
+            static let lightSidebarMaterial = SceneKey("gallery.look.light.sidebar.material")
+            static let lightSidebarOverlayMaterial = SceneKey("gallery.look.light.sidebarOverlay.material")
+            static let darkBarsMaterial = SceneKey("gallery.look.dark.bars.material")
+            static let darkWindowMaterial = SceneKey("gallery.look.dark.window.material")
+            static let darkSidebarMaterial = SceneKey("gallery.look.dark.sidebar.material")
+            static let darkSidebarOverlayMaterial = SceneKey("gallery.look.dark.sidebarOverlay.material")
+        }
+
+        extension SceneKey where Value == AccentChoice {
+            /// The color each surface of each theme wears.
+            static let lightBarsColor = SceneKey("gallery.look.light.bars.color")
+            static let lightWindowColor = SceneKey("gallery.look.light.window.color")
+            static let lightSidebarColor = SceneKey("gallery.look.light.sidebar.color")
+            static let lightSidebarOverlayColor = SceneKey("gallery.look.light.sidebarOverlay.color")
+            static let darkBarsColor = SceneKey("gallery.look.dark.bars.color")
+            static let darkWindowColor = SceneKey("gallery.look.dark.window.color")
+            static let darkSidebarColor = SceneKey("gallery.look.dark.sidebar.color")
+            static let darkSidebarOverlayColor = SceneKey("gallery.look.dark.sidebarOverlay.color")
+        }
+
+        extension SceneKey where Value == Int {
+            /// How thick a blur each surface of each theme is - its place in `SurfaceLook.blurs`.
+            static let lightBarsBlur = SceneKey("gallery.look.light.bars.blur")
+            static let lightWindowBlur = SceneKey("gallery.look.light.window.blur")
+            static let lightSidebarBlur = SceneKey("gallery.look.light.sidebar.blur")
+            static let lightSidebarOverlayBlur = SceneKey("gallery.look.light.sidebarOverlay.blur")
+            static let darkBarsBlur = SceneKey("gallery.look.dark.bars.blur")
+            static let darkWindowBlur = SceneKey("gallery.look.dark.window.blur")
+            static let darkSidebarBlur = SceneKey("gallery.look.dark.sidebar.blur")
+            static let darkSidebarOverlayBlur = SceneKey("gallery.look.dark.sidebarOverlay.blur")
         }
 
         /// A color a gallery wears - on its bars, or behind its pages, where its look
         /// asks for one.
-        enum AccentChoice: String, CaseIterable {
+        enum AccentChoice: String, CaseIterable, Codable {
             case gallery
             case system
             case violet
@@ -3939,23 +3917,143 @@ enum Listings {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
 
-            /// The look chosen for each theme - the gallery's own, until the
-            /// Appearance sample composes another.
-            @State(sceneKey: .lightLook) var lightChoice = LookChoice.own
-            @State(sceneKey: .darkLook) var darkChoice = LookChoice.own
+            /// Whether the light theme wears the user's composition, field by field, or the gallery's own look.
+            @State(sceneKey: .lightComposed) var lightComposed = false
 
-            /// The look the gallery wears in the light theme; a look written here is
-            /// the user's own composition.
+            /// What each surface of the light theme is made of, in which color, and how thick a blur.
+            @State(sceneKey: .lightBarsMaterial)
+            var lightBarsMaterial = ThemeLook.light.bars.material
+            @State(sceneKey: .lightBarsColor)
+            var lightBarsColor = ThemeLook.light.bars.color
+            @State(sceneKey: .lightBarsBlur)
+            var lightBarsBlur = SurfaceLook.place(of: ThemeLook.light.bars.blur)
+            @State(sceneKey: .lightWindowMaterial)
+            var lightWindowMaterial = ThemeLook.light.window.material
+            @State(sceneKey: .lightWindowColor)
+            var lightWindowColor = ThemeLook.light.window.color
+            @State(sceneKey: .lightWindowBlur)
+            var lightWindowBlur = SurfaceLook.place(of: ThemeLook.light.window.blur)
+            @State(sceneKey: .lightSidebarMaterial)
+            var lightSidebarMaterial = ThemeLook.light.sidebar.material
+            @State(sceneKey: .lightSidebarColor)
+            var lightSidebarColor = ThemeLook.light.sidebar.color
+            @State(sceneKey: .lightSidebarBlur)
+            var lightSidebarBlur = SurfaceLook.place(of: ThemeLook.light.sidebar.blur)
+            @State(sceneKey: .lightSidebarOverlayMaterial)
+            var lightSidebarOverlayMaterial = ThemeLook.light.sidebarOverlay.material
+            @State(sceneKey: .lightSidebarOverlayColor)
+            var lightSidebarOverlayColor = ThemeLook.light.sidebarOverlay.color
+            @State(sceneKey: .lightSidebarOverlayBlur)
+            var lightSidebarOverlayBlur = SurfaceLook.place(of: ThemeLook.light.sidebarOverlay.blur)
+
+            /// Whether the dark theme wears the user's composition, field by field, or the gallery's own look.
+            @State(sceneKey: .darkComposed) var darkComposed = false
+
+            /// What each surface of the dark theme is made of, in which color, and how thick a blur.
+            @State(sceneKey: .darkBarsMaterial)
+            var darkBarsMaterial = ThemeLook.dark.bars.material
+            @State(sceneKey: .darkBarsColor)
+            var darkBarsColor = ThemeLook.dark.bars.color
+            @State(sceneKey: .darkBarsBlur)
+            var darkBarsBlur = SurfaceLook.place(of: ThemeLook.dark.bars.blur)
+            @State(sceneKey: .darkWindowMaterial)
+            var darkWindowMaterial = ThemeLook.dark.window.material
+            @State(sceneKey: .darkWindowColor)
+            var darkWindowColor = ThemeLook.dark.window.color
+            @State(sceneKey: .darkWindowBlur)
+            var darkWindowBlur = SurfaceLook.place(of: ThemeLook.dark.window.blur)
+            @State(sceneKey: .darkSidebarMaterial)
+            var darkSidebarMaterial = ThemeLook.dark.sidebar.material
+            @State(sceneKey: .darkSidebarColor)
+            var darkSidebarColor = ThemeLook.dark.sidebar.color
+            @State(sceneKey: .darkSidebarBlur)
+            var darkSidebarBlur = SurfaceLook.place(of: ThemeLook.dark.sidebar.blur)
+            @State(sceneKey: .darkSidebarOverlayMaterial)
+            var darkSidebarOverlayMaterial = ThemeLook.dark.sidebarOverlay.material
+            @State(sceneKey: .darkSidebarOverlayColor)
+            var darkSidebarOverlayColor = ThemeLook.dark.sidebarOverlay.color
+            @State(sceneKey: .darkSidebarOverlayBlur)
+            var darkSidebarOverlayBlur = SurfaceLook.place(of: ThemeLook.dark.sidebarOverlay.blur)
+
+            /// The look the gallery wears in the light theme: the user's composition, or the gallery's own.
             var lightLook: ThemeLook {
-                get { lightChoice.look(dark: false) }
-                set { lightChoice = .composed(newValue) }
+                guard lightComposed else { return .light }
+
+                return ThemeLook(
+                    bars: SurfaceLook(
+                        material: lightBarsMaterial, color: lightBarsColor, blur: SurfaceLook.blurs[lightBarsBlur]),
+                    window: SurfaceLook(
+                        material: lightWindowMaterial, color: lightWindowColor, blur: SurfaceLook.blurs[lightWindowBlur]),
+                    sidebar: SurfaceLook(
+                        material: lightSidebarMaterial, color: lightSidebarColor, blur: SurfaceLook.blurs[lightSidebarBlur]),
+                    sidebarOverlay: SurfaceLook(
+                        material: lightSidebarOverlayMaterial, color: lightSidebarOverlayColor,
+                        blur: SurfaceLook.blurs[lightSidebarOverlayBlur]))
             }
 
-            /// The look the gallery wears in the dark theme; a look written here is
-            /// the user's own composition.
+            /// The look the gallery wears in the dark theme: the user's composition, or the gallery's own.
             var darkLook: ThemeLook {
-                get { darkChoice.look(dark: true) }
-                set { darkChoice = .composed(newValue) }
+                guard darkComposed else { return .dark }
+
+                return ThemeLook(
+                    bars: SurfaceLook(
+                        material: darkBarsMaterial, color: darkBarsColor, blur: SurfaceLook.blurs[darkBarsBlur]),
+                    window: SurfaceLook(
+                        material: darkWindowMaterial, color: darkWindowColor, blur: SurfaceLook.blurs[darkWindowBlur]),
+                    sidebar: SurfaceLook(
+                        material: darkSidebarMaterial, color: darkSidebarColor, blur: SurfaceLook.blurs[darkSidebarBlur]),
+                    sidebarOverlay: SurfaceLook(
+                        material: darkSidebarOverlayMaterial, color: darkSidebarOverlayColor,
+                        blur: SurfaceLook.blurs[darkSidebarOverlayBlur]))
+            }
+
+            /// One color on every surface of both themes, which makes both looks the user's composition.
+            func wearColor(_ accent: AccentChoice) {
+                lightBarsColor = accent
+                lightWindowColor = accent
+                lightSidebarColor = accent
+                lightSidebarOverlayColor = accent
+                darkBarsColor = accent
+                darkWindowColor = accent
+                darkSidebarColor = accent
+                darkSidebarOverlayColor = accent
+                lightComposed = true
+                darkComposed = true
+            }
+
+            /// Back to the gallery's own look in a theme, `dark` or not: the next composition starts from it.
+            func wearOwnLook(dark: Bool) {
+                let own = dark ? ThemeLook.dark : ThemeLook.light
+                if !dark {
+                    lightComposed = false
+                    lightBarsMaterial = own.bars.material
+                    lightBarsColor = own.bars.color
+                    lightBarsBlur = SurfaceLook.place(of: own.bars.blur)
+                    lightWindowMaterial = own.window.material
+                    lightWindowColor = own.window.color
+                    lightWindowBlur = SurfaceLook.place(of: own.window.blur)
+                    lightSidebarMaterial = own.sidebar.material
+                    lightSidebarColor = own.sidebar.color
+                    lightSidebarBlur = SurfaceLook.place(of: own.sidebar.blur)
+                    lightSidebarOverlayMaterial = own.sidebarOverlay.material
+                    lightSidebarOverlayColor = own.sidebarOverlay.color
+                    lightSidebarOverlayBlur = SurfaceLook.place(of: own.sidebarOverlay.blur)
+                }
+                if dark {
+                    darkComposed = false
+                    darkBarsMaterial = own.bars.material
+                    darkBarsColor = own.bars.color
+                    darkBarsBlur = SurfaceLook.place(of: own.bars.blur)
+                    darkWindowMaterial = own.window.material
+                    darkWindowColor = own.window.color
+                    darkWindowBlur = SurfaceLook.place(of: own.window.blur)
+                    darkSidebarMaterial = own.sidebar.material
+                    darkSidebarColor = own.sidebar.color
+                    darkSidebarBlur = SurfaceLook.place(of: own.sidebar.blur)
+                    darkSidebarOverlayMaterial = own.sidebarOverlay.material
+                    darkSidebarOverlayColor = own.sidebarOverlay.color
+                    darkSidebarOverlayBlur = SurfaceLook.place(of: own.sidebarOverlay.blur)
+                }
             }
 
             /// The look the gallery wears in a theme, `dark` or not.
@@ -8813,12 +8911,6 @@ enum Listings {
                 Picker(Size.allCases, selection: $size) { "\($0)".titled }
                     .presentation(.radio)
 
-                // A value, not a state: this picker writes nothing, and the
-                // user's choice comes as its place in the list, written here.
-                Picker(Size.allCases, selection: size) { "\($0)".titled }
-                    .placeholder("Size")
-                    .onSelectedIndexChanged { index in size = Size.allCases[index] }
-
                 Text(size.map { "Chosen: \($0)" } ?? "Nothing chosen")
 
                 Text("Opened \(opened)x")
@@ -9514,17 +9606,13 @@ enum Listings {
         private struct Chore {
             let id: Int
             var title: String
-            var priority = Priority.normal
-        }
-
-        private enum Priority: CaseIterable, Equatable {
-            case low, normal, high
+            var done = false
         }
 
         /// The rows of a value: every control shows its value, and its event writes
         /// the user's change into the whole list - which builds this again.
         private struct KeptChores: View {
-            @State private var chores = [Chore(id: 1, title: "Dishes"), Chore(id: 2, title: "Laundry", priority: .high)]
+            @State private var chores = [Chore(id: 1, title: "Dishes"), Chore(id: 2, title: "Laundry", done: true)]
             @State private var chosen: Int? = 1
             @State private var refreshing = false
 
@@ -9537,13 +9625,11 @@ enum Listings {
                     .gridRow(0)
 
                     ItemsView(chores, id: \.id) { chore in
-                        Text("\(chore.title) · \(chore.priority)")
+                        Text(chore.done ? "\(chore.title) ✓" : chore.title)
                     }
-                    .selection(chosen)
-                    .onSelectionChanged { chosen = $0.first }
-                    .isRefreshing(refreshing)
+                    .selection($chosen)
+                    .isRefreshing($refreshing)
                     .onRefreshRequested(.ignoreWhileRunning) {
-                        refreshing = true
                         defer { refreshing = false }
                         try await Task.sleep(for: .seconds(1))
                     }
@@ -9554,9 +9640,9 @@ enum Listings {
                             TextField(chore.title)
                                 .onTextChanged { title in edit(chore.id) { $0.title = title } }
 
-                            Picker(Priority.allCases, selection: chore.priority)
-                                .presentation(.segmented)
-                                .onSelectedIndexChanged { index in edit(chore.id) { $0.priority = Priority.allCases[index] } }
+                            CheckBox(chore.done)
+                                .text("Done")
+                                .onToggled { done in edit(chore.id) { $0.done = done } }
                         }
                     }
                     .gridRow(2)

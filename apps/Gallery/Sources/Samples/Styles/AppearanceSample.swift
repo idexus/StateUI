@@ -82,13 +82,13 @@ struct AppearanceSample: SampleContent, ExampleContent {
             // force, and changes with it. Side by side where there is room,
             // one under the other on a phone.
             if device.info.formFactor == .phone {
-                LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
-                LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
+                LookColumn(title: "Light", dark: false, style: style)
+                LookColumn(title: "Dark", dark: true, style: style)
             } else {
                 Grid {
-                    LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
+                    LookColumn(title: "Light", dark: false, style: style)
                         .gridColumn(0)
-                    LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
+                    LookColumn(title: "Dark", dark: true, style: style)
                         .gridColumn(1)
                 }
                 .columns(.fill, .fill)
@@ -135,25 +135,17 @@ struct AppearanceSample: SampleContent, ExampleContent {
 
 // listing: AppearanceSample
 /// One theme's look: its bars, and what its window, its sidebar and its
-/// sidebar over the page are made of - written where `look` says, which makes
-/// it the user's own; the gallery's own again where `choice` says.
+/// sidebar over the page are made of - each field a state the scene keeps,
+/// written by its picker, which makes the look the user's own.
 private struct LookColumn: View {
     let title: String
+    let dark: Bool
     let style: SessionStyle
-    let look: ReferenceWritableKeyPath<SessionStyle, ThemeLook>
-    let choice: ReferenceWritableKeyPath<SessionStyle, LookChoice>
 
     var body: some View {
-        // Read here, so a choice made anywhere builds each picker again at its
-        // new place.
-        let style = self.style
-        let key = self.look
+        let (style, dark) = (self.style, self.dark)
         let name = title.lowercased()
-        // Each surface's choices write that part of the theme's look.
-        let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in key.appending(path: part) }
-
-        let choice = self.choice
-        let composed = style[keyPath: choice] != .own
+        let composed = dark ? style.$darkComposed : style.$lightComposed
 
         return VStack {
             SectionTitle(title)
@@ -162,69 +154,76 @@ private struct LookColumn: View {
             // it was when the user composed another.
             Button("The gallery's own")
                 .accessibilityIdentifier("appearance.\(name).own")
-                .isEnabled(composed)
-                .onClicked { style[keyPath: choice] = .own }
+                .isEnabled(composed.wrappedValue)
+                .onClicked { style.wearOwnLook(dark: dark) }
 
             SurfacePickers(
-                title: "The bars", label: "Bars", theme: name, part: .bar, style: style, surface: surface(\.bars))
+                title: "The bars", label: "Bars", theme: name, part: .bar, composed: composed,
+                material: dark ? style.$darkBarsMaterial : style.$lightBarsMaterial,
+                color: dark ? style.$darkBarsColor : style.$lightBarsColor,
+                blur: dark ? style.$darkBarsBlur : style.$lightBarsBlur)
             SurfacePickers(
-                title: "The window", label: "Window", theme: name, part: .window, style: style,
-                surface: surface(\.window))
+                title: "The window", label: "Window", theme: name, part: .window, composed: composed,
+                material: dark ? style.$darkWindowMaterial : style.$lightWindowMaterial,
+                color: dark ? style.$darkWindowColor : style.$lightWindowColor,
+                blur: dark ? style.$darkWindowBlur : style.$lightWindowBlur)
             SurfacePickers(
-                title: "The sidebar", label: "Sidebar", theme: name, part: .sidebar, style: style,
-                surface: surface(\.sidebar))
+                title: "The sidebar", label: "Sidebar", theme: name, part: .sidebar, composed: composed,
+                material: dark ? style.$darkSidebarMaterial : style.$lightSidebarMaterial,
+                color: dark ? style.$darkSidebarColor : style.$lightSidebarColor,
+                blur: dark ? style.$darkSidebarBlur : style.$lightSidebarBlur)
             SurfacePickers(
                 title: "The sidebar over the page", label: "Overlay", theme: name, part: .sidebarOverlay,
-                style: style, surface: surface(\.sidebarOverlay))
+                composed: composed,
+                material: dark ? style.$darkSidebarOverlayMaterial : style.$lightSidebarOverlayMaterial,
+                color: dark ? style.$darkSidebarOverlayColor : style.$lightSidebarOverlayColor,
+                blur: dark ? style.$darkSidebarOverlayBlur : style.$lightSidebarOverlayBlur)
         }
         .spacing(10)
     }
 }
 
 /// One surface's choices: what it is made of, in which color, and how thick
-/// a blur - each shown as the look holds it and written into it by hand, as
-/// the look is a value the scene keeps.
+/// a blur - each a state of its own; a choice makes the theme's look the
+/// user's composition.
 private struct SurfacePickers: View {
     let title: String
     let label: String
     let theme: String
     let part: GallerySurface
-    let style: SessionStyle
-    let surface: ReferenceWritableKeyPath<SessionStyle, SurfaceLook>
+    let composed: Binding<Bool>
+    let material: Binding<SurfaceMaterial>
+    let color: Binding<AccentChoice>
+    let blur: Binding<Int>
 
     var body: some View {
-        let style = self.style
-        let surface = self.surface
-        let look = style[keyPath: surface]
-        let materials = SurfaceMaterial.offered(on: part)
-        let accents = AccentChoice.allCases
-        let blurs = SurfaceLook.blurs
+        let composed = self.composed
+        let made = material.wrappedValue
+        let blurs = ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"]
         let id = "appearance.\(theme).\(label.lowercased())"
 
         return VStack {
             Text(title)
                 .fontSize(12)
                 .textColor(Palette.subtle)
-            Picker(materials, selection: look.material) {
+            Picker(SurfaceMaterial.offered(on: part), selection: material) {
                 $0.name
             }
-                .onSelectedIndexChanged { style[keyPath: surface].material = materials[$0] }
                 .accessibilityIdentifier(id)
                 .accessibilityLabel("\(label), \(theme)")
-            Picker(accents, selection: look.color) {
+                .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+            Picker(AccentChoice.allCases, selection: color) {
                 $0.name
             }
-                .onSelectedIndexChanged { style[keyPath: surface].color = accents[$0] }
                 .accessibilityIdentifier("\(id)Color")
                 .accessibilityLabel("\(label)'s color, \(theme)")
-                .isEnabled(look.material.showsColor)
-            Picker(blurs, selection: look.blur) { blur in
-                ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
-            }
-                .onSelectedIndexChanged { style[keyPath: surface].blur = blurs[$0] }
+                .isEnabled(made.showsColor)
+                .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+            Picker(Array(SurfaceLook.blurs.indices), selection: blur) { blurs[$0] }
                 .accessibilityIdentifier("\(id)Blur")
                 .accessibilityLabel("\(label)'s blur, \(theme)")
-                .isEnabled(look.material.showsBlur)
+                .isEnabled(made.showsBlur)
+                .onSelectedIndexChanged { _ in composed.wrappedValue = true }
         }
         .spacing(10)
     }
