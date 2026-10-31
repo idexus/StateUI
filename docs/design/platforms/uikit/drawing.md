@@ -12,6 +12,20 @@ layout's (`UIKitViewDrawing`), both as the host layer computes them about the
 view's top left, carried to the layer's middle, about which a layer turns;
 its opacity is its own times the one it is placed with.
 
+## A placed opacity
+
+The opacity a placing layout gives a view moves every frame of a turning
+ring or a deck, and it stands on the view's layer (`layer.opacity`); the
+element's own opacity goes through the view's `alpha`. The trap: a view's
+`alpha` coming back from nothing tells UIKit's focus system that a view
+appeared, and with a keyboard attached it asks for a focus update - which
+it throttles to one a second and answers by mapping every focusable place
+in the window. On an iPad Pro with a keyboard that is 40-50 ms on the main
+thread, once a second while a hand drags the cards: a jump each time.
+Shown by the layer, the view is drawn, read (`alpha` reads the layer) and
+hit-tested alike - a view at nothing takes no touch - and the focus system
+maps it when it next looks. An author's own appearing view still tells it.
+
 ## A layout's box
 
 A layout paints its own box behind its children: the fill - a color, or a
