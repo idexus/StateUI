@@ -171,7 +171,11 @@ A Swift `Style` can target the control once its Swift struct conforms to
 the style's values already among its own; the registration needs nothing for
 it. A value handed over as a state - `.rating($stars)` over
 `setValue(_:on:mode:kind:)` - reaches the same applier on the host's own
-frames; see [Motion and journeys](../concepts/motion-and-journeys.md).
+frames; see [Motion and journeys](../concepts/motion-and-journeys.md). A state
+the host cannot carry, or one the control translates - an enumeration, a choice
+by its place - is read by the element as it is described: `.signal($signal)`
+over `setValue(_:whenDescribed:)`, and the body that handed it over is not its
+reader.
 
 **A registered view draws however it likes, the GPU included.** An `MTKView` is
 an `NSView`, so its registration says no more than any other one: the Gallery's

@@ -80,10 +80,8 @@ public struct NavigationStack: ElementView, Arrangement, BarElement, AutomationE
         let root = Self.identified(Node.page(root()), as: Self.rootIdentity)
         node = Node(contract: NavigationStackContract.self, children: [root])
 
-        // The pages above the root, made as the stack is described: the stack reads the path, never the body that
-        // wrote it.
+        // The pages after the root and before the stack's bar, made as the stack is described.
         // Design: docs/design/core/invalidation.md#an-element-reads-what-it-was-handed
-        // Right after the root, before what the stack's modifiers added - its bar.
         node.readsWhenDescribed { node in
             let pages = path.wrappedValue.enumerated().map { depth, route in
                 Self.identified(Node.page(destination(route)), as: Self.identity(depth: depth, route: route))

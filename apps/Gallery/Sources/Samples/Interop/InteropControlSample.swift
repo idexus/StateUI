@@ -35,11 +35,9 @@ struct InteropControlSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
+            // The light reads the state itself; a lamp tapped lands on it.
             TrafficLight()
-                .signal(signal)
-                .onLampTapped { index in
-                    signal = TrafficSignal(rawValue: Int32(index)) ?? signal
-                }
+                .signal($signal)
                 .horizontalAlignment(.center)
 
             Text("signal: \(signal)")
@@ -66,8 +64,8 @@ struct InteropControlSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The control never switches itself. A tap raises `lampTapped` through "
-                + "the reports its `create` is handed, this sample's `@State` decides, "
-                + "and the next render lights the lamp.")
+                + "the reports its `create` is handed, `.signal($signal)` writes it into this "
+                + "sample's `@State`, and the light - which reads the state itself - lights the lamp.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -14,6 +14,7 @@ and a host realizes the contract member by member.
 
   view:      Node(contract: TrafficLightContract.self)
   modifier:  setValue(TrafficLightContract.signal, value)
+  a state:   setValue(TrafficLightContract.signal, whenDescribed: { state.wrappedValue })
   host:      registry.add(TrafficLightContract.self, ...) member by member
 ```
 

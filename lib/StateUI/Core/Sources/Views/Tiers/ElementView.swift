@@ -21,6 +21,25 @@ extension ElementView {
         change(&copy.node)
         return copy
     }
+
+    /// Sets one of this element's properties from a state, read as the element is described - so the element, never
+    /// the body handing the state over, is its reader, and a write describes the element alone again.
+    ///
+    ///     func signal(_ state: Binding<TrafficSignal>) -> Self {
+    ///         setValue(TrafficLightContract.signal, whenDescribed: { state.wrappedValue })
+    ///     }
+    ///
+    /// What a control translates for its host - a choice by its place, a value the host cannot carry - takes it.
+    ///
+    /// - Parameters:
+    ///   - property: the member, written with its contract.
+    ///   - value: what it holds, asked as the element is described.
+    /// - Returns: the element, reading the value then.
+    public func setValue<Owner: Contract, Value: HostRepresentable>(
+        _ property: ElementProperty<Owner, Value>, whenDescribed value: @escaping @MainActor () -> Value
+    ) -> Self {
+        modified { $0.readsWhenDescribed { $0.props[property.token] = value().propValue } }
+    }
 }
 
 /// The body of an element, which has none.

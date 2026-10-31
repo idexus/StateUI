@@ -5340,11 +5340,9 @@ enum Listings {
             VStack {
                 DebugInfoLabel()
 
+                // The light reads the state itself; a lamp tapped lands on it.
                 TrafficLight()
-                    .signal(signal)
-                    .onLampTapped { index in
-                        signal = TrafficSignal(rawValue: Int32(index)) ?? signal
-                    }
+                    .signal($signal)
                     .horizontalAlignment(.center)
 
                 Text("signal: \(signal)")
@@ -12367,6 +12365,15 @@ enum Listings {
             /// Which lamp is lit.
             public func signal(_ value: TrafficSignal) -> Self {
                 setValue(TrafficLightContract.signal, value)
+            }
+
+            /// The signal from a state, both ways: the light reads it as it is described, and a lamp the user taps lands
+            /// on it.
+            public func signal(_ state: Binding<TrafficSignal>) -> Self {
+                setValue(TrafficLightContract.signal, whenDescribed: { state.wrappedValue })
+                    .onLampTapped { lamp in
+                        if let tapped = TrafficSignal(rawValue: Int32(lamp)) { state.wrappedValue = tapped }
+                    }
             }
 
             /// A lamp was tapped, with its index from the top.

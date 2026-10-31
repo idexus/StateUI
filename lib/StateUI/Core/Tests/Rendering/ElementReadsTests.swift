@@ -95,7 +95,9 @@ final class ElementReadsTests: XCTestCase {
     func testAPickerReadsItsChoice() {
         let size = State(wrappedValue: "M")
         assertTheElementReads("Picker", type: "Picker", prop: "selectedIndex", becomes: .number(2),
-                              root: { Handing(builds: $0) { AnyView(Picker(["S", "M", "L"], selection: size.projectedValue)) } },
+                              root: { Handing(builds: $0) {
+                                  AnyView(Picker(["S", "M", "L"], selection: size.projectedValue))
+                              } },
                               write: { size.wrappedValue = "L" })
     }
 
@@ -116,21 +118,27 @@ final class ElementReadsTests: XCTestCase {
     func testAListReadsItsSelection() {
         let chosen = State<Int?>(wrappedValue: 1)
         assertTheElementReads("ItemsView", type: "ItemsView", prop: "selectedItems", becomes: .strings(["2"]),
-                              root: { Handing(builds: $0) { AnyView(ItemsView(0..<3) { Text("\($0)") }.selection(chosen.projectedValue)) } },
+                              root: { Handing(builds: $0) {
+                                  AnyView(ItemsView(0..<3) { Text("\($0)") }.selection(chosen.projectedValue))
+                              } },
                               write: { chosen.wrappedValue = 2 })
     }
 
     func testAMenuToggleReadsItsState() {
         let on = State(wrappedValue: false)
         assertTheElementReads("MenuToggle", type: "MenuToggle", prop: "isOn", becomes: .bool(true),
-                              root: { Handing(builds: $0) { AnyView(Text("page").contextMenu { MenuToggle("Ruler", isOn: on.projectedValue) }) } },
+                              root: { Handing(builds: $0) {
+                                  AnyView(Text("page").contextMenu { MenuToggle("Ruler", isOn: on.projectedValue) })
+                              } },
                               write: { on.wrappedValue = true })
     }
 
     func testAToolbarToggleReadsItsState() {
         let on = State(wrappedValue: false)
         assertTheElementReads("ToolbarToggle", type: "ToolbarToggle", prop: "isOn", becomes: .bool(true),
-                              root: { Handing(builds: $0) { AnyView(Text("page").toolbar { ToolbarToggle("Inspector", isOn: on.projectedValue) }) } },
+                              root: { Handing(builds: $0) {
+                                  AnyView(Text("page").toolbar { ToolbarToggle("Inspector", isOn: on.projectedValue) })
+                              } },
                               write: { on.wrappedValue = true })
     }
 
@@ -168,5 +176,16 @@ final class ElementReadsTests: XCTestCase {
                                   AnyView(Button("Why?").popover(item: topic.projectedValue) { Text($0) })
                               } },
                               write: { topic.wrappedValue = "Sync" })
+    }
+
+    /// An element of the application's own reads a state through its member, `setValue(_:whenDescribed:)`.
+    func testAnElementReadsAStateThroughItsMember() {
+        let place = State(wrappedValue: 0)
+        assertTheElementReads("setValue(_:whenDescribed:)", type: "Picker", prop: "selectedIndex", becomes: .number(1),
+                              root: { Handing(builds: $0) {
+                                  AnyView(Picker().setValue(
+                                      PickerContract.selectedIndex, whenDescribed: { place.wrappedValue }))
+                              } },
+                              write: { place.wrappedValue = 1 })
     }
 }

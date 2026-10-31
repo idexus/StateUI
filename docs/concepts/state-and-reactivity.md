@@ -360,6 +360,16 @@ For a model held in state, the two spellings have different owners:
 A value StateUI does not own reaches a control through a class of `@State`
 fields that follows it, as [State in a class](#state-in-a-class) shows.
 
+### A state an element reads itself
+
+Handing a state to a member never makes the body a reader. A member whose
+value the library translates for its host - a picker's place in its list, a
+tab, a list's chosen items, a stack's pages, a sheet - reads the state as its
+element is described, and a write describes that element alone again: the
+body that wrote `Picker(sizes, selection: $size)` is not built for a choice. A
+registered control of the application's own does the same through its member,
+`setValue(TrafficLightContract.signal, whenDescribed: { state.wrappedValue })`.
+
 ## Selecting a reactive path
 
 Use the consequence you need as the selection rule:
