@@ -41,7 +41,7 @@ and this table maps the two.
 | follow (`following:`) | depend on, subscribe to | what wakes an engine: a write to a state it follows |
 | track (`tracking:`) | follow continuously | an engine that follows and keeps running on the next cycles while it answers `.again` |
 | conversion (`convert`) | derived binding | a binding that reads and writes another state through a mapping |
-| lender, lent | source storage | what a `Proxy` borrows its value from: the state's storage and which part of it |
+| lender, lent | source storage | what a `StatePart` reads and writes through: the state's storage and which part of it |
 | reading, sample (`.samples`) | throttled copy | an animated value copied into ordinary state at a pace |
 | host-carried state, reactive path 2 | bound control value | a state a native control shows and changes with no rebuild |
 | attachment, wear (a state), wearer | binding, bound control | a control property tied to a state |

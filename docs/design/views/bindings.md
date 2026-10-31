@@ -178,10 +178,10 @@ disagree.
 
 A control's report lands on a carried state before its event handlers run,
 wherever the binding is written in the chain, so a handler reads the value
-already in the state. Over a described binding, the binding is itself a
-handler and handlers run in writing order: one written after the binding sees
-the state updated, one written before it still sees the old value. The payload
-carries the new value either way.
+already in the state. A picker's choice, translated to a place in its list, is
+written back by a handler of its own, and handlers run in writing order: one
+written after the picker's state sees it updated, one written before still sees
+the old value. The payload carries the new value either way.
 
 ## Feeds
 

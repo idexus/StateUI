@@ -81,19 +81,21 @@ Passing `$volume` does not make the body a reader. Native input and program
 writes update the attached controls through the host-carried path. Read
 `volume` elsewhere only when the tree actually needs its discrete destination.
 
-A binding derived from arbitrary `get` and `set` closures has no StateUI
-storage identity for the host to carry. A switch, check box, picker, date
-and time pickers, text field, text editor and search field then
-take the described/event path: the getter supplies the property and the
-native report calls the setter. A slider, a stepper and every driven modifier
-refuse it, say so once, and set nothing.
+A `Binding` always comes from a `@State` - there is no binding made from
+closures - so every binding a control is handed is a storage the host
+carries. A part of a state, `$record.field`, reaches no control
+([Two words and a part](../concepts/why.md#two-words-and-a-part-state-binding-statepart)).
 
 ## Two-way input and event ordering
 
-Controls with an editable purpose value accept either a value or a binding.
-Examples include `TextField`, `TextEditor`, `SearchField`, `Switch`,
-`CheckBox`, `Slider`, `Stepper`, `Picker`, `DatePicker`, and `TimePicker`. Every property is one modifier named for it, which takes the
-value itself or, where the host can carry the value, a state, `$x`
+Controls with an editable purpose value that crosses to the host as it is
+accept either a value or a binding: `TextField`, `TextEditor`, `SearchField`,
+`Switch`, `CheckBox`, `Slider`, `Stepper`, `DatePicker`, `TimePicker` and
+`ColorPicker`. A choice the library translates for the host - a picker's
+place in its list, a list's chosen items, a tab - takes the state alone
+([Editing a record: two ways](../concepts/state-and-reactivity.md#editing-a-record-two-ways)).
+Every property is one modifier named for it, which takes the value itself
+or, where the host can carry the value, a state, `$x`
 ([A property is one modifier](../concepts/why.md#a-property-is-one-modifier-a-value-or-a-state)).
 
 ```swift

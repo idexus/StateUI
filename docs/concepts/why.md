@@ -42,8 +42,10 @@ body is built again, compared, and the host is sent the difference. A state
 handed as `$weight` is carried by the host: a write reaches the native control
 on the host's own cycle and no body is built again; a value that can move
 travels to each new one ([Motion and journeys](motion-and-journeys.md)); and
-what the platform reports lands on the same state. Every property the host can
-carry offers both paths, because each has the same shape.
+what the platform reports lands on the same state. Every property that crosses
+to the host as it is offers both paths, because each has the same shape; one
+the library translates to the host's shape takes the state alone
+([Two words and a part](#two-words-and-a-part-state-binding-statepart)).
 
 **Deliberately rejected:** a modifier without an argument that sets one value
 of a property - `.bold()`, `.italic()`, `.center()`, `.leading()` and their
@@ -420,8 +422,9 @@ public API keeps to these rules:
   fail; insets name their edges `start` and `end`, which follow the reading
   direction; a button's purpose is an `ActionRole`. No string, number or flag
   stands for something that has a type of its own.
-- **One shape for one kind.** A modifier gives back `Modified` and names a
-  state it borrows `state`; a host's `run` ends the process where its toolkit
+- **One shape for one kind.** A modifier gives back `Modified` - a composed
+  view's configures the view and gives it back - and names a state it borrows
+  `state`; a host's `run` ends the process where its toolkit
   holds the thread; every host's facade takes what the core takes, in the
   same words.
 - **What an element starts, it ends.** A subscription, a ticker's run and a

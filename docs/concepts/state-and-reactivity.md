@@ -141,10 +141,12 @@ states make their individual writes visible. Two views holding the same model
 read the same property storages; two model instances have independent
 storages. Computed properties follow the state they read.
 
-Give a wrapped class property its initial value at the declaration. This
-wrapper cannot be used as uninitialized stored storage assigned for the first
-time in `init`. A weak or unowned back-reference is a plain property because
-Swift does not combine those ownership modifiers with a property wrapper.
+Give a wrapped class property its initial value at the declaration, or make
+its state in `init` - `_name = State(wrappedValue: name)`, as
+[Editing a record](#editing-a-record-two-ways) shows: assigning the wrapped
+property there does not compile. A weak or unowned back-reference is a plain
+property because Swift does not combine those ownership modifiers with a
+property wrapper.
 
 ### Swift Observation
 
@@ -534,7 +536,7 @@ views convert one source on one line, and lets it go when it leaves.
 
 Conversions take whole StateUI states as sources, which keeps them on the
 host-cycle path: `convert` and `multi` are offered on `Binding` alone, so a
-`Proxy` cannot be converted.
+`StatePart` cannot be converted.
 
 ### Destination conversion and journey conversion
 

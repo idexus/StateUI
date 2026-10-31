@@ -151,9 +151,7 @@ This path is for continuous or platform-owned values:
 
 Bindings and handlers may coexist on one control. The host first commits the
 reported value to its state channel, then invokes the handler. The handler
-therefore observes the new state. For a `Proxy`, which the host does
-not carry - a part of a state, or closures - the write-back is a handler of
-its own, and handlers run in the order written.
+therefore observes the new state.
 
 Program writes are silent at the event boundary. This prevents a write such as
 `enabled = true` from pretending that the user toggled the native control.

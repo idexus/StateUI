@@ -115,8 +115,9 @@ not to the tab host.
 
 ## Split view
 
-`SplitView` owns two pages - a sidebar and a detail - and a two-way binding
-saying whether the sidebar shows:
+`SplitView` owns two pages - a sidebar and a detail - and `.showsSidebar`
+hands it a state saying whether the sidebar shows, both ways; without it the
+platform shows and hides the sidebar itself:
 
 ```swift
 struct MenuPage: View {

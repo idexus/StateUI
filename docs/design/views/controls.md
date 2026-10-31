@@ -22,9 +22,8 @@ What gives a control its purpose - a label's text, a picker's options, a
 path's outline, an image's source - goes in the initializer; everything else is
 a modifier (composition.md, what goes in the initializer). A two-way control
 whose bound value is its purpose takes its binding in the initializer and in a
-modifier of the same name; a picker and a radio button, whose initializers take
-their options and their caption, take it in the modifier alone (bindings.md,
-both spellings).
+modifier of the same name; a picker takes its values and the state holding the
+chosen one together, in its initializer alone (bindings.md, both spellings).
 
 ## Closed vocabularies are numbered here
 
