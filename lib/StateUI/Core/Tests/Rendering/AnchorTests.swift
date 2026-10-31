@@ -80,7 +80,7 @@ private struct StackPresenting: View {
     var body: some View {
         Group {
             if split.wrappedValue {
-                SplitView(State(wrappedValue: true).projectedValue) { Text("Sections") } detail: { Text("Detail") }
+                SplitView { Text("Sections") } detail: { Text("Detail") }.showsSidebar(State(wrappedValue: true).projectedValue)
             } else {
                 NavigationStack($path) { Text("Home") } destination: { _ in Text("Next") }
             }

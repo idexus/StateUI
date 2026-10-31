@@ -15,7 +15,7 @@ struct Tab: View {
 
 @State var shown = "Today"
 
-TabView(["Today", "Archive"], selection: $shown) { name in Tab(name: name) }
+TabView(["Today", "Archive"]) { name in Tab(name: name) }.selection($shown)
 ```
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.

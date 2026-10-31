@@ -172,7 +172,7 @@ private struct MailSheet: View {
     @State private var drafts: [Int] = []
 
     var body: some View {
-        TabView(Tab.allCases, selection: $tab) { tab in
+        TabView(Tab.allCases) { tab in
             switch tab {
             case .inbox:
                 NavigationStack($inbox) {
@@ -209,6 +209,7 @@ private struct MailSheet: View {
                 .icon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
             }
         }
+        .selection($tab)
     }
 
     /// A tab's first page: its name, and a button pushing a page onto its stack.

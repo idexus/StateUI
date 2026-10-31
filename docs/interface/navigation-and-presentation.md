@@ -94,13 +94,14 @@ struct SettingsPage: View { var body: some View { Text("Settings") } }
 
 @State private var selected = Tab.notes
 
-TabView(Tab.allCases, selection: $selected) { tab in
+TabView(Tab.allCases) { tab in
     switch tab {
     case .notes: NotesPage()
     case .search: SearchPage()
     case .settings: SettingsPage()
     }
 }
+.selection($selected)
 ```
 
 Assigning `selected` changes the visible tab. A user-selected tab is reported
@@ -127,11 +128,12 @@ struct MainPage: View { var body: some View { Text("Main") } }
 
 @State private var menuOpen = false
 
-SplitView($menuOpen, sidebar: {
+SplitView(sidebar: {
     MenuPage(showsSidebar: $menuOpen)
 }, detail: {
     MainPage()
 })
+.showsSidebar($menuOpen)
 ```
 
 The sidebar is a page, so its header, rows, and actions are composed from the
@@ -181,11 +183,12 @@ struct MainPage: View { var body: some View { Text("Main") } }
 @State private var menuOpen = false
 @State private var menuOverlays = false
 
-SplitView($menuOpen, sidebar: {
+SplitView(sidebar: {
     MenuPage(showsSidebar: $menuOpen, overlays: $menuOverlays)
 }, detail: {
     MainPage()
 })
+.showsSidebar($menuOpen)
 .sidebarOverlays($menuOverlays)
 ```
 
@@ -215,11 +218,12 @@ struct MailPage: View {
 @State private var menuOpen = false
 @State private var path: [Int] = []
 
-SplitView($menuOpen, sidebar: {
+SplitView(sidebar: {
     MenuPage(showsSidebar: $menuOpen)
 }, detail: {
     NavigationStack($path) { InboxPage() } destination: { MailPage($0) }
 })
+.showsSidebar($menuOpen)
 .showsSidebarToggle(path.isEmpty)
 ```
 
@@ -240,11 +244,12 @@ struct MainPage: View { var body: some View { Text("Main") } }
 
 @State private var menuOpen = false
 
-SplitView($menuOpen, sidebar: {
+SplitView(sidebar: {
     MenuPage(showsSidebar: $menuOpen)
 }, detail: {
     MainPage()
 })
+.showsSidebar($menuOpen)
 .sidebarBackground(.blur(.thin))          // beside the detail
 .sidebarOverlayBackground(.blur(.thick))  // sliding over it
 ```
@@ -614,11 +619,12 @@ struct Library: View {
     @State private var showsFolders = true
 
     var body: some View {
-        SplitView($showsFolders) {
+        SplitView {
             Text("Folders").title("Library")
         } detail: {
             Text("Books").title("All books")
         }
+        .showsSidebar($showsFolders)
         .toolbar {
             ToolbarButton("Add folder").placement(.sidebar).hidesWithSidebar(true).onClicked {}
             ToolbarButton("Account").onClicked {}
@@ -977,11 +983,12 @@ struct Welcome: View { var body: some View { Text("Welcome") } }
 
 @State private var sidebar = true
 
-SplitView($sidebar) {
+SplitView {
     Library()
 } detail: {
     Welcome()
 }
+.showsSidebar($sidebar)
 .menuBar {
     Menu("File") {
         MenuItem("Save")

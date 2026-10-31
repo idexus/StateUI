@@ -41,7 +41,7 @@ private struct Tabs: View {
 
     var body: some View {
         builds.count += 1
-        return TabView([1, 2, 3], selection: tab) { Text("\($0)") }
+        return TabView([1, 2, 3]) { Text("\($0)") }.selection(tab)
     }
 }
 
@@ -52,7 +52,7 @@ private struct Split: View {
 
     var body: some View {
         builds.count += 1
-        return SplitView(shows) { Text("s") } detail: { Text("d") }
+        return SplitView { Text("s") } detail: { Text("d") }.showsSidebar(shows)
     }
 }
 

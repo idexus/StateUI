@@ -65,7 +65,7 @@ final class WinUIFrameReportTests: XCTestCase {
     func testARoomWinUINarrowedPlacesItsLayoutBeforeItIsDrawn() throws {
         try onUIThread {
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("Menu").title("Menu")
                 } detail: {
                     MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
@@ -75,6 +75,7 @@ final class WinUIFrameReportTests: XCTestCase {
                         [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let window = try XCTUnwrap(host.window)
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)

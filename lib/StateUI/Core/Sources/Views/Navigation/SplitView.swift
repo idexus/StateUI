@@ -15,7 +15,7 @@
 ///         @State private var menu = false
 ///
 ///         var body: some View {
-///             SplitView($menu) {
+///             SplitView {
 ///                 MenuPage(section: $section, menu: $menu)
 ///             } detail: {
 ///                 switch section {
@@ -23,6 +23,7 @@
 ///                 case .archive: ArchivePage(menu: $menu)
 ///                 }
 ///             }
+///             .showsSidebar($menu)
 ///         }
 ///     }
 ///
@@ -65,7 +66,6 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
     ///   sidebar's bar, the application's name where it says none.
     /// - Parameter detail: the page beside it, which is the application.
     public init<Sidebar: View, Detail: View>(
-        _ showsSidebar: Binding<Bool>,
         @ViewBuilder sidebar: () -> Sidebar,
         @ViewBuilder detail: () -> Detail
     ) {
@@ -75,18 +75,27 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
                 Self.identified(Node.page(sidebar()), as: Self.sidebarIdentity),
                 Self.identified(Node.page(detail()), as: Self.detailIdentity),
             ])
-        node.readsWhenDescribed { $0.write(SplitViewContract.showsSidebar, showsSidebar.wrappedValue) }
+    }
 
-        // The user's ways in and out, once finished, written only when moved.
-        node.addHandler(SplitViewContract.showsSidebarChanged.token) {
-            guard let visible = EventBuffer.current.value()?.bool,
-                  visible != showsSidebar.wrappedValue else { return }
+    /// Whether the sidebar shows, both ways: the split view reads the state as it is described, and the user's own
+    /// ways in and out - the platform's sidebar button, a swipe, a tap outside - land on it. Without it the
+    /// platform shows and hides the sidebar itself.
+    ///
+    ///     SplitView { MenuPage() } detail: { NotesPage() }
+    ///         .showsSidebar($showsMenu)
+    public func showsSidebar(_ state: Binding<Bool>) -> Self {
+        modified { node in
+            node.readsWhenDescribed { $0.write(SplitViewContract.showsSidebar, state.wrappedValue) }
 
-            showsSidebar.wrappedValue = visible
+            // The user's ways in and out, once finished, written only when moved.
+            node.addHandler(SplitViewContract.showsSidebarChanged.token) {
+                guard let visible = EventBuffer.current.value()?.bool, visible != state.wrappedValue else { return }
+
+                state.wrappedValue = visible
+            }
         }
     }
 
-    /// The sidebar's key among its siblings.
     private static let sidebarIdentity = "sidebar"
 
     /// And the key of the page beside it.
@@ -105,9 +114,10 @@ extension SplitView {
     /// the sidebar - offered unless this says not. A value from a state keeps
     /// it to some pages, as to the root of the detail's stack:
     ///
-    ///     SplitView($menu) { MenuPage() } detail: {
+    ///     SplitView { MenuPage() } detail: {
     ///         NavigationStack($path) { InboxPage() } destination: { MailPage(id: $0) }
     ///     }
+    ///     .showsSidebar($menu)
     ///     .showsSidebarToggle(path.isEmpty)
     ///
     /// With no toggle the sidebar shows and hides by the binding, and by an
@@ -124,7 +134,8 @@ extension SplitView {
 
     /// What the sidebar stands on while it stands beside the detail.
     ///
-    ///     SplitView($showsMenu) { MenuPage() } detail: { NotesPage() }
+    ///     SplitView { MenuPage() } detail: { NotesPage() }
+    ///         .showsSidebar($showsMenu)
     ///         .sidebarBackground(.blur(.thin))
     ///         .sidebarOverlayBackground(.blur(.thick))
     ///
@@ -151,7 +162,8 @@ extension SplitView {
     ///     @State private var menu = false
     ///     @State private var menuOverlays = false
     ///
-    ///     SplitView($menu) { MenuPage(menu: $menu, overlays: $menuOverlays) } detail: { NotesPage() }
+    ///     SplitView { MenuPage(menu: $menu, overlays: $menuOverlays) } detail: { NotesPage() }
+    ///         .showsSidebar($menu)
     ///         .sidebarOverlays($menuOverlays)
     ///
     ///     // in a sidebar row's handler

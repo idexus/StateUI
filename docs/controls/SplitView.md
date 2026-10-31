@@ -9,11 +9,12 @@ struct MainPage: View {
     @State private var showsFolders = true
 
     var body: some View {
-        SplitView($showsFolders) {
+        SplitView {
             Text("Folders")
         } detail: {
             Text("Notes")
         }
+        .showsSidebar($showsFolders)
     }
 }
 ```

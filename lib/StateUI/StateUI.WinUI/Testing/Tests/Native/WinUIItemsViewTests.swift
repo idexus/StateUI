@@ -71,13 +71,14 @@ final class WinUIItemsViewTests: XCTestCase {
         try onUIThread {
             let tab = State(wrappedValue: 0)
             let host = WinUIRenderer.running {
-                TabView([0, 1], selection: tab.projectedValue) { number in
+                TabView([0, 1]) { number in
                     if number == 0 {
                         ItemsView(0..<50) { Text("\($0)") }.title("List")
                     } else {
                         Text("Other").title("Other")
                     }
                 }
+                .selection(tab.projectedValue)
             }
             let list = try XCTUnwrap(host.views(WinUIItemsView.self).first)
             host.settle { stateui_winui_items_scroller_handlers(list.list.handle) == 1 }

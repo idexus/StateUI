@@ -48,11 +48,12 @@ private func flyout(
     _ menu: Binding<Bool>,
     _ section: Binding<String>
 ) -> SplitView {
-    SplitView(menu) {
+    SplitView {
         MenuPage(section: section, menu: menu)
     } detail: {
         DetailPage(section: section.wrappedValue)
     }
+    .showsSidebar(menu)
 }
 
 @MainActor
@@ -133,7 +134,7 @@ final class SplitViewTests: XCTestCase {
         let section = State<String>("today")
         let path = State<[Int]>([1])
 
-        let tree = SplitView(menu.projectedValue) {
+        let tree = SplitView {
             MenuPage(section: section.projectedValue, menu: menu.projectedValue)
         } detail: {
             NavigationStack(path.projectedValue) {
@@ -144,6 +145,7 @@ final class SplitViewTests: XCTestCase {
             .title("Diary")
             .barBackground(Color(hex: 0x512BD4))
         }
+        .showsSidebar(menu.projectedValue)
         .node
 
         // As the message that brings the pages carries them - with the title

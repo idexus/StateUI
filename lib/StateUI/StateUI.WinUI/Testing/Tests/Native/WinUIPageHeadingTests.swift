@@ -17,7 +17,7 @@ final class WinUIPageHeadingTests: XCTestCase {
         try onUIThread {
             let path = State(wrappedValue: [Int]())
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("Menu").title("StateUI")
                 } detail: {
                     NavigationStack(path.projectedValue) {
@@ -26,6 +26,7 @@ final class WinUIPageHeadingTests: XCTestCase {
                         Text("Sample words").title("Button menu").subtitle("Menus")
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             host.settle { Self.headings(host) == ["Home"] }
             XCTAssertEqual(Self.headings(host), ["Home"])
@@ -51,7 +52,7 @@ final class WinUIPageHeadingTests: XCTestCase {
         try onUIThread {
             let path = State(wrappedValue: [Int]())
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("Menu").title("StateUI")
                 } detail: {
                     NavigationStack(path.projectedValue) {
@@ -60,6 +61,7 @@ final class WinUIPageHeadingTests: XCTestCase {
                         TabView([1, 2]) { number in Text("Example words").title("Example \(number)") }.title("Items")
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             path.wrappedValue = [1]
             host.settle { Self.headings(host) == ["Items"] }
@@ -82,7 +84,7 @@ final class WinUIPageHeadingTests: XCTestCase {
     func testAPageShowingNoTitleIsHeadedByNothing() {
         onUIThread {
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("Menu").title("StateUI")
                 } detail: {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -91,6 +93,7 @@ final class WinUIPageHeadingTests: XCTestCase {
                         Text("Sample words").title("Button menu")
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             host.settle { host.views(WinUITextView.self).contains { $0.text == "Home words" } }
             XCTAssertEqual(Self.headings(host), [])

@@ -140,13 +140,14 @@ final class AppKitFrameTests: XCTestCase {
         let heard = Received<[Double]>()
         let shown = State(wrappedValue: true)
         let renderer = AppKitRenderer.running {
-            SplitView(shown.projectedValue) {
+            SplitView {
                 Text("Menu")
             } detail: {
                 Rectangle()
                     .fill(.steelBlue)
                     .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
             }
+            .showsSidebar(shown.projectedValue)
         }
         defer { renderer.closeForTesting() }
         let split = try XCTUnwrap(renderer.nativeViews(AppKitSplitView.self).first)

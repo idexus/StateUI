@@ -14,12 +14,13 @@
 ///         @State private var tab: Tab = .today
 ///
 ///         var body: some View {
-///             TabView(Tab.allCases, selection: $tab) { tab in
+///             TabView(Tab.allCases) { tab in
 ///                 switch tab {
 ///                 case .today:    TodayPage()
 ///                 case .settings: SettingsPage(tab: $tab)
 ///                 }
 ///             }
+///             .selection($tab)
 ///         }
 ///     }
 ///
@@ -46,46 +47,8 @@ public struct TabView<Tab: Hashable>: ElementView, Arrangement, BarElement, Auto
     /// The node this page describes.
     public var node: Node
 
-    /// Tabs over `tabs`, one page each, the one `selection` holds showing -
-    /// borrowed two-way: `tab = .settings` moves to a tab, and a tab the user
-    /// chooses is written here.
-    ///
-    ///     TabView(Tab.allCases, selection: $tab) { tab in … }
-    ///
-    /// A value that names no tab selects nothing, and the state follows the
-    /// tab the platform then shows.
-    ///
-    /// - Parameters:
-    ///   - tabs: what the tab bar offers, in order - the author's own type,
-    ///     each value distinct.
-    ///   - selection: the tab that is showing.
-    ///   - destination: the page for one tab.
-    public init<Tabs: RandomAccessCollection, Destination: View>(
-        _ tabs: Tabs,
-        selection: Binding<Tab>,
-        @ViewBuilder destination: (Tab) -> Destination
-    ) where Tabs.Element == Tab {
-        self.init(tabs, destination: destination)
-        let ordered = Array(tabs)
-
-        // The current page as its index among the children, and none where the
-        // state names no tab: the platform then reports what it shows.
-        // Design: docs/design/views/pages.md#tabs-report-an-index
-        node.readsWhenDescribed { node in
-            if let index = ordered.firstIndex(of: selection.wrappedValue) {
-                node.write(TabViewContract.selectedTab, index)
-            }
-        }
-
-        // The user's choice, as that index, written only when it moved.
-        node.addHandler(TabViewContract.selectedTabChanged.token) {
-            guard let index = EventBuffer.current.value()?.int, ordered.indices.contains(index),
-                  ordered[index] != selection.wrappedValue
-            else { return }
-
-            selection.wrappedValue = ordered[index]
-        }
-    }
+    /// The tabs offered, in order - what a selection's index is a place in.
+    private var tabs: [Tab] = []
 
     /// Tabs over `tabs`, one page each, the platform choosing which shows
     /// until the user does.
@@ -98,11 +61,39 @@ public struct TabView<Tab: Hashable>: ElementView, Arrangement, BarElement, Auto
         _ tabs: Tabs,
         @ViewBuilder destination: (Tab) -> Destination
     ) where Tabs.Element == Tab {
+        self.tabs = Array(tabs)
         node = Node(
             contract: TabViewContract.self,
             children: tabs.map { tab in
                 Self.identified(Node.page(destination(tab)), as: tab)
             })
+    }
+
+    /// The tab that is showing, both ways: the tab view reads the state as it is described, and the tab the user
+    /// chooses lands on it. Without it the platform chooses which shows until the user does.
+    ///
+    ///     TabView(Tab.allCases) { tab in … }
+    ///         .selection($tab)
+    public func selection(_ state: Binding<Tab>) -> Self {
+        let ordered = tabs
+        return modified { node in
+            // The current page as its index among the children, and none where the state names no tab.
+            // Design: docs/design/views/pages.md#tabs-report-an-index
+            node.readsWhenDescribed { node in
+                if let index = ordered.firstIndex(of: state.wrappedValue) {
+                    node.write(TabViewContract.selectedTab, index)
+                }
+            }
+
+            // The user's choice, as that index, written only when it moved.
+            node.addHandler(TabViewContract.selectedTabChanged.token) {
+                guard let index = EventBuffer.current.value()?.int, ordered.indices.contains(index),
+                      ordered[index] != state.wrappedValue
+                else { return }
+
+                state.wrappedValue = ordered[index]
+            }
+        }
     }
 
     /// A page node wearing the key its tab gives it.

@@ -68,11 +68,12 @@ final class WindowTests: XCTestCase {
     /// The bar's look is values an arrangement declares on itself - no child of the window and nothing in its
     /// session.
     func testAnArrangementDeclaresItsBarAsValues() {
-        let node = SplitView(State(wrappedValue: true).projectedValue) {
+        let node = SplitView {
             AnyView(node: label("menu"))
         } detail: {
             AnyView(node: label("detail"))
         }
+        .showsSidebar(State(wrappedValue: true).projectedValue)
         .barBackground(.steelBlue)
         .barForegroundColor(.white)
         .node

@@ -207,11 +207,11 @@ final class ContractRoadsTests: XCTestCase {
             name: "a tab selection of another type than the tabs",
             closed: """
                 @State var tab = "a"
-                _ = TabView([1, 2], selection: $tab) { Text("\\($0)") }
+                _ = TabView([1, 2]) { Text("\\($0)") }.selection($tab)
                 """,
             open: """
                 @State var tab = 1
-                _ = TabView([1, 2], selection: $tab) { Text("\\($0)") }
+                _ = TabView([1, 2]) { Text("\\($0)") }.selection($tab)
                 """),
         Road(
             name: "a view standing on the menu bar",

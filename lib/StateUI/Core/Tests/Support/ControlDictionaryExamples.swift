@@ -463,11 +463,12 @@ extension ControlDictionary {
                 @State private var showsFolders = true
 
                 var body: some View {
-                    SplitView($showsFolders) {
+                    SplitView {
                         Text("Folders")
                     } detail: {
                         Text("Notes")
                     }
+                    .showsSidebar($showsFolders)
                 }
             }
             """#),
@@ -499,7 +500,7 @@ extension ControlDictionary {
 
             @State var shown = "Today"
 
-            TabView(["Today", "Archive"], selection: $shown) { name in Tab(name: name) }
+            TabView(["Today", "Archive"]) { name in Tab(name: name) }.selection($shown)
             """#),
 
         (TextEditorContract.self, #"""

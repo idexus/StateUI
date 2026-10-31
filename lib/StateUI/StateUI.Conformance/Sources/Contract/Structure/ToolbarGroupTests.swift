@@ -208,13 +208,14 @@
                 Covered(ToolbarGroupContract.part),
             ]) { s in
                 s.start {
-                    SplitView(State(wrappedValue: true).projectedValue) {
+                    SplitView {
                         DeclaringPage { [ToolbarButton("Folder").id("folder")] }
                     } detail: {
                         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                             DeclaringPage { [ToolbarButton("Save").id("save")] }
                         } destination: { _ in Text("Pushed") }
                     }
+                    .showsSidebar(State(wrappedValue: true).projectedValue)
                     .toolbar {
                         ToolbarButton("Add").id("add").placement(.sidebar)
                         ToolbarButton("Home").id("home")
@@ -229,11 +230,12 @@
                 Covered(ToolbarGroupContract.part),
             ]) { s in
                 s.start {
-                    SplitView(State(wrappedValue: true).projectedValue) {
+                    SplitView {
                         DeclaringPage { [ToolbarButton("Folder").id("folder")] }
                     } detail: {
                         DeclaringPage { [ToolbarButton("Save").id("save")] }
                     }
+                    .showsSidebar(State(wrappedValue: true).projectedValue)
                     .toolbar {
                         ToolbarButton("Add").id("add").placement(.sidebar)
                         ToolbarButton("Home").id("home")
@@ -249,13 +251,14 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let inDetail = State(wrappedValue: false)
                 s.start {
-                    SplitView(State(wrappedValue: true).projectedValue) {
+                    SplitView {
                         DeclaringPage()
                     } detail: {
                         DeclaringPage(beside: [Button("Move").onClicked { inDetail.wrappedValue = true }.id("change")]) {
                             [ToolbarButton("Save").id("save")]
                         }
                     }
+                    .showsSidebar(State(wrappedValue: true).projectedValue)
                     .toolbar { ToolbarButton("Pin").id("pin").placement(inDetail.wrappedValue ? .detail : .sidebar) }
                 }
                 let detail = { try s.bar(of: try detailPage(s)) }
@@ -273,11 +276,12 @@
                 // Hidden once shown: a split view first given a wide room shows its sidebar.
                 let open = State(wrappedValue: true)
                 s.start {
-                    SplitView(open.projectedValue) {
+                    SplitView {
                         DeclaringPage()
                     } detail: {
                         DeclaringPage { [ToolbarButton("Save").id("save")] }
                     }
+                    .showsSidebar(open.projectedValue)
                     .toolbar {
                         ToolbarButton("Add").id("add").placement(.sidebar)
                         ToolbarButton("Filter").id("filter").placement(.sidebar).hidesWithSidebar(true)

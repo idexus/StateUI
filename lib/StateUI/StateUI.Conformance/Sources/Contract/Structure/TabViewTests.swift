@@ -27,9 +27,10 @@
                 Covered(TabViewContract.selectedTab),
             ]) { s in
                 s.start {
-                    TabView([0, 1], selection: State(wrappedValue: 1).projectedValue) { tab in
+                    TabView([0, 1]) { tab in
                         Text("Tab \(tab)").id("tab\(tab)")
                     }
+                    .selection(State(wrappedValue: 1).projectedValue)
                 }
                 let tabs = try s.element(ofType: TabViewContract.nodeType)
 
@@ -41,7 +42,7 @@
                 Covered(TabViewContract.selectedTab), Covered(TabViewContract.selectedTabChanged),
             ]) { s in
                 let tab = State(wrappedValue: 0)
-                s.start { TabView([0, 1], selection: tab.projectedValue) { tab in Text("Tab \(tab)") } }
+                s.start { TabView([0, 1]) { tab in Text("Tab \(tab)") }.selection(tab.projectedValue) }
                 let tabs = try s.element(ofType: TabViewContract.nodeType)
 
                 try s.perform(.choose(1), on: tabs)
@@ -54,9 +55,10 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let tab = State(wrappedValue: 0)
                 s.start {
-                    TabView([0, 1], selection: tab.projectedValue) { number in
+                    TabView([0, 1]) { number in
                         VStack { Button("Next").onClicked { tab.wrappedValue = 1 }.id("next\(number)") }
                     }
+                    .selection(tab.projectedValue)
                 }
                 let tabs = try s.element(ofType: TabViewContract.nodeType)
 

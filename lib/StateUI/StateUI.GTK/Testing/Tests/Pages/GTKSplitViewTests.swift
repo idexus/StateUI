@@ -17,11 +17,12 @@ final class GTKSplitViewTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: false)
             let host = GTKRenderer.running {
-                SplitView(open.projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     TitledPage(title: "Detail")
                 }
+                .showsSidebar(open.projectedValue)
             }
             let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
             XCTAssertEqual(split.sidebarFrame?.chrome.title, "Menu")
@@ -42,13 +43,15 @@ final class GTKSplitViewTests: XCTestCase {
             let first = State(wrappedValue: true)
             let host = GTKRenderer.running {
                 if first.wrappedValue {
-                    SplitView(State(wrappedValue: true).projectedValue) {
+                    SplitView {
                         TitledPage(title: "Menu")
                     } detail: { TitledPage(title: "First") }
+                    .showsSidebar(State(wrappedValue: true).projectedValue)
                 } else {
-                    SplitView(State(wrappedValue: true).projectedValue) {
+                    SplitView {
                         TitledPage(title: "Menu")
                     } detail: { TitledPage(title: "Second") }
+                    .showsSidebar(State(wrappedValue: true).projectedValue)
                 }
             }
             host.layOut()
@@ -70,11 +73,12 @@ final class GTKSplitViewTests: XCTestCase {
     func testTheChromesButtonsSayTheLibrarysWords() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     TitledPage(title: "Detail").menuBar { Menu("File") { MenuItem("Open") } }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             host.layOut()
             let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
@@ -92,7 +96,7 @@ final class GTKSplitViewTests: XCTestCase {
             // A test process names no application; one does, as GLib gives it.
             if g_get_application_name() == nil { g_set_application_name("Notes") }
             let host = GTKRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+                SplitView { Text("Sidebar") } detail: { Text("Detail") }.showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
             let name = host.runtime.core.applicationName
@@ -109,11 +113,12 @@ final class GTKSplitViewTests: XCTestCase {
         try onUIThread {
             let material = State(wrappedValue: Material(light: nil, dark: nil))
             let host = GTKRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     TitledPage(title: "Detail")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
                 .sidebarBackground(material.projectedValue)
             }
             let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
@@ -130,11 +135,12 @@ final class GTKSplitViewTests: XCTestCase {
     func testBothPanesHeaderBarsWearTheSplitViewsColors() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     TitledPage(title: "Detail")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
                 .barBackground(Color(hex: 0xFF0000))
                 .barForegroundColor(Color(hex: 0xFFFFFF))
             }
@@ -154,11 +160,12 @@ final class GTKSplitViewTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: true)
             let host = GTKRenderer.running {
-                SplitView(open.projectedValue) {
+                SplitView {
                     VStack { Button("Sign out") }
                 } detail: {
                     VStack { TextField(State(wrappedValue: "").projectedValue) }
                 }
+                .showsSidebar(open.projectedValue)
             }
             let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
             let leave = try XCTUnwrap(host.views(GTKButtonView.self).first { $0.text == "Sign out" })
@@ -192,11 +199,12 @@ final class GTKSplitViewTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: true)
             let host = GTKRenderer.running {
-                SplitView(open.projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     TitledPage(title: "Detail")
                 }
+                .showsSidebar(open.projectedValue)
             }
             let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
             let toggle = try XCTUnwrap(split.detailFrame?.sidebarToggle)
@@ -218,7 +226,7 @@ final class GTKSplitViewTests: XCTestCase {
         try onUIThread {
             let path = State(wrappedValue: [Int]())
             let host = GTKRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     NavigationStack(path.projectedValue) {
@@ -227,6 +235,7 @@ final class GTKSplitViewTests: XCTestCase {
                         TitledPage(title: "Page \(number)")
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let split = try XCTUnwrap(host.views(GTKSplitView.self).first)
             let navigation = try XCTUnwrap(host.views(GTKNavigationView.self).first)
@@ -252,11 +261,12 @@ final class GTKTabViewTests: XCTestCase {
             let tab = State(wrappedValue: "one")
             let log = Received<String>()
             let host = GTKRenderer.running {
-                TabView(["one", "two"], selection: tab.projectedValue) { name in
+                TabView(["one", "two"]) { name in
                     TitledPage(
                         title: name == "one" ? "One" : "Two", log: log,
                         actions: name == "two" ? [ToolbarButton("Share")] : [])
                 }
+                .selection(tab.projectedValue)
             }
             let tabs = try XCTUnwrap(host.views(GTKTabView.self).first)
             let frame = try XCTUnwrap(host.window?.pageFrame)

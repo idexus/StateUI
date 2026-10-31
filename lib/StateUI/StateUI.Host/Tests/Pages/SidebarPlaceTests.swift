@@ -43,11 +43,12 @@ private struct PlacePage: View {
 
     var body: some View {
         seen.append(over)
-        return SplitView($menu) {
+        return SplitView {
             Text("Menu")
         } detail: {
             Text(over ? "Over" : "Beside")
         }
+        .showsSidebar($menu)
         .sidebarOverlays($over)
     }
 }

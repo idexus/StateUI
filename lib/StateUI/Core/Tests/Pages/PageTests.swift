@@ -371,7 +371,7 @@ final class PageTests: XCTestCase {
         let arrangements: [(view: any View, type: NodeType)] = [
             (stack, .navigationStack),
             (TabView([0, 1]) { _ in Plain() }, .tabView),
-            (SplitView(sidebar.projectedValue) { Plain() } detail: { Plain() }, .splitView),
+            (SplitView { Plain() } detail: { Plain() }.showsSidebar(sidebar.projectedValue), .splitView),
         ]
 
         XCTAssertEqual(Set(arrangements.map(\.type)), NodeType.arrangements, "every arrangement is shown")

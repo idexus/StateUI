@@ -283,7 +283,7 @@ carry.
 
 Which tabs there are is a collection the author holds, of the author's own
 type; which one shows is a state of that same type, given beside the tabs:
-`TabView(Tab.allCases, selection: $tab) { … }`. A collection rather than a
+`TabView(Tab.allCases) { … }.selection($tab)`. A collection rather than a
 builder of pages is what makes the keys work: a tab is a value, so the page
 for it can be keyed by it. `TabView` is generic over the tab, so a selection
 of another type does not compile.

@@ -269,11 +269,12 @@ final class AndroidPagesTests: XCTestCase {
     func testADrawerStandsAtTheEdgeTheLanguageStartsFrom() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     TitledPage(title: "Home")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let hebrew = try XCTUnwrap(HostLocaleInfo(words: ["he", "IL", "he-IL", "Asia/Jerusalem", "1", "0", "1", "1"]))
             let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
@@ -293,7 +294,7 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let open = State(wrappedValue: false)
             let host = AndroidRenderer.running {
-                SplitView(open.projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu", icon: "test_dot.png")
                 } detail: {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -302,6 +303,7 @@ final class AndroidPagesTests: XCTestCase {
                         TitledPage(title: "Deeper")
                     }
                 }
+                .showsSidebar(open.projectedValue)
             }
             host.layOut()
             let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
@@ -326,7 +328,7 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let open = State(wrappedValue: true)
             let host = AndroidRenderer.running {
-                SplitView(open.projectedValue) {
+                SplitView {
                     TitledPage(title: "Notes", icon: "test_wide.png")
                 } detail: {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -335,6 +337,7 @@ final class AndroidPagesTests: XCTestCase {
                         TitledPage(title: "Deeper")
                     }
                 }
+                .showsSidebar(open.projectedValue)
             }
             host.layOut(width: 2000, height: 1600)
             host.runtime.pump.turn()
@@ -367,7 +370,7 @@ final class AndroidPagesTests: XCTestCase {
                 let open = State(wrappedValue: false)
                 let path = State(wrappedValue: [1])
                 let host = AndroidRenderer.running {
-                    SplitView(open.projectedValue) {
+                    SplitView {
                         TitledPage(title: "Menu", icon: "test_dot.png")
                     } detail: {
                         NavigationStack(path.projectedValue) {
@@ -376,6 +379,7 @@ final class AndroidPagesTests: XCTestCase {
                             TitledPage(title: "Deeper")
                         }
                     }
+                    .showsSidebar(open.projectedValue)
                 }
                 host.layOut(width: width, height: height)
                 host.runtime.pump.turn()
@@ -406,7 +410,7 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let path = State(wrappedValue: [1])
             let host = AndroidRenderer.running {
-                SplitView(State(wrappedValue: false).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     NavigationStack(path.projectedValue) {
@@ -415,6 +419,7 @@ final class AndroidPagesTests: XCTestCase {
                         TitledPage(title: "Deeper")
                     }
                 }
+                .showsSidebar(State(wrappedValue: false).projectedValue)
                 .showsSidebarToggle(path.wrappedValue.isEmpty)
             }
             host.layOut(width: 1080, height: 1920)
@@ -437,7 +442,7 @@ final class AndroidPagesTests: XCTestCase {
     func testTheSidebarsBarStandsAsHighAsTheDetails() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TitledPage(title: "Notes", icon: "test_wide.png")
                 } detail: {
                     NavigationStack(State(wrappedValue: [1]).projectedValue) {
@@ -446,6 +451,7 @@ final class AndroidPagesTests: XCTestCase {
                         TitledPage(title: "Deeper", actions: [ToolbarButton("Save").icon("test_wide.png")])
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             host.insetsChanged(left: 0, top: 48, right: 0, bottom: 96, keyboard: 0)
             // Laid out until the bars hold what the first room said of the sidebar, as a window's passes do.
@@ -478,7 +484,7 @@ final class AndroidPagesTests: XCTestCase {
     func testTheSidebarBesideTheDetailStandsApartByALine() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) { TitledPage(title: "Menu") } detail: { ZStack {} }
+                SplitView { TitledPage(title: "Menu") } detail: { ZStack {} }.showsSidebar(State(wrappedValue: true).projectedValue)
             }
             for _ in 0..<2 {
                 host.layOut(width: 2000, height: 1600)
@@ -504,7 +510,7 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let open = State(wrappedValue: true)
             let host = AndroidRenderer.running {
-                SplitView(open.projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     NavigationStack(State(wrappedValue: [1]).projectedValue) {
@@ -514,6 +520,7 @@ final class AndroidPagesTests: XCTestCase {
                     }
                     .id("detail")
                 }
+                .showsSidebar(open.projectedValue)
             }
             Java.call(TestContext.window.reference, AndroidDriver.setContentView, .object(host.root.reference))
             TestWindow.run(for: 300)
@@ -555,7 +562,7 @@ final class AndroidPagesTests: XCTestCase {
     func testALayoutWhileTheDrawerSlidesLeavesItSliding() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                SplitView(State(wrappedValue: false).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu", icon: "test_dot.png")
                 } detail: {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -564,6 +571,7 @@ final class AndroidPagesTests: XCTestCase {
                         TitledPage(title: "Deeper")
                     }
                 }
+                .showsSidebar(State(wrappedValue: false).projectedValue)
             }
             host.layOut()
             let split = try XCTUnwrap(host.views(AndroidSplitView.self).first)
@@ -649,9 +657,10 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let tab = State(wrappedValue: 0)
             let host = AndroidRenderer.running {
-                TabView([0, 1], selection: tab.projectedValue) { number in
+                TabView([0, 1]) { number in
                     TitledPage(title: "Tab \(number)")
                 }
+                .selection(tab.projectedValue)
             }
             host.layOut()
             let tabs = try XCTUnwrap(host.views(AndroidTabView.self).first)
@@ -669,7 +678,7 @@ final class AndroidPagesTests: XCTestCase {
         try onMainActor {
             let tab = State(wrappedValue: 0)
             let host = AndroidRenderer.running {
-                TabView([0, 1, 2], selection: tab.projectedValue) { number in TitledPage(title: "Tab \(number)") }
+                TabView([0, 1, 2]) { number in TitledPage(title: "Tab \(number)") }.selection(tab.projectedValue)
             }
             host.layOut()
             let tabs = try XCTUnwrap(host.views(AndroidTabView.self).first)
@@ -1191,7 +1200,7 @@ private struct ScenePage: View {
 /// A split whose sidebar slides over a stack, as on a phone.
 @MainActor
 private func drawerOverStack(sidebar: some View) -> some View {
-    SplitView(State(wrappedValue: false).projectedValue) {
+    SplitView {
         sidebar
     } detail: {
         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -1200,6 +1209,7 @@ private func drawerOverStack(sidebar: some View) -> some View {
             TitledPage(title: "Deeper")
         }
     }
+    .showsSidebar(State(wrappedValue: false).projectedValue)
 }
 
 /// `content` in a window painted `color`.

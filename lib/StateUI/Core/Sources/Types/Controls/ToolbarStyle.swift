@@ -7,11 +7,12 @@
 /// How the buttons on a bar stand where the host draws them itself - the
 /// Web; every native bar keeps its platform's own.
 ///
-///     SplitView($showsMenu) {
+///     SplitView {
 ///         MenuPage()
 ///     } detail: {
 ///         DetailPage()
 ///     }
+///     .showsSidebar($showsMenu)
 ///     .toolbarStyle(.rounded)
 public enum ToolbarStyle: Int32, Sendable, CaseIterable {
     /// The platform's own: on the Web, `.plain`.

@@ -17,7 +17,7 @@ final class UIKitSplitViewTests: XCTestCase {
     func testTheSidebarSlidesOverTheDetailInANarrowRoom() throws {
         let menuOpen = State(wrappedValue: false)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            SplitView { Text("Sidebar") } detail: { Text("Detail") }.showsSidebar(menuOpen.projectedValue)
         }
         defer { host.finish() }
         let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
@@ -45,9 +45,10 @@ final class UIKitSplitViewTests: XCTestCase {
     @MainActor
     func testADetailRunningUnderItsBarsStandsBesideTheSidebar() throws {
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: {
+            SplitView { Text("Sidebar") } detail: {
                 ZStack {}.ignoresSafeArea(.all).id("content")
             }
+            .showsSidebar(State(wrappedValue: true).projectedValue)
         }
         defer { host.finish() }
         let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
@@ -72,7 +73,7 @@ final class UIKitSplitViewTests: XCTestCase {
         // The tests' host reports no application; one does as it starts.
         HostBoundary.setApplicationInfo(HostApplicationInfo(name: "Notes", packageName: "", versionString: "", buildString: ""))
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            SplitView { Text("Sidebar") } detail: { Text("Detail") }.showsSidebar(State(wrappedValue: true).projectedValue)
         }
         defer { host.finish() }
         let split = try XCTUnwrap(host.runtime.tree.root?.first(type: .splitView))
@@ -92,10 +93,11 @@ final class UIKitSplitViewTests: XCTestCase {
         let painted = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
             if painted.wrappedValue {
-                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+                SplitView { Text("Sidebar") } detail: { Text("Detail") }
+                    .showsSidebar(State(wrappedValue: true).projectedValue)
                     .sidebarBackground(.color(Color(hex: 0x251E4C)))
             } else {
-                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+                SplitView { Text("Sidebar") } detail: { Text("Detail") }.showsSidebar(State(wrappedValue: true).projectedValue)
             }
         }
         defer { host.finish() }
@@ -117,7 +119,8 @@ final class UIKitSplitViewTests: XCTestCase {
     @MainActor
     func testASidebarOnGlassStandsOnUIKitsEffect() throws {
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            SplitView { Text("Sidebar") } detail: { Text("Detail") }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
                 .sidebarBackground(.glass(.regular))
                 .sidebarOverlayBackground(.glass(.regular))
         }
@@ -154,9 +157,10 @@ final class UIKitSplitViewTests: XCTestCase {
         let path = State(wrappedValue: before)
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running {
-            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
+            SplitView { Text("Sidebar") } detail: {
                 NavigationStack(path.projectedValue) { Text("Home") } destination: { number in Text("Group \(number)") }
             }
+            .showsSidebar(menuOpen.projectedValue)
         }
         defer { host.finish() }
         let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
@@ -205,7 +209,7 @@ final class UIKitSplitViewTests: XCTestCase {
         let path = State(wrappedValue: [1, 2])
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
+            SplitView { Text("Sidebar") } detail: {
                 if tabbed.wrappedValue {
                     TabView([0, 1]) { tab in Text("Tab \(tab)") }
                 } else {
@@ -213,6 +217,7 @@ final class UIKitSplitViewTests: XCTestCase {
                         destination: { number in Text("Pushed \(number)") }
                 }
             }
+            .showsSidebar(menuOpen.projectedValue)
         }
         defer { host.finish() }
         let stack = try XCTUnwrap(Self.controller(of: .navigationStack, in: host))
@@ -239,12 +244,13 @@ final class UIKitSplitViewTests: XCTestCase {
     func testTabsOfStacksStandUnderOneBar() throws {
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
+            SplitView { Text("Sidebar") } detail: {
                 TabView([0, 1]) { tab in
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Tab \(tab)") }
                         destination: { number in Text("Pushed \(number)") }
                 }
             }
+            .showsSidebar(menuOpen.projectedValue)
         }
         defer { host.finish() }
         host.settle { false }

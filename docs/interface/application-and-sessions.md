@@ -719,7 +719,7 @@ struct NotesPage: View {
     @State private var query = ""
 
     var body: some View {
-        SplitView($showsFolders) {
+        SplitView {
             Text("Folders")
                 .title("Notes")
                 .icon("notes.png")
@@ -728,6 +728,7 @@ struct NotesPage: View {
                 .title(folder)
                 .subtitle("Updated today")
         }
+        .showsSidebar($showsFolders)
         .barBackground(.cornflowerBlue)
         .barForegroundColor(.white)
         .titleView {

@@ -218,8 +218,8 @@ enum Presented {
             return AnyView(NavigationStack(State(wrappedValue: [Int]()).projectedValue) { words }
                 destination: { _ in Text("Pushed") }.onLinkOpened(handler))
         case "SplitView":
-            return AnyView(SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") }
-                detail: { words }.onLinkOpened(handler))
+            return AnyView(SplitView { Text("Sidebar") }
+                detail: { words }.showsSidebar(State(wrappedValue: true).projectedValue).onLinkOpened(handler))
         case "TabView":
             return AnyView(TabView([0]) { _ in words }.onLinkOpened(handler))
         default:
@@ -247,9 +247,10 @@ enum Presented {
                 VStack { Beside([Text("Root")] + others) }
             } destination: { _ in Text("Pushed") })
         case "SplitView":
-            return written.worn(by: SplitView(State(wrappedValue: true).projectedValue) {
+            return written.worn(by: SplitView {
                 Text("Sidebar")
-            } detail: { VStack { Beside([Text("Detail")] + others) } })
+            } detail: { VStack { Beside([Text("Detail")] + others) } }
+            .showsSidebar(State(wrappedValue: true).projectedValue))
         case "TabView":
             return written.worn(by: TabView([0]) { _ in VStack { Beside([Text("Inner")] + others) } })
         default:

@@ -16,13 +16,14 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: false)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(open.projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     ScrollView {
                         VStack { HStack { Text("row") } }
                     }
                 }
+                .showsSidebar(open.projectedValue)
             }
             let window = try XCTUnwrap(host.window)
             host.settle { open.wrappedValue }
@@ -46,11 +47,12 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: true)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(open.projectedValue) {
+                SplitView {
                     Text("Menu words").title("Menu")
                 } detail: {
                     ScrollView { VStack { HStack { Text("row") } } }
                 }
+                .showsSidebar(open.projectedValue)
             }
             let scroller = try XCTUnwrap(host.views(WinUIScrollView.self).first)
             host.settle { scroller.laidOutFrame.width > 0 }
@@ -78,11 +80,12 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: true)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(open.projectedValue) {
+                SplitView {
                     Text("Menu words").title("Menu")
                 } detail: {
                     Text("Detail words")
                 }
+                .showsSidebar(open.projectedValue)
             }
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             host.settle { Self.words(split.sidebar, "paneOpen") == "1" }
@@ -102,11 +105,12 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: false)
             let host = WinUIRenderer.running {
-                SplitView(open.projectedValue) {
+                SplitView {
                     Text("Menu words").title("Menu")
                 } detail: {
                     Text("Detail words")
                 }
+                .showsSidebar(open.projectedValue)
             }
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             host.settle { Self.words(split.sidebar, "paneBeside") == "0" }
@@ -135,7 +139,7 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: true)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(open.projectedValue) {
+                SplitView {
                     Grid {
                         ScrollView {
                             VStack { ForEach(0..<60, id: \.self) { Text("row \($0)") } }
@@ -146,6 +150,7 @@ final class WinUIPagesTests: XCTestCase {
                 } detail: {
                     Text("detail")
                 }
+                .showsSidebar(open.projectedValue)
             }
             for _ in 0..<20 { host.step() }
             host.layOut()
@@ -164,7 +169,7 @@ final class WinUIPagesTests: XCTestCase {
     func testTheSidebarsFooterStaysInAWindowMadeShorter() throws {
         try onUIThread {
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Grid {
                         ScrollView {
                             VStack { ForEach(0..<60, id: \.self) { Text("row \($0)") } }
@@ -175,6 +180,7 @@ final class WinUIPagesTests: XCTestCase {
                 } detail: {
                     Text("detail")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             for _ in 0..<20 { host.step() }
             host.layOut()
@@ -199,7 +205,7 @@ final class WinUIPagesTests: XCTestCase {
             let tabs = State(wrappedValue: [0, 1, 2])
             let tab = State(wrappedValue: 2)
             let host = WinUIRenderer.running {
-                TabView(tabs.wrappedValue, selection: tab.projectedValue) { number in Text("Tab \(number)") }
+                TabView(tabs.wrappedValue) { number in Text("Tab \(number)") }.selection(tab.projectedValue)
             }
             let tabbed = try XCTUnwrap(host.views(WinUITabView.self).first)
             let row: WinUIView = tabbed.tabsShownByWindow ? try XCTUnwrap(host.window).tabRow : tabbed.row
@@ -378,11 +384,12 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let tone = State(wrappedValue: Color(red: 0, green: 0, blue: 128))
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TonedSidebar(tone: tone.wrappedValue)
                 } detail: {
                     Text("detail")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             host.settle { Self.words(split.sidebar, "paneBackground") == "#FF000080" }
@@ -401,13 +408,14 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let written = State(wrappedValue: Material?.some(.blur(.ultraThick)))
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("sidebar")
                 } detail: {
                     WindowSessionPage(key: "\(String(describing: written.wrappedValue))") {
                         $0.background = written.wrappedValue
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let window = try XCTUnwrap(host.window)
             host.settle { Self.words(window.handle, "detailCard") == "#00000000" }
@@ -427,11 +435,12 @@ final class WinUIPagesTests: XCTestCase {
     func testTheSidebarPageStandsAtTheSplitViewsTop() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TonedSidebar(tone: Color(red: 0, green: 0, blue: 128))
                 } detail: {
                     Text("detail")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             host.settle { host.views(WinUITextView.self).contains { $0.text == "sidebar" && $0.frame.height > 0 } }
@@ -664,13 +673,14 @@ final class WinUIPagesTests: XCTestCase {
     func testASidebarTallerThanTheWindowScrolls() throws {
         try onUIThread {
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     ScrollView {
                         VStack { ForEach(Array(0..<100), id: \.self) { number in Text("Row \(number)") } }
                     }
                 } detail: {
                     Text("Detail")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             host.layOut()
             let scroller = try XCTUnwrap(host.views(WinUIScrollView.self).first)
@@ -686,11 +696,12 @@ final class WinUIPagesTests: XCTestCase {
     func testATabbedDetailStandsItsTabsAcrossTheDetail() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let window = try XCTUnwrap(host.window)
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
@@ -707,11 +718,12 @@ final class WinUIPagesTests: XCTestCase {
             let host = WinUIRenderer.running {
                 Group {
                     if signedIn.wrappedValue {
-                        SplitView(State(wrappedValue: true).projectedValue) {
+                        SplitView {
                             TitledPage(title: "Menu")
                         } detail: {
                             TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
                         }
+                        .showsSidebar(State(wrappedValue: true).projectedValue)
                     } else {
                         NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                             TitledPage(title: "Sign in")
@@ -751,11 +763,12 @@ final class WinUIPagesTests: XCTestCase {
             for room in [WinUITestHost.room, WinUITestHost.wideRoom] {
                 let open = State(wrappedValue: false)
                 let host = WinUIRenderer.running(room: room) {
-                    SplitView(open.projectedValue) {
+                    SplitView {
                         Button("Sign out")
                     } detail: {
                         Text("Detail")
                     }
+                    .showsSidebar(open.projectedValue)
                 }
                 let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
                 let takes = { stateui_winui_focus(button.handle, true) }
@@ -801,13 +814,14 @@ final class WinUIPagesTests: XCTestCase {
     @MainActor
     private static func signIn(_ signedIn: State<Bool>) -> some View {
         if signedIn.wrappedValue {
-            SplitView(State(wrappedValue: false).projectedValue) {
+            SplitView {
                 Text("Menu")
             } detail: {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     AimedFieldPage()
                 } destination: { _ in Text("Pushed") }
             }
+            .showsSidebar(State(wrappedValue: false).projectedValue)
         } else {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 TextField(State(wrappedValue: "").projectedValue)

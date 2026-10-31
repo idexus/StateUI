@@ -188,7 +188,7 @@ struct ArrangedBeneath: View {
         let signedIn = self.signedIn.wrappedValue
         return Group {
             if signedIn {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("Sections")
                 } detail: {
                     NavigationStack(path.projectedValue) {
@@ -201,6 +201,7 @@ struct ArrangedBeneath: View {
                             .id("pushed")
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             } else {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Rectangle()

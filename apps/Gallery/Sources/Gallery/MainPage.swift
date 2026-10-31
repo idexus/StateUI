@@ -60,7 +60,7 @@ struct MainPage: View {
     /// pages, a stack holding an array, a set of tabs holding a selection.
     var body: some View {
         // listing: MainPage.split
-        SplitView(nav.$menuOpen) {
+        SplitView {
             MenuPage(
                 catalog: catalog,
                 nav: nav,
@@ -69,6 +69,7 @@ struct MainPage: View {
         } detail: {
             detail()
         }
+        .showsSidebar(nav.$menuOpen)
         // What the sidebar stands on beside the page and sliding over it,
         // in each theme, as the gallery's looks say.
         .sidebarBackground(surface(\.sidebar, .sidebar))
@@ -249,7 +250,7 @@ struct MainPage: View {
     /// The one section that is not a stack: a `TabView` over a list of the
     /// author's own enum, with a stack inside its `.stack` tab.
     func tabs() -> some View {
-        TabView(nav.tabs, selection: nav.$tab) { which in
+        TabView(nav.tabs) { which in
             switch which {
             case .stack:
                 NavigationStack(nav.$tabsPath) {
@@ -270,6 +271,7 @@ struct MainPage: View {
                 TabsExtraPage(nav: nav, number: number)
             }
         }
+        .selection(nav.$tab)
     }
     // listing: end
 

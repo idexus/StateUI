@@ -238,7 +238,7 @@ final class WebLookTests: XCTestCase {
         WebBrowser.ask([("density", .number(3)), ("width", .number(430))])
         defer { WebBrowser.ask([("density", .number(1))]) }
         let host = WebRenderer.running {
-            SplitView(State(wrappedValue: false).projectedValue) {
+            SplitView {
                 Text("Samples").title("Gallery")
             } detail: {
                 Text("Shortcut").title("Keyboard shortcut").toolbar {
@@ -249,6 +249,7 @@ final class WebLookTests: XCTestCase {
                     ToolbarButton("Share")
                 }
             }
+            .showsSidebar(State(wrappedValue: false).projectedValue)
         }
         let standing = """
             (() => {
@@ -470,11 +471,12 @@ final class WebLookTests: XCTestCase {
     /// content of the rows under it - 20 from the edge - the toggle at the part's end.
     func testTheApplicationsNameStandsAtTheStartOverTheSidebar() throws {
         let host = WebRenderer.running {
-            SplitView(State(wrappedValue: true).projectedValue) {
+            SplitView {
                 Text("Samples").title("Gallery")
             } detail: {
                 Text("Detail").title("Page")
             }
+            .showsSidebar(State(wrappedValue: true).projectedValue)
         }
         let bar = "document.querySelector('.stateui-window > .stateui-bar')"
         let name = "\(bar).querySelector('.stateui-bar-name')"
@@ -492,11 +494,12 @@ final class WebLookTests: XCTestCase {
     /// its name and the line under it and as wide as its picture is at that height.
     func testTheApplicationsMarkStandsBeforeItsNameOverTheSidebar() throws {
         let host = WebRenderer.running {
-            SplitView(State(wrappedValue: true).projectedValue) {
+            SplitView {
                 Text("Samples").title("Gallery").subtitle("Every sample").icon("test_dot.png")
             } detail: {
                 Text("Detail").title("Page")
             }
+            .showsSidebar(State(wrappedValue: true).projectedValue)
         }
         let bar = "document.querySelector('.stateui-window > .stateui-bar')"
         let mark = "\(bar).querySelector('.stateui-bar-brand img')"
@@ -794,11 +797,12 @@ final class WebLookTests: XCTestCase {
     func testAButtonMovingBetweenTheBarsPartsSlidesThere() throws {
         let shows = State(wrappedValue: true)
         let host = WebRenderer.running {
-            SplitView(shows.projectedValue) {
+            SplitView {
                 Text("Folders").title("Library")
             } detail: {
                 Text("Books").title("All books")
             }
+            .showsSidebar(shows.projectedValue)
             .toolbar { ToolbarButton("Add").placement(.sidebar) }
         }
         let found = { (part: String) in
@@ -818,11 +822,12 @@ final class WebLookTests: XCTestCase {
     func testABarsColumnsMoveAsTheSidebarDoes() throws {
         let shows = State(wrappedValue: true)
         let host = WebRenderer.running {
-            SplitView(shows.projectedValue) {
+            SplitView {
                 Text("Folders").title("Library")
             } detail: {
                 Text("Books").title("All books")
             }
+            .showsSidebar(shows.projectedValue)
         }
         let bar = "document.querySelector('.stateui-window > .stateui-bar')"
         let moving = "\(bar).getAnimations().map((a) => a.transitionProperty).sort().join(',')"

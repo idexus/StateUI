@@ -105,9 +105,10 @@
         case "NavigationStack":
             return dressing.wear(stack())
         case "SplitView":
-            return dressing.wear(SplitView(State(wrappedValue: true).projectedValue) {
+            return dressing.wear(SplitView {
                 Text("Sidebar")
-            } detail: { stack() })
+            } detail: { stack() }
+            .showsSidebar(State(wrappedValue: true).projectedValue))
         case "TabView":
             return dressing.wear(TabView([0, 1]) { tab in
                 if tab == 0 {

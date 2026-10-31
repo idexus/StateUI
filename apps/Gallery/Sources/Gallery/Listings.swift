@@ -6987,7 +6987,7 @@ enum Listings {
         """#,
         "MainPage.split": #"""
         // Sources/Gallery/MainPage.swift
-        SplitView(nav.$menuOpen) {
+        SplitView {
             MenuPage(
                 catalog: catalog,
                 nav: nav,
@@ -6996,6 +6996,7 @@ enum Listings {
         } detail: {
             detail()
         }
+        .showsSidebar(nav.$menuOpen)
         // What the sidebar stands on beside the page and sliding over it,
         // in each theme, as the gallery's looks say.
         .sidebarBackground(surface(\.sidebar, .sidebar))
@@ -7012,7 +7013,7 @@ enum Listings {
         /// The one section that is not a stack: a `TabView` over a list of the
         /// author's own enum, with a stack inside its `.stack` tab.
         func tabs() -> some View {
-            TabView(nav.tabs, selection: nav.$tab) { which in
+            TabView(nav.tabs) { which in
                 switch which {
                 case .stack:
                     NavigationStack(nav.$tabsPath) {
@@ -7033,6 +7034,7 @@ enum Listings {
                     TabsExtraPage(nav: nav, number: number)
                 }
             }
+            .selection(nav.$tab)
         }
         """#,
         "MapSample": #"""
@@ -11472,7 +11474,7 @@ enum Listings {
             @State private var drafts: [Int] = []
 
             var body: some View {
-                TabView(Tab.allCases, selection: $tab) { tab in
+                TabView(Tab.allCases) { tab in
                     switch tab {
                     case .inbox:
                         NavigationStack($inbox) {
@@ -11509,6 +11511,7 @@ enum Listings {
                         .icon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
                     }
                 }
+                .selection($tab)
             }
 
             /// A tab's first page: its name, and a button pushing a page onto its stack.

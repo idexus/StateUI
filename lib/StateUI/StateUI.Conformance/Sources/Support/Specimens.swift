@@ -132,9 +132,10 @@
                 VStack { Beside([Text("Root")] + others) }
             } destination: { _ in Text("Pushed") })
         case "SplitView":
-            return dressing.wear(SplitView(State(wrappedValue: true).projectedValue) {
+            return dressing.wear(SplitView {
                 Text("Sidebar")
-            } detail: { VStack { Beside([Text("Detail")] + others) } })
+            } detail: { VStack { Beside([Text("Detail")] + others) } }
+            .showsSidebar(State(wrappedValue: true).projectedValue))
         case "TabView":
             return dressing.wear(TabView([0, 1]) { tab in VStack { Beside([Text("Tab \(tab)")] + (tab == 0 ? others : [])) } })
         default:

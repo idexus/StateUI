@@ -1201,7 +1201,7 @@ swift.init Slider.init(_:): @MainActor init(_ value: Double)
 swift.init Space.init(): @MainActor init()
 swift.init Spinner.init(): @MainActor init()
 swift.init Spinner.init(_:): @MainActor init(_ isAnimating: Bool)
-swift.init SplitView.init(_:sidebar:detail:): @MainActor init<Sidebar, Detail>(_ showsSidebar: Binding<Bool>, @ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Sidebar : View, Detail : View
+swift.init SplitView.init(sidebar:detail:): @MainActor init<Sidebar, Detail>(@ViewBuilder sidebar: () -> Sidebar, @ViewBuilder detail: () -> Detail) where Sidebar : View, Detail : View
 swift.init State.init(_:): @MainActor convenience init(_ initialValue: @autoclosure @escaping () -> Value)
 swift.init State.init(_:): @MainActor convenience init(_ initialValue: Value)
 swift.init State.init(wrappedValue:): @MainActor convenience init(wrappedValue: @autoclosure @escaping () -> Value)
@@ -1236,7 +1236,6 @@ swift.init Switch.init(): @MainActor init()
 swift.init Switch.init(_:): @MainActor init(_ isOn: Bool)
 swift.init Switch.init(_:): @MainActor init(_ state: Binding<Bool>)
 swift.init TabView.init(_:destination:): @MainActor init<Tabs, Destination>(_ tabs: Tabs, @ViewBuilder destination: (Tab) -> Destination) where Tab == Tabs.Element, Tabs : RandomAccessCollection, Destination : View
-swift.init TabView.init(_:selection:destination:): @MainActor init<Tabs, Destination>(_ tabs: Tabs, selection: Binding<Tab>, @ViewBuilder destination: (Tab) -> Destination) where Tab == Tabs.Element, Tabs : RandomAccessCollection, Destination : View
 swift.init Text.init(): @MainActor init()
 swift.init Text.init(_:): @MainActor init(_ state: Binding<String>)
 swift.init Text.init(_:): @MainActor init(_ text: String)
@@ -11070,6 +11069,7 @@ swift.method SplitView.showsCloseButton(_:): @MainActor func showsCloseButton(_ 
 swift.method SplitView.showsCloseButton(_:): @MainActor func showsCloseButton(_ value: Bool) -> Self.Modified
 swift.method SplitView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
+swift.method SplitView.showsSidebar(_:): @MainActor func showsSidebar(_ state: Binding<Bool>) -> SplitView
 swift.method SplitView.showsSidebarToggle(_:): @MainActor func showsSidebarToggle(_ state: Binding<Bool>) -> SplitView.Modified
 swift.method SplitView.showsSidebarToggle(_:): @MainActor func showsSidebarToggle(_ value: Bool) -> SplitView.Modified
 swift.method SplitView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
@@ -11951,6 +11951,7 @@ swift.method TabView.samples(_:into:_:): @MainActor func samples<Value>(_ source
 swift.method TabView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
+swift.method TabView.selection(_:): @MainActor func selection(_ state: Binding<Tab>) -> TabView<Tab>
 swift.method TabView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method TabView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method TabView.setValue(_:whenDescribed:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, whenDescribed value: @escaping @MainActor @Sendable () -> Value) -> Self where Owner : Contract, Value : HostRepresentable

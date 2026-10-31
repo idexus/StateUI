@@ -9,12 +9,13 @@
 /// Declared on a window's page, it is the whole window's bar; an arrangement
 /// further in stands in its place, one value at a time, while it is shown:
 ///
-///     SplitView($showsMenu) {
+///     SplitView {
 ///         MenuPage()
 ///     } detail: {
 ///         NavigationStack($path) { … }
 ///             .barBackground(.cornflowerBlue)
 ///     }
+///     .showsSidebar($showsMenu)
 ///     .barForegroundColor(.white)
 ///
 /// A split view's bar is both its panes': a sidebar with a bar of its own

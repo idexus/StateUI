@@ -18,13 +18,14 @@ final class WebChoiceTests: XCTestCase {
     /// awaiting handler following the chosen filter loaded, with no other event after the choice.
     func testAChoiceLoadsWhatAPageShowsWithNoOtherEvent() throws {
         let host = WebRenderer.running {
-            SplitView(State(wrappedValue: true).projectedValue) {
+            SplitView {
                 Text("Menu").title("Parcels")
             } detail: {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     SummaryPage()
                 } destination: { _ in Text("Parcel") }
             }
+            .showsSidebar(State(wrappedValue: true).projectedValue)
         }
         let picker = try XCTUnwrap(host.views(WebPickerView.self).first)
         let count = "[...document.querySelectorAll('.stateui-window *')].find((e) => e.children.length === 0 "

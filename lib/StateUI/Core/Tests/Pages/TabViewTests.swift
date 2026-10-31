@@ -36,9 +36,10 @@ private func tabs(
     _ selection: Binding<Tab>,
     _ offered: [Tab] = Tab.allCases
 ) -> TabView<Tab> {
-    TabView(offered, selection: selection.projectedValue) { tab in
+    TabView(offered) { tab in
         TabPage(tab: tab)
     }
+    .selection(selection.projectedValue)
 }
 
 @MainActor
@@ -157,7 +158,7 @@ final class TabViewTests: XCTestCase {
         let selection = State<Tab>(.home)
         let path = State<[Int]>([1])
 
-        let patch = Renders().render(TabView([Tab.home], selection: selection.projectedValue) { _ in
+        let patch = Renders().render(TabView([Tab.home]) { _ in
             NavigationStack(path.projectedValue) {
                 TabPage(tab: .home)
             } destination: { _ in
@@ -166,6 +167,7 @@ final class TabViewTests: XCTestCase {
             .title("Home")
             .icon("house.png")
         }
+        .selection(selection.projectedValue)
         .node)
 
         let stack = try XCTUnwrap(patch.children.first)
@@ -234,7 +236,7 @@ final class TabViewTests: XCTestCase {
         let selection = State<Tab>(.settings)
         let path = State<[Int]>([])
 
-        let tree = TabView([Tab.home, .settings], selection: selection.projectedValue) { tab in
+        let tree = TabView([Tab.home, .settings]) { tab in
             switch tab {
             case .home:
                 NavigationStack(path.projectedValue) {
@@ -249,6 +251,7 @@ final class TabViewTests: XCTestCase {
                 TabPage(tab: tab)
             }
         }
+        .selection(selection.projectedValue)
         .barBackground(Color(hex: 0x512BD4))
         .node
 

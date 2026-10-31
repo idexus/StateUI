@@ -204,7 +204,8 @@ final class PageBarTests: XCTestCase {
     /// A split view's groups hang on the split view after its columns, each
     /// saying the part of its bar it names.
     func testASplitViewsGroupsFollowItsColumns() {
-        let split = SplitView(State(wrappedValue: true).projectedValue) { Text("Folders") } detail: { Text("Notes") }
+        let split = SplitView { Text("Folders") } detail: { Text("Notes") }
+            .showsSidebar(State(wrappedValue: true).projectedValue)
             .toolbar {
                 ToolbarButton("Add").placement(.sidebar)
                 ToolbarButton("Share")

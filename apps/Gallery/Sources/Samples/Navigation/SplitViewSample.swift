@@ -62,7 +62,7 @@ struct SplitViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`SplitView($menuOpen)` is two-way. The native host adapts the pane; "
+            Text("`.showsSidebar($menuOpen)` is two-way. The native host adapts the pane; "
                 + "when it keeps both sides visible, the binding settles on `true`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

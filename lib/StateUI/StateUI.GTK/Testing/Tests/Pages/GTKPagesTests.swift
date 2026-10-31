@@ -615,11 +615,12 @@ final class GTKPagesTests: XCTestCase {
     func testABarWithNoRoomKeepsItsFirstGroups() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                SplitView(State(wrappedValue: false).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     CrowdedBarPage()
                 }
+                .showsSidebar(State(wrappedValue: false).projectedValue)
             }
             let window = try XCTUnwrap(host.window).widget
             let frame = try XCTUnwrap(host.views(GTKSplitView.self).first?.detailFrame)

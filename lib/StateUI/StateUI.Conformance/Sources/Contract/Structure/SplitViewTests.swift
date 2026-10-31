@@ -16,9 +16,10 @@
             ], needs: [Covered(ViewContract.frameChanged, on: "Text")]) { s in
                 let frames = Received<[Double]>()
                 s.start {
-                    SplitView(State(wrappedValue: true).projectedValue) {
+                    SplitView {
                         Text("Sidebar")
                     } detail: { WideDetail(Text("Detail").onEvent(ViewContract.frameChanged) { frames.values.append($0) }) }
+                    .showsSidebar(State(wrappedValue: true).projectedValue)
                 }
                 s.settle { Aspects.laidOut(frames) }
                 s.expect(Aspects.laidOut(frames), true, "its detail laid out in the window")
@@ -27,9 +28,10 @@
                 Covered(SplitViewContract.showsSidebar),
             ]) { s in
                 s.start {
-                    SplitView(State(wrappedValue: true).projectedValue) {
+                    SplitView {
                         Text("Sidebar").id("sidebar")
                     } detail: { WideDetail(Text("Detail").id("detail")) }
+                    .showsSidebar(State(wrappedValue: true).projectedValue)
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
 
@@ -42,7 +44,7 @@
             ]) { s in
                 let open = State(wrappedValue: true)
                 s.start {
-                    SplitView(open.projectedValue) { Text("Sidebar") } detail: { WideDetail(Text("Detail")) }
+                    SplitView { Text("Sidebar") } detail: { WideDetail(Text("Detail")) }.showsSidebar(open.projectedValue)
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
                 try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == true }
@@ -63,11 +65,12 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let open = State(wrappedValue: true)
                 s.start {
-                    SplitView(open.projectedValue) {
+                    SplitView {
                         Text("Sidebar")
                     } detail: {
                         WideDetail(VStack { Button("Hide").onClicked { open.wrappedValue = false }.id("hide") })
                     }
+                    .showsSidebar(open.projectedValue)
                 }
                 let split = try s.element(ofType: SplitViewContract.nodeType)
                 try s.settle { try s.held(SplitViewContract.showsSidebar, on: split) == true }
@@ -105,11 +108,12 @@
         ]) { s in
             let offered = State(wrappedValue: false)
             s.start {
-                let split = SplitView(State(wrappedValue: true).projectedValue) {
+                let split = SplitView {
                     Text("Sidebar")
                 } detail: {
                     WideDetail(VStack { Button("Offer").onClicked { offered.wrappedValue = true }.id("offer") })
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
                 return fromAState
                     ? split.showsSidebarToggle(offered.projectedValue)
                     : split.showsSidebarToggle(offered.wrappedValue)
@@ -134,11 +138,12 @@
         ]) { s in
             let over = State(wrappedValue: first)
             s.start {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("Sidebar")
                 } detail: {
                     WideDetail(NarrowingButton())
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
                 .sidebarOverlays(over.projectedValue)
             }
             let split = try s.element(ofType: SplitViewContract.nodeType)
@@ -164,11 +169,12 @@
             let (first, changed) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
-                write(SplitView(State(wrappedValue: true).projectedValue) {
+                write(SplitView {
                     Text("Sidebar")
                 } detail: {
                     WideDetail(VStack { Button("Change").onClicked { value.wrappedValue = changed }.id("change") })
-                }, value.projectedValue)
+                }
+                .showsSidebar(State(wrappedValue: true).projectedValue), value.projectedValue)
             }
             let split = try s.element(ofType: SplitViewContract.nodeType)
             try s.settle { try s.held(member, on: split) == first }
@@ -189,11 +195,12 @@
         ], needs: [Covered(ButtonContract.clicked), Covered(WindowContract.background)]) { s in
             let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
             s.start {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("Sidebar")
                 } detail: {
                     GroundingDetail(first: first, changed: changed)
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let split = try s.element(ofType: SplitViewContract.nodeType)
             try s.settle { try s.held(SplitViewContract.sidebarOverlayBackground, on: split) == first }
@@ -216,11 +223,12 @@
             let (first, changed) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
-                write(SplitView(State(wrappedValue: true).projectedValue) {
+                write(SplitView {
                     Text("Sidebar")
                 } detail: {
                     WideDetail(VStack { Button("Change").onClicked { value.wrappedValue = changed }.id("change") })
-                }, value.wrappedValue)
+                }
+                .showsSidebar(State(wrappedValue: true).projectedValue), value.wrappedValue)
             }
             let split = try s.element(ofType: SplitViewContract.nodeType)
             try s.settle { try s.held(member, on: split) == first }

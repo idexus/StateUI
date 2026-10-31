@@ -432,7 +432,7 @@ final class UIKitPagesTests: XCTestCase {
     func testATabChosenFromTheMoreListIsChosen() throws {
         let tab = State(wrappedValue: 0)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            TabView(0..<7, selection: tab.projectedValue) { number in Text("Tab \(number)").title("Tab \(number)") }
+            TabView(0..<7) { number in Text("Tab \(number)").title("Tab \(number)") }.selection(tab.projectedValue)
         }
         defer { host.finish() }
         let element = host.runtime.tree.root.flatMap { Self.first(.tabView, in: $0) }

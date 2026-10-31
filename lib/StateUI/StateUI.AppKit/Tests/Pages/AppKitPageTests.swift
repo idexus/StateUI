@@ -1261,11 +1261,12 @@ final class AppKitPageTests: XCTestCase {
     @MainActor
     func testTheSidebarsPartPutsWhatHasNoRoomBehindItsMore() throws {
         let renderer = AppKitRenderer.running {
-            SplitView(State(wrappedValue: true).projectedValue) {
+            SplitView {
                 Text("Folders").title("Library")
             } detail: {
                 Text("Books").title("All books")
             }
+            .showsSidebar(State(wrappedValue: true).projectedValue)
             .toolbar {
                 ToolbarButton("New folder").placement(.sidebar)
                 ToolbarButton("Import").placement(.sidebar)
