@@ -19,7 +19,7 @@ which, member by member. A layout paints its box - its background,
 outline and shape - and cuts what it holds to it; a scroller reports where the
 user moved it on the display's frames and moves where its state says; a state's journey moves every control
 tied to it on the display's frames, a property's transition and a layout's
-children animate, an engine's placement run stands and draws a ZStack's
+children animate, a motion layout's placement run stands and draws a ZStack's
 children, and a user who turns Windows' animation effects off sees
 everything arrive at once. Any other control shows
 its name in red where it belongs, so a gap is visible rather than silent.
@@ -81,16 +81,27 @@ or x64. A debugger here follows the machine's own architecture alone.
 ## The head
 
 An application's WinUI head is an executable. Its `main` names the
-application and hands the thread to the host, and ends the process with the
-code WinUI ended with - a start that failed fails it:
+application and hands the thread to the host; the host ends the process with
+the code WinUI ended with - a start that failed fails it. The Gallery's head:
 
-```swift quote
-import NotesUI
-import StateUIFoundation
+```swift listing winui.md.head
+// Platforms/WinUI/main.swift
+import GalleryUI
+import StateUIWebViewWinUI
 import StateUIWinUI
 
-stateui_app_register()
-exit(StateUIWinUI.run())
+// Register the application module, then say what this host answers for it before it runs: the controls it realizes,
+// the acts it performs, and the pushes it reports - each in Host/ beside this file, the elements made by the gallery's
+// relay in Relay/. Then hand WinUI this thread until the last window closes.
+registerApplication()
+// Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
+GalleryControls.register()
+GalleryActs.register()
+// Before StateUIWinUI.run(): the pushes this host raises, their source wired.
+GalleryEventSources.start()
+// The backends the Gallery shows a library element through: the web view, over WebView2.
+StateUIWebViewWinUI.register()
+StateUIWinUI.run(linkSchemes: ["stateui-gallery"])
 ```
 
 `STATEUI_HOST=winui` is what makes a build a WinUI one: the application's
@@ -133,23 +144,32 @@ public static func add<Realized: ElementContract, Made: WinUIControl>(
 ```
 
 - **`create`** makes the control once per element, and wires what it reports:
-  `reports.raise(Contract.member, values)` for an event of the element's own,
-  and `reports.report(property, value, as: event)` for a value the USER
-  changed.
+  `reports.raise(Contract.member, values)` for an event of the element's own
+  or of a tier it wears, and `reports.report(property, value, as: event)` for
+  a value the USER changed.
 - **`members`** registers what the control takes: `property(_:_:)` hands a
   value over as the type its contract declares, `nil` where it is no longer
   described, and `raises(_:)` records an event the control raises.
 
-```swift quote
-StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightControl in
-    let light = TrafficLightControl()
-    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
-    return light
-}) { light in
-    light.property(TrafficLightContract.signal) { control, signal in
-        control.signal = signal ?? .stop
+```swift listing winui.md.control
+// Platforms/WinUI/Host/TrafficLightControl.swift
+extension TrafficLightControl {
+    /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
+    /// reports, and `property` puts the described signal on it. Said once, before the application runs.
+    @MainActor
+    static func register() {
+        StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightControl in
+            let light = TrafficLightControl()
+            light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+            return light
+        }) { light in
+            // Handed back typed - a TrafficSignal, not its number.
+            light.property(TrafficLightContract.signal) { control, signal in
+                control.signal = signal ?? .stop
+            }
+            light.raises(TrafficLightContract.lampTapped)
+        }
     }
-    light.raises(TrafficLightContract.lampTapped)
 }
 ```
 
@@ -167,18 +187,28 @@ GTK.
 
 ### Properties taken together
 
-A control that must take one property before another - a web view its agent
-before its page - names them with `applies`, and is handed them whole
-whenever any of them changes: each as the type its contract declares, and
-whether it changed (`ControlValues`). Each `property` alone comes in no
-promised order.
+A control that must take properties together - a rating bar its stars and
+its rating, a web view its agent before its page - names them with `applies`,
+and is handed them whole whenever any of them changes: each as the type its
+contract declares, and whether it changed (`ControlValues`). Each `property`
+alone comes in no promised order. The Gallery's rating bar also reports the
+rating the user taps, with `reports.report`:
 
-```swift quote
-StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
-    web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
-        if values.changed(WebViewContract.userAgent) { control.userAgent = values[WebViewContract.userAgent] }
-        if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
+```swift listing winui.md.applies
+// Platforms/WinUI/Host/RatingBarControl.swift
+// The bar, made once per element, reporting the rating its user chooses; its stars and its rating taken together.
+StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarControl in
+    let bar = RatingBarControl()
+    bar.onRatingChanged = { rating in
+        reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
     }
+    return bar
+}) { bar in
+    bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
+        control.show(
+            rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+    }
+    bar.raises(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -191,17 +221,8 @@ change: one added, moved, taken away, or given another value. A child is a
 `WinUIChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the control keeps what it drew for one by it. Such a child has no
-element of its own.
-
-```swift quote
-StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
-    map.property(MapContract.region) { control, region in … }
-    map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, markers in
-        control.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
-        // the user taps one: marker.reports.raise(MarkerContract.selected)
-    }
-}
-```
+element of its own. The Gallery's [Web](web.md#children-a-control-draws) and
+[Android](android.md#children-a-control-draws) heads register a map this way.
 
 A library element a host does not realize - a `Map` where the platform has no
 map of its own - is registered the same way, with the provider and the key it
@@ -224,12 +245,17 @@ the Gallery's does. Until then the host realizes no web view.
 `StateUIActs.add(_:on:_:)` one aimed at the application's own element, handed
 that element's control:
 
-```swift quote
-StateUIActs.add(GalleryContract.readClipboard) { () -> String in
-    Clipboard.read()
+```swift listing winui.md.acts
+// Platforms/WinUI/Host/GalleryActs.swift
+// The log needs no relay: Swift calls Win32 itself - OutputDebugStringW, which a debugger reads.
+StateUIActs.add(GalleryContract.log) { line in
+    line.withCString(encodedAs: UTF16.self) { OutputDebugStringW($0) }
 }
 
+// Platforms/WinUI/Host/RatingBarControl.swift
+// Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
 StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
+    // A Storyboard in the relay fades the bar's opacity down and back, twice.
     bar.flash()
 }
 ```
@@ -238,7 +264,7 @@ A performer runs on the main thread, and may await, the call answered once it
 returns. Its arguments and answer are the act's own types; a call carrying
 anything else fails with the reason. A thrown error fails the act, and so does
 an aim at nothing; an act nobody registered is refused by name. A performer
-may call Win32 itself through `WinSDK` - the Gallery's clipboard does.
+may call Win32 itself through `WinSDK` - the Gallery's log does.
 
 ### An event without a control
 
@@ -246,9 +272,36 @@ may call Win32 itself through `WinSDK` - the Gallery's clipboard does.
 element, from any thread; `StateUIEvents.raises` declares it before the host
 runs, so a handler listening for one no source raises is told so.
 
-```swift quote
-StateUIEvents.raises(GalleryContract.batteryChanged)
-StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+```swift listing winui.md.event
+// Platforms/WinUI/Host/GalleryEventSources.swift
+/// Declares what the host raises and wires its source. Said once, before the application runs.
+@MainActor
+static func start() {
+    // A handler listening for an event nothing declared is told, once, that it will not hear it.
+    StateUIEvents.raises(GalleryContract.batteryChanged)
+
+    // The gallery's relay asks Windows for each change of the battery's charge and of the power source
+    // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.
+    gallery_battery_watch(batteryChanged)
+    report()
+}
+
+@MainActor
+fileprivate static func report() {
+    let (level, charging) = GalleryPower.battery()
+    // Windows tells more than a level change: no battery, or a reading unchanged, raises nothing.
+    guard level > 0, lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+    lastSaid = (level, charging)
+    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+}
+
+/// What Windows calls as the battery's charge or the power source changes - on a thread of its own, and once as the
+/// watch begins: the report is the main actor's.
+/// It stands outside the main actor, as a closure written inside `start()` would be the main actor's.
+private let batteryChanged: @convention(c) () -> Void = {
+    Task { @MainActor in GalleryEventSources.report() }
+}
 ```
 
 ## Running

@@ -37,7 +37,7 @@ final class AndroidProgressBarView: AndroidView {
         Double(Java.callInt(reference, JavaAPI.getProgress)) / Double(Self.steps)
     }
 
-    /// The colour of the work done; nil puts back the platform's.
+    /// The color of the work done; nil puts back the platform's.
     func setTint(_ color: HostValue?) {
         if madeTint == nil {
             madeTint = .some(Java.callObject(reference, JavaAPI.getProgressTintList).map(JavaObject.init))

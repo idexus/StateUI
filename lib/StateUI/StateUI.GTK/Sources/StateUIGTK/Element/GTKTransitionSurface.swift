@@ -21,8 +21,8 @@ enum GTKTransitionSurface {
 
     /// What draws its own box in its snapshot - a layout's, a page arrangement's - which moves frame by frame.
     static let drawsItsOwnBox: Set<NodeType> = [
-        .vStack, .hStack, .zStack, .grid, .layoutEngine, .scrollView, .itemsView,
-        .tabView, .splitView, .navigationStack, .modalStack,
+        .vStack, .hStack, .zStack, .grid, .motionLayout, .scrollView, .itemsView,
+        .tabView, .splitView, .navigationStack,
     ]
 
     /// What else a class paints on one kind of widget, and a window's place and size, which the desktop keeps.
@@ -34,10 +34,9 @@ enum GTKTransitionSurface {
         .picker: [.fontSize, .textColor],
         .datePicker: [.fontSize, .textColor],
         .timePicker: [.fontSize, .textColor],
-        .navigationStack: [.barBackgroundColor, .barForegroundColor],
-        .tabView: [.barBackgroundColor, .barForegroundColor],
-        .splitView: [.barBackgroundColor, .barForegroundColor],
-        .modalStack: [.barBackgroundColor, .barForegroundColor],
+        .navigationStack: [.barBackground, .barForegroundColor],
+        .tabView: [.barBackground, .barForegroundColor],
+        .splitView: [.barBackground, .barForegroundColor],
         .window: [.x, .y, .width, .height],
     ]
 }

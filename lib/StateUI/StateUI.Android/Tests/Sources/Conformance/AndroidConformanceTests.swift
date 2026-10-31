@@ -13,12 +13,14 @@ import XCTest
 final class AndroidConformanceTests: XCTestCase {
     static var allTests: [(String, (AndroidConformanceTests) -> () throws -> Void)] {
         [
-            ("testActivityIndicator", testActivityIndicator),
+            ("testSpinner", testSpinner),
             ("testButton", testButton),
             ("testCanvas", testCanvas),
             ("testCapsule", testCapsule),
-            ("testLayoutEngine", testLayoutEngine),
+            ("testFill", testFill),
+            ("testMotionLayout", testMotionLayout),
             ("testCheckBox", testCheckBox),
+            ("testColorPicker", testColorPicker),
             ("testDatePicker", testDatePicker),
             ("testEllipse", testEllipse),
             ("testGrid", testGrid),
@@ -32,13 +34,12 @@ final class AndroidConformanceTests: XCTestCase {
             ("testPolygon", testPolygon),
             ("testPolyline", testPolyline),
             ("testProgressBar", testProgressBar),
-            ("testRadioButton", testRadioButton),
             ("testRectangle", testRectangle),
             ("testScrollView", testScrollView),
             ("testItemsView", testItemsView),
             ("testSearchField", testSearchField),
             ("testSlider", testSlider),
-            ("testSpacer", testSpacer),
+            ("testSpace", testSpace),
             ("testStepper", testStepper),
             ("testSwitch", testSwitch),
             ("testTextEditor", testTextEditor),
@@ -49,15 +50,19 @@ final class AndroidConformanceTests: XCTestCase {
             ("testZStack", testZStack),
             ("testApplication", testApplication),
             ("testContextMenu", testContextMenu),
+            ("testPopover", testPopover),
             ("testButtonMenu", testButtonMenu),
             ("testMenu", testMenu),
             ("testMenuBar", testMenuBar),
             ("testMenuItem", testMenuItem),
-            ("testDivider", testDivider),
+            ("testMenuToggle", testMenuToggle),
+            ("testSeparator", testSeparator),
             ("testMenuSeparator", testMenuSeparator),
-            ("testModalStack", testModalStack),
+            ("testAnchor", testAnchor),
+            ("testSheet", testSheet),
             ("testNavigationStack", testNavigationStack),
             ("testOverlay", testOverlay),
+            ("testBottomBar", testBottomBar),
             ("testPage", testPage),
             ("testMarker", testMarker),
             ("testScene", testScene),
@@ -66,8 +71,10 @@ final class AndroidConformanceTests: XCTestCase {
             ("testSplitView", testSplitView),
             ("testTabView", testTabView),
             ("testTitleView", testTitleView),
-            ("testToolbarItem", testToolbarItem),
-            ("testToolbarItemGroup", testToolbarItemGroup),
+            ("testToolbarButton", testToolbarButton),
+            ("testToolbarGroup", testToolbarGroup),
+            ("testToolbarLabel", testToolbarLabel),
+            ("testToolbarToggle", testToolbarToggle),
             ("testWindow", testWindow),
             ("testAutomationElement", testAutomationElement),
             ("testVisualElement", testVisualElement),
@@ -79,7 +86,7 @@ final class AndroidConformanceTests: XCTestCase {
             ("testFilledShape", testFilledShape),
             ("testCorneredShape", testCorneredShape),
             ("testTextualElement", testTextualElement),
-            ("testTextStyleElement", testTextStyleElement),
+            ("testTextColorElement", testTextColorElement),
             ("testFontElement", testFontElement),
             ("testTextAlignmentElement", testTextAlignmentElement),
             ("testLineHeightElement", testLineHeightElement),
@@ -91,20 +98,29 @@ final class AndroidConformanceTests: XCTestCase {
             ("testTintElement", testTintElement),
             ("testKeyboardElement", testKeyboardElement),
             ("testFocusElement", testFocusElement),
+            ("testRefreshElement", testRefreshElement),
             ("testBarElement", testBarElement),
+            ("testBarItemElement", testBarItemElement),
+            ("testBarButtonElement", testBarButtonElement),
             ("testMenuItemElement", testMenuItemElement),
+            ("testActionElement", testActionElement),
+            ("testButtonMenuElement", testButtonMenuElement),
+            ("testLink", testLink),
+            ("testTextAndIconElement", testTextAndIconElement),
             ("testPageElement", testPageElement),
             ("testAWindowsPhaseIsTheHostsOwnOnAWindowAlone", testAWindowsPhaseIsTheHostsOwnOnAWindowAlone),
         ]
     }
 
-    func testActivityIndicator() throws { try conform(ActivityIndicatorTests.self) }
+    func testSpinner() throws { try conform(SpinnerTests.self) }
     func testButton() throws { try conform(ButtonTests.self) }
     func testCanvas() throws { try conform(CanvasTests.self) }
     func testCapsule() throws { try conform(CapsuleTests.self) }
-    func testLayoutEngine() throws { try conform(LayoutEngineTests.self) }
+    func testFill() throws { try conform(FillTests.self) }
+    func testMotionLayout() throws { try conform(MotionLayoutTests.self) }
     func testCheckBox() throws { try conform(CheckBoxTests.self) }
-    func testSpacer() throws { try conform(SpacerTests.self) }
+    func testColorPicker() throws { try conform(ColorPickerTests.self) }
+    func testSpace() throws { try conform(SpaceTests.self) }
     func testDatePicker() throws { try conform(DatePickerTests.self) }
     func testEllipse() throws { try conform(EllipseTests.self) }
     func testGrid() throws { try conform(GridTests.self) }
@@ -118,7 +134,6 @@ final class AndroidConformanceTests: XCTestCase {
     func testPolygon() throws { try conform(PolygonTests.self) }
     func testPolyline() throws { try conform(PolylineTests.self) }
     func testProgressBar() throws { try conform(ProgressBarTests.self) }
-    func testRadioButton() throws { try conform(RadioButtonTests.self) }
     func testRectangle() throws { try conform(RectangleTests.self) }
     func testScrollView() throws { try conform(ScrollViewTests.self) }
     func testItemsView() throws { try conform(ItemsViewTests.self) }
@@ -134,15 +149,19 @@ final class AndroidConformanceTests: XCTestCase {
     func testZStack() throws { try conform(ZStackTests.self) }
     func testApplication() throws { try conform(ApplicationTests.self) }
     func testContextMenu() throws { try conform(ContextMenuTests.self) }
+    func testPopover() throws { try conform(PopoverTests.self) }
     func testButtonMenu() throws { try conform(ButtonMenuTests.self) }
     func testMenu() throws { try conform(MenuTests.self) }
     func testMenuBar() throws { try conform(MenuBarTests.self) }
     func testMenuItem() throws { try conform(MenuItemTests.self) }
-    func testDivider() throws { try conform(DividerTests.self) }
+    func testMenuToggle() throws { try conform(MenuToggleTests.self) }
+    func testSeparator() throws { try conform(SeparatorTests.self) }
     func testMenuSeparator() throws { try conform(MenuSeparatorTests.self) }
-    func testModalStack() throws { try conform(ModalStackTests.self) }
+    func testAnchor() throws { try conform(AnchorTests.self) }
+    func testSheet() throws { try conform(SheetTests.self) }
     func testNavigationStack() throws { try conform(NavigationStackTests.self) }
     func testOverlay() throws { try conform(OverlayTests.self) }
+    func testBottomBar() throws { try conform(BottomBarTests.self) }
     func testPage() throws { try conform(PageTests.self) }
     func testMarker() throws { try conform(MarkerTests.self) }
     func testScene() throws { try conform(SceneTests.self) }
@@ -151,8 +170,10 @@ final class AndroidConformanceTests: XCTestCase {
     func testSplitView() throws { try conform(SplitViewTests.self) }
     func testTabView() throws { try conform(TabViewTests.self) }
     func testTitleView() throws { try conform(TitleViewTests.self) }
-    func testToolbarItem() throws { try conform(ToolbarItemTests.self) }
-    func testToolbarItemGroup() throws { try conform(ToolbarItemGroupTests.self) }
+    func testToolbarButton() throws { try conform(ToolbarButtonTests.self) }
+    func testToolbarGroup() throws { try conform(ToolbarGroupTests.self) }
+    func testToolbarLabel() throws { try conform(ToolbarLabelTests.self) }
+    func testToolbarToggle() throws { try conform(ToolbarToggleTests.self) }
     func testWindow() throws { try conform(WindowTests.self) }
     func testAutomationElement() throws { try conform(AutomationElementTests.self) }
     func testVisualElement() throws { try conform(VisualElementTests.self) }
@@ -164,7 +185,7 @@ final class AndroidConformanceTests: XCTestCase {
     func testFilledShape() throws { try conform(FilledShapeTests.self) }
     func testCorneredShape() throws { try conform(CorneredShapeTests.self) }
     func testTextualElement() throws { try conform(TextualElementTests.self) }
-    func testTextStyleElement() throws { try conform(TextStyleElementTests.self) }
+    func testTextColorElement() throws { try conform(TextColorElementTests.self) }
     func testFontElement() throws { try conform(FontElementTests.self) }
     func testTextAlignmentElement() throws { try conform(TextAlignmentElementTests.self) }
     func testLineHeightElement() throws { try conform(LineHeightElementTests.self) }
@@ -176,8 +197,15 @@ final class AndroidConformanceTests: XCTestCase {
     func testTintElement() throws { try conform(TintElementTests.self) }
     func testKeyboardElement() throws { try conform(KeyboardElementTests.self) }
     func testFocusElement() throws { try conform(FocusElementTests.self) }
+    func testRefreshElement() throws { try conform(RefreshElementTests.self) }
     func testBarElement() throws { try conform(BarElementTests.self) }
+    func testBarItemElement() throws { try conform(BarItemElementTests.self) }
+    func testBarButtonElement() throws { try conform(BarButtonElementTests.self) }
     func testMenuItemElement() throws { try conform(MenuItemElementTests.self) }
+    func testActionElement() throws { try conform(ActionElementTests.self) }
+    func testButtonMenuElement() throws { try conform(ButtonMenuElementTests.self) }
+    func testLink() throws { try conform(LinkTests.self) }
+    func testTextAndIconElement() throws { try conform(TextAndIconElementTests.self) }
     func testPageElement() throws { try conform(PageElementTests.self) }
 
     /// The host tells a window its activity's phase: closing or minimizing anything else is Android's own.

@@ -1,9 +1,17 @@
-# revision 2.2
+# revision 4.2
+NavigationStack.background: ✅
 NavigationStack.icon: ✅
+NavigationStack.linkOpened: ✓ openLink on NavigationStack: the relay's report of an activation told the driver's address, no activation
 NavigationStack.title: ✅
+Page.background: ✅
 Page.icon: ✅
+Page.linkOpened: ✓ openLink on Page: the relay's report of an activation told the driver's address, no activation
 Page.title: ✅
+SplitView.background: ✅
 SplitView.icon: ✅
+SplitView.linkOpened: ✓ openLink on SplitView: the relay's report of an activation told the driver's address, no activation
 SplitView.title: ✅
+TabView.background: ✅
 TabView.icon: ✅
+TabView.linkOpened: ✓ openLink on TabView: the relay's report of an activation told the driver's address, no activation
 TabView.title: ✅

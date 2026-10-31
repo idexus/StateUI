@@ -1,16 +1,16 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The inspector's colours, measures, words and the one kind of button it has.
+/// The inspector's colors, measures, words and the one kind of button it has.
 @MainActor
 enum Look {
-    static let ground = Color(light: Color("#F7F6FB"), dark: Color("#1C1A24"))
-    static let edge = Color(light: Color("#D6D2E2"), dark: Color("#3A3647"))
-    static let ink = Color(light: Color("#1B1A22"), dark: Color("#ECEAF4"))
-    static let subtle = Color(light: Color("#6B6878"), dark: Color("#A29FB0"))
-    static let built = Color(light: Color("#B4400A"), dark: Color("#FB923C"))
-    static let carried = Color(light: Color("#15803D"), dark: Color("#4ADE80"))
-    static let chosen = Color(light: Color("#E7E3F3"), dark: Color("#2E2A3B"))
+    static let ground = Color(light: Color(hex: 0xF7F6FB), dark: Color(hex: 0x1C1A24))
+    static let edge = Color(light: Color(hex: 0xD6D2E2), dark: Color(hex: 0x3A3647))
+    static let ink = Color(light: Color(hex: 0x1B1A22), dark: Color(hex: 0xECEAF4))
+    static let subtle = Color(light: Color(hex: 0x6B6878), dark: Color(hex: 0xA29FB0))
+    static let built = Color(light: Color(hex: 0xB4400A), dark: Color(hex: 0xFB923C))
+    static let carried = Color(light: Color(hex: 0x15803D), dark: Color(hex: 0x4ADE80))
+    static let chosen = Color(light: Color(hex: 0xE7E3F3), dark: Color(hex: 0x2E2A3B))
 
     /// How wide a panel docked at the side stands.
     static let side = 460.0
@@ -29,7 +29,7 @@ enum Look {
             .lineWidth(1)
             .shape(.roundedRectangle(7))
             .padding(horizontal: 10, vertical: 2)
-            .margin(left: 0, top: 0, right: 6, bottom: 4)
+            .margin(start: 0, top: 0, end: 6, bottom: 4)
             .onClicked { run() }
     }
 

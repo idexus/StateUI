@@ -37,10 +37,11 @@ it; a new language fails to compile in every part until each says it. The
 compiler cannot check that a translation is right, that a picture exists or
 that a typeface has a script's glyphs - those are tests.
 
-The catalog's language type is its associated type `Language`, so inside a
-catalog that name is taken: an application enum called `Language` makes
-`Language.english` a reference to the catalog's own type, which the compiler
-reports as a recursion. The handbook names the enum after the application.
+The catalog's language type is its associated type `CatalogLanguage`, a name
+no application's own enum takes: an associated type named `Language` would
+make an application enum called `Language` refer to the catalog's own type
+inside the catalog, which the compiler reports as a recursion. Its raw value
+is a `LocaleTag`, so a language's tag is typed where it is written.
 
 A part falls back whole, never a field at a time: every part on a screen comes
 in one language, so a word and its typeface never come from two variants.
@@ -83,8 +84,8 @@ rebuilt when it changes, and only that body: the provider passes a reference
 and reads nothing. A part with no localization of its catalog above stops the
 program with both names, as an object nobody provided does.
 
-A part is a value and lends nothing: `$res.title` does not compile, because the
-lender needs a reference to write through.
+A part is a value, read and never written: `$res.title` does not compile, as an
+`@Environment` has no projected value.
 
 ## Matching a language
 
@@ -137,9 +138,11 @@ English and the United States' formats.
 ## The library's own words
 
 What StateUI says by itself - the "OK" and "Cancel" a dialog shows when the
-application gives no caption, and what a window's chrome says of its own
-controls (`ChromeWords`: back, the sidebar, close, more, the main menu) - is a part of
-resources like an application's,
+application gives no caption, what a window's chrome says of its own
+controls (`ChromeWords`: back, the sidebar, close, more, the main menu), and
+what a control a host composes where its platform has none says of its own
+parts to a screen reader (`ControlWords`: a stepper's step down and step up
+on the Web and on Android) - is a part of resources like an application's,
 `LibraryWords`, in the languages StateUI writes, each in its language's file.
 It speaks the system's language, matched as `.system` matches: the library
 cannot know which of an application's localizations a dialog belongs to, and

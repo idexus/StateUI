@@ -25,14 +25,17 @@ enum GalleryEventSources {
     /// Declares what the gallery raises and starts watching. Said once,
     /// before the application runs.
     static func start() {
+        // listing: appkit.md.raises
         // Declared where the source is wired: a handler listening for an
         // event nothing declared is told, once, that it will not hear it.
         StateUIEvents.raises(GalleryContract.batteryChanged)
+        // listing: end
 
         // Named in full: a C function pointer carries no context at all, and
         // an unqualified call to a static method captures the type implicitly.
         // The source stands on the main run loop, so the call comes on the
         // main thread.
+        // listing: appkit.md.event
         let notify: IOPowerSourceCallbackType = { _ in
             MainActor.assumeIsolated { GalleryEventSources.report() }
         }
@@ -41,9 +44,11 @@ enum GalleryEventSources {
         else { return }
 
         CFRunLoopAddSource(CFRunLoopGetMain(), source, .defaultMode)
+        // listing: end
         report()
     }
 
+    // listing: appkit.md.event
     /// Raises the battery's reading, where it has changed and there is one.
     private static func report() {
         let (level, charging) = GalleryActs.battery()
@@ -54,5 +59,6 @@ enum GalleryEventSources {
         lastSaid = (level, charging)
         StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
+    // listing: end
 }
 // listing: end

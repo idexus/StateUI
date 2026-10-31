@@ -4,7 +4,7 @@ import StateUI
 /// windows beside them, and the look they share.
 struct MultiWindowSample: SampleContent, ExampleContent {
     // listing: MultiWindowSample
-    /// The look every gallery window wears, which the Fonts and Colours
+    /// The look every gallery window wears, which the Fonts and Colors
     /// windows change.
     let style: SessionStyle
 
@@ -38,14 +38,14 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
             HStack {
                 opens("Fonts", .fonts)
-                opens("Colours", .colours)
+                opens("Colors", .colors)
             }
             .spacing(10)
             .horizontalAlignment(.center)
 
             HStack {
                 closes("Close fonts", .fonts)
-                closes("Close colours", .colours)
+                closes("Close colors", .colors)
             }
             .spacing(10)
             .horizontalAlignment(.center)
@@ -85,26 +85,26 @@ struct MultiWindowSample: SampleContent, ExampleContent {
 
             Button("Close swatch 2")
                 .horizontalAlignment(.center)
-                .onClicked(gate: .ignoreWhileRunning) { await closeSwatch(2) }
+                .onClicked(.ignoreWhileRunning) { await closeSwatch(2) }
 
             SectionTitle("More gallery windows")
 
             Button("New gallery window")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.open")
-                .onClicked(gate: .ignoreWhileRunning) { await openAnother() }
+                .onClicked(.ignoreWhileRunning) { await openAnother() }
 
             Button("Close every gallery window")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.close")
-                .onClicked(gate: .ignoreWhileRunning) { await closeThis() }
+                .onClicked(.ignoreWhileRunning) { await closeThis() }
         }
         .spacing(12)
     }
     // listing: end
 
     var notes: (any View)? {
-        Text("Fonts and Colours are windows of the galleries' scene: they change the "
+        Text("Fonts and Colors are windows of the galleries' scene: they change the "
             + "look every gallery window wears, and close with the scene. A swatch "
             + "window exists once per value, its number lent to it as a binding. "
             + "Another gallery window has a place of its own and the scene's look.")
@@ -117,28 +117,28 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     private var preview: some View {
         let line = Text("The quick brown fox jumps over the lazy dog.")
             .fontSize(20)
-            .textColor(style.look(dark: application.info.colorScheme == .dark).barColour.color(system: application.info.accentColor, for: .bar))   // listing: keep
+            .textColor(style.look(dark: application.info.colorScheme == .dark).bars.color.color(system: application.info.accentColor, for: .bar))   // listing: keep
             .horizontalTextAlignment(.center)
 
         return style.font.isEmpty ? line : line.fontFamily(style.font)
     }
 
     /// The button that opens one of the scene's windows.
-    private func opens(_ caption: String, _ type: WindowType) -> some View {
+    private func opens(_ caption: String, _ type: WindowType<Void>) -> some View {
         Button(caption)
             .accessibilityIdentifier(handle("window.open", caption))
-            .onClicked(gate: .ignoreWhileRunning) { await open(type, caption) }
+            .onClicked(.ignoreWhileRunning) { await open(type, caption) }
     }
 
     /// The button that closes it.
-    private func closes(_ caption: String, _ type: WindowType) -> some View {
+    private func closes(_ caption: String, _ type: WindowType<Void>) -> some View {
         Button(caption)
             .accessibilityIdentifier(handle("window.close", caption))
-            .onClicked(gate: .ignoreWhileRunning) { await close(type, caption) }
+            .onClicked(.ignoreWhileRunning) { await close(type, caption) }
     }
 
     /// Opens a window of the scene, and says what came of it.
-    private func open(_ type: WindowType, _ caption: String) async {
+    private func open(_ type: WindowType<Void>, _ caption: String) async {
         do {
             try await application.openWindow(type)
             said = "\(caption): opened."
@@ -150,7 +150,7 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     }
 
     /// Closes one, and says what came of it.
-    private func close(_ type: WindowType, _ caption: String) async {
+    private func close(_ type: WindowType<Void>, _ caption: String) async {
         do {
             try await application.closeWindow(type)
             said = "\(caption): closed."
@@ -174,11 +174,11 @@ struct MultiWindowSample: SampleContent, ExampleContent {
     /// The button that opens one swatch's window.
     private func swatch(_ number: Int) -> some View {
         Button("Swatch \(number)")
-            .background(SwatchPage.colour(of: number))
+            .background(SwatchPage.color(of: number))
             .textColor(.white)
             .shape(.roundedRectangle(8))
             .accessibilityIdentifier("window.open.swatch.\(number)")
-            .onClicked(gate: .ignoreWhileRunning) { await openSwatch(number) }
+            .onClicked(.ignoreWhileRunning) { await openSwatch(number) }
     }
 
     /// Opens a swatch's window, and says what came of it.

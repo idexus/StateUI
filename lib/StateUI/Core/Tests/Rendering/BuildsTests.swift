@@ -29,7 +29,7 @@ private struct Watched: View {
     var body: some View {
         said.last = debugInfo()
         said.count += 1
-        return ModifiedContent(node: label("count \(count)"))
+        return AnyView(node: label("count \(count)"))
     }
 }
 
@@ -41,7 +41,7 @@ private struct Holder: View {
 
     var body: some View {
         mine.last = debugInfo()
-        return ModifiedContent(node: stack([label(title), Passenger(said: theirs, caption: title).node]))
+        return AnyView(node: stack([label(title), Passenger(said: theirs, caption: title).node]))
     }
 }
 
@@ -53,7 +53,7 @@ private struct Passenger: View {
 
     var body: some View {
         said.last = debugInfo()
-        return ModifiedContent(node: label("along"))
+        return AnyView(node: label("along"))
     }
 }
 

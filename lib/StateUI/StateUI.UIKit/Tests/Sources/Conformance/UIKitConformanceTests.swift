@@ -12,13 +12,15 @@ import XCTest
 /// dictionary.
 @MainActor
 final class UIKitConformanceTests: XCTestCase {
-    @MainActor func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
+    @MainActor func testSpinner() { conform(SpinnerTests.self) }
     @MainActor func testButton() { conform(ButtonTests.self) }
     @MainActor func testCanvas() { conform(CanvasTests.self) }
     @MainActor func testCapsule() { conform(CapsuleTests.self) }
-    @MainActor func testLayoutEngine() { conform(LayoutEngineTests.self) }
+    @MainActor func testFill() { conform(FillTests.self) }
+    @MainActor func testMotionLayout() { conform(MotionLayoutTests.self) }
     @MainActor func testCheckBox() { conform(CheckBoxTests.self) }
-    @MainActor func testSpacer() { conform(SpacerTests.self) }
+    @MainActor func testColorPicker() { conform(ColorPickerTests.self) }
+    @MainActor func testSpace() { conform(SpaceTests.self) }
     @MainActor func testDatePicker() { conform(DatePickerTests.self) }
     @MainActor func testEllipse() { conform(EllipseTests.self) }
     @MainActor func testGrid() { conform(GridTests.self) }
@@ -32,7 +34,6 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testPolygon() { conform(PolygonTests.self) }
     @MainActor func testPolyline() { conform(PolylineTests.self) }
     @MainActor func testProgressBar() { conform(ProgressBarTests.self) }
-    @MainActor func testRadioButton() { conform(RadioButtonTests.self) }
     @MainActor func testRectangle() { conform(RectangleTests.self) }
     @MainActor func testScrollView() { conform(ScrollViewTests.self) }
     @MainActor func testItemsView() { conform(ItemsViewTests.self) }
@@ -48,15 +49,19 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testZStack() { conform(ZStackTests.self) }
     @MainActor func testApplication() { conform(ApplicationTests.self) }
     @MainActor func testContextMenu() { conform(ContextMenuTests.self) }
+    @MainActor func testPopover() { conform(PopoverTests.self) }
     @MainActor func testButtonMenu() { conform(ButtonMenuTests.self) }
     @MainActor func testMenu() { conform(MenuTests.self) }
     @MainActor func testMenuBar() { conform(MenuBarTests.self) }
     @MainActor func testMenuItem() { conform(MenuItemTests.self) }
-    @MainActor func testDivider() { conform(DividerTests.self) }
+    @MainActor func testMenuToggle() { conform(MenuToggleTests.self) }
+    @MainActor func testSeparator() { conform(SeparatorTests.self) }
     @MainActor func testMenuSeparator() { conform(MenuSeparatorTests.self) }
-    @MainActor func testModalStack() { conform(ModalStackTests.self) }
+    @MainActor func testAnchor() { conform(AnchorTests.self) }
+    @MainActor func testSheet() { conform(SheetTests.self) }
     @MainActor func testNavigationStack() { conform(NavigationStackTests.self) }
     @MainActor func testOverlay() { conform(OverlayTests.self) }
+    @MainActor func testBottomBar() { conform(BottomBarTests.self) }
     @MainActor func testPage() { conform(PageTests.self) }
     @MainActor func testMarker() { conform(MarkerTests.self) }
     @MainActor func testScene() { conform(SceneTests.self) }
@@ -65,8 +70,10 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testSplitView() { conform(SplitViewTests.self) }
     @MainActor func testTabView() { conform(TabViewTests.self) }
     @MainActor func testTitleView() { conform(TitleViewTests.self) }
-    @MainActor func testToolbarItem() { conform(ToolbarItemTests.self) }
-    @MainActor func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
+    @MainActor func testToolbarButton() { conform(ToolbarButtonTests.self) }
+    @MainActor func testToolbarGroup() { conform(ToolbarGroupTests.self) }
+    @MainActor func testToolbarLabel() { conform(ToolbarLabelTests.self) }
+    @MainActor func testToolbarToggle() { conform(ToolbarToggleTests.self) }
     @MainActor func testWindow() { conform(WindowTests.self) }
     @MainActor func testAutomationElement() { conform(AutomationElementTests.self) }
     @MainActor func testVisualElement1() { conform(VisualElementTests.self, part: Conformance.Part(1, of: 24)) }
@@ -113,7 +120,7 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testFilledShape() { conform(FilledShapeTests.self) }
     @MainActor func testCorneredShape() { conform(CorneredShapeTests.self) }
     @MainActor func testTextualElement() { conform(TextualElementTests.self) }
-    @MainActor func testTextStyleElement() { conform(TextStyleElementTests.self) }
+    @MainActor func testTextColorElement() { conform(TextColorElementTests.self) }
     @MainActor func testFontElement() { conform(FontElementTests.self) }
     @MainActor func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }
     @MainActor func testLineHeightElement() { conform(LineHeightElementTests.self) }
@@ -125,8 +132,15 @@ final class UIKitConformanceTests: XCTestCase {
     @MainActor func testTintElement() { conform(TintElementTests.self) }
     @MainActor func testKeyboardElement() { conform(KeyboardElementTests.self) }
     @MainActor func testFocusElement() { conform(FocusElementTests.self) }
+    @MainActor func testRefreshElement() { conform(RefreshElementTests.self) }
     @MainActor func testBarElement() { conform(BarElementTests.self) }
+    @MainActor func testBarItemElement() { conform(BarItemElementTests.self) }
+    @MainActor func testBarButtonElement() { conform(BarButtonElementTests.self) }
     @MainActor func testMenuItemElement() { conform(MenuItemElementTests.self) }
+    @MainActor func testActionElement() { conform(ActionElementTests.self) }
+    @MainActor func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
+    @MainActor func testLink() { conform(LinkTests.self) }
+    @MainActor func testTextAndIconElement() { conform(TextAndIconElementTests.self) }
     @MainActor func testPageElement() { conform(PageElementTests.self) }
 
     /// Runs `family` - or `part` of it - on UIKit, and holds its verdicts to its file of UIKit's marks. A long family

@@ -53,7 +53,7 @@ Every page shows its contract in use right under its first paragraph: a
 short Swift block, before the hosts and the members. An element's example
 declares it as an application does - a control with its purpose value and a
 modifier or two, a structure part through the modifier or the arrangement
-that declares it (`.toolbar { }`, `.overlays { }`, `ModalStack`); a tier's
+that declares it (`.toolbar { }`, `.overlays { }`, `.sheet { }`); a tier's
 example writes its members on one of the elements wearing it.
 
 The examples are written once, in the dictionary's own source,
@@ -76,9 +76,9 @@ of a small application where its contract is one (`Application`, `Scene`,
 
 A provider's element a host may not realize - a `Map` - shows under its
 example what an application registers with such a host
-(`ControlDictionary.registrations`): a sentence, and the
-registration quoted - `swift quote`, never compiled, since it is written
-against a host's facade and the handbook compiles against `StateUI` alone.
+(`ControlDictionary.registrations`): a sentence pointing to the hosts' pages,
+where the Gallery's registration is cut from its heads - code written against a
+host's facade, which that host's build compiles.
 
 ## Marks
 
@@ -138,7 +138,7 @@ of each element that has it: one element may realize what another does not,
 so the platform contract names them with no mark rather than one that says
 both.
 
-A host writes its records with the contracts' members, so a misspelt name
+A host writes its records with the contracts' members, so a misspelled name
 does not compile: `.complete(SwitchContract.isOn)` judges a member on every
 element wearing its contract, and `on:` judges it on one element alone -
 `.notPlanned(VisualElementContract.background, on: SliderContract.self,
@@ -150,7 +150,7 @@ host's shared machinery realizes becomes one: it serves each view the host
 makes. Where an element wearing the tier does not take such a member - a
 toolbar item AppKit holds as no view - the element's own record says so,
 `.unrealized(AutomationElementContract.accessibilityIdentifier, on:
-ToolbarItemContract.self, why:)`, and stands over the tier's: the member's
+ToolbarButtonContract.self, why:)`, and stands over the tier's: the member's
 case does not run there and its cell stays empty. Only an element's record
 says unrealized, which its type keeps. A text span has no view of its own on
 any host - it is a run of its label's words - so no tier's record reaches it

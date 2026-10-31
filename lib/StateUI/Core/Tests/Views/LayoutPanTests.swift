@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A layout engine panned - two axes scrolled, one across and one down: the hand moves both whichever way it goes,
+// A motion layout panned - two axes scrolled, one across and one down: the hand moves both whichever way it goes,
 // and let go they rest together - beside two fingers spreading another axis at once.
 
 import XCTest
@@ -9,7 +9,7 @@ import XCTest
 @_spi(Host) @testable import StateUI
 
 /// A board panned across and down, and how large it stands.
-private struct Board: LayoutPhase {
+private struct Board: LayoutParameters {
     var x = 0.0
     var y = 0.0
     var zoom = 1.0
@@ -33,15 +33,19 @@ final class LayoutPanTests: XCTestCase {
 
     /// A board of three by three a hand pans a hundred points a unit, resting on each square, and two fingers spread
     /// as large as twice.
-    private func tree(_ board: State<Board>, _ handed: Handed) -> Node {
-        LayoutEngine([0, 1]) { Text("\($0)") } placements: { _, board in
+    private func tree(_ board: State<Board>, _ handed: Handed, downFirst: Bool = false) -> Node {
+        let layout = MotionLayout([0, 1], parameters: board.projectedValue) { Text("\($0)") } placements: { _, board in
             handed.boards.append(board)
             return [Placement(Rect(-board.x * 100, -board.y * 100, 40, 40)), Placement(.zero)]
         }
-        .phase(board.projectedValue)
-        .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
-        .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
-        .axis(\.zoom, input: .magnification, range: 1...2, snaps: .limits)
+        let across = { (layout: MotionLayout<[Int], Int, Board>) in
+            layout.axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+        }
+        let down = { (layout: MotionLayout<[Int], Int, Board>) in
+            layout.axis(\.y, input: .scroll(.vertical, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
+        }
+        return (downFirst ? across(down(layout)) : down(across(layout)))
+        .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
         .motion(.eased(.milliseconds(160), .linear))
         .node
     }
@@ -53,16 +57,17 @@ final class LayoutPanTests: XCTestCase {
     /// A PAN IS HEARD EVERY WAY: the element says it pans, and no one way.
     func testAPanIsHeardEveryWay() throws {
         let (board, handed) = (State(wrappedValue: Board()), Handed())
-        let layout = try XCTUnwrap(bench.laid(Renders(), { tree(board, handed) }).patch.first(.layoutEngine))
+        let layout = try XCTUnwrap(bench.laid(Renders(), { tree(board, handed) }).patch.first(.motionLayout))
 
         XCTAssertEqual(layout.properties[.pans], .bool(true))
-        XCTAssertNil(layout.properties[.handAxis])
-        XCTAssertNotNil(layout.events?[.handMoved])
+        XCTAssertNil(layout.properties[.translationOrientation])
+        XCTAssertNotNil(layout.events?[.translationUpdated])
     }
 
     /// THE HAND MOVES BOTH AXES, each with its own way - left and up both on - and let go still, the run rests on
     /// the nearest square.
     func testTheHandMovesBothAxesAndRestsOnTheNearestSquare() {
+        bench.walks = true
         let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
         func built() -> Node { tree(board, handed) }
         _ = bench.laid(renders, built)
@@ -94,13 +99,35 @@ final class LayoutPanTests: XCTestCase {
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 0), "across thrown on, down let go still")
     }
 
+    /// AXES LET GO TOGETHER GO ON BY ONE LAW, whatever order they were declared in: across thrown on, down let go
+    /// still, the parameters travel alike frame by frame.
+    func testAxesLetGoTogetherGoOnByOneLawWhateverTheirOrder() {
+        func journey(downFirst: Bool) -> [Board] {
+            bench.walks = true
+            let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
+            func built() -> Node { tree(board, handed, downFirst: downFirst) }
+            _ = bench.laid(renders, built)
+            bench.hand(renders, built, .began)
+            bench.hand(renders, built, .changed, moved: Point(-20, -30))
+            bench.hand(renders, built, .ended, speed: Point(-600, 0))
+            handed.boards.removeAll()
+            frames(8)
+            return handed.boards
+        }
+        let (acrossFirst, downFirst) = (journey(downFirst: false), journey(downFirst: true))
+
+        XCTAssertFalse(acrossFirst.isEmpty)
+        XCTAssertEqual(acrossFirst.map(\.y), downFirst.map(\.y), "the way down goes as the way across does")
+        XCTAssertEqual(acrossFirst.map(\.x), downFirst.map(\.x))
+    }
+
     /// A WHEEL'S NOTCHES STEP EACH AXIS their way.
     func testAWheelsNotchesStepEachAxis() {
         let (board, handed, renders) = (State(wrappedValue: Board()), Handed(), Renders())
         func built() -> Node { tree(board, handed) }
         let patch = bench.laid(renders, built).patch
 
-        guard let stepped = patch.first(.layoutEngine)?.events?[.handStepped] else {
+        guard let stepped = patch.first(.motionLayout)?.events?[.wheelStepped] else {
             return XCTFail("the layout hears no wheel")
         }
         XCTAssertTrue(renders.fire(stepped, with: MemberValues.encode(Point(-1, -2))))
@@ -130,23 +157,22 @@ final class LayoutPanTests: XCTestCase {
     /// AXES SCROLLED ACROSS AND DOWN ARE A PAN, heard every way; scrolled one way alone, a hand along the layout.
     func testAxesScrolledAcrossAndDownAreAPan() throws {
         let (board, handed) = (State(wrappedValue: Board()), Handed())
-        func layout() -> LayoutEngine<[Int], Int, Board> {
-            LayoutEngine([0]) { Text("\($0)") } placements: { _, board in
+        func layout() -> MotionLayout<[Int], Int, Board> {
+            MotionLayout([0], parameters: board.projectedValue) { Text("\($0)") } placements: { _, board in
                 handed.boards.append(board)
                 return [Placement(Rect(0, 0, 40, 40))]
             }
-            .phase(board.projectedValue)
-            .axis(\.x, input: .scroll(.horizontal), range: 0...1, snaps: .limits)
+            .axis(\.x, input: .scroll(.horizontal), range: 0...1, snaps: .endpoints)
         }
 
         let panned = try XCTUnwrap(Renders().settled(
-            layout().axis(\.y, input: .scroll(.vertical), range: 0...1, snaps: .limits).node).first(.layoutEngine))
+            layout().axis(\.y, input: .scroll(.vertical), range: 0...1, snaps: .endpoints).node).first(.motionLayout))
         XCTAssertEqual(panned.properties[.pans], .bool(true))
-        XCTAssertNil(panned.properties[.handAxis])
+        XCTAssertNil(panned.properties[.translationOrientation])
 
         let scrolled = try XCTUnwrap(Renders().settled(
-            layout().axis(\.y, input: .scroll(.horizontal), range: 0...1, snaps: .limits).node).first(.layoutEngine))
+            layout().axis(\.y, input: .scroll(.horizontal), range: 0...1, snaps: .endpoints).node).first(.motionLayout))
         XCTAssertNil(scrolled.properties[.pans], "two axes, one way")
-        XCTAssertEqual(scrolled.properties[.handAxis], .enumeration(LayoutInput.Axis.horizontal.rawValue))
+        XCTAssertEqual(scrolled.properties[.translationOrientation], .enumeration(LayoutInput.Orientation.horizontal.rawValue))
     }
 }

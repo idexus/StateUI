@@ -18,6 +18,7 @@ extension UIKitRegistrations {
             return field
         }, members: { field in
             field.applies(inputMembers) { view, values in applyInput(view, values) }
+            field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.isSecureTextEntry = hidden ?? false }
             field.property(TextFieldContract.submitLabel) { view, key in
                 view.setReturnKey(InputTraits.submitLabel(key, searching: false))
@@ -34,6 +35,7 @@ extension UIKitRegistrations {
             return editor
         }, members: { editor in
             editor.applies(inputMembers) { view, values in applyInput(view, values) }
+            editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.growsWithText = grows ?? false }
             editor.raises(TextInputContract.textChanged)
         })
@@ -44,12 +46,26 @@ extension UIKitRegistrations {
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
+            search.applies(outlineMembers) { view, values in applyOutline(view, values) }
             search.property(SearchFieldContract.submitLabel) { view, key in
                 view.setReturnKey(InputTraits.submitLabel(key, searching: true))
             }
             search.raises(TextInputContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })
+    }
+
+    /// A field's outline and the shape its ground and outline follow.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
+
+    private static func applyOutline<Realized: ElementContract>(
+        _ view: any UIKitTextInputView, _ values: ElementValues<Realized>
+    ) {
+        view.outline.set(
+            stroke: values[BorderElementContract.stroke]?.propValue, lineWidth: values[BorderElementContract.lineWidth],
+            shape: values[BorderElementContract.shape]?.propValue)
+        view.setNeedsLayout()
     }
 
     private static func hearInput<Realized: ElementContract>(_ view: any UIKitTextInputView, _ reports: Reports<Realized>) {
@@ -60,15 +76,15 @@ extension UIKitRegistrations {
 
     /// What every view the user types in takes: its words in their case, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
-    private static let inputMembers: [any ContractMember] = [
+    private static let inputMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength,
-        VisualElementContract.isEnabled, TextInputContract.isReadOnly, TextInputContract.isSpellCheckEnabled,
-        TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose,
-    ] + TextMembers.lookMembers + [
-        TextInputContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
-        TextInputContract.cursorPosition, TextInputContract.selectionLength,
-    ]
+        TextInputContract.maximumLength, VisualElementContract.isEnabled, TextInputContract.isReadOnly,
+        TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
+        TextInputContract.inputPurpose)
+        + TextMembers.lookMembers
+        + PropertyList(
+            TextInputContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
+            TextInputContract.cursorPosition, TextInputContract.selectionLength)
 
     private static func applyInput<Realized: ElementContract>(
         _ view: any UIKitTextInputView, _ values: ElementValues<Realized>
@@ -87,7 +103,7 @@ extension UIKitRegistrations {
             || values.changed(TextInputContract.isSpellCheckEnabled)
             || values.changed(TextInputContract.isTextPredictionEnabled)
             || values.changed(TextInputContract.inputPurpose) {
-            view.setBehaviour(
+            view.setBehavior(
                 enabled: values[VisualElementContract.isEnabled] ?? true,
                 readOnly: values[TextInputContract.isReadOnly] ?? false,
                 keyboard: UIKitKeyboard(InputTraits(values)))

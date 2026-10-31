@@ -38,9 +38,18 @@ extension MountedElement {
         driven[.area]?.kind == .placement ? [.area] : []
     }
 
-    /// The places an engine gives the layout's children, one each; nil while no state drives them.
+    /// The places an engine gives the layout's children, one each, standing in the run's direction; nil while no
+    /// state drives them.
     public var placement: HostPlacementRun? {
-        guard !ownPlacementRun.isEmpty, let carried = carriedValue(.area) else { return nil }
-        return HostBoundary.placements(from: carried)
+        guard !ownPlacementRun.isEmpty, let carried = carriedValue(.area),
+              let run = HostBoundary.placements(from: carried) else { return nil }
+        return HostPlacementRun(placements: run.placements, direction: runDirection)
+    }
+
+    /// The direction a motion layout's run and the hand over it stand in: right to left only where the layout mirrors
+    /// (`MotionLayoutContract.mirrorsRightToLeft`) and lays out right to left - as written otherwise.
+    /// Design: docs/design/host/layout.md#right-to-left
+    public var runDirection: LayoutDirection {
+        value(.mirrorsRightToLeft)?.bool == true ? layoutDirection : .leftToRight
     }
 }

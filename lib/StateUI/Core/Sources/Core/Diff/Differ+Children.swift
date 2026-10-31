@@ -15,19 +15,23 @@ extension Differ {
         of previous: RenderedNode?,
         node: Node,
         into patch: inout HostPatch,
-        sizesArrive: Bool
+        sizesArrive: Bool,
+        atPagePosition: Bool = false
     ) -> [RenderedNode] {
         let matching = ChildMatching(previous?.children ?? [])
+        let placesPages = NodeType.pagePositions.contains(node.type) || node.type == .anchor && atPagePosition
         var children: [RenderedNode] = []
         var patches: [HostPatch] = []
 
         for index in node.children.indices {
             let next = identified(node.children[index], at: index, by: matching)
+            describesPagePosition = placesPages
             let (child, childPatch) = element(
                 id: next.id, rendered: next.match, node: next.node, sizesArrive: sizesArrive)
 
-            // An arrangement anywhere a page does not stand is left out (Differ+Arrangements.swift).
-            guard standsWhereItMay(child, under: node.type) else {
+            // An arrangement where no page stands, and a toolbar on a stack or tabs, is left out
+            // (Differ+Arrangements.swift).
+            guard standsWhereItMay(child, under: node.type, placesPages: placesPages) else {
                 forget(child)
                 continue
             }

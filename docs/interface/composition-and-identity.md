@@ -17,7 +17,8 @@ struct StatusBadge: View {
 
     var body: some View {
         HStack {
-            Rectangle(ready ? .green : .gray)
+            Rectangle()
+                .fill(ready ? .green : .gray)
                 .width(8)
                 .height(8)
             Text(title)
@@ -83,7 +84,8 @@ input:
 | --- | --- |
 | value conforming to `Equatable` | value equality |
 | ordinary class | object identity |
-| `@Binding` | the storage and member being borrowed, not its current value |
+| `@Binding` | the state's storage being borrowed, not its current value |
+| a `StatePart` | the storage and the part of it reached, not its current value |
 | owned `@State` or `@Aim` | the adopted storage box |
 | `@Environment` | the resolved object |
 | opaque closure or value | not comparable, so the view rebuilds |
@@ -159,6 +161,23 @@ The `if` and `else` branches are distinct identities even when both create the
 same control type. Switching branches replaces the element because the
 application described a different logical place.
 
+A view whose type a value chooses - one of several kept together, or one held
+as `any View` - goes in as an `AnyView`:
+
+```swift
+let samples: [String: AnyView] = [
+    "Text": AnyView(Text("Hello")),
+    "Button": AnyView(Button("Press")),
+]
+
+VStack {
+    samples["Button"] ?? AnyView(Text("None"))
+}
+```
+
+Its type no longer tells what it holds, so where a type can say it, it keeps
+saying it: an `if`/`else` of views is one view, and a `Group` holds one.
+
 A plain `for` is deliberately unavailable inside `ViewBuilder`. Use `ForEach`
 so each repeated child has an item identity:
 
@@ -217,7 +236,7 @@ inside-out before a replacement is created; creation runs outside-in.
 
 Rebuilding or carrying an existing element is neither creation nor destruction.
 
-Both come once, so neither names a `Gate`, even when it awaits. An
+Both come once, so neither names a policy, even when it awaits. An
 `onCreated` still awaiting when its element leaves is cancelled and changes
 nothing from then on; an `onDestroying` runs to its end.
 
@@ -241,6 +260,31 @@ requires work. Multiple watchers are paired by modifier order. If their count
 changes, the element starts watching afresh; a watcher whose value type
 changed starts over alone, instead of matching an unrelated slot.
 
+A watcher belongs to the view it is written on. One written in a branch of an
+`if` is that branch's view's and starts afresh as the other branch shows; one
+written on a composed view watches while that view stands, whichever branch
+its body shows. A `Group` is such a view written in place - no view and no
+layout of its own, holding one view - so a value watched across a condition
+is watched on the group holding it:
+
+```swift
+struct AccountPage: View {
+    @State var signedIn = false
+    @State var changes = 0
+
+    var body: some View {
+        Group {
+            if signedIn {
+                Text("Signed in")
+            } else {
+                Button("Sign in").onClicked { signedIn = true }
+            }
+        }
+        .onChanged(signedIn) { changes += 1 }
+    }
+}
+```
+
 A handler that awaits names what a newer change does while it runs - a search
 cancels the one before it:
 
@@ -249,7 +293,7 @@ cancels the one before it:
 @State var results: [String] = []
 
 Text(results.joined(separator: ", "))
-    .onChanged(query, gate: .cancelPrevious) { _, new in
+    .onChanged(query, policy: .cancelPrevious) { _, new in
         try await Task.sleep(for: .milliseconds(250))
         results = ["\(new) 1", "\(new) 2"]
     }
@@ -258,6 +302,40 @@ Text(results.joined(separator: ", "))
 Handlers run after the tree walk. A write made by a handler can therefore be
 settled safely. A handler that unconditionally changes the value it watches
 creates a feedback loop; every such write needs a stopping condition.
+
+## What outlives a branch
+
+A composed view, a `Group` or an `if/else` builds one view or another as its
+state moves, and the view it showed is replaced. What is written on it to
+last as long as it stands - `.onChanged`, `.onCreated` and `.onDestroying`,
+`.onHostEvent`, `.sheet` and `.popover` - stays through the switch: a watch
+keeps watching, a sheet stays shown, and `.onDestroying` runs once the view
+itself leaves.
+
+```swift
+struct AccountPage: View {
+    @State var signedIn = false
+    @State var showsHelp = false
+
+    var body: some View {
+        Group {
+            if signedIn {
+                Text("Signed in")
+            } else {
+                Button("Sign in").onClicked { signedIn = true }
+            }
+        }
+        .sheet(isPresented: $showsHelp) { Text("Help") }
+    }
+}
+```
+
+Signing in while the help shows leaves it shown. What is about the look - a
+margin, an opacity, a handler of the view's own events - stands on the view
+shown, branch by branch. Such a view stands on an anchor: an element with no
+view and no layout of its own, which a layout places as what it holds. It is
+made only where the view may build one root or another, as its type tells - a
+view whose body is a `VStack` keeps one root and needs none.
 
 ## Build diagnostics
 
@@ -286,16 +364,22 @@ The Inspector records complete render passes only while it is open or host
 logging is enabled. Offer it from a page toolbar and optionally give the scene
 its own inspector window:
 
-```swift quote
+```swift
+struct EditorPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        TextEditor()
+            .toolbar { ToolbarButton.inspector(window) }
+    }
+}
+
 struct EditorScene: Scene {
     var body: some Scene {
         WindowGroup { EditorPage() }
         Window(.debugInspector) { DebugInspector() }
     }
 }
-
-// Inside a page with a WindowSession environment:
-.toolbar { ToolbarItem.inspector(window) }
 ```
 
 The inspector shows what caused each pass, whether a composed view was built,

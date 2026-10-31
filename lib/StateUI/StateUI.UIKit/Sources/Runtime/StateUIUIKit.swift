@@ -13,18 +13,24 @@ import UIKit
 ///     import NotesUI
 ///     import StateUIUIKit
 ///
-///     stateui_app_register()
+///     registerApplication()
 ///     StateUIUIKit.run()
 @MainActor
 public enum StateUIUIKit {
     /// Runs the application on UIKit's main loop, which never returns.
     ///
-    /// - Parameter resourceDirectory: where the application's pictures are; the bundle's `Images` where nil.
-    public static func run(resourceDirectory: URL? = nil) -> Never {
+    ///     StateUIUIKit.run(delegate: AppDelegate.self)
+    ///
+    /// - Parameters:
+    ///   - resourceDirectory: where the application's pictures are; the bundle's `Images` where nil.
+    ///   - delegate: the application's delegate - the host's own, or one of the application's subclassing it, for
+    ///     an SDK that asks for one.
+    public static func run(
+        resourceDirectory: URL? = nil, delegate: StateUIApplicationDelegate.Type = StateUIApplicationDelegate.self
+    ) -> Never {
         UIKitRenderer.resourceDirectory = resourceDirectory
             ?? Bundle.main.resourceURL?.appendingPathComponent("Images", isDirectory: true)
-        exit(UIApplicationMain(
-            CommandLine.argc, CommandLine.unsafeArgv, nil, NSStringFromClass(UIKitApplicationDelegate.self)))
+        exit(UIApplicationMain(CommandLine.argc, CommandLine.unsafeArgv, nil, NSStringFromClass(delegate)))
     }
 }
 #endif

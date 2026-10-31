@@ -40,20 +40,25 @@ struct AppKitLayoutItem: LayoutChild {
 
     var isShown: Bool { !view.isHidden }
 
-    /// The child's margin, in AppKit's units.
-    var margin: NSEdgeInsets {
-        let margin = values.margin
-        return NSEdgeInsets(top: margin.top, left: margin.left, bottom: margin.bottom, right: margin.right)
-    }
-
     func size(offered width: Double?) -> LayoutSize {
         LayoutSize(fittingSize(width: width.map { CGFloat($0) }))
+    }
+
+    func firstBaseline(offered width: Double?) -> Double? {
+        if let measuring = view as? AppKitBaselineMeasuring {
+            return measuring.firstBaseline(width: width.map { CGFloat($0) }).map(Double.init)
+        }
+        // A control's own, as AppKit reads it; a view AppKit reads none of has no words.
+        let offset = view.firstBaselineOffsetFromTop
+        return offset > 0 ? Double(offset) : nil
     }
 
     /// The view's size for the width offered to it, its margin already taken out: measured at the width it takes of
     /// the offer, its stated sizes and bounds applied (`LayoutValues.offer`, `sized`).
     /// Design: docs/design/host/layout.md#a-child-measured
     func fittingSize(width available: CGFloat? = nil) -> NSSize {
+        // A view holding new words back is measured at their size.
+        if let held = placed?.heldWords { return NSSize(held) }
         let offer = values.offer(available.map { Double($0) }).map { CGFloat($0) }
         let measured: NSSize
         if let measurable = view as? AppKitWidthConstrainedMeasuring {

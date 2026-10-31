@@ -32,6 +32,14 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(StateLaw.motion(of: [2, 300, 4]), .eased(.milliseconds(300), Easing(rawValue: 4) ?? .cubicOut))
     }
 
+    /// A glide lies on the image as its kind and its longest, and reads back as itself.
+    func testAGlideTravelsAsItsLongest() {
+        let glide = Motion.glide(longest: .milliseconds(640))
+
+        XCTAssertEqual(StateLaw.lanes(of: glide), [5, 640, 0])
+        XCTAssertEqual(StateLaw.motion(of: StateLaw.lanes(of: glide)), glide)
+    }
+
     func testAChangedNumberTravelsAtTheApplicationsMotion() {
         let renders = Renders()
 
@@ -53,12 +61,12 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(patch.transitions[.opacity]?.motion, own)
     }
 
-    func testAColourTravels() {
+    func testAColorTravels() {
         let renders = Renders()
 
-        renders.render(ZStack { Text("x") }.background(Color("#000000")).id("b").node)
+        renders.render(ZStack { Text("x") }.background(Color(hex: 0x000000)).id("b").node)
         let patch = renders.render(
-            ZStack { Text("x") }.background(Color("#FFFFFF")).id("b").node)
+            ZStack { Text("x") }.background(Color(hex: 0xFFFFFF)).id("b").node)
 
         XCTAssertNotNil(patch.transitions[.background])
     }
@@ -185,7 +193,7 @@ final class MotionTests: XCTestCase {
         XCTAssertTrue(patch.transitions.isEmpty)
 
         // EVERY ONE OF THEM, not just the one above. What this holds is that
-        // the DIFFER honours the whole list rather than the one property a
+        // the DIFFER honors the whole list rather than the one property a
         // test happened to write: taking the check out of the differ fails
         // here naming `maximumLength`, `gridRowSpan` and `zIndex`.
         //
@@ -213,7 +221,7 @@ final class MotionTests: XCTestCase {
                 "\(property.name) did not change at all, so this proves nothing")
             XCTAssertTrue(
                 moved.transitions.isEmpty,
-                "\(property.name) travelled, and no member that does not travel may")
+                "\(property.name) traveled, and no member that does not travel may")
         }
     }
 
@@ -283,20 +291,44 @@ final class MotionTests: XCTestCase {
         func button(_ enabled: Bool, still: Bool) -> Node {
             let base = Button("Save")
                 .isEnabled(enabled)
-                .visualState(.disabled) { $0.background(Color("#CCCCCC")) }
+                .visualState(.disabled) { $0.background(Color(hex: 0xCCCCCC)) }
 
             return (still ? base.motion(.none) : base).id("b").node
         }
 
-        let travelling = Renders()
-        travelling.render(button(true, still: false))
-        let entered = travelling.render(button(false, still: false))
-        XCTAssertEqual(entered.props["background"], Color("#CCCCCC").propValue)
+        let traveling = Renders()
+        traveling.render(button(true, still: false))
+        let entered = traveling.render(button(false, still: false))
+        XCTAssertEqual(entered.props["background"], Color(hex: 0xCCCCCC).propValue)
         XCTAssertNotNil(entered.transitions["background"], "it crosses as the application's values do")
 
         let still = Renders()
         still.render(button(true, still: true))
         XCTAssertNil(still.render(button(false, still: true)).transitions["background"], "and at once under none")
+    }
+
+    /// A VISUAL STATE LEFT TAKES ITS VALUES AWAY UNDER THE SAME MOTION: a value
+    /// only the state stated - a scale while held down - is taken away with a
+    /// motion beside it, for the host to travel it back to its rest; under
+    /// `.motion(.none)` it goes at once.
+    func testAValueAStateTakesAwayTravelsBack() {
+        func button(_ enabled: Bool, still: Bool) -> Node {
+            let base = Button("Save")
+                .isEnabled(enabled)
+                .visualState(.disabled) { $0.scale(0.9) }
+
+            return (still ? base.motion(.none) : base).id("b").node
+        }
+
+        let traveling = Renders()
+        traveling.render(button(false, still: false))
+        let left = traveling.render(button(true, still: false))
+        XCTAssertEqual(left.clearedProperties, [.scale], "the state's scale taken away")
+        XCTAssertEqual(left.transitions[.scale]?.motion, .standard, "under the control's motion")
+
+        let still = Renders()
+        still.render(button(false, still: true))
+        XCTAssertNil(still.render(button(true, still: true)).transitions[.scale], "and at once under none")
     }
 
     // ---- Which values a motion is about --------------------------------------
@@ -307,25 +339,25 @@ final class MotionTests: XCTestCase {
     func testAMotionMayNameWhichValuesItIsAbout() {
         let renders = Renders()
 
-        func panel(_ width: Double, _ colour: Color) -> Node {
+        func panel(_ width: Double, _ color: Color) -> Node {
             ZStack { Text("x") }
                 .width(width)
-                .background(colour)
+                .background(color)
                 .motion(.none, .size)
                 .id("p")
                 .node
         }
 
-        renders.render(panel(100, Color("#000000")))
-        let patch = renders.render(panel(300, Color("#FFFFFF")))
+        renders.render(panel(100, Color(hex: 0x000000)))
+        let patch = renders.render(panel(300, Color(hex: 0xFFFFFF)))
 
         XCTAssertEqual(patch.props[.width], .number(300))
         XCTAssertNil(patch.transitions[.width], "the size arrives")
-        XCTAssertNotNil(patch.transitions[.background], "the colour still travels")
+        XCTAssertNotNil(patch.transitions[.background], "the color still travels")
     }
 
     /// A shape's corners and outline are its shape, not its size: a size held
-    /// still leaves them travelling, and a rule naming the shape holds them.
+    /// still leaves them traveling, and a rule naming the shape holds them.
     func testAShapesCornersAndOutlineAreItsShapeNotItsSize() {
         func panel(_ wide: Bool, still: MotionValues) -> Node {
             Rectangle()
@@ -408,7 +440,7 @@ final class MotionTests: XCTestCase {
     // ---- A size somebody measures arrives ------------------------------------
 
     /// A layout whose frame is watched reports how big its room is, and a size
-    /// worked out from that report is the LAYOUT's answer: travelling through
+    /// worked out from that report is the LAYOUT's answer: traveling through
     /// it would lay the page out at sizes nobody chose, growing from nothing.
     /// So a child's size arrives there, where the same change travels in a
     /// room nobody measures.
@@ -489,7 +521,7 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(patch.lanes, .place)
     }
 
-    /// A gradient is the same picture in different colours, so it crosses -
+    /// A gradient is the same picture in different colors, so it crosses -
     /// which is what keeps a theme change uniform.
     func testAGradientTravels() {
         let renders = Renders()
@@ -498,14 +530,14 @@ final class MotionTests: XCTestCase {
             VStack { Text("x") }
                 .background(.linearGradient([
                     GradientStop(from, 0),
-                    GradientStop(Color("#FFFFFF"), 1),
+                    GradientStop(Color(hex: 0xFFFFFF), 1),
                 ]))
                 .id("p")
                 .node
         }
 
-        renders.render(panel(Color("#000000")))
-        let patch = renders.render(panel(Color("#FF0000")))
+        renders.render(panel(Color(hex: 0x000000)))
+        let patch = renders.render(panel(Color(hex: 0xFF0000)))
 
         XCTAssertNotNil(patch.transitions[.background])
     }
@@ -521,13 +553,13 @@ final class MotionTests: XCTestCase {
     /// the destination alone, and the host walks the thumb there under the
     /// element's law - which is the one difference between a report and an
     /// assignment, and it is a fact of the lanes rather than of a mark.
-    func testADraggedSliderWritesItsReportBackWithoutTravelling() {
+    func testADraggedSliderWritesItsReportBackWithoutTraveling() {
         let volume = State(wrappedValue: 0.5)
         let renders = Renders()
 
         renders.render(Slider(volume.projectedValue).id("s").node)
 
-        let board = Renderer.shared.board(of: volume.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         _ = board.dirty()
 
@@ -552,13 +584,13 @@ final class MotionTests: XCTestCase {
     /// A `Stepper` is the other control the host walks for a plain `Double`,
     /// and it answers the same way - so the guard covers both of them rather
     /// than the one that happened to be written first.
-    func testASteppedValueIsWrittenBackWithoutTravelling() {
+    func testASteppedValueIsWrittenBackWithoutTraveling() {
         let servings = State(wrappedValue: 2.0)
         let renders = Renders()
 
         renders.render(Stepper(servings.projectedValue).id("s").node)
 
-        let board = Renderer.shared.board(of: servings.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         _ = board.dirty()
 
@@ -569,7 +601,7 @@ final class MotionTests: XCTestCase {
         XCTAssertTrue(board.dirty().isEmpty, "and nothing was left to travel")
     }
 
-    // ---- One transform, about the view's own centre -------------------------
+    // ---- One transform, about the view's own center -------------------------
 
     /// ONE TRANSFORM, HAPPENING IN THE ORDER IT IS WRITTEN. Each part is done
     /// to what the parts before it made - so a move written BEFORE a turn is
@@ -724,39 +756,50 @@ final class MotionTests: XCTestCase {
 
     // ---- The vocabulary itself ---------------------------------------------
 
-    func testTheLawsCarryTheNumbersTheyNeed() {
-        XCTAssertEqual(Motion.eased(.milliseconds(400), .cubicIn).milliseconds, 400)
-        XCTAssertEqual(Motion.eased(.milliseconds(400), .cubicIn).curve, .cubicIn)
-
-        XCTAssertEqual(Motion.spring(response: .milliseconds(260), damping: 0.7).milliseconds, 260)
-        XCTAssertEqual(Motion.spring(response: .milliseconds(260), damping: 0.7).factor, 0.7)
+    /// Each kind carries only its own numbers: an eased motion its length and curve, a spring its response and
+    /// damping, and the three that time nothing - none, the inherited one, an engine's own - none at all, each
+    /// itself.
+    func testEachKindCarriesOnlyItsOwnNumbers() {
+        XCTAssertEqual(Motion.eased(.milliseconds(400), .cubicIn).kind, .eased(milliseconds: 400, curve: .cubicIn))
+        XCTAssertEqual(
+            Motion.spring(response: .milliseconds(260), damping: 0.7).kind, .spring(milliseconds: 260, damping: 0.7))
+        XCTAssertEqual([Motion.none, .inherited, .custom].map(\.kind), [.none, .inherited, .custom])
+        XCTAssertEqual([Motion.none, .inherited, .custom].map(\.milliseconds), [0, 0, 0])
+        XCTAssertEqual([Motion.none, .inherited, .custom, .standard, .spring()].map(\.animates),
+                       [false, false, false, true, true])
     }
 
-    func testALengthIsADurationKeptToTheMillisecond() {
-        XCTAssertEqual(Motion.eased(.seconds(1.25)).length, .milliseconds(1250))
-        XCTAssertEqual(Motion.spring(response: .milliseconds(260)).length, .milliseconds(260))
+    func testALengthIsKeptToTheMillisecond() {
+        XCTAssertEqual(Motion.eased(.seconds(1.25)).milliseconds, 1250)
+        XCTAssertEqual(Motion.spring(response: .milliseconds(260)).milliseconds, 260)
         XCTAssertEqual(Motion.eased(.microseconds(1500)).milliseconds, 2, "to the nearest")
-        XCTAssertEqual(Motion.eased(.milliseconds(-30)).milliseconds, 0, "nothing before none")
         XCTAssertEqual(Asks.every(.seconds(2)).window, 2000)
     }
 
-    func testNoMotionIsNothingAndInheritedResolves() {
-        XCTAssertTrue(Motion.none.isNothing)
-        XCTAssertFalse(Motion.standard.isNothing)
+    /// An eased motion of no time - nought, or less - is no motion: one spelling for it.
+    func testAnEasedMotionOfNoTimeIsNone() {
+        XCTAssertEqual(Motion.eased(.zero, .cubicIn), .none)
+        XCTAssertEqual(Motion.eased(.milliseconds(-30)), .none, "nothing before none")
+        XCTAssertNotEqual(Motion.none, .inherited)
+        XCTAssertNotEqual(Motion.none, .custom)
+    }
 
+    func testInheritedResolves() {
         XCTAssertEqual(Motion.inherited.resolved(against: .standard), .standard)
         XCTAssertEqual(Motion.eased(.milliseconds(50)).resolved(against: .standard), .eased(.milliseconds(50)))
+        XCTAssertEqual(Motion.none.resolved(against: .standard), .none)
     }
 
     /// A spring's damping is bought deliberately and never given away: half a
     /// card's worth of wobble is what a user reads as a mistake.
     func testASpringDoesNotOvershootUnlessItIsAskedTo() {
-        XCTAssertEqual(Motion.spring().factor, 1)
+        XCTAssertEqual(Motion.spring().kind, .spring(milliseconds: 300, damping: 1))
 
         // ASKED TO: damping under one is what overshoot IS, and the floor is
         // 0.05 rather than nought - a spring with no damping at all never
-        // arrives.
-        XCTAssertEqual(Motion.spring(damping: 0.4).factor, 0.4)
-        XCTAssertEqual(Motion.spring(damping: 0).factor, 0.05)
+        // arrives; a damping that is no number is 1.
+        XCTAssertEqual(Motion.spring(damping: 0.4).kind, .spring(milliseconds: 300, damping: 0.4))
+        XCTAssertEqual(Motion.spring(damping: 0).kind, .spring(milliseconds: 300, damping: 0.05))
+        XCTAssertEqual(Motion.spring(damping: .nan).kind, .spring(milliseconds: 300, damping: 1))
     }
 }

@@ -46,8 +46,13 @@ enum GTKTestHost {
     /// so a test lays out without waiting for one.
     static func layOut(_ window: GTKWidget) {
         guard let surface = gtk_native_get_surface(window.opaque) else { return pump(0.05) }
-        let width = gdk_surface_get_width(surface)
-        let height = gdk_surface_get_height(surface)
+        layOut(window, width: gdk_surface_get_width(surface), height: gdk_surface_get_height(surface))
+    }
+
+    /// Lays `window` out at `width` by `height`, as the desktop lays out a window the user narrowed: below what it
+    /// holds asks for, where a breakpoint lets it stand narrower.
+    static func layOut(_ window: GTKWidget, width: Int32, height: Int32) {
+        guard let surface = gtk_native_get_surface(window.opaque) else { return pump(0.05) }
         guard width > 0, height > 0 else { return pump(0.05) }
 
         var values = [GValue](repeating: GValue(), count: 3)
@@ -258,14 +263,14 @@ extension GTKView {
 }
 
 extension GTKView {
-    /// The colours GTK draws the widget in at `points`, in its own coordinates, as premultiplied ARGB.
+    /// The colors GTK draws the widget in at `points`, in its own coordinates, as premultiplied ARGB.
     func pixels(at points: [(Double, Double)]) -> [UInt32] {
         GTKTestHost.pixels(of: widget, at: points)
     }
 }
 
 extension GTKTestHost {
-    /// The colours GTK draws `widget` in at `points`, in its own coordinates, as premultiplied ARGB: the widget
+    /// The colors GTK draws `widget` in at `points`, in its own coordinates, as premultiplied ARGB: the widget
     /// drawn afresh from its parent, as a frame's paint draws it, and rendered by its window's renderer.
     static func pixels(of widget: GTKWidget, at points: [(Double, Double)]) -> [UInt32] {
         // The widget's whole box, its CSS padding and border included, which its width and height leave out.
@@ -300,7 +305,7 @@ extension GTKTestHost {
     }
 }
 
-/// Whether two ARGB colours differ by at most `tolerance` in each channel - GTK rounds an opacity to 256 steps.
+/// Whether two ARGB colors differ by at most `tolerance` in each channel - GTK rounds an opacity to 256 steps.
 func near(_ a: UInt32, _ b: UInt32, within tolerance: Int = 2) -> Bool {
     (0..<4).allSatisfy { shift in
         abs(Int((a >> (shift * 8)) & 0xFF) - Int((b >> (shift * 8)) & 0xFF)) <= tolerance
@@ -321,7 +326,7 @@ extension GTKNavigationView {
 extension GTKSwitchView {
     /// Turns the switch as the user's click does.
     func toggle() {
-        gtk_switch_set_active(widget.opaque, isOn ? 0 : 1)
+        gtk_switch_set_active(control.opaque, isOn ? 0 : 1)
     }
 }
 

@@ -26,7 +26,7 @@ namespace provider = winrt::Microsoft::UI::Xaml::Automation::Provider;
 
 namespace {
     void answer(int64_t ticket, bool accepted, std::string const &words, bool hasWords) {
-        callbacks.answered(ticket, accepted, hasWords ? words.c_str() : nullptr, nullptr);
+        callbacks.answered(ticket, accepted, hasWords ? words.c_str() : nullptr, -1, nullptr);
     }
 
     /// The question under `ticket` could not be asked: the reason, from the error being handled, is its answer.
@@ -39,7 +39,7 @@ namespace {
         } catch (...) {
         }
         report(doing);
-        callbacks.answered(ticket, false, nullptr, reason.c_str());
+        callbacks.answered(ticket, false, nullptr, -1, reason.c_str());
     }
 
     /// Shows `dialog`, handing its result to `closed` once it closes; a dialog WinUI failed fails its question.
@@ -51,7 +51,7 @@ namespace {
                 if (status == AsyncStatus::Error) {
                     auto reason = "WinUI could not show the question: "
                         + winrt::to_string(winrt::hresult_error(operation.ErrorCode()).message());
-                    return callbacks.answered(ticket, false, nullptr, reason.c_str());
+                    return callbacks.answered(ticket, false, nullptr, -1, reason.c_str());
                 }
                 closed(status == AsyncStatus::Completed ? operation.GetResults() : controls::ContentDialogResult::None);
             }));
@@ -101,37 +101,25 @@ namespace {
             };
             break;
         case StateUIQuestionKindChooseAction: {
-            // A choice is a button of its own, the dangerous one first; the answer is the caption pressed.
-            auto chosen = std::make_shared<std::string>();
-            auto pressed = std::make_shared<bool>(false);
+            // Each action is a button of its own, in order; the answer is the place of the one pressed. WinUI draws
+            // no dangerous button apart.
+            auto chosen = std::make_shared<int32_t>(-1);
             controls::StackPanel choices;
             choices.Spacing(8);
-            std::vector<std::string> captions;
-            if (question.destruction) captions.push_back(question.destruction);
-            for (int32_t index = 0; index < question.choiceCount; ++index) captions.push_back(question.choices[index]);
-            for (auto const &caption : captions) {
+            for (int32_t index = 0; index < question.choiceCount; ++index) {
                 controls::Button button;
-                button.Content(winrt::box_value(winrt::to_hstring(caption)));
+                button.Content(winrt::box_value(text(question.choices[index])));
                 button.HorizontalAlignment(xaml::HorizontalAlignment::Stretch);
                 button.Click(guarded("handling Click",
-                    [dialog, chosen, pressed, caption](IInspectable const &, xaml::RoutedEventArgs const &) {
-                    *chosen = caption;
-                    *pressed = true;
+                    [dialog, chosen, index](IInspectable const &, xaml::RoutedEventArgs const &) {
+                    *chosen = index;
                     dialog.Hide();
                 }));
                 choices.Children().Append(button);
             }
             dialog.Content(choices);
-            if (question.cancel) {
-                auto cancel = std::string(question.cancel);
-                dialog.CloseButtonText(text(question.cancel));
-                dialog.CloseButtonClick(guarded("handling CloseButtonClick",
-                    [chosen, pressed, cancel](auto const &, auto const &) {
-                    *chosen = cancel;
-                    *pressed = true;
-                }));
-            }
-            closed = [ticket, chosen, pressed](auto) { answer(ticket, *pressed, *chosen, *pressed); };
+            dialog.CloseButtonText(text(question.cancel));
+            closed = [ticket, chosen](auto) { callbacks.answered(ticket, *chosen >= 0, nullptr, *chosen, nullptr); };
             break;
         }
         case StateUIQuestionKindPrompt: {
@@ -257,7 +245,9 @@ extern "C" bool stateui_winui_answer(StateUIObjectRef handle, int32_t button, ch
         }
         controls::Button pressed{nullptr};
         if (button < 2) {
-            pressed = first<controls::Button>(dialog, button == 0 ? L"PrimaryButton" : L"CloseButton");
+            // An alert's one button is its close button, which accepts it.
+            auto accepts = button == 0 && !dialog.PrimaryButtonText().empty();
+            pressed = first<controls::Button>(dialog, accepts ? L"PrimaryButton" : L"CloseButton");
         } else if (auto choices = dialog.Content().try_as<controls::StackPanel>()) {
             auto index = static_cast<uint32_t>(button - 2);
             if (index < choices.Children().Size()) pressed = choices.Children().GetAt(index).try_as<controls::Button>();

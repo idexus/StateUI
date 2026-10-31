@@ -71,17 +71,13 @@ lookup.
 
 ### Editing a provided object
 
-The projected environment `$account` can lend a writable member to ordinary
-described input. The model property's own projection is the whole state and is
-the appropriate channel when a host carries that value:
+A provided object's `@State` properties are its states, so a control is handed
+one as any object's: `account.$name`, as `AccountEditor` does above, borrows the
+`@State` declared on `Account.name`, and the host carries it.
 
-- `$account.name` reaches the member through the provided object;
-- `account.$name` borrows the `@State` declared on `Account.name` itself.
-
-`$account` lends members only: assigning a different object through it does
-not compile. The ancestor owns which object it provides; descendants edit its
-properties or communicate a replacement through an explicit binding owned by
-that ancestor.
+`@Environment` has no projected value. The ancestor owns which object it
+provides, so nothing replaces it from below; a replacement travels through an
+explicit binding owned by that ancestor.
 
 ## Overriding one branch
 
@@ -119,7 +115,7 @@ to that field rather than to the whole object.
 | `\.application` | `ApplicationSession` | the application's facts (`info`), its phase, styles, motion, kept keys and open scenes |
 | `\.scene` | `SceneSession` | the scene the view stands in |
 | `\.window` | `WindowSession` | the window the view stands in |
-| `\.device` | `Device` | what the device is (`info`), its `display`, `battery` and `connectivity` |
+| `\.device` | `Device` | what the device is (`info`), its `display`, `battery`, `connectivity` and the user's `accessibility` settings |
 | `\.locale` | `LocaleInfo` | the user's language, region, zone and conventions |
 
 The facts the host reports, each group a typed value, are part of StateUI's
@@ -128,11 +124,12 @@ contract:
 | Read as - type | Properties | Meaning and initial fallback |
 | --- | --- | --- |
 | `device.battery` - `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | charge and power state; level is `-1`, enums are `.unknown` until reported |
+| `device.accessibility` - `AccessibilitySettings` | `reducesMotion`, `prefersHigherContrast`, `isScreenReaderOn`, `textScale` | what the user asked of the system - less motion, more contrast, a screen reader, larger words; `false` and a scale of `1` until reported, and where a platform cannot tell |
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
 | `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
-| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `deviceType` | form factor, open platform name, hardware and system facts; text starts empty and closed values `.unknown` |
+| `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil |
 | `locale` - `LocaleInfo` | `language`, `region`, `name`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | host-normalized language, region, the user's languages in order (`LocaleTag`), IANA zone, clock and calendar conventions, and the way the language is written; text starts empty, the list empty, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
-| `application.info` - `AppInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
+| `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
 | `application.phase` - `ApplicationPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a fact. The documented fallback remains
@@ -160,7 +157,6 @@ The closed vocabulary used by these fields is:
 | `Weekday` | `sunday` through `saturday` |
 | `LayoutDirection` | `inherited`, `leftToRight`, `rightToLeft` |
 | `FormFactor` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
-| `DeviceType` | `unknown`, `physical`, `virtual` |
 | `ColorScheme` | `system`, `light`, `dark` |
 | `ApplicationPhase` | `active`, `inactive`, `background` |
 
@@ -200,9 +196,9 @@ room a view is given - `.onFrameChanged` and `GeometryReader`
 screen itself, handling zero density before the first host report. Use `app.info.colorScheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.
 
-### What the platform honours
+### What the platform honors
 
-A platform may leave a member out where its toolkit cannot honour it - a
+A platform may leave a member out where its toolkit cannot honor it - a
 picker's list opened by the program, a tooltip on a phone. Writing such a
 member changes nothing, so a view asks first and leaves out what asks for it:
 
@@ -215,9 +211,8 @@ struct SizeChooser: View {
     var body: some View {
         VStack {
             Picker([1, 2, 3], selection: $size) { "\($0)" }
-                .isOpen(showing)
-                .onClosed { showing = false }
-            if device.honours(PickerContract.isOpen) {
+                .isOpen($showing)
+            if device.honors(PickerContract.isOpen) {
                 Button("Open the list").onClicked { showing = true }
             }
         }
@@ -225,9 +220,10 @@ struct SizeChooser: View {
 }
 ```
 
-The answer is the host's own judgement, the one the
+The answer is the host's own judgment, the one the
 [platform contract](../platform-contract.md) shows: in full or in part is
-honoured, never or not realized is not.
+honored, never or not realized is not. A property, an event and an act are
+asked alike - `device.honors(MapContract.moveToRegion)`.
 
 `device.connectivity.networkAccess == .internet` means ordinary internet access.
 `.constrainedInternet` describes a route with a portal or another constraint,
@@ -358,7 +354,7 @@ Keep portable interface decisions on StateUI's host-normalized boundary:
 - use `Task.sleep` or `Ticker` for application timing, not Foundation
   `Timer` or `RunLoop`;
 - isolate work for the UI thread to `MainActor`, not `DispatchQueue.main`,
-  which nothing drains on Android, Windows, or Linux.
+  which the compiler does not check and the Web does not have.
 
 An application can convert between its Foundation-rich domain model and these
 small StateUI values at its boundary. That keeps the library's description

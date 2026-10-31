@@ -38,6 +38,9 @@ class GTKView {
     /// The words the view shows of itself, which name it where it is a heading; nil where it shows none.
     var shownWords: String? { nil }
 
+    /// The widget assistive technology meets as the view: its own, or the control a composed view shows.
+    var presentedControl: GTKWidget { widget }
+
     /// The controllers the view listens through, and what hears them; nil while it listens for nothing.
     private(set) var listening: GTKListening?
 
@@ -49,10 +52,12 @@ class GTKView {
     private var onFocusChanged: ((Bool) -> Void)?
     private var focusController: OpaquePointer?
 
-    /// The style sheet's class giving the view its padding.
+    /// The room between the view's edge and its content, as the tree says it, and the style sheet's class giving
+    /// it - its start at the side the view's direction starts from.
+    private var padding: Insets?
     private var paddingClass: String?
 
-    /// The colour the view's accent is drawn in, as the host last wrote it, and its class; nil for the platform's.
+    /// The color the view's accent is drawn in, as the host last wrote it, and its class; nil for the platform's.
     private(set) var tint: GdkRGBA?
     private var tintClass: String?
 
@@ -106,7 +111,7 @@ class GTKView {
         connectNotify(UnsafeMutableRawPointer(widget), property, number: number, handler)
     }
 
-    /// What fills the view's box, under its whole frame: a colour, or a brush's first colour; nil for nothing.
+    /// What fills the view's box, under its whole frame: a color, or a brush's first color; nil for nothing.
     /// Design: docs/design/platforms/gtk/drawing.md#a-views-background
     func setBackground(_ value: HostValue?) {
         swapClass(&fillClass, to: GTKBrush(value).firstColor.map(GTKStyleSheet.fill))
@@ -135,6 +140,7 @@ class GTKView {
     /// Design: docs/design/platforms/gtk/layout.md#right-to-left
     func setDirection(_ direction: GtkTextDirection) {
         gtk_widget_set_direction(widget, direction)
+        if padding != nil { showPadding() }
         guard g_type_check_instance_is_a(widget.of(GTypeInstance.self), gtk_editable_get_type()) != 0,
               let words = gtk_editable_get_delegate(widget.opaque) else { return }
         gtk_widget_set_direction(UnsafeMutablePointer(words), direction)
@@ -168,7 +174,16 @@ class GTKView {
 
     /// The room between the view's edge and its content, as a class of the host's style sheet; nil for none.
     func setPadding(_ insets: Insets?) {
-        let wanted = insets.flatMap { $0 == Insets(0) ? nil : GTKStyleSheet.padding($0) }
+        padding = insets
+        showPadding()
+    }
+
+    /// The padding's class, its sides by the direction the view lays out in.
+    /// Design: docs/design/host/layout.md#right-to-left
+    private func showPadding() {
+        let rightToLeft = gtk_widget_get_direction(widget) == GTK_TEXT_DIR_RTL
+        let direction: LayoutDirection = rightToLeft ? .rightToLeft : .leftToRight
+        let wanted = padding.flatMap { $0 == Insets(0) ? nil : GTKStyleSheet.padding($0.sides(in: direction)) }
         guard wanted != paddingClass else { return }
         if let paddingClass { gtk_widget_remove_css_class(widget, paddingClass) }
         if let wanted { gtk_widget_add_css_class(widget, wanted) }
@@ -192,8 +207,14 @@ class GTKView {
     /// Where the view's place travels (`PlacedView`); nothing of most views' follows it.
     func travels(to destination: Rect?) {}
 
-    /// The room the view's words stand in while its place travels; nil where they stand in its place.
-    var wordsRoom: Rect? { nil }
+    /// The size of new words the view holds back while its box grows to hold them (`PlacedView`), its former ones
+    /// shown; nil shows its own and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet { holdWords(heldWords != nil) }
+    }
+
+    /// Shows the words held back, or the view's own; most views hold none.
+    func holdWords(_ holding: Bool) {}
 
     /// The widget's size for the room offered, in logical pixels; nil offers any. Its natural width, no wider
     /// than offered nor narrower than its least, and its natural height for that width.
@@ -207,6 +228,16 @@ class GTKView {
 
         gtk_widget_measure(widget, GTK_ORIENTATION_VERTICAL, Int32(measuredWidth), &least, &natural, nil, nil)
         return LayoutSize(width: measuredWidth, height: Double(natural))
+    }
+
+    /// How far below its top its first line of words rests, measured `width` wide, as GTK measures a widget's
+    /// natural baseline; nil for a widget with none.
+    func firstBaseline(width: Double?) -> Double? {
+        let measured = measure(width: width, height: nil)
+        var (least, natural, leastBaseline, naturalBaseline): (Int32, Int32, Int32, Int32) = (0, 0, -1, -1)
+        gtk_widget_measure(
+            widget, GTK_ORIENTATION_VERTICAL, Int32(measured.width), &least, &natural, &leastBaseline, &naturalBaseline)
+        return naturalBaseline >= 0 ? Double(naturalBaseline) : nil
     }
 
     /// Where the view stands, in logical pixels: its frame in its parent, its place in the window, and that place
@@ -255,11 +286,17 @@ class GTKView {
     /// What the view listens for of the user's input.
     var hearing: Hearing { listening?.hearing ?? [] }
 
-    /// Listens for what `hearing` names, `heard` hearing it; a panel listening for taps is pressable by
-    /// assistive technology.
+    /// Listens for what `hearing` names, `heard` hearing it, a hold waiting `hold` milliseconds - GTK's own time for
+    /// nil; a panel listening for taps is pressable by assistive technology.
     /// Design: docs/design/platforms/gtk/input.md#listening
-    func hear(_ hearing: Hearing, _ heard: @escaping (HeardInput) -> Bool) {
+    func hear(
+        _ hearing: Hearing, holdingFor hold: Double?, countingRuns: Bool, _ heard: @escaping (HeardInput) -> Bool
+    ) {
         onHeard = hearing.isEmpty ? nil : heard
+        defer {
+            listening?.wait(hold)
+            listening?.countsRuns = countingRuns
+        }
         guard hearing != self.hearing else { return }
 
         if GTKPanel.holds(widget) { GTKPanel.setPressable(widget, hearing.contains(.taps)) }
@@ -310,9 +347,17 @@ class GTKView {
     /// The element left the tree: the view lets go of everything that would call back into it. An override
     /// calls this first.
     func detach() {
-        hear([]) { _ in false }
+        hear([], holdingFor: nil, countingRuns: false) { _ in false }
         setFocusChanged(nil)
         contextMenu = nil
         offer(.none) { _ in }
+        // A popover standing by the view - one whose view is made anew - is let go: GTK keeps no parent it lost.
+        var child = gtk_widget_get_first_child(widget)
+        while let each = child {
+            child = gtk_widget_get_next_sibling(each)
+            if g_type_check_instance_is_a(each.of(GTypeInstance.self), gtk_popover_get_type()) != 0 {
+                gtk_widget_unparent(each)
+            }
+        }
     }
 }

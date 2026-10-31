@@ -5,7 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
-/// A layout's children travelling to their places: what a patch said travels, what the room or a read frame gave
+/// A layout's children traveling to their places: what a patch said travels, what the room or a read frame gave
 /// arrives, and a child on its way bends, keeps its way, or stops as it leaves.
 @MainActor
 final class LayoutMotionTests: XCTestCase {
@@ -28,9 +28,9 @@ final class LayoutMotionTests: XCTestCase {
         XCTAssertFalse(layout.animator.isMoving)
     }
 
-    /// A child whose place travels is told where it is bound as it sets out - a view laying out words lays them out
-    /// at that size, never at the widths it passes through - and bound nowhere once it lands or merely arrives.
-    func testATravellingChildIsToldWhereItIsBound() {
+    /// A child whose place travels is told where it is bound as it sets out - a layout lays its children out at that
+    /// size, never at the widths it passes through - and bound nowhere once it lands or merely arrives.
+    func testATravelingChildIsToldWhereItIsBound() {
         let layout = HandWoundLayout()
         let words = Placed()
         let narrow = Rect(x: 0, y: 0, width: 94, height: 21)
@@ -48,6 +48,80 @@ final class LayoutMotionTests: XCTestCase {
         layout.frame(at: 200)
         XCTAssertEqual(words.placedFrame, wide)
         XCTAssertNil(words.bound, "and nowhere once it stands")
+    }
+
+    /// A child laying out words travels its size, never narrower than its words need where it is bound: a button a
+    /// wider cell takes grows the whole way, words that need their new width stand in it from the start, and words
+    /// that wrap where they are bound stand at their destination's width and height.
+    func testAChildLayingOutWordsTravelsNoNarrowerThanItsWordsNeed() {
+        let layout = HandWoundLayout()
+        let button = Placed()
+        let caption = Placed()
+        let wrapped = Placed()
+        let words: [UInt64: LayoutSize] = [
+            1: LayoutSize(width: 60, height: 28), 2: LayoutSize(width: 100, height: 21),
+            3: LayoutSize(width: 300, height: 21),
+        ]
+        layout.arrange([
+            (button, 1, Rect(x: 0, y: 0, width: 371, height: 28)),
+            (caption, 2, Rect(x: 0, y: 40, width: 94, height: 21)),
+            (wrapped, 3, Rect(x: 0, y: 80, width: 200, height: 42)),
+        ], measured: [1, 2, 3], words: words)
+
+        layout.arrange([
+            (button, 1, Rect(x: 0, y: 0, width: 752, height: 28)),
+            (caption, 2, Rect(x: 0, y: 40, width: 100, height: 21)),
+            (wrapped, 3, Rect(x: 0, y: 80, width: 150, height: 63)),
+        ], measured: [1, 2, 3], words: words)
+        XCTAssertEqual(caption.placedFrame.width, 100, "words that need their new width stand in it from the start")
+        XCTAssertEqual(wrapped.placedFrame, Rect(x: 0, y: 80, width: 200, height: 63), "wrapped: no shorter than bound")
+
+        layout.frame(at: 100)
+        XCTAssertEqual(button.placedFrame.width, 561.5, accuracy: 1e-9, "the button's box grows the whole way")
+        XCTAssertEqual(wrapped.placedFrame, Rect(x: 0, y: 80, width: 175, height: 63), "nor narrower than bound")
+
+        layout.frame(at: 200)
+        XCTAssertEqual(button.placedFrame, Rect(x: 0, y: 0, width: 752, height: 28), "and lands exactly")
+    }
+
+    /// A button whose new words need more than its box keeps showing its former ones while its box grows, measured
+    /// at its new words' size, and shows the new ones once its box holds them - as it lands, or on the way where it
+    /// is bound wider; words that shrink show at once.
+    func testAButtonKeepsItsFormerWordsUntilItsBoxHoldsTheNewOnes() {
+        let layout = HandWoundLayout()
+        let fitted = Placed()
+        let filling = Placed()
+        let shrunk = Placed()
+        var words: [UInt64: LayoutSize] = [
+            1: LayoutSize(width: 60, height: 28), 2: LayoutSize(width: 60, height: 28),
+            3: LayoutSize(width: 60, height: 28),
+        ]
+        func arrange(_ widths: [Double]) {
+            layout.arrange(
+                [(fitted, 1, widths[0]), (filling, 2, widths[1]), (shrunk, 3, widths[2])].map { view, mount, width in
+                    (view, mount, Rect(x: 0, y: Double(mount) * 40, width: width, height: 28))
+                },
+                measured: [1, 2, 3], words: words, boxed: [1, 2, 3])
+        }
+        arrange([60, 60, 60])
+
+        words = [
+            1: LayoutSize(width: 100, height: 28), 2: LayoutSize(width: 100, height: 28),
+            3: LayoutSize(width: 40, height: 28),
+        ]
+        arrange([100, 160, 40])
+        XCTAssertEqual(fitted.heldWords, LayoutSize(width: 100, height: 28), "former words, measured as the new ones")
+        XCTAssertEqual(fitted.placedFrame.width, 60, "its box starts where it stood")
+        XCTAssertNil(shrunk.heldWords, "words that shrink show at once")
+
+        layout.frame(at: 100)
+        XCTAssertEqual(fitted.placedFrame.width, 80, accuracy: 1e-9, "its box grows with the former words")
+        XCTAssertEqual(fitted.heldWords, LayoutSize(width: 100, height: 28))
+        XCTAssertNil(filling.heldWords, "a box at 110 holds words of 100: the new ones show on the way")
+
+        layout.frame(at: 200)
+        XCTAssertNil(fitted.heldWords, "and as it lands")
+        XCTAssertEqual(fitted.placedFrame.width, 100)
     }
 
     /// A child that joins a standing layout is at its place at once and fades in under the layout's law; the
@@ -187,7 +261,7 @@ final class LayoutMotionTests: XCTestCase {
         layout.arrange([(moved, 1, Self.row(0, y: 200))])
         XCTAssertEqual(moved.placedFrame.y, 50, accuracy: 1e-9, "it bends from where it stands")
         let bent = try XCTUnwrap(layout.animator.animation(for: .placed(1)))
-        XCTAssertEqual(bent.velocity[1], 0.5, accuracy: 1e-9, "at the speed it has")
+        XCTAssertEqual(bent.velocity[1], 500, accuracy: 1e-9, "at the speed it has, per second")
 
         layout.frame(at: 150)
         XCTAssertGreaterThan(moved.placedFrame.y, 50, "and goes on, never back")
@@ -224,6 +298,7 @@ final class LayoutMotionTests: XCTestCase {
 @MainActor
 private final class Placed: PlacedView {
     var placedFrame = Rect(x: 0, y: 0, width: 0, height: 0)
+    var heldWords: LayoutSize?
 
     /// Where its place travels, as it was last told.
     private(set) var bound: Rect?
@@ -237,7 +312,7 @@ private final class Placed: PlacedView {
 @MainActor
 private final class HandWoundLayout {
     let animator = Animator()
-    let places = TravellingPlaces()
+    let places = TravelingPlaces()
     private(set) var motion: LayoutMotion!
     var reducesMotion = false
 
@@ -256,13 +331,16 @@ private final class HandWoundLayout {
     }
 
     /// An arrangement `width` wide, after a patch where `patched`; every child states its width of 100 but the
-    /// `measured`, and the heights `heights` gives by mount.
+    /// `measured`, the heights `heights` gives by mount, and lays out words of the natural size `words` gives - in a
+    /// box of its own where `boxed`.
     func arrange(
         _ children: [(view: Placed, mount: UInt64, place: Rect)],
         width: Double = 300,
         patched: Bool = true,
         heights: [UInt64: Double] = [:],
-        measured: Set<UInt64> = []
+        measured: Set<UInt64> = [],
+        words: [UInt64: LayoutSize] = [:],
+        boxed: Set<UInt64> = []
     ) {
         if patched { places.patchArrived() }
         places.begin(width: width)
@@ -270,7 +348,11 @@ private final class HandWoundLayout {
             var values = LayoutValues()
             values.width = measured.contains(child.mount) ? nil : 100
             values.height = heights[child.mount]
-            places.place(child.view, mount: child.mount, at: child.place, values: values) { [unowned self] law in
+            values.words = words[child.mount] == nil ? .none : boxed.contains(child.mount) ? .boxed : .bare
+            places.place(
+                child.view, mount: child.mount, at: child.place, values: values,
+                natural: { words[child.mount] ?? .zero }
+            ) { [unowned self] law in
                 self.fades[child.mount] = law
             }
         }

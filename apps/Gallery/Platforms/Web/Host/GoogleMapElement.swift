@@ -95,7 +95,7 @@ final class GoogleMapElement: WebControl {
 
     /// `region` as the element reads it: latitude, longitude and radius in meters.
     private static func written(_ region: MapRegion) -> String {
-        "\(region.latitude) \(region.longitude) \(region.radiusMeters)"
+        "\(region.center.latitude) \(region.center.longitude) \(region.radiusMeters)"
     }
 
     /// `words` on one line of a marker's, no tab or line break in them.
@@ -109,6 +109,7 @@ final class GoogleMapElement: WebControl {
 extension GoogleMapElement {
     /// Adds the map for `MapContract`, its markers, and the act moving it. Said once, before the application runs.
     static func register() {
+        // listing: web.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
             map.property(MapContract.mapType) { control, type in control.show(type) }
@@ -117,16 +118,18 @@ extension GoogleMapElement {
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
             map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
             map.raises(MapContract.mapClicked)
-            map.children(MarkerContract.self, members: [
-                MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
-                MarkerContract.selected, MarkerContract.detailsClicked,
-            ]) { control, markers in
+            map.children(
+                MarkerContract.self,
+                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                events: MarkerContract.selected, MarkerContract.detailsClicked
+            ) { control, markers in
                 control.show(markers)
             }
         }
+        // listing: end
 
-        StateUIActs.add(MapContract.moveToRegion, on: GoogleMapElement.self) { map, latitude, longitude, radius in
-            map.move(to: MapRegion(latitude: latitude, longitude: longitude, radiusMeters: radius))
+        StateUIActs.add(MapContract.moveToRegion, on: GoogleMapElement.self) { map, region in
+            map.move(to: region)
         }
     }
 }

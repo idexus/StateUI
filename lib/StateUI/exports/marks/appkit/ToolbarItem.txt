@@ -1,4 +1,0 @@
-# revision 4.1
-ToolbarItem: ✓ activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
-ToolbarItem.placement: ✅
-ToolbarItem.showsText: – A Mac shows a toolbar's words as its user sets the whole toolbar, not item by item.

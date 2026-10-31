@@ -1,7 +1,7 @@
-# revision 2.1
-ActivityIndicator.tint: ✅
+# revision 3.1
 CheckBox.tint: ✅
 Picker.tint: not realized
 ProgressBar.tint: ✅
 Slider.tint: ✅
+Spinner.tint: ✅
 Switch.tint: ✅

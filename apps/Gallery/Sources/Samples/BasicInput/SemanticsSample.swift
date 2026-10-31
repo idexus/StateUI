@@ -3,9 +3,12 @@ import StateUI
 /// The accessible meaning and stable external identity of a StateUI view.
 struct SemanticsSample: SampleContent, ExampleContent {
     // listing: SemanticsSample
+    @Environment(\.application) private var application
     @State private var described = true
 
     @State private var taps = 0
+
+    @State private var rating = 3
 
     /// The last thing said out loud, shown - because a machine with no screen
     /// reader running shows nothing at all otherwise, and what was said is the
@@ -20,7 +23,7 @@ struct SemanticsSample: SampleContent, ExampleContent {
     // listing: SemanticsSample
     /// Said once, and both written onto the button and printed under it - so
     /// what the sample shows cannot drift from what the platform was handed.
-    private static let says = "Add to favourites"
+    private static let says = "Add to favorites"
 
     private static let hint = "Puts this item on your list"
 
@@ -32,9 +35,10 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
             HStack {
                 VStack {
-                    // A picture and nothing else. To anybody not looking at it,
+                    // A picture and no words. To anybody not looking at it,
                     // this control has no name at all.
-                    Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    Button()
+                        .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                         .style(.iconButton)
                         .accessibilityIdentifier("semantics.bare")
                         .contentMode(.fit)
@@ -108,6 +112,35 @@ struct SemanticsSample: SampleContent, ExampleContent {
             }
             .spacing(4)
 
+            SectionTitle("One thing made of parts")
+
+            // Five stars drawn, one rating heard: a screen reader meets the row
+            // as one adjustable thing holding its value, not as five pictures,
+            // steps it with a swipe up or down, and offers Clear as an action.
+            HStack {
+                ForEach(1...5) { star in
+                    Text(star <= rating ? "★" : "☆")
+                        .fontSize(28)
+                        .textColor(Palette.accent)
+                        .onTapped { rating = star }
+                }
+            }
+            .spacing(4)
+            .horizontalAlignment(.center)
+            .accessibilityIdentifier("semantics.rating")
+            .accessibilityLabel("Rating")
+            .accessibilityRole(.adjustable)
+            .accessibilityValue("\(rating) of 5")
+            .onAccessibilityAdjusted { step in
+                rating = min(5, max(0, rating + (step == .increment ? 1 : -1)))
+            }
+            .accessibilityAction("Clear") { rating = 0 }
+
+            Text("A user hears: Rating, \(rating) of 5")
+                .fontSize(12)
+                .textColor(Palette.accent)
+                .horizontalTextAlignment(.center)
+
             SectionTitle("Said out loud")
 
             // Said out loud, now, whatever the user was on. An ACT, because
@@ -116,9 +149,9 @@ struct SemanticsSample: SampleContent, ExampleContent {
             Button("Announce the count")
                 .accessibilityIdentifier("semantics.announce")
                 .horizontalAlignment(.center)
-                .onClicked(gate: .ignoreWhileRunning) {
+                .onClicked(.ignoreWhileRunning) {
                     let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
-                    try await ScreenReader.announce(words)
+                    try await application.announce(words)
                     said = words
                 }
 
@@ -165,13 +198,13 @@ struct SemanticsSample: SampleContent, ExampleContent {
                     .padding(12)
                 }
                 .style(.card)
-                .automationExcludedWithChildren(true)
+                .hidesChildrenFromAccessibility(true)
             }
             .spacing(12)
             .horizontalAlignment(.center)
 
             // A rule is decoration: a stop that would waste the user's time.
-            Rectangle(Palette.outline)
+            Fill(Palette.outline)
                 .height(1)
                 .isAccessibilityHidden(true)
         }
@@ -184,7 +217,8 @@ struct SemanticsSample: SampleContent, ExampleContent {
     /// makes a modifier written under a condition cost the property and not
     /// the control.
     private var describedButton: some View {
-        let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+        let button = Button()
+            .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
             .style(.iconButton)
             .accessibilityIdentifier("semantics.described")
             .contentMode(.fit)
@@ -203,9 +237,12 @@ struct SemanticsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Two jobs, four modifiers, and they do not stand in for one another. "
+            Text("Two jobs, and they do not stand in for one another. "
                 + "`.accessibilityLabel` and `.accessibilityHint` are what a screen reader "
                 + "SAYS: the first names the control, the second says what using it does. "
+                + "`.accessibilityRole` and `.accessibilityValue` say what a view made of "
+                + "parts is and holds: the stars are one adjustable rating, not five pictures, "
+                + "which a reader steps (`.onAccessibilityAdjusted`) and clears (`.accessibilityAction`). "
                 + "`.accessibilityHeading` marks a view as a heading, which is how a "
                 + "user moves through a long page. `.accessibilityIdentifier` is a handle nobody "
                 + "hears - it is what a UI test, a script or an agent driving the "

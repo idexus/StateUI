@@ -10,17 +10,17 @@ import StateUIConformance
 import XCTest
 
 final class WinUITextInputViewTests: XCTestCase {
-    /// A search box draws its placeholder in a colour of its own, through the theme resources its template reads,
+    /// A search box draws its placeholder in a color of its own, through the theme resources its template reads,
     /// and in a new one written later with no theme read again; the template stands it at the start
     /// (`WinUIRealization`).
-    func testASearchBoxDrawsItsPlaceholderInItsColour() throws {
+    func testASearchBoxDrawsItsPlaceholderInItsColor() throws {
         try onUIThread {
-            let colour = State(wrappedValue: Color(red: 255, green: 0, blue: 0))
+            let color = State(wrappedValue: Color(red: 255, green: 0, blue: 0))
             let host = WinUIRenderer.running {
                 VStack {
                     SearchField(State(wrappedValue: "").projectedValue)
                         .placeholder("MMMM")
-                        .placeholderColor(colour.wrappedValue)
+                        .placeholderColor(color.wrappedValue)
                         .width(300)
                 }
             }
@@ -30,16 +30,16 @@ final class WinUITextInputViewTests: XCTestCase {
             XCTAssertNotNil(Self.ink(in: search, of: Self.isRed), "the placeholder drawn red")
             let read = stateui_winui_themes_read_again()
 
-            colour.wrappedValue = Color(red: 0, green: 0, blue: 255)
+            color.wrappedValue = Color(red: 0, green: 0, blue: 255)
             host.settle { Self.ink(in: search, of: Self.isBlue) != nil }
             XCTAssertNotNil(Self.ink(in: search, of: Self.isBlue), "the placeholder drawn blue")
             XCTAssertEqual(stateui_winui_themes_read_again(), read, "the theme read again")
         }
     }
 
-    /// A placeholder in a colour of its own stands where the words do: in the middle of a field whose words stand
-    /// centred.
-    func testAColouredPlaceholderStandsWhereTheWordsDo() throws {
+    /// A placeholder in a color of its own stands where the words do: in the middle of a field whose words stand
+    /// centered.
+    func testAColoredPlaceholderStandsWhereTheWordsDo() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
@@ -66,7 +66,7 @@ final class WinUITextInputViewTests: XCTestCase {
         (argb >> 16) & 0xFF < 100 && (argb >> 8) & 0xFF < 100 && argb & 0xFF > 150
     }
 
-    /// Where a view draws in a colour `matches` across its middle, in DIPs from its leading edge; nil for nowhere.
+    /// Where a view draws in a color `matches` across its middle, in DIPs from its leading edge; nil for nowhere.
     @MainActor
     private static func ink(in view: WinUIView, of matches: (UInt32) -> Bool) -> ClosedRange<Double>? {
         let frame = view.frame

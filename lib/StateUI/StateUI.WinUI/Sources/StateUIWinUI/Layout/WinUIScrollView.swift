@@ -41,6 +41,14 @@ final class WinUIScrollView: WinUILayoutView {
 
     private var bars = (vertical: ScrollIndicatorVisibility.automatic, horizontal: ScrollIndicatorVisibility.automatic)
 
+    var onRefreshPulled: (() -> Bool)?
+
+    /// The pull to refresh the scroller stands in while it is offered, from the first time it is.
+    private(set) var refresh: WinUIRefreshView?
+
+    /// What stands over the whole room: the pull to refresh holding the scroller, or the scroller.
+    private var outermost: WinUIView { refresh.map { $0.isOffered ? $0 : scroller } ?? scroller }
+
     /// The direction its content is laid out in, the element's: the document and the stack holding several children
     /// take it.
     override var direction: LayoutDirection {
@@ -110,16 +118,36 @@ final class WinUIScrollView: WinUILayoutView {
     override func measure(width: Double, height: Double) -> LayoutSize {
         let across = orientation == .horizontal || orientation == .both
         let down = orientation == .vertical || orientation == .both
-        _ = scroller.measure(
+        _ = outermost.measure(
             width: across ? 0 : (width.isFinite ? width : nil),
             height: down ? 0 : (height.isFinite ? height : nil))
         return super.measure(width: width, height: height)
     }
 
-    /// Stands WinUI's scroller over the whole of the room, then an offset the tree wrote before there was one.
+    /// What runs as the scroller moves, whoever moved it: a bottom bar beside the page follows the rows going on.
+    var standingChanged: (() -> Void)?
+
+    /// Where the scroller stands and the farthest it stands, in DIPs.
+    var standing: (offset: Point, reach: Point) { scroller.standing }
+
+    /// The room the scroller last stood in; nil before its first arrangement.
+    private var laidOutIn: Rect?
+
+    /// Stands WinUI's scroller over the whole of the room, then an offset the tree wrote before there was one - or at
+    /// its end still where it stood at its end as its room changed, a move of its own told as the user's is. WinUI
+    /// tells the new reach once its own pass is over: it is the old one and what the room lost.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
     override func arrange(in bounds: Rect) {
-        scroller.layout(bounds)
-        if let target = scrollerOffset.laidOutNow() { move(to: target) }
+        let (before, was) = (scroller.standing, laidOutIn)
+        laidOutIn = bounds
+        outermost.layout(bounds)
+        if let target = scrollerOffset.laidOutNow() {
+            move(to: target)
+        } else if let was {
+            let now = Point(
+                x: max(0, before.reach.x + was.width - bounds.width), y: max(0, before.reach.y + was.height - bounds.height))
+            if let end = ScrollArithmetic.keptAtEnd(before.offset, reach: before.reach, now: now) { scroller.move(to: end) }
+        }
     }
 
     // MARK: - The user's movement
@@ -127,6 +155,7 @@ final class WinUIScrollView: WinUILayoutView {
     /// The scroller's view changed: the program's move arriving, or the user's, joined to the moves before it until
     /// the display's next frame.
     private func scrolled(to standing: Point) {
+        standingChanged?()
         guard let moved = scrollerOffset.toolkitMoved(to: standing) else { return }
         movement.userMoved(from: moved.from, to: moved.to)
     }
@@ -159,7 +188,28 @@ final class WinUIScrollView: WinUILayoutView {
         onOffsetChanged = nil
         onScrollStopped = nil
         onFramesWanted = nil
+        onRefreshPulled = nil
         scroller.detach()
+        refresh?.detach()
+    }
+
+    /// The pull offered, or not, and its spinner showing as the element says: the scroller stands in WinUI's
+    /// RefreshContainer while the pull is offered, and in the view itself while it is not.
+    /// Design: docs/design/platforms/winui/layout.md#the-pull-to-refresh
+    func applyRefresh<Realized>(_ values: ElementValues<Realized>) {
+        let offered = values[RefreshElementContract.isRefreshEnabled] ?? false
+        if offered, refresh == nil {
+            let made = WinUIRefreshView()
+            made.onPulled = { [weak self] in self?.onRefreshPulled?() ?? false }
+            refresh = made
+        }
+        guard let refresh else { return }
+        if offered != refresh.isOffered {
+            if !offered { refresh.set(content: nil, refreshing: false) }
+            setChildren([offered ? refresh : scroller])
+            invalidateMeasurements()
+        }
+        if offered { refresh.set(content: scroller, refreshing: values[RefreshElementContract.isRefreshing] ?? false) }
     }
 
     // MARK: - WinUI's scroller

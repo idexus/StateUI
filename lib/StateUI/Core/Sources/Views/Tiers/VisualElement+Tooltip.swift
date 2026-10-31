@@ -8,8 +8,9 @@ extension VisualElementProperties {
     /// Words the platform shows beside this view while the pointer rests on
     /// it, saying what the view does.
     ///
-    ///     Button(icon: "bin.png")
-    ///         .accessibilityLabel("Delete")
+    ///     Button("Delete")
+    ///         .icon("bin.png")
+    ///         .showsText(false)
     ///         .tooltip("Moves the file to the bin")
     ///
     /// Each platform shows them its own way - while the pointer rests, or

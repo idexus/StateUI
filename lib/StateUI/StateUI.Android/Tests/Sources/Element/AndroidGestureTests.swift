@@ -13,7 +13,7 @@ final class AndroidGestureTests: XCTestCase {
             ("testTapsAreCountedToTheCountAsked", testTapsAreCountedToTheCountAsked),
             ("testAPanSaysHowFarItHasComeAndMovesItsState", testAPanSaysHowFarItHasComeAndMovesItsState),
             ("testASwipePastItsThresholdSaysItsDirection", testASwipePastItsThresholdSaysItsDirection),
-            ("testAPinchSaysItsScaleAndWhereItIsCentred", testAPinchSaysItsScaleAndWhereItIsCentred),
+            ("testAPinchSaysItsScaleAndWhereItIsCentered", testAPinchSaysItsScaleAndWhereItIsCentered),
             ("testAPinchIsNoTapAndACancelledOneIsCancelled", testAPinchIsNoTapAndACancelledOneIsCancelled),
             ("testThePointerPressesMovesReleasesAndHovers", testThePointerPressesMovesReleasesAndHovers),
             ("testAPressOnAViewInFrontIsNotHeardBehindIt", testAPressOnAViewInFrontIsNotHeardBehindIt),
@@ -45,7 +45,8 @@ final class AndroidGestureTests: XCTestCase {
         }
     }
 
-    /// A pan says how far it has come in points, from where it began, and moves the state it carries by as much.
+    /// A pan says how far it has come in points, from where it began - its end the totals it reached - and moves the
+    /// state it carries by as much.
     func testAPanSaysHowFarItHasComeAndMovesItsState() throws {
         try onMainActor {
             let heard = Received<String>()
@@ -61,7 +62,7 @@ final class AndroidGestureTests: XCTestCase {
             box.touch(1, x: 170, y: 30, at: 60)
             host.settle { heard.values.count == 4 }
 
-            XCTAssertEqual(heard.values, ["began 0 0", "changed 50 0", "changed 80 10", "ended 0 0"])
+            XCTAssertEqual(heard.values, ["began 0 0", "changed 50 0", "changed 80 10", "ended 80 10"])
             XCTAssertEqual(across.wrappedValue, 85)
         }
     }
@@ -87,8 +88,8 @@ final class AndroidGestureTests: XCTestCase {
     }
 
     /// Two fingers spreading from 600 to 900 pixels apart in steps of 75: the pinch begins once Android tells
-    /// it apart - at the first step, 675 - changes from there to 900 and ends, centred where the fingers are.
-    func testAPinchSaysItsScaleAndWhereItIsCentred() throws {
+    /// it apart - at the first step, 675 - changes from there to 900 and ends, centered where the fingers are.
+    func testAPinchSaysItsScaleAndWhereItIsCentered() throws {
         try onMainActor {
             let phases = Received<String>()
             let scales = Received<Double>()
@@ -104,7 +105,7 @@ final class AndroidGestureTests: XCTestCase {
 
             XCTAssertEqual(phases.values.first, "began 0.5 0.5")
             XCTAssertEqual(phases.values.last, "ended 0.5 0.5")
-            XCTAssertEqual(scales.values.reduce(1, *), 900.0 / 675.0, accuracy: 0.01)
+            XCTAssertEqual(scales.values.last ?? 0, 900.0 / 675.0, accuracy: 0.01, "the spread since the pinch began")
         }
     }
 
@@ -167,8 +168,11 @@ final class AndroidGestureTests: XCTestCase {
             let heard = Received<String>()
             let host = AndroidRenderer.running {
                 ZStack {
-                    Rectangle().fill(.red).onTapped { heard.values.append("behind") }
-                    Rectangle().fill(.blue)
+                    Rectangle()
+                        .fill(.red)
+                        .onTapped { heard.values.append("behind") }
+                    Rectangle()
+                        .fill(.blue)
                 }
                 .width(100).height(100).horizontalAlignment(.start).verticalAlignment(.start)
             }
@@ -195,12 +199,13 @@ final class AndroidGestureTests: XCTestCase {
             let turn = State(wrappedValue: 0.0)
             let tapped = Received<Int>()
             let host = AndroidRenderer.running {
-                LayoutEngine([0, 1, 2, 3]) { card in
-                    Rectangle().fill(.red).onTapped { tapped.values.append(card) }
+                MotionLayout([0, 1, 2, 3], parameters: turn.projectedValue) { card in
+                    Rectangle()
+                        .fill(.red)
+                        .onTapped { tapped.values.append(card) }
                 } placements: { _, phase in
                     (0..<4).map { Placement(Rect((Double($0) - phase) * 100, 0, 100, 100)) }
                 }
-                .phase(turn.projectedValue)
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
                 .motion(.none)
                 .height(100)
@@ -226,7 +231,13 @@ final class AndroidGestureTests: XCTestCase {
     @MainActor
     private static func box(_ listens: @escaping @MainActor (Rectangle) -> any View) throws -> (AndroidRenderer, AndroidView) {
         let host = AndroidRenderer.running {
-            listens(Rectangle().fill(.red).width(100).height(100).horizontalAlignment(.start).verticalAlignment(.start))
+            listens(
+                Rectangle()
+                    .fill(.red)
+                    .width(100)
+                    .height(100)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start))
         }
         host.layOut()
         return (host, try XCTUnwrap(host.views(AndroidShapeView.self).first))

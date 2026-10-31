@@ -32,7 +32,7 @@ extension UIKitElement {
 
     // MARK: - The bar
 
-    /// What a page's bar shows: its title or title view, the line under it and the colours its path declares, its
+    /// What a page's bar shows: its title or title view, the line under it and the colors its path declares, its
     /// actions as the host layer orders them, and whether the bar shows and offers the way back. A tabbed view's: its chosen tab's page's, titled as the host
     /// layer names it (`titledPage`) - tabs on a stack by their own title, else by the page beneath.
     /// Design: docs/design/platforms/uikit/pages.md#the-bar
@@ -47,17 +47,36 @@ extension UIKitElement {
         var chrome = UIKitPageChrome()
         chrome.title = element.barTitle(applicationName: host?.runtime.core.applicationName ?? "")
         chrome.showsTitle = value(.showsTitle)?.bool != false
-        chrome.subtitle = element.titleArea?.subtitle
+        chrome.subtitle = element.barSubtitle
         chrome.titleView = element.chromeTitleView?.uiKit.view
         chrome.showsBar = value(.showsNavigationBar)?.bool != false
         chrome.offersBack = value(.showsBackButton)?.bool != false
         chrome.backButtonTitle = value(.backButtonTitle)?.string
         (chrome.barBackground, chrome.barForeground) = element.barColors
+        chrome.barMaterial = element.barMaterial
         let actions = element.chromeActions
-        chrome.leadingActions = actions.leading.map { $0.map(Self.action) }
-        chrome.actions = actions.trailing.map { $0.map(Self.action) }
+        chrome.leadingActions = actions.start.map { $0.map(Self.action) }
+        chrome.actions = actions.end.map { $0.map(Self.action) }
         chrome.overflow = actions.overflow.map(Self.action)
+        if element.offersItsSheetsClose { chrome.closes = { [weak self] in self?.closeItsSheet() } }
         return chrome
+    }
+
+    /// What the bar at a page's foot shows: its actions as the host layer orders them (`chromeBottomActions`). A tabbed
+    /// view's: its chosen tab's page's.
+    /// Design: docs/design/platforms/uikit/pages.md#the-bar-at-the-foot
+    var toolbar: UIKitPageToolbar {
+        if type == .tabView { return element.selectedTab?.visiblePage?.uiKit.toolbar ?? UIKitPageToolbar() }
+        let actions = element.chromeBottomActions
+        return UIKitPageToolbar(
+            leadingActions: actions.start.map { $0.map(Self.action) }, actions: actions.end.map { $0.map(Self.action) },
+            overflow: actions.overflow.map(Self.action))
+    }
+
+    /// The user pressed the bar's close button: the sheet the page's stack stands in goes, false onto its state.
+    private func closeItsSheet() {
+        guard let way = element.closingItsSheet, let window = element.enclosing(type: .window) else { return }
+        host?.runtime.goBack(way, in: window)
     }
 
     /// A page's action as the bar takes it, read as a menu's entry is (`MenuEntry`).
@@ -65,27 +84,49 @@ extension UIKitElement {
         let entry = MenuEntry.entry(of: item)
         return UIKitBarAction(
             title: entry.title, icon: entry.icon, isEnabled: entry.isEnabled, isDestructive: entry.isDestructive,
-            identifier: entry.identifier, perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit)
+            identifier: entry.identifier, perform: { [weak item] in item?.uiKit.choose() }, element: item.uiKit,
+            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil, isLabel: item.type == .toolbarLabel,
+            menu: menu(of: item))
+    }
+
+    /// The menu a bar's button opens, read as a button's is (`ButtonMenu`); nil for one holding none.
+    private static func menu(of item: MountedElement) -> UIKitBarAction.Menu? {
+        let opening = ButtonMenu.opening(of: item)
+        guard opening != .none else { return nil }
+        return UIKitBarAction.Menu(
+            opening: opening, entries: ButtonMenu.entries(of: item), inOverflow: ButtonMenu.inOverflow(item))
     }
 
     /// Writes the bar of every page in this arrangement and every one it holds.
     func composeChrome() {
         switch type {
         case .page:
-            if let controller { chrome.show(on: controller.navigationItem, buttons: &barButtonsSaid) }
+            if let controller {
+                chrome.show(
+                    on: controller.navigationItem, barSize: UIKitNavigationController.barBackground(of: controller),
+                    buttons: &barButtonsSaid)
+                toolbar.show(on: controller, items: &toolbarItemsSaid)
+                (controller as? UIKitPageController)?.showBottomBar(element.chromeBottomBar)
+                (controller as? UIKitPageController)?.showTopEdge(element.barScrollEdge)
+            }
         case .tabView:
-            if let controller { chrome.show(on: controller.navigationItem, buttons: &barButtonsSaid) }
+            if let controller {
+                chrome.show(
+                    on: controller.navigationItem, barSize: UIKitNavigationController.barBackground(of: controller),
+                    buttons: &barButtonsSaid)
+                toolbar.show(on: controller, items: &toolbarItemsSaid)
+            }
             let tabs = controller as? UIKitTabBarController
             tabs?.showsTheStacksBar = element.showsTheStacksBar
-            // A tab bar wears the colours of the bar on its path, which a theme or a state moves on an element above.
+            // A tab bar wears the colors of the bar on its path, which a theme or a state moves on an element above.
             // Design: docs/design/host/pages.md#the-bar-a-path-declares
-            tabs?.showColors(background: element.barColors.background, foreground: element.barColors.foreground)
-            children.forEach { $0.composeChrome() }
+            tabs?.showColors(material: element.barMaterial, foreground: element.barColors.foreground)
+            arranged.forEach { $0.composeChrome() }
         case .navigationStack:
             (controller as? UIKitNavigationController)?.showTopsBar()
-            children.forEach { $0.composeChrome() }
+            arranged.forEach { $0.composeChrome() }
         case .splitView:
-            children.forEach { $0.composeChrome() }
+            arranged.forEach { $0.composeChrome() }
         default:
             break
         }
@@ -101,26 +142,29 @@ extension UIKitElement {
             guard let navigation = controller as? UIKitNavigationController else { return }
             navigation.onPopped = { [weak self] staying in self?.userPopped(staying: staying) }
             navigation.showsBar = { [weak self] shown in
-                self?.children.first { $0.controller === shown }?.element.showsTheStacksBar ?? true
+                self?.arranged.first { $0.controller === shown }?.element.showsTheStacksBar ?? true
             }
+            navigation.onBarResized = { [weak self] in self?.paintBarsGradientAgain() }
             // A page comes in wearing its own bar: UIKit takes the bar's look as the move starts, which a layout in
             // the same turn - a sidebar going - can start before the window's chrome is composed.
-            children.forEach { $0.composeChrome() }
-            navigation.setPages(children.compactMap(\.controller), reducingMotion: host?.reducesMotion() ?? true)
+            arranged.forEach { $0.composeChrome() }
+            navigation.setPages(arranged.compactMap(\.controller), reducingMotion: host?.reducesMotion() ?? true)
         case .tabView:
             guard let tabs = controller as? UIKitTabBarController else { return }
             tabs.show(
-                children.compactMap { tab in
+                arranged.compactMap { tab in
                     tab.controller.map { ($0, tab.value(.title)?.string ?? "", HostPicture(tab.value(.icon))) }
                 },
                 requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
+            tabs.onBarResized = { [weak self] in self?.paintBarsGradientAgain() }
         case .splitView:
             guard let split = controller as? UIKitSplitViewController else { return }
-            split.show(sidebar: children.first?.controller, detail: children.dropFirst().first?.controller)
+            split.show(sidebar: arranged.first?.controller, detail: arranged.dropFirst().first?.controller)
             split.onPresentationChanged = { [weak self] presented in self?.sidebarChanged(to: presented) }
             if let host { split.slide(on: host.runtime.sidebarSlide, mount: element.mount) }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
+            offerSidebarToggle()
             if !changed.isDisjoint(with: MountedElement.sidebarMaterials) {
                 split.paintsSidebar = element.paintsSidebar
                 split.showPageBackgrounds()
@@ -130,12 +174,27 @@ extension UIKitElement {
         }
     }
 
+    /// Offers UIKit's own sidebar button on the split view's bars, unless the split view says it offers none.
+    func offerSidebarToggle() {
+        guard let split = controller as? UIKitSplitViewController else { return }
+        let toggle: UISplitViewController.DisplayModeButtonVisibility = element.offersSidebarToggle ? .automatic : .never
+        if split.displayModeButtonVisibility != toggle { split.displayModeButtonVisibility = toggle }
+    }
+
     /// Lets the arrangement's controller say nothing more, as the element leaves the tree.
     func releasePages() {
         (controller as? UIKitNavigationController)?.onPopped = nil
+        (controller as? UIKitNavigationController)?.onBarResized = nil
         (controller as? UIKitTabBarController)?.onSelection = nil
+        (controller as? UIKitTabBarController)?.onBarResized = nil
         (controller as? UIKitSplitViewController)?.onPresentationChanged = nil
         (controller as? UIKitSplitViewController)?.stopSliding()
+    }
+
+    /// The arrangement's bar took another width: a gradient on it is drawn again for the size it stands at now.
+    private func paintBarsGradientAgain() {
+        guard HostBrush(element.barMaterial.painted).isGradient else { return }
+        composeChrome()
     }
 
     /// The user took the stack's top pages away: the host layer tells the path how long it is now.

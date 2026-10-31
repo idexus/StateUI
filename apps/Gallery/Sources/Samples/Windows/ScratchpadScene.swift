@@ -1,7 +1,7 @@
 import StateUI
 
 // listing: ScratchpadScene
-extension WindowType {
+extension WindowType where Value == Void {
     /// A scratchpad window: as many as the user opens.
     static let scratchpad = WindowType("gallery.scratchpad")
 }
@@ -9,9 +9,9 @@ extension WindowType {
 
 // listing: ScratchpadScene
 /// What the scratchpads KEEP - handed back with their scene when the system restores the application's windows.
-extension SceneKey {
+extension SceneKey where Value == String {
     /// The scratchpads' text.
-    static let scratch = SceneKey("gallery.scratch", of: String.self)
+    static let scratch = SceneKey("gallery.scratch")
 }
 // listing: end
 

@@ -19,8 +19,13 @@ that does not settle ends the process. So each measure the panel answers
 measures every shown child; WinUI answers a child it measured at the same
 size from what it kept, and measures one it did not.
 
-A native control is measured at each width the arithmetic offers it. A
-layout of StateUI's asks for no room, so it is measured at the width of the
+A native control is measured at each width the arithmetic offers it inside
+a measure - a label in a row short of room at its natural width and at its
+share - and keeps what each gave until its content changes; inside an
+arrangement it is answered from those, and WinUI is not asked again: a
+control measured inside an arrangement at a width other than its last marks
+its layout for another pass, and two widths a pass never settle
+(`WinUIView.measured(width:)`). A layout of StateUI's asks for no room, so it is measured at the width of the
 place it stands in: WinUI measures it again only where a change beneath
 marked it. Put in a place of another width, it is measured there first, which
 measures its own children at the widths its arrangement then gives them - a
@@ -30,23 +35,30 @@ per width until WinUI measures it again or a change forgets it on the way up.
 Measured at every width asked of it, a layout would forget its sizes each time
 and measure its whole subtree again.
 
+A layout whose place travels lays its children out at the size it is bound
+for ([a layout bound for a size](../../host/motion.md#a-layout-bound-for-a-size)),
+so it is measured at that width while its box passes through the others.
+Measured at the widths it passes through, words that fit the destination on
+one line would break onto two inside the layout's measure and stand on one
+inside its parent's: their size would change with every pass, and WinUI ends
+the process over a layout that never settles (`AG_E_LAYOUT_CYCLE`).
+
 ## A place between passes
 
 A child's `Arrange` written outside its parent's arrangement does nothing, so
 a view keeps the place it was last given and writes it according to when it
 comes. Inside a pass - the host counts the arrangements under way - the place
-is arranged at once. Between passes, as a display frame moves a travelling
+is arranged at once. Between passes, as a display frame moves a traveling
 child, the view asks the layout that placed it to arrange again
 (`InvalidateArrange`); WinUI runs that arrangement before it draws the frame,
 and the layout's arrangement gives the child the place it keeps.
 
-A label whose place travels is arranged at its place's corner but at the size
-the place is bound for ([words at their
-destination](../../host/motion.md#words-at-their-destination)). WinUI would
-keep its words on the one line the destination gives them anyway - it
-arranges nothing smaller than it measured - but it cuts an element to the
-place it is arranged in, so the words' ends would not be drawn until the
-place arrived.
+A label or a button whose place travels is arranged at the frame the host
+layer gives it, never narrower than its words need ([words on the
+way](../../host/motion.md#words-on-the-way)). WinUI would keep a label's
+words on one line anyway - it arranges nothing smaller than it measured -
+but it cuts an element to the place it is arranged in, so the words' ends
+would not be drawn until the place arrived.
 
 ## A place filled
 
@@ -142,3 +154,17 @@ it as the program's
 ([where a scroller stands](../../host/layout.md#where-a-scroller-stands)); a
 target the view already stands at is not moved to at all, as the scroller
 would say nothing of it, and a user's hold forgets the target.
+
+## The pull to refresh
+
+A scroller pulls through WinUI's own `RefreshContainer` (`WinUIRefreshView`),
+which holds its `ScrollViewer` while the pull is offered: the container stands
+over the scroller's room and the scroller in it; with the pull withheld the
+scroller stands in the view again, as a disabled container would disable the
+scroller with it. The container's `RefreshRequested` is the user's pull: the
+relay holds its deferral - the spinner - and the host layer answers whether it
+stays; where it does not, the deferral completes at once. A value of
+`isRefreshing` the application writes asks the container for a refresh, which
+WinUI raises within `RequestRefresh`: the relay holds that one unheard, and
+false completes the deferral held. A list is not pulled: the container reads a
+`ScrollViewer`, and an ItemsView scrolls in a `ScrollView`.

@@ -77,7 +77,7 @@ final class AppKitVisibilityTests: XCTestCase {
     /// A view that faded away and is shown again under `.motion(.none)` is
     /// back at once and answers input: the fade's deafness never outlives it.
     @MainActor
-    func testAViewShownAgainWithoutTravellingAnswersInput() throws {
+    func testAViewShownAgainWithoutTravelingAnswersInput() throws {
         var now = 0.0
         let renderer = renderer { now }
         defer { renderer.closeForTesting() }

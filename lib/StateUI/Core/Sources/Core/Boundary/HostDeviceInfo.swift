@@ -21,8 +21,9 @@
     /// The operating-system version.
     public let versionString: String
 
-    /// Whether the application runs on hardware or a virtual device.
-    public let deviceType: DeviceType
+    /// Whether the application runs on an emulator, a simulator or a virtual machine; nil where the platform does
+    /// not say.
+    public let isVirtual: Bool?
 
     /// A complete device report.
     public init(
@@ -32,7 +33,7 @@
         manufacturer: String,
         name: String,
         versionString: String,
-        deviceType: DeviceType
+        isVirtual: Bool?
     ) {
         self.formFactor = formFactor
         self.platform = platform
@@ -40,6 +41,6 @@
         self.manufacturer = manufacturer
         self.name = name
         self.versionString = versionString
-        self.deviceType = deviceType
+        self.isVirtual = isVirtual
     }
 }

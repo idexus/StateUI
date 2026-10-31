@@ -13,15 +13,17 @@ platform. A handler runs on `MainActor` and may suspend; it resumes on
                                by the platform's own event loop on the thread
                                it draws on. Nothing here replaces it.
 
-  Android, Windows, Linux      the main queue would be libdispatch's, and
-                               nothing drains it: the UI thread turns its own
-                               loop (Looper, the message pump, GTK's main loop),
-                               and a handler would suspend at its first await
-                               and never wake. So MainActor's executor is
+  Android, Windows, Linux      the main queue is libdispatch's, which no run
+                               loop of the platform's turns: the UI thread
+                               turns its own loop (Looper, the message pump,
+                               GTK's main loop), from which the host drains
+                               libdispatch's queue as well (host/runtime.md,
+                               the main queue). MainActor's executor is
                                UIThreadExecutor, installed through Swift's
                                executor factory before the first task; it
-                               queues each job, and the host drains the queue
-                               on its UI thread through HostBoundary.runJobs.
+                               queues each job, and the host runs them on its
+                               UI thread through HostBoundary.runJobs, in its
+                               turn.
 ```
 
 Away from Apple, a host's start installs the executor: its first call, before
@@ -35,9 +37,10 @@ which its run loop drains as on Apple. The factory is
 `@_spi(ExperimentalCustomExecutors)`; its shape is that of the one Swift
 release the project builds with.
 
-Nothing waits for the platform's main queue in shared code - nothing drains it
-on Android or Windows - and nothing uses a run-loop timer, which hangs off a run
-loop nothing turns there. A timer is `Task.sleep` (cycle.md).
+Nothing waits for the platform's main queue in shared code - it is the host's to
+drain off Apple ([the main queue](../host/runtime.md#the-main-queue)) - and
+nothing uses a run-loop timer, which hangs off a run loop nothing turns there.
+A timer is `Task.sleep` (cycle.md).
 
 ## WebAssembly
 

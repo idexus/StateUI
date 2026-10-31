@@ -72,6 +72,39 @@ final class UIKitPagesTests: XCTestCase {
         host.settle { navigation.transitionCoordinator == nil }
     }
 
+    /// A page taken off a stack leaves nothing alive: its controller and the views it showed go once its move ends.
+    @MainActor
+    func testAPageTakenOffAStackLeavesNothingAlive() throws {
+        let path = State(wrappedValue: [1])
+        // Started in a pool of its own, as the application's run loop drains what a launch autoreleased.
+        let host = autoreleasepool {
+            UIKitRenderer.running {
+                NavigationStack(path.projectedValue) {
+                    Text("Root")
+                } destination: { level in
+                    TextField(State(wrappedValue: "Level \(level)").projectedValue)
+                }
+            }
+        }
+        defer { host.finish() }
+        let stack = try XCTUnwrap(host.runtime.tree.root?.first(type: .navigationStack))
+        let navigation = try XCTUnwrap((stack.native as? UIKitElement)?.controller as? UIKitNavigationController)
+        let standing = { (count: Int) in navigation.viewControllers.count == count && navigation.transitionCoordinator == nil }
+        host.settle { standing(2) }
+        weak var page: UIViewController?
+        weak var field: UIView?
+        autoreleasepool {
+            page = navigation.topViewController
+            field = host.views(UIKitTextFieldView.self).first
+        }
+        XCTAssertNotNil(page)
+
+        path.wrappedValue = []
+        host.settle { standing(1) && page == nil }
+        XCTAssertNil(page, "its controller")
+        XCTAssertNil(field, "a view it showed")
+    }
+
     /// The user's way back is not undone by a render while the page goes. The stack is told once the move ends, so a
     /// render meanwhile still describes the page going - and the stack shows it no more.
     @MainActor
@@ -84,7 +117,7 @@ final class UIKitPagesTests: XCTestCase {
             } destination: { level in
                 Text("Level \(level)")
             }
-            .barBackgroundColor(painted.wrappedValue ? .firebrick : .steelBlue)
+            .barBackground(painted.wrappedValue ? .firebrick : .steelBlue)
         }
         defer { host.finish() }
         let stack = try XCTUnwrap(host.runtime.tree.root?.first(type: .navigationStack))
@@ -150,7 +183,7 @@ final class UIKitPagesTests: XCTestCase {
     func testTheMenuBarIsBuiltAgainWhenAnEntryTurns() throws {
         let on = State(wrappedValue: false)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            Text("Document").menuBar { Menu("View") { MenuItem("Grid").isOn(on.wrappedValue) }.id("view") }
+            Text("Document").menuBar { Menu("View") { MenuToggle("Grid", isOn: on.wrappedValue) }.id("view") }
         }
         defer { host.finish() }
         host.settle { !host.menuBar.isEmpty }
@@ -226,21 +259,23 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(heard.values, [1], "the entry chosen")
     }
 
-    /// The groups a page's path declares stand on its navigation item as the host layer composes them: each a
-    /// `UIBarButtonItemGroup` of its own - a background of its own - the page's nearer the title and the stack's at
-    /// the edge, a leading group beside the way back.
+    /// The groups a page declares stand on its navigation item as the host layer composes them: each a
+    /// `UIBarButtonItemGroup` of its own - a background of its own - in reading order, a leading group beside the
+    /// way back.
     @MainActor
-    func testTheBarsGroupsStandAsThePathComposesThem() throws {
+    func testTheBarsGroupsStandAsThePageDeclaresThem() throws {
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Text("Root")
                     .toolbar {
-                        ToolbarItem("Save").accessibilityIdentifier("save")
-                        ToolbarItem("Add").accessibilityIdentifier("add")
+                        ToolbarGroup {
+                            ToolbarButton("Save").accessibilityIdentifier("save")
+                            ToolbarButton("Add").accessibilityIdentifier("add")
+                        }
+                        ToolbarButton("Filter").accessibilityIdentifier("filter").placement(at: .start)
+                        ToolbarButton("Home").accessibilityIdentifier("home")
                     }
-                    .toolbar(.leading) { ToolbarItem("Filter").accessibilityIdentifier("filter") }
             } destination: { _ in Text("Pushed") }
-            .toolbar { ToolbarItem("Home").accessibilityIdentifier("home") }
         }
         defer { host.finish() }
         let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
@@ -253,17 +288,74 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertTrue(bar.leftItemsSupplementBackButton, "the leading group beside the way back")
     }
 
-    /// On a painted bar an action wears the bar's words' colour, and one that destroys something stays red.
+    /// The overflow's button, a picture on the bar, is named More: UIKit's own menu of the items a narrow bar has no
+    /// room for, and VoiceOver, say its title.
+    @MainActor
+    func testTheOverflowIsNamedMore() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").toolbar { ToolbarButton("Clear").placement(at: .overflow) }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { host.finish() }
+        let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
+        host.settle { item().map { !$0.trailingItemGroups.isEmpty } ?? false }
+        let more = try XCTUnwrap(item()?.trailingItemGroups.flatMap(\.barButtonItems).first { $0.menu != nil })
+
+        XCTAssertEqual(more.title, CoreLink().chromeWords.more)
+    }
+
+    /// A bar's buttons - an action, and one holding a menu - let go of their elements as the bar drops them: the action
+    /// UIKit was handed, which the element keeps, holds neither the element nor its menu's entries.
+    @MainActor
+    func testABarsButtonsLeaveNothingAlive() throws {
+        let shown = State(wrappedValue: true)
+        weak var action: MountedElement?
+        weak var withMenu: MountedElement?
+        weak var actionNative: UIKitElement?
+        weak var withMenuNative: UIKitElement?
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Text("Root").toolbar {
+                    if shown.wrappedValue {
+                        ToolbarButton("Add")
+                        ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save as") }
+                    }
+                }
+            } destination: { _ in Text("Pushed") }
+        }
+        defer { host.finish() }
+        let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
+        host.settle { item().map { $0.trailingItemGroups.flatMap(\.barButtonItems).count == 2 } ?? false }
+        autoreleasepool {
+            let buttons = host.runtime.tree.root.map { Self.all(.toolbarButton, in: $0) } ?? []
+            XCTAssertEqual(buttons.count, 2)
+            (action, withMenu) = (buttons.first, buttons.last)
+            (actionNative, withMenuNative) = (action?.native as? UIKitElement, withMenu?.native as? UIKitElement)
+
+            shown.wrappedValue = false
+            host.settle { item()?.trailingItemGroups.flatMap(\.barButtonItems).isEmpty ?? false }
+        }
+        let settled = Date(timeIntervalSinceNow: 0.3)
+        while Date() < settled { RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.02)) }
+
+        XCTAssertNil(action, "the action's element")
+        XCTAssertNil(withMenu, "the element of the button holding a menu")
+        XCTAssertNil(actionNative, "the action's UIKit element")
+        XCTAssertNil(withMenuNative, "the UIKit element of the button holding a menu")
+    }
+
+    /// On a painted bar an action wears the bar's words' color, and one that destroys something stays red.
     @MainActor
     func testADestructiveActionStaysRedOnAPaintedBar() throws {
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Text("Root").toolbar {
-                    ToolbarItem("Save").accessibilityIdentifier("save")
-                    ToolbarItem("Delete").isDestructive(true).accessibilityIdentifier("delete")
+                    ToolbarButton("Save").accessibilityIdentifier("save")
+                    ToolbarButton("Delete").role(.destructive).accessibilityIdentifier("delete")
                 }
             } destination: { _ in Text("Pushed") }
-            .barBackgroundColor(Color(red: 0, green: 0, blue: 128))
+            .barBackground(Color(red: 0, green: 0, blue: 128))
         }
         defer { host.finish() }
         let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
@@ -277,8 +369,8 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(white, 1, accuracy: 0.01, "the other in the bar's words, light on navy")
     }
 
-    /// A bar whose actions say what they said keeps its buttons as the page's title or the bar's colour moves - a
-    /// letter typed in a field on the bar, a frame of a colour travelling - recoloured, never made again.
+    /// A bar whose actions say what they said keeps its buttons as the page's title or the bar's color moves - a
+    /// letter typed in a field on the bar, a frame of a color traveling - recolored, never made again.
     @MainActor
     func testABarKeepsItsButtonsWhileItsActionsSayTheSame() throws {
         let title = State(wrappedValue: "One")
@@ -286,10 +378,10 @@ final class UIKitPagesTests: XCTestCase {
         let host = UIKitRenderer.running(reducesMotion: true) {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 Text("Root").title(title.wrappedValue).toolbar {
-                    ToolbarItem("Save").accessibilityIdentifier("save")
+                    ToolbarButton("Save").accessibilityIdentifier("save")
                 }
             } destination: { _ in Text("Pushed") }
-            .barBackgroundColor(dark.wrappedValue ? Color(red: 0, green: 0, blue: 128) : Color(red: 255, green: 230, blue: 0))
+            .barBackground(dark.wrappedValue ? Color(red: 0, green: 0, blue: 128) : Color(red: 255, green: 230, blue: 0))
         }
         defer { host.finish() }
         let item = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller?.navigationItem }
@@ -303,12 +395,12 @@ final class UIKitPagesTests: XCTestCase {
         dark.wrappedValue = false
         var white: CGFloat = 1
         host.settle { save.tintColor?.getWhite(&white, alpha: nil) == true && white < 0.5 }
-        XCTAssertTrue(item()?.trailingItemGroups.first?.barButtonItems.first === save, "kept as the colour moved")
-        XCTAssertLessThan(white, 0.5, "and recoloured, dark on yellow")
+        XCTAssertTrue(item()?.trailingItemGroups.first?.barButtonItems.first === save, "kept as the color moved")
+        XCTAssertLessThan(white, 0.5, "and recolored, dark on yellow")
     }
 
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
-    /// colour for them (`BandWords`).
+    /// color for them (`BandWords`).
     @MainActor
     func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
         let dark = State(wrappedValue: true)
@@ -317,7 +409,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 TitledPage(title: "Root")
             } destination: { _ in Text("Pushed") }
-                .barBackgroundColor(dark.wrappedValue ? navy : yellow)
+                .barBackground(dark.wrappedValue ? navy : yellow)
         }
         defer { host.finish() }
         let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller }
@@ -356,7 +448,7 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(tab.wrappedValue, 6)
     }
 
-    /// A tab bar wears the words' colour of the bar on its path as it changes - written on the stack it stands in, so
+    /// A tab bar wears the words' color of the bar on its path as it changes - written on the stack it stands in, so
     /// the tabbed view itself changes nothing - in every layout it lays its tabs in.
     @MainActor
     func testATabBarFollowsTheBarsWordsOnItsPath() throws {
@@ -399,7 +491,7 @@ final class UIKitPagesTests: XCTestCase {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 TitledPage(title: "Root")
             } destination: { _ in Text("Pushed") }
-                .barBackgroundColor(.transparent)
+                .barBackground(.transparent)
         }
         defer { host.finish() }
         let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement)?.controller }
@@ -419,7 +511,7 @@ final class UIKitPagesTests: XCTestCase {
     func testAPagesContentReachesUnderTheBarsWhereItSaysSo() throws {
         let under = State(wrappedValue: false)
         let host = UIKitRenderer.running {
-            ZStack {}.avoidsSafeArea(under.wrappedValue ? .none : .container)
+            ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none)
         }
         defer { host.finish() }
         let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
@@ -434,6 +526,57 @@ final class UIKitPagesTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, 0, "under it")
     }
 
+    /// A stack's bar is part of the safe area of the page under it: the page's content stands clear of it, and where
+    /// it lets itself under the bars it reaches the screen's top edge, under the bar.
+    @MainActor
+    func testAPagesContentReachesUnderAStacksBarWhereItSaysSo() throws {
+        let under = State(wrappedValue: false)
+        let host = UIKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).title("Under the bar")
+            } destination: { _ in Text("Next") }
+        }
+        defer { host.finish() }
+        let page = { (host.runtime.tree.root.flatMap { Self.first(.page, in: $0) }?.native as? UIKitElement) }
+        let controller = try XCTUnwrap(page()?.controller)
+        let bar = try XCTUnwrap(controller.navigationController?.navigationBar)
+        host.settle { bar.window != nil && (page()?.view?.frame.minY ?? 0) > 0 }
+        let below = Double(controller.view.convert(bar.bounds, from: bar).maxY)
+        let standing = Double(try XCTUnwrap(page()?.view?.frame.minY))
+        XCTAssertEqual(standing, below, accuracy: 0.5, "clear of the bar")
+
+        under.wrappedValue = true
+        host.settle { page()?.view?.frame.minY == 0 }
+        XCTAssertEqual(try XCTUnwrap(page()?.view).frame.minY, 0, "under it")
+    }
+
+    /// A page's scroller let under a stack's bar scrolls under it and keeps the bar's depth clear at its start, so
+    /// its first row stands clear of the bar at the offset the tree calls nothing.
+    @MainActor
+    func testAPagesScrollerUnderTheBarKeepsItsFirstRowClear() throws {
+        let offset = State(wrappedValue: Point(0, 0))
+        let host = UIKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue) }
+                    .ignoresSafeArea(.all)
+                    .title("Rows")
+            } destination: { _ in Text("Next") }
+        }
+        defer { host.finish() }
+        let scroller = { host.views(UIKitScrollView.self).first?.scroller }
+        host.settle { (scroller()?.contentInset.top ?? 0) > 0 }
+        let top = Double(try XCTUnwrap(scroller()).contentInset.top)
+        XCTAssertGreaterThan(top, 0, "the bar's depth kept clear")
+        let start = Double(try XCTUnwrap(scroller()?.contentOffset.y))
+        XCTAssertEqual(start, -top, accuracy: 0.5, "its first row clear of the bar")
+        XCTAssertEqual(offset.wrappedValue, Point(0, 0), "where the tree calls nothing")
+
+        offset.wrappedValue = Point(0, 100)
+        host.settle { abs(Double(scroller()?.contentOffset.y ?? 0) - (100 - top)) < 0.5 }
+        let moved = Double(try XCTUnwrap(scroller()?.contentOffset.y))
+        XCTAssertEqual(moved, 100 - top, accuracy: 0.5, "counted from its first row")
+    }
+
     /// A page's scroller let under the strip at its bottom scrolls under the home indicator and keeps the strip
     /// clear at its end, so its last row scrolls out from under it; one standing clear of the strip keeps nothing.
     @MainActor
@@ -441,7 +584,7 @@ final class UIKitPagesTests: XCTestCase {
         let under = State(wrappedValue: true)
         let host = UIKitRenderer.running {
             Grid { ScrollView { Text("rows") } }
-                .avoidsSafeArea(.container, .container, .container, under.wrappedValue ? .none : .container)
+                .ignoresSafeArea(under.wrappedValue ? .bottom : .none)
         }
         defer { host.finish() }
         let scroller = { host.views(UIKitScrollView.self).first?.scroller }
@@ -483,7 +626,7 @@ final class UIKitPagesTests: XCTestCase {
         host.settle { controller.view.backgroundColor != .systemBackground }
         var (red, green, blue): (CGFloat, CGFloat, CGFloat) = (0, 0, 0)
         controller.view.backgroundColor?.getRed(&red, green: &green, blue: &blue, alpha: nil)
-        XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [81, 43, 212], "the window's colour")
+        XCTAssertEqual([red, green, blue].map { Int(($0 * 255).rounded()) }, [81, 43, 212], "the window's color")
     }
 
     /// The first tabbed view in `element`'s tree.
@@ -496,6 +639,12 @@ final class UIKitPagesTests: XCTestCase {
     @MainActor
     private static func first(_ type: NodeType, in element: MountedElement) -> MountedElement? {
         element.type == type ? element : element.children.lazy.compactMap { first(type, in: $0) }.first
+    }
+
+    /// Every element of `type` in `element`'s tree, in order.
+    @MainActor
+    private static func all(_ type: NodeType, in element: MountedElement) -> [MountedElement] {
+        (element.type == type ? [element] : []) + element.children.flatMap { all(type, in: $0) }
     }
 }
 
@@ -511,7 +660,7 @@ private struct TitledPage: View {
 /// A page whose background the page itself says, as the Gallery's pages do.
 private struct PaintedPage: View {
     var body: some View {
-        Text("Painted").pageBackground(Color("#F7F5FC"))
+        Text("Painted").pageBackground(Color(hex: 0xF7F5FC))
     }
 }
 
@@ -519,6 +668,6 @@ private struct WindowPaintedPage: View {
     @Environment(\.window) private var window
 
     var body: some View {
-        Text("Plain").onCreated { window.background = .color(Color("#512BD4")) }
+        Text("Plain").onCreated { window.background = .color(Color(hex: 0x512BD4)) }
     }
 }

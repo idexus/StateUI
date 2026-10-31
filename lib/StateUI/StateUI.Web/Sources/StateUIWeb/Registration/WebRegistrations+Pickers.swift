@@ -19,7 +19,8 @@ extension WebRegistrations {
             }
             return picker
         }, members: { (picker: Registration<PickerContract, WebDOMView>) in
-            picker.applies([PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder]) { view, values in
+            picker.applies(
+                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder) { view, values in
                 (view as! any WebChoosing).setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])

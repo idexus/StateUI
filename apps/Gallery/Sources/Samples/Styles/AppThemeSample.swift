@@ -24,8 +24,8 @@ struct AppThemeSample: SampleContent, ExampleContent {
                 .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
-            // LOGIC on the theme - a different WORD, not a colour.
-            // A colour that differs by theme is Color(light:dark:),
+            // LOGIC on the theme - a different WORD, not a color.
+            // A color that differs by theme is Color(light:dark:),
             // which follows by itself.
             Text(app.info.colorScheme == .dark
                 ? "lights off - a view can choose calmer artwork"
@@ -47,7 +47,7 @@ struct AppThemeSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("Use this for LOGIC - a different picture, a different word. A "
-                + "colour should not need it: a `Color(light:dark:)` reads the theme "
+                + "color should not need it: a `Color(light:dark:)` reads the theme "
                 + "as the view wearing it is built, so a theme change builds exactly "
                 + "the views wearing one again.")
                 .fontSize(12)

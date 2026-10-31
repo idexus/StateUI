@@ -21,7 +21,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     var onFramesWanted: (() -> Void)?
 
     private(set) var orientation = ScrollOrientation.vertical
-    private(set) var padding = NSEdgeInsets()
+    private(set) var padding = Insets(0)
     private var verticalBarVisibility: Int32 = 0
     private var horizontalBarVisibility: Int32 = 0
 
@@ -46,7 +46,47 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     /// The user's movement of this scroller, and its rest.
     private let movement = ScrollMovement()
 
-    var offset: NSPoint { reachable(contentView.bounds.origin) }
+    var offset: NSPoint { reachable(standing(contentView.bounds.origin)) }
+
+    /// What the scroller keeps clear on each edge - the bars a page's scroller reaches under - so its first and last
+    /// content scroll out from under them; its offsets are counted from its first content clear of them.
+    private var clearance = Clearance.none
+
+    /// Keeps `clearance` clear, the scroller standing where the tree has it - or at its end still where it stood at
+    /// its end, a move of its own told as the user's is (`ScrollArithmetic.keptAtEnd`).
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    func keepClear(_ clearance: Clearance) {
+        guard clearance != self.clearance else { return }
+        let (standing, before) = (offset, reach(keeping: self.clearance))
+        self.clearance = clearance
+        automaticallyAdjustsContentInsets = false
+        contentInsets = NSEdgeInsets(top: clearance.top, left: clearance.left, bottom: clearance.bottom, right: clearance.right)
+        scrollClip(to: standing)
+        if let end = ScrollArithmetic.keptAtEnd(Point(standing), reach: before, now: reach(keeping: clearance)) {
+            contentView.scroll(to: native(NSPoint(x: end.x, y: end.y)))
+            reflectScrolledClipView(contentView)
+        }
+    }
+
+    /// The farthest the scroller stands keeping `clearance` clear: its content and the clearance past its viewport.
+    private func reach(keeping clearance: Clearance) -> Point {
+        let document = documentSurface.frame.size
+        return Point(
+            x: max(0, document.width + clearance.left + clearance.right - contentSize.width),
+            y: max(0, document.height + clearance.top + clearance.bottom - contentSize.height))
+    }
+
+    /// Where the clip view at `origin` stands the scroller, counted from its first content kept clear.
+    private func standing(_ origin: NSPoint) -> NSPoint {
+        let point = SafeAreaArithmetic.offset(native: Point(x: origin.x, y: origin.y), clearance: clearance)
+        return NSPoint(x: point.x, y: point.y)
+    }
+
+    /// The clip view's origin standing the scroller at `offset`.
+    private func native(_ offset: NSPoint) -> NSPoint {
+        let point = SafeAreaArithmetic.native(offset: Point(x: offset.x, y: offset.y), clearance: clearance)
+        return NSPoint(x: point.x, y: point.y)
+    }
     var usesStackWrapperForTesting: Bool { usesStackWrapper }
     var documentChildCountForTesting: Int {
         usesStackWrapper ? stackWrapper.items.count : (documentSurface.item == nil ? 0 : 1)
@@ -69,7 +109,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         // same path, so the two can never drift apart.
         apply(
             orientation: ScrollOrientation.vertical.rawValue,
-            padding: NSEdgeInsets(),
+            padding: Insets(0),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
             offset: nil)
@@ -113,7 +153,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
 
     func apply(
         orientation: Int32,
-        padding: NSEdgeInsets,
+        padding: Insets,
         verticalBarVisibility: Int32,
         horizontalBarVisibility: Int32,
         offset: NSPoint?
@@ -148,7 +188,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         documentSurface.fittingContentSize(width: availableWidth)
     }
 
-    /// The scroller's own box: its outline in a colour and the shape it cuts what it shows to, on its layer - an
+    /// The scroller's own box: its outline in a color and the shape it cuts what it shows to, on its layer - an
     /// oval's outline a shape over what it shows.
     /// Design: docs/design/platforms/appkit/views.md#a-layouts-own-box
     func setBox(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
@@ -158,16 +198,16 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         paintBox()
     }
 
-    /// The colour the scroller paints behind what it shows; nil for none.
+    /// The color the scroller paints behind what it shows; nil for none.
     var boxBackground: NSColor? {
         didSet { paintBox() }
     }
 
     private var boxShape = ContainerShape.rectangle
-    private var boxOutline: (colour: CGColor, width: CGFloat)?
+    private var boxOutline: (color: CGColor, width: CGFloat)?
     private var ovalOutline: CAShapeLayer?
 
-    // AppKit repaints a scroller's layer as it displays it, its colour and outline cleared: the box is put back
+    // AppKit repaints a scroller's layer as it displays it, its color and outline cleared: the box is put back
     // each time.
     override func updateLayer() {
         super.updateLayer()
@@ -179,7 +219,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         guard let layer else { return }
         layer.backgroundColor = boxBackground?.cgColor
         let oval = boxShape == .ellipse
-        layer.borderColor = oval ? nil : boxOutline?.colour
+        layer.borderColor = oval ? nil : boxOutline?.color
         layer.borderWidth = oval ? 0 : boxOutline?.width ?? 0
         cutToShape()
     }
@@ -211,7 +251,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         line.frame = layer.bounds
         line.path = CGPath(
             ellipseIn: layer.bounds.insetBy(dx: outline.width / 2, dy: outline.width / 2), transform: nil)
-        line.strokeColor = outline.colour
+        line.strokeColor = outline.color
         line.lineWidth = outline.width
         CATransaction.commit()
     }
@@ -224,10 +264,12 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
 
         if let target = scrollerOffset.laidOutNow() {
             move(to: NSPoint(x: target.x, y: target.y))
-        } else if !movement.isMoving, reachable(normalized(contentView.bounds.origin)) != contentView.bounds.origin {
+        } else if !movement.isMoving, reachable(normalized(standing(contentView.bounds.origin)))
+            != standing(contentView.bounds.origin) {
             // Only a scroller the content left off its reach: a move stops a throw and cuts the stretch past an edge.
-            scrollClip(to: reachable(normalized(contentView.bounds.origin)))
+            scrollClip(to: reachable(normalized(standing(contentView.bounds.origin))))
         }
+        standingChanged?()
     }
 
     override func scrollWheel(with event: NSEvent) {
@@ -291,9 +333,19 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
         movement.holdEnded(rests: true)
     }
 
+    /// What runs as where the scroller stands, or how far it reaches, changes - whoever moved it, or its content laid
+    /// out: a bottom bar over the scroller follows what stands under it.
+    var standingChanged: (() -> Void)?
+
+    /// Where the scroller stands and the farthest it stands, counted from its first content kept clear.
+    var standing: (offset: Point, reach: Point) {
+        (Point(offset), reach(keeping: clearance))
+    }
+
     /// The clip view moved: the user's move, told where it stands first - the report runs the render that writes
     /// the state back, and that write is told apart from an application's by where the scroller already stands.
     @objc private func clipBoundsChanged(_ notification: Notification) {
+        standingChanged?()
         guard let moved = scrollerOffset.toolkitMoved(to: Point(offset)) else { return }
         movement.userMoved(from: moved.from, to: moved.to)
     }
@@ -312,7 +364,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     private func scrollClip(to target: NSPoint) {
         programmaticMovesForTesting += 1
         ProgramWrite.perform {
-            contentView.scroll(to: target)
+            contentView.scroll(to: native(target))
             reflectScrolledClipView(contentView)
         }
         scrollerOffset.programLanded(at: Point(offset))
@@ -348,8 +400,10 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     private func reachable(_ point: NSPoint) -> NSPoint {
         let documentSize = documentSurface.frame.size
         return NSPoint(
-            x: Self.reachable(point.x, content: documentSize.width, viewport: contentSize.width),
-            y: Self.reachable(point.y, content: documentSize.height, viewport: contentSize.height))
+            x: Self.reachable(
+                point.x, content: documentSize.width + clearance.left + clearance.right, viewport: contentSize.width),
+            y: Self.reachable(
+                point.y, content: documentSize.height + clearance.top + clearance.bottom, viewport: contentSize.height))
     }
 
     /// An offset inside measured content. Before either extent is known only
@@ -367,7 +421,7 @@ final class AppKitScrollView: NSScrollView, AppKitWidthConstrainedMeasuring, App
     }
 
     func moveAsUserForTesting(to point: NSPoint) {
-        contentView.scroll(to: reachable(normalized(point)))
+        contentView.scroll(to: native(reachable(normalized(point))))
         reflectScrolledClipView(contentView)
     }
 
@@ -386,8 +440,8 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
             invalidateMeasurements()
         }
     }
-    var padding = NSEdgeInsets() {
-        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
+    var padding = Insets(0) {
+        didSet { if padding != oldValue { invalidateMeasurements() } }
     }
     var orientation = ScrollOrientation.vertical {
         didSet { if orientation != oldValue { invalidateMeasurements() } }
@@ -404,7 +458,7 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
 
     private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
         NSSize(ScrollArithmetic.contentSize(
-            of: item, padding: Insets(padding), orientation: orientation,
+            of: item, padding: padding, orientation: orientation,
             width: availableWidth.map(Double.init)))
     }
 
@@ -415,7 +469,7 @@ private final class AppKitScrollDocumentView: NSView, AppKitMeasurementCaching {
         }
 
         let arranged = ScrollArithmetic.arrange(
-            item, padding: Insets(padding), orientation: orientation, in: LayoutSize(viewport), direction: direction)
+            item, padding: padding, orientation: orientation, in: LayoutSize(viewport), direction: direction)
         frame = NSRect(origin: .zero, size: NSSize(arranged.document))
         item.view.frame = NSRect(placed: arranged.place)
         item.view.needsLayout = true

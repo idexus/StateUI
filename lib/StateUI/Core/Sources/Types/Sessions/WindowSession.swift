@@ -12,11 +12,11 @@
 ///             window.width = 1100
 ///             window.height = 800
 ///         }
-///         .onChanged(window.phase, gate: .waitForPrevious) {
+///         .onChanged(window.phase, policy: .waitForPrevious) {
 ///             if window.phase == .stopped { try await save() }
 ///         }
 ///
-///     Button("Close").onClicked(gate: .ignoreWhileRunning) { try await window.close() }
+///     Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
 ///
 /// Every window offers its own, so a view acts on the window it is in, and
 /// what the window is told stands until it is told otherwise. See
@@ -78,14 +78,14 @@ public final class WindowSession {
     @State public var isMinimizable: Bool? = nil
 
     /// What the window is made of behind its pages - around a floating
-    /// sidebar, under a page that paints no background of its own: a colour,
+    /// sidebar, under a page that paints no background of its own: a color,
     /// or a blur or glass the desktop shows through.
     ///
     ///     window.background = .blur(.regular)
-    ///     window.background = Material(light: nil, dark: .blur(.thick.tint(Color("#26512BD4"))))
+    ///     window.background = Material(light: nil, dark: .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15))))
     ///
     /// A host whose windows cannot show what is behind them draws a blur's
-    /// colour in its place. `nil` - and a nil half of a pair - keeps the
+    /// color in its place. `nil` - and a nil half of a pair - keeps the
     /// platform's own window.
     @State public var background: Material? = nil
     /// The key the tree knows the window by in its scene.
@@ -94,6 +94,10 @@ public final class WindowSession {
     /// The scene the window is in - nothing for the one a view outside every
     /// window reads, and nothing once that scene has ended.
     weak var record: SceneRecord?
+
+    /// The state saying which value a window for a value is about - a `State` of the group's value type, made
+    /// the first time its page is built.
+    var value: AnyObject?
 
     /// A window's own, made by the scene it is in.
     init(key: String, record: SceneRecord?) {
@@ -118,6 +122,20 @@ public final class WindowSession {
         }
 
         try record.closeWindow(key: key)
+    }
+
+    /// The window as an act aimed at it names it: its scene's key and its own - both empty for a session of no
+    /// scene, whose acts ask in the window the user is in.
+    ///
+    /// - Throws: `WindowError.noScene` for a window whose scene ended, and `WindowError.notOpen` for one closed.
+    /// Design: docs/design/core/acts.md#a-windows-acts
+    var address: (scene: Name, window: Name) {
+        get throws {
+            guard let record else { return (Name(""), Name("")) }
+            guard OpenScenes.shared.record(id: record.id) === record else { throw WindowError.noScene }
+            guard record.windows.contains(where: { $0.key == key }) else { throw WindowError.notOpen }
+            return (Name(record.id), Name(key))
+        }
     }
 
     /// The explicitly authored window properties. An absent value leaves that

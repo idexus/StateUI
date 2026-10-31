@@ -5,13 +5,13 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// A brush as the relay takes it, read from a colour or a brush as it crosses.
+/// A brush as the relay takes it, read from a color or a brush as it crosses.
 /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
 struct WinUIBrush: Equatable {
     /// 0 none, 1 solid, 2 linear, 3 radial.
     var kind: StateUIBrushKind = .none
 
-    /// A line's two points, or a centre and a radius, in fractions of the painted box.
+    /// A line's two points, or a center and a radius, in fractions of the painted box.
     var geometry: [Double] = [0, 0, 0, 0]
 
     /// Whether how it paints follows the size of what it paints: a radial gradient's circle does.

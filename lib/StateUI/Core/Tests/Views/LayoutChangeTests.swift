@@ -21,9 +21,9 @@ private struct Tile: View {
     }
 }
 
-/// A change of a layout engine's description at the current phase - a view joining or leaving, a new order, a value
-/// read in the body - travels under the layout's motion from where each view was shown: the phase, the room and a
-/// followed state move the views as they always do.
+/// A change of a motion layout's description at the current phase - a view joining or leaving, a new order, a value
+/// read in the body - comes onto its new places as bodies of the layout's world, from where each view was shown: the
+/// phase, the room and a followed state move the views as they always do.
 @MainActor
 final class LayoutChangeTests: XCTestCase {
     override func setUp() async throws {
@@ -33,18 +33,21 @@ final class LayoutChangeTests: XCTestCase {
 
     private let bench = LayoutBench()
 
-    /// A row of views, `gap` apart from the left - each one's place its index in the items - under `motion`.
+    /// The phase of every layout a test builds that moves none.
+    private let turn = State(wrappedValue: 0.0)
+
+    /// A row of views, `gap` apart from the left - each one's place its index in the items - in `world`.
     private func row(
         _ items: State<[Int]>, gap: State<Double>? = nil, phase: State<Double>? = nil,
-        motion: Motion = .eased(.milliseconds(160), .linear)
+        world: LayoutDynamics = .spring(response: .milliseconds(160))
     ) -> Node {
         let apart = gap?.wrappedValue ?? 100
         let count = items.wrappedValue.count
-        let engine = LayoutEngine(items.wrappedValue) { Text("\($0)") } placements: { _, at in
+        return MotionLayout(items.wrappedValue, parameters: (phase ?? turn).projectedValue) { Text("\($0)") } placements: { _, at in
             (0..<count).map { Placement(Rect((Double($0) - at) * apart, 0, 10, 10)) }
         }
-        .motion(motion)
-        return (phase.map { engine.phase($0.projectedValue) } ?? engine).node
+        .dynamics(world)
+        .node
     }
 
     /// The run shown after `frames` frames.
@@ -53,8 +56,8 @@ final class LayoutChangeTests: XCTestCase {
         return bench.shown(renders.renderFromScratch(tree()))
     }
 
-    /// A VIEW LEAVING GOES AT ONCE, AND THE OTHERS CLOSE UP from where they stood, under the layout's motion.
-    func testTheOthersCloseUpUnderTheMotion() {
+    /// A VIEW LEAVING GOES AT ONCE, AND THE OTHERS CLOSE UP from where they stood, on the world's spring.
+    func testTheOthersCloseUpOnTheWorldsSpring() {
         let items = State(wrappedValue: [0, 1, 2])
         let renders = Renders()
         func tree() -> Node { row(items) }
@@ -66,24 +69,10 @@ final class LayoutChangeTests: XCTestCase {
         let first = after(1, renders, tree)
         XCTAssertEqual(first.count, 2, "the view left at once")
         XCTAssertEqual(first[0].bounds.x, 100, accuracy: 0.001, "where it stood")
-        XCTAssertEqual(after(5, renders, tree)[0].bounds.x, 50, accuracy: 0.001, "on its way, as the motion goes")
-        XCTAssertEqual(after(5, renders, tree)[0].bounds.x, 0, accuracy: 0.001, "where its arithmetic puts it")
-    }
-
-    /// A LAYOUT SAYING NO LAW OF ITS OWN TAKES THE APPLICATION'S, as the host's channel does - one answer to
-    /// `.inherited` everywhere: an application that turned motion off sees a change land at once.
-    func testALayoutWithNoLawOfItsOwnTakesTheApplications() {
-        StandardEnvironment.application.motion = .none
-        defer { StandardEnvironment.application.motion = .standard }
-        let items = State(wrappedValue: [0, 1, 2])
-        let renders = Renders()
-        func tree() -> Node { row(items, motion: .inherited) }
-        _ = bench.laid(renders, tree)
-
-        items.wrappedValue = [1, 2]
-        _ = renders.render(tree())
-
-        XCTAssertEqual(after(1, renders, tree)[0].bounds.x, 0, accuracy: 0.001, "no motion: where its arithmetic puts it")
+        let going = after(5, renders, tree)[0].bounds.x
+        XCTAssertLessThan(going, 100, "on its way")
+        XCTAssertGreaterThan(going, 0)
+        XCTAssertEqual(after(40, renders, tree)[0].bounds.x, 0, accuracy: 0.001, "where its arithmetic puts it")
     }
 
     /// A VIEW JOINING FADES IN where its arithmetic puts it.
@@ -99,8 +88,10 @@ final class LayoutChangeTests: XCTestCase {
         let first = after(1, renders, tree)
         XCTAssertEqual(first[2].bounds.x, 200, accuracy: 0.001, "where it goes")
         XCTAssertEqual(first[2].opacity, 0, accuracy: 0.001, "none of it yet")
-        XCTAssertEqual(after(5, renders, tree)[2].opacity, 0.5, accuracy: 0.001)
-        XCTAssertEqual(after(5, renders, tree)[2].opacity, 1, accuracy: 0.001)
+        let fading = after(5, renders, tree)[2].opacity
+        XCTAssertGreaterThan(fading, 0, "fading in")
+        XCTAssertLessThan(fading, 1)
+        XCTAssertEqual(after(40, renders, tree)[2].opacity, 1, accuracy: 0.001)
         XCTAssertEqual(first[0].opacity, 1, "the others as they were")
     }
 
@@ -110,7 +101,7 @@ final class LayoutChangeTests: XCTestCase {
         let (items, builds, renders) = (State(wrappedValue: [0, 1, 2]), Builds(), Renders())
         func tree() -> Node {
             let count = items.wrappedValue.count
-            return LayoutEngine(items.wrappedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
+            return MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
                 (0..<count).map { Placement(Rect(Double($0) * 100, 0, 10, 10)) }
             }
             .node
@@ -129,7 +120,7 @@ final class LayoutChangeTests: XCTestCase {
         let (items, builds, renders) = (State(wrappedValue: [0, 1, 2]), Builds(), Renders())
         func tree() -> Node {
             let count = items.wrappedValue.count
-            return LayoutEngine(items.wrappedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
+            return MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Tile(item: $0, builds: builds) } placements: { _, _ in
                 (0..<count).map { Placement(Rect(Double($0) * 100, 0, 10, 10)) }
             }
             .node
@@ -155,7 +146,7 @@ final class LayoutChangeTests: XCTestCase {
 
         let first = after(1, renders, tree)
         XCTAssertEqual(first.map(\.bounds.x), [200, 100, 0], "each where it stood")
-        XCTAssertEqual(after(10, renders, tree).map(\.bounds.x), [0, 100, 200])
+        XCTAssertEqual(after(40, renders, tree).map { ($0.bounds.x * 1_000).rounded() / 1_000 }, [0, 100, 200])
     }
 
     /// A VALUE READ IN THE BODY IS A CHANGE OF THE DESCRIPTION, and the new poses travel.
@@ -170,7 +161,7 @@ final class LayoutChangeTests: XCTestCase {
         _ = renders.render(tree())
 
         XCTAssertEqual(after(1, renders, tree)[2].bounds.x, 200, accuracy: 0.001)
-        XCTAssertEqual(after(10, renders, tree)[2].bounds.x, 100, accuracy: 0.001)
+        XCTAssertEqual(after(40, renders, tree)[2].bounds.x, 100, accuracy: 0.001)
     }
 
     /// A CHANGE WHILE THE PHASE TRAVELS LEAVES THE PHASE ITS OWN MOVE: the change is measured at the phase it was
@@ -182,7 +173,7 @@ final class LayoutChangeTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node { row(items, gap: gap, phase: phase) }
         let laid = bench.laid(renders, tree)
-        let worn = try XCTUnwrap(laid.patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(laid.patch.first(.motionLayout)?.driven?[.parameters]?.state)
 
         moved(worn, to: 0.5)
         bench.cycle()
@@ -192,7 +183,7 @@ final class LayoutChangeTests: XCTestCase {
         let first = after(1, renders, tree)
         XCTAssertEqual(first[2].bounds.x, 150, accuracy: 0.001, "(2 - 0.5) × 100, where it stood")
         moved(worn, to: 1)
-        XCTAssertEqual(after(10, renders, tree)[2].bounds.x, 50, accuracy: 0.001, "(2 - 1) × 50: the phase's, the change's")
+        XCTAssertEqual(after(40, renders, tree)[2].bounds.x, 50, accuracy: 0.001, "(2 - 1) × 50: the phase's, the change's")
     }
 
     /// A CHANGE ON ITS WAY, CHANGED AGAIN, sets out from where each view is shown, at the speed it had.
@@ -210,11 +201,11 @@ final class LayoutChangeTests: XCTestCase {
         gap.wrappedValue = 100
         _ = renders.render(tree())
 
-        XCTAssertEqual(after(1, renders, tree)[2].bounds.x, halfway, accuracy: 2, "no jump back")
-        XCTAssertEqual(after(20, renders, tree)[2].bounds.x, 200, accuracy: 0.001)
+        XCTAssertEqual(after(1, renders, tree)[2].bounds.x, halfway, accuracy: 20, "no jump: a frame of its spring on from there")
+        XCTAssertEqual(after(40, renders, tree)[2].bounds.x, 200, accuracy: 0.001)
     }
 
-    /// LESS MOTION SHOWS A CHANGE AT ONCE, and a layout whose motion is none.
+    /// LESS MOTION SHOWS A CHANGE AT ONCE, and a layout whose world is none.
     func testLessMotionShowsAChangeAtOnce() {
         let items = State(wrappedValue: [0, 1, 2])
         let renders = Renders()
@@ -229,7 +220,7 @@ final class LayoutChangeTests: XCTestCase {
 
         let still = State(wrappedValue: [0, 1, 2])
         let others = Renders()
-        func plain() -> Node { row(still, motion: .none) }
+        func plain() -> Node { row(still, world: .none) }
         _ = bench.laid(others, plain)
         still.wrappedValue = [1, 2]
         _ = others.render(plain())
@@ -255,10 +246,9 @@ final class LayoutChangeTests: XCTestCase {
         let phase = State(wrappedValue: 1.0)
         let renders = Renders()
         func tree() -> Node {
-            LayoutEngine([0]) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
-                .phase(phase.projectedValue)
+            MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, _, from in [Placement(Rect(from * 100, 0, 10, 10))] }
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
-                .motion(.eased(.milliseconds(160), .linear))
+                .dynamics(.spring(response: .milliseconds(160)))
                 .node
         }
         _ = bench.laid(renders, tree)
@@ -267,7 +257,7 @@ final class LayoutChangeTests: XCTestCase {
         bench.hand(renders, tree, .changed, moved: Point(-120, 0))
 
         XCTAssertEqual(after(0, renders, tree)[0].bounds.x, 100, accuracy: 0.001, "where it was shown")
-        XCTAssertEqual(after(10, renders, tree)[0].bounds.x, 200, accuracy: 0.001, "where it sets out from now")
+        XCTAssertEqual(after(40, renders, tree)[0].bounds.x, 200, accuracy: 0.001, "where it sets out from now")
     }
 
     /// A NEW ROOM TRAVELS NOT: the layout follows the window at once.
@@ -275,14 +265,14 @@ final class LayoutChangeTests: XCTestCase {
         let renders = Renders()
         let items = State(wrappedValue: [0, 1])
         func tree() -> Node {
-            LayoutEngine(items.wrappedValue) { Text("\($0)") } placements: { room, _ in
+            MotionLayout(items.wrappedValue, parameters: turn.projectedValue) { Text("\($0)") } placements: { room, _ in
                 [Placement(Rect(0, 0, room.width, 10)), Placement(Rect(room.width, 0, 10, 10))]
             }
-            .motion(.eased(.milliseconds(160), .linear))
+            .dynamics(.spring(response: .milliseconds(160)))
             .node
         }
         let laid = bench.laid(renders, tree)
-        let fed = try XCTUnwrap(laid.patch.first(.layoutEngine)?.driven?[.frame]?.state)
+        let fed = try XCTUnwrap(laid.patch.first(.motionLayout)?.driven?[.frame]?.state)
 
         moved(fed, to: [10, 20, 500, 200])
 

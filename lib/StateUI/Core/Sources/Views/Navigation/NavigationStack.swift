@@ -75,16 +75,19 @@ public struct NavigationStack: ElementView, Arrangement, BarElement, AutomationE
     public init<Route: Hashable, Root: View, Destination: View>(
         _ path: Binding<[Route]>,
         @ViewBuilder root: () -> Root,
-        @ViewBuilder destination: (Route) -> Destination
+        @ViewBuilder destination: @escaping (Route) -> Destination
     ) {
-        var children: [Node] = [Self.identified(Node.page(root()), as: Self.rootIdentity)]
+        let root = Self.identified(Node.page(root()), as: Self.rootIdentity)
+        node = Node(contract: NavigationStackContract.self, children: [root])
 
-        for (depth, route) in path.wrappedValue.enumerated() {
-            children.append(
-                Self.identified(Node.page(destination(route)), as: Self.identity(depth: depth, route: route)))
+        // The pages after the root and before the stack's bar, made as the stack is described.
+        // Design: docs/design/core/invalidation.md#an-element-reads-what-it-was-handed
+        node.readsWhenDescribed { node in
+            let pages = path.wrappedValue.enumerated().map { depth, route in
+                Self.identified(Node.page(destination(route)), as: Self.identity(depth: depth, route: route))
+            }
+            node.children.insert(contentsOf: pages, at: 1)
         }
-
-        node = Node(contract: NavigationStackContract.self, children: children)
 
         // The platform's way back, once committed, reports how deep the stack
         // now is above the root; the path only ever shortens to match.

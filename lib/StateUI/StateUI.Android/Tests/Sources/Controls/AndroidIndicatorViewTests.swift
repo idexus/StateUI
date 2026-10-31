@@ -12,6 +12,7 @@ final class AndroidIndicatorViewTests: XCTestCase {
             ("testAProgressBarShowsTheShareDone", testAProgressBarShowsTheShareDone),
             ("testAnIndicatorKeepsItsRoomWhileItDoesNotRun", testAnIndicatorKeepsItsRoomWhileItDoesNotRun),
             ("testAStepperStepsWithinItsRangeAndSaysSo", testAStepperStepsWithinItsRangeAndSaysSo),
+            ("testASteppersButtonsSayTheLibrarysWords", testASteppersButtonsSayTheLibrarysWords),
         ]
     }
 
@@ -30,12 +31,12 @@ final class AndroidIndicatorViewTests: XCTestCase {
             let running = State(wrappedValue: false)
             let host = AndroidRenderer.running(reducesMotion: true) {
                 VStack {
-                    ActivityIndicator().isAnimating(running.wrappedValue)
+                    Spinner().isAnimating(running.wrappedValue)
                     Button("Run").onClicked { running.wrappedValue = true }
                 }
             }
             host.layOut()
-            let indicator = try XCTUnwrap(host.views(AndroidActivityIndicatorView.self).first)
+            let indicator = try XCTUnwrap(host.views(AndroidSpinnerView.self).first)
 
             XCTAssertEqual(Java.callInt(indicator.reference, JavaAPI.getVisibility), ViewConstants.invisible)
             XCTAssertGreaterThan(indicator.frame.height, 0)
@@ -65,6 +66,33 @@ final class AndroidIndicatorViewTests: XCTestCase {
             buttons.down.click()
             XCTAssertEqual(count.wrappedValue, 5)
             XCTAssertTrue(Java.callBool(buttons.up.reference, TestJava.isEnabled))
+        }
+    }
+
+    /// A stepper's buttons say the library's words to TalkBack, in the system's language.
+    func testASteppersButtonsSayTheLibrarysWords() throws {
+        try onMainActor {
+            let shown = State(wrappedValue: false)
+            let host = AndroidRenderer.running {
+                VStack {
+                    Button("Show").onClicked { shown.wrappedValue = true }
+                    if shown.wrappedValue { Stepper(State(wrappedValue: 5.0).projectedValue) }
+                }
+            }
+            let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl", "PL", "pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
+            let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+            defer { host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(english) } }
+            host.runtime.environmentChanged { host.runtime.core.setLocaleInfo(polish) }
+            try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
+            let buttons = try XCTUnwrap(host.views(AndroidStepperView.self).first).buttons
+
+            let said = [buttons.down, buttons.up].map { button in
+                Java.frame {
+                    Java.callObject(button.reference, TestJava.getContentDescription)
+                        .flatMap { Java.callObject($0, JavaAPI.toString) }.map { Java.text($0) }
+                }
+            }
+            XCTAssertEqual(said, ["Zmniejsz", "Zwiększ"])
         }
     }
 }

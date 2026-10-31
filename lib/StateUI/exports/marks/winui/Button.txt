@@ -1,4 +1,4 @@
-# revision 8.3
+# revision 9.3
 Button: ✅
 Button.clicked: ✅
 Button.icon: ✅
@@ -6,8 +6,6 @@ Button.iconPosition: ✅
 Button.iconSpacing: ✅
 Button.keyboardShortcut: ✅
 Button.lineBreak: ✅
-Button.menuKind: ✅
 Button.pressed: ✅
 Button.released: ✅
 Button.role: ✅
-Button.showsMenuArrow: ✅

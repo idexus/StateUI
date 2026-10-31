@@ -26,7 +26,7 @@ extension AppKitDriver {
         switch (act, view) {
         case (.tap(let count), let map as AppKitMapView):
             // A click on a map is the map's, and the view's where it hears taps too.
-            for run in 1...max(count, 1) { native?.tapRecognizer?.clicked(run: run) }
+            tap(native, map, count: count)
             map.clicked(at: NSPoint(x: map.bounds.midX, y: map.bounds.midY))
         case (.endContent, let web as WebKitView):
             // As WebKit tells it when the page's process dies.
@@ -40,9 +40,8 @@ extension AppKitDriver {
         case (.scroll(let target), let items as AppKitItemsView): items.scrollForTesting(to: target)
         case (.activate, _): try activate(element, view)
         case (.pressKeys(let shortcut), _): try pressKeys(shortcut, on: element, view)
-        case (.toggle, let toggle as AppKitSwitchView): _ = toggle.accessibilityPerformPress()
+        case (.toggle, let toggle as AppKitSwitchView): _ = toggle.control.accessibilityPerformPress()
         case (.toggle, let check as AppKitCheckBoxView): check.performClick(nil)
-        case (.toggle, let radio as AppKitRadioButtonView): radio.performClick(nil)
         case (.toggle, let split as AppKitSplitView): split.toggleForTesting()
         case (.slide(let value), let slider as AppKitSliderView):
             slider.doubleValue = value
@@ -65,22 +64,27 @@ extension AppKitDriver {
         case (.close, let picker as AppKitPickerView): picker.menuDidClose(NSMenu())
         case (.pickDate(let day), let picker as AppKitDatePickerView): picker.chooseForTesting(day)
         case (.pickTime(let time), let picker as AppKitTimePickerView): picker.chooseForTesting(time)
+        case (.pickColor(let color), let picker as AppKitColorPickerView):
+            // What the color panel does as the user chooses: the well takes the color, then sends its action.
+            picker.color = nsColor(color.propValue) ?? .black
+            picker.sendAction(picker.action, to: picker.target)
         case (.pressDown(let point), _) where native?.handReader != nil: native?.handReader?.dragging.pressed(at: point)
         case (.drag(let point), _) where native?.handReader != nil: native?.handReader?.dragging.moved(to: point)
         case (.lift, _) where native?.handReader != nil: native?.handReader?.dragging.released()
         case (.pressDown(let point), let view?): try press(view, native, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, native, down: false, at: point, element)
         case (.drag(let point), let canvas as AppKitCanvasView): canvas.dragForTesting(at: NSPoint(point))
-        case (.drag(let point), _) where native?.pointerRecognizer != nil:
+        case (.drag(let point), _) where native?.pressRecognizer != nil || native?.pointerRecognizer != nil:
+            native?.pressRecognizer?.press(.changed, at: point)
             native?.pointerRecognizer?.pointed(.pointerMoved, at: point)
         case (.hover(let point), _) where native?.pointerRecognizer != nil:
             native?.pointerRecognizer?.pointed(.pointerEntered, at: point)
             native?.pointerRecognizer?.pointed(.pointerMoved, at: point)
         case (.leave, _) where native?.pointerRecognizer != nil:
             native?.pointerRecognizer?.pointed(.pointerExited, at: Point(x: 0, y: 0))
-        case (.tap(let count), _) where native?.tapRecognizer != nil:
-            // A quick run of clicks, each told with its place in the run, as AppKit's click recognizer tells them.
-            for run in 1...max(count, 1) { native?.tapRecognizer?.clicked(run: run) }
+        case (.tap(let count), let view?) where native?.tapRecognizer != nil: tap(native, view, count: count)
+        case (.hold, _) where native?.holdRecognizer != nil:
+            native?.holdRecognizer?.held()
         case (.pan(let offset), _) where native?.panRecognizer != nil:
             native?.panRecognizer?.dragged(.began, x: 0, y: 0)
             native?.panRecognizer?.dragged(.changed, x: offset.x, y: offset.y)
@@ -89,6 +93,10 @@ extension AppKitDriver {
             native?.handReader?.hand(.began, moved: .zero)
             native?.handReader?.hand(.changed, moved: offset)
             native?.handReader?.hand(.ended, moved: .zero, speed: speed)
+        // A view that hears no hand - an axis of keyframes alone - holds no reader of the host's: a sweep reaches
+        // nothing, as AppKit hands it to no one.
+        case (.sweep, _) where !element.hearing.contains(.hand):
+            break
         case (.notch(let notches), _) where native?.handReader != nil:
             native?.handReader?.notched(notches)
         case (.pinch(let scale, let point), _) where native?.pinchRecognizer != nil:
@@ -109,14 +117,17 @@ extension AppKitDriver {
                 throw DriverCannot(act, on: element)
             }
             window.makeFirstResponder(focusable)
-        case (.answer(let caption, let words), _):
-            guard renderer?.actToolkit.showing?.pressForTesting(caption, typing: words) == true else {
-                throw DriverCannot("press \(caption): no question shows it")
+        case (.answer(let button, let words), _):
+            guard renderer?.actToolkit.showing?.pressForTesting(button, typing: words) == true else {
+                throw DriverCannot("press \(button): no question shows it")
             }
         case (.dragAndDrop(let target, let across), _):
             try dragAndDrop(element, onto: target, across: across)
         case (.dropFiles(let names), let view?):
             try dropFiles(names, on: view, element)
+        case (.answerShare(let shared), _):
+            guard let sheet = renderer?.actToolkit.sharing else { throw DriverCannot("answer a share sheet: none shows") }
+            sheet.answerForTesting(shared: shared)
         case (.answerFiles(let names), _):
             guard let dialog = renderer?.fileToolkit.showing else { throw DriverCannot("answer a file dialog: none shows") }
             dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })
@@ -130,6 +141,8 @@ extension AppKitDriver {
             } else {
                 controller.toolbarForTesting.performForTesting(AppKitWindowToolbar.back)
             }
+        case (.openLink(let address), _):
+            renderer?.openLinks([address])
         case (.switchAway, _) where element.type == .window:
             // Another application in front takes the keyboard and the main window from every window, all AppKit tells.
             for window in windows { leaveTheFront(window) }
@@ -148,24 +161,51 @@ extension AppKitDriver {
             tell(NSWindow.didDeminiaturizeNotification, window)
             comeToTheFront(window)
         case (.close, _) where element.type == .window: try window(of: element).close()
+        case (.close, _) where element.type == .page:
+            // The close button on the bar of the sheet the page's stack stands in, as the user presses it.
+            try sheet(of: element).toolbarForTesting.performForTesting(AppKitWindowToolbar.close)
+        case (.close, _) where element.type == .popover:
+            // The user closing it as a click beside it does, through the popover's own close.
+            guard let popover = (element.native as? AppKitElement)?.shownPopover else {
+                throw DriverCannot(act, on: element)
+            }
+            popover.closeAsTheUser()
+        case (.performAccessibilityAction(let name), let view?):
+            // The action VoiceOver offers on what it meets of the view, run as VoiceOver runs it.
+            let target = native?.accessibilityTarget(of: view)
+            _ = target?.accessibilityCustomActions()?.first { $0.name == name }?.handler?()
+        case (.adjust(let step), let view?):
+            guard let target = native?.accessibilityTarget(of: view) else { throw DriverCannot(act, on: element) }
+            _ = step == .increment ? target.accessibilityPerformIncrement() : target.accessibilityPerformDecrement()
         default: throw DriverCannot(act, on: element)
         }
     }
 
-    /// A click on a button, a radio button's click, a menu's item chosen, a page's action taken from the toolbar, and
+    /// A click on a button, a menu's item chosen, a page's action taken from the toolbar, and
     /// a view that hears taps pressed as assistive technology presses it.
     private func activate(_ element: MountedElement, _ view: NSView?) throws {
         switch view {
         case let button as AppKitButtonView: button.performClick(nil)
-        case let radio as AppKitRadioButtonView: radio.performClick(nil)
+        case let link as AppKitLinkView: link.performClick(nil)
         case let pressed as AppKitHitTestView where pressed.pressAction != nil: _ = pressed.accessibilityPerformPress()
         default:
-            if element.type == .menuItem, let item = (element.native as? AppKitElement)?.platformMenuItem,
+            if [.menuItem, .menuToggle].contains(element.type), let item = (element.native as? AppKitElement)?.platformMenuItem,
                let menu = item.menu {
                 menu.performActionForItem(at: menu.index(of: item))
                 return
             }
-            if element.type == .toolbarItem {
+            if [.toolbarButton, .toolbarToggle].contains(element.type),
+               let page = element.enclosing(type: .page),
+               let foot = bottomToolbar(of: page)?.controlForTesting("StateUI.action.\(element.mount)") {
+                switch foot {
+                case let button as NSButton: button.performClick(nil)
+                case let combo as NSComboButton: combo.sendAction(combo.action, to: combo.target)
+                case let item as NSMenuItem: bottomToolbar(of: page)?.chooseForTesting(item)
+                default: throw DriverCannot(.activate, on: element)
+                }
+                return
+            }
+            if [.toolbarButton, .toolbarToggle].contains(element.type) {
                 let identifier = NSToolbarItem.Identifier("StateUI.action.\(element.mount)")
                 try controller(of: element).toolbarForTesting.performForTesting(identifier)
                 return
@@ -176,10 +216,25 @@ extension AppKitDriver {
 
     /// A pointer pressed down or let go: a button held, a slider's thumb taken, a canvas pressed, and a view that
     /// hears the pointer told.
+    /// A quick run of clicks on the view's middle: each a press, then told with its place in the run, as AppKit's
+    /// click recognizer tells it.
+    private func tap(_ native: AppKitElement?, _ view: NSView, count: Int) {
+        let middle = Point(x: Double(view.bounds.midX), y: Double(view.bounds.midY))
+        for run in 1...max(count, 1) {
+            native?.pressRecognizer?.press(.began, at: middle)
+            native?.pressRecognizer?.press(.ended, at: middle)
+            native?.tapRecognizer?.clicked(run: run)
+        }
+    }
+
     private func press(
         _ view: NSView, _ native: AppKitElement?, down: Bool, at point: Point, _ element: MountedElement
     ) throws {
         var done = false
+        if let press = native?.pressRecognizer {
+            press.press(down ? .began : .ended, at: point)
+            done = true
+        }
         if let pointer = native?.pointerRecognizer {
             pointer.pointed(down ? .pointerPressed : .pointerReleased, at: point)
             done = true
@@ -215,6 +270,14 @@ extension AppKitDriver {
               let controller = renderer?.windowsForTesting.first(where: { $0.element === window })
         else { throw DriverCannot("find the window") }
         return controller
+    }
+
+    /// The sheet `element` stands in, on its window.
+    func sheet(of element: MountedElement) throws -> AppKitModalWindowController {
+        guard let presented = element.enclosing(type: .sheet)?.children.first,
+              let sheet = try controller(of: element).modalsForTesting.first(where: { $0.node.element === presented })
+        else { throw DriverCannot("find the sheet") }
+        return sheet
     }
 
     /// The native windows the host shows, in the tree's order.

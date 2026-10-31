@@ -28,7 +28,7 @@ final class AndroidAccessibilityTests: XCTestCase {
                         .accessibilityHeading(.h2)
                     Text("Hidden").isAccessibilityHidden(true)
                     Text("Met").isAccessibilityHidden(false)
-                    VStack { Text("Inside") }.automationExcludedWithChildren(true)
+                    VStack { Text("Inside") }.hidesChildrenFromAccessibility(true)
                     Text("Plain")
                 }
             }
@@ -71,7 +71,7 @@ enum TestAccessibility {
         Java.frame { Java.callStaticObject(owner, describing, .object(view.reference)).map { Java.text($0) } ?? "" }
     }
 
-    /// One of the words assistive technology meets of `view` - "label", "hint", "id" - or nothing.
+    /// One of the words assistive technology meets of `view` - "label", "hint", "id", "kind", "value" - or nothing.
     static func word(_ name: String, of view: AndroidView) -> String? {
         Java.frame {
             Java.callStaticObject(owner, wording, .object(view.reference), .object(Java.string(name))).map { Java.text($0) }
@@ -80,4 +80,27 @@ enum TestAccessibility {
 
     private static let wording = Java.staticMethod(
         owner, "word", "(Landroid/view/View;Ljava/lang/String;)Ljava/lang/String;")
+
+    /// Performs the action of `view`'s node named `name`, as TalkBack does; whether the view took it.
+    static func perform(_ name: String, on view: AndroidView) -> Bool {
+        Java.frame { Java.callStaticBool(owner, performing, .object(view.reference), .object(Java.string(name))) }
+    }
+
+    private static let performing = Java.staticMethod(owner, "perform", "(Landroid/view/View;Ljava/lang/String;)Z")
+
+    /// Steps `view` up or down as TalkBack steps a slider, where its node offers the step; whether the view took it.
+    static func step(up: Bool, on view: AndroidView) -> Bool {
+        Java.callStaticBool(owner, stepping, .object(view.reference), .bool(up))
+    }
+
+    private static let stepping = Java.staticMethod(owner, "step", "(Landroid/view/View;Z)Z")
+
+    /// How many items a collection's node tells assistive technology the user may choose - Android's
+    /// `CollectionInfo` numbers, none, one, many - nil where the view's node is no collection.
+    static func selectionMode(of view: AndroidView) -> Int32? {
+        let mode = Java.callStaticInt(owner, choosing, .object(view.reference))
+        return mode < 0 ? nil : mode
+    }
+
+    private static let choosing = Java.staticMethod(owner, "selectionMode", "(Landroid/view/View;)I")
 }

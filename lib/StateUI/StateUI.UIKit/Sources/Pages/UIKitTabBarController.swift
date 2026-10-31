@@ -10,7 +10,16 @@ import UIKit
 /// shows is the host layer's rule (`TabChoice`); the user's choice is told as the tab before and the tab now.
 /// Design: docs/design/platforms/uikit/pages.md#tabs
 @MainActor
-final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegate, UINavigationControllerDelegate {
+final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegate, UINavigationControllerDelegate,
+    UIKitSheetStanding {
+    /// What runs once the controller has left the screen, as a sheet (`UIKitSheetStanding`).
+    var leftScreen: (() -> Void)?
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        leftScreen?()
+    }
+
     /// How tall a tab's picture stands - UIKit's icon size for a tab - and on a tab bar made low by a phone on its
     /// side.
     static let glyphHeight = 25.0
@@ -43,6 +52,17 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         layTheStacksBar(animated: animated)
+    }
+
+    /// What runs as the tab bar takes another width - laid out the first time, the device turned, the window resized.
+    var onBarResized: (() -> Void)?
+    private var barWidth: CGFloat = 0
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        guard tabBar.bounds.width != barWidth else { return }
+        barWidth = tabBar.bounds.width
+        onBarResized?()
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -83,18 +103,16 @@ final class UIKitTabBarController: UITabBarController, UITabBarControllerDelegat
         if let shown = choice.shown(among: controllers.count), selectedIndex != shown { selectedIndex = shown }
     }
 
-    /// The tab bar's colours: its own where the tree says none.
-    func showColors(background: HostValue?, foreground: HostValue?) {
+    /// The tab bar's material and colors: its own where the tree says none.
+    func showColors(material: HostMaterial, foreground: HostValue?) {
+        let background = material.painted
         guard background != nil || foreground != nil else {
             (tabBar.standardAppearance, tabBar.scrollEdgeAppearance) = (UITabBarAppearance(), nil)
             return
         }
         let appearance = UITabBarAppearance()
-        if let color = background.flatMap(UIColor.init(stateUI:)) {
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = color
-        }
-        // Words on a painted bar: the colour written, else light on a dark bar and dark on a light one.
+        appearance.stand(on: material, size: tabBar.bounds.size)
+        // Words on a painted bar: the color written, else light on a dark bar and dark on a light one.
         // In every layout: stacked, and inline on an iPad and a phone turned.
         if let color = BandWords.color(on: background, written: foreground).flatMap(UIColor.init(stateUI:)) {
             for layout in [

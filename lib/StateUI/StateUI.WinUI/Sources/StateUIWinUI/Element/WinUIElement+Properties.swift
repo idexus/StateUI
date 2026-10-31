@@ -37,6 +37,7 @@ extension WinUIElement {
         }
         switch type {
         case .page, .overlay: return WinUISingleChildView()
+        case .popover: return WinUIPopoverView()
         case .navigationStack:
             return WinUINavigationView(reducesMotion: { [weak host] in host?.runtime.reducesMotion() ?? false })
         case .splitView: return WinUISplitView()
@@ -49,6 +50,10 @@ extension WinUIElement {
     /// registration's first, then what every element takes.
     /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) {
+            (page.native as? WinUIElement)?.applyProperties(changed: [.background])
+        }
         guard let view else {
             if !changed.isDisjoint(with: MountedElement.arrangedProperties) { parent?.invalidateMeasurements() }
             return
@@ -72,13 +77,13 @@ extension WinUIElement {
             case .ignoresInput: view.setIgnoresInput(element.bool(.ignoresInput) == true)
             case .tooltip: view.setTooltip(element.string(.tooltip))
             case .background:
-                view.setBackground(HostMaterial(value(.background)).painted)
+                view.setBackground(HostMaterial(element.drawnBackground).painted)
                 (parent?.view as? WinUISplitView)?.paintPane()
             default: break
             }
         }
         if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
-        if !own.isDisjoint(with: MountedElement.accessibilityProperties) {
+        if element.changesAccessibility(changed) {
             view.setAccessibility(element.accessibilityWords)
         }
         if let layers = view as? WinUIZStackView { layers.placement = element.placement }
@@ -102,6 +107,7 @@ extension WinUIElement {
     private func follow(_ scroll: WinUIScrollView) {
         scroll.onOffsetChanged = { [weak self] old, new in self?.scrolled(from: old, to: new) }
         scroll.onScrollStopped = { [weak self] in self?.send(.scrollStopped, []) }
+        scroll.onRefreshPulled = { [weak self] in self?.pulled() ?? false }
         scroll.onFramesWanted = { [weak self, weak scroll] in
             if let scroll { self?.host?.runtime.frames.serve(scroll, order: scroll.number) }
         }

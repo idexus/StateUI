@@ -1,7 +1,7 @@
-# revision 2.1
-Capsule.fill: ✅
-Ellipse.fill: ✅
-Path.fill: ✅
-Polygon.fill: ✅
-Polyline.fill: ✅
-Rectangle.fill: ✅
+# revision 3.1
+Capsule.fill: ☑️ GTK blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it.
+Ellipse.fill: ☑️ GTK blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it.
+Path.fill: ☑️ GTK blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it.
+Polygon.fill: ☑️ GTK blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it.
+Polyline.fill: ☑️ GTK blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it.
+Rectangle.fill: ☑️ GTK blurs nothing behind a figure: a blur or glass shows the theme's color standing in, its tint over it.

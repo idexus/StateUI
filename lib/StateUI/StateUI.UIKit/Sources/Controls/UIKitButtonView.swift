@@ -50,11 +50,44 @@ final class UIKitButtonView: UIButton {
         fatalError("UIKitButtonView is made in code")
     }
 
-    /// The button's words.
+    /// The button's words, and whether they stand beside its picture: out of sight, they name it to VoiceOver
+    /// through the host layer's words (`AccessibilityWords`).
+    private var words = ""
+    private var showsWords = true
+
+    /// The words shown before the tree's last ones.
+    private var formerWords: String?
+
+    /// The size of new words the button holds back while its box grows to hold them, its former ones shown; nil
+    /// shows the tree's and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet {
+            if heldWords == nil { formerWords = nil }
+            showWords()
+        }
+    }
+
+    /// The button's words; new ones while some are held back show at once.
     func setText(_ text: String) {
-        configuration?.title = text.isEmpty ? nil : text
+        let former = words
+        words = text
+        if text != former, heldWords != nil {
+            heldWords = nil
+        } else {
+            if text != former { formerWords = former }
+            showWords()
+        }
         showLook()
     }
+
+    private func showWords() {
+        let shown = heldWords == nil ? words : formerWords ?? words
+        let title = shown.isEmpty || !showsWords ? nil : shown
+        if configuration?.title != title { configuration?.title = title }
+    }
+
+    /// Whether the words stand in sight.
+    var showsWordsForTesting: Bool { configuration?.title != nil }
 
     /// Changes the words' look; what it leaves unsaid is the button's own.
     func setLook(_ change: (inout TextLook) -> Void) {
@@ -62,13 +95,15 @@ final class UIKitButtonView: UIButton {
         showLook()
     }
 
-    /// The icon, where it stands beside the words, and the room between them.
-    func setIcon(_ icon: UIImage?, position: IconPosition, spacing: Double?) {
+    /// The icon, where it stands beside the words, the room between them, and whether the words stand beside it.
+    func setIcon(_ icon: UIImage?, position: IconPosition, spacing: Double?, showsText: Bool) {
         configuration?.image = icon
+        showsWords = showsText
+        showWords()
         configuration?.imagePlacement = switch position {
-        case .leading: .leading
+        case .start: .leading
         case .top: .top
-        case .trailing: .trailing
+        case .end: .trailing
         case .bottom: .bottom
         }
         configuration?.imagePadding = spacing ?? 8
@@ -105,10 +140,12 @@ final class UIKitButtonView: UIButton {
                 box.strokeColor = line
             }
         }
-        configuration?.background = box
         boxShape = shape == nil ? nil : outlined
-        configuration?.cornerStyle = boxShape == nil ? own.cornerStyle : .fixed
-        roundCorners()
+        guard var next = configuration else { return }
+        next.background = box
+        next.cornerStyle = boxShape == nil ? own.cornerStyle : .fixed
+        if let radius = cornerRadius() { next.background.cornerRadius = radius }
+        if next != configuration { configuration = next }
     }
 
     /// Wears UIKit's filled configuration or its plain one, keeping all the button set on the other.
@@ -129,7 +166,7 @@ final class UIKitButtonView: UIButton {
     }
 
     /// Stands the words in the system's red, as UIKit marks an action that destroys something, or in the
-    /// configuration's own colour.
+    /// configuration's own color.
     func setCriticalWords(_ critical: Bool) {
         let words: UIColor? = critical ? .systemRed : nil
         if configuration?.baseForegroundColor != words { configuration?.baseForegroundColor = words }
@@ -137,15 +174,19 @@ final class UIKitButtonView: UIButton {
 
     /// Rounds the box's corners as its outline says in the button's bounds.
     private func roundCorners() {
-        guard let boxShape else { return }
-        let radius = CGFloat(BoxArithmetic.cornerRadius(of: boxShape, width: bounds.width, height: bounds.height))
-        if configuration?.background.cornerRadius != radius { configuration?.background.cornerRadius = radius }
+        guard let radius = cornerRadius(), configuration?.background.cornerRadius != radius else { return }
+        configuration?.background.cornerRadius = radius
+    }
+
+    /// The box's corners as its outline says in the button's bounds; nil where the tree gives it no outline.
+    private func cornerRadius() -> CGFloat? {
+        boxShape.map { CGFloat(BoxArithmetic.cornerRadius(of: $0, width: bounds.width, height: bounds.height)) }
     }
 
     /// The room between the button's edge and what it shows.
     func setPadding(_ insets: Insets?) {
         padding = insets.map {
-            NSDirectionalEdgeInsets(top: $0.top, leading: $0.left, bottom: $0.bottom, trailing: $0.right)
+            NSDirectionalEdgeInsets(top: $0.top, leading: $0.start, bottom: $0.bottom, trailing: $0.end)
         } ?? UIButton.Configuration.plain().contentInsets
         showPadding()
     }
@@ -243,7 +284,7 @@ final class UIKitButtonView: UIButton {
 
     private func showLook() {
         configuration?.titleTextAttributesTransformer = look.titleTransformer(color: tintColor)
-        // An icon is drawn in the words' colour where the tree writes one, with words or alone; so is the arrow.
+        // An icon is drawn in the words' color where the tree writes one, with words or alone; so is the arrow.
         let words = look.color.flatMap(UIColor.init(stateUI:))
         configuration?.imageColorTransformer = words.map { color in UIConfigurationColorTransformer { _ in color } }
         guard let arrow else { return }

@@ -37,8 +37,9 @@ controls::TextBlock stateui::labelWords(StateUIObjectRef handle) {
 }
 
 controls::TextBlock stateui::captionOf(IInspectable const &element) {
-    // A button's, or a split button's, which shows its words as a button does.
+    // A button's, a split button's or a link's, each showing its words as a button does.
     auto button = element.try_as<controls::Button>() || element.try_as<controls::SplitButton>()
+            || element.try_as<controls::HyperlinkButton>()
         ? element.try_as<controls::ContentControl>() : nullptr;
     if (!button) return nullptr;
     auto content = button.Content();
@@ -123,6 +124,12 @@ extern "C" StateUIObjectRef stateui_winui_button_make(int64_t view, StateUIButto
                     callbacks.clicked(view);
                 }));
             return detach(split);
+        }
+        if (kind == StateUIButtonKindLink) {
+            controls::HyperlinkButton link;
+            link.Click(guarded("handling Click",
+                [view](IInspectable const &, xaml::RoutedEventArgs const &) { callbacks.clicked(view); }));
+            return detach(link);
         }
         controls::Button button = kind == StateUIButtonKindDropDown ? controls::DropDownButton() : controls::Button();
         button.Click(guarded("handling Click",
@@ -211,7 +218,7 @@ extern "C" void stateui_winui_button_set_accent(StateUIObjectRef handle, bool ac
 
 extern "C" void stateui_winui_button_set_critical(StateUIObjectRef handle, bool critical) {
     try {
-        // The theme's critical colour under the button's words, as a destructive entry's: a colour the tree writes
+        // The theme's critical color under the button's words, as a destructive entry's: a color the tree writes
         // in the button's own resources stands over it.
         auto button = as<controls::Control>(handle);
         std::wstring name = button.try_as<controls::SplitButton>() ? L"SplitButtonForeground" : L"ButtonForeground";
@@ -256,14 +263,6 @@ extern "C" bool stateui_winui_button_accent(StateUIObjectRef handle) {
     }
 }
 
-extern "C" void stateui_winui_set_caption(StateUIObjectRef handle, char const *utf8) {
-    try {
-        as<controls::ContentControl>(handle).Content(winrt::box_value(text(utf8)));
-    } catch (...) {
-        report("setting a caption");
-    }
-}
-
 extern "C" void stateui_winui_button_set_content(
     StateUIObjectRef handle, char const *words, char const *icons, int32_t position, double spacing, int32_t aspect,
     bool wraps, bool trims
@@ -296,7 +295,7 @@ extern "C" void stateui_winui_button_set_content(
             return;
         }
         // Alone, the picture fills the room inside the padding as StateUI's ContentMode says: fit, fill, stretch,
-        // centre. Beside words it stands at its own size, smaller where the button is.
+        // center. Beside words it stands at its own size, smaller where the button is.
         controls::Viewbox box;
         box.Child(picture);
         if (alone) {

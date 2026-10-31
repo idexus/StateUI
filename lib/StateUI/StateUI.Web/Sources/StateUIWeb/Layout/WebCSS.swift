@@ -4,14 +4,14 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// StateUI's values as CSS writes them: lengths in pixels, colours in sRGB, an inset's sides by their logical names -
+/// StateUI's values as CSS writes them: lengths in pixels, colors in sRGB, an inset's sides by their logical names -
 /// its leading side is the inline start, so a layout right to left turns them by itself.
 /// Design: docs/design/platforms/web/layout.md#values-in-css
 enum WebCSS {
     /// The height of the page's lines of words, in sizes of their font: the style sheet's body stands at the same.
     static let lineHeight = 1.4
 
-    /// A number as CSS reads it: whole as it is, any other to a millionth with no nought trailing - spelt by whole
+    /// A number as CSS reads it: whole as it is, any other to a millionth with no nought trailing - spelled by whole
     /// numbers, as a double's shortest spelling costs a browser running WebAssembly with no compiler much.
     /// Design: docs/design/platforms/web/layout.md#values-in-css
     static func number(_ value: Double) -> String {
@@ -96,12 +96,13 @@ enum WebCSS {
         }
     }
 
-    /// An inset's four sides: leading, top, trailing and bottom, as CSS's logical sides - a margin's below nothing
-    /// where `signed`, as it shifts a view, a padding's never.
-    static func sides(_ insets: Insets?, signed: Bool = false) -> [(side: String, length: String?)] {
-        [("inline-start", insets?.left), ("block-start", insets?.top), ("inline-end", insets?.right),
+    /// An inset's four sides: leading, top, trailing and bottom, as CSS's logical sides. A padding's side said is a
+    /// length, nought included, as it stands over the padding a control's own style keeps - a button's; a `margin`'s
+    /// may be below nothing, as it shifts a view, and its nought is none, as every element's own margin is nought.
+    static func sides(_ insets: Insets?, margin: Bool = false) -> [(side: String, length: String?)] {
+        [("inline-start", insets?.start), ("block-start", insets?.top), ("inline-end", insets?.end),
          ("block-end", insets?.bottom)].map {
-            ($0, $1.flatMap { $0 == 0 ? nil : signed ? signedPixels($0) : pixels($0) })
+            ($0, $1.flatMap { margin ? ($0 == 0 ? nil : signedPixels($0)) : pixels($0) })
         }
     }
 
@@ -121,7 +122,7 @@ enum WebCSS {
         }
     }
 
-    /// A look's font and colour as CSS - what it leaves unsaid none, so the words take it from around them: its
+    /// A look's font and color as CSS - what it leaves unsaid none, so the words take it from around them: its
     /// style's size and weight from the Web's type ramp, under the size and weight it gives. A size stands in rems,
     /// which the browser's text size scales, where the words scale, and in pixels where not - the page's own size
     /// held fixed where the look gives none.
@@ -131,6 +132,8 @@ enum WebCSS {
         return [("font-size", look.scales ? size.map(rems) : pixels(size) ?? "var(--stateui-words-fixed)"),
                 ("font-weight", weight.map { String($0.number) }),
                 ("font-style", look.attributesGiven ? (look.attributes.contains(.italic) ? "italic" : "normal") : nil),
+                ("font-variant-numeric",
+                 look.attributesGiven ? (look.attributes.contains(.monospacedDigits) ? "tabular-nums" : "normal") : nil),
                 ("font-family", look.family.map(string)),
                 ("color", color(look.color))]
     }
@@ -164,14 +167,14 @@ enum WebCSS {
                 ("text-decoration-line", lines.isEmpty ? nil : lines.joined(separator: " "))]
     }
 
-    /// A colour as CSS's `rgb()`; nil for a value that is none.
+    /// A color as CSS's `rgb()`; nil for a value that is none.
     static func color(_ value: HostValue?) -> String? {
         guard let channels = value?.color else { return nil }
         let alpha = number((ColorComponent.fraction(channels.alpha) * 1000).rounded() / 1000)
         return "rgb(\(channels.red) \(channels.green) \(channels.blue) / \(alpha))"
     }
 
-    /// What fills a box: a colour, or a brush's first colour.
+    /// What fills a box: a color, or a brush's first color.
     static func fill(_ value: HostValue?) -> String? {
         switch HostBrush(value) {
         case .none: nil
@@ -197,6 +200,8 @@ enum WebCSS {
         case 0: "start"
         case 1: "center"
         case 2: "end"
+        // On a row's first baseline, as the browser's flexbox lines its items up.
+        case 4: "first baseline"
         default: stated ? "center" : "stretch"
         }
     }

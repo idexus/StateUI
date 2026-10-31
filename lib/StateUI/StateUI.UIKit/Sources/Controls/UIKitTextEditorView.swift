@@ -11,6 +11,7 @@ import UIKit
 @MainActor
 final class UIKitTextEditorView: UITextView, UIKitTextInputView {
     let typing = UIKitTyping()
+    let outline = UIKitFieldOutline()
 
     private let placeholderLabel = UILabel()
 
@@ -60,7 +61,7 @@ final class UIKitTextEditorView: UITextView, UIKitTextInputView {
     }
 
     /// Editable only while it takes input, as a text view made editable is made selectable too.
-    func setBehaviour(enabled: Bool, readOnly: Bool, keyboard: UIKitKeyboard) {
+    func setBehavior(enabled: Bool, readOnly: Bool, keyboard: UIKitKeyboard) {
         isEditable = enabled && !readOnly
         isSelectable = enabled
         keyboard.apply(to: self)
@@ -86,6 +87,7 @@ final class UIKitTextEditorView: UITextView, UIKitTextInputView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        outline.draw(on: self, ownRadius: 8)
         let inset = textContainerInset
         let padding = textContainer.lineFragmentPadding
         let width = bounds.width - inset.left - inset.right - padding * 2

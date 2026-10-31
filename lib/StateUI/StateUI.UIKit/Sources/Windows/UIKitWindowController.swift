@@ -75,6 +75,7 @@ final class UIKitWindowController {
         let window = UIWindow(windowScene: scene)
         window.backgroundColor = background
         window.overrideUserInterfaceStyle = UIKitActToolkit.style(HostThemes.held)
+        window.tintColor = UIKitActToolkit.tint(HostAccents.held)
         window.rootViewController = root
         root.onResizing = { [weak self, weak scene] in
             guard let scene else { return }
@@ -135,19 +136,39 @@ final class UIKitWindowController {
             root.lay(overlays.compactMap(\.uiKit.view))
         }
         if let sheets = changes.sheets {
-            root.onSheetDismissed = { [weak runtime, weak element] remaining in
-                guard let runtime, let element else { return }
-                runtime.goBack(.dismissSheet(remaining: remaining), in: element)
+            // The sheets over the `remaining` that stay go, the top first.
+            root.onSheetDismissed = { [weak self, weak runtime, weak element] remaining in
+                guard let self, let runtime, let element else { return }
+                runtime.goBack(.dismissSheets(presentation.sheets.dropFirst(remaining).reversed()), in: element)
             }
             root.present(sheets.compactMap(\.uiKit.controller), animated: !runtime.reducesMotion())
         }
         presentation.arrangement?.uiKit.composeChrome()
         presentation.sheets.forEach { $0.uiKit.composeChrome() }
+        presentation.sheets.forEach(askSize)
         let title = presentation.arrangement?.titledPage?.value(.title)?.string
         window?.windowScene?.title = title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string
         // Every page shows the window's background where it paints none of its own, the arrangement in place.
         if changes.traits != nil { window?.rootViewController?.showPageBackgrounds() }
     }
+
+    /// Asks UIKit to stand `sheet` as large as its page asks, within a form sheet's room on the window - which a wide
+    /// screen keeps and a narrow one passes over - and at UIKit's own size where the page asks none (`SheetSize`).
+    /// Design: docs/design/platforms/uikit/pages.md#sheets
+    private func askSize(of sheet: MountedElement) {
+        guard let controller = sheet.uiKit.controller, let bounds = window?.bounds.size else { return }
+        let room = SheetRoom(
+            least: Self.leastSheet, standard: LayoutSize(width: 0, height: 0),
+            most: LayoutSize(width: Double(bounds.width) - 64, height: Double(bounds.height) - 64))
+        let size = SheetSize.asks(sheet)
+            ? SheetSize.size(of: sheet, in: room) { sheet.uiKit.layoutItem?.size(offered: $0) ?? room.least }
+            : room.standard
+        let asked = CGSize(width: size.width, height: size.height)
+        if controller.preferredContentSize != asked { controller.preferredContentSize = asked }
+    }
+
+    /// The least a sheet stands at on a wide screen.
+    private static let leastSheet = LayoutSize(width: 320, height: 180)
 
     /// The element under `element` holding the keyboard: the deepest whose view holds the first responder.
     private static func keyboardHolder(under element: MountedElement) -> MountedElement? {

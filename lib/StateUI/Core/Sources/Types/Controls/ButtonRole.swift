@@ -11,6 +11,6 @@ public enum ButtonRole: Int32, Sendable, HostRepresentable {
     /// The way out without acting: pressed by Escape.
     case cancel = 1
 
-    /// An action that destroys something: drawn in the platform's colour for one, where it has one.
+    /// An action that destroys something: drawn in the platform's color for one, where it has one.
     case destructive = 2
 }

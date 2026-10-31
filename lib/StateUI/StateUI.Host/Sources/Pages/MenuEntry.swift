@@ -51,6 +51,10 @@
     /// A submenu's entries, in order.
     public let entries: [MenuEntry]
 
+    /// What the entry does to the field holding the keyboard, where it is one an Edit menu keeps itself; nil for an
+    /// entry of the tree's.
+    public let edit: EditCommand?
+
     /// Everything an entry shows and the element it answers, holding no element: a host builds a menu it cannot
     /// change in place again where what its entries say differs.
     public struct Said: Equatable, Sendable {
@@ -64,6 +68,7 @@
         let isOn: Bool?
         let keyboardShortcut: KeyboardShortcut?
         let entries: [Said]
+        let edit: EditCommand?
     }
 
     /// What the entry says, its submenu's entries with it.
@@ -71,7 +76,7 @@
         Said(
             kind: kind, mount: element?.mount, title: title, icon: icon, isEnabled: isEnabled,
             isDestructive: isDestructive, identifier: identifier, isOn: isOn, keyboardShortcut: keyboardShortcut,
-            entries: entries.map(\.said))
+            entries: entries.map(\.said), edit: edit)
     }
 
     /// The platform's menu this one joins, where its `.id` is a `StandardMenu`.
@@ -84,12 +89,20 @@
     public static func entries(of container: MountedElement) -> [MenuEntry] {
         container.children.compactMap { entry in
             switch entry.type {
-            case .menuItem: MenuEntry(entry, kind: .item, entries: [])
+            case .menuItem, .menuToggle: MenuEntry(entry, kind: .item, entries: [])
             case .menuSeparator: .separator
             case .menu: MenuEntry(entry, kind: .submenu, entries: entries(of: entry))
             default: nil
             }
         }
+    }
+
+    /// The picture `element` shows: a bar's setting its `on:` picture while it stands on, else its own.
+    /// Design: docs/design/host/pages.md#a-checked-entry
+    static func picture(of element: MountedElement?) -> HostValue? {
+        guard let element else { return nil }
+        if element.type == .toolbarToggle, element.value(.isOn)?.bool == true, let on = element.value(.onIcon) { return on }
+        return element.value(.icon)
     }
 
     /// A line between two sections.
@@ -107,16 +120,32 @@
         self.init(head, kind: .submenu, entries: entries)
     }
 
+    /// The Edit menu's own entry doing `command`, in `words`, showing its shortcut - Redo's as `redo`.
+    init(_ command: EditCommand, words: EditWords, redo: KeyboardShortcut) {
+        kind = .item
+        element = nil
+        title = command.title(in: words)
+        icon = nil
+        isEnabled = true
+        isDestructive = false
+        identifier = nil
+        isOn = nil
+        keyboardShortcut = command.shortcut(redo: redo)
+        entries = []
+        edit = command
+    }
+
     private init(_ element: MountedElement?, kind: Kind, entries: [MenuEntry]) {
         self.kind = kind
         self.element = element
         title = element?.value(.text)?.string ?? ""
-        icon = HostPicture(element?.value(.icon))
-        isEnabled = element?.isEffectivelyEnabled ?? true
-        isDestructive = element?.value(.isDestructive)?.bool == true
+        icon = HostPicture(Self.picture(of: element))
+        isEnabled = element.map { $0.type != .toolbarLabel && $0.isEffectivelyEnabled } ?? true
+        isDestructive = element?.value(.role).flatMap(ActionRole.init(propValue:)) == .destructive
         identifier = element?.value(.accessibilityIdentifier)?.string
         isOn = kind == .item ? element?.value(.isOn)?.bool : nil
         keyboardShortcut = kind == .item ? element?.keyboardShortcut : nil
         self.entries = entries
+        edit = nil
     }
 }

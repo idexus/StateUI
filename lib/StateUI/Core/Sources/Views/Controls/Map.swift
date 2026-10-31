@@ -20,7 +20,7 @@ extension MapProperties {
         setValue(MapContract.isZoomEnabled, value)
     }
 
-    /// Whether the roads are coloured by traffic.
+    /// Whether the roads are colored by traffic.
     public func showsTraffic(_ value: Bool) -> Modified {
         setValue(MapContract.showsTraffic, value)
     }
@@ -39,9 +39,9 @@ extension MapProperties {
 ///
 ///     Map()
 ///         .markers {
-///             Marker("Royal Castle")
+///             Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
+///                 .label("Royal Castle")
 ///                 .subtitle("Plac Zamkowy 4")
-///                 .location(latitude: 52.2479, longitude: 21.0155)
 ///                 .onSelected { chosen = "castle" }
 ///         }
 ///
@@ -49,7 +49,7 @@ extension MapProperties {
 /// still - rather than a place inside a ScrollView.
 ///
 /// Where it looks is an act: put an `@Aim(Map.self)` on it with `.aim(_:)` and
-/// call `map.moveToRegion(latitude:longitude:radiusMeters:)`. Where it opens
+/// call `map.moveToRegion(_:)`. Where it opens
 /// is the initializer below.
 ///
 /// The platform's own map draws it where the platform ships one; elsewhere
@@ -64,27 +64,25 @@ public struct Map: ElementView, MapProperties {
         node = Node(contract: MapContract.self)
     }
 
-    /// A map opening on the region around a point.
+    /// A map opening on a region.
     ///
-    ///     Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
+    ///     Map(region: MapRegion(center: Location(latitude: 52.2479, longitude: 21.0155), radiusMeters: 1500))
     ///
     /// Where a map opens belongs here, not in an act from `.onCreated`, which
     /// the platform's own opening region overwrites. Moving later is the act,
-    /// `map.moveToRegion(latitude:longitude:radiusMeters:)`.
+    /// `map.moveToRegion(_:)`.
     ///
-    /// - Parameter radiusMeters: the circle around the point the map shows
-    ///   whole, its shorter side spanning the circle's width, in METERS - a
-    ///   plain number, its unit in its name.
-    public init(latitude: Double, longitude: Double, radiusMeters: Double) {
+    /// - Parameter region: what the map opens on.
+    public init(region: MapRegion) {
         node = Node(contract: MapContract.self)
-        node.write(MapContract.region, MapRegion(latitude: latitude, longitude: longitude, radiusMeters: radiusMeters))
+        node.write(MapContract.region, region)
     }
 
     // MARK: The markers
 
     /// The markers on it, replacing whatever markers it held before. A `Marker` is not a
     /// view, and goes here and nowhere else.
-    public func markers(@MarkerBuilder _ content: () -> [Marker]) -> Self {
+    public func markers(@MarkerBuilder _ content: () -> [Marker]) -> Modified {
         var copy = self
 
         // The markers go before the context menu's slot, which stays last.
@@ -100,22 +98,27 @@ public struct Map: ElementView, MapProperties {
     // MARK: Events
 
     /// Fires when the map itself is tapped - not a marker - with where.
-    public func onMapClicked(_ handler: @escaping @MainActor (Location) throws -> Void) -> Self {
+    public func onMapClicked(_ handler: @escaping @MainActor (Location) throws -> Void) -> Modified {
         onEvent(MapContract.mapClicked, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onMapClicked(gate: some Gate, _ handler: @escaping ValueEventHandler<Location>) -> Self {
+    public func onMapClicked(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
+        onEvent(MapContract.mapClicked, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onMapClicked(gate: Gate, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
         onEvent(MapContract.mapClicked, gate: gate, handler)
     }
 }
 
-/// A marker on the map.
+/// A marker on the map, where it stands.
 ///
-///     Marker("Royal Castle")
+///     Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
+///         .label("Royal Castle")
 ///         .subtitle("Plac Zamkowy 4")
-///         .location(latitude: 52.2479, longitude: 21.0155)
 ///
 /// Tapping the marker shows its label and address in the platform's own
 /// callout; `.onSelected` is the tap on the marker, `.onDetailsClicked`
@@ -124,11 +127,12 @@ public struct Marker: Element {
     /// The node this marker describes.
     public var node: Node
 
-    /// A marker labelled `label` - what the callout shows in bold. Give it a
-    /// `.location`, or it stands at zero-zero in the Atlantic.
-    public init(_ label: String) {
+    /// A marker standing at `location`.
+    ///
+    /// - Parameter location: where it stands.
+    public init(at location: Location) {
         node = Node(contract: MarkerContract.self)
-        node.write(MarkerContract.label, label)
+        node.write(MarkerContract.location, location)
     }
 
     /// Who this marker is among the map's others, so a marker put before it
@@ -143,8 +147,7 @@ public struct Marker: Element {
         return copy
     }
 
-    /// The callout's first line, in bold. The initializer takes the same
-    /// value and is where a marker usually gets it.
+    /// The callout's first line, in bold.
     public func label(_ value: String) -> Self {
         var copy = self
         copy.node.write(MarkerContract.label, value)
@@ -166,13 +169,6 @@ public struct Marker: Element {
         return copy
     }
 
-    /// Where it stands.
-    public func location(latitude: Double, longitude: Double) -> Self {
-        var copy = self
-        copy.node.write(MarkerContract.location, Location(latitude: latitude, longitude: longitude))
-        return copy
-    }
-
     /// Fires when the marker is tapped. Observing only: it cannot keep the
     /// callout shut.
     public func onSelected(_ handler: @escaping @MainActor () throws -> Void) -> Self {
@@ -181,9 +177,16 @@ public struct Marker: Element {
         return copy
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSelected(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onSelected(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+        var copy = self
+        copy.node.addHandler(MarkerContract.selected, policy: policy, handler)
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSelected(gate: Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(MarkerContract.selected, gate: gate, handler)
         return copy
@@ -197,9 +200,16 @@ public struct Marker: Element {
         return copy
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDetailsClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onDetailsClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+        var copy = self
+        copy.node.addHandler(MarkerContract.detailsClicked, policy: policy, handler)
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDetailsClicked(gate: Gate, _ handler: @escaping EventHandler) -> Self {
         var copy = self
         copy.node.addHandler(MarkerContract.detailsClicked, gate: gate, handler)
         return copy
@@ -250,77 +260,67 @@ public struct Location: Equatable, Sendable, HostRepresentable {
     }
 }
 
-/// The part of the world a map shows: the region around a point.
+/// The part of the world a map shows: the region around a place.
 ///
-///     Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
+///     Map(region: MapRegion(center: Location(latitude: 52.2479, longitude: 21.0155), radiusMeters: 1500))
 ///
 /// It crosses as its three numbers - latitude, longitude, and the radius in
 /// meters.
 public struct MapRegion: Equatable, Sendable, HostRepresentable {
-    /// Degrees north of the equator, negative south of it.
-    public var latitude: Double
+    /// The place in the middle.
+    public var center: Location
 
-    /// Degrees east of Greenwich, negative west of it.
-    public var longitude: Double
-
-    /// The circle around the centre the map shows whole, its shorter side
-    /// spanning the circle's width, in meters.
+    /// The circle around the center the map shows whole, its shorter side
+    /// spanning the circle's width, in meters - a plain number, its unit in
+    /// its name.
     public var radiusMeters: Double
 
-    /// A region, by its centre and its radius.
+    /// A region, by its center and its radius.
     ///
     /// - Parameters:
-    ///   - latitude: degrees north of the equator, negative south.
-    ///   - longitude: degrees east of Greenwich, negative west.
-    ///   - radiusMeters: the circle around the centre the map shows whole, in
+    ///   - center: the place in the middle.
+    ///   - radiusMeters: the circle around the center the map shows whole, in
     ///     meters.
-    public init(latitude: Double, longitude: Double, radiusMeters: Double) {
-        self.latitude = latitude
-        self.longitude = longitude
+    public init(center: Location, radiusMeters: Double) {
+        self.center = center
         self.radiusMeters = radiusMeters
     }
 
     /// Its three numbers, in order.
-    public var propValue: PropValue { .numbers([latitude, longitude, radiusMeters]) }
+    public var propValue: PropValue { .numbers([center.latitude, center.longitude, radiusMeters]) }
 
     /// A region back from its three numbers - nil for anything else.
     /// - Parameter propValue: what the host sent.
     public init?(propValue: PropValue) {
         guard let numbers = propValue.numbers, numbers.count == 3 else { return nil }
 
-        self.init(latitude: numbers[0], longitude: numbers[1], radiusMeters: numbers[2])
+        self.init(center: Location(latitude: numbers[0], longitude: numbers[1]), radiusMeters: numbers[2])
     }
 }
 
 // MARK: - The acts
 
 extension Aim where Target == Map {
-    /// Slides the map until it shows the region around a point.
+    /// Slides the map until it shows `region`.
     ///
     ///     @Aim(Map.self) private var map
     ///
-    ///     Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
+    ///     Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
     ///         .aim(map)
     ///
-    ///     Button("Old Town").onClicked(gate: .cancelPrevious) {
+    ///     Button("Old Town").onClicked(.cancelPrevious) {
     ///         try await map.moveToRegion(
-    ///             latitude: 52.2497, longitude: 21.0135, radiusMeters: 800)
+    ///             MapRegion(center: Location(latitude: 52.2497, longitude: 21.0135), radiusMeters: 800))
     ///     }
     ///
     /// For moving a map that is already up; where one opens is
-    /// `Map(latitude:longitude:radiusMeters:)`.
+    /// `Map(region:)`.
     ///
-    /// - Parameter radiusMeters: the circle around the point the map shows
-    ///   whole, its shorter side spanning the circle's width, in METERS - a
-    ///   plain number, its unit in its name.
+    /// - Parameter region: what the map is to show.
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.
-    public func moveToRegion(
-        latitude: Double,
-        longitude: Double,
-        radiusMeters: Double
-    ) async throws {
-        try await call(MapContract.moveToRegion, latitude, longitude, radiusMeters)
+    public func moveToRegion(_ region: MapRegion) async throws {
+        try await call(MapContract.moveToRegion, region)
     }
 }
 

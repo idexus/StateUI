@@ -62,7 +62,7 @@
             },
             Aspects.holds(ButtonContract.icon, on: "Button", "test_dot.png", then: "test_wide.png",
                           with: [Write(TextualElementContract.text, "Go")]),
-            Aspects.holds(ButtonContract.iconPosition, on: "Button", .leading, then: .top, with: [
+            Aspects.holds(ButtonContract.iconPosition, on: "Button", .start, then: .top, with: [
                 Write(TextualElementContract.text, "Go"), Write(ButtonContract.icon, "test_dot.png"),
             ]),
             Aspects.holds(ButtonContract.iconSpacing, on: "Button", 4, then: 12, with: [
@@ -114,45 +114,6 @@
                 try s.perform(.pressKeys(KeyboardShortcut("1", modifiers: [])), on: s.element("one"))
                 s.turn()
                 s.expect(heard.values, [], "the key is the field's, the button stays as it was")
-            },
-            ConformanceCase("aHeldButtonsClickIsItsOwnItsMenuApart", proves: [
-                Covered(ButtonContract.menuKind),
-            ], needs: [Covered(ButtonContract.clicked), Covered(MenuItemElementContract.clicked, on: "MenuItem")]) { s in
-                let heard = Received<String>()
-                s.start {
-                    VStack {
-                        Button("Save")
-                            .onClicked { heard.values.append("save") }
-                            .menu(.held) { MenuItem("Save as").onClicked { heard.values.append("save as") }.id("saveAs") }
-                            .id("save")
-                    }
-                }
-                let save = try s.element("save")
-                try s.perform(.activate, on: save)
-                s.settle { heard.values == ["save"] }
-                s.expect(heard.values, ["save"], "a click is the button's own action")
-                s.expect(try s.buttonMenu(of: save), "Save as", "and its menu, held, stands apart")
-
-                try s.perform(.activate, on: s.element("saveAs"))
-                s.settle { heard.values == ["save", "save as"] }
-                s.expect(heard.values, ["save", "save as"], "an entry of its menu chosen")
-            },
-            ConformanceCase("aMenusArrowShowsAsTheTreeSays", proves: [
-                Covered(ButtonContract.showsMenuArrow),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let shows = State(wrappedValue: true)
-                s.start {
-                    VStack {
-                        Button("Share").menu { MenuItem("Mail") }.showsMenuArrow(shows.wrappedValue).id("share")
-                        Button("Change").onClicked { shows.wrappedValue = false }.id("change")
-                    }
-                }
-                s.expect(try s.held(ButtonContract.showsMenuArrow, on: s.element("share")), true, "the arrow shown")
-
-                try s.perform(.activate, on: s.element("change"))
-                try s.settle { try s.held(ButtonContract.showsMenuArrow, on: s.element("share")) == false }
-                s.expect(try s.held(ButtonContract.showsMenuArrow, on: s.element("share")), false, "and taken away")
-                s.expect(try s.buttonMenu(of: s.element("share")), "Mail", "the menu still the click's")
             },
             Aspects.holds(ButtonContract.role, on: "Button", .primary, then: .destructive,
                           with: [Write(TextualElementContract.text, "Go")]),

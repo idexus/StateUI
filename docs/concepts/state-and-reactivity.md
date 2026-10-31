@@ -13,6 +13,17 @@ ownership model and the host motion axis are introduced in
 [Architecture](architecture.md). This chapter is the author-facing reference
 for choosing and composing those paths.
 
+Two words say how a view holds a state, and one type names a part of it:
+
+- `@State` owns the value and manages its state;
+- `@Binding` borrows a whole state, with the host's reactive channel;
+- a `StatePart` - `$contact.name`, `$levels[1]` - is one property or element
+  of a state, read and written through the whole, which nothing in the
+  library takes.
+
+Every member takes a value, which a body reads, or a `Binding`, which the host
+carries: `Text(contact.name)` reads, `Text(contact.$name)` is the channel.
+
 ## Owning a value with `@State`
 
 A state belongs where its lifetime belongs:
@@ -130,10 +141,12 @@ states make their individual writes visible. Two views holding the same model
 read the same property storages; two model instances have independent
 storages. Computed properties follow the state they read.
 
-Give a wrapped class property its initial value at the declaration. This
-wrapper cannot be used as uninitialized stored storage assigned for the first
-time in `init`. A weak or unowned back-reference is a plain property because
-Swift does not combine those ownership modifiers with a property wrapper.
+Give a wrapped class property its initial value at the declaration, or make
+its state in `init` - `_name = State(wrappedValue: name)`, as
+[Editing a record](#editing-a-record-two-ways) shows: assigning the wrapped
+property there does not compile. A weak or unowned back-reference is a plain
+property because Swift does not combine those ownership modifiers with a
+property wrapper.
 
 ### Swift Observation
 
@@ -144,32 +157,41 @@ write to an `@Observable` property alone does not request a render. Holding an
 its member writes leave the interface unchanged.
 
 Declare properties on a model you own with `@State`. When another package owns
-an `@Observable` type, bridge it explicitly: read the properties the interface
-uses inside `withObservationTracking`, and in `onChange` re-arm that one-shot
-tracking before calling `Renderer.shared.setNeedsRender()`.
+an `@Observable` type, bridge it with an adapter whose properties are `@State`:
+copy what the interface reads inside `withObservationTracking`, and in
+`onChange` copy again, which arms the one-shot tracking anew. Each copy is a
+write to a state, so only the views that read that property are built again.
 
-```swift quote
+```swift
 import Observation
+import StateUI
+
+/// Another package's model.
+@MainActor @Observable
+final class ExternalModel {
+    var title = ""
+    var progress = 0.0
+}
 
 @MainActor
-func observe(_ model: ExternalModel) {
-    withObservationTracking {
-        _ = model.title
-        _ = model.progress
-    } onChange: {
-        Task { @MainActor in
-            observe(model) // Observation tracking is one-shot.
-            Renderer.shared.setNeedsRender()
+final class PlayerAdapter {
+    @State var title = ""
+    @State var progress = 0.0
+
+    func follow(_ model: ExternalModel) {
+        withObservationTracking {
+            title = model.title
+            progress = model.progress
+        } onChange: { [weak self] in
+            Task { @MainActor in self?.follow(model) } // Observation tracking is one-shot.
         }
     }
 }
 ```
 
-Call the bridge from the lifetime owner and stop retaining that owner when its
-element leaves. `setNeedsRender()` is a full, unnamed invalidation: it cannot
-identify which composed body read which external property. For selective
-StateUI invalidation, copy the external values needed by the interface into an
-adapter whose properties are `@State`.
+The views read the adapter, never the model. Start following from the lifetime
+owner - an action or `.onAppearing` - and let the adapter go when its element
+leaves; the weak reference ends the following with it.
 
 ## Borrowing with `@Binding`
 
@@ -201,16 +223,19 @@ The projection `$name` is a `Binding<String>`. A borrowed binding projects
 itself again, so it can be handed through several composed views without a new
 wrapper or adapter.
 
-### Binding to a part
+### Editing a record: two ways
 
-Bindings use dynamic-member lookup for writable key paths. A value member is
-updated by reading the whole value, changing the member, and writing the whole
-value back:
+A control takes a whole state, `$x`, which the host carries. A record edited
+field by field is written one of two ways.
+
+**A class whose fields are states.** Each field is a `@State` of its own, so a
+control is handed it whole - `contact.$name` - and the host carries it: typing
+writes that field alone, and no body is built for it.
 
 ```swift
-struct Contact {
-    var name = ""
-    var subscribed = false
+final class Contact {
+    @State var name = ""
+    @State var subscribed = false
 }
 
 struct ContactForm: View {
@@ -218,56 +243,137 @@ struct ContactForm: View {
 
     var body: some View {
         VStack {
-            TextField($contact.name)
-            Switch($contact.subscribed)
+            TextField(contact.$name)
+            Switch(contact.$subscribed)
+            Text("Hello, \(contact.name)")
         }
     }
 }
 ```
 
-A mutable collection can be borrowed by index in the same way:
+An array of such objects edits its rows the same way: a row borrows its fields
+with `@Binding`, and a keystroke writes that row's state alone. A field given
+its first value in `init` is made there, `_title = State(wrappedValue: title)`:
+assigning a wrapped property in `init` does not compile.
 
 ```swift
-@State var levels = [0.2, 0.5, 0.8]
+final class Todo {
+    let id: Int
+    @State var title: String
+    @State var done = false
 
-Stepper($levels[1])
-```
+    init(id: Int, title: String) {
+        self.id = id
+        _title = State(wrappedValue: title)
+    }
+}
 
-For a model held in state, the two useful spellings have different owners:
+struct TodoRow: View {
+    @Binding var title: String
+    @Binding var done: Bool
 
-- `profile.$name` is the model property's whole state;
-- `$profile.name` is the `name` part reached through the state that holds the
-  model.
+    var body: some View {
+        HStack {
+            CheckBox($done)
+            TextField($title)
+        }
+    }
+}
 
-A part has no independent state storage. It works for described values and
-write-back, but it cannot be a host motion channel, a journey, or an engine's
-followed state. Give independently carried values their own `@State` storage.
+struct Checklist: View {
+    @State private var todos = [Todo(id: 1, title: "Milk"), Todo(id: 2, title: "Bread")]
 
-A binding to an element knows whether its collection still has it: a write, or
-a post, to `$levels[1]` after the array shrank to one element is dropped and
-said once rather than reaching past the end.
-
-### A custom binding
-
-Use `Binding(get:set:)` at an integration boundary that StateUI does not own:
-
-```swift
-@MainActor
-final class ExternalSettings {
-    var name = ""
-
-    var nameBinding: Binding<String> {
-        Binding(
-            get: { self.name },
-            set: { self.name = $0 })
+    var body: some View {
+        VStack {
+            ForEach(todos, id: \.id) { todo in
+                TodoRow(title: todo.$title, done: todo.$done)
+            }
+        }
     }
 }
 ```
 
-The setter decides whether anything is invalidated. A closure binding has no
-StateUI storage for the host to carry or for an engine to follow, so controls
-read it while describing and report changes through its setter. Prefer a real
-`@State` whenever StateUI owns the value.
+**A value and its event.** A record that stays a value - written to a file,
+compared, kept by a scene - hands each control its value, and the control's
+event writes the user's change:
+
+```swift
+struct Chore {
+    let id: Int
+    var title: String
+    var done = false
+}
+
+struct Chores: View {
+    @State private var chores = [Chore(id: 1, title: "Milk"), Chore(id: 2, title: "Bread")]
+
+    var body: some View {
+        VStack {
+            ForEach(chores, id: \.id) { chore in
+                HStack {
+                    CheckBox(chore.done)
+                        .onToggled { done in edit(chore.id) { $0.done = done } }
+                    TextField(chore.title)
+                        .onTextChanged { title in edit(chore.id) { $0.title = title } }
+                }
+            }
+        }
+    }
+
+    private func edit(_ id: Int, _ change: (inout Chore) -> Void) {
+        if let row = chores.firstIndex(where: { $0.id == id }) { change(&chores[row]) }
+    }
+}
+```
+
+Each change writes the whole array, so the body that read it is built again
+and describes the new values; the write stands where it can be seen, and finds
+its row by identity, not by place.
+
+| | A class of states | A value and its event |
+| --- | --- | --- |
+| The record | a class: shared, never copied | a value: `Codable` and `Equatable` come with it |
+| One keystroke | writes that field's state, builds nothing | writes the whole value, builds its readers |
+| The control's value | carried by the host | described by the body |
+| A journey, an animation, an engine on a field | yes | no |
+| Suits | live editing, values that move | lists and records saved or compared |
+
+A value that crosses to the host as it is - text, on or off, a number, a day,
+a time, a color - takes either form: `TextField($name)` or
+`TextField(name).onTextChanged { … }`. A choice the library translates for the
+host - a picker's place in its list, a list's chosen items, a tab - takes the
+state alone, `Picker(sizes, selection: $size)`: a choice kept in a value is a
+field made a state of its own.
+
+### A part of a state: `StatePart`
+
+`$contact.name` and `$levels[1]` are one property or one element of a state - a
+`StatePart`, which reads the whole value and writes the member back. Nothing
+in the library takes one: a control, a driven modifier, a conversion and an
+engine take a whole state, so a part handed to one does not compile, and the
+error names a `StatePart` where a `Binding` is asked. A part is read and
+written - `$levels[1].wrappedValue` - and posted to from another thread,
+`$levels[1].post(0.5)`; a write or a post to an element its collection no
+longer has is dropped and said once.
+
+For a model held in state, the two spellings have different owners:
+
+- `profile.$name` is the model property's whole state, a `Binding`;
+- `$profile.name` is the `name` part reached through the state that holds the
+  model, a `StatePart`.
+
+A value StateUI does not own reaches a control through a class of `@State`
+fields that follows it, as [State in a class](#state-in-a-class) shows.
+
+### A state an element reads itself
+
+Handing a state to a member never makes the body a reader. A member whose
+value the library translates for its host - a picker's place in its list, a
+tab, a list's chosen items, a stack's pages, a sheet - reads the state as its
+element is described, and a write describes that element alone again: the
+body that wrote `Picker(sizes, selection: $size)` is not built for a choice. A
+registered control of the application's own does the same through its member,
+`setValue(TrafficLightContract.signal, whenDescribed: { state.wrappedValue })`.
 
 ## Selecting a reactive path
 
@@ -277,9 +383,10 @@ Use the consequence you need as the selection rule:
 | --- | --- | --- |
 | Change which views exist or how authored values are composed | read the state in a body | rebuild current readers, then diff |
 | Give a child access to the same value | pass `$value` to `@Binding` | determined by what the child does with it |
+| Give a child one field of a record | the field's own state, `record.$field`, to `@Binding`; or its value | as for a whole state; or rebuild the child, which reads it |
 | Keep a native property synchronized continuously | hand the whole state to a binding-taking control or modifier | host-cycle update, no body read |
 | Wake arithmetic on a display frame | name the state in `engine(following:)` or `engine(tracking:)` | wake that engine |
-| Turn one or more carried states into another carried value | `convert`, `convert(with:)`, or `multi` | conversion engine, no body read |
+| Turn one or more carried states into another carried value | `convert`, or `multi` for several | conversion engine, no body read |
 | Let a continuous value make an occasional structural decision | `samples` into ordinary state, or an engine that writes only when a threshold changes | rebuild only for sampled or changed decisions |
 
 A state may use both paths. For example, a slider can carry `$volume` while a
@@ -293,9 +400,9 @@ not return as a user event.
 
 ## Persistent state
 
-Persistent state is ordinary state with a stable application key. It is
-hydrated before the first description is built and written to the selected
-host store after changes.
+Persistent state is ordinary state with a stable application key. The host's
+store is read as the first state under the key is made, so the kept value is
+there for the state's first description, and every change is written back.
 
 ```swift
 enum Appearance: String, PersistentValue {
@@ -304,22 +411,8 @@ enum Appearance: String, PersistentValue {
     case system
 }
 
-extension PersistentKey {
-    static let appearance = PersistentKey(
-        "com.example.notes.appearance",
-        of: Appearance.self)
-}
-
-struct NotesApp: Application {
-    @Environment(\.application) private var application
-
-    init() {
-        application.persistentKeys = [.appearance]
-    }
-
-    var body: some Scene {
-        WindowGroup { SettingsPage() }
-    }
+extension PersistentKey where Value == Appearance {
+    static let appearance = PersistentKey("com.example.notes.appearance")
 }
 
 struct SettingsPage: View {
@@ -333,11 +426,9 @@ struct SettingsPage: View {
 }
 ```
 
-The declared value is the default when the store has no entry. The application
-must list every key in `ApplicationSession.persistentKeys` during its
-initialization; otherwise the host has no key to hydrate before the first
-build. A write still has its key, so omitting it can look like restoration is
-one launch late; a key a state keeps and the list leaves out is said once.
+The declared value is the default when the store has no entry. Nothing lists
+the keys in advance: a key is typed by the value it keeps, and the store is
+read by its name and that type's kind.
 
 `Bool`, `Int`, `Double`, and `String` conform to `PersistentValue`. An enum
 whose raw value conforms gains the same representation. Larger records belong
@@ -345,8 +436,9 @@ in an application-owned, explicitly versioned model rather than being hidden
 inside an unversioned settings string.
 
 One key names one storage for the application. Separate declarations of the
-same key share the value and invalidate all of its readers. A type mismatch
-between a key and its state is rejected when the state is built.
+same key share the value and invalidate all of its readers. A state of another
+type than its key's does not compile; two keys giving one name to different
+types stop the application when the second is used.
 
 Several writes to one key before the host drains pending work produce one save
 holding the last value. A persistent write is still drained when no body reads
@@ -367,10 +459,8 @@ A `SceneKey` keeps a separate value for each scene session. A restoring host
 returns that value with the scene before the scene's first build:
 
 ```swift
-extension SceneKey {
-    static let selectedSection = SceneKey(
-        "com.example.notes.selectedSection",
-        of: Int.self)
+extension SceneKey where Value == Int {
+    static let selectedSection = SceneKey("com.example.notes.selectedSection")
 }
 
 struct SceneSidebar: View {
@@ -388,8 +478,10 @@ struct SceneSidebar: View {
 }
 ```
 
-Two declarations of one key inside one scene share its storage. The same key
-in another scene names that scene's independent storage. A `sceneKey` state
+A scene keeps any `Codable` value, as its JSON text; a kept text that no
+longer reads as the key's type - the type changed since - leaves the declared
+default. Two declarations of one key inside one scene share its storage. The
+same key in another scene names that scene's independent storage. A `sceneKey` state
 declared outside a scene is ordinary state because there is no scene session to
 claim it. On a host without scene restoration, the state still lasts for the
 open scene but is not promised across launches.
@@ -415,7 +507,7 @@ VStack {
 
     Text($volume.convert { "\(Int($0 * 100))%" })
 
-    Text($width.convert(with: $height) { width, height in
+    Text(.multi($width, $height).convert { width, height in
         "\(Int(width)) × \(Int(height))"
     })
 }
@@ -442,9 +534,9 @@ Text(.multi($name, $width, $height).convert { name, width, height in
 Each view writing a conversion keeps its own derived state, even where two
 views convert one source on one line, and lets it go when it leaves.
 
-Conversions require whole StateUI states as sources to remain on the host-cycle
-path. A binding to a member or one made from closures is evaluated as described
-data instead and cannot receive a host-carried reverse conversion.
+Conversions take whole StateUI states as sources, which keeps them on the
+host-cycle path: `convert` and `multi` are offered on `Binding` alone, so a
+`StatePart` cannot be converted.
 
 ### Destination conversion and journey conversion
 
@@ -456,7 +548,8 @@ value travels:
 @State var width = 80.0
 
 VStack {
-    Rectangle(.cornflowerBlue)
+    Rectangle()
+        .fill(.cornflowerBlue)
         .width($width)
         .height(24)
 
@@ -467,8 +560,9 @@ VStack {
 }
 ```
 
-Use `journey.convert(with:)` when the live presentation depends on two moving
-states. One host-carried state is one shared motion channel; use separate
+Use `.multi($a.journey, $b.journey).convert { … }` when the live presentation
+depends on two moving states - `.multi` is the one road for a conversion of
+several sources, states or journeys. One host-carried state is one shared motion channel; use separate
 states when the values need independent animations.
 
 ## Journey and sampled readings
@@ -531,7 +625,8 @@ struct SpringDot: View {
 
     var body: some View {
         VStack {
-            Rectangle(.cornflowerBlue)
+            Rectangle()
+                .fill(.cornflowerBlue)
                 .width(28)
                 .height(28)
                 .translationY($y)

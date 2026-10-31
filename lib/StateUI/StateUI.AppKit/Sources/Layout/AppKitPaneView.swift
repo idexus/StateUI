@@ -6,21 +6,17 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// One pane of a split view. Its page keeps out of the part the window's title
-/// bar and toolbar cover, and a colour written for the bars paints that part;
-/// a sidebar's pane stands on the material its split view says, else on the
-/// system's sidebar.
-///
-/// A room: the split view decides its size and it gives its page all of it, so
-/// a change inside the page is laid out by the page.
+/// One pane of a split view, a room: its column's content stands against the safe area as a window's page does,
+/// the bars' brush paints the part they cover, and a sidebar's pane stands on its split view's material.
+/// Design: docs/design/platforms/appkit/views.md#a-sidebars-material
 @MainActor
 final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
-    /// The colour the window's bars are written in, painted over `barBand`.
-    var barColor: NSColor? {
-        didSet { if barColor != oldValue { needsDisplay = true } }
+    /// What the window's bars are painted with - a color or a gradient - over `barBand`.
+    var barBrush = AppKitBrush() {
+        didSet { if barBrush != oldValue { needsDisplay = true } }
     }
 
-    /// What the pane stands on - a colour, a gradient, a blur or glass - drawn as a layout draws its box.
+    /// What the pane stands on - a color, a gradient, a blur or glass - drawn as a layout draws its box.
     let ground = AppKitDecoration()
 
     /// Stands the pane on `background`, the split view's material; nil leaves the system's own.
@@ -33,9 +29,68 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
         NSRect(x: 0, y: 0, width: bounds.width, height: max(0, safeAreaRect.minY))
     }
 
+    /// The column the pane holds, whose visible page says which edges its content runs under.
+    weak var column: MountedElement? {
+        didSet { needsLayout = true }
+    }
+
+    /// The column's visible page's bottom bar, over the pane's foot.
+    private let bottomBar = AppKitBottomBarView()
+
+    /// The band under the toolbar showing its edge while the column's rows pass under it.
+    private let topEdge = AppKitTopEdgeView()
+
+    /// Whether macOS draws its own automatic edge under the toolbar over this pane - a sidebar's.
+    var macOSDrawsItsEdge: Bool {
+        get { topEdge.macOSDrawsItsEdge }
+        set { topEdge.macOSDrawsItsEdge = newValue }
+    }
+
+    /// Shows the column's visible page's bottom bar and its bar at its foot, or takes them away where it declares
+    /// neither.
+    func showBottomBar() {
+        bottomBar.show(column?.visiblePage)
+        if !bottomBar.showsAnything {
+            bottomBar.removeFromSuperview()
+        } else if bottomBar.superview !== self {
+            addSubview(bottomBar, positioned: .above, relativeTo: nil)
+        }
+        needsLayout = true
+    }
+
+    override func setItem(_ item: AppKitLayoutItem?) {
+        super.setItem(item)
+        if bottomBar.showsAnything, bottomBar.superview !== self { addSubview(bottomBar, positioned: .above, relativeTo: nil) }
+    }
+
+    /// Where the bottom bar stands at the pane's foot; nil where it shows none.
+    private var bottomBarPlace: BottomBarPlace? {
+        bottomBar.superview === self ? bottomBar.place(safe: safeAreaRect.placed, whole: bounds.placed) : nil
+    }
+
+    /// The room the column's content stands in against the pane's safe area, its bottom bar standing over its foot.
+    override var childRoom: Rect {
+        let page = column?.visiblePage
+        return SafeAreaArithmetic.room(
+            safe: bottomBarPlace?.safe ?? safeAreaRect.placed, whole: bounds.placed,
+            edges: page?.contentIgnoresSafeArea ?? .none, direction: page?.layoutDirection ?? .leftToRight)
+    }
+
     override func layout() {
         super.layout()
-        if barColor != nil { needsDisplay = true }
+        let place = bottomBarPlace
+        let scroller = column?.visiblePage?.pageScroller?.appKit.view as? AppKitPageScroller
+        scroller?.keepClear(SafeAreaArithmetic.clearance(room: childRoom, safe: place?.safe ?? safeAreaRect.placed))
+        bottomBar.stand(at: place, over: column?.visiblePage, scroller: scroller)
+        if topEdge.superview !== self { addSubview(topEdge, positioned: .above, relativeTo: item?.view) }
+        topEdge.stand(
+            in: Rect(x: 0, y: 0, width: bounds.width, height: max(0, safeAreaRect.minY)), over: column?.visiblePage,
+            scroller: scroller)
+        scroller?.standingChanged = { [weak self] in
+            self?.bottomBar.follow()
+            self?.topEdge.follow()
+        }
+        if barBrush.paints { needsDisplay = true }
         layOutReporting(item?.view)
     }
 
@@ -45,9 +100,11 @@ final class AppKitPaneView: AppKitSingleChildView, AppKitRoom {
     override func draw(_ dirtyRect: NSRect) {
         super.draw(dirtyRect)
         ground.draw(in: bounds)
-        guard let barColor else { return }
-        barColor.setFill()
-        barBand.fill()
+        guard barBrush.paints else { return }
+        // Design: docs/design/platforms/appkit/runtime.md#the-bars-band
+        let window = self.window?.contentView.map { convert($0.bounds, from: $0) } ?? bounds
+        let across = NSRect(x: window.minX, y: barBand.minY, width: window.width, height: barBand.height)
+        barBrush.draw(in: NSBezierPath(rect: barBand), bounds: across)
     }
 }
 

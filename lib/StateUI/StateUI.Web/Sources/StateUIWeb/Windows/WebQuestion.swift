@@ -5,17 +5,17 @@
 @_spi(Host) import StateUIHost
 
 /// A question for the user in the browser's own modal `<dialog>`: its title and message, the words a prompt asks
-/// for, and a button for each answer - a choice's actions one under another, its dangerous one marked; Escape
-/// answers as cancelling does, where the question can be cancelled.
+/// for, and a button for each answer, named by what it answers (`data-answer`) - a choice's actions one under
+/// another, its dangerous one marked; Escape answers as cancelling does, an alert's as its one button.
 /// Design: docs/design/platforms/web/pages.md#questions-for-the-user
 @MainActor
 final class WebQuestion {
     private let dialog = WebDOMView(tag: "dialog")
     private var parts: [WebDOMView] = []
     private var field: WebTextInputView?
-    private var answered: ((Bool, String?) -> Void)?
+    private var answered: ((HostQuestion.Given) -> Void)?
 
-    init(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) {
+    init(_ question: HostQuestion, answered: @escaping (HostQuestion.Given) -> Void) {
         self.answered = answered
         dialog.attribute("class", "stateui-question")
         dialog.attribute("data-kind", question.kind == .chooseAction ? "choice" : nil)
@@ -26,37 +26,39 @@ final class WebQuestion {
         let buttons = WebDOMView(tag: "div")
         buttons.attribute("class", "stateui-question-buttons")
         insert(buttons)
-        var index = 0
-        func button(_ words: String, role: String?, answer: @escaping (WebQuestion) -> Void) {
+        // A choice's actions stand first, its cancel last; a confirmation's and a prompt's cancel before the accept.
+        let offered = question.buttons
+        let ordered = question.kind == .chooseAction
+            ? offered : offered.filter { $0.role == .cancel } + offered.filter { $0.role != .cancel }
+        for (index, (caption, role)) in ordered.enumerated() {
             let made = WebDOMView(tag: "button")
             made.attribute("type", "button")
-            made.attribute("data-role", role)
-            WebRelay.setText(made.node, words)
-            made.listen("click") { [weak self] in if let self { answer(self) } }
+            made.attribute("data-answer", Self.answer(of: role))
+            let look: String? = switch role {
+            case .accept: "accept"
+            case .cancel: "cancel"
+            case .action(let place): place == question.destructive ? "destructive" : nil
+            }
+            made.attribute("data-role", look)
+            WebRelay.setText(made.node, caption)
+            made.listen("click") { [weak self] in
+                guard let self else { return }
+                answer(HostQuestion.Given(pressed: role, typing: typed))
+            }
             WebRelay.insert(made.node, into: buttons.node, at: index)
             parts.append(made)
-            index += 1
         }
-        switch question.kind {
-        case .chooseAction:
-            for choice in question.choices { button(choice, role: nil) { $0.answer(true, choice) } }
-            if let destruction = question.destruction {
-                button(destruction, role: "destructive") { $0.answer(true, destruction) }
-            }
-            // A choice's cancel is a choice of its caption; dismissed - Escape - nothing was chosen.
-            if let cancel = question.cancel { button(cancel, role: "cancel") { $0.answer(true, cancel) } }
-        default:
-            if let cancel = question.cancel { button(cancel, role: "cancel") { $0.answer(false, nil) } }
-            button(question.accept, role: "accept") { $0.answer(true, $0.typed) }
-        }
-        let cancels = question.kind != .alert && (question.kind != .chooseAction || question.cancel != nil)
         dialog.hear(.dismiss) { [weak self] in
-            guard let self else { return }
-            if question.kind == .alert {
-                answer(true, nil)
-            } else if cancels {
-                answer(false, nil)
-            }
+            self?.answer(HostQuestion.Given(pressed: question.kind == .alert ? .accept : .cancel))
+        }
+    }
+
+    /// What a button doing `button` is named by: `accept`, `cancel`, `action-<place>`.
+    static func answer(of button: QuestionButton) -> String {
+        switch button {
+        case .accept: "accept"
+        case .cancel: "cancel"
+        case .action(let place): "action-\(place)"
         }
     }
 
@@ -72,10 +74,10 @@ final class WebQuestion {
         field.map { WebRelay.value(of: $0.node) }
     }
 
-    private func answer(_ accepted: Bool, _ words: String?) {
+    private func answer(_ given: HostQuestion.Given) {
         guard let answered else { return }
         withdraw()
-        answered(accepted, words)
+        answered(given)
     }
 
     /// Takes the question away, answering nobody: the window it stood over went.
@@ -101,7 +103,7 @@ final class WebQuestion {
         WebRelay.setValue(field.node, question.words)
         field.hear(.enter) { [weak self] in
             guard let self else { return }
-            answer(true, typed)
+            answer(HostQuestion.Given(accepted: true, words: typed))
         }
         WebRelay.insert(field.node, into: dialog.node, at: parts.count)
         self.field = field

@@ -19,21 +19,33 @@ extension MountedElement {
                 if reason == .navigation { tellPhase(.navigatedTo) }
             } else {
                 if reason == .navigation { tellPhase(.navigatingFrom) }
+                takePointerOff()
                 tellPhase(.disappearing)
                 if reason == .navigation { tellPhase(.navigatedFrom) }
             }
         case .navigationStack:
             // A stack whose window comes is navigated to; one whose window goes only disappears.
             let passed: PagePresentationReason = reason == .window ? (presented ? .navigation : .appearance) : reason
-            children.last?.setPagePresented(presented, reason: passed)
+            arrangedChildren.last?.setPagePresented(presented, reason: passed)
         case .tabView:
             selectedTab?.setPagePresented(presented, reason: .appearance)
         case .splitView:
-            children.dropFirst().first?.setPagePresented(presented, reason: .appearance)
-            if sidebarIsVisible { children.first?.setPagePresented(presented, reason: .appearance) }
+            arrangedChildren.dropFirst().first?.setPagePresented(presented, reason: .appearance)
+            if sidebarIsVisible { arrangedChildren.first?.setPagePresented(presented, reason: .appearance) }
         default:
             break
         }
+    }
+
+    /// Takes the pointer off every view of this page it stood over, in the page's turn: a toolkit tells no exit to a
+    /// view gone from under the pointer, and a state following the pointer would stay.
+    /// Design: docs/design/host/pages.md#a-pages-phases
+    private func takePointerOff() {
+        if pointerIsOver {
+            pointerIsOver = false
+            tellPhase(.pointerExited)
+        }
+        for child in children { child.takePointerOff() }
     }
 
     /// After what this arrangement shows changed - a push or a pop, another tab, the sidebar shown or hidden - what

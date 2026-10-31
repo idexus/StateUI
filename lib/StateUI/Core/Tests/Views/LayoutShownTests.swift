@@ -26,14 +26,14 @@ final class LayoutShownTests: XCTestCase {
     /// A run of three views moved a hundred points a unit, and beside it a view whose engine follows the phase.
     private func tree(_ phase: State<Double>, _ read: Read) -> Node {
         ZStack {
-            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 (0..<3).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
             }
-            .phase(phase.projectedValue)
             .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
             .motion(.eased(.milliseconds(160), .linear))
 
-            Rectangle(.red)
+            Rectangle()
+                .fill(.red)
                 .engine(following: phase.projectedValue) { _ in read.values.append(phase.projectedValue.journey.value) }
         }
         .node
@@ -54,6 +54,7 @@ final class LayoutShownTests: XCTestCase {
 
     /// AN ENGINE FOLLOWING THE PHASE GOES WITH THE HAND, move by move, and with the run as it comes onto its target.
     func testAnEngineFollowingThePhaseGoesWithTheHand() {
+        bench.walks = true
         let (phase, read, renders) = (State(wrappedValue: 0.0), Read(), Renders())
         func built() -> Node { tree(phase, read) }
         _ = bench.laid(renders, built)

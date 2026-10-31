@@ -31,12 +31,14 @@ var targets: [Target] = [
         name: "GalleryUI",
         dependencies: [.product(name: "StateUI", package: "StateUIRoot")],
         path: "Sources", swiftSettings: settings + [.enableUpcomingFeature("MemberImportVisibility")]),
-    // The tests walk the gallery over the host layer too, every sample visited and left (LeakWalkTests).
+    // The tests walk the gallery over the host layer too, every sample visited and left (LeakWalkTests), and use
+    // its samples as their user does through a test's window (StateUITesting).
     .testTarget(
         name: "GalleryTests",
         dependencies: [
             "GalleryUI", .product(name: "StateUI", package: "StateUIRoot"),
             .product(name: "StateUIHost", package: "StateUIHost"),
+            .product(name: "StateUITesting", package: "StateUITesting"),
         ],
         path: "Tests/GalleryTests",
         swiftSettings: settings
@@ -109,11 +111,12 @@ let package = Package(
         .macOS(.v26),
     ],
     products: products,
-    // The StateUI checkout: the library at its root, the host layer the tests walk the gallery over, and a head's
-    // host.
+    // The StateUI checkout: the library at its root, the host layer the tests walk the gallery over, the testing
+    // library they use its samples through, and a head's host.
     dependencies: [
         .package(name: "StateUIRoot", path: "../.."),
         .package(name: "StateUIHost", path: "../../lib/StateUI/StateUI.Host"),
+        .package(name: "StateUITesting", path: "../../lib/StateUI/StateUI.Testing"),
     ]
         + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")])
         + (webBackend.isEmpty ? [] : host.map { host in

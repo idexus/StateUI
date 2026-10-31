@@ -25,6 +25,7 @@ struct MainPage: View {
                 .width(240)
 
             Button(Self.caption(clicks: count))
+                .accessibilityIdentifier("main.click")
                 .onClicked { count += 1 }
                 .horizontalAlignment(.center)
                 .margin(20)

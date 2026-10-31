@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 
 @_spi(Host) extension HostStateValue {
-    /// The value a state takes from what a control reported: words as text, a flag, a number, numbers or a
-    /// choice as lanes; nil for what no state carries.
+    /// The value a state takes from what a control reported: words as text, a flag, a number, numbers, a choice
+    /// or a color's channels as fractions of full as lanes; nil for what no state carries.
     public init?(carrying value: HostValue) {
         switch value {
         case .string(let text): self = .text(text)
@@ -14,6 +14,8 @@
         case .number(let number): self = .lanes([number])
         case .numbers(let numbers): self = .lanes(numbers)
         case .enumeration(let choice): self = .lanes([Double(choice)])
+        case .color(let red, let green, let blue, let alpha):
+            self = .lanes([red, green, blue, alpha].map(ColorComponent.fraction))
         default: return nil
         }
     }
@@ -22,9 +24,11 @@
 /// What the user does to an element's native control, carried into the runtime alike on every host.
 /// Design: docs/design/host/runtime.md#a-users-change
 extension MountedElement {
-    /// An event the control raised, with what it carries, to the handler the tree listens with; a field submitted
-    /// whose return says Next hands the keyboard on (`NextField`).
+    /// An event the control raised, with what it carries, to the handler the tree listens with; a link chosen opens
+    /// its address as a launched one opens; a field submitted whose return says Next hands the keyboard on
+    /// (`NextField`).
     public func send(_ event: Event, _ values: [HostValue], in runtime: HostRuntime) {
+        if event == .clicked, type == .link { runtime.presenter?.open(link: string(.destination) ?? "") }
         if let handler = handler(event) { runtime.dispatch(handler, payload: values) }
         if event == .submitted, let next = NextField.after(self) { runtime.presenter?.focus(next) }
     }
@@ -41,45 +45,28 @@ extension MountedElement {
         for child in children { child.reportFocus(in: runtime, holds: holds) }
     }
 
-    /// A value the user changed: onto the state carrying it, then the event with it. A radio button checked takes
-    /// its set's other checks away first - `turnOff` writing each off as the program - each reporting that it is
-    /// off, in one transaction. What the program writes reports nothing.
-    public func reportUserChange(
-        _ property: Prop, _ event: Event, _ value: HostValue, in runtime: HostRuntime,
-        turningOff turnOff: (MountedElement) -> Void
-    ) {
+    /// A value the user changed: onto the state carrying it, then the event with it. What the program writes reports
+    /// nothing.
+    public func reportUserChange(_ property: Prop, _ event: Event, _ value: HostValue, in runtime: HostRuntime) {
         guard !ProgramWrite.isWriting else { return }
-        guard type == .radioButton, property == .isOn, value == .bool(true) else {
-            return carry(property, event, value, in: runtime)
-        }
-        runtime.performUserTransaction {
-            for peer in radioPeers where peer.value(.isOn)?.bool == true {
-                ProgramWrite.perform { turnOff(peer) }
-                peer.carry(.isOn, event, .bool(false), in: runtime)
-            }
-            carry(property, event, value, in: runtime)
-        }
+        carry(property, value, then: event, [value], in: runtime)
     }
 
-    /// The user moved the scroller from `old` to `new`, as the display's frame saw it: onto its state first, then
-    /// the events, as one user's transaction.
+    /// The user moved the scroller from `old` to `new`, as the display's frame saw it: onto its state, as one
+    /// user's transaction.
     public func reportScrolled(from old: Point, to new: Point, in runtime: HostRuntime) {
         runtime.performUserTransaction {
             if old != new, let binding = driven[.scrollOffset] {
                 runtime.take([new.x, new.y], through: binding)
             }
-            if old.x != new.x, let handler = handler(.scrollXChanged) {
-                runtime.dispatch(handler, payload: [.number(new.x)])
-            }
-            if old.y != new.y, let handler = handler(.scrollYChanged) {
-                runtime.dispatch(handler, payload: [.number(new.y)])
-            }
         }
     }
 
     /// One value onto the state that carries it - a journey the host carries, else a report - then the event with
-    /// it; with no handler, a turn renders what the state changed.
-    private func carry(_ property: Prop, _ event: Event, _ value: HostValue, in runtime: HostRuntime) {
+    /// what it carries; with no handler, a turn renders what the state changed.
+    func carry(
+        _ property: Prop, _ value: HostValue, then event: Event, _ payload: [HostValue], in runtime: HostRuntime
+    ) {
         var reported = false
         if let carried = HostStateValue(carrying: value), let binding = driven[property] {
             if case .lanes(let lanes) = carried, binding.kind == .property {
@@ -90,7 +77,7 @@ extension MountedElement {
         }
 
         if let handler = handler(event) {
-            runtime.dispatch(handler, payload: [value])
+            runtime.dispatch(handler, payload: payload)
         } else if reported {
             runtime.pump.turn()
         }

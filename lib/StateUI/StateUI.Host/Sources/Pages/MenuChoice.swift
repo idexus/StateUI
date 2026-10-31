@@ -6,22 +6,29 @@
 /// A menu's entry, or a bar's item, the user chose: carried alike on every host.
 /// Design: docs/design/host/pages.md#a-checked-entry
 @_spi(Host) extension MountedElement {
-    /// The way choosing this entry turns it - the other way from how it stands checked; nil for an entry standing
-    /// neither way, which choosing only clicks.
+    /// The way choosing this entry turns it - a setting's, a menu's or a bar's, the other way from how it stands; nil
+    /// for an entry that acts, which choosing clicks.
     public var turnsWhenChosen: Bool? {
-        guard type == .menuItem, let on = value(.isOn)?.bool else { return nil }
-        return !on
+        guard type == .menuToggle || type == .toolbarToggle else { return nil }
+        return value(.isOn)?.bool != true
     }
 
-    /// The user chose this entry: one standing checked or not turns the other way first - onto its state, then its
-    /// `toggled` - and then it is clicked.
+    /// The picture this item shows - on its bar, in a menu, behind an overflow: a bar's setting its `on:` picture while
+    /// it stands on, else its own.
+    public var itemPicture: HostPicture? {
+        HostPicture(MenuEntry.picture(of: self))
+    }
+
+    /// The user chose this entry: a setting's turns the other way - onto its state, then its `toggled` - and one that
+    /// acts is clicked.
     public func chosen(in runtime: HostRuntime) {
-        // One choice of the user's: the turn and the click render together.
+        // One choice of the user's: what it moves renders together.
         runtime.performUserTransaction {
             if let turned = turnsWhenChosen {
-                reportUserChange(.isOn, .toggled, .bool(turned), in: runtime) { _ in }
+                reportUserChange(.isOn, .toggled, .bool(turned), in: runtime)
+            } else {
+                send(.clicked, [], in: runtime)
             }
-            send(.clicked, [], in: runtime)
         }
     }
 }

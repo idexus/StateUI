@@ -26,21 +26,25 @@ struct ShapesSample: SampleContent, ExampleContent {
             SectionTitle("Filled")
 
             HStack {
-                Rectangle(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .width(56)
                     .height(56)
 
-                Rectangle(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .cornerRadius(14)
                     .width(56)
                     .height(56)
 
-                Rectangle(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
                     .width(56)
                     .height(56)
 
-                Ellipse(Palette.accent)
+                Ellipse()
+                    .fill(Palette.accent)
                     .width(56)
                     .height(56)
             }
@@ -49,11 +53,13 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             // A capsule's ends stay round at every size: wide, tall, or square.
             HStack {
-                Capsule(Palette.accent)
+                Capsule()
+                    .fill(Palette.accent)
                     .width(120)
                     .height(40)
 
-                Capsule(Palette.accent)
+                Capsule()
+                    .fill(Palette.accent)
                     .width(40)
                     .height(80)
             }
@@ -62,56 +68,64 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             SectionTitle("Stroked")
 
-            HStack {
-                Line()
-                    .x1(0).y1(0)
-                    .x2(56).y2(56)
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .lineCap(.round)
-                    .width(56)
-                    .height(56)
+            // Two rows of three: six shapes side by side stand wider than a phone.
+            VStack {
+                HStack {
+                    Line()
+                        .x1(0).y1(0)
+                        .x2(56).y2(56)
+                        .stroke(Palette.accent)
+                        .lineWidth(4)
+                        .lineCap(.round)
+                        .width(56)
+                        .height(56)
 
-                Line()
-                    .x1(0).y1(28)
-                    .x2(56).y2(28)
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .dash([3, 2])
-                    .width(56)
-                    .height(56)
+                    Line()
+                        .x1(0).y1(28)
+                        .x2(56).y2(28)
+                        .stroke(Palette.accent)
+                        .lineWidth(4)
+                        .dash([3, 2])
+                        .width(56)
+                        .height(56)
 
-                // The one shape that is whatever you can write down: SVG path
-                // syntax, normalized by StateUI for every native host.
-                Path("M 28,0 L 56,56 L 0,56 Z")
-                    .fill(Palette.accent)
-                    .width(56)
-                    .height(56)
+                    Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
+                        .stroke(Palette.accent)
+                        .lineWidth(4)
+                        .lineJoin(.round)
+                        .width(56)
+                        .height(56)
+                }
+                .spacing(28)
 
-                // A transform on the GEOMETRY - the same ViewTransform
-                // every view takes, drawn whole: a lean draws here, and the
-                // stroke follows the shape it makes. On any shape, not only
-                // a Path.
-                Path("M 28,0 L 56,56 L 0,56 Z")
-                    .fill(Palette.accent)
-                    .geometryTransform(.skew(20, 0))
-                    .width(56)
-                    .height(56)
+                HStack {
+                    // The one shape that is whatever you can write down: SVG path
+                    // syntax, normalized by StateUI for every native host.
+                    Path("M 28,0 L 56,56 L 0,56 Z")
+                        .fill(Palette.accent)
+                        .width(56)
+                        .height(56)
 
-                Rectangle(Palette.accent)
-                    .cornerRadius(14)
-                    .geometryTransform(.skew(20, 0))
-                    .width(56)
-                    .height(56)
+                    // A transform on the GEOMETRY - the same ViewTransform
+                    // every view takes, drawn whole: a lean draws here, and the
+                    // stroke follows the shape it makes. On any shape, not only
+                    // a Path. Narrowed first, the lean stays inside its room.
+                    Path("M 28,0 L 56,56 L 0,56 Z")
+                        .fill(Palette.accent)
+                        .geometryTransform(.scaleX(0.6).skew(20, 0))
+                        .width(56)
+                        .height(56)
 
-                Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
-                    .stroke(Palette.accent)
-                    .lineWidth(4)
-                    .lineJoin(.round)
-                    .width(56)
-                    .height(56)
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .cornerRadius(14)
+                        .geometryTransform(.scaleX(0.6).skew(20, 0))
+                        .width(56)
+                        .height(56)
+                }
+                .spacing(28)
             }
-            .spacing(12)
+            .spacing(16)
             .horizontalAlignment(.center)
 
             SectionTitle("Where the dashes start")
@@ -178,6 +192,48 @@ struct ShapesSample: SampleContent, ExampleContent {
 
             SwitchRow("Even-odd fill", $evenOdd)
                 .horizontalAlignment(.center)
+
+            SectionTitle("Made of a material")
+
+            // Over stripes, so what each figure lets through shows.
+            ZStack {
+                HStack {
+                    Space()
+                        .background(.tomato)
+                    Space()
+                        .background(.gold)
+                    Space()
+                        .background(.steelBlue)
+                    Space()
+                        .background(Palette.accent)
+                }
+
+                HStack {
+                    Capsule()
+                        .fill(.blur(.regular))
+                        .width(120)
+                        .height(48)
+
+                    Ellipse()
+                        .fill(.glass(.clear))
+                        .stroke(.white)
+                        .width(64)
+                        .height(64)
+
+                    Polygon(Self.star)
+                        .fill(.blur(.thin))
+                        .fillRule(evenOdd ? .evenOdd : .nonzero)
+                        .stroke(.white)
+                        .width(64)
+                        .height(64)
+                }
+                .spacing(16)
+                .horizontalAlignment(.center)
+                .verticalAlignment(.center)
+            }
+            .height(100)
+            .shape(.roundedRectangle(14))
+            .clipsContent(true)
         }
         .spacing(12)
     }
@@ -190,7 +246,7 @@ struct ShapesSample: SampleContent, ExampleContent {
                 + "stroke draws no outline and one with no fill has no inside - a "
                 + "`Line` has only an outline, as there is nothing to fill. A `Rectangle`, "
                 + "an `Ellipse` and a `Capsule` take their fill first, "
-                + "`Rectangle(Palette.accent)`. A `Rectangle` rounds its corners with "
+                + "`Rectangle().fill(Palette.accent)`. A `Rectangle` rounds its corners with "
                 + "`cornerRadius`: one number for all four, or each corner by name; a "
                 + "`Capsule`'s ends are always half its shorter side.")
                 .fontSize(12)

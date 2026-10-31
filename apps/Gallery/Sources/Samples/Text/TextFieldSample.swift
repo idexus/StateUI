@@ -10,6 +10,10 @@ struct TextFieldSample: SampleContent, ExampleContent {
     @State private var email = ""
     @State private var done = 0
     @State private var hidden = true
+    @State private var user = ""
+    @State private var newPassword = ""
+    @State private var signInCode = ""
+    @State private var outlined = ""
     // listing: end
 
     static let id = "textField"
@@ -81,17 +85,10 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .isPassword(hidden)
                 .submitLabel(.done)
 
-            HStack {
-                Text("Hidden")
-                    .fontSize(14)
-                    .verticalAlignment(.center)
-
-                Switch($hidden)
-                    .accessibilityIdentifier("entry.hidden")
-                    .accessibilityLabel("Password hidden")
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Switch($hidden)
+                .text("Hidden")
+                .accessibilityIdentifier("entry.hidden")
+                .horizontalAlignment(.center)
 
             // The keyboard the platform brings up, a cap on the length, and
             // what the return key does when it is pressed.
@@ -102,6 +99,38 @@ struct TextFieldSample: SampleContent, ExampleContent {
                 .inputPurpose(.email)
                 .maximumLength(20)
                 .onSubmitted { done += 1 }
+
+            // Signing in: what each field holds is what the platform fills
+            // it in with - a name it keeps, a strong password it makes and
+            // keeps, a code it received.
+            TextField($user)
+                .accessibilityIdentifier("entry.username")
+                .accessibilityLabel("User name")
+                .placeholder("a user name")
+                .inputPurpose(.username)
+
+            TextField($newPassword)
+                .accessibilityIdentifier("entry.newPassword")
+                .accessibilityLabel("New password")
+                .placeholder("a new password")
+                .isPassword(true)
+                .inputPurpose(.newPassword)
+
+            TextField($signInCode)
+                .accessibilityIdentifier("entry.signInCode")
+                .accessibilityLabel("Sign-in code")
+                .placeholder("a code sent to you")
+                .inputPurpose(.oneTimeCode)
+
+            // An outline of the application's own, in place of the
+            // platform's frame, and the shape the field stands in.
+            TextField($outlined)
+                .accessibilityIdentifier("entry.outlined")
+                .accessibilityLabel("Outlined")
+                .placeholder("an outlined capsule")
+                .stroke(Palette.accent)
+                .lineWidth(1.5)
+                .shape(.capsule)
         }
         .spacing(12)
     }

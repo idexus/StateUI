@@ -31,8 +31,20 @@ final class UIKitLeaveTests: XCTestCase {
         let driver = UIKitDriver()
         defer { driver.finish() }
         // UIKit itself keeps every UIStepper it ever drew (iOS 27): one made by UIKit alone outlives its window too.
-        let elements = Specimens.wearing(VisualElementContract.self).filter { $0 != "Stepper" }
+        let elements = Leaving.walked.filter { $0 != "Stepper" }
         XCTAssertEqual(try Leaving.outlived(on: driver, elements), [])
+    }
+
+    /// A field focused as its host ends lets the keyboard go: kept, it stands over the next test's page, which lays
+    /// out above it.
+    @MainActor
+    func testAFieldFocusedAsItsHostEndsLetsTheKeyboardGo() throws {
+        let host = UIKitRenderer.running { TextField("") }
+        let field = try XCTUnwrap(host.views(UIKitTextFieldView.self).first)
+        XCTAssertTrue(field.becomeFirstResponder(), "the field takes the keyboard")
+
+        host.finish()
+        XCTAssertFalse(field.isFirstResponder, "the keyboard went with the host")
     }
 
     /// An element that leaves the tree lets go of its view: the host holds one view fewer alive, the count its

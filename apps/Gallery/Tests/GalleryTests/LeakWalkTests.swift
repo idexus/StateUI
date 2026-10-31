@@ -121,6 +121,7 @@ private final class Walk: HostPresenter {
     func perform(_ call: HostActCall) {
         if let completion = call.completion { runtime.core.fail(completion, reason: "the walk performs no act") }
     }
+    func open(link address: String) {}
     func focus(_ element: MountedElement) {}
 }
 
@@ -140,6 +141,8 @@ private final class WalkedHalf: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func directionChanged() {}
 
     func leave() {

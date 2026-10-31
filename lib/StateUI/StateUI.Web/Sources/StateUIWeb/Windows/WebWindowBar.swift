@@ -4,25 +4,31 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the application's name,
-/// the page's title - or the view the page declares in its place - the actions its path declares and a menu of those behind it and of its menus - the
-/// host layer's `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: the name and the toggle over the
-/// sidebar, the rest over the detail.
+/// The window's one bar, over the page the user sees: the sidebar's toggle, the way back, the title area the
+/// sidebar's page names the application with, the page's title and the line under it - or the view the page declares
+/// in their place - the actions it declares and a menu of those behind it and of its menus - the host layer's
+/// `WindowChrome`. Beside a sidebar shown, the bar stands in two parts: over the sidebar the name, the sidebar's part's
+/// actions and the toggle, the rest over the detail.
 /// Design: docs/design/platforms/web/pages.md#the-windows-bar
 @MainActor
 final class WebWindowBar: WebDOMView {
     private let toggle = WebDOMView(tag: "button")
     private let back = WebDOMView(tag: "button")
     private let brand = WebDOMView(tag: "div")
+    private let mark = WebImageView()
     private let heading = WebDOMView(tag: "div")
     private let name = WebDOMView(tag: "span")
     private let subtitle = WebDOMView(tag: "span")
     private let title = WebDOMView(tag: "span")
+    private let words = WebDOMView(tag: "span")
+    private let line = WebDOMView(tag: "span")
     private let lead = WebDOMView(tag: "div")
     private let side = WebDOMView(tag: "div")
     private let start = WebDOMView(tag: "div")
     private let leading = WebDOMView(tag: "div")
     private let trailing = WebDOMView(tag: "div")
+    private let sideLeading = WebDOMView(tag: "div")
+    private let sideTrailing = WebDOMView(tag: "div")
 
     /// The view standing in place of the title; nil while the title stands there.
     private weak var titleView: WebDOMView?
@@ -30,8 +36,12 @@ final class WebWindowBar: WebDOMView {
     /// The button of each action shown, by the item it stands for.
     private(set) var buttons: [ObjectIdentifier: WebBarButton] = [:]
 
-    /// The groups of actions shown, each a run of buttons standing together.
-    private var groups: [WebDOMView] = []
+    /// The groups of actions shown over the detail, each a run of buttons standing together, and over the sidebar.
+    private var groups: [WebBarGroup] = []
+    private var sideGroups: [WebBarGroup] = []
+
+    /// Every group of actions standing on the bar, over the sidebar first.
+    var shownGroups: [WebBarGroup] { sideGroups + groups }
 
     /// The shape drawn on each button of the bar's own, let go of with the bar.
     private var glyphs: [WebDOMView] = []
@@ -51,108 +61,304 @@ final class WebWindowBar: WebDOMView {
     private let more = WebDOMView(tag: "button")
     private var behind: [MenuEntry] = []
 
+    /// The button opening the actions behind the sidebar's part, shown where there are any.
+    private let sideMore = WebDOMView(tag: "button")
+    private var sideBehind: [MenuEntry] = []
+
+    /// The items of each group shown, in reading order as `groups` stands; those placed behind the bar; and the
+    /// menus the page's path declares - what More offers besides the groups that leave the bar.
+    private var runs: [[MountedElement]] = []
+    private var placed: [MountedElement] = []
+    private var menus: [MenuEntry] = []
+
+    /// The items of each group over the sidebar, in reading order as `sideGroups` stands, and those placed behind
+    /// the sidebar's part's More.
+    private var sideRuns: [[MountedElement]] = []
+    private var sidePlaced: [MountedElement] = []
+
+    /// The items standing over the sidebar, by identity: one moving to the other part slides there.
+    private var sideItems: Set<ObjectIdentifier> = []
+
+    /// What the user is doing to each of the bar's own buttons - a press, the pointer over it - by the button.
+    private var ownStates: [ObjectIdentifier: (pressed: Bool, over: Bool)] = [:]
+
+    /// The page under the bar and, over a sidebar, the sidebar's page; the scroller of each listened to last; and
+    /// whether each part shows its edge.
+    private weak var pageUnder: MountedElement?
+    private weak var sideUnder: MountedElement?
+    private weak var pageRows: WebDOMView?
+    private weak var sideRows: WebDOMView?
+    private var edges = (page: false, side: false)
+
     init() {
         super.init(tag: "header")
         attribute("class", "stateui-bar")
         attribute("role", "toolbar")
         for (part, kind) in [(brand, "brand"), (heading, "heading"), (name, "name"), (subtitle, "subtitle"),
-                             (title, "title"), (lead, "lead"), (side, "side"), (start, "start"),
-                             (leading, "actions"), (trailing, "actions")] {
+                             (title, "title"), (words, "words"), (line, "line"), (lead, "lead"), (side, "side"),
+                             (start, "start"), (leading, "actions"), (trailing, "actions"), (sideLeading, "actions"),
+                             (sideTrailing, "actions")] {
             part.attribute("class", "stateui-bar-\(kind)")
         }
-        let words = CoreLink().chromeWords
-        glyph(toggle, "sidebar", label: words.sidebar)
-        glyph(back, "back", label: words.back)
-        glyph(closer, "close", label: words.close)
-        glyph(more, "more", label: words.more)
-        more.attribute("aria-haspopup", "menu")
+        sideLeading.attribute("data-edge", "start")
+        let said = CoreLink().chromeWords
+        glyph(toggle, "sidebar", label: said.sidebar)
+        glyph(back, "back", label: said.back)
+        glyph(closer, "close", label: said.close)
+        glyph(more, "more", label: said.more)
+        glyph(sideMore, "more", label: said.more)
+        for button in [more, sideMore] { button.attribute("aria-haspopup", "menu") }
         more.listen("click") { [weak self] in
             guard let self else { return }
             WebMenu(behind).show(under: more)
         }
+        sideMore.listen("click") { [weak self] in
+            guard let self else { return }
+            WebMenu(sideBehind).show(under: sideMore)
+        }
         closer.setShown(false)
+        for button in [toggle, back, closer, more, sideMore] { followUser(button) }
         toggle.listen("click") { [weak self] in self?.onToggle() }
         back.listen("click") { [weak self] in self?.onBack() }
         closer.listen("click") { [weak self] in self?.onClose?() }
         for (index, part) in [lead, title, trailing].enumerated() { WebRelay.insert(part.node, into: node, at: index) }
         for (index, part) in [side, start].enumerated() { WebRelay.insert(part.node, into: lead.node, at: index) }
-        for (index, part) in [brand, toggle].enumerated() { WebRelay.insert(part.node, into: side.node, at: index) }
+        for (index, part) in [brand, sideLeading, sideTrailing, toggle].enumerated() {
+            WebRelay.insert(part.node, into: side.node, at: index)
+        }
         for (index, part) in [back, leading].enumerated() { WebRelay.insert(part.node, into: start.node, at: index) }
-        WebRelay.insert(heading.node, into: brand.node, at: 0)
+        WebRelay.insert(mark.node, into: brand.node, at: 0)
+        WebRelay.insert(heading.node, into: brand.node, at: 1)
+        mark.attribute("data-part", "mark")
+        mark.attribute("alt", "")
         WebRelay.insert(name.node, into: heading.node, at: 0)
         WebRelay.insert(subtitle.node, into: heading.node, at: 1)
+        WebRelay.insert(words.node, into: title.node, at: 0)
+        WebRelay.insert(line.node, into: title.node, at: 1)
+        // The window's width, and the part before the title as a split view's sidebar comes and goes, change what
+        // fits.
+        followSize { [weak self] in self?.fit() }
+        start.followSize { [weak self] in self?.fit() }
+        side.followSize { [weak self] in self?.fit() }
     }
 
-    /// Shows `chrome`: its parts where it has them, its actions in their groups, its colours; `sidebar` says whether
+    /// The look of the bar's buttons `style` asks for, as the bar's `data-toolbar-style` says it; nil for glass.
+    static func look(of style: ToolbarStyle) -> String? {
+        switch style {
+        case .glass: nil
+        case .system, .plain: "plain"
+        case .rounded: "rounded"
+        }
+    }
+
+    /// Shows `chrome`: its parts where it has them, its actions in their groups, its colors; `sidebar` says whether
     /// the split view the toggle serves shows its sidebar, nil where there is none.
     func show(_ chrome: WindowChrome, title shown: String, sidebar: Bool?, split: WebSplitView? = nil) {
         attribute("data-sidebar", sidebar.map { $0 ? "shown" : "hidden" })
+        // Its parts move as the sidebar does, and stand at once where it does.
+        attribute("data-moves", split?.moves == true ? "" : nil)
         // The part over a sidebar beside the page stands on the sidebar's own ground, as one column with it.
         for name in ["--stateui-sidebar-ground", "--stateui-sidebar-filter"] { style(name, split?.styled(name)) }
-        toggle.setShown(chrome.sidebarToggle != nil)
+        toggle.setShown(chrome.showsSidebarToggle)
         back.setShown(chrome.back != nil)
         back.attribute("title", chrome.back?.title)
 
         let area = chrome.titleArea
         brand.setShown(area != nil)
+        // The application's mark, the sidebar's page's picture, before its name.
+        mark.apply(picture: area?.icon, aspect: .fit)
+        mark.setShown(area?.icon != nil)
         WebRelay.setText(name.node, area?.title ?? "")
         WebRelay.setText(subtitle.node, area?.subtitle ?? "")
         subtitle.setShown(area?.subtitle?.isEmpty == false)
         // A page showing no title leaves its place empty; the tab keeps its name.
         attribute("data-title", chrome.showsTitle ? nil : "none")
         let view = (chrome.center?.native as? WebElement)?.view
-        showTitle(chrome.showsTitle ? shown : "", or: view, repeating: area?.title)
+        showTitle(chrome.showsTitle ? shown : "", line: chrome.showsTitle ? chrome.subtitle : nil, or: view,
+                  repeating: area?.title)
 
-        style("--stateui-bar-background", WebCSS.fill(chrome.background))
-        // A clear bar shows what is behind it as it is: no blur, no deeper colour under it.
-        style("--stateui-bar-filter", HostBrush(chrome.background).isClear ? "none" : nil)
-        // Words the tree gives no colour stand light on a dark band and dark on a light one.
+        // The bar's material: a color, a gradient over the bar's size, or a blur - a backdrop filter under its
+        // color - glass drawn as its blur.
+        let material = chrome.material
+        let box = WebBox(fill: material.paint, material: material.blur == nil ? nil : material)
+        let styles = Dictionary(box.styles(size: .zero), uniquingKeysWith: { first, _ in first })
+        styleBackground("--stateui-bar-background", material.isEmpty ? nil : box)
+        // A clear bar paints nothing, and only softens what scrolls under it toward the top.
+        let clear = HostBrush(chrome.background).isClear
+        style("--stateui-bar-filter", clear ? "none" : styles["backdrop-filter"] ?? nil)
+        attribute("data-clear", clear ? "" : nil)
+        // How what scrolls under the bar shows at its edge: a line along its foot where it is hard, nothing for none.
+        attribute("data-edge", chrome.barScrollEdge == .none ? "none" : chrome.barScrollEdge == .hard ? "hard" : nil)
+        // Words the tree gives no color stand light on a dark band and dark on a light one.
         style("--stateui-bar-foreground", WebCSS.color(BandWords.color(on: chrome.background, written: chrome.foreground)))
+        // The buttons on glass unless said otherwise: the Web's own look for them, `.system`, is plain.
+        attribute("data-toolbar-style", Self.look(of: chrome.toolbarStyle))
+        style("--stateui-bar-spacing", WebCSS.pixels(chrome.toolbarSpacing))
+        for button in [toggle, back, closer, more, sideMore] { showOwnLook(button) }
 
+        // An item keeps its button wherever it stands, moving from one part to the other - from where it stood.
+        let stood = buttons.mapValues { WebRelay.box(of: $0.node) }
         var kept: [ObjectIdentifier: WebBarButton] = [:]
-        var made: [WebDOMView] = []
-        let ending = chrome.actions.trailing
-        for (edge, runs) in [(leading, chrome.actions.leading), (trailing, ending)] {
-            for (place, items) in runs.enumerated() {
-                let group = place < groups.count ? groups.removeFirst() : WebDOMView(tag: "div")
-                group.attribute("class", "stateui-bar-group")
-                group.attribute("role", "group")
-                WebRelay.insert(group.node, into: edge.node, at: place)
-                for (index, item) in items.enumerated() {
-                    let button = buttons[ObjectIdentifier(item)] ?? WebBarButton()
-                    button.show(item)
-                    WebRelay.insert(button.node, into: group.node, at: index)
-                    kept[ObjectIdentifier(item)] = button
-                }
-                made.append(group)
-            }
-        }
+        var pool = sideGroups + groups
+        let sidebar = chrome.sidebarActions
+        sideGroups = place(sidebar.start, on: sideLeading, from: &pool, keeping: &kept)
+            + place(sidebar.end, on: sideTrailing, from: &pool, keeping: &kept)
+        let ending = chrome.actions.end
+        groups = place(chrome.actions.start, on: leading, from: &pool, keeping: &kept)
+            + place(ending, on: trailing, from: &pool, keeping: &kept)
         for (key, button) in buttons where kept[key] == nil { button.release() }
-        for gone in groups { gone.release() }
+        for gone in pool { gone.release() }
         buttons = kept
-        groups = made
+        let overSidebar = Set((sidebar.start + sidebar.end).joined().map(ObjectIdentifier.init))
+        for (key, button) in kept where sideItems.contains(key) != overSidebar.contains(key) {
+            let box = WebRelay.box(of: button.node)
+            guard let was = stood[key], was.width > 0, box.width > 0 else { continue }
+            WebRelay.slide(button.node, from: was.x - box.x, was.y - box.y)
+        }
+        sideItems = overSidebar
+        sideRuns = sidebar.start + sidebar.end
+        sidePlaced = sidebar.overflow
+        // With actions of its own, the part over the sidebar stands its name beside them rather than over them.
+        attribute("data-side-acts", sideRuns.isEmpty && sidePlaced.isEmpty ? nil : "")
+        WebRelay.insert(sideMore.node, into: sideTrailing.node, at: sidebar.end.count)
         // The bar ends with the actions behind it, then - a sheet's - the button closing it.
-        behind = chrome.actions.overflow.map(MenuEntry.entry(of:))
-        if !behind.isEmpty, !chrome.menus.menus.isEmpty { behind.append(.separator) }
-        behind += chrome.menus.menus
-        more.setShown(!behind.isEmpty)
+        runs = chrome.actions.start + ending
+        placed = chrome.actions.overflow
+        // A page keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
+        menus = chrome.menus
+            .editing(CoreLink().editWords, redo: KeyboardShortcut("z", modifiers: [.primary, .shift])).menus
         WebRelay.insert(more.node, into: trailing.node, at: ending.count)
         WebRelay.insert(closer.node, into: trailing.node, at: ending.count + 1)
+        fit()
     }
 
-    /// The title's words, or `view` in their place where the page declares one.
-    private func showTitle(_ words: String, or view: WebDOMView?, repeating name: String?) {
+    /// Stands `runs` on `edge`, each a group of buttons - a group of `pool` taken before one is made, an item's
+    /// button the one standing for it - each item's button joining `kept`; the groups standing.
+    /// Follows what of `page` stands under the bar, and of `sidebar` under its part over a sidebar, and shows each
+    /// part's edge while anything does (`TopBarEdge.covers`): `data-under` over the page, `data-side-under` over the
+    /// sidebar.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-top
+    func follow(page: MountedElement?, sidebar: MountedElement?) {
+        (pageUnder, sideUnder) = (page, sidebar)
+        showEdges()
+    }
+
+    /// Each part's edge, read again from its page as its rows move.
+    private func showEdges() {
+        let (page, side) = (covers(pageUnder, listened: &pageRows), covers(sideUnder, listened: &sideRows))
+        if page != edges.page { attribute("data-under", page ? "" : nil) }
+        if side != edges.side { attribute("data-side-under", side ? "" : nil) }
+        edges = (page, side)
+    }
+
+    /// Whether anything of `page` stands under its part of the bar, its scroller listened to once.
+    private func covers(_ page: MountedElement?, listened: inout WebDOMView?) -> Bool {
+        guard let page else { return false }
+        let rows = page.pageScroller?.web.view
+        if let rows, rows !== listened { rows.listen("scroll") { [weak self] in self?.showEdges() } }
+        listened = rows
+        let runs = SafeAreaArithmetic.under(page.contentIgnoresSafeArea, direction: page.layoutDirection).top
+        return TopBarEdge.covers(contentRunsUnder: runs, scrollerOffset: rows.map(WebElement.standing))
+    }
+
+    private func place(
+        _ runs: [[MountedElement]], on edge: WebDOMView, from pool: inout [WebBarGroup],
+        keeping kept: inout [ObjectIdentifier: WebBarButton]
+    ) -> [WebBarGroup] {
+        runs.enumerated().map { place, items in
+            let group = pool.isEmpty ? WebBarGroup() : pool.removeFirst()
+            group.show(items.first?.parent)
+            WebRelay.insert(group.node, into: edge.node, at: place)
+            for (index, item) in items.enumerated() {
+                // A button opens its item's menu one way for good: an item opening it another way is another.
+                let button = WebBarButton.standing(for: item, from: &buttons)
+                button.show(item)
+                WebRelay.insert(button.node, into: group.node, at: index)
+                kept[ObjectIdentifier(item)] = button
+            }
+            return group
+        }
+    }
+
+    /// Stands as many groups on the bar as fit beside its title - the first in reading order - and the rest behind
+    /// More (`BarFit`); a title left less room than a few letters stands hidden, as an ellipsis alone says nothing.
+    /// Design: docs/design/platforms/web/pages.md#a-bar-with-no-room
+    private func fit() {
+        // The part over the sidebar first: what it holds past its edges would crowd the detail's.
+        let sideStanding = BarFit.standing(groups: sideGroups.count) { trial in
+            standSide(trial.groups)
+            return !WebRelay.crowded(side.node)
+        }
+        standSide(sideStanding.groups)
+        title.attribute("data-squeezed", nil)
+        let standing = BarFit.standing(groups: groups.count) { trial in
+            stand(trial)
+            return !WebRelay.crowded(node)
+        }
+        stand(standing)
+        let squeezed = standing.title == .between && WebRelay.size(of: title.node).width < Self.leastTitle
+        title.attribute("data-squeezed", squeezed ? "" : nil)
+    }
+
+    /// The groups `standing` keeps on the bar shown, the others' items behind More, and the title as it stands.
+    private func stand(_ standing: BarFit.Standing) {
+        for (index, group) in groups.enumerated() { group.setShown(index < standing.groups) }
+        attribute("data-crowded", standing.title == .between ? "" : nil)
+        behind = BarFit.behind(left: Array(runs.dropFirst(standing.groups)), placed: placed)
+        if !behind.isEmpty, !menus.isEmpty { behind.append(.separator) }
+        behind += menus
+        more.setShown(!behind.isEmpty)
+    }
+
+    /// The first `count` groups over the sidebar shown, the others' items behind the sidebar's part's More.
+    private func standSide(_ count: Int) {
+        for (index, group) in sideGroups.enumerated() { group.setShown(index < count) }
+        sideBehind = BarFit.behind(left: Array(sideRuns.dropFirst(count)), placed: sidePlaced)
+        sideMore.setShown(!sideBehind.isEmpty)
+    }
+
+    /// The least room a title stands in: a few letters and an ellipsis, which say what the page is.
+    private static let leastTitle = 72.0
+
+    /// The title's words and the `line` under them, or `view` in their place where the page declares one.
+    private func showTitle(_ shown: String, line said: String?, or view: WebDOMView?, repeating name: String?) {
         if let titleView, titleView !== view, !titleView.isReleased { WebRelay.detach(titleView.node) }
         titleView = view
-        if let view {
-            WebRelay.setText(title.node, "")
-            WebRelay.insert(view.node, into: title.node, at: 0)
-        } else {
-            WebRelay.setText(title.node, words)
-        }
-        title.setShown(view != nil || !words.isEmpty)
-        title.attribute("data-repeats", view == nil && words == name ? "" : nil)
+        if let view { WebRelay.insert(view.node, into: title.node, at: 0) }
+        WebRelay.setText(words.node, view == nil ? shown : "")
+        WebRelay.setText(line.node, view == nil ? said ?? "" : "")
+        words.setShown(view == nil)
+        line.setShown(view == nil && said != nil)
+        title.setShown(view != nil || !shown.isEmpty)
+        title.attribute("data-repeats", view == nil && shown == name && said == nil ? "" : nil)
         title.attribute("data-holds-view", view == nil ? nil : "")
+    }
+
+    /// Follows what the user does to one of the bar's own buttons - the pointer over it, a press - and shows it
+    /// in the look the application's style for every toolbar button gives that state (`BarOwnButtons`). A finger
+    /// hovers over nothing.
+    /// Design: docs/design/platforms/web/pages.md#a-bars-items-in-the-applications-look
+    private func followUser(_ button: WebDOMView) {
+        let key = ObjectIdentifier(button)
+        let moves: [(String, (inout (pressed: Bool, over: Bool)) -> Void)] = [
+            ("pointerenter", { $0.over = true }), ("pointerleave", { $0 = (false, false) }),
+            ("pointerdown", { $0.pressed = true }), ("pointerup", { $0.pressed = false }),
+            ("pointercancel", { $0.pressed = false }),
+        ]
+        for (said, move) in moves {
+            button.listen(said) { [weak self, weak button] in
+                guard let self, let button, said != "pointerenter" || WebRelay.eventPointer.kind != .touch else { return }
+                move(&ownStates[key, default: (false, false)])
+                showOwnLook(button)
+            }
+        }
+    }
+
+    /// One of the bar's own buttons in the look its user's state gives it.
+    private func showOwnLook(_ button: WebDOMView) {
+        let state = ownStates[ObjectIdentifier(button)] ?? (false, false)
+        let look = BarOwnButtons.look(pressed: state.pressed, pointerOver: state.over)
+        button.showBarLook { look[$0] }
     }
 
     private func glyph(_ button: WebDOMView, _ glyph: String, label: String) {
@@ -168,10 +374,11 @@ final class WebWindowBar: WebDOMView {
 
     override func release() {
         for button in buttons.values { button.release() }
-        for group in groups { group.release() }
+        for group in groups + sideGroups { group.release() }
         for shape in glyphs { shape.release() }
         let parts = [
-            toggle, back, closer, more, name, subtitle, heading, brand, title, leading, trailing, side, start, lead,
+            toggle, back, closer, more, sideMore, name, subtitle, heading, mark, brand, words, line, title, leading, trailing,
+            sideLeading, sideTrailing, side, start, lead,
         ]
         for part in parts {
             part.release()

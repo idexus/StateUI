@@ -5,9 +5,10 @@
 How a picture fills the room it was given.
 
 ```swift
-Button(icon: "trash.png")
+Button("Delete")
+    .icon("trash.png")
+    .showsText(false)
     .contentMode(.fit)
-    .accessibilityLabel("Delete")
 ```
 
 Worn by: [Button](../Button.md) · [Image](../Image.md)

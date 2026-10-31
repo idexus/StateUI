@@ -1,0 +1,24 @@
+// The gallery's own color for each part of its window, made for each platform.
+
+import StateUI
+
+// listing: Gallery.Looks
+/// A part of the gallery a color paints - each has a color of the gallery's
+/// own, made to sit with the platform's look.
+enum GallerySurface {
+    case bar, window, sidebar, sidebarOverlay
+
+    /// The gallery's own color for this part, in each theme: in the dark,
+    /// the colors its Windows window wears in the gallery's violet acrylic -
+    /// the window, the bar a breath lighter, the sidebar and the menu over the
+    /// page as dark as a list of samples on it (`Palette.shade`).
+    var own: Color {
+        switch self {
+        case .bar: Color(light: Color(hex: 0xEFEBFA), dark: Color(hex: 0x2E255A))
+        case .window: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x2A2154))
+        case .sidebar: Color(light: Color(hex: 0xEEEBF6), dark: Color(hex: 0x221A43))
+        case .sidebarOverlay: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x221A43))
+        }
+    }
+}
+// listing: end

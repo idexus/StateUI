@@ -24,19 +24,28 @@ extension ModifiableElement {
         modified { $0.addHandler(event, handler) }
     }
 
-    /// Hears one of this element's events with a handler that awaits; its `gate`
+    /// Hears one of this element's events with a handler that awaits; its `policy`
     /// says what the event does when it comes again while a run is under way.
     ///
-    ///     onEvent(TrafficLightContract.closed, gate: .ignoreWhileRunning) { try await save() }
+    ///     onEvent(TrafficLightContract.closed, policy: .ignoreWhileRunning) { try await save() }
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: what runs.
     /// - Returns: the element, with the handler on it.
     public func onEvent<Owner: Contract>(
         _ event: ElementEvent<Owner, Void>,
-        gate: some Gate,
+        policy: GatePolicy,
+        _ handler: @escaping EventHandler
+    ) -> Modified {
+        modified { $0.addHandler(event, policy: policy, handler) }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onEvent<Owner: Contract>(
+        _ event: ElementEvent<Owner, Void>,
+        gate: Gate,
         _ handler: @escaping EventHandler
     ) -> Modified {
         modified { $0.addHandler(event, gate: gate, handler) }
@@ -63,19 +72,28 @@ extension ModifiableElement {
         modified { $0.addHandler(event, handler) }
     }
 
-    /// Hears one of this element's events with a handler that awaits; its `gate`
+    /// Hears one of this element's events with a handler that awaits; its `policy`
     /// says what the event does when it comes again while a run is under way.
     ///
-    ///     onEvent(TrafficLightContract.lampTapped, gate: .ignoreWhileRunning) { lamp in try await save(lamp) }
+    ///     onEvent(TrafficLightContract.lampTapped, policy: .ignoreWhileRunning) { lamp in try await save(lamp) }
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: given the value.
     /// - Returns: the element, with the handler on it.
     public func onEvent<Owner: Contract, Value: HostRepresentable>(
         _ event: ElementEvent<Owner, Value>,
-        gate: some Gate,
+        policy: GatePolicy,
+        _ handler: @escaping ValueEventHandler<Value>
+    ) -> Modified {
+        modified { $0.addHandler(event, policy: policy, handler) }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onEvent<Owner: Contract, Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, Value>,
+        gate: Gate,
         _ handler: @escaping ValueEventHandler<Value>
     ) -> Modified {
         modified { $0.addHandler(event, gate: gate, handler) }
@@ -98,19 +116,28 @@ extension ModifiableElement {
         modified { $0.addHandler(event, handler) }
     }
 
-    /// Hears one of this element's events with a handler that awaits; its `gate`
+    /// Hears one of this element's events with a handler that awaits; its `policy`
     /// says what the event does when it comes again while a run is under way.
     ///
-    ///     onEvent(GaugeContract.dimmed, gate: .cancelPrevious) { level, lit in try await show(level, lit) }
+    ///     onEvent(GaugeContract.dimmed, policy: .cancelPrevious) { level, lit in try await show(level, lit) }
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: given the values.
     /// - Returns: the element, with the handler on it.
     public func onEvent<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
         _ event: ElementEvent<Owner, (First, Second)>,
-        gate: some Gate,
+        policy: GatePolicy,
+        _ handler: @escaping ValueEventHandler<First, Second>
+    ) -> Modified {
+        modified { $0.addHandler(event, policy: policy, handler) }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onEvent<Owner: Contract, First: HostRepresentable, Second: HostRepresentable>(
+        _ event: ElementEvent<Owner, (First, Second)>,
+        gate: Gate,
         _ handler: @escaping ValueEventHandler<First, Second>
     ) -> Modified {
         modified { $0.addHandler(event, gate: gate, handler) }
@@ -133,22 +160,75 @@ extension ModifiableElement {
         modified { $0.addHandler(event, handler) }
     }
 
-    /// Hears one of this element's events with a handler that awaits; its `gate`
+    /// Hears one of this element's events with a handler that awaits; its `policy`
     /// says what the event does when it comes again while a run is under way.
     ///
-    ///     onEvent(event, gate: .waitForPrevious) { first, second, third in try await keep(first, second, third) }
+    ///     onEvent(event, policy: .waitForPrevious) { first, second, third in try await keep(first, second, third) }
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
-    ///   - gate: what the handler passes through: what an event does while a run is under way.
+    ///   - policy: what the handler passes through: what an event does while a run is under way.
     ///   - handler: given the values.
     /// - Returns: the element, with the handler on it.
     public func onEvent<
         Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
     >(
         _ event: ElementEvent<Owner, (First, Second, Third)>,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<First, Second, Third>
+    ) -> Modified {
+        modified { $0.addHandler(event, policy: policy, handler) }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onEvent<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second, Third>
+    ) -> Modified {
+        modified { $0.addHandler(event, gate: gate, handler) }
+    }
+
+    /// Hears one of this element's events that carries four values, handed over as the types its contract
+    /// declares in its order. The handler runs whole inside the event.
+    ///
+    /// - Parameters:
+    ///   - event: the member, written with its contract.
+    ///   - handler: given the values.
+    /// - Returns: the element, with the handler on it.
+    public func onEvent<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        _ handler: @escaping @MainActor (First, Second, Third, Fourth) throws -> Void
+    ) -> Modified {
+        modified { $0.addHandler(event, handler) }
+    }
+
+    /// The same, with a handler that awaits; its `policy` says what the event does when it comes again while a
+    /// run is under way.
+    public func onEvent<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        policy: GatePolicy,
+        _ handler: @escaping ValueEventHandler<First, Second, Third, Fourth>
+    ) -> Modified {
+        modified { $0.addHandler(event, policy: policy, handler) }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onEvent<
+        Owner: Contract, First: HostRepresentable, Second: HostRepresentable, Third: HostRepresentable,
+        Fourth: HostRepresentable
+    >(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<First, Second, Third, Fourth>
     ) -> Modified {
         modified { $0.addHandler(event, gate: gate, handler) }
     }
@@ -156,7 +236,7 @@ extension ModifiableElement {
     /// Adds a handler beside any already there, by token - on this tier, so
     /// nothing reachable from a `Style` can put one in a bag of values.
     /// Design: docs/design/views/modifiers.md#a-handler-runs-beside-the-one-before
-    func addHandler(_ event: Event, gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    func addHandler(_ event: Event, gate: Gating, _ handler: @escaping EventHandler) -> Modified {
         modified { $0.addHandler(event, gate: gate, handler) }
     }
 }

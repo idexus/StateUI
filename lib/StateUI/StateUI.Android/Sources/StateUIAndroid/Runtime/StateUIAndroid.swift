@@ -16,7 +16,7 @@ import CStateUIAndroid
 ///
 ///     @_cdecl("JNI_OnLoad")
 ///     public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-///         stateui_app_register()
+///         registerApplication()
 ///         return StateUIAndroid.load(machine)
 ///     }
 ///
@@ -57,9 +57,16 @@ enum JavaNatives {
             env, _, activity, root, density in
             JavaNatives.start(env: env!, activity: activity!, root: root!, density: Double(density))
         }
-        let phase: @convention(c) (Environment, jclass?, jint) -> Void = { _, _, phase in
+        let phase: @convention(c) (Environment, jclass?, jint, jboolean) -> Void = { _, _, phase, madeAgain in
             MainActor.assumeIsolated {
-                AndroidRenderer.shared?.setPhase(ApplicationPhase(rawValue: phase) ?? .active)
+                AndroidRenderer.shared?.setPhase(
+                    ApplicationPhase(rawValue: phase) ?? .active, beingMadeAgain: madeAgain != 0)
+            }
+        }
+        let insets: @convention(c) (Environment, jclass?, jint, jint, jint, jint, jint) -> Void = {
+            _, _, left, top, right, bottom, keyboard in
+            MainActor.assumeIsolated {
+                AndroidRenderer.shared?.insetsChanged(left: left, top: top, right: right, bottom: bottom, keyboard: keyboard)
             }
         }
         let configured: @convention(c) (Environment, jclass?) -> Void = { _, _ in
@@ -92,6 +99,20 @@ enum JavaNatives {
         }
         let longClicked: @convention(c) (Environment, jclass?, jlong) -> jboolean = { _, _, number in
             MainActor.assumeIsolated { AndroidView.find(number)?.longClicked() == true ? 1 : 0 }
+        }
+        let accessibilityActed: @convention(c) (Environment, jclass?, jlong, jstring?) -> jboolean = {
+            _, _, number, action in
+            nonisolated(unsafe) let action = action
+            return MainActor.assumeIsolated {
+                guard let heard = AndroidView.find(number)?.readerHeard else { return 0 }
+                return heard(.accessibilityAction(Java.text(action))) ? 1 : 0
+            }
+        }
+        let accessibilityStepped: @convention(c) (Environment, jclass?, jlong, jboolean) -> jboolean = { _, _, number, up in
+            MainActor.assumeIsolated {
+                guard let heard = AndroidView.find(number)?.readerHeard else { return 0 }
+                return heard(.accessibilityAdjustment(up != 0 ? .increment : .decrement)) ? 1 : 0
+            }
         }
         let menuChose: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, item in
             MainActor.assumeIsolated {
@@ -142,6 +163,10 @@ enum JavaNatives {
         }
         let destroying: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated { AndroidRenderer.shared?.destroying() }
+        }
+        let linkOpened: @convention(c) (Environment, jclass?, jstring?) -> Void = { _, _, address in
+            nonisolated(unsafe) let address = address
+            MainActor.assumeIsolated { AndroidRenderer.shared?.runtime.openLink(Java.text(address)) }
         }
         let environmentChanged: @convention(c) (Environment, jclass?) -> Void = { _, _ in
             MainActor.assumeIsolated { AndroidRenderer.shared?.environmentChanged() }
@@ -206,6 +231,11 @@ enum JavaNatives {
                 (AndroidView.find(number) as? AndroidScrollView)?.scrolled()
             }
         }
+        let refreshPulled: @convention(c) (Environment, jclass?, jlong) -> jboolean = { _, _, number in
+            MainActor.assumeIsolated {
+                (AndroidView.find(number) as? any AndroidRefreshing)?.onRefreshPulled?() == true ? 1 : 0
+            }
+        }
         let held: @convention(c) (Environment, jclass?, jlong, jboolean) -> Void = { _, _, number, holding in
             MainActor.assumeIsolated {
                 AndroidView.find(number)?.held(holding != 0)
@@ -225,7 +255,7 @@ enum JavaNatives {
         }
         let chose: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, number, index in
             MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidPickerView)?.onChosen?(Int(index))
+                AndroidView.find(number)?.chose(Int(index))
             }
         }
         let canvasTouched: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat) -> Void = {
@@ -240,6 +270,9 @@ enum JavaNatives {
             MainActor.assumeIsolated {
                 AndroidRenderer.shared?.answered(ticket: ticket, accepted: accepted != 0, words: words.map { Java.text($0) })
             }
+        }
+        let actionChosen: @convention(c) (Environment, jclass?, jlong, jint) -> Void = { _, _, ticket, place in
+            MainActor.assumeIsolated { AndroidRenderer.shared?.actionChosen(ticket: ticket, place: Int(place)) }
         }
         let filesChosen: @convention(c) (Environment, jclass?, jlong, jobjectArray?, jobjectArray?, jstring?) -> Void = {
             _, _, ticket, addresses, names, failure in
@@ -256,6 +289,15 @@ enum JavaNatives {
             MainActor.assumeIsolated {
                 AndroidRenderer.shared?.fileRead(
                     ticket: ticket, bytes: Java.bytesOf(bytes), failure: failure.map { Java.text($0) })
+            }
+        }
+        let requestAnswered: @convention(c) (Environment, jclass?, jlong, jint, jobjectArray?, jbyteArray?, jstring?) -> Void = {
+            _, _, ticket, status, headers, body, failure in
+            nonisolated(unsafe) let (headers, body, failure) = (headers, body, failure)
+            MainActor.assumeIsolated {
+                AndroidRenderer.shared?.requestAnswered(
+                    ticket: ticket, status: Int(status), headers: Java.texts(headers), body: Java.bytesOf(body),
+                    failure: failure.map { Java.text($0) })
             }
         }
         let dragHeard: @convention(c) (Environment, jclass?, jlong, jint, jstring?) -> Void = { _, _, number, kind, words in
@@ -370,12 +412,15 @@ enum JavaNatives {
 
         let natives: [(String, String, UnsafeMutableRawPointer)] = [
             ("start", "(Landroid/app/Activity;Landroid/widget/FrameLayout;F)V", unsafeBitCast(start, to: UnsafeMutableRawPointer.self)),
-            ("phase", "(I)V", unsafeBitCast(phase, to: UnsafeMutableRawPointer.self)),
+            ("phase", "(IZ)V", unsafeBitCast(phase, to: UnsafeMutableRawPointer.self)),
             ("configured", "()V", unsafeBitCast(configured, to: UnsafeMutableRawPointer.self)),
+            ("insets", "(IIIII)V", unsafeBitCast(insets, to: UnsafeMutableRawPointer.self)),
             ("back", "()Z", unsafeBitCast(back, to: UnsafeMutableRawPointer.self)),
             ("frame", "(J)V", unsafeBitCast(frame, to: UnsafeMutableRawPointer.self)),
             ("clicked", "(J)V", unsafeBitCast(clicked, to: UnsafeMutableRawPointer.self)),
             ("longClicked", "(J)Z", unsafeBitCast(longClicked, to: UnsafeMutableRawPointer.self)),
+            ("accessibilityActed", "(JLjava/lang/String;)Z", unsafeBitCast(accessibilityActed, to: UnsafeMutableRawPointer.self)),
+            ("accessibilityStepped", "(JZ)Z", unsafeBitCast(accessibilityStepped, to: UnsafeMutableRawPointer.self)),
             ("menuChose", "(JI)V", unsafeBitCast(menuChose, to: UnsafeMutableRawPointer.self)),
             ("keyPressed", "(III)Z", unsafeBitCast(keyPressed, to: UnsafeMutableRawPointer.self)),
             ("keyTaken", "(ZIII)Z", unsafeBitCast(keyTaken, to: UnsafeMutableRawPointer.self)),
@@ -386,6 +431,7 @@ enum JavaNatives {
             ("notched", "(JFF)Z", unsafeBitCast(notched, to: UnsafeMutableRawPointer.self)),
             ("focusChanged", "(JZ)V", unsafeBitCast(focusChanged, to: UnsafeMutableRawPointer.self)),
             ("destroying", "()V", unsafeBitCast(destroying, to: UnsafeMutableRawPointer.self)),
+            ("linkOpened", "(Ljava/lang/String;)V", unsafeBitCast(linkOpened, to: UnsafeMutableRawPointer.self)),
             ("environmentChanged", "()V", unsafeBitCast(environmentChanged, to: UnsafeMutableRawPointer.self)),
             ("menuOpening", "(JLandroid/view/Menu;)V", unsafeBitCast(menuOpening, to: UnsafeMutableRawPointer.self)),
             ("tabSelected", "(JI)V", unsafeBitCast(tabSelected, to: UnsafeMutableRawPointer.self)),
@@ -397,6 +443,7 @@ enum JavaNatives {
             ("heldWords", "(Ljava/lang/String;IZ)Ljava/lang/String;", unsafeBitCast(heldWords, to: UnsafeMutableRawPointer.self)),
             ("submitted", "(J)V", unsafeBitCast(submitted, to: UnsafeMutableRawPointer.self)),
             ("scrolled", "(J)V", unsafeBitCast(scrolled, to: UnsafeMutableRawPointer.self)),
+            ("refreshPulled", "(J)Z", unsafeBitCast(refreshPulled, to: UnsafeMutableRawPointer.self)),
             ("held", "(JZ)V", unsafeBitCast(held, to: UnsafeMutableRawPointer.self)),
             ("opened", "(J)V", unsafeBitCast(opened, to: UnsafeMutableRawPointer.self)),
             ("closed", "(J)V", unsafeBitCast(closed, to: UnsafeMutableRawPointer.self)),
@@ -404,9 +451,12 @@ enum JavaNatives {
             ("chose", "(JI)V", unsafeBitCast(chose, to: UnsafeMutableRawPointer.self)),
             ("canvasTouched", "(JIFF)V", unsafeBitCast(canvasTouched, to: UnsafeMutableRawPointer.self)),
             ("answered", "(JZLjava/lang/String;)V", unsafeBitCast(answered, to: UnsafeMutableRawPointer.self)),
+            ("actionChosen", "(JI)V", unsafeBitCast(actionChosen, to: UnsafeMutableRawPointer.self)),
             ("filesChosen", "(J[Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)V",
              unsafeBitCast(filesChosen, to: UnsafeMutableRawPointer.self)),
             ("fileRead", "(J[BLjava/lang/String;)V", unsafeBitCast(fileRead, to: UnsafeMutableRawPointer.self)),
+            ("requestAnswered", "(JI[Ljava/lang/String;[BLjava/lang/String;)V",
+             unsafeBitCast(requestAnswered, to: UnsafeMutableRawPointer.self)),
             ("launched", "(JZ)V", unsafeBitCast(launched, to: UnsafeMutableRawPointer.self)),
             ("dragHeard", "(JILjava/lang/String;)V", unsafeBitCast(dragHeard, to: UnsafeMutableRawPointer.self)),
             ("filesDragged", "(J[Ljava/lang/String;[Ljava/lang/String;)V",

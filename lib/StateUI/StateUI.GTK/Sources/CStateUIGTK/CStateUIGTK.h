@@ -1,12 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// GTK 4 and libadwaita, as Swift imports them.
+// GTK 4 and libadwaita, as Swift imports them - and GLib's watch of a file descriptor.
 #include <adwaita.h>
+#include <glib-unix.h>
 
 // GLib marks its flags as flag enumerations from 2.86, which Swift then imports as option sets naming their members
 // itself - G_SIGNAL_MATCH_DATA is no longer in scope. The flags Swift passes stand here under one name on every GLib.
-static const GApplicationFlags STATEUI_APPLICATION_DEFAULT_FLAGS = G_APPLICATION_DEFAULT_FLAGS;
+static const GApplicationFlags STATEUI_APPLICATION_HANDLES_OPEN = G_APPLICATION_HANDLES_OPEN;
 static const GApplicationFlags STATEUI_APPLICATION_NON_UNIQUE = G_APPLICATION_NON_UNIQUE;
 static const GSignalMatchType STATEUI_SIGNAL_MATCH_ID = G_SIGNAL_MATCH_ID;
 static const GSignalMatchType STATEUI_SIGNAL_MATCH_DATA = G_SIGNAL_MATCH_DATA;
@@ -15,3 +16,4 @@ static const GDBusProxyFlags STATEUI_DBUS_PROXY_FLAGS_DO_NOT_AUTO_START = G_DBUS
 static const GFileTest STATEUI_FILE_TEST_IS_REGULAR = G_FILE_TEST_IS_REGULAR;
 static const GFileCreateFlags STATEUI_FILE_CREATE_NONE = G_FILE_CREATE_NONE;
 static const GLogLevelFlags STATEUI_LOG_LEVEL_MESSAGE = G_LOG_LEVEL_MESSAGE;
+static const GIOCondition STATEUI_IO_IN = G_IO_IN;

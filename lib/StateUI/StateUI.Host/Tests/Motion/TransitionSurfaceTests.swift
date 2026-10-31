@@ -9,8 +9,8 @@ import XCTest
 @MainActor
 final class TransitionSurfaceTests: XCTestCase {
     /// A rectangle's fill, size and corners travel, as a view's opacity, a page's background, a line's transform, a
-    /// window's place and an arrangement's bar colours do; a turn about a flat view's axis, a stepper's value, a map's
-    /// opacity and a property no host knows arrive at once.
+    /// window's place and an arrangement's bar colors do; a stepper's value, a map's opacity and a property no host
+    /// knows arrive at once.
     func testTheSurfaceIsClosedAroundWhatAViewPresents() {
         for property: Prop in [.fill, .width, .height, .cornerRadius] {
             XCTAssertTrue(TransitionSurface.presents(property, on: .rectangle), "\(property)")
@@ -19,13 +19,35 @@ final class TransitionSurfaceTests: XCTestCase {
         XCTAssertTrue(TransitionSurface.presents(.background, on: .page))
         XCTAssertTrue(TransitionSurface.presents(.geometryTransform, on: .line))
         XCTAssertTrue(TransitionSurface.presents(.x, on: .window))
-        XCTAssertTrue(TransitionSurface.presents(.barBackgroundColor, on: .splitView))
-        XCTAssertTrue(TransitionSurface.presents(.barForegroundColor, on: .modalStack))
+        XCTAssertTrue(TransitionSurface.presents(.barBackground, on: .splitView))
+        XCTAssertTrue(TransitionSurface.presents(.barForegroundColor, on: .tabView))
 
-        XCTAssertFalse(TransitionSurface.presents(.rotationX, on: .text))
         XCTAssertFalse(TransitionSurface.presents(.value, on: .stepper))
         XCTAssertFalse(TransitionSurface.presents(.opacity, on: .map))
         XCTAssertFalse(TransitionSurface.presents(Prop("custom"), on: .text))
+    }
+
+    /// A space's or a fill's box travels as a layout's does - what it is made of, its outline, its shape, its size -
+    /// and it holds no padding to move.
+    func testASpacesAndAFillsBoxTravelAsALayoutsDoes() {
+        for type: NodeType in [.space, .fill] {
+            for property: Prop in [.background, .stroke, .lineWidth, .shape, .opacity, .width, .rotation] {
+                XCTAssertTrue(TransitionSurface.presents(property, on: type), "\(type) \(property.name)")
+            }
+            XCTAssertFalse(TransitionSurface.presents(.padding, on: type), "\(type)")
+        }
+    }
+
+    /// Every turn, scale and shift of a view's drawing travels - a tip about a flat view's axis as a turn in its
+    /// plane does - and where it turns about arrives at once.
+    func testEveryTurnScaleAndShiftOfADrawingTravels() {
+        let moving = MountedElement.transformProperties.subtracting([.pivotX, .pivotY])
+        for type: NodeType in [.text, .rectangle, .vStack, .button, .image] {
+            for property in moving.sorted(by: { $0.name < $1.name }) {
+                XCTAssertTrue(TransitionSurface.presents(property, on: type), "\(property.name) on \(type.name)")
+            }
+            XCTAssertFalse(TransitionSurface.presents(.pivotX, on: type), "where \(type.name) turns about")
+        }
     }
 
     /// What a host's toolkit paints only at rest arrives at once on that host, and the rest of the surface travels.

@@ -18,7 +18,7 @@ enum VisualStateRules {
     /// The states in the order they come first: the first that holds is the control's state, and wins a value.
     static let precedence = [
         VisualStateName.disabled, VisualStateName.pressed, VisualStateName.pointerOver, VisualStateName.focused,
-        VisualStateName.on, VisualStateName.checked, VisualStateName.off, VisualStateName.unchecked,
+        VisualStateName.on, VisualStateName.off,
     ]
 
     /// The state a control is in when no other of its states holds, written or not.
@@ -31,8 +31,8 @@ enum VisualStateRules {
         case VisualStateName.pressed: facts.pressed
         case VisualStateName.pointerOver: facts.pointerOver
         case VisualStateName.focused: facts.focused
-        case VisualStateName.on, VisualStateName.checked: facts.isOn == true
-        case VisualStateName.off, VisualStateName.unchecked: facts.isOn == false
+        case VisualStateName.on: facts.isOn == true
+        case VisualStateName.off: facts.isOn == false
         default: false
         }
     }

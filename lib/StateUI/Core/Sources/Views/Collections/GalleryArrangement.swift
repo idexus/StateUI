@@ -8,7 +8,7 @@ public enum GalleryArrangement: Sendable, Equatable {
     /// the rest turn away, shrink and fade behind it.
     case `default`
 
-    /// A hand of cards: the middle one stands tallest and its neighbours lean
+    /// A hand of cards: the middle one stands tallest and its neighbors lean
     /// out and sink.
     case fan
 

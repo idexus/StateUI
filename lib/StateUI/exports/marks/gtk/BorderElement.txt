@@ -1,19 +1,43 @@
-# revision 10.1
+# revision 14.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
+Fill.lineWidth: ✅
+Fill.shape: ✅
+Fill.stroke: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-LayoutEngine.lineWidth: ◐ cannot read lineWidth of LayoutEngine - GTK's driver has no path for it yet
-LayoutEngine.shape: ◐ cannot read shape of LayoutEngine - GTK's driver has no path for it yet
-LayoutEngine.stroke: ◐ cannot read stroke of LayoutEngine - GTK's driver has no path for it yet
+MotionLayout.lineWidth: ◐ cannot read lineWidth of MotionLayout - GTK's driver has no path for it yet
+MotionLayout.shape: ◐ cannot read shape of MotionLayout - GTK's driver has no path for it yet
+MotionLayout.stroke: ◐ cannot read stroke of MotionLayout - GTK's driver has no path for it yet
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
+SearchField.lineWidth: ✓ read lineWidth of SearchField: the class of the host's style sheet the widget wears: GTK reads back no lineWidth
+SearchField.shape: ✓ read shape of SearchField: the class of the host's style sheet the widget wears: GTK reads back no shape
+SearchField.stroke: ✓ read stroke of SearchField: the class of the host's style sheet the widget wears: GTK reads back no stroke
+Space.lineWidth: ✅
+Space.shape: ✅
+Space.stroke: ✅
+TextEditor.lineWidth: ✓ read lineWidth of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no lineWidth
+TextEditor.shape: ✓ read shape of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no shape
+TextEditor.stroke: ✓ read stroke of TextEditor: the class of the host's style sheet the widget wears: GTK reads back no stroke
+TextField.lineWidth: ✓ read lineWidth of TextField: the class of the host's style sheet the widget wears: GTK reads back no lineWidth
+TextField.shape: ✓ read shape of TextField: the class of the host's style sheet the widget wears: GTK reads back no shape
+TextField.stroke: ✓ read stroke of TextField: the class of the host's style sheet the widget wears: GTK reads back no stroke
+ToolbarButton.lineWidth: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.shape: – A header bar's buttons stand in libadwaita's own look.
+ToolbarButton.stroke: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.lineWidth: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.shape: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.stroke: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.lineWidth: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.shape: – A header bar's buttons stand in libadwaita's own look.
+ToolbarToggle.stroke: – A header bar's buttons stand in libadwaita's own look.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅

@@ -63,13 +63,13 @@ final class RestoredWindowsTests: XCTestCase {
         let restored = RestoredWindows<Shown>()
         var values = SceneValues()
         let (seven, tool, window, eight, about) = (Shown(), Shown(), Shown(), Shown(), Shown())
-        let section: [String: HostValue] = ["restored.section": .number(2)]
+        let section: [String: HostValue] = ["restored.section": .string("2")]
 
         for (record, native) in [
             (WindowRecord(identifier: "n7", kind: "restored.note", value: "7", kept: section), seven),
             (WindowRecord(identifier: "t1", kind: "restored.tool", kept: section), tool),
             (WindowRecord(identifier: "n8", kind: "restored.note", value: "8", kept: section), eight),
-            (WindowRecord(identifier: "w1", kept: ["restored.section": .number(5)]), window),
+            (WindowRecord(identifier: "w1", kept: ["restored.section": .string("5")]), window),
             (WindowRecord(identifier: "a1", kind: "restored.about"), about),
         ] {
             XCTAssertTrue(restored.accept(record, native: native, values: &values, in: runtime))
@@ -110,7 +110,7 @@ final class RestoredWindowsTests: XCTestCase {
         XCTAssertNil(runtime.tree.root, "nothing rendered before the first window")
 
         XCTAssertTrue(restored.accept(
-            WindowRecord(identifier: "w1", kept: ["restored.section": .number(2)]),
+            WindowRecord(identifier: "w1", kept: ["restored.section": .string("2")]),
             native: Shown(), values: &values, in: runtime))
         runtime.pump.turn()
 
@@ -158,13 +158,13 @@ private struct RestoredApplication: Application {
 private struct RestoredScene: Scene {
     var body: some Scene {
         WindowGroup { RestoredSectionPage() }
-        WindowGroup(WindowType("restored.note"), for: Int.self) { number in Text("note \(number.wrappedValue)") }
+        WindowGroup(WindowType<Int>("restored.note")) { number in Text("note \(number.wrappedValue)") }
         WindowGroup(WindowType("restored.tool")) { Text("tool") }
     }
 }
 
 private struct RestoredSectionPage: View {
-    @State(sceneKey: SceneKey("restored.section", of: Int.self)) private var section = 0
+    @State(sceneKey: SceneKey<Int>("restored.section")) private var section = 0
 
     var body: some View {
         RestoredApplication.sections.append(section)

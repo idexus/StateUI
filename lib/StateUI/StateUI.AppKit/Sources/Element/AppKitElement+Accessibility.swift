@@ -18,12 +18,22 @@ extension AppKitElement {
                 role: target.accessibilityRole())
         }
         guard let defaults = accessibilityDefaults else { return }
+        let words = element.accessibilityWords
 
         target.setAccessibilityIdentifier(string(.accessibilityIdentifier))
-        target.setAccessibilityLabel(string(.accessibilityLabel))
+        if let toggle = view as? AppKitSwitchView {
+            toggle.authoredLabel = words.label
+        } else {
+            // The author's label, else the words a button leaves out of sight beside its picture.
+            target.setAccessibilityLabel(words.label)
+        }
         target.setAccessibilityHelp(string(.accessibilityHint))
+        // A value said stands over the control's own; unsaid again, the control's own comes back.
+        let said = string(.accessibilityValue)
+        if said != nil || accessibilityValueSaid { target.setAccessibilityValue(said) }
+        accessibilityValueSaid = said != nil
 
-        let excludesChildren = value(.automationExcludedWithChildren)?.bool == true
+        let excludesChildren = value(.hidesChildrenFromAccessibility)?.bool == true
         if excludesChildren {
             view.setAccessibilityChildren([])
             accessibilityChildrenSuppressed = true
@@ -33,18 +43,47 @@ extension AppKitElement {
         }
 
         // Met as the host layer says - by the author, or by words of its own or a tap - else as the view is.
-        let words = element.accessibilityWords
         target.setAccessibilityElement(words.isElement(standing: defaults.isElement))
         // An element that answers a tap is a button to assistive technology,
         // pressed by the handler a click runs. See `AppKitHitTestView`.
         let pressable = events[.tapped] != nil && view is AppKitHitTestView
 
-        if words.headingLevel > 0 {
+        if let role = words.role {
+            target.setAccessibilityRole(Self.accessibilityRole(role))
+        } else if words.headingLevel > 0 {
             target.setAccessibilityRole(NSAccessibility.Role(rawValue: "AXHeading"))
         } else if pressable {
             target.setAccessibilityRole(.button)
         } else {
             target.setAccessibilityRole(defaults.role)
+        }
+        applyReaderActions(words, to: target, of: view)
+    }
+
+    /// The actions VoiceOver offers on the view, and its steps of a view that says it is adjustable - each heard by
+    /// the host layer's rule.
+    /// Design: docs/design/platforms/appkit/views.md#accessibility-on-the-control
+    private func applyReaderActions(_ words: AccessibilityWords, to target: NSAccessibilityProtocol, of view: NSView) {
+        if !words.actions.isEmpty || accessibilityActionsSaid {
+            target.setAccessibilityCustomActions(words.actions.isEmpty ? nil : words.actions.map { name in
+                NSAccessibilityCustomAction(name: name) { [weak self] in self?.hear(.accessibilityAction(name)) ?? false }
+            })
+        }
+        accessibilityActionsSaid = !words.actions.isEmpty
+        (view as? AppKitHitTestView)?.stepAction = words.role == .adjustable
+            ? { [weak self] step in self?.hear(.accessibilityAdjustment(step)) ?? false }
+            : nil
+    }
+
+    /// AppKit's role for a kind the element says it is.
+    static func accessibilityRole(_ role: AccessibilityRole) -> NSAccessibility.Role {
+        switch role {
+        case .button: .button
+        case .toggle: .checkBox
+        case .adjustable: .slider
+        case .link: .link
+        case .image: .image
+        case .text: .staticText
         }
     }
 

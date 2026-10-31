@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // A material on a state the host carries: its kind, then what it is made of,
-// each colour as it stands - the half in force of every pair in it.
+// each color as it stands - the half in force of every pair in it.
 // Design: docs/design/core/state.md#a-material-on-a-carried-state
 
 extension Material: LaneValue {
-    /// The material as lanes: its kind - 0 none, 1 a colour, 2 a gradient, 3 a
-    /// blur, 4 glass - then what that kind is made of, each colour in the standard
+    /// The material as lanes: its kind - 0 none, 1 a color, 2 a gradient, 3 a
+    /// blur, 4 glass - then what that kind is made of, each color in the standard
     /// theme. The state that carries a material lays it in the theme in force.
     public var carried: StateCarried {
         .lanes(standingLanes(in: .standard))
@@ -50,7 +50,7 @@ extension Material: LaneValue {
         }
     }
 
-    /// A tint as five lanes: whether there is one, then its colour.
+    /// A tint as five lanes: whether there is one, then its color.
     private static func lanes(tint: Color?, in theme: ThemeInForce) -> [Double] {
         tint.map { [1] + $0.standingLanes(in: theme) } ?? [0, 0, 0, 0, 0]
     }
@@ -64,21 +64,21 @@ extension Material: LaneValue {
             defer { at += 1 }
             return lanes[at]
         }
-        func colour() -> PropValue? {
+        func color() -> PropValue? {
             guard at + 4 <= lanes.count else { return nil }
             defer { at += 4 }
             return Color(carried: .lanes(Array(lanes[at..<at + 4])))?.propValue
         }
         func tint() -> PropValue? {
-            guard let has = next(), let colour = colour() else { return nil }
-            return has != 0 ? colour : .nothing
+            guard let has = next(), let color = color() else { return nil }
+            return has != 0 ? color : .nothing
         }
 
         switch next().map({ Int($0.rounded()) }) {
         case 0:
             return .nothing
         case 1:
-            return colour()
+            return color()
         case 2:
             guard let brush = next(), let count = next().map({ Int($0.rounded()) }), count >= 0,
                   at + count <= lanes.count
@@ -86,18 +86,18 @@ extension Material: LaneValue {
             var values: [PropValue] = [.enumeration(Int32(brush.rounded())), .numbers(Array(lanes[at..<at + count]))]
             at += count
             while at < lanes.count {
-                guard let offset = next(), let colour = colour() else { return nil }
-                values += [.number(offset), colour]
+                guard let offset = next(), let color = color() else { return nil }
+                values += [.number(offset), color]
             }
             return .values(values)
         case 3:
             guard let raw = next(), let thickness = Blur.Thickness(rawValue: Int32(raw.rounded())),
-                  let tint = tint(), let standIn = colour()
+                  let tint = tint(), let standIn = color()
             else { return nil }
             return .values([.enumeration(4), thickness.propValue, tint, standIn])
         case 4:
             guard let raw = next(), let clarity = Glass.Clarity(rawValue: Int32(raw.rounded())),
-                  let interactive = next(), let tint = tint(), let standIn = colour()
+                  let interactive = next(), let tint = tint(), let standIn = color()
             else { return nil }
             let fallback = Glass(clarity: clarity, tint: nil, isInteractive: false).fallback
             return .values([
@@ -111,7 +111,7 @@ extension Material: LaneValue {
 
 extension Material: ThemeWearing {
     /// Whether any part of it turns with the theme or the accent: a pair, a
-    /// colour that does, or a blur or glass - whose stand-in is the theme's.
+    /// color that does, or a blur or glass - whose stand-in is the theme's.
     var wearsTheTheme: Bool {
         switch kind {
         case .color(let color): color.wearsTheTheme
@@ -120,7 +120,7 @@ extension Material: ThemeWearing {
         }
     }
 
-    /// Each pair's half in force, each colour in force.
+    /// Each pair's half in force, each color in force.
     func carried(wearing theme: ThemeInForce) -> StateCarried {
         .lanes(standingLanes(in: theme))
     }

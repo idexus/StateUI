@@ -17,13 +17,14 @@ struct WindowSample: SampleContent, ExampleContent {
     static let title = "Window"
     static let summary = "Change the native window while it stays on screen."
 
+    /// Listed where the host sizes a window: where the system or the browser does, its buttons would do nothing.
+    static func shows(_ device: Device) -> Bool { device.honors(WindowContract.width) }
+
     static var code: String { Listings.joined("MainPage.created", "MainPage.look", "WindowSample") }
 
     var notes: (any View)? {
-        Text("On an iPad and a phone the system sizes and places a window, so the size, the place, the "
-            + "bound, maximizing and minimizing do nothing there. On GNOME the place, maximizing, "
-            + "minimizing and the bound do nothing. What the window is made of - its background - is "
-            + "the gallery's look, which the Appearance sample chooses.")
+        Text("On GNOME the place, maximizing, minimizing and the bound do nothing. What the window is made "
+            + "of - its background - is the gallery's look, which the Appearance sample chooses.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
@@ -104,13 +105,9 @@ struct WindowSample: SampleContent, ExampleContent {
 
     /// A native boolean window capability.
     private func option(_ title: String, id: String, value: Binding<Bool>) -> some View {
-        HStack {
-            Switch(value)
-                .accessibilityIdentifier(id)
-                .accessibilityLabel(title)
-            Text(title).verticalAlignment(.center)
-        }
-        .spacing(8)
+        Switch(value)
+            .text(title)
+            .accessibilityIdentifier(id)
     }
     // listing: end
 }

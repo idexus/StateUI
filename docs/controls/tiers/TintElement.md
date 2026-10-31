@@ -2,7 +2,7 @@
 
 # TintElement
 
-A control's one accent colour.
+A control's one accent color.
 
 ```swift
 @State var on = true
@@ -11,7 +11,7 @@ Switch($on)
     .tint(.green)
 ```
 
-Worn by: [ActivityIndicator](../ActivityIndicator.md) · [CheckBox](../CheckBox.md) · [Picker](../Picker.md) · [ProgressBar](../ProgressBar.md) · [Slider](../Slider.md) · [Switch](../Switch.md)
+Worn by: [CheckBox](../CheckBox.md) · [Picker](../Picker.md) · [ProgressBar](../ProgressBar.md) · [Slider](../Slider.md) · [Spinner](../Spinner.md) · [Switch](../Switch.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/TintElementContract.swift`.
 

@@ -14,6 +14,7 @@ and a host realizes the contract member by member.
 
   view:      Node(contract: TrafficLightContract.self)
   modifier:  setValue(TrafficLightContract.signal, value)
+  a state:   setValue(TrafficLightContract.signal, whenDescribed: { state.wrappedValue })
   host:      registry.add(TrafficLightContract.self, ...) member by member
 ```
 
@@ -63,10 +64,14 @@ layer:
            losing it replaces the element: a gesture's settings, a list's
            items, where the host puts an item (a toolbar item's order, a
            swipe's side), a choice clearing would move, and a window's kind,
-           value and behaviour, which the host keeps its windows by
+           value and behavior, which the host keeps its windows by
   moves    which group of a view's values it is for `.motion(_:_:)` - a size,
            a place, a transform, spacing, text - where the value cannot say;
-           a colour says its own group through its value
+           a color says its own group through its value
+  unsaid   the value the library writes itself where an author says nothing,
+           for a member it writes always because no default answers for it -
+           a group's side and order, whether a window floats or hides; none
+           for every other member
 ```
 
 A host still snaps a transition it cannot interpolate; `travels` keeps the
@@ -102,7 +107,8 @@ name and its number - with the library's entries as static members. A token is
 a key and only a key; a host reads it by its name. That is what makes the
 library's tokens and an application's the same thing.
 
-Nobody writes a token by hand. A member's token is made from its name, and each
+Nobody writes a token by hand. A member's token is made from its name - a
+token's `init(_ name:)` is the host's alone, behind `@_spi(Host)` - and each
 name is spelled once, where a contract declares its member; the library's
 tokens (`Tokens.swift`, for the hosts, behind `@_spi(Host)`) are
 made from the members, and a guard names any source that spells a name out
@@ -152,8 +158,8 @@ is no key - or the toolkit's own vocabulary; the guard lists each with which.
 
 A host registers each element contract it realizes with a `Registry`: how the
 element's view is made, which members the view takes - one at a time, or the
-element whole where a view takes several at once - and which of its own events
-it raises. The registration is the record of what the host realizes: the core
+element whole where a view takes several at once - and which events it
+raises, its own or a tier's it wears. The registration is the record of what the host realizes: the core
 answers "does this host realize X" from it, and the host makes and updates its
 views through it. It is generic over the platform's view type, so every Swift
 host takes the same machinery.
@@ -165,16 +171,24 @@ host takes the same machinery.
   ElementValues   what a registration reads: each member typed, whether it
                   is carried in (the host's to write - the control is the
                   source), and whether the patch changed it
-  Registration    property(...), applies([...]), raises(...),
-                  children(Contract, members:) - children the view draws
+  Registration    property(...), applies(...), raises(...),
+                  children(Contract, properties:, events:) - children the view draws
                   itself, a map's markers, handed over whole as ChildElements
   Registry        add, add(madeByHost:), everyElementRealizes/Raises,
                   raises (the application's events), makeView, apply,
                   childTypes, applyChildren, realization
 ```
 
+A view taking several properties at once names them in `applies`, one by one
+or in a `PropertyList` the hosts share, and a list holds properties alone: an
+event or an act among them does not compile. Nor does a type of an
+application's own offered as properties: `AppliedProperties` keeps its one
+requirement on the host's side, and the default it offers every other type is
+unavailable. A child the view draws itself is named the same way, its
+properties apart from its events (`children(_:properties:events:apply:)`).
+
 A member of a contract the element does not wear is refused and said once, at
-registration and at report alike. `apply` puts changed properties registered
+registration, at a raise and at a report alike. `apply` puts changed properties registered
 alone in name order, then runs each whole applier whose members changed, every
 value read as the host presents it - a value in motion or carried by a state
 included. An element whose view the host makes itself, because its making needs
@@ -185,7 +199,7 @@ on the screen.
 
 A runtime hands over its registry's realization before its first render,
 through `CoreLink.setRealization`, with the library's elements it shows none
-of - its `unrealized` judgement, the same the control dictionary reads, with
+of - its `unrealized` judgment, the same the control dictionary reads, with
 what it leaves to the application and each backend no one registered: every
 other element of the library's is realized, and so is every element and member
 the registry names, the application's own controls and the events its head
@@ -194,18 +208,18 @@ says nothing. With it the host hands its register, which the core reads when
 first asked rather than as it is handed: building one costs, and a host hands
 it at each start.
 
-## What a platform honours
+## What a platform honors
 
-`Device.honours` answers an application asking whether the platform it runs
-on honours a member - so a view leaves out what asks for one it does not,
+`Device.honors` answers an application asking whether the platform it runs
+on honors a member - so a view leaves out what asks for one it does not,
 an "Open the list" where no list opens by the program. The answer is the
 host's register (`HostRegister`), handed to the core as the runtime starts:
-the host's own judgements - in full, in part, never with why - over what its
+the host's own judgments - in full, in part, never with why - over what its
 registry realizes, the same answer the platform contract shows. Before a host
 hands one, what its registry said it realizes answers. A tier's member the
 register records element by element - realized on a slider, never on a
-switch - is honoured by its tier in part, so the answer to
-`honours(TintElementContract.tint)` is the same before the register comes and
+switch - is honored by its tier in part, so the answer to
+`honors(TintElementContract.tint)` is the same before the register comes and
 after.
 
 ## Declarations
@@ -244,9 +258,12 @@ the same way. Nothing is said while the host has said nothing.
 
 In a Debug build, a member described on an element the host realizes is said
 once where the host's register says it does not realize it there, or never
-will, with the register's reason (`HostRealizations.unhonoured`): a tint
+will, with the register's reason (`HostRealizations.unhonored`): a tint
 written on a control a platform draws in the user's accent compiles and does
 nothing, and this is where its author hears why. A member the register says
-nothing of, or realizes in part, goes by. The register is built when first
+nothing of, or realizes in part, goes by, and so does a member holding its
+`unsaid` value: the library wrote it, its author having said nothing - and a
+mark only the library writes (`writtenByStateUI`, a lone toolbar item's
+`standsAlone`), whatever it holds. The register is built when first
 asked, and the host layer keeps it while the host tells the same realization
 at each start (`CoreLink.setRealization`).

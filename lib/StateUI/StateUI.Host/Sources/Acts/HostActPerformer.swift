@@ -14,11 +14,15 @@
 @_spi(Host) @MainActor public final class HostActPerformer {
     private let toolkit: any ActToolkit
     private let files: (any FileToolkit)?
+    private let network: (any NetworkToolkit)?
     private let answers: any ActAnswering
     private let tree: () -> MountedTree?
 
     /// What the user is asked, one showing at a time; each answers under its ticket.
-    private let questions = QuestionQueue<(call: HostActCall, asked: Asked)>()
+    private let questions = QuestionQueue<(call: HostActCall, asked: Asked, window: AskedWindow?)>()
+
+    /// What stops each call still under way, by the id its answer goes under: a request.
+    private var stops: [Int: () -> Void] = [:]
 
     /// The question showing - one at a time - and how many times it was shown: an answer counts from its latest
     /// showing.
@@ -31,17 +35,19 @@
     private enum Asked {
         case question(HostQuestion)
         case files(HostFileDialog)
+        case share(HostShare)
     }
 
-    /// A performer for the acts called on the host whose toolkit `toolkit` is - `files` its toolkit for files, where
-    /// it has one - its answers through `answers`, its aimed acts found in `tree`. A caller an answer resumes runs
-    /// in a job of its own, which asks for its turn.
+    /// A performer for the acts called on the host whose toolkit `toolkit` is - `files` its toolkit for files and
+    /// `network` for requests, where it has them - its answers through `answers`, its aimed acts found in `tree`. A
+    /// caller an answer resumes runs in a job of its own, which asks for its turn.
     public init(
-        toolkit: any ActToolkit, files: (any FileToolkit)? = nil, answers: any ActAnswering = CoreLink(),
-        tree: @escaping () -> MountedTree?
+        toolkit: any ActToolkit, files: (any FileToolkit)? = nil, network: (any NetworkToolkit)? = nil,
+        answers: any ActAnswering = CoreLink(), tree: @escaping () -> MountedTree?
     ) {
         self.toolkit = toolkit
         self.files = files
+        self.network = network
         self.answers = answers
         self.tree = tree
     }
@@ -68,20 +74,44 @@
             reply(call, HostActs.utcOffset(minutes: minutes))
         case .alert, .confirm, .chooseAction, .prompt:
             guard let question = HostQuestion(call) else { return fail(call, "the act asks nothing") }
-            ask(call, .question(question))
+            ask(call, .question(question), in: AskedWindow(call))
+        case .share:
+            guard let shared = HostShare(call) else { return fail(call, "the act offers nothing to share") }
+            ask(call, .share(shared), in: AskedWindow(call))
         case .openFiles, .saveFile, .readFile, .launchFile, .launchLink:
             guard let files else { return fail(call, notPerformed(call)) }
             perform(call, files: files)
+        case .sendRequest:
+            send(call)
+        case .cancelCall:
+            stop(call)
         case .announce:
             toolkit.announce(call.arguments.first?.string ?? "")
             reply(call, [])
+        case .writeClipboard:
+            toolkit.writeClipboard(call.arguments.first?.string ?? "")
+            reply(call, [])
+        case .readClipboard:
+            toolkit.readClipboard { [weak self] read in
+                switch read {
+                case .success(let words): self?.reply(call, [words.map { .string($0) } ?? .nothing])
+                case .failure(let failure): self?.fail(call, failure.reason)
+                }
+            }
         case .useColorScheme:
             let theme = call.arguments.first.flatMap(ColorScheme.init(propValue:)) ?? .system
             toolkit.useColorScheme(theme)
             CoreLink().holdColorScheme(theme)
             reply(call, [])
+        case .useAccentColor:
+            let accent = call.arguments.first.flatMap(Color.init(propValue:))
+            CoreLink().holdAccentColor(toolkit.useAccentColor(accent) ? accent : nil)
+            reply(call, [])
         case .hideOnScreenKeyboard:
-            reply(call, [.bool(toolkit.hideOnScreenKeyboard())])
+            switch window(asked: AskedWindow(call)) {
+            case .some(let window): reply(call, [.bool(toolkit.hideOnScreenKeyboard(in: window))])
+            case .none: reply(call, [.bool(false)])
+            }
         case .focus, .unfocus:
             aim(call)
         case .handlerFailed:
@@ -101,26 +131,42 @@
 
     // MARK: - Questions for the user
 
-    /// Asks the user; the answer comes back when they give it.
-    private func ask(_ call: HostActCall, _ asked: Asked) {
-        let (ticket, showsNow) = questions.ask((call, asked))
-        if showsNow { show(ticket, call: call, asked: asked) }
+    /// Asks the user in `window`; the answer comes back when they give it.
+    private func ask(_ call: HostActCall, _ asked: Asked, in window: AskedWindow?) {
+        let (ticket, showsNow) = questions.ask((call, asked, window))
+        if showsNow { show(ticket, call: call, asked: asked, in: window) }
     }
 
-    /// Puts a question or a file dialog to the user; with no window to ask in by its turn it fails, and the next
+    /// The window `asked` names, as its toolkit takes it: `.some(nil)` for the window the user is in, nil where the
+    /// window it names is not open.
+    /// Design: docs/design/core/acts.md#a-windows-acts
+    private func window(asked: AskedWindow?) -> MountedElement?? {
+        guard let asked, !asked.isTheUsers else { return .some(nil) }
+        guard let element = asked.element(in: tree()?.root) else { return nil }
+        return .some(element)
+    }
+
+    /// Puts a question, a file dialog or a share sheet to the user over the window it names - answered as the user dismissing it
+    /// does where that window closed while it waited; with no window to ask in by its turn it fails, and the next
     /// takes its turn.
     /// Design: docs/design/host/runtime.md#questions-for-the-user
-    private func show(_ ticket: Int64, call: HostActCall, asked: Asked) {
+    private func show(_ ticket: Int64, call: HostActCall, asked: Asked, in named: AskedWindow?) {
+        guard case .some(let over) = window(asked: named) else {
+            dismiss(ticket, asked, of: call)
+            return showFirst()
+        }
         let count = (showing?.ticket == ticket ? showing?.count ?? 0 : 0) + 1
         showing = (ticket, count)
         let window = switch asked {
         case .question(let question):
-            toolkit.show(question) { [weak self] given in
+            toolkit.show(question, over: over) { [weak self] given in
                 guard let self, showing?.ticket == ticket, showing?.count == count else { return }
-                answer(ticket, given.map { question.answer(accepted: $0.accepted, words: $0.words) })
+                answer(ticket, given.map(question.answer))
             }
         case .files(let dialog):
-            files?.show(dialog) { [weak self] chosen in self?.answer(ticket, chosen.map(dialog.answer)) }
+            files?.show(dialog, over: over) { [weak self] chosen in self?.answer(ticket, chosen.map(dialog.answer)) }
+        case .share(let shared):
+            toolkit.share(shared, over: over) { [weak self] done in self?.answer(ticket, done.map { [.bool($0)] }) }
         }
         if let window {
             if showing?.ticket == ticket { askedIn = window }
@@ -134,7 +180,7 @@
     /// Shows what is now first in line.
     private func showFirst() {
         guard let (ticket, first) = questions.first else { return }
-        show(ticket, call: first.call, asked: first.asked)
+        show(ticket, call: first.call, asked: first.asked, in: first.window)
     }
 
     /// Asks again the question showing, whose dialog went with the window it stood over - an activity made again:
@@ -142,7 +188,7 @@
     /// the next, and is not asked again.
     public func askAgain() {
         guard let (ticket, first) = questions.first, case .question = first.asked else { return }
-        show(ticket, call: first.call, asked: first.asked)
+        show(ticket, call: first.call, asked: first.asked, in: first.window)
     }
 
     /// Answers every question waiting - the one showing and those behind it - as the user dismissing it does: the
@@ -171,8 +217,9 @@
         forget(ticket)
         _ = questions.answered(ticket)
         switch asked {
-        case .question(let question): deliver(call, .success(question.answer(accepted: false, words: nil)))
+        case .question(let question): deliver(call, .success(question.answer(.dismissed)))
         case .files(let dialog): deliver(call, .success(dialog.answer([])))
+        case .share: deliver(call, .success([.bool(false)]))
         }
     }
 
@@ -204,7 +251,7 @@
     /// A file dialog waits its turn among the questions; a file is read, and a file or an address launched, at once.
     /// Design: docs/design/host/runtime.md#files
     private func perform(_ call: HostActCall, files: any FileToolkit) {
-        if let dialog = HostFileDialog(call) { return ask(call, .files(dialog)) }
+        if let dialog = HostFileDialog(call) { return ask(call, .files(dialog), in: AskedWindow(call)) }
         let file = call.arguments.value(0).flatMap(ChosenFile.init(propValue:))
         let launched: (Bool) -> Void = { [weak self] took in self?.deliver(call, .success([.bool(took)])) }
         switch call.act {
@@ -217,6 +264,46 @@
             files.launch(file, answered: launched)
         default:
             files.launch(address: call.arguments.value(0)?.string ?? "", answered: launched)
+        }
+    }
+
+    /// Opens the address of a link the user chose, as a launched one opens - in the application the system gives
+    /// it - with no caller to answer; nothing where the host launches nothing.
+    /// Design: docs/design/host/runtime.md#a-link-chosen
+    public func open(link address: String) {
+        files?.launch(address: address) { _ in }
+    }
+
+    // MARK: - Requests
+
+    /// Sends the request the act names through the toolkit for requests; an address with no scheme only where the
+    /// platform reads it against a page.
+    /// Design: docs/design/core/acts.md#requests
+    private func send(_ call: HostActCall) {
+        guard let network else { return fail(call, notPerformed(call)) }
+        guard let request = HostRequest(call) else { return fail(call, "the act names no address") }
+        guard request.namesItsScheme || network.readsRelativeAddresses else {
+            return fail(call, "the address '\(request.address)' names no scheme, and no page stands to read it against")
+        }
+        var finished = false
+        let stop = network.send(request) { [weak self] answered in
+            finished = true
+            if let id = call.completion { self?.stops[id] = nil }
+            self?.deliver(call, answered.map(\.answer))
+        }
+        if let id = call.completion, !finished { stops[id] = stop }
+    }
+
+    // MARK: - A call stopped
+
+    /// Stops the call the act names, its caller's run having ended: a request is stopped, a question still waiting
+    /// its turn leaves the queue unasked. A question showing stays for the user, its answer reaching no one.
+    /// Design: docs/design/core/acts.md#a-call-ends-with-its-run
+    private func stop(_ call: HostActCall) {
+        guard let id = call.arguments.value(0)?.number.map({ Int($0) }) else { return }
+        stops.removeValue(forKey: id)?()
+        if let ticket = questions.ticket(where: { $0.call.completion == id }), ticket != showing?.ticket {
+            _ = questions.answered(ticket)
         }
     }
 

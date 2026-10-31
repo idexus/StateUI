@@ -105,6 +105,7 @@ extension RatingBarWidget {
     @MainActor
     static func register() {
         // listing: end
+        // listing: gtk.md.applies
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarWidget in
             let bar = RatingBarWidget()
             // A tapped star is the USER's change: it lands on the state the value is carried in, and raises the event
@@ -115,19 +116,22 @@ extension RatingBarWidget {
             return bar
         }) { bar in
             // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
-            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
             bar.raises(RatingBarContract.ratingChanged)
         }
+        // listing: end
 
         // listing: InteropActsSample.GTK.swift
+        // listing: gtk.md.acts
         // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
         // The performer is handed that control, and flash() dims it and brings it back with libadwaita's animation.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
             bar.flash()
         }
+        // listing: end
     }
 }
 // listing: end

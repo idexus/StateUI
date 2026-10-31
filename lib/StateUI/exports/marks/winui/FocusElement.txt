@@ -1,22 +1,25 @@
-# revision 3.1
+# revision 5.1
 Button.focus: ✅
 Button.isFocusedChanged: ✅
 Button.unfocus: ✅
 CheckBox.focus: ✅
 CheckBox.isFocusedChanged: ✅
 CheckBox.unfocus: ✅
+ColorPicker.focus: ✅
+ColorPicker.isFocusedChanged: ✅
+ColorPicker.unfocus: ✅
 DatePicker.focus: ✅
 DatePicker.isFocusedChanged: ✅
 DatePicker.unfocus: ✅
 ItemsView.focus: ✅
 ItemsView.isFocusedChanged: ✅
 ItemsView.unfocus: ✅
+Link.focus: ✅
+Link.isFocusedChanged: ✅
+Link.unfocus: ✅
 Picker.focus: ✅
 Picker.isFocusedChanged: ✅
 Picker.unfocus: ✅
-RadioButton.focus: ✅
-RadioButton.isFocusedChanged: ✅
-RadioButton.unfocus: ✅
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard

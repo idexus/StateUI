@@ -29,7 +29,7 @@ final class GTKSplitView: GTKLayoutView {
     private(set) var sidebarFrame: GTKPageFrame?
     private(set) var detailFrame: GTKPageFrame?
 
-    /// The colours the sidebar stands on beside the detail and over it, as the split view says them; nil for
+    /// The colors the sidebar stands on beside the detail and over it, as the split view says them; nil for
     /// libadwaita's own sidebar.
     var grounds: (beside: GdkRGBA?, over: GdkRGBA?) = (nil, nil) {
         didSet { ground() }
@@ -89,7 +89,7 @@ final class GTKSplitView: GTKLayoutView {
         return true
     }
 
-    /// Stands the sidebar on the split view's colour for its place - over the detail where the split is collapsed,
+    /// Stands the sidebar on the split view's color for its place - over the detail where the split is collapsed,
     /// beside it otherwise - or on libadwaita's own sidebar.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     private func ground() {
@@ -97,8 +97,8 @@ final class GTKSplitView: GTKLayoutView {
         swapClass(&paneClass, to: isCollapsed ? nil : GTKStyleSheet.sidebarBeside(shaded: grounds.beside == nil),
                   on: split.widget)
         guard let sidebar = adw_overlay_split_view_get_sidebar(native) else { return }
-        let colour = isCollapsed ? grounds.over : grounds.beside
-        swapClass(&groundClass, to: colour.map(GTKStyleSheet.fill), on: sidebar)
+        let color = isCollapsed ? grounds.over : grounds.beside
+        swapClass(&groundClass, to: color.map(GTKStyleSheet.fill), on: sidebar)
     }
 
     /// Takes the fill class off the sidebar's widget, while it still stands in the split.

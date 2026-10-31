@@ -20,14 +20,14 @@ public enum PageContract: ElementContract {
     /// What the back affordance says on the page pushed above this one.
     public static let backButtonTitle = ElementProperty<Self, String>("backButtonTitle", layer: .adaptive)
 
-    /// What is drawn behind the page.
-    public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
-
     /// The page is leaving the screen.
     public static let disappearing = ElementEvent<Self, Void>("disappearing", layer: .adaptive)
 
     /// Whether the page offers a way back.
     public static let showsBackButton = ElementProperty<Self, Bool>("showsBackButton", layer: .adaptive)
+
+    /// Whether the bar over the page, standing in a sheet, offers a button closing the sheet.
+    public static let showsCloseButton = ElementProperty<Self, Bool>("showsCloseButton", layer: .adaptive)
 
     /// Whether the bar shows above the page.
     public static let showsNavigationBar = ElementProperty<Self, Bool>("showsNavigationBar", layer: .adaptive)
@@ -35,6 +35,10 @@ public enum PageContract: ElementContract {
     /// Whether the page shows its title - on its bar, or over its content where the bar names the application; it
     /// names the window and the way back all the same.
     public static let showsTitle = ElementProperty<Self, Bool>("showsTitle", layer: .adaptive)
+
+    /// The line under the page's title, wherever its title shows: the current document or section; an empty one is
+    /// none.
+    public static let subtitle = ElementProperty<Self, String>("subtitle", layer: .adaptive)
 
     /// The user has left the page for another.
     public static let navigatedFrom = ElementEvent<Self, Void>("navigatedFrom", layer: .adaptive)
@@ -47,7 +51,8 @@ public enum PageContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        appearing, backButtonTitle, background, disappearing, showsBackButton, showsNavigationBar, showsTitle,
+        appearing, backButtonTitle, disappearing, showsBackButton, showsCloseButton, showsNavigationBar,
+        showsTitle, subtitle,
         navigatedFrom, navigatedTo, navigatingFrom,
     ]
 }

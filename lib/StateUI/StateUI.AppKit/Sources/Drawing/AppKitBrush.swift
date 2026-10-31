@@ -6,18 +6,18 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A fill drawn by AppKit: the host layer's reading of it (`HostBrush`), its colours in sRGB, painted on a path.
+/// A fill drawn by AppKit: the host layer's reading of it (`HostBrush`), its colors in sRGB, painted on a path.
 /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
-struct AppKitBrush {
+struct AppKitBrush: Equatable {
     /// What the tree's value describes.
     let brush: HostBrush
 
-    /// The brush the tree's `value` describes: a colour, a gradient, or nothing.
+    /// The brush the tree's `value` describes: a color, a gradient, or nothing.
     init(_ value: HostValue? = nil) {
         brush = HostBrush(value)
     }
 
-    /// Its one colour, where it is one.
+    /// Its one color, where it is one.
     var color: NSColor? {
         if case .solid(let color) = brush { nsColor(color) } else { nil }
     }
@@ -27,15 +27,7 @@ struct AppKitBrush {
         brush != .none
     }
 
-    /// Whether it is a gradient, which a layer's colour cannot paint.
-    var isGradient: Bool {
-        switch brush {
-        case .linear, .radial: true
-        case .none, .solid: false
-        }
-    }
-
-    /// The colour a line draws with: its colour, or its first stop's.
+    /// The color a line draws with: its color, or its first stop's.
     var lineColor: NSColor? {
         brush.firstColor.flatMap(nsColor)
     }
@@ -68,7 +60,7 @@ struct AppKitBrush {
         }
     }
 
-    /// Strokes `path` `width` wide in the brush's line colour.
+    /// Strokes `path` `width` wide in the brush's line color.
     func stroke(_ path: NSBezierPath, width: CGFloat) {
         guard let color = lineColor, width > 0 else { return }
         color.setStroke()
@@ -87,14 +79,14 @@ struct AppKitBrush {
     }
 }
 
-/// The colour a view that blurs nothing paints its background in: a colour, or a blur's or glass's tint over the
-/// colour standing in for it (`HostMaterial.painted`); nil for a gradient or nothing.
+/// The color a view that blurs nothing paints its background in: a color, or a blur's or glass's tint over the
+/// color standing in for it (`HostMaterial.painted`); nil for a gradient or nothing.
 @MainActor
 func paintedColor(_ material: HostValue?) -> NSColor? {
     HostMaterial(material).painted.flatMap(nsColor)
 }
 
-/// A StateUI colour is four sRGB channels, drawn in sRGB exactly.
+/// A StateUI color is four sRGB channels, drawn in sRGB exactly.
 func nsColor(_ value: HostValue) -> NSColor? {
     guard let color = value.fractions else { return nil }
     return NSColor(srgbRed: color.red, green: color.green, blue: color.blue, alpha: color.alpha)

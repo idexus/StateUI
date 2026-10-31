@@ -59,6 +59,15 @@ public struct TrafficLight: ElementView {
         setValue(TrafficLightContract.signal, value)
     }
 
+    /// The signal from a state, both ways: the light reads it as it is described, and a lamp the user taps lands
+    /// on it.
+    public func signal(_ state: Binding<TrafficSignal>) -> Self {
+        setValue(TrafficLightContract.signal, whenDescribed: { state.wrappedValue })
+            .onLampTapped { lamp in
+                if let tapped = TrafficSignal(rawValue: Int32(lamp)) { state.wrappedValue = tapped }
+            }
+    }
+
     /// A lamp was tapped, with its index from the top.
     public func onLampTapped(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
         onEvent(TrafficLightContract.lampTapped, handler)

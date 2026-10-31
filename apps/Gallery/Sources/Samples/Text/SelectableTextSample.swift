@@ -22,15 +22,9 @@ struct SelectableTextSample: SampleContent, ExampleContent {
             Text("A caption the user only reads.")
                 .textStyle(.caption)
 
-            HStack {
-                Switch($selectable)
-                    .accessibilityIdentifier("selectable.on")
-                    .accessibilityLabel("Selectable")
-
-                Text("Selectable")
-                    .verticalAlignment(.center)
-            }
-            .spacing(12)
+            Switch($selectable)
+                .text("Selectable")
+                .accessibilityIdentifier("selectable.on")
         }
         .spacing(12)
     }

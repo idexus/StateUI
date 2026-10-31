@@ -3,13 +3,13 @@
 
 @_spi(Host) import StateUI
 
-/// The hand over a layout engine, read alike on every host: a press dragged or a trackpad's fingers reported as they
+/// The hand over a motion layout, read alike on every host: a press dragged or a trackpad's fingers reported as they
 /// move, a wheel's notches with no lift - ended after a pause on the frame clock - and the speed at the lift where
-/// the platform tells none. What it answers is the element's `handMoved`.
+/// the platform tells none. What it answers is the element's `translationUpdated`.
 /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
 @_spi(Host) public struct HandReading: Sendable {
-    /// One report of the hand: its phase, how far it moved what is under it since the last, and its speed as it
-    /// lifts, per second; a hand holding one view by itself, where it is and how long it has stood still.
+    /// One report of the hand: its phase, how far it moved what is under it since the last, and how fast it goes,
+    /// per second; a hand holding one view by itself, where it is and how long it has stood still.
     public struct Report: Equatable, Sendable {
         /// Where the gesture is: begun, moving, lifted or taken away.
         public let phase: GesturePhase
@@ -17,7 +17,7 @@
         /// How far the hand moved what is under it since the last report.
         public let moved: Point
 
-        /// How fast the hand went as it lifted, per second; nought before.
+        /// How fast the hand goes, per second - as it lifts, as fast as it lifted; nought as it begins.
         public let speed: Point
 
         /// Whether the hand holds one view by itself rather than moving the run.
@@ -101,11 +101,11 @@
     /// Whether the hand asks the frames for something: a wheel to let go, a press to hold a view, a held view
     /// standing still.
     public var wantsFrames: Bool {
-        isWheeling || holdsItem || (press != nil && itemStart == .held && claimed == nil)
+        isWheeling || holdsItem || (press != nil && itemStart == .longPress && claimed == nil)
     }
 
-    /// The moves of the last `reading` milliseconds, with when each was made.
-    private var moves: [(time: Double, moved: Point)] = []
+    /// How fast the hand goes, by its moves of the last `reading` milliseconds.
+    private var trail = SpeedReading()
 
     /// When the hand last moved.
     private var last = 0.0
@@ -136,19 +136,19 @@
         return along > 0 && along >= across
     }
 
-    /// Whether a hand whose first move is `moved` is taken over a layout moved `way` whose views are taken as
-    /// `items` says - the run's its way, a view's across it with `.across` - and any way where it already holds a
-    /// view: what a toolkit asks before its drag begins.
+    /// Whether a hand whose first move is `moved` is taken over a layout moved `way` whose views are taken as `items`
+    /// says - the run's its way, a view's across it with `.perpendicular` - and any way where it already holds a view:
+    /// what a toolkit asks before its drag begins.
     public static func takes(_ moved: Point, way: HandWay?, items: ItemDragStart?, holding: Bool) -> Bool {
-        holding || way.map { claims(moved, way: $0) } == true || (items == .across && moved != .zero)
+        holding || way.map { claims(moved, way: $0) } == true || (items == .perpendicular && moved != .zero)
     }
 
     /// The hand at `phase` - a press dragged or a trackpad's fingers - moving what is under it by `moved` at `time`,
     /// lifting at `speed` where the platform tells one, a press going down at `point`: a layout moved `way` takes a
-    /// gesture whose first move goes its way; one whose views are taken as `items` says gives the view under
-    /// the press a first move across it (`.across`) or a press standing still `hold` (`.held`, by the frames); the
-    /// rest is left to whatever holds the layout. A hold and a held view's standing are measured on the frames'
-    /// clock, `now`; the hand's pace on the platform's, `time`. Whether it took this step, and what it says.
+    /// gesture whose first move goes its way; one whose views are taken as `items` says gives the view under the press
+    /// a first move across it (`.perpendicular`) or a press standing still `hold` (`.longPress`, by the frames); the
+    /// rest is left to whatever holds the layout. A hold and a held view's standing are measured on the frames' clock,
+    /// `now`; the hand's pace on the platform's, `time`. Whether it took this step, and what it says.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func hand(
         _ phase: GesturePhase, moved: Point, speed: Point?, at time: Double, way: HandWay?,
@@ -164,7 +164,7 @@
             return (true, [])
 
         case .changed:
-            if holdsItem { return (true, itemMoved(moved, at: time, now: now)) }
+            if holdsItem { return (true, itemDragUpdated(moved, at: time, now: now)) }
             if claimed == nil {
                 guard moved != .zero else { return (true, []) }
 
@@ -173,11 +173,11 @@
                     press = nil
                     return (true, began(at: time) + self.moved(moved, at: time))
                 }
-                guard itemStart == .across, let press else {
+                guard itemStart == .perpendicular, let press else {
                     self.press = nil
                     return (false, [])
                 }
-                return (true, itemTaken(at: press.point, time: time, now: now) + itemMoved(moved, at: time, now: now))
+                return (true, itemTaken(at: press.point, time: time, now: now) + itemDragUpdated(moved, at: time, now: now))
             }
             guard claimed == true else { return (false, []) }
 
@@ -208,7 +208,7 @@
     }
 
     /// The hand holding a view moved it by `moved` at `time`, `now` on the frames' clock.
-    private mutating func itemMoved(_ moved: Point, at time: Double, now: Double) -> [Report] {
+    private mutating func itemDragUpdated(_ moved: Point, at time: Double, now: Double) -> [Report] {
         itemAt = Point(itemAt.x + moved.x, itemAt.y + moved.y)
         itemMovedAt = now
         stood = 0
@@ -245,7 +245,7 @@
 
         open = true
         coasting = false
-        moves = []
+        trail = SpeedReading()
         last = time
         return ended + [Report(.began)]
     }
@@ -254,23 +254,20 @@
     public mutating func moved(_ moved: Point, at time: Double) -> [Report] {
         guard open else { return began(at: time) + self.moved(moved, at: time) }
 
-        moves = moves.filter { time - $0.time <= Self.reading } + [(time, moved)]
+        trail.moved(moved, at: time)
         last = time
-        return [Report(.changed, moved: moved)]
+        return [Report(.changed, moved: moved, speed: trail.speed(at: time))]
     }
 
     /// The hand lifted at `time`, as fast as the platform says, or as its last moves say where it says nothing.
     public mutating func lifted(at time: Double, speed: Point?) -> [Report] {
         guard open else { return [] }
 
-        let recent = moves.filter { time - $0.time <= Self.reading }
-        let span = max(time - (recent.first?.time ?? time), Self.frame)
-        let went = recent.reduce(Point.zero) { Point($0.x + $1.moved.x, $0.y + $1.moved.y) }
-        let read = recent.isEmpty ? Point.zero : Point(went.x / span * 1_000, went.y / span * 1_000)
+        let read = trail.speed(at: time)
 
         open = false
         isWheeling = false
-        moves = []
+        trail = SpeedReading()
         return [Report(.ended, speed: speed ?? read)]
     }
 
@@ -280,7 +277,7 @@
 
         open = false
         isWheeling = false
-        moves = []
+        trail = SpeedReading()
         return [Report(.cancelled)]
     }
 
@@ -327,7 +324,7 @@
     /// stands still.
     /// Design: docs/design/host/runtime.md#the-hand-over-a-layout
     public mutating func paced(at time: Double) -> [Report] {
-        if let press, claimed == nil, itemStart == .held, time - press.time >= Self.hold {
+        if let press, claimed == nil, itemStart == .longPress, time - press.time >= Self.hold {
             return itemTaken(at: press.point, time: time, now: time)
         }
         if holdsItem, time - itemMovedAt >= Double(stood + 1) * Self.hold {

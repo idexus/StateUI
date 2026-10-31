@@ -18,13 +18,17 @@ extension AndroidElement {
         element.chosen(in: host.runtime)
     }
 
-    /// A value the user changed in the view, by the host layer's rule (`reportUserChange`): a radio button's
-    /// peers turned off on their own buttons.
+    /// A value the user changed in the view, by the host layer's rule (`reportUserChange`).
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
-        element.reportUserChange(property, event, value, in: host.runtime) { peer in
-            ((peer.native as? AndroidElement)?.view as? AndroidToggleView)?.setOn(false)
-        }
+        element.reportUserChange(property, event, value, in: host.runtime)
+    }
+
+    /// The user pulled the view to refresh it, by the host layer's rule (`reportRefreshRequested`): whether its spinner
+    /// stays.
+    func pulled() -> Bool {
+        guard let host else { return false }
+        return element.reportRefreshRequested(in: host.runtime)
     }
 
     /// The user moved a scroller from `old` to `new`, as the display's frame saw it.

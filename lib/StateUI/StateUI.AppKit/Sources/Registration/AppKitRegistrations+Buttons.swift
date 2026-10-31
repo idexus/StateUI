@@ -25,17 +25,14 @@ extension AppKitRegistrations {
             button.onReleased = { reports.raise(ButtonContract.released) }
             return button
         }, members: { button in
-            button.applies([
+            button.applies(
                 TextualElementContract.text, TextualElementContract.textCase, ButtonContract.icon,
-                ButtonContract.iconPosition,
-                ImageElementContract.contentMode, ButtonContract.lineBreak,
-                TextStyleElementContract.textColor, VisualElementContract.background,
-                BorderElementContract.shape, BorderElementContract.stroke,
-                BorderElementContract.lineWidth, VisualElementContract.isEnabled,
-                FontElementContract.fontFamily, FontElementContract.fontSize,
-                FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
-                ButtonContract.role,
-            ]) { view, values in
+                ButtonContract.iconPosition, ImageElementContract.contentMode, ButtonContract.lineBreak,
+                TextColorElementContract.textColor, VisualElementContract.background, BorderElementContract.shape,
+                BorderElementContract.stroke, BorderElementContract.lineWidth, VisualElementContract.isEnabled,
+                FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
+                FontElementContract.fontWeight, FontElementContract.textStyle, TrackingElementContract.tracking,
+                ButtonContract.role, TextAndIconElementContract.showsText) { view, values in
                 // Each value is read into a name of its own: twelve arguments
                 // of `flatMap` and `??` in one call is more than the type
                 // checker will take.
@@ -43,23 +40,26 @@ extension AppKitRegistrations {
                     .applied(to: values[TextualElementContract.text] ?? "")
                 let source = values[ButtonContract.icon].flatMap { HostPicture($0.propValue) }
                 let icon: NSImage? = source.flatMap { view.picture?($0) }
-                let position: NSControl.ImagePosition = caption.isEmpty
+                // Words left out of sight stay the title, which names the button to assistive technology.
+                let alone = caption.isEmpty || !TextAndIcon.showsText(
+                    values[TextAndIconElementContract.showsText], hasPicture: icon != nil, byDefault: true)
+                let position: NSControl.ImagePosition = alone
                     ? .imageOnly
-                    : Self.imagePosition(values[ButtonContract.iconPosition] ?? .leading)
+                    : Self.imagePosition(values[ButtonContract.iconPosition] ?? .start)
                 // Beside words a picture stands at its own size, smaller where the button is; so does an icon alone.
-                let scaling: NSImageScaling = if caption.isEmpty, case .icon? = source {
+                let scaling: NSImageScaling = if alone, case .icon? = source {
                     .scaleProportionallyDown
-                } else if caption.isEmpty {
+                } else if alone {
                     Self.imageScaling(values[ImageElementContract.contentMode] ?? .fit)
                 } else {
                     .scaleProportionallyDown
                 }
                 let background = paintedColor(values[VisualElementContract.background]?.propValue)
-                // A destructive action's words in the system's red where the tree colours them not.
+                // A destructive action's words in the system's red where the tree colors them not.
                 let look = ButtonRoleLook(
                     values[ButtonContract.role], fills: background != nil,
-                    colorsWords: values[TextStyleElementContract.textColor] != nil)
-                let textColor: NSColor = values[TextStyleElementContract.textColor]
+                    colorsWords: values[TextColorElementContract.textColor] != nil)
+                let textColor: NSColor = values[TextColorElementContract.textColor]
                     .flatMap { nsColor($0.propValue) } ?? (look.wordsInCritical ? .systemRed : .controlTextColor)
                 let stroke = values[BorderElementContract.stroke]?.propValue
                 let lineWidth = BoxArithmetic.outlineWidth(
@@ -84,7 +84,7 @@ extension AppKitRegistrations {
             }
             // AppKit's own key equivalent - the one stated, else the role's - pressing the button while its window is
             // in front, and the role's marks: the accent for the main action, AppKit's mark for a destructive one.
-            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { control, values in
+            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { control, values in
                 let role = values[ButtonContract.role]
                 let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
                 control.applyKeys(shortcut, role: role)
@@ -99,9 +99,9 @@ extension AppKitRegistrations {
     private static func imagePosition(_ position: IconPosition) -> NSControl.ImagePosition {
         switch position {
         case .top: .imageAbove
-        case .trailing: .imageTrailing
+        case .end: .imageTrailing
         case .bottom: .imageBelow
-        case .leading: .imageLeading
+        case .start: .imageLeading
         }
     }
 

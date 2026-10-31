@@ -6,6 +6,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- The WebView sample fetches its page, and the page's link leads on over plain HTTP. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- The Map sample shows the user's own position, once the user allows it. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <application
         android:icon="@mipmap/appicon"
         android:roundIcon="@mipmap/appicon"
@@ -13,15 +16,26 @@
         android:usesCleartextTraffic="true"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault.Light.NoActionBar">
+        <!-- The Maps SDK's key, from google-maps-key.properties: present even when empty, as the map stops without it. -->
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="${googleMapsKey}" />
+        <!-- Single in its task, so a link the Gallery is asked to open reaches the running activity. -->
         <activity
             android:name="com.stateui.gallery.GalleryActivity"
             android:exported="true"
+            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|density">
             <!-- The library this head's Swift is built into; its JNI_OnLoad names the application and registers the host's native methods. -->
             <meta-data android:name="stateui.library" android:value="GalleryAndroid" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- The links the Gallery opens: its own scheme, stateui-gallery://. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="stateui-gallery" />
             </intent-filter>
         </activity>
     </application>

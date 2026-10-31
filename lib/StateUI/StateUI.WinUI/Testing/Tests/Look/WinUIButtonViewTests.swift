@@ -10,15 +10,15 @@ import StateUIConformance
 import XCTest
 
 final class WinUIButtonViewTests: XCTestCase {
-    /// A button styled by the application wears its fill, its words' colour and its rounded corners; the corner
+    /// A button styled by the application wears its fill, its words' color and its rounded corners; the corner
     /// outside the rounding shows nothing of it.
     func testAButtonWearsItsFillWordsAndCorners() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Go")
-                        .background(Color("#512BD4"))
-                        .textColor(Color("#FFFFFF"))
+                        .background(Color(hex: 0x512BD4))
+                        .textColor(Color(hex: 0xFFFFFF))
                         .shape(.roundedRectangle(10))
                         .padding(horizontal: 16, vertical: 11)
                         .width(120)
@@ -32,16 +32,16 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
-    /// A fill and words' colour the tree changes after the button is drawn stand under the pointer too, the fill a
+    /// A fill and words' color the tree changes after the button is drawn stand under the pointer too, the fill a
     /// little fainter: the template takes those states' brushes from the button's own resources as they are now.
-    func testAColourChangedLaterStandsUnderThePointer() throws {
+    func testAColorChangedLaterStandsUnderThePointer() throws {
         try onUIThread {
             let blue = State(wrappedValue: false)
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Go")
-                        .background(Color(blue.wrappedValue ? "#0000FF" : "#FF0000"))
-                        .textColor(Color(blue.wrappedValue ? "#00FF00" : "#FFFF00"))
+                        .background(Color(hex: blue.wrappedValue ? 0x0000FF : 0xFF0000))
+                        .textColor(Color(hex: blue.wrappedValue ? 0x00FF00 : 0xFFFF00))
                         .lineWidth(0)
                         .width(120)
                         .height(40)
@@ -61,14 +61,14 @@ final class WinUIButtonViewTests: XCTestCase {
         }
     }
 
-    /// A destructive action's words stand in the theme's critical colour where the tree colours them not; a colour
+    /// A destructive action's words stand in the theme's critical color where the tree colors them not; a color
     /// the tree states wins.
-    func testADestructiveButtonsWordsStandInTheCriticalColour() {
+    func testADestructiveButtonsWordsStandInTheCriticalColor() {
         onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Delete").role(.destructive).width(120).height(40).horizontalAlignment(.start)
-                    Button("Delete").role(.destructive).textColor(Color("#0000FF"))
+                    Button("Delete").role(.destructive).textColor(Color(hex: 0x0000FF))
                         .width(120).height(40).horizontalAlignment(.start)
                 }
             }
@@ -81,9 +81,9 @@ final class WinUIButtonViewTests: XCTestCase {
                 }
             }
             host.settle { reddish(buttons[0]) }
-            XCTAssertTrue(reddish(buttons[0]), "its words in the critical colour")
+            XCTAssertTrue(reddish(buttons[0]), "its words in the critical color")
             XCTAssertTrue(buttons[0].isCritical)
-            XCTAssertFalse(reddish(buttons[1]), "the tree's colour wins")
+            XCTAssertFalse(reddish(buttons[1]), "the tree's color wins")
         }
     }
 
@@ -93,7 +93,7 @@ final class WinUIButtonViewTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Button("Go")
-                    Button("Send").icon("test_wide.png").iconPosition(.trailing)
+                    Button("Send").icon("test_wide.png").iconPosition(.end)
                 }
             }
             let buttons = host.views(WinUIButtonView.self)
@@ -107,6 +107,20 @@ final class WinUIButtonViewTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack { Button("Go").icon("test_wide.png").horizontalAlignment(.start) }
+            }
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            host.settle { button.frame.width > 0 }
+            XCTAssertLessThan(button.frame.width, 150, "\(button.frame)")
+            XCTAssertLessThan(button.frame.height, 60, "\(button.frame)")
+        }
+    }
+
+    /// A picture standing alone stands at its own size where the tree states none: the button stays a button's size,
+    /// however much room its layout offers.
+    func testAPictureAloneStandsAtItsOwnSize() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                VStack { Button("Go").icon("test_wide.png").showsText(false).horizontalAlignment(.start) }
             }
             let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
             host.settle { button.frame.width > 0 }
@@ -177,7 +191,7 @@ final class WinUIButtonViewTests: XCTestCase {
             ] {
                 let host = WinUIRenderer.running {
                     HStack {
-                        Button(icon: "test_wide.png")
+                        Button().icon("test_wide.png")
                             .contentMode(aspect)
                             .background(.transparent)
                             .lineWidth(0)

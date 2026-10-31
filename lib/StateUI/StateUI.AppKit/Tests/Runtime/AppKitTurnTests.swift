@@ -63,7 +63,7 @@ final class AppKitTurnTests: XCTestCase {
             guard renderer.actToolkit.showing == nil else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         }
-        XCTAssertTrue(try XCTUnwrap(renderer.actToolkit.showing).pressForTesting("Delete", typing: nil))
+        XCTAssertTrue(try XCTUnwrap(renderer.actToolkit.showing).pressForTesting(.accept, typing: nil))
         for _ in 0..<100 {
             guard shown() != "deleted" else { break }
             RunLoop.main.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
@@ -112,7 +112,7 @@ private struct BarAndPage: View {
             Button("Say").onClicked { said += 1 }
         }
         .title("Page")
-        .toolbar { ToolbarItem("Said \(said)").onClicked {} }
+        .toolbar { ToolbarButton("Said \(said)").onClicked {} }
     }
 }
 
@@ -124,13 +124,14 @@ private final class Said {
 
 /// A page that asks the user, then says the answer.
 private struct AskingPage: View {
+    @Environment(\.window) private var window
     @State private var said = "asked"
 
     var body: some View {
         VStack {
             Text(said)
-            Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
-                let deleting = try await Dialogs.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
+            Button("Confirm").onClicked(.ignoreWhileRunning) {
+                let deleting = try await window.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
                 said = deleting ? "deleted" : "kept"
             }
         }

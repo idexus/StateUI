@@ -22,7 +22,7 @@ private enum Route: Hashable {
 /// arrives with its titles.
 private struct Root: View {
     var body: some View {
-        ModifiedContent(node: label("home")).title("Home")
+        AnyView(node: label("home")).title("Home")
     }
 }
 
@@ -31,7 +31,7 @@ private struct Destination: View {
     let name: String
 
     var body: some View {
-        ModifiedContent(node: label(name)).title(name)
+        AnyView(node: label(name)).title(name)
     }
 }
 
@@ -40,8 +40,8 @@ private struct DressedDestination: View {
     let depth: Int
 
     var body: some View {
-        ModifiedContent(node: label("level \(depth)"))
-            .titleView { ModifiedContent(node: label("on the bar")) }
+        AnyView(node: label("level \(depth)"))
+            .titleView { AnyView(node: label("on the bar")) }
             .title("Level \(depth)")
             // Non-default values prove that the host must apply the branch; an assertion agreeing with a default
             // could pass without it.
@@ -166,14 +166,14 @@ final class NavigationStackTests: XCTestCase {
         let path = State<[Route]>([])
 
         let node = stack(path.projectedValue)
-            .barBackgroundColor(Color("#512BD4"))
+            .barBackground(Color(hex: 0x512BD4))
             .barForegroundColor(.white)
             .node
             .built
 
-        XCTAssertEqual(node.props["barBackgroundColor"], Color("#512BD4").propValue)
-        XCTAssertEqual(node.props["barForegroundColor"], Color("#FFFFFF").propValue)
-        XCTAssertNil(node.children.first?.built.props["barBackgroundColor"],
+        XCTAssertEqual(node.props["barBackground"], Color(hex: 0x512BD4).propValue)
+        XCTAssertEqual(node.props["barForegroundColor"], Color(hex: 0xFFFFFF).propValue)
+        XCTAssertNil(node.children.first?.built.props["barBackground"],
                      "and not on the page under it")
     }
 
@@ -185,11 +185,11 @@ final class NavigationStackTests: XCTestCase {
 
         let sent = Set(
             stack(path.projectedValue)
-                .barBackgroundColor(.black)
+                .barBackground(.black)
                 .barForegroundColor(.white)
-                .barTitle("StateUI")
-                .barSubtitle("Home")
-                .barIcon("mark.png")
+                .toolbarStyle(.plain)
+                .toolbarSpacing(12)
+                .barScrollEdge(.hard)
                 .node
                 .built
                 .props
@@ -226,7 +226,7 @@ final class NavigationStackTests: XCTestCase {
             case .level(let depth): DressedDestination(depth: depth)
             }
         }
-        .barBackgroundColor(Color("#512BD4"))
+        .barBackground(Color(hex: 0x512BD4))
         .barForegroundColor(.white)
         .node
 
@@ -236,7 +236,7 @@ final class NavigationStackTests: XCTestCase {
         let dressed = ElementID.manual("1/level(2)")
 
         XCTAssertEqual(stack.props, [
-            "barBackgroundColor": Color("#512BD4").propValue, "barForegroundColor": Color.white.propValue,
+            "barBackground": Color(hex: 0x512BD4).propValue, "barForegroundColor": Color.white.propValue,
         ])
         XCTAssertEqual(stack.eventNames, ["popped"])
         XCTAssertEqual(stack.arrangement, [.manual("root"), .manual("0/detail(\"one\")"), dressed])

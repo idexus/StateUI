@@ -49,17 +49,18 @@ final class WinUIActToolkit: ActToolkit {
         return Int(minutes)
     }
 
-    /// Asks in WinUI's own dialog over the window the user is in; its answer comes back by its ticket.
+    /// Asks in WinUI's own dialog over the window asked; its answer comes back by its ticket.
     /// Design: docs/design/platforms/winui/runtime.md#questions-for-the-user
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = renderer.userWindow, let element = renderer.element(of: window), let content = window.content
+        guard let window = renderer.window(asked: window), let element = renderer.element(of: window), let content = window.content
         else { return nil }
         let ticket = dialogs.hold(answered)
         showing = Showing(ticket: ticket, window: window, bound: question.maximumLength)
 
-        // The title, the message, the captions that accept, cancel and destroy, the placeholder, the first words.
+        // The title, the message, the captions that accept and cancel, the placeholder, the first words.
         let kind: StateUIQuestionKind = switch question.kind {
         case .alert: .alert
         case .confirm: .confirm
@@ -67,18 +68,18 @@ final class WinUIActToolkit: ActToolkit {
         case .prompt: .prompt
         }
         let words: [String?] = [
-            question.title, question.message, question.accept, question.cancel, question.destruction,
-            question.placeholder, question.words,
+            question.title, question.message, question.accept, question.cancel, question.placeholder, question.words,
         ]
         let traits = question.traits
         WinUIStrings.withCStrings(words.map { $0 ?? "" } + question.choices) { pointers in
             func at(_ index: Int) -> UnsafePointer<CChar>? { words[index] == nil ? nil : pointers[index] }
             Array(pointers.dropFirst(words.count)).withUnsafeBufferPointer { offered in
                 var relayed = StateUIQuestion(
-                    kind: kind, title: at(0), message: at(1), accept: at(2), cancel: at(3), destruction: at(4),
-                    choices: offered.baseAddress, choiceCount: Int32(question.choices.count), placeholder: at(5),
+                    kind: kind, title: at(0), message: at(1), accept: at(2), cancel: at(3),
+                    choices: offered.baseAddress, choiceCount: Int32(question.choices.count),
+                    destructive: Int32(question.destructive ?? -1), placeholder: at(4),
                     maximumLength: Int32(question.maximumLength ?? 0), spellChecked: traits.checksSpelling,
-                    predicted: traits.predicts, scope: WinUIInputScope(traits).rawValue, initial: at(6))
+                    predicted: traits.predicts, scope: WinUIInputScope(traits).rawValue, initial: at(5))
                 stateui_winui_ask(content.handle, ticket, &relayed)
             }
         }
@@ -115,12 +116,54 @@ final class WinUIActToolkit: ActToolkit {
         for controller in renderer.windows { controller.window.useTheme(theme) }
     }
 
+    /// Keeps the accent the user chose for Windows: WinUI draws its controls in it.
+    func useAccentColor(_ accent: Color?) -> Bool { false }
+
     func announce(_ words: String) {
         if let content = renderer.userWindow?.content { stateui_winui_announce(content.handle, words) }
     }
 
-    func hideOnScreenKeyboard() -> Bool {
-        renderer.userWindow?.content.map { stateui_winui_hide_keyboard($0.handle) } ?? false
+    /// What the user is offered to share now, where a test holds the sheet unshown.
+    private(set) var sharing: (shared: HostShare, answered: (Result<Bool, ActFailure>) -> Void)?
+
+    /// Whether a test holds the share sheet unshown and answers it itself (`answerShareForTesting`).
+    var holdsShareForTesting = false
+
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let shown = renderer.window(asked: window), let element = renderer.element(of: shown) else { return nil }
+        if holdsShareForTesting {
+            sharing = (shared, answered)
+            return element
+        }
+        let waiting = Unmanaged.passRetained(WinUIShareWaiting(answered)).toOpaque()
+        stateui_winui_share(shown.handle, shared.text, shared.link, waiting) { context, shared in
+            let waiting = Unmanaged<WinUIShareWaiting>.fromOpaque(context!).takeRetainedValue()
+            MainActor.assumeIsolated {
+                waiting.answered(shared < 0 ? .failure(ActFailure("Windows offered no share sheet")) : .success(shared == 1))
+            }
+        }
+        return element
+    }
+
+    /// A test's answer for the user: shared, or cancelled.
+    func answerShareForTesting(shared: Bool) {
+        guard let waiting = sharing else { return }
+        sharing = nil
+        waiting.answered(.success(shared))
+    }
+
+    func writeClipboard(_ words: String) {
+        WinUIClipboard.write(words)
+    }
+
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        answered(.success(WinUIClipboard.read()))
+    }
+
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        renderer.window(asked: window)?.content.map { stateui_winui_hide_keyboard($0.handle) } ?? false
     }
 
     /// Design: docs/design/platforms/winui/runtime.md#acts
@@ -140,7 +183,7 @@ final class WinUIActToolkit: ActToolkit {
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
         case .persistValue:
-            WinUIPersistence.keep(call, core: renderer.runtime.core)
+            WinUIPersistence.keep(call)
         case .persistSceneValue:
             let scenes = renderer.scenes
             if scenes.keep(call.arguments), let text = scenes.changed(root: renderer.runtime.tree.root) {
@@ -181,5 +224,14 @@ final class WinUIActToolkit: ActToolkit {
 
     func log(_ message: String) {
         WinUIRenderer.log.error(message)
+    }
+}
+
+/// What waits for the share sheet's answer, carried through the relay's context.
+private final class WinUIShareWaiting {
+    let answered: (Result<Bool, ActFailure>) -> Void
+
+    init(_ answered: @escaping (Result<Bool, ActFailure>) -> Void) {
+        self.answered = answered
     }
 }

@@ -57,6 +57,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     @State private var shape = Shape.wheel
     @State private var shown = 0
     @State private var shaded = true
+    @State private var rightToLeft = false
     @State private var opened = "tap one"
     @State private var moves = 0
     // listing: end
@@ -76,7 +77,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // over, which a stack cannot give a child - and a gallery wants it all.
         Grid {
             Grid {
-                Rectangle(Palette.raised)
+                Rectangle()
+                    .fill(Palette.raised)
                     .cornerRadius(14)
 
                 // THE WHOLE CONTROL: the run made below - one card per item, each
@@ -84,10 +86,13 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 gallery
                     .arrangement(shape.arrangement)
                     .position($shown)
-                    .onItemTapped { card in opened = "tapped \(card.name)" }
+                    .onItemActivated { name in opened = "opened \(name)" }
                     // Another card in the middle, swiped or assigned.
                     .onPositionChanged { _ in moves += 1 }
             }
+            // RIGHT TO LEFT the cards stand in the mirror, as a row of views
+            // does, and the swipe that moves them on goes the other way.
+            .layoutDirection(rightToLeft ? .rightToLeft : .inherited)
             .gridRow(0)
             // The cards stay ON the board: one mid-crossing between two shapes,
             // or turned far out in a small room, is cut at the board's edge
@@ -104,11 +109,11 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 // to the middle, not on every frame of the movement.
                 DebugInfoLabel()
 
-                PositionIndicator()
+                PositionDots()
                     .count(cards.count)
                     .position(shown)
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
                 Text("\(cards[front].name) · card \(shown + 1) of \(cards.count) · \(opened) · moved \(moves)")
@@ -160,6 +165,8 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 Picker(Shape.allCases, selection: $shape) { $0.title }
 
                 SwitchRow("Shaded", $shaded)
+
+                SwitchRow("Right to left", $rightToLeft)
             }
             .spacing(16)
             .horizontalAlignment(.center)
@@ -204,7 +211,10 @@ struct GalleryViewSample: SampleContent, ExampleContent {
         // corners, which is why the view is the application's to give.
         // A quarter of the fade is left beside it, unless `.fade(_:)` says
         // otherwise.
-        return run.shade(Rectangle(Color("#000000")).cornerRadius(16))
+        return run.shade(
+            Rectangle()
+                .fill(Color(hex: 0x000000))
+                .cornerRadius(16))
     }
 
     /// One card's face - a picture and its name, and nothing at all about where
@@ -222,7 +232,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                     .textColor(Palette.onBrand)
                     .lineBreak(.tailTruncation)
                     .padding(horizontal: 12, vertical: 10)
-                    .background(Color("#B3000000"))
+                    .background(Color(hex: 0x000000, opacity: 0.7))
                     .verticalAlignment(.end)
             }
             .clipsContent(true)
@@ -247,15 +257,15 @@ struct GalleryViewSample: SampleContent, ExampleContent {
                 + "card it is nearest - in the deck, the card in front goes out under your "
                 + "finger and under the next. `.position($shown)` is which one, written "
                 + "as the user moves and glided to when it is assigned - which is what "
-                + "Back and Next do. The dots are a `PositionIndicator` reading the same "
+                + "Back and Next do. The dots are a `PositionDots` reading the same "
                 + "`@State`: one number joins the two controls.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`Shaded` is `.shade(Rectangle(Color(\"#000000\")).cornerRadius(16))`: "
+            Text("`Shaded` is `.shade(Rectangle().fill(Color(hex: 0x000000)).cornerRadius(16))`: "
                 + "the cards away from the middle are DARKENED by a view drawn over them "
                 + "rather than faded, so what is behind a far card stays hidden. "
-                + "`.onItemTapped` is handed the card in the MIDDLE.")
+                + "`.onItemActivated` is handed the card in the MIDDLE.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

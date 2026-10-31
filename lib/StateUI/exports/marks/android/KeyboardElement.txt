@@ -1,8 +1,10 @@
-# revision 3.1
+# revision 6.1
 Button.keyPressed: ✓ pressKeys on Button: the key event no view took handed to the host as the application's activity hands it
 Button.keysTaken: ✓ pressKeys on Button: the key event no view took handed to the host as the application's activity hands it
 CheckBox.keyPressed: ✓ pressKeys on CheckBox: the key event no view took handed to the host as the application's activity hands it
 CheckBox.keysTaken: ✓ pressKeys on CheckBox: the key event no view took handed to the host as the application's activity hands it
+ColorPicker.keyPressed: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.keysTaken: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 DatePicker.keyPressed: ✓ pressKeys on DatePicker: the key event no view took handed to the host as the application's activity hands it
 DatePicker.keysTaken: ✓ pressKeys on DatePicker: the key event no view took handed to the host as the application's activity hands it
 Grid.keyPressed: ✓ pressKeys on Grid: the key event no view took handed to the host as the application's activity hands it
@@ -11,12 +13,12 @@ HStack.keyPressed: ✓ pressKeys on HStack: the key event no view took handed to
 HStack.keysTaken: ✓ pressKeys on HStack: the key event no view took handed to the host as the application's activity hands it
 ItemsView.keyPressed: ✓ pressKeys on ItemsView: the key event no view took handed to the host as the application's activity hands it
 ItemsView.keysTaken: ✓ pressKeys on ItemsView: the key event no view took handed to the host as the application's activity hands it
-LayoutEngine.keyPressed: ✓ pressKeys on LayoutEngine: the key event no view took handed to the host as the application's activity hands it
-LayoutEngine.keysTaken: ✓ pressKeys on LayoutEngine: the key event no view took handed to the host as the application's activity hands it
+Link.keyPressed: ✓ pressKeys on Link: the key event no view took handed to the host as the application's activity hands it
+Link.keysTaken: ✓ pressKeys on Link: the key event no view took handed to the host as the application's activity hands it
+MotionLayout.keyPressed: ✓ pressKeys on MotionLayout: the key event no view took handed to the host as the application's activity hands it
+MotionLayout.keysTaken: ✓ pressKeys on MotionLayout: the key event no view took handed to the host as the application's activity hands it
 Picker.keyPressed: ✓ pressKeys on Picker: the key event no view took handed to the host as the application's activity hands it
 Picker.keysTaken: ✓ pressKeys on Picker: the key event no view took handed to the host as the application's activity hands it
-RadioButton.keyPressed: ✓ pressKeys on RadioButton: the key event no view took handed to the host as the application's activity hands it
-RadioButton.keysTaken: ✓ pressKeys on RadioButton: the key event no view took handed to the host as the application's activity hands it
 ScrollView.keyPressed: ✓ pressKeys on ScrollView: the key event no view took handed to the host as the application's activity hands it
 ScrollView.keysTaken: ✓ pressKeys on ScrollView: the key event no view took handed to the host as the application's activity hands it
 SearchField.keyPressed: ✓ pressKeys on SearchField: the key event no view took handed to the host as the application's activity hands it

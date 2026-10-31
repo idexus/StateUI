@@ -20,9 +20,11 @@ let package = Package(
         .package(name: "StateUIRoot", path: "../../.."),
     ],
     targets: [
+        // libdispatch's main queue as a run loop turns it: its handle and its drain.
+        .systemLibrary(name: "CStateUIHost", path: "CStateUIHost"),
         .target(
             name: "StateUIHost",
-            dependencies: [.product(name: "StateUI", package: "StateUIRoot")],
+            dependencies: ["CStateUIHost", .product(name: "StateUI", package: "StateUIRoot")],
             path: "Sources",
             swiftSettings: [.enableUpcomingFeature("NonisolatedNonsendingByDefault")]
         ),

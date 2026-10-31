@@ -20,6 +20,18 @@ final class WebLeaveTests: XCTestCase {
         XCTAssertEqual(try Leaving.outlived(on: WebDriver()), [])
     }
 
+    /// A view alive is counted by its kind - its class, its element's tag and its classes - which names a view that
+    /// outlived its element; let go of, it is counted no more.
+    func testAViewAliveIsCountedByItsKind() {
+        let kind = "WebDOMView <span>.kind-probe"
+        let view = WebDOMView(tag: "span")
+        view.attribute("class", "kind-probe")
+        XCTAssertEqual(WebDriver().liveViewKinds?[kind], 1)
+
+        view.release()
+        XCTAssertNil(WebDriver().liveViewKinds?[kind])
+    }
+
     /// A window closed lets go of every listener its views hung on the page - a box's size followed, a shape's and a
     /// canvas's, a frame read, a list's cells watched for nearness.
     func testAClosedWindowLetsGoOfEveryListenerItsViewsHung() throws {
@@ -28,8 +40,14 @@ final class WebLeaveTests: XCTestCase {
         let gradient = Brush.linearGradient([GradientStop(.red, 0), GradientStop(.blue, 1)])
         let host = WebRenderer.running {
             VStack {
-                Rectangle().fill(.red).background(gradient).height(20)
-                Rectangle().fill(gradient).height(20).onFrameChanged { _ in }
+                Rectangle()
+                    .fill(.red)
+                    .background(gradient)
+                    .height(20)
+                Rectangle()
+                    .fill(gradient)
+                    .height(20)
+                    .onFrameChanged { _ in }
                 Canvas().height(20)
                 ItemsView(["one", "two", "three"]) { Text($0) }.height(80)
             }

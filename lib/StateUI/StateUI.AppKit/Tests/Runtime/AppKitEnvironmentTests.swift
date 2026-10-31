@@ -32,7 +32,7 @@ final class AppKitEnvironmentTests: XCTestCase {
         let info = StandardEnvironment.application.info
         let before = info.accentColor
         defer { HostBoundary.setAccentColor(before) }
-        HostBoundary.setAccentColor(Color("#00000000"))
+        HostBoundary.setAccentColor(Color(hex: 0x000000, opacity: 0))
 
         AppKitEnvironment(core: CoreLink()).reportAccent()
 
@@ -44,6 +44,28 @@ final class AppKitEnvironmentTests: XCTestCase {
         XCTAssertEqual(info.accentColor, Color(
             red: channel(accent.redComponent), green: channel(accent.greenComponent),
             blue: channel(accent.blueComponent), alpha: channel(accent.alphaComponent)))
+    }
+
+    /// The accessibility settings reported are the Mac's own: less motion, more contrast and VoiceOver as the
+    /// workspace says them, and the scale of words 1, which a Mac keeps none of.
+    func testTheAccessibilitySettingsReportedAreTheMacs() {
+        let settings = StandardEnvironment.device.accessibility
+        defer {
+            HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+                reducesMotion: false, prefersHigherContrast: false, isScreenReaderOn: false, textScale: 1))
+        }
+        let workspace = NSWorkspace.shared
+        HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: !workspace.accessibilityDisplayShouldReduceMotion,
+            prefersHigherContrast: !workspace.accessibilityDisplayShouldIncreaseContrast,
+            isScreenReaderOn: !workspace.isVoiceOverEnabled, textScale: 2))
+
+        AppKitEnvironment(core: CoreLink()).reportAccessibility()
+
+        XCTAssertEqual(settings.reducesMotion, workspace.accessibilityDisplayShouldReduceMotion)
+        XCTAssertEqual(settings.prefersHigherContrast, workspace.accessibilityDisplayShouldIncreaseContrast)
+        XCTAssertEqual(settings.isScreenReaderOn, workspace.isVoiceOverEnabled)
+        XCTAssertEqual(settings.textScale, 1)
     }
 
     /// The locale report is the user's locale, its zone and its language's direction.

@@ -16,6 +16,9 @@ final class WebSplitView: WebDOMView {
     /// Whether the sidebar shows on screen.
     private(set) var isPresented = false
 
+    /// Whether the sidebar's last change moved it: the first room's decision and the tree's first word stand at once.
+    private(set) var moves = false
+
     /// The user showed or hid the sidebar.
     var onPresentationChanged: (Bool) -> Void = { _ in }
 
@@ -43,7 +46,10 @@ final class WebSplitView: WebDOMView {
 
     /// Shows the sidebar or hides it, as the tree or the user says; `moves` false for a change that stands at once.
     func present(_ presented: Bool, moves: Bool = true) {
-        if presented != isPresented { attribute("data-moves", moves ? "" : nil) }
+        if presented != isPresented {
+            self.moves = moves
+            attribute("data-moves", moves ? "" : nil)
+        }
         isPresented = presented
         attribute("data-sidebar", presented ? "shown" : "hidden")
     }
@@ -64,15 +70,19 @@ final class WebSplitView: WebDOMView {
     }
 
     /// Stands the sidebar on what the split view says of each place - beside the detail, and over it - as variables
-    /// the style sheet reads in each: a colour, or a blur's filter under its colour; none for the page's own.
+    /// the style sheet reads in each: a color, or a blur's filter under its color; none for the page's own. Over the
+    /// detail a color is laid over the page's raised surface.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     func ground(beside: HostMaterial, over: HostMaterial) {
-        for (place, material) in [("sidebar", beside), ("flyout", over)] {
+        for (place, material) in [("sidebar", beside), ("sidebar-overlay", over)] {
             let box = WebBox(fill: material.paint, material: material.blur == nil ? nil : material)
             let styles = Dictionary(box.styles(size: .zero), uniquingKeysWith: { first, _ in first })
-            style("--stateui-\(place)-ground", material.isEmpty ? nil : styles["background"] ?? nil)
+            let ground = material.isEmpty ? nil : styles["background"] ?? nil
+            style("--stateui-\(place)-ground", ground)
             style("--stateui-\(place)-filter", styles["backdrop-filter"] ?? nil)
         }
+        let color = over.blur == nil ? WebCSS.fill(over.paint) : nil
+        style("--stateui-sidebar-overlay-layer", color.map { "linear-gradient(\($0), \($0)), var(--stateui-raised)" })
     }
 
     override func release() {

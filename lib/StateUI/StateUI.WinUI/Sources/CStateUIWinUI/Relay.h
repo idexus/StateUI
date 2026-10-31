@@ -44,11 +44,25 @@ namespace stateui {
     /// Runs `work` on the UI thread, in its turn; from any thread - what a WinRT operation ending beside it hands back.
     void runOnUIThread(std::function<void()> work);
 
+    /// The color `argb` - 0xAARRGGBB - is.
+    inline winrt::Windows::UI::Color color(uint32_t argb) {
+        return {static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8),
+                static_cast<uint8_t>(argb)};
+    }
+
     /// WinUI's own brush for a brush as the host hands it; null for none.
     xaml::Media::Brush brush(StateUIBrush const &brush);
 
-    /// A brush painting an oval `width` by `height`: `fill`'s first colour keeping `share` of its opacity inside,
-    /// `stroke`'s first colour `lineWidth` wide inside its edge.
+    /// The brush of a ground: null for WinUI's own, a color `argb`, or the in-app acrylic in it - its luminosity
+    /// hiding `opacity` of what is behind it and its tint `tintOpacity`.
+    xaml::Media::Brush ground(StateUIGround kind, uint32_t argb, float opacity, float tintOpacity);
+
+    /// The brush of a bar's ground: `gradient` where it is a line's or a point's, else the ground's (`ground`).
+    xaml::Media::Brush barGround(
+        StateUIGround kind, uint32_t argb, float opacity, float tintOpacity, StateUIBrush const &gradient);
+
+    /// A brush painting an oval `width` by `height`: `fill`'s first color keeping `share` of its opacity inside,
+    /// `stroke`'s first color `lineWidth` wide inside its edge.
     xaml::Media::Brush oval(StateUIBrush const &fill, StateUIBrush const &stroke, double lineWidth, double share,
                             double width, double height);
 
@@ -69,7 +83,7 @@ namespace stateui {
     bool holdsFocus(xaml::UIElement const &element);
 
     /// Writes `brushes` into the control's own resources under the names its template reads - lightweight styling;
-    /// a null brush takes its name away. A solid brush standing there takes the new colour in place, which what it
+    /// a null brush takes its name away. A solid brush standing there takes the new color in place, which what it
     /// paints follows; one that comes, goes or is of another kind has the control's theme read again, as its template
     /// takes such a resource only then.
     /// Design: docs/design/platforms/winui/controls.md#a-controls-accent
@@ -132,8 +146,16 @@ namespace stateui {
     /// The file an icon `pictureIcon` made shows; empty for any other icon, and for none.
     std::wstring iconFile(controls::IconElement const &icon);
 
+    /// Names `brushes` - a name a template reads, a color - in the entry's resources for the light theme and the dark,
+    /// before the entry stands. Design: docs/design/platforms/winui/pages.md#a-bars-buttons
+    void nameThemedBrushes(
+        xaml::FrameworkElement const &entry, std::vector<std::pair<std::wstring, std::wstring>> const &brushes);
+
+    /// Whether the entry's own theme dictionaries name a brush `name`.
+    bool namesThemedBrush(xaml::FrameworkElement const &entry, wchar_t const *name);
+
     /// Marks an entry whose choice destroys something: its words' brushes `names` - at rest, under the pointer and
-    /// pressed - take the theme's critical colour, light or dark as the entry's own theme is. Written before the
+    /// pressed - take the theme's critical color, light or dark as the entry's own theme is. Written before the
     /// entry stands, as its template reads them then.
     /// Design: docs/design/platforms/winui/pages.md#a-destructive-entry
     void markDestructive(xaml::FrameworkElement const &entry, std::vector<std::wstring> const &names);
@@ -265,6 +287,71 @@ namespace stateui {
     inline controls::CommandBar trailingActions(controls::TitleBar const &bar) {
         return bar.RightHeader().as<controls::CommandBar>();
     }
+
+    /// The two command bars a bar's actions stand on: its leading edge's, and its trailing edge's with "more" behind
+    /// it - a title bar's headers, or the head of a sheet.
+    struct ActionEdges {
+        controls::CommandBar leading{nullptr};
+        controls::CommandBar trailing{nullptr};
+    };
+
+    /// A title bar's edges.
+    inline ActionEdges actionEdges(controls::TitleBar const &bar) {
+        return {leadingActions(bar), trailingActions(bar)};
+    }
+
+    /// The edges of a sheet's head, beside its title.
+    ActionEdges sheetActionEdges(controls::Grid const &sheet);
+
+    /// The edges of the head of a split view's pane, over its sidebar page.
+    ActionEdges paneActionEdges(controls::SplitView const &split);
+
+    /// The edges of a page's bar at its foot.
+    ActionEdges footActionEdges(controls::Grid const &foot);
+
+    /// Whether `control`, one of a bar's, is words nobody chooses rather than a button.
+    inline bool isBarLabel(controls::Control const &control) {
+        return !control.try_as<controls::Primitives::ButtonBase>() && !control.try_as<controls::SplitButton>();
+    }
+
+    /// Paints the actions on `edges` and "more" in `foreground`, or the theme's where it is null; a destructive one
+    /// keeps the theme's critical color.
+    void paintActions(ActionEdges const &edges, xaml::Media::Brush const &foreground);
+
+    /// A command bar for the actions at one of a bar's edges, on the bar's own background.
+    inline controls::CommandBar actionBar() {
+        controls::CommandBar actions;
+        actions.DefaultLabelPosition(controls::CommandBarDefaultLabelPosition::Right);
+        actions.Background(xaml::Media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
+        actions.VerticalAlignment(xaml::VerticalAlignment::Center);
+        return actions;
+    }
+
+    /// The row of actions on the capsule a bar's container holds; null where it holds none.
+    controls::StackPanel capsuleRow(controls::AppBarElementContainer const &contained);
+
+    /// The controls a bar's container holds for its actions: the one of an action standing alone, or each action
+    /// standing on the capsule it holds.
+    std::vector<controls::Control> composedActions(controls::AppBarElementContainer const &contained);
+
+    /// The name of the brush the words of an action's control on the bar take: a split button's, a two-state
+    /// button's or another button's.
+    std::wstring composedForeground(controls::Control const &control);
+
+    /// Puts `count` actions on `edges`, as `stateui_winui_title_bar_set_actions` says; `owner` is the element whose
+    /// theme fades a disabled picture, `view` the one a press is told to.
+    void setActions(
+        ActionEdges const &edges, xaml::FrameworkElement const &owner, int64_t view, char const *const *texts,
+        char const *const *identifiers, char const *const *icons, bool const *words, bool const *destructive,
+        int32_t const *groups, int32_t leadingGroups, bool const *enabled, int32_t const *keys,
+        int32_t const *modifiers, bool const *givesWay, int32_t const *states, int32_t const *openings,
+        int32_t const *capsules, int32_t count);
+
+    /// Gives the action at `place` on `edges` its menu, as `stateui_winui_title_bar_set_action_menu` says.
+    void setActionMenu(
+        ActionEdges const &edges, int64_t view, int32_t place, bool held, int32_t first, int32_t const *kinds,
+        char const *const *titles, bool const *enabled, char const *const *identifiers, char const *const *icons,
+        bool const *destructive, int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count);
 
     /// Whether `element` is one of a window's layers over its rows - its sheets or its overlays - and no row's own.
     inline bool isLayer(xaml::FrameworkElement const &element) {

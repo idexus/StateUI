@@ -13,11 +13,14 @@
     func presentRendered(touchedChrome: Bool)
 
     /// Follows a frame's walk outside the tree: the windows' chrome again where `movedChrome` says it moved - a
-    /// bar's colour, a window's frame.
+    /// bar's color, a window's frame.
     func presentFrame(movedChrome: Bool)
 
     /// Performs an act the application called, on the interface its handler changed.
     func perform(_ call: HostActCall)
+
+    /// Opens the address of a link the user chose, as a launched one opens (`HostActPerformer.open(link:)`).
+    func open(link address: String)
 
     /// Puts the keyboard on `element` as the focus act does (`ActToolkit.focus`): a field the keyboard is handed on
     /// to (`NextField`).

@@ -20,15 +20,9 @@ struct BuilderSample: SampleContent, ExampleContent {
             // the closure a flip or a pick builds again.
             DebugInfoLabel()
 
-            HStack {
-                Switch($signedIn)
-                    .accessibilityIdentifier("builder.signedIn")
-                    .accessibilityLabel("Signed in")
-
-                Text("Signed in")
-                    .verticalAlignment(.center)
-            }
-            .spacing(12)
+            Switch($signedIn)
+                .text("Signed in")
+                .accessibilityIdentifier("builder.signedIn")
 
             // An `if` with no `else`. The TextField below it is child 2 in one
             // state and child 3 in the other - and it is the same control

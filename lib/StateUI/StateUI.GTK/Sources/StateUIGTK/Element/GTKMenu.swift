@@ -32,8 +32,14 @@ final class GTKMenu {
     /// Each item's element, by its action's name.
     private(set) var items: [String: () -> MountedElement?] = [:]
 
+    /// The action's name of each of the Edit menu's own entries, by what it does.
+    private(set) var edits: [EditCommand: String] = [:]
+
     /// The numbers its actions' signals carry.
     private var numbers: [Int64] = []
+
+    /// The numbers its own Edit entries' signals carry.
+    private var editNumbers: [Int64] = []
 
     /// What the menu draws: its entries' kinds, captions and whether each can be chosen, in order.
     private(set) var drawn: [String] = []
@@ -60,6 +66,7 @@ final class GTKMenu {
 
     isolated deinit {
         for number in numbers { Self.chosen.release(number) }
+        for number in editNumbers { Self.edited.release(number) }
         g_object_unref(UnsafeMutableRawPointer(model))
         g_object_unref(UnsafeMutableRawPointer(actions))
     }
@@ -105,19 +112,33 @@ final class GTKMenu {
             g_object_unref(UnsafeMutableRawPointer(submenu))
             return
         }
-        let name = "e\(items.count)"
+        let name = "e\(runs.count)"
         checks.append(entry.isOn)
         let action = entry.isOn.map { g_simple_action_new_stateful(name, nil, g_variant_new_boolean($0 ? 1 : 0))! }
             ?? g_simple_action_new(name, nil)!
         g_simple_action_set_enabled(action, entry.isEnabled ? 1 : 0)
         let element = entry.element
-        items[name] = { [weak element] in element }
         runs.append(element.map(ObjectIdentifier.init))
-        let number = Self.chosen.hold { [weak element] in element }
-        numbers.append(number)
-        connectSignal(UnsafeMutableRawPointer(action), "activate", number: number) {
-            (_: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, data: gpointer?) in
-            MainActor.assumeIsolated { GTKMenu.chosen.find(viewNumber(data))?()?.gtk.choose() }
+        if let command = entry.edit {
+            // The Edit menu's own entry acts on the words the user typed into in the window the menu stands in.
+            edits[command] = name
+            let number = Self.edited.hold(command)
+            editNumbers.append(number)
+            connectSignal(UnsafeMutableRawPointer(action), "activate", number: number) {
+                (_: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, data: gpointer?) in
+                MainActor.assumeIsolated {
+                    guard let command = GTKMenu.edited.find(viewNumber(data)) else { return }
+                    GTKEditing.perform(command, in: GTKRenderer.shared?.userWindow)
+                }
+            }
+        } else {
+            items[name] = { [weak element] in element }
+            let number = Self.chosen.hold { [weak element] in element }
+            numbers.append(number)
+            connectSignal(UnsafeMutableRawPointer(action), "activate", number: number) {
+                (_: UnsafeMutableRawPointer?, _: UnsafeMutableRawPointer?, data: gpointer?) in
+                MainActor.assumeIsolated { GTKMenu.chosen.find(viewNumber(data))?()?.gtk.choose() }
+            }
         }
         g_action_map_add_action(OpaquePointer(actions), action)
         g_object_unref(UnsafeMutableRawPointer(action))
@@ -135,6 +156,9 @@ final class GTKMenu {
 
     /// Every item's element, by the number its action's signal carries, one across the process.
     private static let chosen = Numbered<() -> MountedElement?>()
+
+    /// What each of the Edit menu's own entries does, by the number its action's signal carries.
+    private static let edited = Numbered<EditCommand>()
 }
 
 /// The model of a `GMenu`, as GTK's menus take it.

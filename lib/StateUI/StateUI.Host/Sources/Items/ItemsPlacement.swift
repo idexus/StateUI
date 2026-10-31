@@ -11,19 +11,19 @@
     /// The room an entry keeps around it, in points: before it in the reading direction, above it, after it.
     public struct Room: Equatable, Sendable {
         /// The room before the entry, in the reading direction.
-        public var leading = 0.0
+        public var start = 0.0
 
         /// The room above the entry.
         public var top = 0.0
 
         /// The room after the entry, in the reading direction.
-        public var trailing = 0.0
+        public var end = 0.0
 
-        /// A room of `leading`, `top` and `trailing` points.
-        public init(leading: Double = 0, top: Double = 0, trailing: Double = 0) {
-            self.leading = leading
+        /// A room of `start`, `top` and `end` points.
+        public init(start: Double = 0, top: Double = 0, end: Double = 0) {
+            self.start = start
             self.top = top
-            self.trailing = trailing
+            self.end = end
         }
     }
 
@@ -51,7 +51,7 @@
             }
             for entry in Self.walk(entries) {
                 let before = entry.edge || entry.place == 0 ? 0 : spacing
-                add(entry.edge, span: 1, across ? Room(leading: before) : Room(top: before))
+                add(entry.edge, span: 1, across ? Room(start: before) : Room(top: before))
             }
             return
         }
@@ -62,9 +62,9 @@
         // A cell at `column`, `span` columns wide, in a row after the first or not: as wide as a column, and
         // `spacing` from the cell beside it.
         func cell(_ column: Int, span: Int, below: Bool) -> Room {
-            let leading = Double(column) * spacing / Double(columns)
-            let trailing = Double(span) * width / Double(columns) - leading - itemWidth
-            return Room(leading: leading, top: below ? spacing : 0, trailing: trailing)
+            let start = Double(column) * spacing / Double(columns)
+            let end = Double(span) * width / Double(columns) - start - itemWidth
+            return Room(start: start, top: below ? spacing : 0, end: end)
         }
 
         for (place, entry) in Self.walk(entries).enumerated() {

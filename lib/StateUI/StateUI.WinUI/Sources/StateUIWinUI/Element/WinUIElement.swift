@@ -34,6 +34,8 @@ final class WinUIElement: NativeElement {
     var type: NodeType { element.type }
     var parent: WinUIElement? { element.parent?.winUI }
     var children: [WinUIElement] { element.children.map(\.winUI) }
+    /// The children it places, an anchor's in the anchor's place.
+    var arranged: [WinUIElement] { element.arrangedChildren.map(\.winUI) }
     func value(_ property: Prop) -> HostValue? { element.value(property) }
 
     // MARK: - The native half's part in a patch
@@ -67,14 +69,20 @@ final class WinUIElement: NativeElement {
         // Its menu's entries are in reach with the view.
         if changed.contains(.isEnabled), hadContextMenu { contextMenuChanged = true }
         refreshContextMenu()
+        configurePopover()
         host?.runtime.frames.follow(self, of: element, reads: view != nil && readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
-        if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = view as? WinUISplitView {
-            split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))
-        }
+        if changed.contains(.isPresented) { configurePopover() }
+        if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { groundSidebar() }
+    }
+
+    /// Stands a split view's sidebar on its materials, beside the detail and over it.
+    func groundSidebar() {
+        guard let split = view as? WinUISplitView else { return }
+        split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))
     }
 
     func leave() {

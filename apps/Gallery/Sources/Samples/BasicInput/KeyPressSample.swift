@@ -26,12 +26,15 @@ struct KeyPressSample: SampleContent, ExampleContent {
                 Text(row == 2 ? "▸ Cheese" : "Cheese")
             }
             .spacing(6)
-            // The stack holds the field, so these keys are its while the field holds the keyboard.
-            .onKeyPressed(.upArrow, .downArrow, .escape) { key in
-                if key == .escape {
-                    query = ""
-                } else {
-                    row = min(2, max(0, row + (key == .upArrow ? -1 : 1)))
+            // The stack holds the field, so these keys are its while the field holds the keyboard. Page Up and
+            // Page Down go to the ends; Tab goes down a row, and back up with Shift held.
+            .onKeyPressed(.upArrow, .downArrow, .pageUp, .pageDown, .tab, .escape) { press in
+                switch press.key {
+                case .escape: query = ""
+                case .pageUp: row = 0
+                case .pageDown: row = 2
+                case .tab: row = min(2, max(0, row + (press.modifiers.contains(.shift) ? -1 : 1)))
+                default: row = min(2, max(0, row + (press.key == .upArrow ? -1 : 1)))
                 }
             }
         }

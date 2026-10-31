@@ -48,6 +48,14 @@ is placed in, as it is placed, and in that room again at every measure
 after; before it stands anywhere it is measured in none, and realizes
 nothing.
 
+The list a page scrolls by tells where it stands as its view or its extent
+changes, so a bottom bar beside the page shows its line while items go on
+past it ([a bar at the foot](../../host/layout.md#a-bar-at-the-foot)). Where
+it stood at its end as its room changes - the bar growing beside it - its
+view moves on to its end, unanimated (`ScrollArithmetic.keptAtEnd`): its reach
+grows by what the room lost, read from the room, so an item come in the same
+pass is left to the scroll the program asks for.
+
 ## A cell
 
 A cell is a StateUI panel WinUI places, so it answers WinUI's measure with

@@ -1,32 +1,35 @@
-# revision 3.1
-ActivityIndicator.accessibilityIdentifier: ✅
+# revision 8.1
 Button.accessibilityIdentifier: ✅
 Canvas.accessibilityIdentifier: ✅
 Capsule.accessibilityIdentifier: ✅
 CheckBox.accessibilityIdentifier: ✅
+ColorPicker.accessibilityIdentifier: ✅
 DatePicker.accessibilityIdentifier: ✅
-Divider.accessibilityIdentifier: ✅
 Ellipse.accessibilityIdentifier: ✅
+Fill.accessibilityIdentifier: ✅
 Grid.accessibilityIdentifier: ✅
 HStack.accessibilityIdentifier: ✅
 Image.accessibilityIdentifier: ✅
 ItemsView.accessibilityIdentifier: ✅
-LayoutEngine.accessibilityIdentifier: ✅
 Line.accessibilityIdentifier: ✅
+Link.accessibilityIdentifier: ✅
 Map.accessibilityIdentifier: ✅
 MenuItem.accessibilityIdentifier: ☑️ Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.
+MenuToggle.accessibilityIdentifier: ☑️ Only an entry of a context menu carries it; an entry the page puts in the menu bar does not.
+MotionLayout.accessibilityIdentifier: ✅
 NavigationStack.accessibilityIdentifier: ✅
 Path.accessibilityIdentifier: ✅
 Picker.accessibilityIdentifier: ✅
 Polygon.accessibilityIdentifier: ✅
 Polyline.accessibilityIdentifier: ✅
 ProgressBar.accessibilityIdentifier: ✅
-RadioButton.accessibilityIdentifier: ✅
 Rectangle.accessibilityIdentifier: ✅
 ScrollView.accessibilityIdentifier: ✅
 SearchField.accessibilityIdentifier: ✅
+Separator.accessibilityIdentifier: ✅
 Slider.accessibilityIdentifier: ✅
-Spacer.accessibilityIdentifier: ✅
+Space.accessibilityIdentifier: ✅
+Spinner.accessibilityIdentifier: ✅
 SplitView.accessibilityIdentifier: ✅
 Stepper.accessibilityIdentifier: ✅
 Switch.accessibilityIdentifier: ✅
@@ -35,7 +38,8 @@ Text.accessibilityIdentifier: ✅
 TextEditor.accessibilityIdentifier: ✅
 TextField.accessibilityIdentifier: ✅
 TimePicker.accessibilityIdentifier: ✅
-ToolbarItem.accessibilityIdentifier: not realized
+ToolbarButton.accessibilityIdentifier: not realized
+ToolbarToggle.accessibilityIdentifier: not realized
 VStack.accessibilityIdentifier: ✅
 WebView.accessibilityIdentifier: ✅
 ZStack.accessibilityIdentifier: ✅

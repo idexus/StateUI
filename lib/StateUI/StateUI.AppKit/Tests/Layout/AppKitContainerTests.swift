@@ -483,7 +483,7 @@ final class AppKitContainerTests: XCTestCase {
                 HostPlacement(
                     bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
                     scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
-            })
+            }, direction: .leftToRight)
         }
         let layers = AppKitZStackView()
         layers.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
@@ -500,7 +500,7 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertEqual(children.map(\.moves), standing, "and none taken out to get there")
     }
 
-    /// A blur behind a layout engine's children stays under them through a run turning their order.
+    /// A blur behind a motion layout's children stays under them through a run turning their order.
     @MainActor
     func testARunKeepsTheBlurBehindItsChildren() {
         func run(_ ranks: [Int]) -> HostPlacementRun {
@@ -508,7 +508,7 @@ final class AppKitContainerTests: XCTestCase {
                 HostPlacement(
                     bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
                     scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
-            })
+            }, direction: .leftToRight)
         }
         let layers = AppKitZStackView()
         layers.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
@@ -687,10 +687,10 @@ final class AppKitContainerTests: XCTestCase {
             NSRect(x: 20, y: 25, width: 30, height: 40))
     }
 
-    /// A layout paints its own box: a plain colour is its layer's, with nothing drawn, and a gradient is drawn
+    /// A layout paints its own box: a plain color is its layer's, with nothing drawn, and a gradient is drawn
     /// across it from its first stop to its last.
     @MainActor
-    func testALayoutPaintsItsColourAndGradientBackgrounds() throws {
+    func testALayoutPaintsItsColorAndGradientBackgrounds() throws {
         let renderer = AppKitRenderer.running {
             VStack {
                 ZStack().background(.red)
@@ -706,7 +706,7 @@ final class AppKitContainerTests: XCTestCase {
         guard boxes.count == 2 else { return }
         for box in boxes { box.frame = NSRect(x: 0, y: 0, width: 40, height: 20) }
 
-        XCTAssertFalse(boxes[0].decoration.draws, "a plain colour is drawn by no one")
+        XCTAssertFalse(boxes[0].decoration.draws, "a plain color is drawn by no one")
         let red = try XCTUnwrap(boxes[0].layer?.backgroundColor.flatMap(NSColor.init(cgColor:)))
         XCTAssertGreaterThan(red.redComponent, 0.9)
         XCTAssertLessThan(red.blueComponent, 0.1)
@@ -725,11 +725,24 @@ final class AppKitContainerTests: XCTestCase {
     func testALayoutThatClipsCutsWhatItHoldsToItsShape() throws {
         let renderer = AppKitRenderer.running {
             VStack {
-                ZStack { Rectangle().fill(Color("#FF0000")) }.shape(.roundedRectangle(16)).clipsContent(true)
+                ZStack {
+                    Rectangle()
+                        .fill(Color(hex: 0xFF0000))
+                }.shape(.roundedRectangle(16)).clipsContent(true)
                     .width(100).height(100)
-                ZStack { Rectangle().fill(Color("#FF0000")) }.shape(.ellipse).clipsContent(true).width(100).height(60)
-                ZStack { Rectangle().fill(Color("#FF0000")) }.clipsContent(true).width(100).height(40)
-                ZStack { Rectangle().fill(Color("#FF0000")) }.shape(.roundedRectangle(16)).width(100).height(40)
+                ZStack {
+                    Rectangle()
+                        .fill(Color(hex: 0xFF0000))
+                }
+                    .shape(.ellipse).clipsContent(true).width(100).height(60)
+                ZStack {
+                    Rectangle()
+                        .fill(Color(hex: 0xFF0000))
+                }.clipsContent(true).width(100).height(40)
+                ZStack {
+                    Rectangle()
+                        .fill(Color(hex: 0xFF0000))
+                }.shape(.roundedRectangle(16)).width(100).height(40)
             }
         }
         defer { renderer.closeForTesting() }
@@ -755,7 +768,7 @@ final class AppKitContainerTests: XCTestCase {
         XCTAssertTrue(boxes[3].decoration.draws, "its rounded shape is drawn all the same")
     }
 
-    /// A scroller paints its background and outlines itself in its stroke's colour on its shape, cutting what it
+    /// A scroller paints its background and outlines itself in its stroke's color on its shape, cutting what it
     /// shows to that shape - and keeps all of it through AppKit's own repaint of a scroller's layer.
     @MainActor
     func testAScrollerOutlinesItselfAndCutsWhatItShowsToItsShape() throws {
@@ -763,8 +776,8 @@ final class AppKitContainerTests: XCTestCase {
             VStack {
                 ScrollView { Text("code") }
                     .orientation(.horizontal)
-                    .background(Color("#00FF00"))
-                    .stroke(Color("#FF0000"))
+                    .background(Color(hex: 0x00FF00))
+                    .stroke(Color(hex: 0xFF0000))
                     .lineWidth(2)
                     .shape(.roundedRectangle(12))
                     .height(60)
@@ -790,14 +803,14 @@ final class AppKitContainerTests: XCTestCase {
     }
 
     /// A layout keeps its padding between its outline and what it holds, and strokes its outline in its stroke's
-    /// colour, as wide as its stroke width.
+    /// color, as wide as its stroke width.
     @MainActor
     func testALayoutPadsWhatItHoldsAndStrokesItsOutline() throws {
         var layout = HostPatch(id: .manual("layout"), type: .zStack)
         layout.properties = [
             .padding: .numbers([4, 6, 8, 10]),
             .background: .color(red: 0, green: 0, blue: 255, alpha: 255),
-            .stroke: Brush.solidColor(Color("#FF0000")).propValue,
+            .stroke: Brush.solidColor(Color(hex: 0xFF0000)).propValue,
             .lineWidth: .number(6),
         ]
         layout.children = .arranged([box("inside", [:])])
@@ -811,7 +824,7 @@ final class AppKitContainerTests: XCTestCase {
         let drawn = try bitmap(of: try XCTUnwrap(renderer.viewForTesting(id: .manual("layout"))))
         let outline = try XCTUnwrap(drawn.colorAt(x: 2, y: 30))
         let within = try XCTUnwrap(drawn.colorAt(x: 10, y: 30))
-        XCTAssertGreaterThan(outline.redComponent, 0.9, "the stroke's colour at the edge")
+        XCTAssertGreaterThan(outline.redComponent, 0.9, "the stroke's color at the edge")
         XCTAssertLessThan(outline.blueComponent, 0.1)
         XCTAssertGreaterThan(within.blueComponent, 0.9, "the background beyond the stroke's width")
         XCTAssertLessThan(within.redComponent, 0.1)

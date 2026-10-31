@@ -14,6 +14,7 @@ enum AndroidRegistrations {
 
         text(registry)
         buttons(registry)
+        links(registry)
         toggles(registry)
         pickers(registry)
         dates(registry)
@@ -34,7 +35,7 @@ enum AndroidRegistrations {
     /// The acts this host performs, whichever element each is aimed at: every host's (`HostActs.performed`), the
     /// files (`HostActs.files`) and its own elements' acts; the host layer's performer (`HostActPerformer`) answers
     /// exactly these, and refuses every other by name.
-    static let acts: [any ContractMember] = HostActs.performed + HostActs.files + [
+    static let acts: [any ContractMember] = HostActs.performed + HostActs.files + HostActs.network + [
         WebViewContract.evaluateJavaScript, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
         ItemsViewContract.scrollTo,
     ]
@@ -42,6 +43,7 @@ enum AndroidRegistrations {
     /// What `AndroidElement` puts on every view wearing each member's contract, by the host layer's rules.
     static func shared(_ registry: Registry<AndroidView>) {
         registry.everyElementMeetsAssistiveTechnology()
+        registry.everyElementTakesAccessibilityActions()
         registry.everyElementShowsItsTooltip()
         registry.everyElementHearsTheUser()
         registry.everyElementTakesItsKeys()

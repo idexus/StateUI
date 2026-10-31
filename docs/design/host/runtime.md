@@ -55,7 +55,7 @@ paths, the journey's animations and the frame they run on.
 | | | `HandlerDispatch` | host layer |
 | | | each element's native half (`NativeElement`), one realization per control family | toolkit half |
 | C | reactive path 2: a value reaches a native control with no rebuild, and the user's change comes back | `ProgramWrite` | host layer |
-| | | a user's change carried onto its state and its event, a radio set (`MountedElement.reportUserChange`), a scroller's move (`reportScrolled`) | host layer |
+| | | a user's change carried onto its state and its event (`MountedElement.reportUserChange`), a scroller's move (`reportScrolled`) | host layer |
 | | | the native callback that hears the user | toolkit half |
 | J | a journey's animations, run by the host | `Animator`, `Animation`, `AnimationTarget`; the laws are `HostMotionLaw` in the core | host layer |
 | E | the frame engines and animations run on | `DisplayCycle`; the `FrameClock` protocol | host layer |
@@ -121,7 +121,7 @@ of the elements around it is decided once, for every host
 parent arranges again where a value that places it moved, or where it shows
 no view of its own and is drawn by its parent's; and the window's chrome is
 composed again where it shows what moved (`WindowChrome.follows`): a window's
-frame, an arrangement's bar colours, and a page's title, bar, way back and
+frame, an arrangement's bar colors, and a page's title, bar, way back and
 back button's words said from a state, which no render follows.
 
 ## One turn
@@ -150,7 +150,7 @@ The turn always runs in the same order.
 The acts come last, so an act lands on the interface its handler just changed.
 
 The cycle a render asks for runs in the same turn, once, before anything is
-drawn: a layout engine's run of the views the render put in stands with them.
+drawn: a motion layout's run of the views the render put in stands with them.
 Left to the next frame, the toolkit would draw the new views by a run worked
 out for the old - each placed by position, so a view put in at the front
 would stand where the one now after it is, and the last in no place at all,
@@ -188,6 +188,20 @@ resume or a post - on the thread the work came from; no thread of the host's
 waits. One turn is posted until its drain begins. The turn itself is the
 `Pump`'s.
 
+## The main queue
+
+Off Apple, libdispatch keeps a main queue no run loop turns: an application's
+`DispatchQueue.main.async` would wait for ever. So every host there drains it
+on its UI thread (`MainQueue`): libdispatch's handle for it - an eventfd on
+Linux and Android, an event on Windows, signaled while the queue holds work -
+is watched by the host's own loop, and as it signals the host clears it, then
+runs what the queue holds (`MainQueue.drain`), the two entry points a run loop
+takes of libdispatch. libdispatch binds its main queue to the thread it
+started on, the process's first - the UI thread on every host - and stops the
+process when another thread drains it. The library itself still sends nothing
+there but `UIThread.swift`'s one drain; Apple's run loop drains the queue of
+itself, and the Web has none.
+
 ## The turn on Apple
 
 On Apple every source of work is a pass of the main run loop: a handler's
@@ -206,7 +220,7 @@ The application's handlers run in the order the user caused them, each on the
 interface the last one left. `HandlerDispatch` holds a handler raised while a
 patch applies - the tree is half old, half new until the patch is in - and
 one raised inside the user's transaction, a gesture that changes two things at
-once, such as a radio button turning one off and the next on. Both run in
+once, such as every frame one layout pass moved. Both run in
 their order once the hold is over. A turn asked for inside the transaction,
 by a report that wrote a state, waits for it too: the two halves of one
 gesture render together or not at all.
@@ -236,11 +250,35 @@ The carrying is the host layer's, the same on every host
 (`MountedElement.reportUserChange`): what the program writes reports
 nothing; a value becomes the state's - a journey a carried property's channel
 takes, else a report - and then its event runs, or a turn renders what the
-state changed where no handler listens. A radio button checked takes its
-set's other checks away first, in one user's transaction: each peer turned off
-on its own control as the program, then reporting that it is off. A host's
-native callback hands the value on, and turns a peer's control off in its
-toolkit's terms.
+state changed where no handler listens, in one user's transaction. A host's
+native callback hands the value on.
+
+## A color chosen
+
+A color picker shows the tree's color - black where the tree gives none - and
+opens its toolkit's own panel for the user to choose another. What it reports
+is the host layer's, alike on every host (`ColorChoice`): the four fractions
+of full the toolkit hands back, at their nearest channels, and an opaque color
+where the picker does not choose opacity. A toolkit's panel keeps the alpha it
+last held even while its opacity control is hidden, so the rule, not the
+panel, keeps that promise. The chosen color reaches a carried state as the
+four lanes a color state lays (`HostStateValue(carrying:)`), then its event
+runs, as any user's change does.
+
+## The pull to refresh
+
+A scroller or a list offers the platform's pull where it hears it - a handler
+of `refreshRequested`, or a state `isRefreshing` the pull writes into - unless
+it says `isRefreshEnabled(false)`: its view is given that offer as
+`isRefreshEnabled` (`MountedElement.presented`), told again whenever what
+hears the pull changes, whatever road the handler came by. The pull is a
+user's change with nothing to carry to the handler
+(`MountedElement.reportRefreshRequested`): `isRefreshing` true onto the state
+carrying it, then `refreshRequested`. The spinner the platform shows as the
+pull ends stays only where something will end it - a state carrying
+`isRefreshing`, or the element describing it - and the host takes it down at
+once where nothing would. A value of `isRefreshing` the application writes
+shows or ends the spinner and reports nothing back.
 
 ## The runtime's parts
 
@@ -390,12 +428,49 @@ element's events by one rule on every host (`MountedElement.hearing`,
 for a press dragged where a pan, a swipe or a state a pan carries asks - one
 pointer's alone - and for a pinch. A tap answers each time a quick run
 reaches the count asked for, and at once for a press assistive technology
-made; the pointer says where it is, but not as it enters or leaves; a press
+made; a press held answers once, as the platform's long press comes ([a press
+held](#a-press-held)); the pointer says where it is, but not as it enters or leaves; a press
 dragged moves the states it carries by how far it has come from where they
 stood as it began, in one user's transaction, and is a swipe as it ends far
 enough ([a swipe](#a-swipe)); a pinch says each step's scale since the last
 and where, as shares of the view (`PinchStep`). A host's toolkit hears the
 input and says it as `HeardInput`.
+
+## A press as a button takes it
+
+A view that hears taps is pressed as a button is, on every host
+(`ButtonPress`, `HeardInput.press`): the press lights it - its `.pressed`
+visual state - while it stands over the view, puts it out as it leaves and
+lights it again as it comes back; let go over the view it taps, let go away
+it taps nothing. A scroll that takes the touch, the view's own drag and a hold
+take the press: the view goes out and nothing taps. So does a hand over a
+layout once it moves the run or holds a view (`HandReading.claimed`,
+`holdsItem`) - the layout's own press and those of every view it holds, once
+a touch: a swipe across a run of cards opens none, and a press standing still
+under the hand taps. A finger's press on a view standing in what it may still
+begin to scroll - a scroller, a collection, a layout a hand moves - lights the
+view only once it has stood a moment (`ButtonPress.scrollerWait`, iOS's wait
+before a list's row hears a touch), paced by the frames: a scroll beginning
+before lights nothing, and a quick tap lights the view as it lets go and taps.
+A mouse's or a pen's press lights it at once. A finger stands over a
+view a finger's breadth beyond its edge (`ButtonPress.fingerBreadth`), a
+mouse or a pen within it. A host tells the press's phases where it stands -
+its toolkit's own press, the platform taking it away as `cancelled` - and the
+host layer decides the rest. A single tap is the press's; a run of taps
+(`onTapped(count:)` past one) keeps the platform's own count, a double tap
+being no button's gesture.
+
+## A finger hovers over nothing
+
+A mouse or a pen comes over a view, moves over it and leaves it; a finger
+presses and lets go. The platforms made for the finger tell it so - UIKit's
+hover and Android's hover events come from a pointer that hovers alone - and
+`.pointerOver` promises it: never on a touch-only device. A browser and WinUI
+tell a finger's touch as a pointer coming over the view, and a finger that
+slides off a view and lifts elsewhere may leave it entered for good. So the
+host layer drops a finger's entering, moving over and leaving
+(`HeardInput.pointer(_:_:byFinger:)`); its press and its letting go stay. A
+host whose toolkit tells a finger's pointer apart says so.
 
 ## A disabled branch
 
@@ -428,13 +503,38 @@ a drag ends with nothing. A platform's distance is taken in DIPs; the toolkit
 holds the pointer once the press is a drag, which the host asks for as the
 rule says so.
 
+## A gesture's speed
+
+How fast a gesture goes is read by one rule on every host
+(`SpeedReading`): what it moved over the last tenth of a second
+(`HandReading.reading`), divided by the time between its first move there and
+now, a display frame at least (`HandReading.frame`), so moves a busy thread
+glued into one step read no faster than a frame allows, and a gesture that
+stood still for a tenth reads nought. The hand over a layout lifts at that
+speed where its platform tells none; a pan, a pinch and two fingers turning
+report it on every step, their moves read off the frame clock as the host
+layer hears them - a pan's from its totals, a pinch's from its spread, a
+rotation's from its steps ([the reports](../types/gestures.md#a-gestures-speed)).
+
+## A press held
+
+A view held is told by the platform's long press - a recognizer, a long
+click, a hold event, a timer the Web's relay keeps - after the time the view
+says (`holdDuration`), or the platform's own where it says none. Its rule is
+the host layer's, once (`DragRecognition.held`): a hold comes before the drag's
+threshold, so a press that became a drag is no hold, and a press held is the
+hold's - it drags nothing after, however far it moves, and its release is no
+tap. A host whose toolkit tells taps and drags of its own keeps the hold apart
+from them by the toolkit's means: a recognizer that is not heard with the
+view's tap and pan, a click the relay takes.
+
 ## The hand over a layout
 
-A layout engine a hand moves hears the hand itself (`Hearing.hand`, its
-`handAxis`): a press dragged - a finger or a pointer - a trackpad's two
+A motion layout a hand moves hears the hand itself (`Hearing.hand`, its
+`translationOrientation`): a press dragged - a finger or a pointer - a trackpad's two
 fingers and a wheel, each as the platform tells it, said as `HeardInput.hand`
 or `.wheel`. `HandReading` makes them one stream of the element's
-`handMoved` - a beginning, each move of what is under the hand, and a lift
+`translationUpdated` - a beginning, each move of what is under the hand, and a lift
 with its speed - alike on every host. Where the platform tells no speed at
 the lift, the moves of its last tenth of a second say it. A wheel tells no
 beginning and no lift: its first notch opens a gesture, and a frame finding
@@ -453,7 +553,7 @@ points at least - a hand pushing again - or a gap of more than six frames, a
 hand that stopped it and moves again. A wheel the platform says turns notch by
 notch is no stream: it is said as notches (`HeardInput.notch`), a fine
 wheel's parts adding up to whole ones (`HandReading.notches`), each a step
-of the run to the next target (`handStepped`). What the hand says is kept
+of the run to the next target (`wheelStepped`). What the hand says is kept
 for the next frame and said at its start, before the cycle - its moves since
 the last frame as one (`HandPace`): a toolkit telling the hand faster than
 the display draws, 120 times a second or in a burst a busy thread held back,
@@ -467,8 +567,8 @@ down begins it where it went down in the view, the fingers' middle moving it
 slop all round, WinUI's drag rectangle and the browser's four points along
 either axis (`DragRecognition.Distance`) - asks the layout; a hand taken says
 every move after; the last finger up ends it, taken or not. What the hand does to the run -
-the phase moving with it, a throw to the target nearest its end - is the
-core's (views/layout-engine.md, the hand).
+the parameters moving with it, a throw to the target nearest its end - is the
+core's (views/motion-layout.md, the hand).
 
 A layout whose views the hand takes by themselves (`itemDrag`) gives the
 hand one of three owners, by one rule every host shares: a first move along
@@ -481,20 +581,20 @@ every move and lift as it does for the run, and its end always - a press that
 held a view and never moved still lets it go; it decides nothing more. The
 hold is found by the frames, since nothing moves: a press waiting for it holds
 the clock (`HandReading.wantsFrames`), as an open wheel does. The view's hand
-is said as the element's `itemMoved` - where it is in the layout, from the
+is said as the element's `itemDragUpdated` - where it is in the layout, from the
 press's point and every move since, its speed at the lift as the run's is
 read, and how long it has stood still - told again each hold it stands, so
 an application can turn a board under an icon held at its edge.
 
 ## Two fingers over a layout
 
-A layout engine that `magnifies` or `rotates` hears two fingers itself
+A motion layout that `magnifies` or `rotates` hears two fingers itself
 (`Hearing.pinches`, `Hearing.rotations`): a pinch and a rotation, each as
 the platform tells it - its own gesture where the toolkit has one, two
 pointers where it tells only pointers (`TwoFingers`: how far apart they
 stand and which way the line between them turns, clockwise in a view whose
 y grows down, the short way round). `PinchReading` makes the two one stream
-of the element's `pinchMoved`: begun with the first, ended with the last -
+of the element's `pinchRotationUpdated`: begun with the first, ended with the last -
 a move with no beginning heard begins it, a cancel of the last cancels it -
 each move a scale and degrees since the last, said at the next frame's
 start as one, and as the fingers lift their speed, read from the last
@@ -608,7 +708,10 @@ a language written right to left - the network as its access and a set of
 bits for its connections, a battery as present or not, charging, on mains
 or full, and a screen as landscape where it stands at least as wide as it is
 tall, turned by quarters from its natural orientation - none on one that
-turns with nothing. When any of it changes, one step
+turns with nothing - and the user's accessibility settings as four facts:
+less motion, more contrast, a screen reader running, the scale of words; one a
+platform cannot tell stays as the system draws by default, off, and a scale
+of 1. When any of it changes, one step
 follows on every host (`HostRuntime.environmentChanged`): the core is told
 what stands now, the tree follows the language's direction, and one turn
 renders what it all changed. A report that repeats what stands - and
@@ -620,13 +723,25 @@ whatever moves once more.
 
 An application may hold a theme of its own (`application.colorScheme`), and
 its act shows every window in it with the toolkit's own call. The theme the
-core resolves colour pairs against is then the theme in force, the same on
+core resolves color pairs against is then the theme in force, the same on
 every host (`HostThemes`): the application's while it holds one, the
 system's while it follows the system. A host reports the system's theme as
 its toolkit tells it, and the host layer passes on the theme in force - so a
 toolkit that tells the system's alone, a browser's media query, reports the
 application's all the same, and one that tells its own effective look agrees
 with it.
+
+## The accent in force
+
+An application may hold an accent of its own (`application.accentColor`),
+which its act hands the toolkit. A platform whose user chooses no accent - the
+Web, UIKit, GNOME before libadwaita 1.6 - draws its controls in it and says it
+took it; one whose user chose one - AppKit, WinUI, Android, GNOME 47 on -
+keeps the user's and says it did not. The accent the core resolves
+`Color.accent` against is then the accent in force, the same on every host
+(`HostAccents`): the application's where its platform took it, else the one
+the platform reports - so a platform's later report leaves the application's
+in force. The core hands on a pair's half in force, again as the theme turns.
 
 ## The application's phase
 
@@ -705,14 +820,18 @@ the control it hands an aimed act.
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
 read from its act the same way on every host (`HostQuestion`): its title and
-message, the accepting caption, the cancelling one (a choice's only where it
-names one) - the core sends the library's own words in the system's language
-where the application names none, so "OK" and "Cancel" here stand only for an
-act that came without them - a choice's dangerous action and its others, a prompt's placeholder,
-bound, purpose and starting words. It answers as its kind does: a
-confirmation yes or no, a choice or a prompt its words where the user
-accepted - a prompt's cut to its bound, by characters - and nothing where
-not, an alert nothing. A question the toolkit could not show - another
+message, the accepting caption, the cancelling one - every question but an
+alert offers one; the core sends the library's own words in the system's
+language where the application names none, so "OK" and "Cancel" here stand
+only for an act that came without them - a choice's actions and the place of
+its dangerous one, a prompt's placeholder, bound, purpose and starting words.
+Its buttons are the host layer's too (`HostQuestion.buttons`), each a caption
+and what pressing it answers (`QuestionButton`: accept, cancel, an action's
+place), so a host draws them in its own order and look and a driver presses
+one by what it does, never by its words. It answers as its kind does: a
+confirmation yes or no, a choice the place of the action chosen, a prompt its
+words where the user accepted - cut to its bound, by characters - and nothing
+where not, an alert nothing. A question the toolkit could not show - another
 dialog standing where it would - fails its call with the toolkit's reason:
 the toolkit answers a `Result`, as a file dialog does, and a failure is never
 read as the user saying no. Questions show one at a
@@ -720,15 +839,27 @@ time in the order asked, each under a ticket of its own across the process
 (`QuestionQueue`), so an answer after its runtime has gone answers nothing
 of another's.
 
-A question or a file dialog stands over the window the toolkit asked in, and
-goes with it: once that window is no longer open, the host layer answers it
-as the user dismissing it does - a confirmation not accepted, nothing chosen
-- and the next asks over the window the user is in then
-(`HostActPerformer.windowsOpen`), which every host tells after its windows
-change. Its caller almost always stood in that window too and went with it;
+A question or a file dialog stands over the window its act names - its
+scene's key and its own, found once in the host layer (`AskedWindow`); the
+window the user is in where it names none - and goes with it: once that
+window is no longer open, the host layer answers it as the user dismissing it
+does - a confirmation not accepted, nothing chosen - and the next asks over
+its own window (`HostActPerformer.windowsOpen`), which every host tells after
+its windows change. One whose window closed while it waited is answered so
+when its turn comes. The keyboard is taken down in the window named, and a
+window closed holds none. Its caller almost always stood in that window too and went with it;
 a question standing over a window gone would otherwise hold every later
 question behind it, and an answer its dialog gives later counts for
 nothing.
+
+## Sharing
+
+A share sheet waits its turn among the questions and the file dialogs, one at
+a time, over the window it is offered from: answered whether the user shared,
+and answered as not shared where its window went while it waited
+(`HostShare`). A toolkit with no share sheet answers the act's failure at
+once. A host's test holds the sheet unshown and answers it as the user would,
+so its driver proves the words and the link offered, never a sheet's look.
 
 ## Files
 
@@ -746,6 +877,27 @@ hands its `FileToolkit` to its performer beside its `ActToolkit`, and
 declares `HostActs.files`; a host without one fails every act for files by
 name. A file read and a launch answer when the platform does, never in the
 turn that asked.
+
+## A link chosen
+
+A link's address is the host layer's, not its native control's: the control
+raises its click alone, and the host layer opens the address
+(`MountedElement.send`, `HostActPerformer.open(link:)`) as a launch opens
+one - in the application the system gives it, with no caller to answer -
+before the link's own handlers run. One rule opens every host's link, so a
+toolkit control able to open an address itself is handed none, or its own
+opening is taken; a host that launches nothing opens nothing. A test reads
+what a host launched from the host's own record (`launched`).
+
+## A link opened
+
+A link the application is asked to open - its scheme the head's - goes to one
+window by one rule (`LinkInbox`): the window the platform names, where a page
+or an arrangement of it hears links; else the one activated last where one
+does; else the first. Every page and arrangement of that window that hears
+links hears it, the outermost first. A link that comes before any window has
+one hearing links - a start the link made, a window still on its way - waits,
+in order, and the first turn after one stands gives it (`HostRuntime.openLink`).
 
 ## Starting
 
@@ -765,13 +917,14 @@ thread (`CoreLink.claimUIThread`).
 
 ## Kept values
 
-Every host keeps a value as its words, by one rule (`KeptWord`): a value is
-kept as the words its key's kind reads back, and a value of another kind is
-not kept. A key the application does not list still saves, as its value's
-own kind - true or false, a number, words - which its key's kind reads back
-once it is listed, as the application's session promises. The words stand in
-the platform's own store where it has one - the preferences on a Mac, on iOS
-and on Android.
+Every host keeps a value as its words, by one rule (`KeptWord`): a save
+carries no kind, so a value is written as the words of its own kind - true or
+false, a number (a whole one whole), words - and read back as the kind of the
+key that reads it, which the core asks for by name and kind through the
+reader the host gives it as it starts (`CoreLink.readsKept`). The words stand
+in the platform's own store where it has one - the preferences on a Mac, on
+iOS and on Android, read through the application's context, which outlives
+every activity.
 
 A host whose platform keeps no store an application can use keeps them in a
 file of its own, and one codec says what the file holds (`KeptValuesText`): a
@@ -852,9 +1005,15 @@ correction goes with it - and the input purpose, which picks the keys a
 screen keyboard offers and where capitals go. Plain words are taken as typed:
 no capitals, no checking, no correction, no prediction - a login, a code a
 user types or a scanner enters. An address takes no capitals; text starts
-its sentences in them; the default leaves the platform its own. Each host
-tells its toolkit these in its own terms - a keyboard type, input flags, the
-text checking a desktop does as the user types.
+its sentences in them; the default leaves the platform its own. What the
+words are - an address, a number, a link, and signing in's three: a name, a
+new password, a one-time code in digits alone - is what the platform fills
+them in from (`InputTraits.content`): a name it keeps, a strong password it
+makes and keeps, a code it received. Each host tells its toolkit these in its
+own terms - a keyboard type and a content type, input flags and autofill
+hints, an `autocomplete` token, the text checking a desktop does as the user
+types. GNOME and WinUI keep nothing to fill a field in from: their fields
+take the keys and the checking alone.
 
 ## A value in a range
 
@@ -879,7 +1038,7 @@ Such a control is written, as its value and its ends apply, by one rule
 or an end, else the value the control shows, so a hand on the thumb or the
 buttons is never argued with. A range that moves takes the tree's value
 again: the control stood clamped at the old range's end - a state's value
-outside it, or one travelling to the value written with the range - and a
+outside it, or one traveling to the value written with the range - and a
 range widened over that value shows it rather than the end it stood at.
 
 A stepper shows its steps alone (`ElementValues.shownStep`,

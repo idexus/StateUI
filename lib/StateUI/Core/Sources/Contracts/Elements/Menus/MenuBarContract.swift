@@ -11,7 +11,8 @@ public enum MenuBarContract: ElementContract {
     public static let layer: ElementLayer = .structure
 
     /// Where the declaration's menus and sections stand among the others: lower earlier.
-    public static let order = ElementProperty<Self, Int>("order", layer: .stateUI, travels: false, cleared: false)
+    public static let order = ElementProperty<Self, Int>(
+        "order", layer: .stateUI, travels: false, cleared: false, unsaid: 0)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [order]

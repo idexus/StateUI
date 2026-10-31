@@ -25,7 +25,7 @@ private struct SpannedPage: View {
 }
 
 final class WinUITextViewTests: XCTestCase {
-    /// A label with nothing said stands as WinUI's own body text, in the theme's colour.
+    /// A label with nothing said stands as WinUI's own body text, in the theme's color.
     func testATextWithNothingSaidIsWinUIsOwnText() throws {
         try onUIThread {
             let host = WinUIRenderer.running { VStack { Text("plain") } }

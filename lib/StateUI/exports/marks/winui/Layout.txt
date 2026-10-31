@@ -1,16 +1,16 @@
-# revision 2.2
-Grid.avoidsSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
+# revision 3.2
 Grid.clipsContent: ✅
+Grid.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 Grid.letsInputThrough: not realized
-HStack.avoidsSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 HStack.clipsContent: ✅
+HStack.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 HStack.letsInputThrough: not realized
-LayoutEngine.avoidsSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
-LayoutEngine.clipsContent: ✅
-LayoutEngine.letsInputThrough: not realized
-VStack.avoidsSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
+MotionLayout.clipsContent: ✅
+MotionLayout.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
+MotionLayout.letsInputThrough: not realized
 VStack.clipsContent: ✅
+VStack.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 VStack.letsInputThrough: not realized
-ZStack.avoidsSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 ZStack.clipsContent: ✅
+ZStack.ignoresSafeArea: – A Windows desktop window keeps no area of its content clear: nothing of the window stands over its content.
 ZStack.letsInputThrough: not realized

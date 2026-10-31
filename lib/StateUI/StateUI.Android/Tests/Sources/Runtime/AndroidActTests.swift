@@ -43,8 +43,8 @@ final class AndroidActTests: XCTestCase {
             let host = AndroidRenderer.running {
                 VStack {
                     TextField(State(wrappedValue: "").projectedValue).inputPurpose(.numeric)
-                    Button("Ask").onClicked(gate: .ignoreWhileRunning) {
-                        _ = try await Dialogs.prompt("How many?", accept: "OK", cancel: "No", inputPurpose: .numeric)
+                    Button("Ask").onClicked(.ignoreWhileRunning) {
+                        _ = try await WindowSession().prompt("How many?", accept: "OK", cancel: "No", inputPurpose: .numeric)
                     }
                 }
             }
@@ -55,7 +55,9 @@ final class AndroidActTests: XCTestCase {
 
             XCTAssertEqual(fieldType(), Java.callInt(field.reference, Self.getInputType))
             XCTAssertTrue(Java.frame {
-                Java.callStaticBool(AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("No")), .object(nil))
+                Java.callStaticBool(
+                    AndroidDriver.dialogs, AndroidDriver.answer, .int(AndroidAnswer.cancel.rawValue), .int(-1),
+                    .object(nil))
             })
             host.settle {
                 TestWindow.run(for: 10)
@@ -69,9 +71,9 @@ final class AndroidActTests: XCTestCase {
         try onMainActor {
             let answers = Received<String>()
             let host = AndroidRenderer.running {
-                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                Button("Ask").onClicked(.ignoreWhileRunning) {
                     answers.values.append(
-                        try await Dialogs.prompt("Name", accept: "OK", cancel: "No", maximumLength: 3) ?? "nothing")
+                        try await WindowSession().prompt("Name", accept: "OK", cancel: "No", maximumLength: 3) ?? "nothing")
                 }
             }
             try XCTUnwrap(host.views(AndroidButtonView.self).first).click()
@@ -79,7 +81,7 @@ final class AndroidActTests: XCTestCase {
 
             XCTAssertTrue(Java.frame {
                 Java.callStaticBool(
-                    AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("OK")),
+                    AndroidDriver.dialogs, AndroidDriver.answer, .int(AndroidAnswer.accept.rawValue), .int(-1),
                     .object(Java.string("a👍🏽bc")))
             })
             host.settle {
@@ -119,7 +121,7 @@ private struct FocusPage: View {
         let field = self.field
         return VStack {
             TextField("").aim(field)
-            Button("Focus").onClicked(gate: .ignoreWhileRunning) { answers.values.append(try await field.focus()) }
+            Button("Focus").onClicked(.ignoreWhileRunning) { answers.values.append(try await field.focus()) }
         }
     }
 }

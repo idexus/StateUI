@@ -6,7 +6,7 @@ import HelloWorldUI
 import StateUIAppKit
 
 // Register the application module before the native host requests its root.
-stateui_app_register()
+registerApplication()
 
 // The application's artwork: beside the head, where a deployed copy carries
 // it (.scripts/AppKit/deploy.sh), else where the application keeps it, found

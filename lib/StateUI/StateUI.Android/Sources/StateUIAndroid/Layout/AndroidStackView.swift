@@ -6,7 +6,7 @@
 
 /// A VStack or an HStack: the host layer's stack arithmetic over a `StateUIViewGroup`.
 @MainActor
-final class AndroidStackView: AndroidTravellingLayout {
+final class AndroidStackView: AndroidTravelingLayout {
     /// The axis the stack runs along.
     let axis: StackArithmetic.Axis
 
@@ -20,19 +20,31 @@ final class AndroidStackView: AndroidTravellingLayout {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
+    /// Whether a row stands on one line or wraps, and the room between its lines.
+    var lines = StackArithmetic.Lines.one {
+        didSet { if lines != oldValue { invalidateMeasurements() } }
+    }
+
     init(axis: StackArithmetic.Axis) {
         self.axis = axis
         super.init()
     }
 
+    override func firstBaseline(width: Double?) -> Double? {
+        let size = measurements.size(offering: width) { contentSize(width: width) }
+        return StackArithmetic.firstBaseline(
+            of: items, axis: axis, spacing: spacing, lines: lines, padding: padding,
+            in: Rect(x: 0, y: 0, width: size.width, height: size.height))
+    }
+
     override func contentSize(width: Double?) -> LayoutSize {
-        StackArithmetic.size(of: items, axis: axis, spacing: spacing, padding: padding, width: width)
+        StackArithmetic.size(of: items, axis: axis, spacing: spacing, lines: lines, padding: padding, width: width)
     }
 
     override func arrange(in bounds: Rect) {
         beginArrangement(width: bounds.width)
         let places = StackArithmetic.places(
-            of: items, axis: axis, spacing: spacing, padding: padding, in: bounds, direction: direction)
+            of: items, axis: axis, spacing: spacing, lines: lines, padding: padding, in: bounds, direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: place) }
         }

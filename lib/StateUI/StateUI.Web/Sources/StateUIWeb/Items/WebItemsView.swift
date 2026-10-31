@@ -92,8 +92,14 @@ final class WebItemsView: WebDOMView {
 
     private func makeCell(_ identity: String) -> WebItemCell {
         let cell = WebItemCell(identity)
-        cell.hear(.itemTap) { [weak self, weak cell] in
+        // A press on an item taps it as a button takes one (`ButtonPress`); a click no pointer made taps at once.
+        cell.hearPress { [weak self, weak cell] phase, at, size, byFinger in
             guard let self, let cell else { return }
+            let over = ButtonPress.isOver(at, in: size, byFinger: byFinger)
+            if cell.press.step(phase, over: over).contains(.tapped) { cells.userTapped(cell.entry) }
+        }
+        cell.hear(.itemTap) { [weak self, weak cell] in
+            guard let self, let cell, WebRelay.eventClicks == 0 else { return }
             cells.userTapped(cell.entry)
         }
         WebRelay.watchNearness(cell.node, of: node, nearness)

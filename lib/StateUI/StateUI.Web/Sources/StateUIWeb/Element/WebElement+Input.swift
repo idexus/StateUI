@@ -14,12 +14,25 @@ extension WebElement {
         let hearing = element.hearing
         if hearing.contains(.taps), !listening.contains(.taps) {
             listening.insert(.taps)
+            view.hearPress { [weak self] phase, at, size, byFinger in
+                self?.heard(.taps, .press(phase, at: at, size: size, byFinger: byFinger))
+            }
             view.listen("click") { [weak self] in
-                // A label's click comes again as its control's: one tap.
-                guard let self, !press.wasDragged, !WebRelay.eventPassesToControl else { return }
-                heard(.taps, .tap(run: WebRelay.eventClicks))
+                // A pointer's tap is its press's; a click no pointer made - the keyboard's, a screen reader's - taps,
+                // and a run of clicks counts as the page counts it. A label's click comes again as its control's.
+                guard let self, !WebRelay.eventPassesToControl else { return }
+                let clicks = WebRelay.eventClicks
+                guard clicks == 0 || (element.number(.tapCount) ?? 1) > 1 else { return }
+                heard(.taps, .tap(run: clicks))
             }
             view.hear(.activate) { [weak self] in self?.heard(.taps, .tap(run: 0)) }
+        }
+        if hearing.contains(.holds) {
+            view.holdTime = element.holdDuration ?? HandReading.hold
+            if !listening.contains(.holds) {
+                listening.insert(.holds)
+                view.listenForHold { [weak self] in self?.held() }
+            }
         }
         if !hearing.isDisjoint(with: Self.presses), listening.isDisjoint(with: Self.presses) {
             listening.formUnion(Self.presses)
@@ -32,7 +45,10 @@ extension WebElement {
         if hearing.contains(.pointer), !listening.contains(.pointer) {
             listening.insert(.pointer)
             for (event, said) in Self.pointerEvents {
-                view.listen(event) { [weak self] in self?.heard(.pointer, .pointer(said, WebRelay.eventPoint)) }
+                view.listen(event) { [weak self] in
+                    let byFinger = WebRelay.eventPointer.kind == .touch
+                    self?.heard(.pointer, .pointer(said, WebRelay.eventPoint, byFinger: byFinger))
+                }
             }
         }
         if element.handler(.isFocusedChanged) != nil, !listensForFocus {
@@ -232,6 +248,12 @@ extension WebElement {
         element.hear(
             .mirrored(phase, at: WebRelay.eventPoint, middle: Point(x: size.width / 2, y: size.height / 2)),
             in: host.runtime)
+    }
+
+    /// The relay held a press: the hold's where it has not become a drag, by the host layer's rule.
+    private func held() {
+        guard press.held() else { return }
+        heard(.holds, .hold)
     }
 
     private func heard(_ kind: Hearing, _ input: HeardInput) {

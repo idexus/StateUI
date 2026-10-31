@@ -22,7 +22,7 @@ import StateUI
 enum GallerySection: Hashable {
     /// What the gallery opens with, and the ROOT of the main stack - a group is
     /// pushed on top of it rather than replacing it, because choosing a group
-    /// promises a page on the stack and a back button then honours that move.
+    /// promises a page on the stack and a back button then honors that move.
     case home
 
     /// The page the menu lists only when it is told to - see `SplitViewSample`.
@@ -95,17 +95,6 @@ enum DemoTab: Hashable {
     }
 }
 
-// listing: Navigation.sheets
-/// A page the gallery presents OVER everything - see `ModalSample`.
-///
-/// The modal stack is the WINDOW's page, so a sheet this value names covers
-/// the bars as well as the content.
-enum Sheet: Hashable {
-    /// A page shown through the host's adaptive native modal presentation.
-    case page
-}
-// listing: end
-
 /// Where one gallery is, and the moves that change it.
 ///
 /// A CLASS OF `@State` PROPERTIES, held by its gallery window. Each property
@@ -137,16 +126,20 @@ final class Navigation {
     /// platform places the menu for the room.
     @State var menuOverlays = false
 
+    /// Whether the split view's bar offers the button showing and hiding the
+    /// menu - see `SplitViewSample`, which is where the switch that writes
+    /// it lives.
+    @State var showsMenuButton = true
+
     /// Whether the menu lists the row that is hidden by default - see
     /// `SplitViewSample`, which is where the switch that writes it lives.
     @State var listsHiddenRow = false
 
     // listing: Navigation.sheets
-    /// What is presented over all of it, the first presented first and the
-    /// top one last. Usually empty, and almost always one deep when it is not -
-    /// it is a stack because the platforms make it one: a sheet may present a
-    /// sheet.
-    @State var sheets: [Sheet] = []
+    /// Whether a page stands presented over all of it - the bars included,
+    /// which is the whole difference from `push`. The user dismissing it
+    /// writes false, the way a back gesture shortens a path.
+    @State var presentsPage = false
     // listing: end
 
     /// Whether the window's notice stands over every page - the Window
@@ -198,6 +191,24 @@ final class Navigation {
         if menuOverlays { menuOpen = false }
     }
 
+    /// The links this window was given, newest last - what the Links sample
+    /// lists.
+    @State var links: [String] = []
+
+    /// A link this window was given: noted, and the sample it names shown over
+    /// its group - the window's own move, the back button leading to the group
+    /// and home. A link naming no sample of `catalog` moves nothing.
+    func follow(link address: String, in catalog: Catalog) {
+        links.append(address)
+        guard let id = GalleryLink.sample(in: address),
+              let group = catalog.groups.first(where: { $0.samples.contains { $0.id == id } })
+        else { return }
+
+        section = .home
+        path = [.group(group.route), .sample(id)]
+        if menuOverlays { menuOpen = false }
+    }
+
     /// Pushes a page on top of whatever is showing.
     ///
     /// There is deliberately no `back()` beside it. A page that offers a way
@@ -229,23 +240,6 @@ final class Navigation {
     func showingGroup(_ route: String) -> Bool {
         section == .home && path.first == .group(route)
     }
-
-    // listing: Navigation.sheets
-    /// Presents a page over everything - the bars included, which is the whole
-    /// difference from `push`.
-    func present(_ sheet: Sheet) {
-        sheets.append(sheet)
-    }
-
-    /// Closes the top one. A sheet the USER dismisses needs none of this: the
-    /// host reports how many survived and `ModalStack` shortens the array, the
-    /// same way a back gesture shortens a path.
-    func dismiss() {
-        if !sheets.isEmpty {
-            sheets.removeLast()
-        }
-    }
-    // listing: end
 
     // MARK: - The tab list, which the user changes
 
@@ -335,7 +329,7 @@ final class Navigation {
 extension Navigation {
     /// Opens a sample nobody asked for - the menu's last row and the title
     /// bar's chip both call it. Flattened, so every sample is as likely as
-    /// every other - picking a group first would favour whatever is in the
+    /// every other - picking a group first would favor whatever is in the
     /// shortest one - and drawn from what `formFactor` shows, so a phone is never
     /// surprised with a page about desktop chrome.
     ///

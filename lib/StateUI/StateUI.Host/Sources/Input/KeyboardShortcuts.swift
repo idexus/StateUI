@@ -11,8 +11,8 @@
     /// whose shortcut the platform only shows beside it.
     public static func acts(_ element: MountedElement) -> Bool {
         switch element.type {
-        case .button, .toolbarItem: true
-        case .menuItem: element.enclosing(type: .contextMenu) == nil
+        case .button, .toolbarButton, .toolbarToggle: true
+        case .menuItem, .menuToggle: element.enclosing(type: .contextMenu) == nil
         default: false
         }
     }
@@ -134,11 +134,16 @@
     }
 
     /// Whether the element stands where the user meets it: it and everything holding it shown, on the page each
-    /// arrangement around it shows - a stack's top, the chosen tab, the sheet over the others.
+    /// arrangement around it shows - a stack's top, the chosen tab - under no sheet shown after its own.
     public var standsInSight: Bool {
         guard standsShown else { return false }
         var child = self
         while let parent = child.parent {
+            // A sheet stands over its window wherever the view presenting it stands: the top one is in sight.
+            if parent.type == .sheet {
+                guard let window = parent.enclosing(type: .window) else { return false }
+                return tree?.presentedSheets(in: window).last === child
+            }
             guard parent.standsShown else { return false }
             // A slot of an arrangement - a bar, a menu - stands with the arrangement, whichever page it shows.
             if parent.slots.contains(where: { $0 === child }) {
@@ -146,12 +151,14 @@
                 continue
             }
             switch parent.type {
-            case .navigationStack, .modalStack: if parent.children.last !== child { return false }
+            case .navigationStack: if parent.children.last !== child { return false }
             case .tabView: if let chosen = parent.selectedTab, chosen !== child { return false }
             default: break
             }
             child = parent
         }
-        return true
+        // Under the window's sheets, none in sight.
+        guard let window = enclosing(type: .window) else { return true }
+        return tree?.presentedSheets(in: window).isEmpty != false
     }
 }

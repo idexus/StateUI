@@ -36,9 +36,13 @@ final class WinUIRenderer {
     /// WinUI's part of the files the user opens and saves, and of what Windows launches.
     private(set) lazy var fileToolkit = WinUIFileToolkit(renderer: self)
 
+    /// WinUI's part of the requests the application sends.
+    private(set) lazy var network = WinUINetwork()
+
     /// What performs the acts the application calls, and answers them, by the host layer's rules.
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
+        toolkit: actToolkit, files: fileToolkit, network: network, answers: runtime.core,
+        tree: { [unowned self] in runtime.tree })
 
     /// The windows the tree holds, each with its controller, in the tree's order.
     private let roster = WindowRoster<WinUIWindowController>()
@@ -59,6 +63,13 @@ final class WinUIRenderer {
         return front.flatMap { controller(of: $0)?.window } ?? window
     }
 
+    /// The window a window's act asks in: the one `element` stands in, or, where nil, the one the user is in; nil
+    /// where `element` stands in no window shown.
+    func window(asked element: MountedElement?) -> WinUIWindow? {
+        guard let element else { return userWindow }
+        return controller(of: element)?.window
+    }
+
     /// The window element whose window is `window`.
     func element(of window: WinUIWindow) -> MountedElement? {
         roster.windows.first { $0.controller.window === window }?.element
@@ -76,6 +87,13 @@ final class WinUIRenderer {
 
     /// WinUI stands on this thread: the host claims it as the UI thread, then starts.
     /// Design: docs/design/platforms/winui/runtime.md#starting
+    /// Windows asked the application to open `addresses` - links of a scheme it registered: each reaches a window by
+    /// the host layer's rule.
+    /// Design: docs/design/platforms/winui/runtime.md#a-link-opened
+    func openLinks(_ addresses: [String]) {
+        for address in addresses { runtime.openLink(address) }
+    }
+
     nonisolated static func launch() {
         CoreLink().claimUIThread()
 
@@ -91,6 +109,7 @@ final class WinUIRenderer {
         let renderer = WinUIRenderer()
         shared = renderer
         renderer.start(restoringKept: previous == nil, turns: WinUIDoorbell.install)
+        WinUIMainQueue.watch()
         stateui_winui_watch_environment()
         return renderer
     }
@@ -144,7 +163,7 @@ final class WinUIRenderer {
             register: WinUIRealization.register,
             complainingTo: WinUIRenderer.log,
             environment: { WinUIEnvironment.report(to: runtime.core) },
-            kept: { if restoringKept { WinUIPersistence.restore(into: runtime.core) } },
+            kept: { if restoringKept { WinUIPersistence.readKept(into: runtime.core) } },
             windows: { scenes.restore(WinUIPersistence.readScenes(), in: runtime) },
             turns: turns)
     }
@@ -193,6 +212,7 @@ extension WinUIRenderer: HostPresenter {
             showWindows()
             refreshWindowChrome()
         }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.winUI.configurePopover() }
         if let text = scenes.changed(root: runtime.tree.root) { WinUIPersistence.writeScenes(text) }
     }
 
@@ -204,6 +224,10 @@ extension WinUIRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+
+    func open(link address: String) {
+        acts.open(link: address)
     }
 
     func focus(_ element: MountedElement) {

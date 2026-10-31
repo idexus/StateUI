@@ -10,12 +10,61 @@ final class AndroidTextViewTests: XCTestCase {
     static var allTests: [(String, (AndroidTextViewTests) -> () throws -> Void)] {
         [
             ("testATextsSpansAreRunsOfItsWords", testATextsSpansAreRunsOfItsWords),
+            ("testALinkThatCannotBeChosenIsDimmed", testALinkThatCannotBeChosenIsDimmed),
             ("testATextShowsAsManyLinesAsItsBreakAllows", testATextShowsAsManyLinesAsItsBreakAllows),
             ("testWrappedWordsHeldToSomeLinesEndWithAnEllipsis", testWrappedWordsHeldToSomeLinesEndWithAnEllipsis),
             ("testATextsCaseAndLetterSpacingAreItsOwn", testATextsCaseAndLetterSpacingAreItsOwn),
             ("testABackgroundBrushIsDrawnAcrossTheView", testABackgroundBrushIsDrawnAcrossTheView),
-            ("testALabelsWordsStandInTheThemesPrimaryColour", testALabelsWordsStandInTheThemesPrimaryColour),
+            ("testALabelsWordsStandInTheThemesPrimaryColor", testALabelsWordsStandInTheThemesPrimaryColor),
+            ("testAPaddingsStartStandsWhereTheDirectionStarts", testAPaddingsStartStandsWhereTheDirectionStarts),
         ]
+    }
+
+    /// A padding's start and end follow the direction: a text's and a button's start stand at the left left to right
+    /// and at the right right to left - again as the direction turns.
+    func testAPaddingsStartStandsWhereTheDirectionStarts() throws {
+        try onMainActor {
+            let rightToLeft = State(wrappedValue: false)
+            let host = AndroidRenderer.running {
+                VStack {
+                    Text("Ada").padding(start: 16, top: 0, end: 2, bottom: 0)
+                    Button("Go").padding(start: 16, top: 0, end: 2, bottom: 0)
+                }
+                .layoutDirection(rightToLeft.wrappedValue ? .rightToLeft : .leftToRight)
+            }
+            let views: [AndroidTextualView] = [
+                try XCTUnwrap(host.views(AndroidTextView.self).first),
+                try XCTUnwrap(host.views(AndroidButtonView.self).first),
+            ]
+            let (start, end) = (views[0].pixels(16), views[0].pixels(2))
+            @MainActor func sides(_ view: AndroidTextualView) -> [Int32] {
+                [JavaAPI.getPaddingLeft, JavaAPI.getPaddingRight].map { Java.callInt(view.reference, $0) }
+            }
+            XCTAssertEqual(views.map(sides), [[start, end], [start, end]], "the start at the left")
+
+            rightToLeft.wrappedValue = true
+            host.runtime.pump.turn()
+            XCTAssertEqual(views.map(sides), [[end, start], [end, start]], "the start at the right")
+        }
+    }
+
+    /// A link that cannot be chosen shows its words dimmed, as the theme dims what cannot be chosen.
+    func testALinkThatCannotBeChosenIsDimmed() {
+        onMainActor {
+            let host = AndroidRenderer.running {
+                VStack {
+                    Link("On", destination: "https://www.swift.org")
+                    Link("Off", destination: "https://www.swift.org").isEnabled(false)
+                }
+            }
+            host.layOut()
+            let links = host.views(AndroidLinkView.self)
+            XCTAssertEqual(links.count, 2)
+            let alpha = links.map { UInt32(bitPattern: Java.callInt($0.reference, AndroidDriver.getCurrentTextColor)) >> 24 }
+
+            XCTAssertEqual(alpha[0], 255)
+            XCTAssertLessThan(alpha[1], 200, "the disabled one's words dimmed")
+        }
     }
 
     /// The runs' words are the label's, one after another, and a larger run makes the line taller.
@@ -100,13 +149,13 @@ final class AndroidTextViewTests: XCTestCase {
         }
     }
 
-    /// A gradient runs across the whole view, from its first colour at the start point to its last at the end.
+    /// A gradient runs across the whole view, from its first color at the start point to its last at the end.
     func testABackgroundBrushIsDrawnAcrossTheView() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 Text("")
                     .background(Brush.linearGradient(
-                        [GradientStop(Color("#FF0000"), 0), GradientStop(Color("#0000FF"), 1)],
+                        [GradientStop(Color(hex: 0xFF0000), 0), GradientStop(Color(hex: 0x0000FF), 1)],
                         startPoint: Point(0, 0),
                         endPoint: Point(1, 0)))
                     .width(100)
@@ -125,8 +174,8 @@ final class AndroidTextViewTests: XCTestCase {
         }
     }
 
-    /// A label whose colour the tree states not stands in the theme's primary words colour.
-    func testALabelsWordsStandInTheThemesPrimaryColour() throws {
+    /// A label whose color the tree states not stands in the theme's primary words color.
+    func testALabelsWordsStandInTheThemesPrimaryColor() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 Text("Words").horizontalAlignment(.start).verticalAlignment(.start)

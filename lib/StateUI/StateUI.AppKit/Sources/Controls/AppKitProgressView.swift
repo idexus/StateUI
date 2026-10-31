@@ -33,7 +33,7 @@ final class AppKitProgressView: NSProgressIndicator {
 
 /// AppKit's indeterminate indicator, visible exactly while work is running.
 @MainActor
-final class AppKitActivityIndicatorView: NSProgressIndicator {
+final class AppKitSpinnerView: NSProgressIndicator {
     private(set) var isSpinning = false
 
     /// A stopped indicator keeps its place and draws nothing, natively, so
@@ -52,7 +52,7 @@ final class AppKitActivityIndicatorView: NSProgressIndicator {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        fatalError("AppKitActivityIndicatorView is created in code")
+        fatalError("AppKitSpinnerView is created in code")
     }
 
     func apply(running: Bool) {

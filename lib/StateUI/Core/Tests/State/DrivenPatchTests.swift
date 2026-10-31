@@ -150,17 +150,17 @@ final class DrivenPatchTests: XCTestCase {
     /// here rather than surprising a device.
     func testEveryDrivenModifierRegistersItsProperty() throws {
         let number = State(wrappedValue: 0.5)
-        let colour = State(wrappedValue: Color("#102030"))
+        let color = State(wrappedValue: Color(hex: 0x102030))
         let inset = State(wrappedValue: Insets(4))
 
         let card = ZStack {
             Text("words")
                 .fontSize(number.projectedValue)
-                .textColor(colour.projectedValue)
+                .textColor(color.projectedValue)
                 .tracking(number.projectedValue)
         }
         .opacity(number.projectedValue)
-        .background(colour.projectedValue)
+        .background(color.projectedValue)
         .width(number.projectedValue)
         .height(number.projectedValue)
         .minimumWidth(number.projectedValue)
@@ -191,14 +191,15 @@ final class DrivenPatchTests: XCTestCase {
         let button = Button("press")
             .lineWidth(number.projectedValue)
 
-        let entry = TextField("").placeholderColor(colour.projectedValue)
+        let entry = TextField("").placeholderColor(color.projectedValue)
 
         // And the one modifier that is a control's own rather than a tier's.
-        let box = Rectangle().fill(colour.projectedValue)
+        let box = Rectangle()
+            .fill(color.projectedValue)
 
         let page = try page(VStack { card; shape; button; entry; box }.spacing(number.projectedValue).node)
 
-        // The number is state 1, the colour 2 and the insets 3, in the walk.
+        // The number is state 1, the color 2 and the insets 3, in the walk.
         XCTAssertEqual(ties(page, .auto(3)), tied(["spacing"], to: 1, .inOut, .property, .number))
         XCTAssertEqual(
             ties(page, .auto(3), .auto(4)),
@@ -307,20 +308,22 @@ final class DrivenPatchTests: XCTestCase {
     /// The wrapper around each face is the library's own and is always there,
     /// shaded or not - which is what keeps the host's writes off the author's
     /// view. A shaded run wraps two, the shade second.
-    func testALayoutEngineRegistersOnTheLayoutAlone() throws {
+    func testAMotionLayoutRegistersOnTheLayoutAlone() throws {
         let page = try page(
-            LayoutEngine(["a", "b"]) { Text($0) } placements: { _, _ in [] }
-                .shade(Rectangle(.black))
+            MotionLayout(["a", "b"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
+                .shade(
+                    Rectangle()
+                        .fill(.black))
                 .node)
-        let layout = try XCTUnwrap(page.subtree.first { $0.type == .layoutEngine })
+        let layout = try XCTUnwrap(page.subtree.first { $0.type == .motionLayout })
         let ties = layout.driven?.bindings ?? [:]
 
         XCTAssertEqual(ties[.area]?.kind, .placement)
         XCTAssertEqual(ties[.area]?.mode, .out)
         XCTAssertEqual(ties[.frame]?.kind, .feed)
         XCTAssertEqual(ties[.frame]?.mode, .in)
-        XCTAssertEqual(ties[.phase]?.kind, .property, "the phase worn, so the host walks it")
-        XCTAssertEqual(ties[.phase]?.mode, .inOut)
+        XCTAssertEqual(ties[.parameters]?.kind, .property, "the phase worn, so the host walks it")
+        XCTAssertEqual(ties[.parameters]?.mode, .inOut)
         XCTAssertEqual(layout.children.map(\.type), [.grid, .grid], "each face wrapped")
         XCTAssertEqual(layout.children.prefix(2).map(\.children.count), [2, 2], "the face, then its shade")
         XCTAssertTrue(
@@ -376,9 +379,10 @@ final class DrivenPatchTests: XCTestCase {
 
                 values.formUnion(written.occurrences(between: "public func ", and: "(_ value:"))
 
-                if let name = written.occurrences(between: "public func ", and: "(").first,
-                   let type = written.occurrences(between: "Binding<", and: ">").first {
-                    signature = (name, type)
+                // Each declaration starts afresh, so a body is never read as an earlier signature's.
+                if let name = written.occurrences(between: "public func ", and: "(").first {
+                    let type = written.occurrences(between: "Binding<", and: ">").first
+                    signature = type.map { (name, $0) }
                 } else if let property = written.occurrences(between: "journey(", and: ",").first,
                           property.hasPrefix(".")
                             || property.split(separator: ".").first?.hasSuffix("Contract") == true,
@@ -394,7 +398,7 @@ final class DrivenPatchTests: XCTestCase {
             walked.count, 20, "the scan found too few walked modifiers to be reading the right thing")
 
         // What the host has a blend for, and the whole of it - a number, a
-        // colour, a thickness, and a POINT, which is the scroller's offset:
+        // color, a thickness, and a POINT, which is the scroller's offset:
         // two lanes the host carries by the scroller's own key rather than by
         // a property's type, the platform declaring no settable property for
         // it.
@@ -416,7 +420,7 @@ final class DrivenPatchTests: XCTestCase {
         }
     }
 
-    /// What the host has a blend for, and the whole of it - a number, a colour, a thickness, and a point.
+    /// What the host has a blend for, and the whole of it - a number, a color, a thickness, and a point.
     private static let walkedTypes: Set<String> = ["Double", "Color", "Insets", "Point"]
 
     /// A VALUE MODIFIER'S TWIN IS DECIDED BY ITS CONTRACT. Every twin goes through `twin(_:by:)` or
@@ -425,7 +429,10 @@ final class DrivenPatchTests: XCTestCase {
     /// grid's spacing came to jump where a stack's glides. A control's own value, carried both ways (`mode:`), and
     /// the values the host walks by a key of their own stand apart.
     func testEveryTwinIsDecidedByItsContract() throws {
-        let ownValues = ["journey(.scrollOffset,", "journey(SliderContract.value.token,", "journey(StepperContract.value.token,"]
+        let ownValues = [
+            "journey(.scrollOffset,", "journey(SliderContract.value.token,", "journey(StepperContract.value.token,",
+            "journey(ColorPickerContract.color.token,",
+        ]
         var bypassing: [String] = []
 
         // The helpers themselves, where the choice is made, stand apart.

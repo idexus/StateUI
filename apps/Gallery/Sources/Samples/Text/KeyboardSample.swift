@@ -3,6 +3,7 @@ import StateUI
 /// Explicit native focus and soft-input actions.
 struct KeyboardSample: SampleContent, ExampleContent {
     // listing: KeyboardSample
+    @Environment(\.window) private var window
     @State private var name = ""
     @State private var note = ""
     @State private var said = ""
@@ -16,7 +17,7 @@ struct KeyboardSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         Text("`focus()` and `unfocus()` are acts aimed at one field with `@Aim`. "
-            + "`OnScreenKeyboard.hide()` releases whichever input holds the focus, and answers "
+            + "`window.hideOnScreenKeyboard()` releases whichever input holds the focus, and answers "
             + "whether anything did.")
             .fontSize(12)
             .textColor(Palette.subtle)
@@ -42,17 +43,17 @@ struct KeyboardSample: SampleContent, ExampleContent {
             HStack {
                 Button("Focus first")
                     .horizontalAlignment(.fill)
-                    .onClicked(gate: .ignoreWhileRunning) { try await first.focus() }
+                    .onClicked(.ignoreWhileRunning) { try await first.focus() }
 
                 Button("Unfocus first")
                     .horizontalAlignment(.fill)
-                    .onClicked(gate: .ignoreWhileRunning) { try await first.unfocus() }
+                    .onClicked(.ignoreWhileRunning) { try await first.unfocus() }
             }
             .spacing(8)
 
             Button("Close keyboard")
-                .onClicked(gate: .ignoreWhileRunning) {
-                    said = try await OnScreenKeyboard.hide()
+                .onClicked(.ignoreWhileRunning) {
+                    said = try await window.hideOnScreenKeyboard()
                         ? "Focus released"
                         : "Nothing was focused"
                 }

@@ -64,17 +64,17 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// Whether there is a page behind this one - what enables a Back button -
     /// written into the binding by the platform after every navigation.
-    public func canGoBack(_ binding: Binding<Bool>) -> Self {
+    public func canGoBack(_ state: Binding<Bool>) -> Modified {
         onEvent(WebViewContract.canGoBackChanged) { can in
-            binding.wrappedValue = can
+            state.wrappedValue = can
         }
     }
 
     /// Whether there is a page ahead of this one - true only after going back,
     /// and what enables a Forward button - written into the binding.
-    public func canGoForward(_ binding: Binding<Bool>) -> Self {
+    public func canGoForward(_ state: Binding<Bool>) -> Modified {
         onEvent(WebViewContract.canGoForwardChanged) { can in
-            binding.wrappedValue = can
+            state.wrappedValue = can
         }
     }
 
@@ -82,13 +82,20 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// Fires as a navigation starts, with where it is going. Observing only: it
     /// cannot cancel the navigation.
-    public func onNavigating(_ handler: @escaping @MainActor (WebNavigation) throws -> Void) -> Self {
+    public func onNavigating(_ handler: @escaping @MainActor (WebNavigation) throws -> Void) -> Modified {
         onEvent(WebViewContract.navigating) { type, url in try handler(WebNavigation(type: type, url: url)) }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigating(gate: some Gate, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Self {
+    public func onNavigating(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
+        onEvent(WebViewContract.navigating, policy: policy) { type, url in
+            try await handler(WebNavigation(type: type, url: url))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onNavigating(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigation>) -> Modified {
         onEvent(WebViewContract.navigating, gate: gate) { type, url in
             try await handler(WebNavigation(type: type, url: url))
         }
@@ -96,15 +103,22 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// Fires when a navigation finished, with how it ended - the place to
     /// clear a spinner, or to say a page could not be fetched.
-    public func onNavigated(_ handler: @escaping @MainActor (WebNavigated) throws -> Void) -> Self {
+    public func onNavigated(_ handler: @escaping @MainActor (WebNavigated) throws -> Void) -> Modified {
         onEvent(WebViewContract.navigated) { result, type, url in
             try handler(WebNavigated(result: result, type: type, url: url))
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onNavigated(gate: some Gate, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Self {
+    public func onNavigated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
+        onEvent(WebViewContract.navigated, policy: policy) { result, type, url in
+            try await handler(WebNavigated(result: result, type: type, url: url))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onNavigated(gate: Gate, _ handler: @escaping ValueEventHandler<WebNavigated>) -> Modified {
         onEvent(WebViewContract.navigated, gate: gate) { result, type, url in
             try await handler(WebNavigated(result: result, type: type, url: url))
         }
@@ -112,13 +126,18 @@ public struct WebView: ElementView, WebViewProperties, FocusElement {
 
     /// Fires when the platform's web process died under the view - out of
     /// memory, usually - leaving it blank. `reload()` is the recovery.
-    public func onProcessTerminated(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onProcessTerminated(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(WebViewContract.processTerminated, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onProcessTerminated(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onProcessTerminated(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(WebViewContract.processTerminated, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onProcessTerminated(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(WebViewContract.processTerminated, gate: gate, handler)
     }
 }
@@ -275,7 +294,7 @@ extension Aim where Target == WebView {
     ///
     ///     Button("Back")
     ///         .isEnabled(hasBack)
-    ///         .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
+    ///         .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
     ///
     /// - Throws: `StateUIError` when the aim is on no view or on two, or its
     ///   view is no longer shown.

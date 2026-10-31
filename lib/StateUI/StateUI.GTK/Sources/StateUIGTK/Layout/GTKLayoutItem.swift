@@ -23,7 +23,14 @@ struct GTKLayoutItem: LayoutChild {
 
     /// The view's size for the width offered it, margin taken out (`LayoutValues.offer`, `sized`).
     func size(offered width: Double?) -> LayoutSize {
-        values.sized(view.measure(width: values.offer(width), height: nil))
+        // A view holding new words back is measured at their size.
+        if let held = view.heldWords { return held }
+        return values.sized(view.measure(width: values.offer(width), height: nil))
+    }
+
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(offered width: Double?) -> Double? {
+        view.firstBaseline(width: values.offer(width))
     }
 
     /// Whether a parent would place this item as it places `other`.

@@ -48,7 +48,8 @@ final class UIKitRenderer {
     /// UIKit's part of the files the user opens and saves, and of what iOS launches.
     private(set) lazy var fileToolkit = UIKitFileToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
+        toolkit: actToolkit, files: fileToolkit, network: URLSessionNetwork(), answers: runtime.core,
+        tree: { [unowned self] in runtime.tree })
 
     /// The key a scene's session keeps its window's record under, for iOS to hand back as it restores the scene.
     static let recordKey = "StateUI.Window"
@@ -112,7 +113,7 @@ final class UIKitRenderer {
                 reportEnvironment()
                 environment.start(reportingChanges: { [weak self] report in self?.runtime.environmentChanged(report) })
             },
-            kept: hydratePersistentState, turns: startTurns)
+            kept: readKeptFromPreferences, turns: startTurns)
     }
 
     /// Takes a turn after every pass of the main run loop, where the core has work for one.
@@ -208,6 +209,14 @@ final class UIKitRenderer {
 
     /// A scene iOS let go of - in the background, to come back - takes its window with it; the StateUI window
     /// stands until its session comes back or the user closes it, and the theme is followed on a scene iOS holds.
+    /// The system asked the application to open `addresses` in `scene`: each reaches a window by the host layer's
+    /// rule - the scene's own where it stands and hears links.
+    /// Design: docs/design/platforms/uikit/runtime.md#a-link-opened
+    func openLinks(_ addresses: [String], in scene: UIWindowScene) {
+        let window = roster.windows.first { $0.1.window?.windowScene === scene }?.0
+        for address in addresses { runtime.openLink(address, in: window) }
+    }
+
     func disconnect(_ scene: UIWindowScene) {
         roster.windows.first { $0.1.window?.windowScene === scene }?.1.sceneLeft()
         environment.stopFollowingTheme(of: scene)
@@ -233,13 +242,13 @@ final class UIKitRenderer {
     private func reportEnvironment() {
         let device = UIDevice.current
         #if targetEnvironment(simulator)
-        let deviceType = DeviceType.virtual
+        let isVirtual = true
         #else
-        let deviceType = DeviceType.physical
+        let isVirtual = false
         #endif
         runtime.core.setDeviceInfo(HostDeviceInfo(
             formFactor: device.userInterfaceIdiom == .pad ? .tablet : .phone, platform: "iOS", model: device.model,
-            manufacturer: "Apple", name: device.name, versionString: device.systemVersion, deviceType: deviceType))
+            manufacturer: "Apple", name: device.name, versionString: device.systemVersion, isVirtual: isVirtual))
         runtime.core.setApplicationInfo(SystemFacts.application)
     }
 
@@ -338,6 +347,18 @@ final class UIKitRenderer {
         userWindow?.rootViewController as? UIKitRootViewController
     }
 
+    /// The window a window's act asks in: the one `element` stands in, or, where nil, the one the user is looking
+    /// at; nil where `element` stands in no window shown.
+    func window(asked element: MountedElement?) -> UIWindow? {
+        guard let element else { return userWindow }
+        return roster.controller(of: element)?.window
+    }
+
+    /// The root of the window a window's act asks in (`window(asked:)`).
+    func root(asked element: MountedElement?) -> UIKitRootViewController? {
+        window(asked: element)?.rootViewController as? UIKitRootViewController
+    }
+
     /// A picture the application ships, by its name: its own file, else its drawing (`PictureArithmetic.drawnFiles`),
     /// each at the pixels a point it holds - read from exactly that file, as UIKit's own reading of a path would take
     /// a `@3x` file beside it for it. No name asks for no picture.
@@ -357,7 +378,7 @@ final class UIKitRenderer {
     }
 
     /// The native image for a picture, made once: a file the application ships, the SF Symbol for an icon - a
-    /// template, drawn in the colour of what holds it - or the bytes decoded at a point a pixel. Each is named by its
+    /// template, drawn in the color of what holds it - or the bytes decoded at a point a pixel. Each is named by its
     /// identity.
     static func image(_ picture: HostPicture) -> UIImage? {
         let key = UIKitPictureKey(picture, height: nil)
@@ -419,8 +440,8 @@ private final class UIKitPictureKey: NSObject {
 
 extension UIKitRenderer: HostPresenter {
     func presentRendered(touchedChrome: Bool) {
-        guard touchedChrome else { return tellStandingPhases() }
-        synchronizeWindows()
+        if touchedChrome { synchronizeWindows() } else { tellStandingPhases() }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.uiKit.configurePopover() }
     }
 
     func presentFrame(movedChrome: Bool) {
@@ -429,6 +450,10 @@ extension UIKitRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+
+    func open(link address: String) {
+        acts.open(link: address)
     }
 
     func focus(_ element: MountedElement) {

@@ -17,8 +17,8 @@ final class WebWindowController {
     /// What the window shows, by the host layer's rule.
     let presentation = WindowPresentation()
 
-    /// A sheet for each page the window's modal stack presents, the last on top.
-    private var sheets: [(element: MountedElement, sheet: WebSheet)] = []
+    /// A sheet for each page the window's views present, the last shown on top.
+    private(set) var sheets: [(element: MountedElement, sheet: WebSheet)] = []
 
     private unowned let runtime: HostRuntime
 
@@ -82,11 +82,13 @@ final class WebWindowController {
         let changes = presentation.show(element, in: runtime.lifecycle)
         if let traits = changes.traits {
             window.frame.setBackground(traits.background.painted)
-            WebRelay.keepPageColour(Self.pageColour(traits.background))
+            WebRelay.keepPageColor(Self.pageColor(traits.background))
+            groundTheSurfacesOverThePage(element)
         }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.web.view) }
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.web.view)) }
         if let pages = changes.sheets { showSheets(pages) }
+        for page in element.pages { page.web.showBottomBar() }
         adaptSidebar()
     }
 
@@ -95,15 +97,26 @@ final class WebWindowController {
         (presentation.arrangement?.web.view as? WebSplitView)?.adapt()
     }
 
-    /// The colour the page wears under the window, and keeps for its next start: the window's own where it is one
-    /// opaque colour - what Safari takes above the page and around its bars, once, at the first paint - and none
+    /// The color the page wears under the window, and keeps for its next start: the window's own where it is one
+    /// opaque color - what Safari takes above the page and around its bars, once, at the first paint - and none
     /// where it is translucent, a blur or the platform's own.
-    /// Design: docs/design/platforms/web/pages.md#the-colour-under-the-window
-    static func pageColour(_ background: HostMaterial) -> String? {
-        guard background.blur == nil, background.glass == nil, case .solid(let colour) = HostBrush(background.paint),
-              colour.color?.alpha == 255
+    /// Design: docs/design/platforms/web/pages.md#the-color-under-the-window
+    static func pageColor(_ background: HostMaterial) -> String? {
+        guard background.blur == nil, background.glass == nil, case .solid(let color) = HostBrush(background.paint),
+              color.color?.alpha == 255
         else { return nil }
-        return WebCSS.color(colour)
+        return WebCSS.color(color)
+    }
+
+    /// Stands the surfaces over the page on the window's background as it changes: its sheets, and its split views'
+    /// sidebars over the detail (`overlaidGround`).
+    /// Design: docs/design/host/pages.md#a-pages-ground
+    private func groundTheSurfacesOverThePage(_ element: MountedElement) {
+        for (page, sheet) in sheets { sheet.stand(on: page.overlaidGround) }
+        for split in element.splitViews {
+            (split.web.view as? WebSplitView)?.ground(
+                beside: split.sidebarMaterial(over: false), over: split.sidebarMaterial(over: true))
+        }
     }
 
     /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
@@ -121,6 +134,7 @@ final class WebWindowController {
                 guard let self else { return }
                 goBack(in: runtime)
             }
+            sheet.stand(on: page.overlaidGround)
             sheet.present()
             sheets.append((page, sheet))
         }
@@ -136,21 +150,22 @@ final class WebWindowController {
         if leavesHistory { Self.unclaimedLeaves += 1 }
     }
 
-    /// The user took the top sheet away: the modal stack is told how many remain.
+    /// The user took the top sheet away: false is written onto its state.
     private func dismissTopSheet() {
         guard let element, !presentation.sheets.isEmpty else { return }
-        runtime.goBack(.dismissSheet(remaining: presentation.sheets.count - 1), in: element)
+        runtime.goBack(.dismissSheets(Array(presentation.sheets.suffix(1))), in: element)
     }
 
     /// Writes the window's chrome on its bar and each sheet's on the sheet's - their tabbed views' strips in their
-    /// bars' colours - and names the tab after the page the user sees and the site.
+    /// bars' colors - and names the tab after the page the user sees and the site.
     /// Design: docs/design/platforms/web/pages.md#the-windows-bar
     func refreshChrome() {
         guard let element else { return }
         let chrome = WindowChrome(window: element, arrangement: presentation.arrangement)
         var title = chrome.title.flatMap { $0.isEmpty ? nil : $0 } ?? element.value(.title)?.string ?? ""
-        let split = chrome.sidebarToggle?.web.view as? WebSplitView
+        let split = chrome.splitView?.web.view as? WebSplitView
         window.bar.show(chrome, title: title, sidebar: split?.isPresented, split: split)
+        window.bar.follow(page: presentation.arrangement?.visiblePage, sidebar: presentation.arrangement?.sidebarPage)
         // The page the user sees may stand with no bar over it.
         window.bar.setShown(presentation.arrangement?.visiblePage?.value(.showsNavigationBar)?.bool != false)
         for tabs in presentation.arrangement?.tabViewsShown ?? [] { tabs.web.showBarColors() }
@@ -159,6 +174,11 @@ final class WebWindowController {
             let own = WindowChrome(window: element, arrangement: page)
             let named = own.title.flatMap { $0.isEmpty ? nil : $0 } ?? ""
             sheet.bar.show(own, title: named, sidebar: nil)
+            sheet.bar.follow(page: page.visiblePage, sidebar: nil)
+            // A sheet has no bar of its own: a stack in it brings one, offering the close unless its page says not.
+            sheet.bar.setShown(page.bringsABar)
+            sheet.offersClose(page.offersClose)
+            sheet.fits(SheetSize.asks(page))
             if !named.isEmpty { title = named }
         }
         WebRelay.setTitle(Self.tab(page: title, site: WebRelay.siteName))
@@ -183,7 +203,7 @@ final class WebWindowController {
 
     /// Shows or hides the sidebar of the split view the window shows, as the user does.
     private func toggleSidebar() {
-        guard let split = WindowChrome(window: element!, arrangement: presentation.arrangement).sidebarToggle,
+        guard let split = WindowChrome(window: element!, arrangement: presentation.arrangement).splitView,
               let view = split.web.view as? WebSplitView
         else { return }
         view.userPresents(!view.isPresented)

@@ -8,6 +8,7 @@ import StateUIAndroid
 /// The gallery's own event on this head: the battery, which the gallery's activity watches while it lives and tells
 /// through GalleryNatives.
 enum GalleryEventSources {
+    // listing: android.md.event
     /// Declares the event the activity's watcher raises. Said once, as the library loads.
     @MainActor
     static func register() {
@@ -26,5 +27,6 @@ enum GalleryEventSources {
         lastSaid = (level, charging)
         StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
+    // listing: end
 }
 // listing: end

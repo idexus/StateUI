@@ -15,11 +15,11 @@ the same image and nothing changed. A registration is made once for the whole pr
 ask, so the host hands every view it makes, through `AppKitPictureResolving`,
 the means to resolve a name. A name the application has no file for resolves
 to nothing. An icon resolves to its SF Symbol (`Icon.sfSymbol`), a template
-image in the colour of the control holding it, and bytes to the image they
-encode. An image view tints a template in the label colour, as the words
-beside it; left untinted, it draws one in the secondary label colour. A
-bordered button tints a template in the platform's colour alone, so where
-its words stand in one of their own - a role's red, the tree's colour - it
+image in the color of the control holding it, and bytes to the image they
+encode. An image view tints a template in the label color, as the words
+beside it; left untinted, it draws one in the secondary label color. A
+bordered button tints a template in the platform's color alone, so where
+its words stand in one of their own - a role's red, the tree's color - it
 shows a copy of the icon drawn in theirs.
 
 ## Accessibility on the control
@@ -27,7 +27,14 @@ shows a copy of the icon drawn in theirs.
 A host view that wraps one native control hands assistive technology that
 control in its own place, through `AppKitAccessibilityPresenting`. The
 author's words, the role and whether the element takes part are written where
-VoiceOver meets the control, not on the view around it.
+VoiceOver meets the control, not on the view around it. A kind the element
+says is an accessibility role - a button, a check box for a toggle, a slider
+for something adjustable, a link, an image, static text - and a value its
+accessibility value; a slider and a date's or a time's picker say their own
+value over any given. Its actions are custom actions, and a view StateUI draws
+that says it is adjustable takes VoiceOver's increment and decrement; AppKit's
+own view - a control, a box, a scroller, a map, a page - steps as its own kind
+does, or not at all.
 
 ## A stated size
 
@@ -40,12 +47,12 @@ and two required answers to one width are a conflict AppKit reports.
 
 ## A layout's own box
 
-A stack, a grid or a ZStack paints its own box. A plain colour on a plain
-rectangle is its layer's background colour: the view draws nothing and keeps
+A stack, a grid or a ZStack paints its own box. A plain color on a plain
+rectangle is its layer's background color: the view draws nothing and keeps
 no backing store, which is what almost every layout is. An outline, a
 rounded or oval shape, or a gradient makes the view draw instead - the
 background on the shape, the outline inside the bounds, half its width either
-side of the shape's edge, in a colour alone (AppKit's brush strokes no
+side of the shape's edge, in a color alone (AppKit's brush strokes no
 gradient). With `clipsContent` the layer cuts what the layout holds: to its
 bounds, its rounded corners, or an oval mask; without it nothing is cut.
 
@@ -65,26 +72,54 @@ what the glass holds. So glass wears its tint while its window stands key or
 main in the application in front, and in its content (the wash) otherwise,
 following the window's and the application's notices.
 
-A scroller's box is its layer's alone: a colour behind what it shows, a
-colour's outline on a rectangle or a rounded one, and the cut of what it shows
+A scroller's box is its layer's alone: a color behind what it shows, a
+color's outline on a rectangle or a rounded one, and the cut of what it shows
 to its shape, always. AppKit repaints a scroller's layer as it displays it and
-clears its colour and outline, so the scroller puts them back each time it
+clears its color and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller's outline is a shape layer over what it
 shows: under the oval's mask a layer's border would show only as slivers.
+
+## The same box again
+
+A layout takes its box - background, outline, shape, cut - each time the
+host applies its values, which a run placing it does every frame; the same
+box again changes nothing and marks nothing for display
+(`AppKitDecoration.apply`): cut and displayed again on every frame of a run,
+it would be work for nothing.
+
+## A figure made of a material
+
+A shape whose fill is a blur or glass (`HostMaterial`) stands AppKit's own
+view of it - an `NSVisualEffectView` in the blur's role, its tint washed over
+it, or an `NSGlassEffectView` - lowest in the shape's view, its layer cut by a
+`CAShapeLayer` mask holding the figure's path; the mask's path is flipped for a
+surface that is not flipped, as an effect view is not. The shape's own drawing
+lies under its subviews, so it paints nothing then, and its outline -
+dashes, caps and joins as ever - is drawn by `AppKitShapeOutline`, a view over
+the surface that takes no click. A fill of a color or a gradient is drawn as
+it always was, with no surface.
 
 ## A sidebar's material
 
 A split view's sidebar is AppKit's own sidebar item, on the system's sidebar
 material. The material its split view says for it beside the detail
-(`sidebarBackground`) stands in its pane as a layout's box does - a colour on
+(`sidebarBackground`) stands in its pane as a layout's box does - a color on
 the pane's layer, a blur or glass a view of its own under the page - over
 the system's. A Mac sidebar never slides over the detail: a window too narrow
-for both hides it, so the flyout's material is never shown.
+for both hides it, so the overlay material is never shown.
+
+Each pane of a split view is a room, as the window is: the window's title bar
+and toolbar stand over the top of both - the sidebar spans the title bar -
+and its column's content stands clear of them, or under them on the edges
+its visible page's own layout ignores, by the host layer's rule
+(`AppKitPaneView.childRoom`, `SafeAreaArithmetic.room`), its scroller keeping
+clear what it reaches under. The window lays the panes again as a column's
+page changes - pushed, popped, its edges said anew.
 
 ## A child turned in place
 
 A ZStack whose run turns its drawing order - two cards swapping ranks as a
-layout engine's run passes halfway between them - sets its `subviews` in the
+motion layout's run passes halfway between them - sets its `subviews` in the
 new order (`ZStackArithmetic.drawingOrder`), which moves each child it keeps
 without taking it out. A child taken out and added again leaves the window
 for a moment, and AppKit cancels a gesture under way on it: a pointer drag of
@@ -129,6 +164,22 @@ bounds for visible where it or an ancestor stands under a transform
 a scroller uncovering a long label still draws it strip by strip (A long
 text).
 
+## A drawn picture
+
+A picture that is a file's drawing - an SVG's, a PDF's - stands in the
+image view as pixels of the size it is shown at (`AppKitImageView`), by
+the host layer's rule (`PictureArithmetic.vectorPixels`, `drawsAgain`):
+made again only for more pixels, so a size in motion does not draw it
+every frame. They are made away from the main thread, the picture
+standing as it is meanwhile; pixels, icons and pictures drawn by code
+stand as they are given. The trap: AppKit draws an image view again
+whenever a transform above it moves - a photo turning as a throw slows, a
+card of a ring - and its drawing view, a private part of the control,
+draws a drawing anew from its source each time: a light table's turned
+photos spent 300 ms of every 500 in CoreSVG and the throw stuttered.
+Pixels made on the main thread for every size made a pinch stutter
+instead.
+
 ## A button's icon beside its words
 
 A button keeps its icon beside its words, the two together in the middle
@@ -160,7 +211,7 @@ standing alone.
 ## A button's menu
 
 AppKit's own menu buttons - the pull-down button and the combo button - take
-no box and no colour of their words, so a button holding a menu is the host's
+no box and no color of their words, so a button holding a menu is the host's
 own AppKit button, which wears what the tree says, and its menu an `NSMenu`
 opened under it, at least as wide, as a pull-down opens its:
 
@@ -178,20 +229,39 @@ by it, and its cell sets its words and picture in the rest, its bezel the whole
 button's. Assistive technology asking for the menu of any of them opens it; a
 split button's arrow part, a view inside a button, is not met on its own.
 
-## A radio button's set
+## A link
 
-StateUI owns a radio button's set - its name, across the whole window - and
-turns the others of a set off as one is checked. AppKit keeps sets of its own:
-the radio buttons of one superview sharing one action turn each other off as
-one is clicked, whatever sets StateUI put them in. So the host's radio button
-takes a turn only from StateUI's own writes and from a click on itself, which
-its cell makes; AppKit's turning off of the others is refused.
+AppKit has no link control of its own. A link is a borderless `NSButton`, its
+words in the system's link color - or the tree's - and underlined, the
+pointing hand over it, and its role to assistive technology a link, which
+VoiceOver names by its words. Its click is the button's; the host layer opens
+the address (`host/runtime.md#a-link-chosen`).
+
+## A color picker
+
+A color picker is AppKit's `NSColorWell` in its default style: a click opens
+the system's color panel, which hands each color the user picks to the well,
+and the well's action reports it as the host layer reports a color
+(`host/runtime.md#a-color-chosen`). The well's `supportsAlpha` is
+`choosesOpacity`, so the panel shows its opacity slider only where the
+picker chooses opacity. A color the program writes changes the well and
+sends no action.
+
+## A switch's words
+
+A check box's words are its button's title, beside its box, as AppKit draws
+one. `NSSwitch` has no title, so a switch with words is a view of two: the
+words from its start and the switch at its end, mirrored right to left, the
+way System Settings sets a switch in a row. The words belong to the switch: a
+click on them turns it, and assistive technology meets the switch alone,
+named by the element's label or else by its words, the label beside it left
+out (`AppKitAccessibilityPresenting`).
 
 ## A field's placeholder
 
 A text field's, a search field's and an editor's placeholder stands where the
 field's own words would: across the field as `horizontalTextAlignment` says,
-a plain placeholder in the field's font. A placeholder in a colour of its own
+a plain placeholder in the field's font. A placeholder in a color of its own
 is attributed text, which takes no alignment from its field as a plain one
 does, so it carries the field's alignment itself. An editor's placeholder is
 a label over the text view, in the editor's font, as wide as the text view's
@@ -223,6 +293,7 @@ the first title, `.subtitle` the second, `.headline`, `.body` and `.caption`
 the first caption. The style's size and weight stand under the tree's
 (`TextLook.standing`), and the font is made again at the size and weight that
 stand - the system font, or the named family with that weight in its
-descriptor; italic is AppKit's italic trait. A weight is AppKit's
+descriptor; italic is AppKit's italic trait, and digits of one width the
+number-spacing feature in its descriptor (`kMonospacedNumbersSelector`). A weight is AppKit's
 `NSFont.Weight`, and a font's weight reads back from its descriptor's traits.
 A Mac gives an application no text size of the user's to follow.

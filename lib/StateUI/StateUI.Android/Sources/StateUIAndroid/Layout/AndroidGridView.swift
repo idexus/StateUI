@@ -6,7 +6,7 @@
 
 /// A Grid: the host layer's grid arithmetic over a `StateUIViewGroup`.
 @MainActor
-final class AndroidGridView: AndroidTravellingLayout {
+final class AndroidGridView: AndroidTravelingLayout {
     var rows: [GridLength] = [] {
         didSet { if rows != oldValue { invalidateMeasurements() } }
     }

@@ -13,7 +13,7 @@ GTK paints only at rest - what a class of the host's style sheet paints, a
 class a value, which a value on its way would add to the sheet every frame
 and parse it whole each time: every widget's background, room and accent
 but a layout's (`GTKTransitionSurface.classPainted`), a button's box, the
-words of a field, a picker and a date, the bars' colours; and a window's
+words of a field, a picker and a date, the bars' colors; and a window's
 place and size, which the desktop keeps. Those arrive at once. A layout and
 a page arrangement draw their own box in their snapshot
 (`GTKTransitionSurface.drawsItsOwnBox`), which moves frame by frame.
@@ -23,11 +23,10 @@ last wrote, the value a slider's thumb shows. GTK keeps a widget's opacity in
 256 steps, so what it draws is the nearest step; the animation runs on the
 host's own number, exactly.
 
-A label whose place travels is allocated at the size it is bound for, its
-place travelling around it: GTK breaks a label's words at the width it is
-allocated, so at the widths the place passes through words that fit the
-destination on one line would stand on two
-([words at their destination](../../host/motion.md#words-at-their-destination)).
+A label or a button whose place travels is allocated at the frame the host
+layer gives it, never narrower than its words need: GTK breaks a label's
+words at the width it is allocated
+([words on the way](../../host/motion.md#words-on-the-way)).
 
 ## Moved, turned and scaled
 
@@ -54,9 +53,9 @@ journey's waiter hears it arrive.
 
 ## Joining and leaving
 
-A stack is a travelling layout: when a patch reaches it, its children travel
+A stack is a traveling layout: when a patch reaches it, its children travel
 to their new places ([layout motion](../../host/motion.md#layout-motion)). The
-display's frame writes each travelling child's place before GTK lays the frame
+display's frame writes each traveling child's place before GTK lays the frame
 out, and the place lands in the allocation it asks for
 ([a place between passes](layout.md#a-place-between-passes)); that
 allocation asks for the same places and keeps the running animation.

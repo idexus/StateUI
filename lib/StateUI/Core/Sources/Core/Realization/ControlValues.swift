@@ -4,7 +4,7 @@
 /// The values an application's own control takes together, as a host's registration hands them over whole: each by
 /// its member, as the type its contract declares, and which of them changed.
 ///
-///     web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+///     web.applies(WebViewContract.userAgent, WebViewContract.source) { control, values in
 ///         control.userAgent = values[WebViewContract.userAgent]
 ///         if values.changed(WebViewContract.source) { control.show(values[WebViewContract.source]) }
 ///     }

@@ -22,7 +22,7 @@ public protocol StateValue: Equatable, Sendable {
     static var lanes: Int { get }
 
     /// Which of a view's values this one is where the property alone cannot say - a
-    /// colour. Everything else answers nothing.
+    /// color. Everything else answers nothing.
     static var moving: MotionValues { get }
 }
 
@@ -116,14 +116,14 @@ extension Rect: LaneValue {
 }
 
 extension Insets: LaneValue {
-    /// Left, top, right, bottom.
-    public var carried: StateCarried { .lanes([left, top, right, bottom]) }
+    /// Start, top, end, bottom.
+    public var carried: StateCarried { .lanes([start, top, end, bottom]) }
 
     /// Insets from those four lanes.
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
 
-        self.init(left: lanes[0], top: lanes[1], right: lanes[2], bottom: lanes[3])
+        self.init(start: lanes[0], top: lanes[1], end: lanes[2], bottom: lanes[3])
     }
 
     /// Four.
@@ -131,14 +131,14 @@ extension Insets: LaneValue {
 }
 
 extension Color: LaneValue {
-    /// Red, green, blue and alpha, each from nought to one: a colour pair's light
+    /// Red, green, blue and alpha, each from nought to one: a color pair's light
     /// half, the accent as the application's first. The state that carries a
-    /// colour lays it in the theme in force.
+    /// color lays it in the theme in force.
     public var carried: StateCarried {
         .lanes(standingLanes(in: .standard))
     }
 
-    /// The colour in `theme` - a pair's half in force, the accent in force - as four
+    /// The color in `theme` - a pair's half in force, the accent in force - as four
     /// lanes.
     func standingLanes(in theme: ThemeInForce) -> [Double] {
         let inDark = theme.scheme == .dark && dark != nil
@@ -150,7 +150,7 @@ extension Color: LaneValue {
         return [Double(half.red) / 255, Double(half.green) / 255, Double(half.blue) / 255, Double(half.alpha) / 255]
     }
 
-    /// A colour from those four lanes, each held to the range a channel has
+    /// A color from those four lanes, each held to the range a channel has
     /// and rounded to the eight bits a channel is kept in.
     public init?(carried: StateCarried) {
         guard case .lanes(let lanes) = carried, lanes.count == 4 else { return nil }
@@ -169,10 +169,10 @@ extension Color: LaneValue {
     /// Four.
     public static var lanes: Int { 4 }
 
-    /// A colour, which is what only the value can say.
+    /// A color, which is what only the value can say.
     public static var moving: MotionValues { .color }
 
-    /// A colour.
+    /// A color.
     public static var laneKind: LaneKind { .color }
 }
 

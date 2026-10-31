@@ -81,6 +81,24 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.velocity, 0, "and not moving")
     }
 
+    /// WHERE A THROW REACHES: as far as the value's speed for the motion's length over how steeply the motion sets
+    /// out - a glide as `cubicOut` does, an eased motion on its curve; standing still, or under no motion, where it is.
+    func testWhereAThrowReaches() {
+        let offset = State(wrappedValue: Point(0, 0))
+        let journey = offset.projectedValue.journey
+        journey.snap(to: Point(100, 20))
+        journey.velocity = Point(600, -300)
+
+        let glided = journey.reach(.glide(longest: .milliseconds(900)))
+        XCTAssertEqual(glided.x, 100 + 600 * 0.9 / 3, accuracy: 0.1, "a glide sets out as cubicOut does")
+        XCTAssertEqual(glided.y, 20 - 300 * 0.9 / 3, accuracy: 0.1)
+        XCTAssertEqual(journey.reach(.eased(.milliseconds(400), .linear)).x, 100 + 600 * 0.4, accuracy: 0.1)
+        XCTAssertEqual(journey.reach(.none), Point(100, 20), "no motion carries it")
+
+        journey.velocity = Point(0, 0)
+        XCTAssertEqual(journey.reach(.glide(longest: .milliseconds(900))), Point(100, 20), "still, where it is")
+    }
+
     /// A STATE NOBODY WEARS LANDS WHERE IT IS WRITTEN. Until an element
     /// registers the state the host has no number for it and nothing walks it,
     /// so a write puts the value at the destination as well - and once an
@@ -120,16 +138,16 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.value, 0)
     }
 
-    /// A WRITE LAYS ONLY ITS PART. A colour read back through its type is eight
+    /// A WRITE LAYS ONLY ITS PART. A color read back through its type is eight
     /// bits a channel, and the host reports lanes between them: a stop or a move
     /// that laid the whole journey again would say the value and the speed moved,
     /// and the host would start over from them - Stop in the Gallery's At the same
     /// time let the wash travel on to where it had been going.
     func testAJourneyWriteLaysOnlyItsPart() throws {
-        let wash = State(wrappedValue: Color("#7C3AED"))
+        let wash = State(wrappedValue: Color(hex: 0x7C3AED))
         Renders().render(Rectangle().background(wash.projectedValue).node)
         let image = try XCTUnwrap(wash.storage.walkedImage())
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
         typealias Lanes = JourneyLanes<Color>
 
         // The host reports a frame on its way: lanes no eight bits say.
@@ -145,7 +163,7 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(image.pendingMask & ~beforeStop, Lanes.mask(of: .stopped), "a stop lays its counter alone")
 
         let beforeMove = image.pendingMask
-        wash.projectedValue.journey.move(to: Color("#EA580C"), .eased(.milliseconds(400)))
+        wash.projectedValue.journey.move(to: Color(hex: 0xEA580C), .eased(.milliseconds(400)))
         let moved = image.pendingMask & ~beforeMove
         XCTAssertEqual(moved & (Lanes.mask(of: .value) | Lanes.mask(of: .velocity)), 0, "a move leaves the value and the speed")
         XCTAssertNotEqual(moved & Lanes.mask(of: .destination), 0, "and lays where it goes")
@@ -168,6 +186,32 @@ final class JourneyTests: XCTestCase {
         XCTAssertNotEqual(image.pendingMask & y, 0, "every lane laid again where none changes")
     }
 
+    /// A LAW GIVEN TO A MOVE IS THAT MOVE'S ALONE: the value travels under it, its own law standing, and the next
+    /// write that names no law - an assignment, or a move without one - travels under the value's own again.
+    func testALawGivenToAMoveIsThatMovesAlone() throws {
+        let offset = State(wrappedValue: Point(0, 0), motion: .spring())
+        Renders().render(ScrollView { Text("a") }.scrollOffset(offset.projectedValue).node)
+        let image = try XCTUnwrap(offset.storage.walkedImage())
+        let slow = Motion.eased(.milliseconds(2000))
+        var now = 0.0
+        let crossing = { () -> Motion? in
+            now += 16
+            Renderer.shared.board.cycle(now: now, reducesMotion: false)
+            return self.law(crossing: image)
+        }
+
+        offset.projectedValue.journey.move(to: Point(0, 5), slow)
+        XCTAssertEqual(crossing(), slow, "the move travels under the law it was given")
+        XCTAssertEqual(offset.projectedValue.journey.motion, .spring(), "the value's own law stands")
+
+        offset.wrappedValue = Point(0, 0)
+        XCTAssertEqual(crossing(), .spring(), "an assignment travels under the value's own")
+
+        offset.projectedValue.journey.move(to: Point(0, 5), slow)
+        offset.projectedValue.journey.move(to: Point(0, 1))
+        XCTAssertEqual(crossing(), .spring(), "and so does a move that names none")
+    }
+
     /// THE LAW RIDES THE VALUE, not the view showing it. `.motion(_:)` on an
     /// element says how everything that element does travels; `@State(motion:)`
     /// says how THIS value travels wherever it is shown, and it survives on the
@@ -186,31 +230,35 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(plain.projectedValue.journey.motion, .eased(.milliseconds(90), .linear), "written later, it is the value's too")
     }
 
-    /// A law given to a move stays on the value even where nothing wears the state yet and the move arrives at once.
-    func testALawGivenToAMoveOfAStateNobodyWearsStays() {
+    /// A law given to a move of a state nobody wears goes with the move, which arrives at once: the value's own law
+    /// stands.
+    func testALawGivenToAMoveOfAStateNobodyWearsGoesWithIt() {
         let fade = State(wrappedValue: 1.0)
-        let law = Motion.eased(.milliseconds(400), .cubicIn)
 
-        let arrival = fade.projectedValue.journey.move(to: 0, law)
+        let arrival = fade.projectedValue.journey.move(to: 0, .eased(.milliseconds(400), .cubicIn))
 
         XCTAssertEqual(arrival.ended, true)
-        XCTAssertEqual(fade.projectedValue.journey.motion, law, "the law it was given is the value's now")
+        XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own law")
     }
 
     /// `.none` given to a move is the law that does not move, never "no law given": the value travels under it, not
     /// under its own.
-    func testAMoveGivenNoMotionTravelsUnderNone() {
-        let fade = State(wrappedValue: 1.0, motion: .spring())
+    func testAMoveGivenNoMotionTravelsUnderNone() throws {
+        let offset = State(wrappedValue: Point(0, 0), motion: .spring())
+        Renders().render(ScrollView { Text("a") }.scrollOffset(offset.projectedValue).node)
+        let image = try XCTUnwrap(offset.storage.walkedImage())
 
-        fade.projectedValue.journey.move(to: 0, .none)
+        offset.projectedValue.journey.move(to: Point(0, 5), .none)
+        Renderer.shared.board.cycle(now: 16, reducesMotion: false)
 
-        XCTAssertEqual(fade.projectedValue.journey.motion, Motion.none, "the law it was given, `.none`")
+        XCTAssertEqual(law(crossing: image), Motion.none, "the law it was given, `.none`")
+        XCTAssertEqual(offset.projectedValue.journey.motion, .spring(), "the value's own standing")
     }
 
     /// THE VALUE'S OWN LAW OVERRIDES THE ELEMENT'S, per property. `.inherited`
     /// is a REQUEST - the crossing answers it with whatever the element
     /// resolved - and anything else is an answer already given, which the
-    /// crossing leaves alone. So a colour driven from one value can travel the
+    /// crossing leaves alone. So a color driven from one value can travel the
     /// application's way while a coordinate driven from another, on the SAME
     /// element, travels its own.
     func testAValuesOwnLawSurvivesTheCrossingAndInheritedDoesNot() {
@@ -276,7 +324,7 @@ final class JourneyTests: XCTestCase {
         XCTAssertEqual(journey.destination, 100, "which the engine reads back")
 
         let image = try XCTUnwrap(ball.projectedValue.journeyImage)
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         board.cycle(now: 0, reducesMotion: false)
 
@@ -360,6 +408,26 @@ final class JourneyTests: XCTestCase {
 
         XCTAssertEqual(walking.wrappedValue, "at 50", "a destination written moves the walk's words not at all")
         XCTAssertEqual(going.wrappedValue, "going to 0", "and moves the state's at once")
+    }
+
+    /// TWO JOURNEYS READ AS ONE follow both walks: the words are settled from where each value IS, on every frame
+    /// either moves.
+    func testTwoJourneysReadAsOneFollowBothWalks() {
+        let x = State(wrappedValue: 1.0)
+        let y = State(wrappedValue: 1.0)
+        let renders = Renders()
+
+        let words = Binding<String>.multi(x.projectedValue.journey, y.projectedValue.journey).convert { x, y in
+            "at \(Int(x.value * 100)), \(Int(y.value * 100))"
+        }
+
+        renders.render(VStack { Rectangle().opacity(x.projectedValue); Rectangle().opacity(y.projectedValue) }.node)
+
+        moved(x.number, to: [0.5, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        XCTAssertEqual(words.wrappedValue, "at 50, 100", "the first walk's frame reached the words")
+
+        moved(y.number, to: [0.25, 1, 0, 0, 0, 0, 0, 0], mask: 0b1)
+        XCTAssertEqual(words.wrappedValue, "at 50, 25", "and the second's")
     }
 
     /// The law lying in a crossing's bytes, read the way the host reads it.

@@ -9,28 +9,33 @@ extension AndroidRegistrations {
     /// children, and the box it paints.
     static func layouts(_ registry: Registry<AndroidView>) {
         registry.add(VStackContract.self, create: { _ in AndroidStackView(axis: .vertical) }) { stack in
-            stack.applies(stackMembers) { view, values in applyStack(view, values) }
+            stack.applies(LayoutMembers.stackMembers) { view, values in applyStack(view, values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+            stack.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
 
         registry.add(HStackContract.self, create: { _ in AndroidStackView(axis: .horizontal) }) { stack in
-            stack.applies(stackMembers) { view, values in applyStack(view, values) }
+            stack.applies(LayoutMembers.stackMembers) { view, values in applyStack(view, values) }
+            stack.applies(LayoutMembers.rowMembers) { view, values in view.lines = StackArithmetic.Lines(values) }
             stack.applies(boxMembers) { view, values in applyBox(view, values) }
             stack.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+            stack.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
 
-        // A spacer is empty room the stack's arithmetic sizes; a divider in a stack is the theme's line.
-        // Design: docs/design/host/layout.md#a-spacer
-        registry.add(SpacerContract.self, create: { _ in AndroidSpacerView() })
-        registry.add(DividerContract.self, create: { _ in AndroidDividerView() })
+        // A space is a box of its own the stack's arithmetic sizes, drawn as a layout's box; a separator in a stack is
+        // the theme's line.
+        // Design: docs/design/host/layout.md#a-space
+        registry.add(SpaceContract.self, create: { _ in AndroidZStackView() }) { space in
+            space.applies(outlineMembers) { view, values in applyBox(view, values) }
+            space.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+        }
+        registry.add(SeparatorContract.self, create: { _ in AndroidSeparatorView() })
 
         registry.add(GridContract.self, create: { _ in AndroidGridView() }) { grid in
-            grid.applies([
-                GridContract.rows, GridContract.columns,
-                GridContract.rowSpacing, GridContract.columnSpacing,
-                PaddingElementContract.padding,
-            ]) { view, values in
+            grid.applies(
+                GridContract.rows, GridContract.columns, GridContract.rowSpacing, GridContract.columnSpacing,
+                PaddingElementContract.padding) { view, values in
                 view.rows = values[GridContract.rows] ?? []
                 view.columns = values[GridContract.columns] ?? []
                 view.rowSpacing = values[GridContract.rowSpacing] ?? 0
@@ -39,32 +44,41 @@ extension AndroidRegistrations {
             }
             grid.applies(boxMembers) { view, values in applyBox(view, values) }
             grid.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+            grid.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
 
         registry.add(ZStackContract.self, create: { _ in AndroidZStackView() }) { layout in
             layout.property(PaddingElementContract.padding) { view, padding in view.padding = padding ?? Insets(0) }
             layout.applies(boxMembers) { view, values in applyBox(view, values) }
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+            layout.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
 
-        // A layout engine stands on the ZStack: its children where its run of placements puts them.
-        registry.add(LayoutEngineContract.self, create: { _ in
+        // A fill is a box of its own that holds nothing, drawn as a layout's box.
+        // Design: docs/design/host/layout.md#a-fill
+        registry.add(FillContract.self, create: { _ in AndroidZStackView() }) { fill in
+            fill.applies(outlineMembers) { view, values in applyBox(view, values) }
+            fill.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+        }
+
+        // A motion layout stands on the ZStack: its children where its run of placements puts them.
+        registry.add(MotionLayoutContract.self, create: { _ in
             let layout = AndroidZStackView()
-            layout.engine = true
+            layout.motionLayout = true
             return layout
         }) { layout in
             layout.applies(boxMembers) { view, values in applyBox(view, values) }
             layout.property(VisualElementContract.ignoresInput) { view, ignores in view.setIgnoresInput(ignores ?? false) }
+            layout.property(LayoutContract.letsInputThrough) { view, lets in view.setLetsInputThrough(lets ?? false) }
         }
 
         // Where the user moves it is reported by the element, on the display's frames.
         // Design: docs/design/platforms/android/layout.md#scrolling
         registry.add(ScrollViewContract.self, create: { _ in AndroidScrollView() }) { scroll in
-            scroll.applies([
+            scroll.applies(
                 ScrollViewContract.orientation, ScrollViewContract.verticalScrollIndicator,
                 ScrollViewContract.horizontalScrollIndicator, ScrollViewContract.scrollOffset,
-                PaddingElementContract.padding,
-            ]) { view, values in
+                PaddingElementContract.padding) { view, values in
                 view.apply(
                     orientation: values[ScrollViewContract.orientation] ?? .vertical,
                     padding: values[PaddingElementContract.padding] ?? Insets(0),
@@ -72,9 +86,9 @@ extension AndroidRegistrations {
                     horizontalBar: values[ScrollViewContract.horizontalScrollIndicator] ?? .automatic,
                     offset: values.changed(ScrollViewContract.scrollOffset) ? values[ScrollViewContract.scrollOffset] : nil)
             }
-            scroll.applies([
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
-            ]) { view, values in
+            scroll.applies(
+                BorderElementContract.shape, BorderElementContract.stroke,
+                BorderElementContract.lineWidth) { view, values in
                 // A scroller always cuts what it shows to its bounds; a shape cuts it to the shape.
                 view.setOutline(AndroidLayoutView.Outline(
                     stroke: values[BorderElementContract.stroke]?.propValue,
@@ -82,17 +96,22 @@ extension AndroidRegistrations {
                     shape: values[BorderElementContract.shape]?.propValue,
                     clips: values[BorderElementContract.shape] != nil))
             }
-            scroll.raises(ScrollViewContract.scrollXChanged)
-            scroll.raises(ScrollViewContract.scrollYChanged)
             scroll.raises(ScrollViewContract.scrollStopped)
+            scroll.applies(RefreshElementContract.isRefreshEnabled, RefreshElementContract.isRefreshing) { view, values in
+                view.applyRefresh(values)
+            }
+            scroll.raises(RefreshElementContract.refreshRequested)
         }
     }
 
+    /// What a space or a fill takes of its box: its outline and its shape - it holds nothing to cut.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
+
     /// What every layout takes of its own box: its outline, its shape and its cut.
-    private static let boxMembers: [any ContractMember] = [
+    private static let boxMembers = PropertyList(
         BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape,
-        LayoutContract.clipsContent,
-    ]
+        LayoutContract.clipsContent)
 
     private static func applyBox<Realized: ElementContract>(_ view: AndroidLayoutView, _ values: ElementValues<Realized>) {
         view.setOutline(AndroidLayoutView.Outline(
@@ -102,10 +121,6 @@ extension AndroidRegistrations {
             clips: values[LayoutContract.clipsContent] ?? false))
     }
 
-    /// What both stacks take: the space between their children, and the space inside their own edge.
-    private static let stackMembers: [any ContractMember] = [
-        StackContract.spacing, PaddingElementContract.padding,
-    ]
 
     private static func applyStack<Realized: ElementContract>(
         _ view: AndroidStackView, _ values: ElementValues<Realized>

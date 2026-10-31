@@ -50,9 +50,9 @@ final class LayoutInterpolationTests: XCTestCase {
         }
     }
 
-    /// THE CATMULL-ROM CURVE IS SHAPED BY THE NEIGHBOURS: through 0, 10 and 40 it starts slower than the straight
+    /// THE CATMULL-ROM CURVE IS SHAPED BY THE NEIGHBORS: through 0, 10 and 40 it starts slower than the straight
     /// line; held at a tension of 1 it slows to a stop at each keyframe.
-    func testTheCatmullRomCurveIsShapedByTheNeighbours() {
+    func testTheCatmullRomCurveIsShapedByTheNeighbors() {
         let values = [0.0, 10, 40, 90]
         XCTAssertEqual(value(.linear, at: 0.5, values), 5, accuracy: 1e-12)
         XCTAssertEqual(value(.catmullRom, at: 0.5, values), 3.75, accuracy: 1e-12)
@@ -124,11 +124,11 @@ final class LayoutInterpolationTests: XCTestCase {
         XCTAssertEqual(blended[0].opacity, 1)
         XCTAssertEqual(blended[0].shade, 1)
 
-        let unshaded = [[Placement(Rect.zero, shade: PackedPlacement.unshaded)],
-                        [Placement(Rect.zero, shade: PackedPlacement.unshaded)]]
+        let unshaded = [[Placement(Rect.zero, shade: Placement.unshaded)],
+                        [Placement(Rect.zero, shade: Placement.unshaded)]]
         XCTAssertEqual(
             LayoutBlend.blend(unshaded, at: 0.5, segment: 0, knots: [0, 1], curve: .linear)[0].shade,
-            PackedPlacement.unshaded)
+            Placement.unshaded)
     }
 
     /// THE DRAWING ORDER SWAPS AS THE VIEWS' NUMBERS CROSS: a view rising from 0 to 2 past one standing at 1 is drawn

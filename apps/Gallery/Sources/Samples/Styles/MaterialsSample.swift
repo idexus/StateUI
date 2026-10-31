@@ -1,14 +1,14 @@
 import StateUI
 
-/// What a surface is made of: a colour, a gradient, a blur of what lies behind
-/// it, or the platform's glass - laid over stripes of colour, so what each one
+/// What a surface is made of: a color, a gradient, a blur of what lies behind
+/// it, or the platform's glass - laid over stripes of color, so what each one
 /// lets through shows.
 struct MaterialsSample: SampleContent, ExampleContent {
     // listing: MaterialsSample
     /// Which of the blurs the blurred panel wears.
     @State private var thickness = Blur.regular
 
-    /// Whether the blur wears the gallery's colour as a tint.
+    /// Whether the blur wears the gallery's color as a tint.
     @State private var tinted = false
 
     /// Whether the glass is the clearer kind.
@@ -17,13 +17,13 @@ struct MaterialsSample: SampleContent, ExampleContent {
     /// Whether the glass answers the touch and the pointer.
     @State private var interactive = false
 
-    /// The colour the last panel walks to and back - a colour's channel.
+    /// The color the last panel walks to and back - a color's channel.
     @State private var wash = Palette.accent
     // listing: end
 
     static let id = "materials"
     static let title = "Materials"
-    static let summary = "What a surface is made of: a colour, a gradient, a blur of what is behind it, or glass."
+    static let summary = "What a surface is made of: a color, a gradient, a blur of what is behind it, or glass."
 
     static var code: String { Listings.joined("MaterialsSample") }
 
@@ -41,26 +41,31 @@ struct MaterialsSample: SampleContent, ExampleContent {
 
         return VStack {
             ZStack {
-                // Stripes of colour behind the panels: what each lets through shows on them.
+                // Stripes of color behind the panels: what each lets through shows on them.
                 Grid {
-                    Rectangle(.tomato).gridColumn(0)
-                    Rectangle(.gold).gridColumn(1)
-                    Rectangle(.steelBlue).gridColumn(2)
-                    Rectangle(.white).gridColumn(3)
-                    Rectangle(Palette.accent).gridColumn(4)
+                    Fill(.tomato)
+                        .gridColumn(0)
+                    Fill(.gold)
+                        .gridColumn(1)
+                    Fill(.steelBlue)
+                        .gridColumn(2)
+                    Fill(.white)
+                        .gridColumn(3)
+                    Fill(Palette.accent)
+                        .gridColumn(4)
                 }
                 .columns(.fill, .fill, .fill, .fill, .fill)
 
                 Grid {
-                    panel("Colour", .color(Palette.accent)).gridRow(0).gridColumn(0)
+                    panel("Color", .color(Palette.accent)).gridRow(0).gridColumn(0)
                     panel("Gradient", .gradient(Palette.identity)).gridRow(0).gridColumn(1)
                     panel("Blur", .blur(blur)).gridRow(1).gridColumn(0)
                     panel("Glass", .glass(glass)).gridRow(1).gridColumn(1)
                     // A blur in the dark theme, and nearly white in the light one.
                     panel("Light and dark", Material(light: .color(Color.white.opacity(0.85)), dark: .blur(.regular)))
                         .gridRow(2).gridColumn(0)
-                    // A colour's channel: the host walks the colour, and no view is built again.
-                    words("A colour's channel")
+                    // A color's channel: the host walks the color, and no view is built again.
+                    words("A color's channel")
                         .background($wash)
                         .shape(.roundedRectangle(14))
                         .height(76)
@@ -82,7 +87,7 @@ struct MaterialsSample: SampleContent, ExampleContent {
             SwitchRow("Tinted blur", $tinted)
             SwitchRow("Clear glass", $clear)
             SwitchRow("Glass answers the touch", $interactive)
-            Button("Change the colour")
+            Button("Change the color")
                 .horizontalAlignment(.center)
                 .onClicked { wash = wash == Palette.accent ? Palette.brand : Palette.accent }
         }
@@ -111,7 +116,7 @@ struct MaterialsSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("A background is a material: a colour, a gradient, a blur of what lies behind the view, "
+            Text("A background is a material: a color, a gradient, a blur of what lies behind the view, "
                 + "or the platform's glass, each cut to the view's shape. A tint lies over a blur or "
                 + "glass alike; this glass wears none, so the platform's own shows.")
                 .fontSize(12)
@@ -119,12 +124,12 @@ struct MaterialsSample: SampleContent, ExampleContent {
 
             Text("`Material(light:dark:)` gives each theme its own; one with no pair is the same in "
                 + "both, the blur and glass following the theme as the platform draws them. A platform "
-                + "with no glass draws the blur as clear as the glass, one that blurs nothing a colour "
+                + "with no glass draws the blur as clear as the glass, one that blurs nothing a color "
                 + "of the theme in its place.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`.background($wash)` hands the colour to the host as a channel: it walks the colour "
+            Text("`.background($wash)` hands the color to the host as a channel: it walks the color "
                 + "to each new one, and nothing here is built again.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

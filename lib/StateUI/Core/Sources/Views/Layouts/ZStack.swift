@@ -4,7 +4,8 @@
 /// Lays its children one over another, each in the whole room or in the area it names.
 ///
 ///     ZStack {
-///         Rectangle().fill(.cornflowerBlue)
+///         Rectangle()
+///             .fill(.cornflowerBlue)
 ///
 ///         Text("Bottom right")
 ///             .horizontalAlignment(.end)

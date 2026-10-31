@@ -26,4 +26,18 @@ final class WebStepperViewTests: XCTestCase {
         stepper.setEnabled(false)
         XCTAssertEqual(disabled(), [true, true])
     }
+
+    /// Its buttons say the library's words to a screen reader, in the system's language.
+    func testItsButtonsSayTheLibrarysWords() throws {
+        let polish = try XCTUnwrap(HostLocaleInfo(words: ["pl", "PL", "pl-PL", "Europe/Warsaw", "1", "1", "1", "0"]))
+        let english = try XCTUnwrap(HostLocaleInfo(words: ["en", "GB", "en-GB", "Europe/London", "1", "1", "1", "0"]))
+        defer { CoreLink().setLocaleInfo(english) }
+        CoreLink().setLocaleInfo(polish)
+
+        let stepper = WebStepperView()
+        defer { stepper.release() }
+        let buttons = WebPage.children(of: stepper.node).filter { WebPage.attribute(of: $0, "type") == "button" }
+
+        XCTAssertEqual(buttons.map { WebPage.attribute(of: $0, "aria-label") }, ["Zmniejsz", "Zwiększ"])
+    }
 }

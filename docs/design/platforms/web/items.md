@@ -47,7 +47,7 @@ the size kept for it: a thousand rows stood in 863 points.
 A tap on a cell, but for one on a control inside it, is the list's
 (`ItemsTap`): it opens the item, or chooses it as the list chooses. A list
 that chooses is a listbox, each item an option, the chosen ones selected
-and tinted in the accent colour
+and tinted in the accent color
 ([the chosen band](../../host/items.md#the-chosen-band)).
 
 ## Scrolling to an item
@@ -62,6 +62,12 @@ would bring every cell it passed near the view, each would take its entry's
 own size, and the item would stand elsewhere when the scroll arrived: row 500
 of rows a little smaller than a row's room stood 47 rows away.
 
+
+The list a page scrolls by keeps the bars over it clear as a ScrollView does
+([the safe area](pages.md#the-safe-area)): their depth is its padding, so
+its first and last items scroll out from under them, and its scroll padding
+too, the region `scrollIntoView` aligns an item in - padding alone left an
+item scrolled to the end under the bar at the foot.
 ## Scrolled
 
 A list the user scrolls moves every item in the window, which no observer

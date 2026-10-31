@@ -7,16 +7,20 @@
 /// and how the ones that ask the time are read and answered, the same on every host.
 /// Design: docs/design/host/runtime.md#acts
 @_spi(Host) public enum HostActs {
-    /// The acts every host performs: the focus, the questions for the user and a word to a screen reader, the time
-    /// and the zones, the on-screen keyboard, a value kept - the application's or a scene's - a handler's failure
-    /// told, and the theme the application shows in.
+    /// The acts every host performs: the focus, the questions for the user and a word to a screen reader, the
+    /// clipboard, the time and the zones, the on-screen keyboard, a value kept - the application's or a scene's - a
+    /// handler's failure told, the theme and the accent the application shows in, and a call stopped as its
+    /// caller's run ends.
     public static let performed: [any ContractMember] = [
         FocusElementContract.focus, FocusElementContract.unfocus,
-        ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.chooseAction,
+        ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.cancelCall,
+        ApplicationContract.chooseAction,
         ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
         ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard,
         ApplicationContract.persistSceneValue, ApplicationContract.persistValue, ApplicationContract.prompt,
-        ApplicationContract.useColorScheme, ApplicationContract.utcOffset,
+        ApplicationContract.readClipboard, ApplicationContract.share, ApplicationContract.useAccentColor,
+        ApplicationContract.useColorScheme,
+        ApplicationContract.utcOffset, ApplicationContract.writeClipboard,
     ]
 
     /// The acts a host with a `FileToolkit` performs: the files the user opens and saves, read, and what the system
@@ -25,6 +29,9 @@
         ApplicationContract.openFiles, ApplicationContract.saveFile, ApplicationContract.readFile,
         ApplicationContract.launchFile, ApplicationContract.launchLink,
     ]
+
+    /// The acts a host with a `NetworkToolkit` performs: the requests the application sends.
+    public static let network: [any ContractMember] = [ApplicationContract.sendRequest]
 
     /// The answer to `currentTime`: the hour, the minute, the second and the millisecond of the local time.
     public static func currentTime(hour: Int, minute: Int, second: Int, millisecond: Int) -> [HostValue] {

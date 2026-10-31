@@ -9,7 +9,7 @@ value and reports the user's change back ([patches](../../host/patches.md)).
 
 A label's words are a `GtkLabel`'s, and how they look is one list of Pango
 attributes written whole whenever any of it changes: the font's size in
-logical pixels, its weight, slant and family, the colour, the space between
+logical pixels, its weight, slant and family, the color, the space between
 the letters, a line's height as a multiple of the font's own, and the lines
 under or through the words - each GTK's own where the tree says nothing.
 
@@ -24,9 +24,9 @@ stands them in its middle or at its bottom - GTK's own is the middle.
 
 A label's padding is room inside its own box, around its words
 ([a widget's own box](drawing.md#a-widgets-own-box)), and its background a
-class filling that box in its colour - a brush's first colour. A button's caption is
+class filling that box in its color - a brush's first color. A button's caption is
 the `GtkLabel` the button shows it in, and takes the same look, font and
-colour, and the button its padding.
+color, and the button its padding.
 
 ## The user's text size
 
@@ -61,7 +61,7 @@ button standing inside the class's box. A split button wears the box whole,
 its two buttons bare but for a shade under the pointer and a deeper one
 pressed - each rounded at its outer corners alone, by the direction of the
 words - and the line between them, which the theme leaves to the gap
-between two filled buttons, drawn in the colour of its words. The padding
+between two filled buttons, drawn in the color of its words. The padding
 goes to the buttons, which hold the words.
 
 ## A button's picture
@@ -79,14 +79,38 @@ button wears GTK's own classes for each, `image-text-button` and
 `image-button`. Its words break as a label's do where the tree says how, and
 stand on one line where it says nothing, as GTK's own buttons stand.
 
+GTK names a button by the label it makes for words alone through a
+`labelled-by` relation, and keeps it when that label leaves the button:
+named by a label no longer there, the button says nothing. A child of the
+host's - the picture, or the box - drops the relation, and the button is
+named by its words in sight, or by the words the host layer gives it
+([words out of sight](../../host/pages.md#words-beside-a-picture)).
+
 A press is heard as it goes down and as it ends, wherever the pointer ends
 up: a drag gesture of the button's own, which claims nothing, so the button
 still clicks.
 
+## A link
+
+A link is GTK's `GtkLinkButton` holding an empty address, its words in the
+theme's link color or, by Pango attributes, the tree's. Its `activate-link`
+is the host's and answers that it took the link, so GTK opens nothing and
+marks nothing visited; the host layer opens the address
+(`host/runtime.md#a-link-chosen`).
+
+## A color picker
+
+A color picker is GTK's `GtkColorDialogButton`, owning its `GtkColorDialog`:
+a click opens the dialog, and the color the user chooses there becomes the
+button's `rgba`, whose `notify::rgba` the host hears and reports as the host
+layer reports a color (`host/runtime.md#a-color-chosen`). The dialog's
+`with-alpha` is `choosesOpacity`. A color the program writes notifies too,
+inside the program's write, which reports nothing.
+
 ## Runs of words
 
 A label's spans are its words, run by run: the label's text is their words
-joined, and each run's look - its colour, size, weight, slant, lines and
+joined, and each run's look - its color, size, weight, slant, lines and
 background - covers its own bytes of it, the label's look where the run says
 nothing. The runs stand in place of the label's own words; a label whose
 spans are taken away shows its own words again. A span that changes has its
@@ -94,26 +118,23 @@ label apply again, so the runs are laid down whole each time.
 
 ## On or off
 
-A Switch is GTK's `GtkSwitch`, a CheckBox and a RadioButton each a
-`GtkCheckButton`, one view kind in the host: it writes whether the control is
-on and whether it can be turned, and hears the turn the user makes through the
-property GTK notifies, `active`. A check box has no caption, so it is the box
-alone; a radio button's caption is its label, in the look the tree gives its
-words.
+A Switch is GTK's `GtkSwitch` and a CheckBox its `GtkCheckButton`, one view
+kind in the host: it writes whether the control is on and whether it can be
+turned, and hears the turn the user makes through the property GTK notifies,
+`active`, on the control that turns. A check box's words are its button's
+label, beside its box, in the look the tree gives them; with none, it is the
+box alone.
 
-Which of a radio button's set loses its check is the host's. A set is named
-across the window, or is the buttons beside one that names none, and only
-the tree knows who is in it: the button the user checks reports that it is
-on, and the host takes the check off each other button of its set, each
-reporting that it is off, in one transaction. GTK draws a check button as a
-radio only in a group, and a group takes its other members' checks away
-itself - the one that lost would be heard twice - so each radio button stands
-in a group with a partner of its own that is never shown. Joined in GTK's own
-group by their set instead, the buttons fight the tree: a check the tree
-writes back - a constant `isOn(true)` - GTK takes from another button the
-tree says is on, whose check the next render writes back, without end. The
-partner is how GTK draws a radio while the check stays StateUI's; a picker's
-radio buttons stand in one group of their own, as a picker holds one choice.
+## A switch's words
+
+`GtkSwitch` has no label, so a switch with words is a row of two: a label
+from its start and the switch at its end, as GNOME's settings set a switch
+in a row; the row, its label and its switch take the view's direction, so
+right to left mirrors them. The words belong to the switch: a click on them
+activates it, and assistive technology meets the switch alone, named by the
+element's label or else by its words, the label beside it hidden - every
+word for assistive technology goes on the control the view presents
+(`presentedControl`), its heading role too.
 
 ## Nothing the program writes is heard
 
@@ -186,11 +207,11 @@ the program put stands over the field's first focus, written again once GTK
 has selected - and once that focus has passed or the user has changed the
 words, GNOME's own way stands.
 
-A field's font and colour are a class of the display-wide sheet
+A field's font and color are a class of the display-wide sheet
 ([a widget's own box](drawing.md#a-widgets-own-box)) rather than Pango
 attributes, since an editor's text view takes none: the class sets the font
-and the colour, which the placeholder takes too. GTK dims a placeholder with
-opacity; a placeholder colour is drawn in full.
+and the color, which the placeholder takes too. GTK dims a placeholder with
+opacity; a placeholder color is drawn in full.
 
 ## An editor
 
@@ -201,7 +222,12 @@ entry's room around its words. It is as wide as the room it is offered, its
 words wrapping in it; growing with its words it is as tall as they are, and
 not growing it keeps a line's height, whatever it holds - the room its
 layout gives it is the room it scrolls in. GTK allows a scrolled window no
-less than its scrollbar's length, so an editor is never shorter than that.
+less than its scrollbar's length, so an editor that does not grow is never
+shorter than that; a growing one shows no scrollbar (`GTK_POLICY_EXTERNAL`) -
+it grows instead - and stands one line tall at one line, still scrolling to
+its caret where its room is shorter than its words. An editor given a ground
+of its own stands in it with no box of the theme's - no fill, no corners, no
+ring (`stateui-editor-bare`).
 
 A text view has no placeholder: the editor's is a label laid over its first
 line, shown only while it holds no words. A text view has no bound either:
@@ -239,8 +265,8 @@ and the user's choice is reported onto the state it is carried in. GTK gives a
 drop-down no placeholder and tells no one its list opened or closed, so the
 placeholder and the list's opening and closing are not planned. The words of
 the chosen one - on the drop-down's `button` node - take the tree's font and
-colour; the list keeps the theme's. A GNOME drop-down wears no accent: a
-check in its words' colour marks the choice, so a picker takes no tint.
+color; the list keeps the theme's. A GNOME drop-down wears no accent: a
+check in its words' color marks the choice, so a picker takes no tint.
 
 ## A day and a time
 
@@ -268,18 +294,18 @@ format is not read.
 ## What shows work
 
 A progress bar is a `GtkProgressBar` over the range 0 to 1, a fraction past
-either end standing at that end; an activity indicator is a `GtkSpinner`,
+either end standing at that end; a spinner is a `GtkSpinner`,
 turning while its work runs and drawing nothing while it does not.
 
 ## A control's accent
 
-A control's tint is its one accent colour, where GNOME's theme draws its
+A control's tint is its one accent color, where GNOME's theme draws its
 accent: a switch's track while it is on, a ticked box, a slider's track up to
 its thumb, a progress bar's done part and a spinner. Each is a node GTK
 documents for the control, so the tint is a class of the display-wide sheet
 ([a widget's own box](drawing.md#a-widgets-own-box)) filling that node -
 `switch:checked`, `check:checked`, `trough > highlight`, `trough > progress` -
-and the spinner's colour; the
+and the spinner's color; the
 theme's light under the pointer and pressed lies over it as over its own
 accent.
 
@@ -293,7 +319,9 @@ takes GTK's heading role with its level. GTK fixes a widget's role once
 assistive technology has met it, so a widget becomes a heading only while it
 stands in no window - as the element's first properties find it - and a GTK
 widget in a role other than its own is not named by the words it shows, so a
-heading's label is its words, written again as they change.
+heading's label is its words, written again as they change. A kind is a
+role too, and the class a widget is made of fixes it, so the host says none;
+GTK says a value only of a range, a role of its own.
 
 GTK 4 tells assistive technology no identifier before 4.22, and from 4.22
 only a GtkBuilder file's id, which no public call sets on a widget made in
@@ -344,7 +372,11 @@ style's weight stands at the theme's own number - 800 for the largest titles -
 where the tree gives none. The
 size and weight the tree gives stand over the style's (`TextLook.standing`),
 and both reach a label and a run as Pango attributes and a field as its words'
-class.
+class. Digits of one width are the font feature `tnum`: a Pango font-features
+attribute on a label and a run, `font-feature-settings` in a picker's class,
+and in words a user types - a field's, an editor's - the words' own attribute
+(`gtk_text_set_attributes`, a tag laid over an editor's words again as they
+change), as GTK keeps what its style gives typed words to itself.
 
 ## A picker's segments and radio buttons
 
@@ -354,5 +386,11 @@ buttons is a column of its check buttons, which a group draws as radio
 buttons (`GTKChoiceGroupView`). Each set is one group, so GTK keeps one
 active; a button turned on tells the choice, and the program's writes are
 dropped as every program write is. The words' class stands on the box, and
-GTK's CSS hands the font and colour on to the buttons.
+GTK's CSS hands the font and color on to the buttons.
 
+## A field's outline
+
+A field, a search field or an editor the tree outlines or shapes (`stroke`,
+`lineWidth`, `shape`) wears it as a box class of the host's style sheet - the
+same as a button's, its border and its corners, a capsule's ends whole - over
+the theme's frame; with neither it keeps the theme's.

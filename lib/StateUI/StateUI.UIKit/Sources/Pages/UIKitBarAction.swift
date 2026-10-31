@@ -20,6 +20,23 @@ struct UIKitBarAction {
     /// The element of the item, which keeps the action UIKit was last handed.
     let element: UIKitElement?
 
+    /// A setting's state, on or off; nil for an action.
+    var isOn: Bool? = nil
+
+    /// Whether it is words nobody chooses (`ToolbarLabel`).
+    var isLabel = false
+
+    /// The menu its button opens; nil for an action holding none.
+    var menu: Menu? = nil
+
+    /// The menu a bar's button opens: how it opens, its entries, and what it offers behind the overflow
+    /// (`ButtonMenu`).
+    struct Menu {
+        let opening: ButtonMenuOpening
+        let entries: [MenuEntry]
+        let inOverflow: [MenuEntry]
+    }
+
     /// How tall a picture stands on a bar - the size a glass circle holds its symbol at, room around it - and on a
     /// bar made low by a phone on its side.
     static let glyphHeight = 20.0
@@ -38,37 +55,79 @@ struct UIKitBarAction {
         let isDestructive: Bool
         let identifier: String?
         let mount: UInt64?
+        let isOn: Bool?
+        var isLabel = false
+        var opening: ButtonMenuOpening = .none
+        var menu: [MenuEntry.Said] = []
+        var inOverflow: [MenuEntry.Said] = []
     }
 
     var said: Said {
         Said(
             title: title, icon: icon, isEnabled: isEnabled, isDestructive: isDestructive, identifier: identifier,
-            mount: element?.element.mount)
+            mount: element?.element.mount, isOn: isOn, isLabel: isLabel, opening: menu?.opening ?? .none,
+            menu: menu?.entries.map(\.said) ?? [], inOverflow: menu?.inOverflow.map(\.said) ?? [])
     }
 
     /// A button of the bar, in `tint` - a painted bar's words, nil for the bar's own - or red where it destroys
     /// something.
     func barItem(tint: UIColor?) -> UIBarButtonItem {
-        let item = UIBarButtonItem(primaryAction: menuAction)
+        if isLabel { return labelItem(tint: tint) }
+        let item: UIBarButtonItem
+        if let menu {
+            // Its tap opens the menu where the button has no click of its own, else holding it does: UIKit's bar
+            // offers no arrow part, so a split stands as held.
+            // Design: docs/design/platforms/uikit/pages.md#the-bar
+            let opened = UIKitMenus.menu(menu.entries, identifier: element?.menuIdentifier)
+            item = menu.opening == .click
+                ? UIBarButtonItem(title: title, image: image, primaryAction: nil, menu: opened)
+                : UIBarButtonItem(primaryAction: menuAction, menu: opened)
+        } else {
+            item = UIBarButtonItem(primaryAction: menuAction)
+        }
         item.landscapeImagePhone = icon.flatMap { UIKitRenderer.glyph($0, height: Self.lowGlyphHeight) }
         item.isEnabled = isEnabled
         item.accessibilityIdentifier = identifier
         item.tintColor = self.tint(tint)
+        // A setting is UIKit's two-state button: selected while on, turned over as it is chosen.
+        if let isOn {
+            item.changesSelectionAsPrimaryAction = true
+            item.isSelected = isOn
+        }
         return item
     }
 
-    /// The colour its button stands in: red where it destroys something, else `tint`.
+    /// Words on the bar: its picture and words standing on the bar itself, in `tint` or the secondary color of words.
+    private func labelItem(tint: UIColor?) -> UIBarButtonItem {
+        let label = UIKitBarLabel(title, image: image)
+        label.tint(tint)
+        element?.barLabel = label
+        let item = UIBarButtonItem(customView: label)
+        item.hidesSharedBackground = true
+        return item
+    }
+
+    /// The color its button stands in: red where it destroys something, else `tint`.
     func tint(_ tint: UIColor?) -> UIColor? {
         isDestructive ? .systemRed : tint
     }
 
-    /// An entry of a menu.
+    /// Its entry behind the bar's overflow: its action, or, holding a menu, a submenu under its words.
+    var overflowEntry: UIMenuElement {
+        menu.map { UIKitMenus.menu($0.inOverflow, title: title) } ?? menuAction
+    }
+
+    /// An entry of a menu. Its handler takes `perform` alone: the element keeps the action, which would keep the element
+    /// and its menu's entries taking the whole action.
     var menuAction: UIAction {
-        let action = UIAction(title: title, image: image, identifier: element?.actionIdentifier) { _ in perform() }
+        let action = UIAction(title: title, image: image, identifier: element?.actionIdentifier) { [perform] _ in
+            perform()
+        }
         var attributes: UIMenuElement.Attributes = []
         if !isEnabled { attributes.insert(.disabled) }
         if isDestructive { attributes.insert(.destructive) }
         action.attributes = attributes
+        if let isOn { action.state = isOn ? .on : .off }
         action.accessibilityIdentifier = identifier
         element?.menuAction = action
         return action

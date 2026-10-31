@@ -1,38 +1,4 @@
-# revision 7.1
-ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.area: ✅
-ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragEnded: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragStarting: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.dragText: ✓ dragAndDrop on ActivityIndicator: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the view's drag listener's report told the driver's documents, no drag started
-ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the view's drag listener's report told the driver's documents, no drag started
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumn: ✅
-ActivityIndicator.gridColumnSpan: ✅
-ActivityIndicator.gridRow: ✅
-ActivityIndicator.gridRowSpan: ✅
-ActivityIndicator.horizontalAlignment: ✅
-ActivityIndicator.margin: ✅
-ActivityIndicator.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-ActivityIndicator.panUpdated: ✅
-ActivityIndicator.panXChannel: ✅
-ActivityIndicator.panYChannel: ✅
-ActivityIndicator.pinchUpdated: ✅
-ActivityIndicator.pointerEntered: ✅
-ActivityIndicator.pointerExited: ✅
-ActivityIndicator.pointerMoved: ✅
-ActivityIndicator.pointerPressed: ✅
-ActivityIndicator.pointerReleased: ✅
-ActivityIndicator.swipeDirection: ✅
-ActivityIndicator.swipeThreshold: ✅
-ActivityIndicator.swiped: ✅
-ActivityIndicator.tapCount: ✅
-ActivityIndicator.tapped: ✅
-ActivityIndicator.verticalAlignment: ✅
+# revision 19.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the views' drag listeners' reports told by the driver, no drag started
@@ -49,7 +15,10 @@ Button.gridColumn: ✅
 Button.gridColumnSpan: ✅
 Button.gridRow: ✅
 Button.gridRowSpan: ✅
+Button.held: ✅
+Button.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Button.horizontalAlignment: ✅
+Button.layoutBody: ✅
 Button.margin: ✅
 Button.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Button.panUpdated: ✅
@@ -61,6 +30,7 @@ Button.pointerExited: ✅
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
+Button.rotationUpdated: ✅
 Button.swipeDirection: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
@@ -83,7 +53,10 @@ Canvas.gridColumn: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRow: ✅
 Canvas.gridRowSpan: ✅
+Canvas.held: – The control takes its own press - a drawing, a scroll, a thumb, its buttons: Android tells no long click of it.
+Canvas.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Canvas.horizontalAlignment: ✅
+Canvas.layoutBody: ✅
 Canvas.margin: ✅
 Canvas.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Canvas.panUpdated: ✅
@@ -95,6 +68,7 @@ Canvas.pointerExited: ✅
 Canvas.pointerMoved: ✅
 Canvas.pointerPressed: ✅
 Canvas.pointerReleased: ✅
+Canvas.rotationUpdated: ✅
 Canvas.swipeDirection: ✅
 Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
@@ -117,7 +91,10 @@ Capsule.gridColumn: ✅
 Capsule.gridColumnSpan: ✅
 Capsule.gridRow: ✅
 Capsule.gridRowSpan: ✅
+Capsule.held: ✅
+Capsule.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Capsule.horizontalAlignment: ✅
+Capsule.layoutBody: ✅
 Capsule.margin: ✅
 Capsule.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Capsule.panUpdated: ✅
@@ -129,6 +106,7 @@ Capsule.pointerExited: ✅
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
+Capsule.rotationUpdated: ✅
 Capsule.swipeDirection: ✅
 Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
@@ -151,7 +129,10 @@ CheckBox.gridColumn: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRow: ✅
 CheckBox.gridRowSpan: ✅
+CheckBox.held: ✅
+CheckBox.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 CheckBox.horizontalAlignment: ✅
+CheckBox.layoutBody: ✅
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 CheckBox.panUpdated: ✅
@@ -163,12 +144,51 @@ CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
+CheckBox.rotationUpdated: ✅
 CheckBox.swipeDirection: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
+ColorPicker.allowsDrop: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.area: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.canDrag: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragEnded: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragLeave: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragOver: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragStarting: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.dragText: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.drop: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.droppedFileTypes: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.filesDropped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.frameChanged: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.gridColumn: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.gridColumnSpan: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.gridRow: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.gridRowSpan: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.held: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.holdDuration: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.horizontalAlignment: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.layoutBody: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.margin: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.panTouchCount: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.panUpdated: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.panXChannel: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.panYChannel: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pinchUpdated: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerEntered: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerExited: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerMoved: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerPressed: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pointerReleased: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.rotationUpdated: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.swipeDirection: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.swipeThreshold: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.swiped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.tapCount: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.tapped: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.verticalAlignment: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 DatePicker.area: ✅
 DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the views' drag listeners' reports told by the driver, no drag started
@@ -185,7 +205,10 @@ DatePicker.gridColumn: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRow: ✅
 DatePicker.gridRowSpan: ✅
+DatePicker.held: ✅
+DatePicker.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 DatePicker.horizontalAlignment: ✅
+DatePicker.layoutBody: ✅
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 DatePicker.panUpdated: ✅
@@ -197,46 +220,13 @@ DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
+DatePicker.rotationUpdated: ✅
 DatePicker.swipeDirection: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
-Divider.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Divider.area: ✅
-Divider.canDrag: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragEnded: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragStarting: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
-Divider.dragText: ✓ dragAndDrop on Divider: the views' drag listeners' reports told by the driver, no drag started
-Divider.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Divider.droppedFileTypes: ✓ dropFiles on Divider: the view's drag listener's report told the driver's documents, no drag started
-Divider.filesDropped: ✓ dropFiles on Divider: the view's drag listener's report told the driver's documents, no drag started
-Divider.frameChanged: ✅
-Divider.gridColumn: ✅
-Divider.gridColumnSpan: ✅
-Divider.gridRow: ✅
-Divider.gridRowSpan: ✅
-Divider.horizontalAlignment: ✅
-Divider.margin: ✅
-Divider.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-Divider.panUpdated: ✅
-Divider.panXChannel: ✅
-Divider.panYChannel: ✅
-Divider.pinchUpdated: ✅
-Divider.pointerEntered: ✅
-Divider.pointerExited: ✅
-Divider.pointerMoved: ✅
-Divider.pointerPressed: ✅
-Divider.pointerReleased: ✅
-Divider.swipeDirection: ✅
-Divider.swipeThreshold: ✅
-Divider.swiped: ✅
-Divider.tapCount: ✅
-Divider.tapped: ✅
-Divider.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Ellipse.area: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the views' drag listeners' reports told by the driver, no drag started
@@ -253,7 +243,10 @@ Ellipse.gridColumn: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRow: ✅
 Ellipse.gridRowSpan: ✅
+Ellipse.held: ✅
+Ellipse.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Ellipse.horizontalAlignment: ✅
+Ellipse.layoutBody: ✅
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Ellipse.panUpdated: ✅
@@ -265,12 +258,51 @@ Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
+Ellipse.rotationUpdated: ✅
 Ellipse.swipeDirection: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
+Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Fill.area: ✅
+Fill.canDrag: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragEnded: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragStarting: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
+Fill.dragText: ✓ dragAndDrop on Fill: the views' drag listeners' reports told by the driver, no drag started
+Fill.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Fill.droppedFileTypes: ✓ dropFiles on Fill: the view's drag listener's report told the driver's documents, no drag started
+Fill.filesDropped: ✓ dropFiles on Fill: the view's drag listener's report told the driver's documents, no drag started
+Fill.frameChanged: ✅
+Fill.gridColumn: ✅
+Fill.gridColumnSpan: ✅
+Fill.gridRow: ✅
+Fill.gridRowSpan: ✅
+Fill.held: ✅
+Fill.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
+Fill.horizontalAlignment: ✅
+Fill.layoutBody: ✅
+Fill.margin: ✅
+Fill.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Fill.panUpdated: ✅
+Fill.panXChannel: ✅
+Fill.panYChannel: ✅
+Fill.pinchUpdated: ✅
+Fill.pointerEntered: ✅
+Fill.pointerExited: ✅
+Fill.pointerMoved: ✅
+Fill.pointerPressed: ✅
+Fill.pointerReleased: ✅
+Fill.rotationUpdated: ✅
+Fill.swipeDirection: ✅
+Fill.swipeThreshold: ✅
+Fill.swiped: ✅
+Fill.tapCount: ✅
+Fill.tapped: ✅
+Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Grid.area: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the views' drag listeners' reports told by the driver, no drag started
@@ -287,7 +319,10 @@ Grid.gridColumn: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRow: ✅
 Grid.gridRowSpan: ✅
+Grid.held: ✅
+Grid.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Grid.horizontalAlignment: ✅
+Grid.layoutBody: ✅
 Grid.margin: ✅
 Grid.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Grid.panUpdated: ✅
@@ -299,6 +334,7 @@ Grid.pointerExited: ✅
 Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
+Grid.rotationUpdated: ✅
 Grid.swipeDirection: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
@@ -321,7 +357,10 @@ HStack.gridColumn: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRow: ✅
 HStack.gridRowSpan: ✅
+HStack.held: ✅
+HStack.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 HStack.horizontalAlignment: ✅
+HStack.layoutBody: ✅
 HStack.margin: ✅
 HStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 HStack.panUpdated: ✅
@@ -333,6 +372,7 @@ HStack.pointerExited: ✅
 HStack.pointerMoved: ✅
 HStack.pointerPressed: ✅
 HStack.pointerReleased: ✅
+HStack.rotationUpdated: ✅
 HStack.swipeDirection: ✅
 HStack.swipeThreshold: ✅
 HStack.swiped: ✅
@@ -355,7 +395,10 @@ Image.gridColumn: ✅
 Image.gridColumnSpan: ✅
 Image.gridRow: ✅
 Image.gridRowSpan: ✅
+Image.held: ✅
+Image.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Image.horizontalAlignment: ✅
+Image.layoutBody: ✅
 Image.margin: ✅
 Image.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Image.panUpdated: ✅
@@ -367,6 +410,7 @@ Image.pointerExited: ✅
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
+Image.rotationUpdated: ✅
 Image.swipeDirection: ✅
 Image.swipeThreshold: ✅
 Image.swiped: ✅
@@ -389,7 +433,10 @@ ItemsView.gridColumn: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRow: ✅
 ItemsView.gridRowSpan: ✅
+ItemsView.held: – The control takes its own press - a drawing, a scroll, a thumb, its buttons: Android tells no long click of it.
+ItemsView.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 ItemsView.horizontalAlignment: ✅
+ItemsView.layoutBody: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ItemsView.panUpdated: ✅
@@ -401,46 +448,13 @@ ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
+ItemsView.rotationUpdated: ✅
 ItemsView.swipeDirection: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
-LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-LayoutEngine.area: ✅
-LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the views' drag listeners' reports told by the driver, no drag started
-LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the views' drag listeners' reports told by the driver, no drag started
-LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the views' drag listeners' reports told by the driver, no drag started
-LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the views' drag listeners' reports told by the driver, no drag started
-LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the view's drag listener's report told the driver's documents, no drag started
-LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the view's drag listener's report told the driver's documents, no drag started
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumn: ✅
-LayoutEngine.gridColumnSpan: ✅
-LayoutEngine.gridRow: ✅
-LayoutEngine.gridRowSpan: ✅
-LayoutEngine.horizontalAlignment: ✅
-LayoutEngine.margin: ✅
-LayoutEngine.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-LayoutEngine.panUpdated: ✅
-LayoutEngine.panXChannel: ✅
-LayoutEngine.panYChannel: ✅
-LayoutEngine.pinchUpdated: ✅
-LayoutEngine.pointerEntered: ✅
-LayoutEngine.pointerExited: ✅
-LayoutEngine.pointerMoved: ✅
-LayoutEngine.pointerPressed: ✅
-LayoutEngine.pointerReleased: ✅
-LayoutEngine.swipeDirection: ✅
-LayoutEngine.swipeThreshold: ✅
-LayoutEngine.swiped: ✅
-LayoutEngine.tapCount: ✅
-LayoutEngine.tapped: ✅
-LayoutEngine.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Line.area: ✅
 Line.canDrag: ✓ dragAndDrop on Line: the views' drag listeners' reports told by the driver, no drag started
@@ -457,7 +471,10 @@ Line.gridColumn: ✅
 Line.gridColumnSpan: ✅
 Line.gridRow: ✅
 Line.gridRowSpan: ✅
+Line.held: ✅
+Line.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Line.horizontalAlignment: ✅
+Line.layoutBody: ✅
 Line.margin: ✅
 Line.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Line.panUpdated: ✅
@@ -469,12 +486,51 @@ Line.pointerExited: ✅
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
+Line.rotationUpdated: ✅
 Line.swipeDirection: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
 Line.verticalAlignment: ✅
+Link.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Link.area: ✅
+Link.canDrag: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
+Link.dragEnded: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
+Link.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Link.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Link.dragStarting: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
+Link.dragText: ✓ dragAndDrop on Link: the views' drag listeners' reports told by the driver, no drag started
+Link.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Link.droppedFileTypes: ✓ dropFiles on Link: the view's drag listener's report told the driver's documents, no drag started
+Link.filesDropped: ✓ dropFiles on Link: the view's drag listener's report told the driver's documents, no drag started
+Link.frameChanged: ✅
+Link.gridColumn: ✅
+Link.gridColumnSpan: ✅
+Link.gridRow: ✅
+Link.gridRowSpan: ✅
+Link.held: ✅
+Link.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
+Link.horizontalAlignment: ✅
+Link.layoutBody: ✅
+Link.margin: ✅
+Link.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Link.panUpdated: ✅
+Link.panXChannel: ✅
+Link.panYChannel: ✅
+Link.pinchUpdated: ✅
+Link.pointerEntered: ✅
+Link.pointerExited: ✅
+Link.pointerMoved: ✅
+Link.pointerPressed: ✅
+Link.pointerReleased: ✅
+Link.rotationUpdated: ✅
+Link.swipeDirection: ✅
+Link.swipeThreshold: ✅
+Link.swiped: ✅
+Link.tapCount: ✅
+Link.tapped: ✅
+Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.canDrag: 🧩
@@ -491,7 +547,10 @@ Map.gridColumn: 🧩
 Map.gridColumnSpan: 🧩
 Map.gridRow: 🧩
 Map.gridRowSpan: 🧩
+Map.held: 🧩
+Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
+Map.layoutBody: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
@@ -503,12 +562,51 @@ Map.pointerExited: 🧩
 Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
+Map.rotationUpdated: 🧩
 Map.swipeDirection: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 Map.verticalAlignment: 🧩
+MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.area: ✅
+MotionLayout.canDrag: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the view's drag listener's report told the driver's documents, no drag started
+MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the view's drag listener's report told the driver's documents, no drag started
+MotionLayout.frameChanged: ✅
+MotionLayout.gridColumn: ✅
+MotionLayout.gridColumnSpan: ✅
+MotionLayout.gridRow: ✅
+MotionLayout.gridRowSpan: ✅
+MotionLayout.held: ✅
+MotionLayout.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
+MotionLayout.horizontalAlignment: ✅
+MotionLayout.layoutBody: ✅
+MotionLayout.margin: ✅
+MotionLayout.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+MotionLayout.panUpdated: ✅
+MotionLayout.panXChannel: ✅
+MotionLayout.panYChannel: ✅
+MotionLayout.pinchUpdated: ✅
+MotionLayout.pointerEntered: ✅
+MotionLayout.pointerExited: ✅
+MotionLayout.pointerMoved: ✅
+MotionLayout.pointerPressed: ✅
+MotionLayout.pointerReleased: ✅
+MotionLayout.rotationUpdated: ✅
+MotionLayout.swipeDirection: ✅
+MotionLayout.swipeThreshold: ✅
+MotionLayout.swiped: ✅
+MotionLayout.tapCount: ✅
+MotionLayout.tapped: ✅
+MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Path.area: ✅
 Path.canDrag: ✓ dragAndDrop on Path: the views' drag listeners' reports told by the driver, no drag started
@@ -525,7 +623,10 @@ Path.gridColumn: ✅
 Path.gridColumnSpan: ✅
 Path.gridRow: ✅
 Path.gridRowSpan: ✅
+Path.held: ✅
+Path.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Path.horizontalAlignment: ✅
+Path.layoutBody: ✅
 Path.margin: ✅
 Path.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Path.panUpdated: ✅
@@ -537,6 +638,7 @@ Path.pointerExited: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
+Path.rotationUpdated: ✅
 Path.swipeDirection: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
@@ -559,7 +661,10 @@ Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
 Picker.gridRowSpan: ✅
+Picker.held: ✅
+Picker.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Picker.horizontalAlignment: ✅
+Picker.layoutBody: ✅
 Picker.margin: ✅
 Picker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Picker.panUpdated: ✅
@@ -571,6 +676,7 @@ Picker.pointerExited: ✅
 Picker.pointerMoved: ✅
 Picker.pointerPressed: ✅
 Picker.pointerReleased: ✅
+Picker.rotationUpdated: ✅
 Picker.swipeDirection: ✅
 Picker.swipeThreshold: ✅
 Picker.swiped: ✅
@@ -593,7 +699,10 @@ Polygon.gridColumn: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRow: ✅
 Polygon.gridRowSpan: ✅
+Polygon.held: ✅
+Polygon.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Polygon.horizontalAlignment: ✅
+Polygon.layoutBody: ✅
 Polygon.margin: ✅
 Polygon.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Polygon.panUpdated: ✅
@@ -605,6 +714,7 @@ Polygon.pointerExited: ✅
 Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
+Polygon.rotationUpdated: ✅
 Polygon.swipeDirection: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
@@ -627,7 +737,10 @@ Polyline.gridColumn: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRow: ✅
 Polyline.gridRowSpan: ✅
+Polyline.held: ✅
+Polyline.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Polyline.horizontalAlignment: ✅
+Polyline.layoutBody: ✅
 Polyline.margin: ✅
 Polyline.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Polyline.panUpdated: ✅
@@ -639,6 +752,7 @@ Polyline.pointerExited: ✅
 Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
+Polyline.rotationUpdated: ✅
 Polyline.swipeDirection: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
@@ -661,7 +775,10 @@ ProgressBar.gridColumn: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRow: ✅
 ProgressBar.gridRowSpan: ✅
+ProgressBar.held: ✅
+ProgressBar.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 ProgressBar.horizontalAlignment: ✅
+ProgressBar.layoutBody: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ProgressBar.panUpdated: ✅
@@ -673,46 +790,13 @@ ProgressBar.pointerExited: ✅
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
+ProgressBar.rotationUpdated: ✅
 ProgressBar.swipeDirection: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.area: ✅
-RadioButton.canDrag: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragEnded: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragStarting: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.dragText: ✓ dragAndDrop on RadioButton: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-RadioButton.droppedFileTypes: ✓ dropFiles on RadioButton: the view's drag listener's report told the driver's documents, no drag started
-RadioButton.filesDropped: ✓ dropFiles on RadioButton: the view's drag listener's report told the driver's documents, no drag started
-RadioButton.frameChanged: ✅
-RadioButton.gridColumn: ✅
-RadioButton.gridColumnSpan: ✅
-RadioButton.gridRow: ✅
-RadioButton.gridRowSpan: ✅
-RadioButton.horizontalAlignment: ✅
-RadioButton.margin: ✅
-RadioButton.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-RadioButton.panUpdated: ✅
-RadioButton.panXChannel: ✅
-RadioButton.panYChannel: ✅
-RadioButton.pinchUpdated: ✅
-RadioButton.pointerEntered: ✅
-RadioButton.pointerExited: ✅
-RadioButton.pointerMoved: ✅
-RadioButton.pointerPressed: ✅
-RadioButton.pointerReleased: ✅
-RadioButton.swipeDirection: ✅
-RadioButton.swipeThreshold: ✅
-RadioButton.swiped: ✅
-RadioButton.tapCount: ✅
-RadioButton.tapped: ✅
-RadioButton.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Rectangle.area: ✅
 Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
@@ -729,7 +813,10 @@ Rectangle.gridColumn: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRow: ✅
 Rectangle.gridRowSpan: ✅
+Rectangle.held: ✅
+Rectangle.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Rectangle.horizontalAlignment: ✅
+Rectangle.layoutBody: ✅
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Rectangle.panUpdated: ✅
@@ -741,6 +828,7 @@ Rectangle.pointerExited: ✅
 Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
+Rectangle.rotationUpdated: ✅
 Rectangle.swipeDirection: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
@@ -763,7 +851,10 @@ ScrollView.gridColumn: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRow: ✅
 ScrollView.gridRowSpan: ✅
+ScrollView.held: – The control takes its own press - a drawing, a scroll, a thumb, its buttons: Android tells no long click of it.
+ScrollView.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 ScrollView.horizontalAlignment: ✅
+ScrollView.layoutBody: ✅
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ScrollView.panUpdated: ✅
@@ -775,6 +866,7 @@ ScrollView.pointerExited: ✅
 ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
+ScrollView.rotationUpdated: ✅
 ScrollView.swipeDirection: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
@@ -797,7 +889,10 @@ SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRow: ✅
 SearchField.gridRowSpan: ✅
+SearchField.held: ✅
+SearchField.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 SearchField.horizontalAlignment: ✅
+SearchField.layoutBody: ✅
 SearchField.margin: ✅
 SearchField.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 SearchField.panUpdated: ✅
@@ -809,12 +904,51 @@ SearchField.pointerExited: ✅
 SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
+SearchField.rotationUpdated: ✅
 SearchField.swipeDirection: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
+Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Separator.area: ✅
+Separator.canDrag: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragEnded: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragStarting: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
+Separator.dragText: ✓ dragAndDrop on Separator: the views' drag listeners' reports told by the driver, no drag started
+Separator.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Separator.droppedFileTypes: ✓ dropFiles on Separator: the view's drag listener's report told the driver's documents, no drag started
+Separator.filesDropped: ✓ dropFiles on Separator: the view's drag listener's report told the driver's documents, no drag started
+Separator.frameChanged: ✅
+Separator.gridColumn: ✅
+Separator.gridColumnSpan: ✅
+Separator.gridRow: ✅
+Separator.gridRowSpan: ✅
+Separator.held: ✅
+Separator.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
+Separator.horizontalAlignment: ✅
+Separator.layoutBody: ✅
+Separator.margin: ✅
+Separator.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Separator.panUpdated: ✅
+Separator.panXChannel: ✅
+Separator.panYChannel: ✅
+Separator.pinchUpdated: ✅
+Separator.pointerEntered: ✅
+Separator.pointerExited: ✅
+Separator.pointerMoved: ✅
+Separator.pointerPressed: ✅
+Separator.pointerReleased: ✅
+Separator.rotationUpdated: ✅
+Separator.swipeDirection: ✅
+Separator.swipeThreshold: ✅
+Separator.swiped: ✅
+Separator.tapCount: ✅
+Separator.tapped: ✅
+Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Slider.area: ✅
 Slider.canDrag: ✓ dragAndDrop on Slider: the views' drag listeners' reports told by the driver, no drag started
@@ -831,7 +965,10 @@ Slider.gridColumn: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRow: ✅
 Slider.gridRowSpan: ✅
+Slider.held: – The control takes its own press - a drawing, a scroll, a thumb, its buttons: Android tells no long click of it.
+Slider.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Slider.horizontalAlignment: ✅
+Slider.layoutBody: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Slider.panUpdated: ✅
@@ -843,46 +980,89 @@ Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
+Slider.rotationUpdated: ✅
 Slider.swipeDirection: ✅
 Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Slider.verticalAlignment: ✅
-Spacer.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Spacer.area: ✅
-Spacer.canDrag: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragEnded: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragStarting: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
-Spacer.dragText: ✓ dragAndDrop on Spacer: the views' drag listeners' reports told by the driver, no drag started
-Spacer.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
-Spacer.droppedFileTypes: ✓ dropFiles on Spacer: the view's drag listener's report told the driver's documents, no drag started
-Spacer.filesDropped: ✓ dropFiles on Spacer: the view's drag listener's report told the driver's documents, no drag started
-Spacer.frameChanged: ✅
-Spacer.gridColumn: ✅
-Spacer.gridColumnSpan: ✅
-Spacer.gridRow: ✅
-Spacer.gridRowSpan: ✅
-Spacer.horizontalAlignment: ✅
-Spacer.margin: ✅
-Spacer.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
-Spacer.panUpdated: ✅
-Spacer.panXChannel: ✅
-Spacer.panYChannel: ✅
-Spacer.pinchUpdated: ✅
-Spacer.pointerEntered: ✅
-Spacer.pointerExited: ✅
-Spacer.pointerMoved: ✅
-Spacer.pointerPressed: ✅
-Spacer.pointerReleased: ✅
-Spacer.swipeDirection: ✅
-Spacer.swipeThreshold: ✅
-Spacer.swiped: ✅
-Spacer.tapCount: ✅
-Spacer.tapped: ✅
-Spacer.verticalAlignment: ✅
+Space.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Space.area: ✅
+Space.canDrag: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
+Space.dragEnded: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
+Space.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Space.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Space.dragStarting: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
+Space.dragText: ✓ dragAndDrop on Space: the views' drag listeners' reports told by the driver, no drag started
+Space.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Space.droppedFileTypes: ✓ dropFiles on Space: the view's drag listener's report told the driver's documents, no drag started
+Space.filesDropped: ✓ dropFiles on Space: the view's drag listener's report told the driver's documents, no drag started
+Space.frameChanged: ✅
+Space.gridColumn: ✅
+Space.gridColumnSpan: ✅
+Space.gridRow: ✅
+Space.gridRowSpan: ✅
+Space.held: ✅
+Space.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
+Space.horizontalAlignment: ✅
+Space.layoutBody: ✅
+Space.margin: ✅
+Space.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Space.panUpdated: ✅
+Space.panXChannel: ✅
+Space.panYChannel: ✅
+Space.pinchUpdated: ✅
+Space.pointerEntered: ✅
+Space.pointerExited: ✅
+Space.pointerMoved: ✅
+Space.pointerPressed: ✅
+Space.pointerReleased: ✅
+Space.rotationUpdated: ✅
+Space.swipeDirection: ✅
+Space.swipeThreshold: ✅
+Space.swiped: ✅
+Space.tapCount: ✅
+Space.tapped: ✅
+Space.verticalAlignment: ✅
+Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Spinner.area: ✅
+Spinner.canDrag: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragEnded: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragOver: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragStarting: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
+Spinner.dragText: ✓ dragAndDrop on Spinner: the views' drag listeners' reports told by the driver, no drag started
+Spinner.drop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
+Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the view's drag listener's report told the driver's documents, no drag started
+Spinner.filesDropped: ✓ dropFiles on Spinner: the view's drag listener's report told the driver's documents, no drag started
+Spinner.frameChanged: ✅
+Spinner.gridColumn: ✅
+Spinner.gridColumnSpan: ✅
+Spinner.gridRow: ✅
+Spinner.gridRowSpan: ✅
+Spinner.held: ✅
+Spinner.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
+Spinner.horizontalAlignment: ✅
+Spinner.layoutBody: ✅
+Spinner.margin: ✅
+Spinner.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
+Spinner.panUpdated: ✅
+Spinner.panXChannel: ✅
+Spinner.panYChannel: ✅
+Spinner.pinchUpdated: ✅
+Spinner.pointerEntered: ✅
+Spinner.pointerExited: ✅
+Spinner.pointerMoved: ✅
+Spinner.pointerPressed: ✅
+Spinner.pointerReleased: ✅
+Spinner.rotationUpdated: ✅
+Spinner.swipeDirection: ✅
+Spinner.swipeThreshold: ✅
+Spinner.swiped: ✅
+Spinner.tapCount: ✅
+Spinner.tapped: ✅
+Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the views' drag listeners' reports told by the driver, no drag started
 Stepper.area: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the views' drag listeners' reports told by the driver, no drag started
@@ -899,7 +1079,10 @@ Stepper.gridColumn: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRow: ✅
 Stepper.gridRowSpan: ✅
+Stepper.held: – The control takes its own press - a drawing, a scroll, a thumb, its buttons: Android tells no long click of it.
+Stepper.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Stepper.horizontalAlignment: ✅
+Stepper.layoutBody: ✅
 Stepper.margin: ✅
 Stepper.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Stepper.panUpdated: ✅
@@ -911,6 +1094,7 @@ Stepper.pointerExited: ✅
 Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
+Stepper.rotationUpdated: ✅
 Stepper.swipeDirection: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
@@ -933,7 +1117,10 @@ Switch.gridColumn: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRow: ✅
 Switch.gridRowSpan: ✅
+Switch.held: ✅
+Switch.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Switch.horizontalAlignment: ✅
+Switch.layoutBody: ✅
 Switch.margin: ✅
 Switch.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Switch.panUpdated: ✅
@@ -945,6 +1132,7 @@ Switch.pointerExited: ✅
 Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
+Switch.rotationUpdated: ✅
 Switch.swipeDirection: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
@@ -967,7 +1155,10 @@ Text.gridColumn: ✅
 Text.gridColumnSpan: ✅
 Text.gridRow: ✅
 Text.gridRowSpan: ✅
+Text.held: ✅
+Text.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 Text.horizontalAlignment: ✅
+Text.layoutBody: ✅
 Text.margin: ✅
 Text.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 Text.panUpdated: ✅
@@ -979,6 +1170,7 @@ Text.pointerExited: ✅
 Text.pointerMoved: ✅
 Text.pointerPressed: ✅
 Text.pointerReleased: ✅
+Text.rotationUpdated: ✅
 Text.swipeDirection: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
@@ -1001,7 +1193,10 @@ TextEditor.gridColumn: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRow: ✅
 TextEditor.gridRowSpan: ✅
+TextEditor.held: ✅
+TextEditor.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 TextEditor.horizontalAlignment: ✅
+TextEditor.layoutBody: ✅
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TextEditor.panUpdated: ✅
@@ -1013,6 +1208,7 @@ TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
+TextEditor.rotationUpdated: ✅
 TextEditor.swipeDirection: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
@@ -1035,7 +1231,10 @@ TextField.gridColumn: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRow: ✅
 TextField.gridRowSpan: ✅
+TextField.held: ✅
+TextField.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 TextField.horizontalAlignment: ✅
+TextField.layoutBody: ✅
 TextField.margin: ✅
 TextField.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TextField.panUpdated: ✅
@@ -1047,6 +1246,7 @@ TextField.pointerExited: ✅
 TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅
+TextField.rotationUpdated: ✅
 TextField.swipeDirection: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
@@ -1069,7 +1269,10 @@ TimePicker.gridColumn: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRow: ✅
 TimePicker.gridRowSpan: ✅
+TimePicker.held: ✅
+TimePicker.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 TimePicker.horizontalAlignment: ✅
+TimePicker.layoutBody: ✅
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 TimePicker.panUpdated: ✅
@@ -1081,6 +1284,7 @@ TimePicker.pointerExited: ✅
 TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
+TimePicker.rotationUpdated: ✅
 TimePicker.swipeDirection: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
@@ -1103,7 +1307,10 @@ VStack.gridColumn: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRow: ✅
 VStack.gridRowSpan: ✅
+VStack.held: ✅
+VStack.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 VStack.horizontalAlignment: ✅
+VStack.layoutBody: ✅
 VStack.margin: ✅
 VStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 VStack.panUpdated: ✅
@@ -1115,6 +1322,7 @@ VStack.pointerExited: ✅
 VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
+VStack.rotationUpdated: ✅
 VStack.swipeDirection: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
@@ -1137,7 +1345,10 @@ WebView.gridColumn: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRow: ✅
 WebView.gridRowSpan: ✅
+WebView.held: ✅
+WebView.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 WebView.horizontalAlignment: ✅
+WebView.layoutBody: ✅
 WebView.margin: ✅
 WebView.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 WebView.panUpdated: ✅
@@ -1149,6 +1360,7 @@ WebView.pointerExited: ✅
 WebView.pointerMoved: ✅
 WebView.pointerPressed: ✅
 WebView.pointerReleased: ✅
+WebView.rotationUpdated: ✅
 WebView.swipeDirection: ✅
 WebView.swipeThreshold: ✅
 WebView.swiped: ✅
@@ -1171,7 +1383,10 @@ ZStack.gridColumn: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRow: ✅
 ZStack.gridRowSpan: ✅
+ZStack.held: ✅
+ZStack.holdDuration: – Android's long click comes after the system's long-press time: a view keeps no time of its own.
 ZStack.horizontalAlignment: ✅
+ZStack.layoutBody: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ☑️ The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off.
 ZStack.panUpdated: ✅
@@ -1183,6 +1398,7 @@ ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅
+ZStack.rotationUpdated: ✅
 ZStack.swipeDirection: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅

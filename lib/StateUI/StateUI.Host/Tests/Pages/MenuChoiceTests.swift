@@ -5,7 +5,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
-/// How every host takes a menu's entry chosen: one standing checked or not turns the other way, any other is only
+/// How every host takes a menu's entry chosen: a setting's turns the other way from how it stands, one that acts is
 /// clicked.
 @MainActor
 final class MenuChoiceTests: XCTestCase {
@@ -18,7 +18,7 @@ final class MenuChoiceTests: XCTestCase {
         }
         var menu = HostPatch(id: .manual("menu"), type: .contextMenu)
         menu.children = .arranged([
-            entry("checked", .menuItem, on: true), entry("unchecked", .menuItem, on: false),
+            entry("checked", .menuToggle, on: true), entry("unchecked", .menuToggle, on: false),
             entry("plain", .menuItem, on: nil),
         ])
         var root = HostPatch(id: .manual("root"), type: .text)
@@ -28,8 +28,33 @@ final class MenuChoiceTests: XCTestCase {
 
         XCTAssertEqual(entries.first(id: .manual("checked"))?.turnsWhenChosen, false)
         XCTAssertEqual(entries.first(id: .manual("unchecked"))?.turnsWhenChosen, true)
-        XCTAssertNil(entries.first(id: .manual("plain"))?.turnsWhenChosen, "an entry standing neither way is only clicked")
+        XCTAssertNil(entries.first(id: .manual("plain"))?.turnsWhenChosen, "an entry that acts is clicked")
         XCTAssertEqual(MenuEntry.entries(of: entries).map(\.isOn), [true, false, nil])
+    }
+
+    /// A setting on a bar turns as a menu's does, and shows its `on:` picture while it stands on - in its overflow's
+    /// entry too - its own while off or where it gives none.
+    func testABarsSettingTurnsAndShowsItsOnPictureWhileOn() throws {
+        let runtime = HostRuntime.still()
+        func toggle(_ id: String, on: Bool, onIcon: Bool) -> HostPatch {
+            var toggle = HostPatch(id: .manual(id), type: .toolbarToggle)
+            toggle.properties = [.isOn: .bool(on), .icon: .string("off.png")]
+            if onIcon { toggle.properties[.onIcon] = .string("on.png") }
+            return toggle
+        }
+        var group = HostPatch(id: .manual("group"), type: .toolbarGroup)
+        group.children = .arranged([
+            toggle("on", on: true, onIcon: true), toggle("off", on: false, onIcon: true),
+            toggle("plain", on: true, onIcon: false),
+        ])
+        var root = HostPatch(id: .manual("root"), type: .page)
+        root.children = .arranged([group])
+        runtime.tree.apply(root, complete: true)
+        let items = try XCTUnwrap(runtime.tree.root?.first(id: .manual("group"))).children
+
+        XCTAssertEqual(items.map(\.turnsWhenChosen), [false, true, false])
+        XCTAssertEqual(items.map { MenuEntry.entry(of: $0).icon }, [.file("on.png"), .file("off.png"), .file("off.png")])
+        XCTAssertEqual(items.map { MenuEntry.entry(of: $0).isOn }, [true, false, true])
     }
 
     /// An entry carries the shortcut its item states, for a host to show beside its words; a submenu and a line carry
@@ -71,7 +96,7 @@ final class MenuChoiceTests: XCTestCase {
 
         XCTAssertEqual(tree([:]), plain, "the same entry says the same")
         XCTAssertNotEqual(tree([.isOn: .bool(true)]), plain, "checked")
-        XCTAssertNotEqual(tree([.isDestructive: .bool(true)]), plain, "marked destructive")
+        XCTAssertNotEqual(tree([.role: ActionRole.destructive.propValue]), plain, "marked destructive")
         XCTAssertNotEqual(tree([.icon: .string("save.png")]), plain, "with a picture")
         XCTAssertNotEqual(tree([.text: .string("Keep")]), plain, "in other words")
         _ = tree([:])

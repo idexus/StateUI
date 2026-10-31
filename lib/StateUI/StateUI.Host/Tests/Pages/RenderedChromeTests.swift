@@ -32,9 +32,9 @@ final class RenderedChromeTests: XCTestCase {
 
         var words = HostPatch(id: .manual("action words"), type: .text)
         words.properties[.text] = .string("Send")
-        var action = HostPatch(id: .manual("action"), type: .toolbarItem)
+        var action = HostPatch(id: .manual("action"), type: .toolbarButton)
         action.children = .changed([words])
-        var group = HostPatch(id: .manual("group"), type: .toolbarItemGroup)
+        var group = HostPatch(id: .manual("group"), type: .toolbarGroup)
         group.children = .changed([action])
         XCTAssertTrue(touches(Self.content(.changed([Self.holder(.changed([group]))]))), "an action's words")
     }
@@ -45,6 +45,23 @@ final class RenderedChromeTests: XCTestCase {
         menu.children = .arranged([])
         let words = HostPatch(id: .manual("x"), type: .text)
         XCTAssertTrue(touches(Self.content(.changed([Self.holder(.arranged([words, Self.group(), menu]))]))), "made")
+        XCTAssertTrue(touches(Self.content(.changed([Self.holder(.arranged([words, Self.group()]))]))), "let go")
+    }
+
+    /// A BOTTOM BAR MADE OR LET GO TOUCHES THE CHROME, AND WHAT IT HOLDS CHANGED DOES NOT: its room lays what it holds
+    /// as a page's own view, a word typed into it showing no bar again.
+    func testABottomBarMadeOrLetGoTouchesTheChromeAndWhatItHoldsDoesNot() {
+        let words = HostPatch(id: .manual("x"), type: .text)
+        var draft = HostPatch(id: .manual("draft"), type: .text)
+        var bar = HostPatch(id: .manual("bar"), type: .bottomBar)
+        bar.children = .arranged([draft])
+        XCTAssertTrue(touches(Self.content(.changed([Self.holder(.arranged([words, Self.group(), bar]))]))), "made")
+
+        draft.properties[.text] = .string("Hello")
+        var typed = HostPatch(id: .manual("bar"), type: .bottomBar)
+        typed.children = .changed([draft])
+        XCTAssertFalse(touches(Self.content(.changed([Self.holder(.changed([typed]))]))), "what it holds")
+
         XCTAssertTrue(touches(Self.content(.changed([Self.holder(.arranged([words, Self.group()]))]))), "let go")
     }
 
@@ -116,9 +133,9 @@ final class RenderedChromeTests: XCTestCase {
     }
 
     private static func group() -> HostPatch {
-        var action = HostPatch(id: .manual("action"), type: .toolbarItem)
+        var action = HostPatch(id: .manual("action"), type: .toolbarButton)
         action.children = .arranged([HostPatch(id: .manual("action words"), type: .text)])
-        var group = HostPatch(id: .manual("group"), type: .toolbarItemGroup)
+        var group = HostPatch(id: .manual("group"), type: .toolbarGroup)
         group.children = .arranged([action])
         return group
     }

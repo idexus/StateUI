@@ -32,28 +32,18 @@ import StateUI
 // listing: GalleryApp
 /// The gallery application.
 ///
-/// An application is what every scene SHARES - its styles, and the settings
-/// it keeps between launches. The galleries are one scene, its windows as many
-/// as the user opens: see Gallery/GalleryScene.swift.
+/// An application is what every scene SHARES - here its styles. The galleries
+/// are one scene, its windows as many as the user opens: see
+/// Gallery/GalleryScene.swift.
 struct GalleryApp: Application {
-    /// The application as it runs - where its styles and its kept keys go.
+    /// The application as it runs - where its styles go.
     @Environment(\.application) private var application
 
     /// What every gallery shares, written as the application is made.
     init() {
-        // The styles a control of the gallery asks for by name. A colour in a
+        // The styles a control of the gallery asks for by name. A color in a
         // style follows the theme by itself. See Styles/AppStyles.swift.
         application.styles = AppStyles.sheet
-
-        // What the gallery keeps under its own keys between launches -
-        // `PersistentStateSample`'s three settings; what its scenes keep comes
-        // back with them. Listed because a settings store is read one key at a
-        // time and offers no list of what it holds, so this is the only way
-        // the host can have the values in memory before the first view asks
-        // for one - which is why it is written HERE, as the application is
-        // made. Each host keeps them in the platform's settings store, or in a
-        // file of its own where the platform offers an application none.
-        application.persistentKeys = [.visits, .who, .shade]
 
         // On GNOME the gallery opens in the dark theme, the look it wears
         // best there; the Appearance sample turns it back.
@@ -72,11 +62,10 @@ struct GalleryApp: Application {
 }
 // listing: end
 
-/// The function every head of this application calls by name before its host
+/// Names this application to its host: every head calls it before its host
 /// runs - Platforms/<Host>. The library cannot declare it: the dependency runs
 /// app -> library.
-@_cdecl("stateui_app_register")
 @MainActor
-public func stateui_app_register() {
+public func registerApplication() {
     stateUIUseApp(GalleryApp())
 }

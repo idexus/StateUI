@@ -22,7 +22,7 @@ Swift protocols behind them refine each other.
   |   '-- TextAlignmentElement           where text sits across its element
   '-- MenuItemElement                    an item the user chooses: caption, icon, action, shortcut
 
-  TextStyleElement                       text colour
+  TextColorElement                       text color
   '-- TextualElement                     the words and their case
   FontElement                            family, size, weight and slant, text-size scaling
   LineHeightElement                      space between lines
@@ -30,11 +30,11 @@ Swift protocols behind them refine each other.
   DecorableTextElement                   underline and strikethrough
   BorderElement                          the shape of an element's own box, and its outline
   ImageElement                           how a picture fills its room
-  TintElement                            a control's one accent colour
+  TintElement                            a control's one accent color
   KeyboardElement                        keys taken while it holds the keyboard
   '-- FocusElement                       the keyboard put on it and taken off
   PageElement                            a title and an icon
-  BarElement                             an arrangement's bar: colours, title area
+  BarElement                             an arrangement's bar: colors, title area
 
   Each tier on the second list wears nothing above it: a text run wears the text tiers, and no name automation
   finds it by.
@@ -43,28 +43,28 @@ Swift protocols behind them refine each other.
 ## Who wears what
 
 ```text
-  View               ActivityIndicator, Button, Canvas, CheckBox,
-                     DatePicker, Divider, Image, Text, Map, Picker,
-                     ProgressBar, RadioButton, ScrollView, Slider, Spacer,
-                     Stepper, Switch, TimePicker, WebView, ItemsView
-  Layout             Grid, LayoutEngine, ZStack
+  View               Spinner, Button, Canvas, CheckBox,
+                     DatePicker, Separator, Fill, Image, Text, Map, Picker,
+                     ProgressBar, ScrollView, Slider, Space, Stepper,
+                     Switch, TimePicker, WebView, ItemsView
+  Layout             Grid, MotionLayout, ZStack
   Stack              HStack, VStack
   TextInput          SearchField, TextEditor, TextField
   Shape              Capsule, Ellipse, Line, Path, Polygon, Polyline,
                      Rectangle
   FilledShape        Capsule, Ellipse, Path, Polygon, Polyline, Rectangle
   CorneredShape      Path, Polygon, Polyline, Rectangle
-  AutomationElement  every View, MenuItem, ToolbarItem, NavigationStack,
+  AutomationElement  every View, MenuItem, ToolbarButton, NavigationStack,
                      TabView, SplitView
-  MenuItemElement    MenuItem, ToolbarItem
+  MenuItemElement    MenuItem, ToolbarButton
   TrackingElement    Text, Button, TextSpan
   LineHeightElement  Text
   KeyboardElement    every Layout and every FocusElement
   FocusElement       Button, CheckBox, DatePicker, ItemsView, Picker,
-                     RadioButton, ScrollView, Slider, Stepper, Switch,
-                     TimePicker, WebView, every TextInput
+                     ScrollView, Slider, Stepper, Switch, TimePicker,
+                     WebView, every TextInput
   PageElement        Page, NavigationStack, TabView, SplitView
-  BarElement         NavigationStack, TabView, SplitView, ModalStack
+  BarElement         NavigationStack, TabView, SplitView
   text tiers only    TextSpan
   no tier            Application, Scene, Window, MenuBar, Menu, ButtonMenu,
                      MenuSeparator, ContextMenu, Overlay, Marker, and the
@@ -73,7 +73,7 @@ Swift protocols behind them refine each other.
 
 An element adds the smaller tiers it needs beside its main one: a `Button`
 is a `View` with a caption in a font, padded, bordered, with a picture
-fitted; a `Switch` is a `View` with a tint.
+fitted; a `Switch` is a `View` with a tint and the words it says beside it.
 
 ## Worn once nearest first
 

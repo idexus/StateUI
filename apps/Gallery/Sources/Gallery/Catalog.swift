@@ -41,7 +41,7 @@ final class Catalog {
             Self.basicInputGroup(nav: nav, style: style, bar: bar, log: log),
             Self.textGroup(nav: nav, style: style, bar: bar, log: log),
             Self.layoutGroup(nav: nav, style: style, bar: bar, log: log),
-            Self.layoutEngineGroup(nav: nav, style: style, bar: bar, log: log),
+            Self.motionLayoutGroup(nav: nav, style: style, bar: bar, log: log),
             Self.stylesGroup(nav: nav, style: style, bar: bar, log: log),
             Self.shapesGroup(nav: nav, style: style, bar: bar, log: log),
             Self.collectionsGroup(nav: nav, style: style, bar: bar, log: log),
@@ -135,10 +135,12 @@ final class Catalog {
                 Sample(OnChangedSample()),
                 Sample(AimSample()),
                 Sample(StateClassSample()),
+                Sample(RecordEditingSample()),
                 Sample(PropertyReadsSample()),
                 Sample(PersistentStateSample()),
                 Sample(PacedStateSample()),
                 Sample(ConcurrentStateSample()),
+                Sample(MainQueueSample()),
                 Sample(GateSample()),
             ])
     }
@@ -171,8 +173,8 @@ final class Catalog {
         SampleGroup(
             route: "basicInput",
             title: "Controls",
-            summary: "Button, Switch, CheckBox, RadioButton, Slider, Stepper and "
-                + "Picker, the spinner and the bar that show work, and what a "
+            summary: "Button, Switch, CheckBox, Slider, Stepper, Picker and ColorPicker, "
+                + "the spinner and the bar that show work, and what a "
                 + "control says about itself; text fields are under Text & typing.",
             icon: ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"),
             card: ImageSource("cat_basicinput.png"),
@@ -181,19 +183,29 @@ final class Catalog {
                 Sample(ButtonRoleSample()),
                 Sample(ButtonMenuSample()),
                 Sample(IconButtonSample()),
+                Sample(LinkSample()),
                 Sample(SwitchSample()),
                 Sample(CheckBoxSample()),
-                Sample(RadioButtonSample()),
                 Sample(SliderSample()),
                 Sample(StepperSample()),
                 Sample(PickerSample()),
+            ] + Self.pickingColors + [
                 Sample(ProgressBarSample()),
-                Sample(ActivityIndicatorSample()),
+                Sample(SpinnerSample()),
                 Sample(SemanticsSample()),
                 Sample(TooltipSample()),
                 Sample(ShortcutSample()),
                 Sample(KeyPressSample()),
             ])
+    }
+
+    /// The color picker, on the hosts whose platform has one: Android has none.
+    private static var pickingColors: [Sample] {
+        #if ANDROID
+        []
+        #else
+        [Sample(ColorPickerSample())]
+        #endif
     }
 
     /// The group at `text`.
@@ -233,11 +245,13 @@ final class Catalog {
             card: ImageSource("cat_layout.png"),
             samples: [
                 Sample(StackLayoutSample()),
+                Sample(FillSample()),
                 Sample(GridSample()),
                 Sample(ZStackSample()),
                 Sample(ScrollViewSample()),
                 Sample(SizingSample()),
                 Sample(OutlineSample()),
+                Sample(SafeAreaSample()),
                 Sample(TransformSample()),
                 Sample(LayoutDirectionSample()),
                 Sample(GeometryReaderSample()),
@@ -246,20 +260,20 @@ final class Catalog {
             ])
     }
 
-    /// The group at `layoutEngine`.
-    private static func layoutEngineGroup(
+    /// The group at `motionLayout`.
+    private static func motionLayoutGroup(
         nav: Navigation, style: SessionStyle, bar: WindowBarState, log: WindowLog
     ) -> SampleGroup {
         SampleGroup(
-            route: "layoutEngine",
-            title: "Layout Engine",
-            summary: "Views placed by arithmetic of your own, worked out from a phase the hand or the "
+            route: "motionLayout",
+            title: "Motion Layout",
+            summary: "Views placed by arithmetic of your own, worked out from parameters the hand or the "
                 + "program moves: a ring, a deck, pages of icons, a table panned, pinched and turned.",
-            icon: ImageSource(light: "nav_layoutengine.png", dark: "nav_layoutengine_dark.png"),
-            card: ImageSource("cat_layoutengine.png"),
+            icon: ImageSource(light: "nav_motionlayout.png", dark: "nav_motionlayout_dark.png"),
+            card: ImageSource("cat_motionlayout.png"),
             samples: [
-                Sample(LayoutEngineSample()),
-                Sample(LayoutPhaseSample()),
+                Sample(MotionLayoutSample()),
+                Sample(LayoutParametersSample()),
                 Sample(LayoutAxesSample()),
                 Sample(LayoutKeyframesSample()),
                 Sample(ChangingDeckSample()),
@@ -325,8 +339,10 @@ final class Catalog {
                 Sample(ItemsViewSample()),
                 Sample(ChoosingItemsSample()),
                 Sample(LoadingItemsSample()),
+                Sample(RefreshSample()),
+                Sample(ItemActionsSample()),
                 Sample(GalleryViewSample()),
-                Sample(PositionIndicatorSample()),
+                Sample(PositionDotsSample()),
             ])
     }
 
@@ -337,12 +353,13 @@ final class Catalog {
         SampleGroup(
             route: "gestures",
             title: "Gestures",
-            summary: "A gesture on any view that wants one - a tap, a drag, a swipe, "
+            summary: "A gesture on any view that wants one - a tap, a hold, a drag, a swipe, "
                 + "a pinch, a pointer, and carrying something from one view to another.",
             icon: ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"),
             card: ImageSource("cat_gestures.png"),
             samples: [
                 Sample(TapSample()),
+                Sample(HoldSample()),
                 Sample(PanSample()),
                 Sample(SwipeSample()),
                 Sample(PinchSample()),
@@ -379,8 +396,8 @@ final class Catalog {
             route: "navigation",
             title: "Navigation",
             summary: "Moving between pages - the stack, the tabs and the split view; a "
-                + "modal, an alert, a file dialog, a toolbar and a menu over them; and a "
-                + "search field in the navigation bar.",
+                + "modal, an alert, a file dialog, the clipboard, sharing, a toolbar, a menu and a popover over them; "
+                + "and a search field in the navigation bar.",
             icon: ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"),
             card: ImageSource("cat_navigation.png"),
             samples: [
@@ -388,12 +405,17 @@ final class Catalog {
                 Sample(TabsSample(nav: nav)),
                 Sample(SplitViewSample(nav: nav)),
                 Sample(ModalSample(nav: nav)),
+                Sample(SheetsSample()),
                 Sample(DialogsSample()),
                 Sample(FilesSample()),
+                Sample(ClipboardSample()),
+                Sample(ShareSample()),
                 Sample(ToolbarSample()),
+                Sample(BottomBarSample()),
                 Sample(ToolbarLayersSample(nav: nav)),
                 Sample(MenuBarSample()),
                 Sample(ContextMenuSample()),
+                Sample(PopoverSample()),
                 Sample(SearchSample(nav: nav)),
             ])
     }
@@ -415,6 +437,7 @@ final class Catalog {
                 Sample(WindowOverlaySample(nav: nav)),
                 Sample(LifecycleSample(log: log)),
                 Sample(WindowPhaseSample()),
+                Sample(LinksSample(nav: nav)),
             ])
     }
 
@@ -426,7 +449,7 @@ final class Catalog {
             route: "environment",
             title: "Environment",
             summary: "What the host knows - the device, the screen, the locale, the "
-                + "network and the battery - the application's session, an object "
+                + "network and a request through it, and the battery - the application's session, an object "
                 + "of your own provided above and resolved below by type, and a document "
                 + "in its own language; the theme is under Styles, the scene's and the "
                 + "window's sessions under Scene.",
@@ -439,7 +462,9 @@ final class Catalog {
                 Sample(LocaleInfoSample()),
                 Sample(LocalizationSample()),
                 Sample(ConnectivitySample()),
+                Sample(HTTPRequestSample()),
                 Sample(BatterySample()),
+                Sample(AccessibilitySettingsSample()),
                 Sample(PlatformSupportSample()),
                 Sample(ApplicationSessionSample()),
             ])

@@ -34,6 +34,8 @@ final class AndroidElement: NativeElement {
     var type: NodeType { element.type }
     var parent: AndroidElement? { element.parent?.android }
     var children: [AndroidElement] { element.children.map(\.android) }
+    /// The children it places, an anchor's in the anchor's place.
+    var arranged: [AndroidElement] { element.arrangedChildren.map(\.android) }
     func value(_ property: Prop) -> HostValue? { element.value(property) }
 
     // MARK: - The native half's part in a patch
@@ -54,6 +56,7 @@ final class AndroidElement: NativeElement {
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
+        if !wasDescribed, type == .page { paintBackground() }
         applyProperties(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: AndroidRegistrations.registry, in: host.runtime) }
         configureGestures()
@@ -65,12 +68,15 @@ final class AndroidElement: NativeElement {
         arrangePages(changed: changed)
         configureContextMenu()
         configureButtonMenu()
+        configurePopover()
         host?.runtime.frames.follow(self, of: element, reads: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if changed.contains(.isPresented) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { groundSidebar() }
+        if changed.contains(.showsSidebarToggle) { refreshBars() }
     }
 
     func leave() {

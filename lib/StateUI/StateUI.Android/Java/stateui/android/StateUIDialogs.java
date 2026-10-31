@@ -16,8 +16,8 @@ import java.util.ArrayList;
 
 /**
  * The questions the application asks the user, as the platform's own dialogs. Each answers once, by its
- * ticket: whether it was accepted, and the words chosen or typed - a dialog dismissed any other way is
- * not accepted.
+ * ticket: whether it was accepted and the words typed, or the place of the action chosen - a dialog dismissed
+ * any other way is not accepted.
  */
 final class StateUIDialogs {
     private StateUIDialogs() {}
@@ -89,27 +89,26 @@ final class StateUIDialogs {
     }
 
     /**
-     * Answers the question on top as the user does: its field first given `words` where it has one, then its button
-     * or its list's item of `caption` pressed; whether one was.
+     * Answers the question on top as the user does: its field first given `words` where it has one, then its
+     * accepting button pressed for `ACCEPT`, its cancel for `CANCEL`, else its list's action at `place`; whether one
+     * was.
      */
-    static boolean answer(String caption, String words) {
+    static boolean answer(int role, int place, String words) {
         Shown top = top();
         if (top == null) return false;
         if (words != null && top.field != null) top.field.setText(words);
-        for (int which : new int[] {DialogInterface.BUTTON_POSITIVE, DialogInterface.BUTTON_NEGATIVE,
-                DialogInterface.BUTTON_NEUTRAL}) {
-            Button button = top.dialog.getButton(which);
-            if (button != null && caption.equals(button.getText().toString())) return button.performClick();
+        if (role == ACCEPT || role == CANCEL) {
+            Button button = top.dialog.getButton(
+                    role == ACCEPT ? DialogInterface.BUTTON_POSITIVE : DialogInterface.BUTTON_NEGATIVE);
+            return button != null && button.performClick();
         }
-        if (top.choices != null) {
-            for (int index = 0; index < top.choices.length; index++) {
-                if (caption.equals(top.choices[index])) {
-                    return top.dialog.getListView().performItemClick(null, index, index);
-                }
-            }
-        }
-        return false;
+        if (top.choices == null || place < 0 || place >= top.choices.length) return false;
+        return top.dialog.getListView().performItemClick(null, place, place);
     }
+
+    /** What a press answers: the accepting button, the cancel, an action of a list. */
+    // Swift: AndroidAnswer
+    static final int ACCEPT = 0, CANCEL = 1, ACTION = 2;
 
     /** Takes every dialog showing away, each answered as dismissed: the window they stand over goes. */
     static void dismissAll() {
@@ -157,18 +156,16 @@ final class StateUIDialogs {
         show(dialog, answer, title, message, null, null);
     }
 
-    /** Offers a list of choices, the destructive one last; the answer is the caption pressed, the cancel's too. */
-    static void chooseAction(Context context, long ticket, String title, String cancel, String destructive,
-                             String[] choices) {
+    /** Offers a list of actions in order, and its cancel; the answer is the place of the action chosen. */
+    static void chooseAction(Context context, long ticket, String title, String[] choices, String cancel) {
         Answer answer = new Answer(ticket);
-        String[] shown = destructive == null ? choices : append(choices, destructive);
         AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                .setItems(shown, (dialog, which) -> answer.give(true, shown[which]));
+                .setItems(choices, (dialog, which) -> answer.choose(which))
+                .setNegativeButton(cancel, (dialog, which) -> answer.give(false, null));
         if (title != null && !title.isEmpty()) builder.setTitle(title);
-        if (cancel != null) builder.setNegativeButton(cancel, (dialog, which) -> answer.give(true, cancel));
         AlertDialog dialog = builder.create();
         answer.onDismissOf(dialog);
-        show(dialog, answer, title, null, shown, null);
+        show(dialog, answer, title, null, choices, null);
     }
 
     /** Asks for words; the answer is what was typed, or none where it was cancelled. */
@@ -212,13 +209,6 @@ final class StateUIDialogs {
         field.requestFocus();
     }
 
-    private static String[] append(String[] words, String last) {
-        String[] all = new String[words.length + 1];
-        System.arraycopy(words, 0, all, 0, words.length);
-        all[words.length] = last;
-        return all;
-    }
-
     /** One dialog's answer, given once: a button's, or the dismissal's when no button answered. */
     private static final class Answer {
         private final long ticket;
@@ -232,6 +222,12 @@ final class StateUIDialogs {
             if (given) return;
             given = true;
             StateUIHost.answered(ticket, accepted, words);
+        }
+
+        void choose(int place) {
+            if (given) return;
+            given = true;
+            StateUIHost.actionChosen(ticket, place);
         }
 
         void onDismissOf(AlertDialog dialog) {

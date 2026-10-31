@@ -77,6 +77,14 @@ final class RenderedNode {
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     var placeholder: Node?
 
+    /// The element its composed views' bodies made, its own reads still to run - where the clean walk starts when
+    /// only the element read what moved; nil for an element that reads nothing itself.
+    /// Design: docs/design/core/invalidation.md#an-element-reads-what-it-was-handed
+    var expanded: Node?
+
+    /// What the element itself read of a state it was handed - none of it a page value.
+    var ownReads: Set<ObjectIdentifier> = []
+
     /// The composed view whose body wrote this element, for `debugInfo()` in a bare
     /// container's braces.
     var view: String?
@@ -96,12 +104,15 @@ final class RenderedNode {
     /// which a carry compares.
     var seen: [ObjectIdentifier: ObjectIdentifier]
 
-    /// The `.onChanged` values of its last build, in written order - the values
-    /// only; the closures belong to their render.
+    /// The `.onChanged` values of its last build, in written order - the values only; the closures belong to their
+    /// render.
     var watched: [Any]
 
     /// What `.onDestroying` runs as it leaves: its last build's closures.
     var destroying: [EventHandler] = []
+
+    /// What it hears of the application's events, as its last build wrote it (HostEventRelay.swift).
+    var hostEvents: [HostEventListen] = []
 
     /// The runs of what its walks found to run, kept while it is the same element.
     var runs = RunSlots()
@@ -116,6 +127,9 @@ final class RenderedNode {
 
     /// What the view a page shows says of its page, for the page to take on every description of it.
     var pageValues: PageValues?
+
+    /// Whether it stands where a page stands - kept for the clean walk, which enters it from no parent.
+    var atPagePosition = false
 
     /// The properties driven to a state, as the host was told them.
     var driven: [Prop: StateEntry] = [:]

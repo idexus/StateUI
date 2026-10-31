@@ -4,12 +4,13 @@
 // A flag set, its bits numbered by StateUI: append a flag, never insert one.
 // Design: docs/design/types/vocabularies.md#flag-sets-carry-bits
 
-/// Whether text is drawn italic.
+/// How text is drawn within its font: italic, and with digits of one width.
 ///
 ///     Text("Total").fontAttributes(.italic)
+///     Text("\(seconds) s").fontAttributes(.monospacedDigits)
 ///
-/// Only the slant: the weight is `.fontWeight`, the family `.fontFamily` and
-/// the size `.fontSize`, each its own modifier as it is its own property.
+/// The weight is `.fontWeight`, the family `.fontFamily` and the size
+/// `.fontSize`, each its own modifier as it is its own property.
 public struct FontAttributes: OptionSet, Sendable {
     /// The flag bits.
     public let rawValue: Int32
@@ -24,6 +25,10 @@ public struct FontAttributes: OptionSet, Sendable {
 
     /// Drawn italic.
     public static let italic = FontAttributes(rawValue: 1 << 1)
+
+    /// Every digit as wide as the others, so a number that changes keeps its
+    /// width - a countdown, a column of sums.
+    public static let monospacedDigits = FontAttributes(rawValue: 1 << 2)
 }
 
 extension FontAttributes: HostRepresentable {}

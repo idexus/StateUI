@@ -22,7 +22,7 @@ extension AppKitRegistrations {
             entry.onSubmitted = { reports.raise(TextFieldContract.submitted) }
             return entry
         }, members: { entry in
-            entry.applies(Self.fieldMembers + [TextFieldContract.isPassword]) { view, values in
+            entry.applies(Self.fieldMembers, TextFieldContract.isPassword) { view, values in
                 let words = Self.words(values)
                 view.textCase = values[TextualElementContract.textCase]
 
@@ -33,7 +33,7 @@ extension AppKitRegistrations {
                     placeholder: values[TextInputContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
-                    foregroundColor: values[TextStyleElementContract.textColor]
+                    foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
                     font: Self.font(values),
@@ -47,6 +47,12 @@ extension AppKitRegistrations {
                     selectionLength: values[TextInputContract.selectionLength],
                     writeSelection: Self.writesSelection(values))
             }
+            entry.applies(Self.outlineMembers) { view, values in
+                view.setOutline(
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    lineWidth: values[BorderElementContract.lineWidth],
+                    shape: values[BorderElementContract.shape]?.propValue)
+            }
             entry.raises(TextInputContract.textChanged)
             entry.raises(TextFieldContract.submitted)
         })
@@ -58,7 +64,7 @@ extension AppKitRegistrations {
             }
             return editor
         }, members: { editor in
-            editor.applies(Self.fieldMembers + [TextEditorContract.growsWithText]) { view, values in
+            editor.applies(Self.fieldMembers, TextEditorContract.growsWithText) { view, values in
                 let words = Self.words(values)
                 view.textCase = values[TextualElementContract.textCase]
 
@@ -69,7 +75,7 @@ extension AppKitRegistrations {
                     placeholder: values[TextInputContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
-                    foregroundColor: values[TextStyleElementContract.textColor]
+                    foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
                     font: Self.font(values),
@@ -82,6 +88,12 @@ extension AppKitRegistrations {
                     selectionLength: values[TextInputContract.selectionLength],
                     writeSelection: Self.writesSelection(values),
                     growsWithText: values[TextEditorContract.growsWithText] == true)
+            }
+            editor.applies(Self.outlineMembers) { view, values in
+                view.setOutline(
+                    stroke: values[BorderElementContract.stroke]?.propValue,
+                    lineWidth: values[BorderElementContract.lineWidth],
+                    shape: values[BorderElementContract.shape]?.propValue)
             }
             editor.raises(TextInputContract.textChanged)
         })
@@ -105,7 +117,7 @@ extension AppKitRegistrations {
                     placeholder: values[TextInputContract.placeholder],
                     placeholderColor: values[TextInputContract.placeholderColor]
                         .flatMap { nsColor($0.propValue) },
-                    foregroundColor: values[TextStyleElementContract.textColor]
+                    foregroundColor: values[TextColorElementContract.textColor]
                         .flatMap { nsColor($0.propValue) } ?? .controlTextColor,
                     backgroundColor: paintedColor(values[VisualElementContract.background]?.propValue),
                     font: Self.font(values),
@@ -123,17 +135,20 @@ extension AppKitRegistrations {
         })
     }
 
+    /// A field's outline and the shape its ground and outline follow.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
+
     /// What every field takes, whatever kind of field it is.
-    private static let fieldMembers: [any ContractMember] = [
+    private static let fieldMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.placeholderColor,
-        TextStyleElementContract.textColor, VisualElementContract.background,
-        FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes, FontElementContract.fontWeight, FontElementContract.textStyle,
+        TextInputContract.placeholderColor, TextColorElementContract.textColor, VisualElementContract.background,
+        FontElementContract.fontFamily, FontElementContract.fontSize, FontElementContract.fontAttributes,
+        FontElementContract.fontWeight, FontElementContract.textStyle,
         TextAlignmentElementContract.horizontalTextAlignment, VisualElementContract.isEnabled,
-        TextInputContract.isReadOnly, TextInputContract.maximumLength,
-        TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose,
-        TextInputContract.cursorPosition, TextInputContract.selectionLength,
-    ]
+        TextInputContract.isReadOnly, TextInputContract.maximumLength, TextInputContract.isSpellCheckEnabled,
+        TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose, TextInputContract.cursorPosition,
+        TextInputContract.selectionLength)
 
     /// The caret moves only where the tree moved it, never because something
     /// else about the field changed.

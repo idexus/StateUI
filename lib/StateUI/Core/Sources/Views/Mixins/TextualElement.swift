@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A control whose text is a property: everything `TextStyleElement` has,
+/// A control whose text is a property: everything `TextColorElement` has,
 /// plus the text itself.
-public protocol TextualElement: TextStyleElement {}
+public protocol TextualElement: TextColorElement {}
 
 extension TextualElement {
     /// What the control says. Usually given in the initializer instead -

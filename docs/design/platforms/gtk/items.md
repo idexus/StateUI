@@ -36,10 +36,10 @@ list is given.
 
 A collection paints nothing of its own behind its rows, as on every host:
 what it stands on shows through, so a list matches the page or the card
-around it. GTK's theme paints a list view in its own view colour and an item
+around it. GTK's theme paints a list view in its own view color and an item
 chosen in the desktop's accent, which matches no page of an application's
 own; so the list and the grid wear a class of the host's style sheet that
-takes the view colour away and shades an item chosen in the colour of its
+takes the view color away and shades an item chosen in the color of its
 words, as GNOME's sidebars shade theirs - over any page alike. The same class
 takes away the padding the theme gives a row and a grid's child, so an item
 stands where StateUI's spacing puts it and is as wide as the list.
@@ -83,3 +83,16 @@ bound before it has a size - so the host looks for it every 16 ms, on a GLib
 timeout, sixty times at most, and stands it on every frame it is laid out on
 while the host layer holds it; entries coming to the cells start the frames
 again. A scroll of the user's - a wheel's, a touchpad's - lets it go.
+
+The list a page scrolls by tells where it stands, so a bottom bar beside
+the page shows its hard edge while items go on past it ([a bar at the
+foot](../../host/layout.md#a-bar-at-the-foot)). Where it stood at its end as
+its room changes - the bar growing beside it - it stays at its end
+(`ScrollArithmetic.keptAtEnd`): its reach grows by what the room lost, read
+from the room and not from the adjustment, so an item come in the same pass
+is left to the scroll the program asks for rather than scrolled to. The item
+the program scrolled to stands again in the room that changed, until anything
+else moves the list ([scrolling to an
+item](../../host/items.md#scrolling-to-an-item)); and a list GTK has not
+given its room yet - an adjustment with no page - has laid nothing out, so a
+scroll asked as the list is made waits for it.

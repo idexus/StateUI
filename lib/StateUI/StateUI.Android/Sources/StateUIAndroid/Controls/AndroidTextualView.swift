@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// An `android.widget.TextView` or a subclass: the words, their size, weight and colour.
+/// An `android.widget.TextView` or a subclass: the words, their size, weight and color.
 @MainActor
 class AndroidTextualView: AndroidView {
     private var made: (size: Float, colors: JavaObject)?
@@ -46,7 +46,7 @@ class AndroidTextualView: AndroidView {
     }
 
     /// How the words look (`TextMembers.look`): their style's size and weight on the platform's type scale, under
-    /// the size and weight they give, their slant, family and colour, each the platform's own where the look says
+    /// the size and weight they give, their slant, family and color, each the platform's own where the look says
     /// nothing.
     func setLook(_ look: TextLook) {
         scales = look.scales
@@ -94,7 +94,7 @@ class AndroidTextualView: AndroidView {
         Java.call(reference, JavaAPI.setLetterSpacing, .float(Float(look.letterSpacing(inEmsOf: size))))
     }
 
-    /// Draws the words in the family, weight and slant last set again - after anything that put back the
+    /// Draws the words in the family, weight, slant and digits last set again - after anything that put back the
     /// platform's typeface.
     func applyTypeface() {
         let italic = fontAttributes?.contains(.italic) == true
@@ -103,6 +103,9 @@ class AndroidTextualView: AndroidView {
         let style = fontWeight == nil && italic ? AndroidTypeface.italicStyle : 0
         Java.call(reference, JavaAPI.setTypeface, .object(face), .int(style))
         Java.release(local: face)
+        let features = AndroidTypeface.features(fontAttributes)
+        Java.call(reference, JavaAPI.setFontFeatureSettings, .object(features))
+        Java.release(local: features)
     }
 
     /// How the words break, and how many lines show: a line cut or truncated is one line, and only a
@@ -122,7 +125,7 @@ class AndroidTextualView: AndroidView {
         withExtendedLifetime(at) { Java.call(reference, JavaAPI.setEllipsize, .object(at?.reference)) }
     }
 
-    /// The words' colour; nil puts back the platform's (`plainWordColours`).
+    /// The words' color; nil puts back the platform's (`plainWordColors`).
     func setTextColor(_ color: HostValue?) {
         writtenTextColor = color
         if let argb = color.flatMap(Self.argb) {
@@ -131,16 +134,21 @@ class AndroidTextualView: AndroidView {
             Java.call(reference, JavaAPI.setTextColors, .object(colors))
             Java.release(local: colors)
         } else {
-            let plain = plainWordColours
+            let plain = plainWordColors
             withExtendedLifetime(plain) { Java.call(reference, JavaAPI.setTextColors, .object(plain.reference)) }
         }
     }
 
-    /// The colour the tree wrote for the words; nil for none.
+    /// The color the tree wrote for the words; nil for none.
     private(set) var writtenTextColor: HostValue?
 
-    /// The words' colours where none is written: the platform's, as the view was made.
-    var plainWordColours: JavaObject { madeWith.colors }
+    /// The words' colors where none is written: the platform's, as the view was made.
+    var plainWordColors: JavaObject { madeWith.colors }
+
+    /// The direction the view lays out in, which says which side its padding's start stands at.
+    var direction = LayoutDirection.leftToRight {
+        didSet { if direction != oldValue, padding != nil { applyPadding() } }
+    }
 
     /// The room around the words, in points; nil puts back the platform's.
     func setPadding(_ insets: Insets?) {
@@ -155,7 +163,7 @@ class AndroidTextualView: AndroidView {
 
     /// The padding's right side in pixels, without the room kept beyond it: the tree's, else the platform's.
     var paddingRight: Int32 {
-        padding.map { pixels($0.right) } ?? platformPadding.right
+        padding.map { pixels($0.sides(in: direction).right) } ?? platformPadding.right
     }
 
     /// A new background brings its own padding; the tree's is put back over it.
@@ -167,7 +175,8 @@ class AndroidTextualView: AndroidView {
 
     private func applyPadding() {
         let platform = platformPadding
-        let sides = padding.map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? platform
+        let sides = padding.map { $0.sides(in: direction) }
+            .map { (pixels($0.left), pixels($0.top), pixels($0.right), pixels($0.bottom)) } ?? platform
         Java.call(reference, JavaAPI.setPadding, .int(sides.0), .int(sides.1), .int(sides.2 + rightRoom), .int(sides.3))
     }
 
@@ -181,7 +190,7 @@ class AndroidTextualView: AndroidView {
         return read
     }
 
-    /// The size and colours the view was made with, read before the first change.
+    /// The size and colors the view was made with, read before the first change.
     private var madeWith: (size: Float, colors: JavaObject) {
         if let kept = made { return kept }
 

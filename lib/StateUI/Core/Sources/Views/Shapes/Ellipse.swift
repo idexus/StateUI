@@ -3,7 +3,8 @@
 
 /// An oval filling the room it is given - a circle when that room is square.
 ///
-///     Ellipse(.tomato)
+///     Ellipse()
+///         .fill(.tomato)
 ///         .width(48)
 ///         .height(48)
 ///
@@ -20,24 +21,5 @@ public struct Ellipse: FilledShape {
     /// An ellipse - which is also what a `Style<Ellipse>` is written against.
     public init() {
         node = Node(contract: EllipseContract.self)
-    }
-
-    /// An ellipse painted with `fill`, a colour.
-    public init(_ fill: Color) {
-        self.init()
-        self = self.fill(fill)
-    }
-
-    /// An ellipse painted with `fill`, a brush - a colour or a gradient.
-    public init(_ fill: Brush) {
-        self.init()
-        self = self.fill(fill)
-    }
-
-    /// An ellipse painted with a colour state, `$x`: the host animates the colour to each new value, and no view is
-    /// rebuilt for it.
-    public init(_ fill: Binding<Color>) {
-        self.init()
-        self = self.fill(fill)
     }
 }

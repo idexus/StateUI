@@ -7,6 +7,12 @@
 /// The native view: made, and given the element's properties.
 extension AndroidElement {
     func makeView() -> AndroidView? {
+        let view = makeOwnView()
+        (view as? any AndroidRefreshing)?.onRefreshPulled = { [weak self] in self?.pulled() ?? false }
+        return view
+    }
+
+    private func makeOwnView() -> AndroidView? {
         if type == .itemsView, let host {
             return AndroidItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
                 host?.runtime.reducesMotion() ?? false
@@ -24,14 +30,23 @@ extension AndroidElement {
         }
 
         switch type {
-        case .page, .overlay:
-            return AndroidSingleChildView()
+        case .page:
+            return AndroidPageView(page: element)
+
+        case .overlay:
+            // An overlay lets a touch beside what it holds through to the page under it.
+            let overlay = AndroidSingleChildView()
+            overlay.setLetsInputThrough(true)
+            return overlay
+
+        case .popover:
+            return AndroidPopoverView()
 
         case .navigationStack:
             return AndroidNavigationView(reducesMotion: { [weak host] in host?.runtime.reducesMotion() ?? false })
 
         case .splitView:
-            return AndroidSplitView()
+            return AndroidSplitView(reducesMotion: { [weak host] in host?.runtime.reducesMotion() ?? false })
 
         case .tabView:
             return AndroidTabView()
@@ -45,6 +60,8 @@ extension AndroidElement {
     /// then what every view takes.
     /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) { (page.native as? AndroidElement)?.paintBackground() }
         guard let view else {
             if !changed.isDisjoint(with: MountedElement.arrangedProperties) { parent?.invalidateMeasurements() }
             return
@@ -58,15 +75,19 @@ extension AndroidElement {
                 switch property {
                 case .opacity: view.setOpacity(value(.opacity)?.number ?? 1)
                 case .isVisible: view.setShown(isShown)
-                // Android blurs nothing behind a view: a blur's or glass's colour stands in, its tint over it.
-                case .background: view.setBackground(HostMaterial(value(.background)).painted)
+                case .background: paintBackground()
                 case .isEnabled: view.setEnabled(element.presented(.isEnabled)?.bool ?? true)
                 case .tooltip: view.setTooltip(element.string(.tooltip))
                 default: break
                 }
             }
             if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
-            if !own.isDisjoint(with: MountedElement.accessibilityProperties) { view.setAccessibility(element.accessibilityWords) }
+            if element.changesAccessibility(changed) {
+                view.setAccessibility(element.accessibilityWords) { [weak self] heard in
+                    guard let self, let host else { return false }
+                    return element.hear(heard, in: host.runtime)
+                }
+            }
             if let layers = view as? AndroidZStackView { layers.placement = element.placement }
         }
 
@@ -97,5 +118,16 @@ extension AndroidElement {
     /// The view of this element or the nearest one above it.
     var nearestView: AndroidView? {
         view ?? parent?.nearestView
+    }
+
+    /// Paints the view's background: its own - a page's arrangement's where it says none (`drawnBackground`) - a
+    /// blur's or glass's color standing in, its tint over it, as Android blurs nothing behind a view; a page painting
+    /// none stands on the color its window is painted in.
+    /// Design: docs/design/host/pages.md#a-pages-ground
+    func paintBackground() {
+        guard let view else { return }
+        let own = HostMaterial(element.drawnBackground).painted
+        guard type == .page, own == nil else { return view.setBackground(own) }
+        Java.callStatic(JavaAPI.views, JavaAPI.groundPage, .object(view.reference))
     }
 }

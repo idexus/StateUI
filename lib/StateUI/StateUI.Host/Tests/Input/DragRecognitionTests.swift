@@ -47,4 +47,34 @@ final class DragRecognitionTests: XCTestCase {
         XCTAssertEqual(drag.moved(to: Point(x: 30, y: 10)).last, .drag(.changed, x: 20, y: 0), "from the new press")
         XCTAssertEqual(drag.ended(letGo: false), .drag(.cancelled, x: 20, y: 0))
     }
+
+    /// A press held before it passed the distance is the hold's: it drags nothing after, however far it moves, and
+    /// stays held after it lets go - its release is no tap - until the next press.
+    func testAPressHeldBeforeTheDistanceIsTheHolds() {
+        var drag = DragRecognition(distance: .radius(4))
+        drag.pressed(at: Point(x: 0, y: 0))
+        _ = drag.moved(to: Point(x: 2, y: 2))
+
+        XCTAssertTrue(drag.held(), "still within the distance")
+        XCTAssertTrue(drag.isHeld)
+        XCTAssertEqual(drag.moved(to: Point(x: 40, y: 0)), [], "a press held drags nothing")
+        XCTAssertNil(drag.ended(letGo: true))
+        XCTAssertTrue(drag.isHeld, "its release is no tap")
+
+        drag.pressed(at: Point(x: 0, y: 0))
+        XCTAssertFalse(drag.isHeld, "the next press is no hold yet")
+    }
+
+    /// A press that became a drag is no hold; where no press is followed, nothing stops the platform's hold.
+    func testAPressDraggedIsNoHold() {
+        var drag = DragRecognition(distance: .radius(4))
+        XCTAssertTrue(drag.held(), "no press followed: the platform's hold stands")
+        XCTAssertFalse(drag.isHeld)
+
+        drag.pressed(at: Point(x: 0, y: 0))
+        _ = drag.moved(to: Point(x: 10, y: 0))
+        XCTAssertFalse(drag.held())
+        XCTAssertFalse(drag.isHeld)
+        XCTAssertEqual(drag.moved(to: Point(x: 12, y: 0)), [.drag(.changed, x: 12, y: 0)], "the drag goes on")
+    }
 }

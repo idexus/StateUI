@@ -177,7 +177,7 @@
 /// What a channel says after a change: itself, what the core hears, and the waiters answered.
 private typealias StateChannelEmit = (StateChannel, HostJourneyUpdate?, [JourneyCompletion]) -> Void
 
-/// One state's channel: its animated value, travelling in runs - the lanes one write sent on together, each an
+/// One state's channel: its animated value, traveling in runs - the lanes one write sent on together, each an
 /// animation of its own - so a write of some lanes leaves the other lanes' travel and their waiter as they were.
 /// Design: docs/design/host/motion.md#a-channel-lane-by-lane
 @MainActor
@@ -195,7 +195,7 @@ private final class StateChannel {
     private var runs: [Int: Run] = [:]
     private var numbered = 0
 
-    /// Lanes travelling together, and the waiter their arrival answers.
+    /// Lanes traveling together, and the waiter their arrival answers.
     private struct Run {
         var lanes: [Int]
         var completion: Int?
@@ -220,7 +220,7 @@ private final class StateChannel {
         motion = journey.motion
         stopped = journey.stopped
 
-        guard !motion.isCustom else { return }
+        guard motion.kind != .custom else { return }
         aim(
             Array(value.indices),
             at: journey,
@@ -331,7 +331,7 @@ private final class StateChannel {
 
             for (index, lane) in run.lanes.enumerated() {
                 value[lane] = step.value[index]
-                velocity[lane] = step.velocity[index] * 1_000
+                velocity[lane] = step.velocity[index]
             }
         }
 
@@ -370,7 +370,7 @@ private final class StateChannel {
         let completion = usesCompletion ? incoming.completion : nil
         for lane in lanes { destination[lane] = incoming.destination[lane] }
 
-        if motion.isCustom {
+        if motion.kind == .custom {
             for lane in lanes {
                 value[lane] = incoming.value[lane]
                 velocity[lane] = incoming.velocity[lane]
@@ -382,12 +382,12 @@ private final class StateChannel {
         let animation = Animation(
             from: lanes.map { value[$0] },
             destination: lanes.map { destination[$0] },
-            velocity: lanes.map { (stated.contains($0) ? incoming.velocity[$0] : velocity[$0]) / 1_000 },
+            velocity: lanes.map { stated.contains($0) ? incoming.velocity[$0] : velocity[$0] },
             motion: motion,
             began: now)
-        for (index, lane) in lanes.enumerated() { velocity[lane] = animation.velocity[index] * 1_000 }
+        for (index, lane) in lanes.enumerated() { velocity[lane] = animation.velocity[index] }
 
-        let instant = motion.law == .eased && motion.milliseconds == 0
+        let instant = !motion.animates
 
         if instant || reducesMotion || animation.arrives {
             for lane in lanes {

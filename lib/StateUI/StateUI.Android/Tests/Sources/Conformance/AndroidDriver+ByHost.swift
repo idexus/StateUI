@@ -8,11 +8,16 @@
 /// Design: docs/design/platforms/android/conformance.md#what-goes-past-android
 extension AndroidDriver {
     func byHost(_ ability: String) -> String? {
+        if ability.hasPrefix("read fill of ") { return "the color the host draws the figure with: Android reads back no drawing" }
         switch Ability(ability).act {
         case "sweep":
             return "the listener's report of the hand handed to the host, no touch sent"
         case "notch":
             return "the listener's report of a wheel's notches handed to the host, no scroll sent"
+        case "close" where Ability(ability).element == "Popover":
+            return "the popup window dismissed as a touch beside it dismisses it, no touch sent"
+        case "openLink":
+            return "the host's entry the activity's intent reaches, no intent sent"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
             if Ability(ability).element == "Window" { return "the host told the activity's phase, no activity moved" }
         case "pressKeys":
@@ -25,6 +30,10 @@ extension AndroidDriver {
             return "the view's drag listener's report told the driver's documents, no drag started"
         case "answerFiles":
             return "the relay's result path handed the driver's documents, no picker shown"
+        case "answerShare":
+            return "the host told the driver's answer, no chooser shown"
+        case "pullToRefresh":
+            return "the relay's own pull handed the swipe to refresh, no finger dragged"
         default: break
         }
         switch ability {
@@ -36,15 +45,17 @@ extension AndroidDriver {
         case "read showsSidebar of SplitView": return "the split's own flag; the drawer slides on it"
         case "read sidebarOverlays of SplitView": return "the split's own place for the room; the drawer stands by it"
         case "read sidebarBackground of SplitView":
-            return "the colour the split keeps for its sidebar beside the detail, which a phone's room never shows"
-        case "read selectionMode of ItemsView": return "the mode the relay keeps, which its cells tell TalkBack"
+            return "the color the split keeps for its sidebar beside the detail, which a phone's room never shows"
         case "read a question": return "what the relay keeps of the dialog it showed"
+        case "read what the screen reader said": return "the host's own list of what it handed Android to announce"
+        case "read a share sheet": return "what the host holds of a chooser a test never shows"
         case "read a file dialog": return "the picker the relay holds, which a test never hands the system"
         case "read what was launched":
             return "the relay's own record of what it handed the system, which a test holds back from launching"
         case "read minimumDate of DatePicker", "read maximumDate of DatePicker":
             return "the bounds the relay hands its calendar as it opens"
-        case "read format of DatePicker", "read format of TimePicker": return "the pattern the relay writes the field in"
+        case "read format of DatePicker": return "the form the relay writes the field in"
+        case "read format of TimePicker": return "the pattern the relay writes the field in"
         default: return nil
         }
     }

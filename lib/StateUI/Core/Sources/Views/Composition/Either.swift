@@ -39,15 +39,14 @@ extension Either: Element where First: Element, Second: Element {
 extension Either: PropertyContainer, ModifiableElement, AutomationElement, VisualElementProperties, VisualElement,
     ViewProperties, View where First: View, Second: View {
     /// A modifier on a branch is kept on the branch's node, as on a composed view.
-    public typealias Modified = ModifiedContent
+    public typealias Modified = ModifiedContent<Self>
 
     /// None: a branch is described by the view it chose.
     public var body: Never { fatalError("a branch has no body: it is the view it chose") }
 
-    /// A modifier written on the branch, kept on a `ModifiedContent`.
-    public func modified(_ change: (inout Node) -> Void) -> ModifiedContent {
-        var node = self.node
-        change(&node)
-        return ModifiedContent(node: node)
+    /// A modifier written on the branch, kept on a `ModifiedContent`; what outlives the branch on the anchor of
+    /// the `if/else`.
+    public func modified(_ change: (inout Node) -> Void) -> ModifiedContent<Self> {
+        ModifiedContent(node: node.writing(change, flips: true))
     }
 }

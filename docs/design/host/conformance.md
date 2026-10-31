@@ -22,8 +22,8 @@ what a press reaches, what is let go. Never a look the platform decides - a
 native widget's pixels, its font, its kind, where the toolkit puts its own
 parts: those belong to the host's own tests, beside the native API they
 prove. What StateUI decides itself a case reads as an effect: the place its
-layout gives a view, and the colours of what it draws, which hold no native
-value to read ([a drawing read by its colours](#a-drawing-read-by-its-colours)).
+layout gives a view, and the colors of what it draws, which hold no native
+value to read ([a drawing read by its colors](#a-drawing-read-by-its-colors)).
 
 ## A case
 
@@ -66,10 +66,9 @@ floor is `Aspects.holds`: the value the tree gives reaches the native
 control, and so does the value the tree changes it to. An event is heard
 once for the user's act and not at all for the program's; an act answers,
 and refuses or cancels as the contract says. Where a property has an effect
-a case can see without reading the control - a frame, a colour StateUI draws,
+a case can see without reading the control - a frame, a color StateUI draws,
 what a press reaches - a case of the effect stands beside it. A property no
-toolkit holds - a radio button's set, which StateUI keeps - has its effect
-alone; where one host's toolkit holds a property another leaves to StateUI's
+toolkit holds has its effect alone; where one host's toolkit holds a property another leaves to StateUI's
 arithmetic - a stack's spacing - the second's driver says why it cannot read
 it, and the effect proves it there.
 
@@ -117,12 +116,20 @@ its window, the order a layout's children are drawn in as its native view
 holds them, whether assistive technology meets a view as a heading, the
 question and the file dialog the window shows, what the screen reader was
 told, the theme the application shows in, what the host handed the system to
-launch, the colour StateUI draws at a point - never a native control's look -
+launch, the color StateUI draws at a point - never a native control's look -
 the host's log, what it keeps, and how many views it holds alive; each read a
 host does not have yet is its driver's "cannot". A case's first start of an
 application is its first launch: the driver forgets what the host's stores
 keep, and a start after it in the same case is the next launch, which finds
 them.
+
+One report a driver makes as the platform would rather than reads: the
+platform's bars over a window's edges (`standUnderSystemBars`). A host whose
+test window stands under none - Android's instrumented window - is told a
+phone's status bar and gesture bar as its toolkit tells them, through the
+host's own report of the window's insets; a host whose window has its own
+(UIKit's) or whose platform stands nothing over a window's content leaves
+it, so a case of the safe area proves on each host what a user meets there.
 
 A host with backends keeps its driver and its suite in a package of their own
 inside the host's folder, `Testing` - the WinUI host's `StateUIWinUIDriver`,
@@ -139,10 +146,10 @@ conformance suite in a browser, whose layout, focus, dialogs and input its
 cases need - and what the driver reads, that JavaScript answers through
 functions of its own (`CWebTesting`).
 
-## A drawing read by its colours
+## A drawing read by its colors
 
 What StateUI draws itself - a shape's outline, a canvas, a box's fill - holds
-no native value a driver could read, so its cases read the colours it shows:
+no native value a driver could read, so its cases read the colors it shows:
 a dashed outline has gaps along a run of points where a solid one has none,
 dashes shifted by their phase stand where the gaps stood, squared ends cover
 more of a run of short dashes than flat ones, and a mitred corner reaches a
@@ -153,7 +160,7 @@ their outline on every host. A line and an ellipse have no corner: their
 joins are never had there. A layout's box and a button's are read the same
 way - filled inside, outlined at the edge, an oval leaving the corners bare -
 but a button's own face may stand inside its outline, so there "nothing
-inside" means nothing of the outline's colour.
+inside" means nothing of the outline's color.
 
 ## A session
 
@@ -179,15 +186,15 @@ cases step the host until their effect holds or 20 seconds pass
 (`settle(for:until:)`); a step count would make their verdict the machine's
 speed.
 
-## A colour drawn
+## A color drawn
 
-A colour StateUI draws is read at a point of what it draws and held as a
+A color StateUI draws is read at a point of what it draws and held as a
 screen shows it: where the smoothing of an edge touches the pixel read, a
-colour drawn whole comes back a few steps off in a channel - at one pixel a
+color drawn whole comes back a few steps off in a channel - at one pixel a
 point, the middle of a line four points wide is a pixel or two. `Session.shows`
-and `expect(_:shows:)` take each channel within four steps of the colour;
-nothing drawn at the point shows no colour. A colour read is a `ShownColor`,
-which answers `shows` and is never compared with a colour whole: whole, an
+and `expect(_:shows:)` take each channel within four steps of the color;
+nothing drawn at the point shows no color. A color read is a `ShownColor`,
+which answers `shows` and is never compared with a color whole: whole, an
 edge's smoothing may keep it from ever matching, and a `settle` waiting on it
 would run out and fail the case, its time the whole of the settle's steps.
 
@@ -236,19 +243,33 @@ look proves no member; it proves how the host draws.
 A view that outlives its element is no effect a case can see: the page shows
 the same, and the host only grows. Every host's own suite runs one shared
 walk instead (`Leaving.outlived(on:)`): each element that is drawn stands on
-a page alone, and a click takes it away, shows it and takes it away again.
-Taken away the second time, the host holds as many of its views alive as the
-first time - the count its tally writes (`HostDriver.liveViews`). The first
-time is the measure, not the page before it: a toolkit may make a view of
-its own the first time a control is drawn, and keep it.
+a page alone, and each item of a page's bar on its bar, and a click takes it
+away, shows it and takes it away again. Taken away the second time, the host
+holds as many of its views alive as the first time - the count its tally
+writes (`HostDriver.liveViews`) - and as many elements
+(`MountedElement.liveCount`). The first time is the measure, not the page
+before it: a toolkit may make a view of its own the first time a control is
+drawn, and keep it.
+
+The elements' count finds what the views' cannot: an element a host still
+holds after the tree dropped it, through an object that is no view - an
+action a toolkit was handed, whose closure took the element, or the menu
+entries it reads. A closure a host hands its toolkit takes what it calls,
+never the value it was made in.
 
 A toolkit may let go of a view a while after it leaves - MapKit on the Mac
 keeps a map five seconds - so where more views are alive the second time,
 the walk steps the host up to ten seconds for them to go: a view a toolkit
 only keeps a while comes back to the count, one held for good never does.
 
+Where a host also counts its live views by kind (`HostDriver.liveViewKinds`
+- the Web host's debug build does, by class, tag and classes), an element
+that leaves views behind names the kinds that grew: a view kept only now
+and then is found by the one run that keeps it.
+
 Each element walks twice: bare, then dressed - a look from every tier it
-wears and an ear for every gesture. A host answers a font, a colour or a
+wears and an ear for every gesture; a bar's item an ear for its action and,
+a button, a menu. A host answers a font, a color or a
 gesture with a closure of its own, and a closure that holds its view keeps
 it: a bare control never builds one. The walk marks nothing; an element a
 toolkit itself never lets go stands outside it in that host's test, with its

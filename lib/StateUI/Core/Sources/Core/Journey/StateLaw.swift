@@ -26,13 +26,14 @@ enum StateLaw {
 
     /// A law as its lanes.
     static func lanes(of motion: Motion) -> [Double] {
-        if motion.isInherited { return [StateLaw.inherited, 0, 0] }
-        if motion.isCustom { return [StateLaw.custom, 0, 0] }
-        if motion.milliseconds == 0 && motion.law == .eased { return [0, 0, 0] }
-
-        return motion.law == .spring
-            ? [3, Double(motion.milliseconds), motion.factor]
-            : [2, Double(motion.milliseconds), Double(motion.curve.rawValue)]
+        switch motion.kind {
+        case .none: [0, 0, 0]
+        case .inherited: [StateLaw.inherited, 0, 0]
+        case .eased(let milliseconds, let curve): [2, Double(milliseconds), Double(curve.rawValue)]
+        case .spring(let milliseconds, let damping): [3, Double(milliseconds), damping]
+        case .custom: [StateLaw.custom, 0, 0]
+        case .glide(let milliseconds): [5, Double(milliseconds), 0]
+        }
     }
 
     /// And back.
@@ -48,6 +49,7 @@ enum StateLaw {
             return .eased(.milliseconds(length), curve ?? .cubicOut)
         case 3 where lanes.count > 2: return .spring(response: .milliseconds(length), damping: third)
         case 4: return .custom
+        case 5: return .glide(longest: .milliseconds(length))
         default: return Motion.none
         }
     }

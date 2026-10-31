@@ -31,4 +31,8 @@ enum WebHearing: Int32, CaseIterable {
 
     /// Return or Space pressed on the element itself.
     case activate
+
+    /// A press on the element, the pointer the element's until it lets go - but for one begun on a control inside,
+    /// which is the control's - told at each phase (`WebRelay.eventPress`).
+    case press
 }

@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 /// What the keyboard is told of the words a view takes, by their traits (`InputTraits`): whether they are spell
-/// checked and predicted, and what they are for.
+/// checked and predicted, what they are for, and what they are, which iOS fills them in from.
 @MainActor
 struct UIKitKeyboard {
     var keyboardType = UIKeyboardType.default
@@ -22,14 +22,18 @@ struct UIKitKeyboard {
         case .words: .default
         case .email: .emailAddress
         case .number: .decimalPad
+        case .digits: .numberPad
         case .telephone: .phonePad
         case .url: .URL
         }
-        content = switch traits.keys {
-        case .email: .emailAddress
-        case .telephone: .telephoneNumber
+        content = switch traits.content {
+        case .emailAddress: .emailAddress
+        case .telephoneNumber: .telephoneNumber
         case .url: .URL
-        case .words, .number: nil
+        case .username: .username
+        case .newPassword: .newPassword
+        case .oneTimeCode: .oneTimeCode
+        case nil: nil
         }
         capitalization = traits.capitals == .none ? .none : .sentences
         spellChecking = traits.checksSpelling ? .yes : .no

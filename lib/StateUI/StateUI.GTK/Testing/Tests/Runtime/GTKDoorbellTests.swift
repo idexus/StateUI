@@ -18,13 +18,14 @@ private struct SaidPage: View {
 
 /// A page that asks the user, then says the answer.
 private struct AskingPage: View {
+    @Environment(\.window) private var window
     @State private var said = "asked"
 
     var body: some View {
         VStack {
             Text(said)
-            Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
-                let deleting = try await Dialogs.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
+            Button("Confirm").onClicked(.ignoreWhileRunning) {
+                let deleting = try await window.confirm("Delete draft?", message: "", accept: "Delete", cancel: "Keep")
                 said = deleting ? "deleted" : "kept"
             }
         }
@@ -77,7 +78,7 @@ final class GTKDoorbellTests: XCTestCase {
                 guard host.dialog == nil else { break }
                 GTKTestHost.pump(0.01)
             }
-            try host.answer("Delete")
+            try host.answer(.accept)
 
             XCTAssertTrue(Self.loopShows("deleted", host), "the answer waits for an event that never comes")
         }

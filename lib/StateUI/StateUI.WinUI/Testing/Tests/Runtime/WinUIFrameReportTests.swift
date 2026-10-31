@@ -17,7 +17,10 @@ final class WinUIFrameReportTests: XCTestCase {
             let heard = Received<[Double]>()
             let host = WinUIRenderer.running {
                 VStack {
-                    Rectangle().fill(.steelBlue).width(120).height(60)
+                    Rectangle()
+                        .fill(.steelBlue)
+                        .width(120)
+                        .height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)
@@ -39,7 +42,10 @@ final class WinUIFrameReportTests: XCTestCase {
                 VStack {
                     Text("above").height(20)
                     if shown.wrappedValue {
-                        Rectangle().fill(.steelBlue).width(120).height(60)
+                        Rectangle()
+                            .fill(.steelBlue)
+                            .width(120)
+                            .height(60)
                             .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                     }
                 }
@@ -59,13 +65,17 @@ final class WinUIFrameReportTests: XCTestCase {
     func testARoomWinUINarrowedPlacesItsLayoutBeforeItIsDrawn() throws {
         try onUIThread {
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("Menu").title("Menu")
                 } detail: {
-                    LayoutEngine([0]) { _ in Rectangle(.red) } placements: { room, _ in
+                    MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+                        Rectangle()
+                            .fill(.red)
+                    } placements: { room, _ in
                         [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let window = try XCTUnwrap(host.window)
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
@@ -91,7 +101,10 @@ final class WinUIFrameReportTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     ItemsView(0..<100) { item in
-                        Rectangle().fill(item == 2 ? .red : .blue).width(120).height(60)
+                        Rectangle()
+                            .fill(item == 2 ? .red : .blue)
+                            .width(120)
+                            .height(60)
                             .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
                     }
                     .width(200).height(300)
@@ -105,13 +118,13 @@ final class WinUIFrameReportTests: XCTestCase {
 
             // A list asked to move before its first frames are composed stays: asked until it starts moving.
             host.settle {
-                if list.standingForTesting.offset.y > 0 { return true }
+                if list.standing.offset.y > 0 { return true }
                 list.scroll(to: "5", anchor: .nearest)
                 return false
             }
-            host.settle { list.standingForTesting.offset.y == 60 && heard.values.last?[5] == before[5] - 60 }
+            host.settle { list.standing.offset.y == 60 && heard.values.last?[5] == before[5] - 60 }
 
-            XCTAssertEqual(list.standingForTesting.offset.y, 60, "item 5 brought wholly into view")
+            XCTAssertEqual(list.standing.offset.y, 60, "item 5 brought wholly into view")
             XCTAssertEqual(heard.values.last?[5], before[5] - 60, "60 higher in its window")
             XCTAssertEqual(heard.values.last.map { Array($0.prefix(4)) }, Array(before.prefix(4)), "where it was in its cell")
         }

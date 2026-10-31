@@ -14,7 +14,7 @@ private struct TintedPage: View {
 
     var body: some View {
         VStack {
-            CheckBox(true).tint(blue ? Color("#0000FF") : Color("#FF0000"))
+            CheckBox(true).tint(blue ? Color(hex: 0x0000FF) : Color(hex: 0xFF0000))
             Button("Blue").onClicked { blue = true }
         }
         .horizontalAlignment(.start)
@@ -31,9 +31,9 @@ final class WinUITintTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    CheckBox(true).tint(Color("#FF0000"))
-                    Switch(true).tint(Color("#FF0000"))
-                    Slider(0.5).tint(Color("#FF0000")).width(200)
+                    CheckBox(true).tint(Color(hex: 0xFF0000))
+                    Switch(true).tint(Color(hex: 0xFF0000))
+                    Slider(0.5).tint(Color(hex: 0xFF0000)).width(200)
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
@@ -50,7 +50,7 @@ final class WinUITintTests: XCTestCase {
     }
 
     /// A tint changed after the control is drawn is drawn by the brushes that stand in its resources, which take the
-    /// new colour: its theme is not read again, as a tint travelling frame by frame would have it read each frame.
+    /// new color: its theme is not read again, as a tint traveling frame by frame would have it read each frame.
     func testATintChangedLaterIsDrawn() throws {
         try onUIThread {
             let host = WinUIRenderer.running { TintedPage() }
@@ -73,7 +73,7 @@ final class WinUITintTests: XCTestCase {
             let tinted = State(wrappedValue: false)
             let host = WinUIRenderer.running {
                 let box = CheckBox(true)
-                return VStack { tinted.wrappedValue ? box.tint(Color("#FF0000")) : box }
+                return VStack { tinted.wrappedValue ? box.tint(Color(hex: 0xFF0000)) : box }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
             }

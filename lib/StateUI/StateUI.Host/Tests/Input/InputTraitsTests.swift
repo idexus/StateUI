@@ -40,6 +40,29 @@ final class InputTraitsTests: XCTestCase {
         XCTAssertTrue(traits(.chat).offersEmoji)
     }
 
+    /// What the words are reaches what the platform fills them in with: an address, a number and a link their
+    /// kinds, and signing in its three - a name taken as typed, a new password, and a code in digits alone; words of no
+    /// such kind are filled in from nothing.
+    func testWhatTheWordsAreIsWhatThePlatformFillsInFrom() {
+        func traits(_ purpose: InputPurpose) -> InputTraits {
+            InputTraits(spellChecked: true, predicted: true, purpose: purpose)
+        }
+
+        XCTAssertEqual(
+            [traits(.email).content, traits(.telephone).content, traits(.url).content],
+            [.emailAddress, .telephoneNumber, .url])
+        XCTAssertEqual(
+            [traits(.username).content, traits(.newPassword).content, traits(.oneTimeCode).content],
+            [.username, .newPassword, .oneTimeCode])
+        XCTAssertEqual([traits(.default).content, traits(.text).content, traits(.numeric).content], [nil, nil, nil])
+
+        for purpose in [InputPurpose.username, .newPassword, .oneTimeCode] {
+            XCTAssertFalse(traits(purpose).checksSpelling || traits(purpose).corrects || traits(purpose).predicts)
+        }
+        XCTAssertEqual([traits(.username).capitals, traits(.newPassword).capitals], [.none, .none])
+        XCTAssertEqual(traits(.oneTimeCode).keys, .digits)
+    }
+
     /// Spell checking and prediction turned off stay off whatever the purpose; prediction off takes correction
     /// with it.
     func testWhatTheTreeTurnsOffStaysOff() {

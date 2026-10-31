@@ -15,11 +15,12 @@ final class WebButtonView: WebDOMView, WebWordsView {
     private var picture: WebImageView?
     private var text = ""
 
-    /// A split button's arrow, the part opening its menu; nil for any other button.
-    private var arrow: WebDOMView?
+    /// The words shown before the tree's last ones, and those written last.
+    private var formerText: String?
+    private var written: String?
 
-    /// Whether the click under way landed on the arrow, which opened the menu in place of clicking the button.
-    private var arrowClicked = false
+    /// How the button opens its menu; nil for a button holding none.
+    private var menu: WebButtonMenu?
 
     init() {
         super.init(tag: "button")
@@ -27,45 +28,14 @@ final class WebButtonView: WebDOMView, WebWordsView {
         attribute("class", "stateui-button")
         WebRelay.insert(words.node, into: node, at: 0)
         listen("click") { [weak self] in
-            guard let self else { return }
-            if arrowClicked {
-                arrowClicked = false
-                return
-            }
-            if let opensMenu { opensMenu() } else { onClicked() }
+            guard let self, menu?.takes() != true else { return }
+            onClicked()
         }
     }
 
-    /// What opens the button's menu where a click opens it; nil where the click is the button's own.
-    private var opensMenu: (() -> Void)?
-
-    /// Makes the button open its menu - by `open` - as `opening` says: its click; as a split button, its click its
-    /// own, its arrow - a part set off by a line - opening the menu; or held. A right click or a finger held opens a
-    /// split button's and a held one's.
-    /// Design: docs/design/platforms/web/controls.md#a-buttons-menu
+    /// Makes the button open its menu - by `open` - as `opening` says (`WebButtonMenu`).
     func holdMenu(_ opening: ButtonMenuOpening, _ open: @escaping () -> Void) {
-        attribute("aria-haspopup", "menu")
-        attribute("data-menu", opening == .click ? "opens" : opening == .arrow ? "splits" : "held")
-        if opening == .click {
-            opensMenu = open
-            return
-        }
-        guard opening == .arrow else {
-            listenForMenu { open() }
-            return
-        }
-
-        let arrow = WebDOMView(tag: "span")
-        arrow.attribute("class", "stateui-split-arrow")
-        arrow.attribute("aria-hidden", "true")
-        // Last, after the words and a picture put before them.
-        WebRelay.insert(arrow.node, into: node, at: .max)
-        arrow.listen("click") { [weak self] in
-            self?.arrowClicked = true
-            open()
-        }
-        self.arrow = arrow
-        listenForMenu { open() }
+        menu = WebButtonMenu(on: self, opening, open)
     }
 
     /// Whether a button whose click opens its menu shows the `▾` saying so.
@@ -73,10 +43,40 @@ final class WebButtonView: WebDOMView, WebWordsView {
         attribute("data-bare", shows ? nil : "")
     }
 
+    /// Whether the words stand beside the picture; out of sight, they name the button through the host layer's
+    /// words (`AccessibilityWords`).
+    private var showsWords = true
+
+    /// The button's words; new ones while some are held back show at once.
     func setText(_ text: String) {
+        let former = self.text
         self.text = text
-        WebRelay.setText(words.node, text)
-        attribute("data-alone", text.isEmpty && picture != nil ? "" : nil)
+        if text != former, heldWords != nil {
+            heldWords = nil
+        } else {
+            if text != former { formerText = former }
+            showText()
+        }
+        showAlone()
+    }
+
+    /// The former words while new ones are held back, else the tree's.
+    /// Design: docs/design/host/motion.md#words-on-the-way
+    override func holdWords(_ holding: Bool) {
+        if !holding { formerText = nil }
+        showText()
+    }
+
+    private func showText() {
+        let shown = heldWords == nil ? text : formerText ?? text
+        guard shown != written else { return }
+        written = shown
+        WebRelay.setText(words.node, shown)
+    }
+
+    /// The picture alone where there is one and the words show not.
+    private func showAlone() {
+        attribute("data-alone", picture != nil && (text.isEmpty || !showsWords) ? "" : nil)
     }
 
     /// How the words break across lines and where they stop; nil for one line, the browser's own.
@@ -86,12 +86,13 @@ final class WebButtonView: WebDOMView, WebWordsView {
     }
 
     /// The picture beside the words - before them, after, above or below, `spacing` apart, 8 where nil - or alone,
-    /// filling the button as `aspect` says; none shows the words alone.
-    func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
+    /// filling the button as `aspect` says, where the words show not; none shows the words alone.
+    func setIcon(_ source: ImageSource?, position: IconPosition, spacing: Double?, aspect: ContentMode, showsText: Bool) {
+        showsWords = showsText
         guard let source = HostPicture(source, dark: false) else {
             picture?.release()
             picture = nil
-            attribute("data-alone", nil)
+            showAlone()
             return
         }
         let shown = picture ?? WebImageView()
@@ -99,14 +100,14 @@ final class WebButtonView: WebDOMView, WebWordsView {
         picture = shown
         shown.apply(picture: source, aspect: aspect)
         let direction: String? = switch position {
-        case .leading: nil
-        case .trailing: "row-reverse"
+        case .start: nil
+        case .end: "row-reverse"
         case .top: "column"
         case .bottom: "column-reverse"
         }
         style("flex-direction", direction)
         style("gap", WebCSS.pixels(spacing ?? 8))
-        attribute("data-alone", text.isEmpty ? "" : nil)
+        showAlone()
     }
 
     /// A button is a button of itself.
@@ -115,10 +116,8 @@ final class WebButtonView: WebDOMView, WebWordsView {
     override var isControl: Bool { true }
 
     override func release() {
-        opensMenu = nil
+        menu?.release()
         picture?.release()
-        arrow?.release()
-        arrow = nil
         words.release()
         super.release()
     }

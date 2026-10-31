@@ -19,13 +19,16 @@ final class GestureTests: XCTestCase {
         var swipes: [SwipeDirection] = []
         var pans: [PanUpdate] = []
         var pinches: [PinchUpdate] = []
+        var turns: [RotationUpdate] = []
         var points: [Point] = []
 
         let patch = renders.render(
-            Rectangle().fill(.cornflowerBlue)
+            Rectangle()
+                .fill(.cornflowerBlue)
                 .onSwiped { swipes.append($0) }
                 .onPanUpdated { pans.append($0) }
                 .onPinchUpdated { pinches.append($0) }
+                .onRotationUpdated { turns.append($0) }
                 .onPointerMoved { points.append($0) }
                 .node)
 
@@ -33,10 +36,13 @@ final class GestureTests: XCTestCase {
 
         renders.fire(events["swiped"] ?? -1, with: [.enumeration(SwipeDirection.left.rawValue)])
         renders.fire(events["panUpdated"] ?? -1, with: [
-            .enumeration(GesturePhase.changed.rawValue), .number(12.5), .number(-3),
+            .enumeration(GesturePhase.changed.rawValue), .numbers([12.5, -3]), .numbers([400, -80]),
         ])
         renders.fire(events["pinchUpdated"] ?? -1, with: [
-            .enumeration(GesturePhase.ended.rawValue), .number(1.25), .numbers([0.5, 0.75]),
+            .enumeration(GesturePhase.ended.rawValue), .number(1.25), .numbers([0.5, 0.75]), .number(2),
+        ])
+        renders.fire(events["rotationUpdated"] ?? -1, with: [
+            .enumeration(GesturePhase.changed.rawValue), .number(30), .number(90),
         ])
         renders.fire(events["pointerMoved"] ?? -1, with: [.numbers([12.5, 30])])
 
@@ -45,10 +51,17 @@ final class GestureTests: XCTestCase {
         XCTAssertEqual(pans.first?.phase, .changed)
         XCTAssertEqual(pans.first?.totalX, 12.5)
         XCTAssertEqual(pans.first?.totalY, -3)
+        XCTAssertEqual(pans.first?.velocityX, 400)
+        XCTAssertEqual(pans.first?.velocityY, -80)
 
         XCTAssertEqual(pinches.first?.phase, .ended)
         XCTAssertEqual(pinches.first?.scale, 1.25)
         XCTAssertEqual(pinches.first?.scaleOrigin, Point(x: 0.5, y: 0.75))
+        XCTAssertEqual(pinches.first?.velocity, 2)
+
+        XCTAssertEqual(turns.first?.phase, .changed)
+        XCTAssertEqual(turns.first?.angle, 30)
+        XCTAssertEqual(turns.first?.velocity, 90)
 
         XCTAssertEqual(points, [Point(x: 12.5, y: 30)])
     }
@@ -68,16 +81,16 @@ final class GestureTests: XCTestCase {
         let patch = renders.render(Rectangle().onPanUpdated { _ in pans += 1 }.node)
         let id = patch.events?["panUpdated"] ?? -1
 
-        renders.fire(id, with: [.enumeration(GesturePhase.changed.rawValue), .number(12.5)])
+        renders.fire(id, with: [.enumeration(GesturePhase.changed.rawValue), .numbers([12.5, 0])])
         renders.fire(id, with: [
-            .number(Double(GesturePhase.changed.rawValue)), .number(1), .number(2),
+            .number(Double(GesturePhase.changed.rawValue)), .numbers([1, 2]), .numbers([0, 0]),
         ])
         renders.fire(id, with: [])
 
         XCTAssertEqual(pans, 0)
 
         renders.fire(id, with: [
-            .enumeration(GesturePhase.began.rawValue), .number(0), .number(0),
+            .enumeration(GesturePhase.began.rawValue), .numbers([0, 0]), .numbers([0, 0]),
         ])
         XCTAssertEqual(pans, 1)
     }
@@ -175,6 +188,31 @@ final class GestureTests: XCTestCase {
         XCTAssertTrue(hasComplained("hears taps of one count"))
     }
 
+    /// A hold says how long it waits where it is asked to, and is heard as `held`; unsaid, the platform's own
+    /// time stands.
+    func testAHoldSaysItsTimeBesideWhatItDoes() {
+        let renders = Renders()
+        var held = 0
+
+        let patch = renders.render(Rectangle().onHeld(minimum: .milliseconds(800)) { held += 1 }.node)
+        XCTAssertEqual(patch.props["holdDuration"], .number(800))
+        renders.fire(patch.events?["held"] ?? -1, with: [])
+        XCTAssertEqual(held, 1)
+
+        let unsaid = Renders().render(Rectangle().onHeld {}.node)
+        XCTAssertNil(unsaid.props["holdDuration"], "the platform's own time")
+        XCTAssertNotNil(unsaid.events?["held"])
+    }
+
+    /// A view waits one time for a hold: two are said, the last standing; a hold saying no time keeps the one said.
+    func testHoldsOfTwoTimesOnOneViewAreSaid() {
+        let kept = Renders().render(Rectangle().onHeld(minimum: .seconds(1)) {}.onHeld {}.node)
+        XCTAssertEqual(kept.props["holdDuration"], .number(1000), "a hold saying no time erases nothing")
+
+        Renders().render(Rectangle().onHeld(minimum: .seconds(1)) {}.onHeld(minimum: .seconds(2)) {}.node)
+        XCTAssertTrue(hasComplained("waits one time for a hold"))
+    }
+
     /// A pan for one touch count beside a pan for another is said; a pan saying no count keeps the one said.
     func testPansOfTwoTouchCountsOnOneViewAreSaid() {
         let kept = Renders().render(Rectangle().onPanUpdated(touchCount: 2) { _ in }.onPanUpdated { _ in }.node)
@@ -224,8 +262,8 @@ final class GestureTests: XCTestCase {
         let patch = renders.render(
             Rectangle()
                 .onPinchUpdated { _ in typed += 1 }
-                .onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
-                    heard.append("\(phase) \(scale) \(origin.x),\(origin.y)")
+                .onEvent(ViewContract.pinchUpdated) { phase, scale, origin, velocity in
+                    heard.append("\(phase) \(scale) \(origin.x),\(origin.y) \(velocity)")
                 }
                 .node)
 
@@ -234,17 +272,17 @@ final class GestureTests: XCTestCase {
         // The second is the first with its phase sent as a plain number, which
         // is the whole difference between a report and a refusal.
         let readable: [PropValue] = [
-            .enumeration(GesturePhase.changed.rawValue), .number(1.25), .numbers([0.5, 0.5]),
+            .enumeration(GesturePhase.changed.rawValue), .number(1.25), .numbers([0.5, 0.5]), .number(0),
         ]
         let garbled: [PropValue] = [
-            .number(Double(GesturePhase.changed.rawValue)), .number(1.25), .numbers([0.5, 0.5]),
+            .number(Double(GesturePhase.changed.rawValue)), .number(1.25), .numbers([0.5, 0.5]), .number(0),
         ]
 
         renders.fire(id, with: readable)
         renders.fire(id, with: garbled)
 
         XCTAssertEqual(typed, 1, "the typed modifier read the one it could")
-        XCTAssertEqual(heard, ["changed 1.25 0.5,0.5"],
+        XCTAssertEqual(heard, ["changed 1.25 0.5,0.5 0.0"],
                        "and so did the member's handler beside it, and nothing else")
     }
 

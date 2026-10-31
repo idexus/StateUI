@@ -21,7 +21,7 @@ final class WinUIPathView: WinUIView {
     private var geometry = Geometry.rectangle([0, 0, 0, 0], transform: nil)
     private var lineWidth = 1.0
 
-    /// The outline drawn, which the figure is inset by half of; none without a colour.
+    /// The outline drawn, which the figure is inset by half of; none without a color.
     private var outlineWidth = 0.0
 
     /// Where a geometry of the shape's own stands before it is placed, as WinUI measures it.
@@ -40,7 +40,7 @@ final class WinUIPathView: WinUIView {
     }
 
     /// Paints the shape: its outline `width` wide - WinUI holding the width whatever it draws - and its figure
-    /// inset by half of `outline`, the outline drawn: none without a colour.
+    /// inset by half of `outline`, the outline drawn: none without a color.
     func paint(
         fill: WinUIBrush, stroke: WinUIBrush, width: Double, outline: Double, dashes: [Double], dashOffset: Double,
         cap: LineCap, join: LineJoin, miter: Double

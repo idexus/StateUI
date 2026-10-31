@@ -4,9 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A page a modal stack presents, on a sheet: the browser's own modal `<dialog>` over the window - a card in the
-/// middle, from the bottom where the page is narrow - its bar the page's chrome with a button closing it, the page
-/// in the room under it. Escape closes it as that button does: the tree decides.
+/// A page a view presents, on a sheet: the browser's own modal `<dialog>` over the window - a card in the
+/// middle, from the bottom where the page is narrow - its bar, where a stack in it brings one, the page's chrome
+/// with a button closing it, the page in the room under it. Escape is the user's dismissal: the tree decides.
 /// Design: docs/design/platforms/web/pages.md#sheets
 @MainActor
 final class WebSheet {
@@ -36,6 +36,29 @@ final class WebSheet {
         WebRelay.insert(dialog.node, into: WebRelay.body, at: 0)
         WebRelay.showModal(dialog.node)
     }
+
+    /// Stands the sheet as large as its page where it `fits`, at the dialog's standard size otherwise (`SheetSize`).
+    func fits(_ fits: Bool) {
+        dialog.attribute("data-fits", fits ? "" : nil)
+    }
+
+    /// Shows the bar's close button where `offers`, which closes the sheet as the user's dismissal.
+    func offersClose(_ offers: Bool) {
+        bar.onClose = offers ? { [weak self] in self?.onClosedByUser() } : nil
+    }
+
+    /// Stands the sheet on `ground` - its window's background - laid over the sheet's own surface; on that surface
+    /// alone where it is empty.
+    /// Design: docs/design/platforms/web/pages.md#sheets
+    func stand(on ground: HostMaterial) {
+        let painted = WebCSS.fill(ground.painted)
+        let opaque = ground.painted.flatMap { HostBrush($0).firstColor?.color?.alpha } == 255
+        dialog.style("background-color", opaque ? painted : nil)
+        dialog.style("background-image", opaque ? nil : painted.map { "linear-gradient(\($0), \($0))" })
+    }
+
+    /// The dialog's element, which a driver reads the sheet's ground off.
+    var dialogNode: Int32 { dialog.node }
 
     /// Takes the sheet away; its page stays the tree's.
     func close() {

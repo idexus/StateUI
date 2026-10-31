@@ -13,11 +13,13 @@ enum GalleryEventSources {
         // What the host raises, declared where its source is wired: a handler listening for an event nothing
         // declared is told, once, that it will not hear it.
         StateUIEvents.raises(GalleryContract.batteryChanged)
+        // listing: web.md.acts
         StateUIScripts.hear("battery") { words in
             let (level, charging) = GalleryActs.battery(words)
             guard level > 0 else { return }
             StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
         }
+        // listing: end
     }
 }
 // listing: end

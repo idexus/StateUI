@@ -7,13 +7,13 @@ answers ([the C API](c-api.md#a-subclass-from-swift)).
 ## A layout's box
 
 A layout draws its own box in its snapshot, before its children: the fill -
-a colour, or a linear or radial gradient over the box in fractions of its
+a color, or a linear or radial gradient over the box in fractions of its
 size, a radial one a circle reaching as far across as down
 ([brushes](../../types/brushes.md#geometry-in-fractions)) - inside the
 outline, then the outline's stroke inside its edge, so the
 stroke never spills over the place the layout was given. The outline is a
 rectangle, a rectangle with rounded corners, a capsule or an ellipse, each
-GSK's rounded rectangle. A stroke is drawn in one colour: a gradient's first stop.
+GSK's rounded rectangle. A stroke is drawn in one color: a gradient's first stop.
 
 A layout that clips cuts what it holds to its outline as it draws it, and
 its widget's overflow is hidden (`gtk_widget_set_overflow`), so a child cut
@@ -25,16 +25,16 @@ that does not clip cuts nothing.
 A view's background is the ground under its whole frame: the host's style
 sheet fills the widget's own CSS box with a class (`GTKStyleSheet.fill`),
 which GTK paints under whatever the widget draws - a field's box is its
-field, as GNOME's applications show one. A brush gives its first colour; a
+field, as GNOME's applications show one. A brush gives its first color; a
 layout paints its box with the whole brush. A switch takes none: GTK paints
-its box as the track, so a colour there would recolour the track.
+its box as the track, so a color there would recolor the track.
 
 ## A widget's own box
 
 GTK sizes and draws a widget's own box - the room between its edge and its
 content - from CSS alone. The host keeps one style sheet for the whole
 display, and a rule in it for each value asked for, a class named for what
-it says - `stateui-padding-24-8-12-4`, a header bar's colours
+it says - `stateui-padding-24-8-12-4`, a header bar's colors
 `stateui-bar-b512BD4FF-fFFFFFFFF` - which a widget wears to take it and takes
 off to give it up. The sheet stands above the theme, so its rule wins over
 the theme's own for the same widget. A rule is written the first time its value is
@@ -65,9 +65,9 @@ the theme then searches (`GTKOwnIcons`), so an image and a bar find it by
 name alike (`Icon.name(in:)`). An image stands it at the theme's normal icon size, 16
 logical pixels, where nothing gives it room, and fills the room it is placed
 in by its aspect: the theme gives the icon at that size times the display's
-scale, and the image draws it in the colour of the words around it, so a
-button's, a heading's and the dark theme's colours reach it. On a bar it is
-a `GtkImage` of the icon's name, which GTK colours itself.
+scale, and the image draws it in the color of the words around it, so a
+button's, a heading's and the dark theme's colors reach it. On a bar it is
+a `GtkImage` of the icon's name, which GTK colors itself.
 
 A picture's bytes are read into a texture as they are given, at one pixel a
 logical pixel.
@@ -117,6 +117,6 @@ placed grid's second child is its shade, drawn as opaque as the run says.
 
 A test reads what is drawn: the widget drawn afresh from its parent, as a
 frame's paint draws it, rendered to a texture by its window's renderer and
-read back as premultiplied colour, sampled at the points the test names. A
+read back as premultiplied color, sampled at the points the test names. A
 widget's own paintable shows only the drawing GTK last kept, which a layout
 since has thrown away.

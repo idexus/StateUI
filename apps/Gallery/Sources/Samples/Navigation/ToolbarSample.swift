@@ -14,17 +14,35 @@ struct ToolbarSample: SampleContent, ExampleContent {
     /// Whether the sample's group stands after the gallery's, by its order.
     @State private var afterGallery = false
 
-    /// Whether the sample's actions join the gallery's own group, by its id.
-    @State private var inGallery = false
+    /// Whether the sample's group stands at the bar's start.
+    @State private var atStart = false
 
-    /// Whether the sample's group stands at the bar's leading edge.
-    @State private var atLeading = false
+    /// Whether the sample's group stands in the sidebar's part of the bar.
+    @State private var overSidebar = false
+
+    /// Whether the sample's group hides with the sidebar rather than move to
+    /// the detail's start.
+    @State private var hidesWithSidebar = false
 
     /// Whether Add shows its words beside its picture on the bar.
     @State private var addWords = false
 
+    /// Whether the page is a favorite: a setting on the bar and in the File
+    /// menu, one state for both.
+    @State private var favorite = false
+
+    /// Whether Save's menu opens as the button is held rather than from an
+    /// arrow of its own.
+    @State private var saveHeld = false
+
+    /// Whether Sort shows the arrow saying its click opens a menu.
+    @State private var sortArrow = true
+
     /// Whether the branch declaring the actions is disabled.
     @State private var locked = false
+
+    /// Whether the page shows the bar at its foot.
+    @State private var atFoot = true
     // listing: end
 
     static let id = "toolbar"
@@ -46,45 +64,103 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     .fontSize(13)
                     .textColor(Palette.subtle)
 
-                Text("Press Save and Add on the bar; Clear is in its overflow.")
+                Text(favorite ? "A favorite" : "Not a favorite")
+                    .fontSize(13)
+                    .textColor(Palette.subtle)
+
+                Text("Press Save, Add and the star; Sort and Save's arrow open menus; Clear is in the overflow.")
                     .fontSize(12)
                     .textColor(Palette.subtle)
 
                 SectionTitle("Where the actions stand")
 
                 switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
-                switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
-                switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
+                switchRow($atStart, "At the start", id: "toolbar.atStart")
+                switchRow($overSidebar, "Over the sidebar", id: "toolbar.overSidebar")
+                switchRow($hidesWithSidebar, "Hidden with the sidebar", id: "toolbar.hidesWithSidebar")
 
                 SectionTitle("A picture and its words")
 
                 switchRow($addWords, "Add's words beside its picture", id: "toolbar.addWords")
+
+                SectionTitle("A button's menu")
+
+                switchRow($saveHeld, "Save's menu held", id: "toolbar.saveHeld")
+                switchRow($sortArrow, "Sort's arrow", id: "toolbar.sortArrow")
+
+                SectionTitle("At the page's foot")
+
+                switchRow($atFoot, "The bar at the foot", id: "toolbar.atFoot")
             }
             .spacing(12)
             // The page's actions, declared where their state lives: they follow
             // it as the body builds - `saved` decides whether Clear can be pressed,
-            // `addWords` Add's words, the three switches where the group stands.
-            .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
-                ToolbarItem("Save")
-                    .id("save")
-                    .onClicked { saved += 1 }
+            // `addWords` Add's words, the four switches where the group stands.
+            .toolbar {
+                ToolbarGroup {
+                    // Its click its own, its menu apart: from an arrow of its
+                    // own, or held.
+                    ToolbarButton("Save")
+                        .id("save")
+                        .onClicked { saved += 1 }
+                        .menu(saveHeld ? .held : .split) {
+                            MenuItem("Save a copy")
+                                .id("saveCopy")
+                                .onClicked {
+                                    saved += 1
+                                    added += 1
+                                    recent.append("copy\(added).txt")
+                                }
+                        }
 
-                // A picture alone, unless it asks for its words beside it.
-                ToolbarItem("Add")
-                    .id("add")
-                    .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
-                    .showsText(addWords)
-                    .onClicked {
-                        added += 1
-                        recent.append("file\(added).txt")
+                    // A picture alone, unless it asks for its words beside it.
+                    ToolbarButton("Add")
+                        .id("add")
+                        .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                        .showsText(addWords)
+                        .onClicked {
+                            added += 1
+                            recent.append("file\(added).txt")
+                        }
+                }
+                .placement(overSidebar ? .sidebar : nil, at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
+                .hidesWithSidebar(hidesWithSidebar)
+
+                // A menu its click opens, an arrow saying so.
+                ToolbarButton("Sort")
+                    .id("sort")
+                    .showsMenuArrow(sortArrow)
+                    .menu {
+                        MenuItem("A to Z").id("sort.up").onClicked { recent.sort() }
+                        MenuItem("Z to A").id("sort.down").onClicked { recent.sort(by: >) }
                     }
 
-                ToolbarItem("Clear")
+                // A setting: on and off, its filled star while on.
+                ToolbarToggle("Favorite", isOn: $favorite)
+                    .id("favorite")
+                    .icon(
+                        ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"),
+                        on: ImageSource(light: "menu_star_on.png", dark: "menu_star_on_dark.png"))
+
+                ToolbarButton("Clear")
                     .id("clear")
-                    .placement(.overflow)
-                    .isDestructive(true)
+                    .placement(at: .overflow)
+                    .role(.destructive)
                     .isEnabled(saved > 0)
                     .onClicked { saved = 0 }
+            }
+            // The bar at the page's foot, by the same rules: words nobody
+            // chooses at its start, an action at its end.
+            .toolbar(.bottom) {
+                if atFoot {
+                    ToolbarLabel(recent.isEmpty ? "No recent files" : "\(recent.count) recent file(s)")
+                        .id("foot.files")
+                        .placement(at: .start)
+
+                    ToolbarButton("Save")
+                        .id("foot.save")
+                        .onClicked { saved += 1 }
+                }
             }
             // The desktop File menu, declared the same way: Save, and the recent
             // files following the state.
@@ -93,6 +169,10 @@ struct ToolbarSample: SampleContent, ExampleContent {
                     MenuItem("Save")
                         .id("save")
                         .onClicked { saved += 1 }
+
+                    // The bar's setting again, checked as the state is.
+                    MenuToggle("Favorite", isOn: $favorite)
+                        .id("favorite")
 
                     Menu("Recent") {
                         recent.map { file in
@@ -118,17 +198,10 @@ struct ToolbarSample: SampleContent, ExampleContent {
     }
 
     /// A switch and what it says, told apart for scripts by `id`.
-    private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
-        HStack {
-            Switch(value)
-                .accessibilityIdentifier(id)
-                .accessibilityLabel(words)
-
-            Text(words)
-                .fontSize(14)
-                .verticalAlignment(.center)
-        }
-        .spacing(10)
+    private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
+        Switch(value)
+            .text(words)
+            .accessibilityIdentifier(id)
     }
     // listing: end
 
@@ -140,13 +213,29 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
 
             Text("The gallery's own actions stand at the edge on every page; the sample's "
-                + "come in from the title's side. `order: 1` moves its group after them, "
-                + "`id: \"gallery\"` joins their group, `.leading` takes it to the other edge.")
+                + "group comes in from the title's side. `order: 1` moves it after them, "
+                + "`.start` takes it to the other edge.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Over the sidebar, the group stands in the sidebar's part of the bar; "
+                + "with the sidebar hidden it moves to the detail's start, or hides with it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("Add shows its picture alone, its words in its tip; `.showsText(true)` "
                 + "puts them beside it where the platform's bar can.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Sort is a menu its click opens, an arrow saying so where the platform's bar "
+                + "draws one. Save splits: its click saves, and Save a copy opens from its arrow "
+                + "- or, held, as the button is held.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("The star is a `ToolbarToggle`: the platform's two-state button, its filled "
+                + "picture while on. The File menu's `MenuToggle` holds the same state.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -156,8 +245,13 @@ struct ToolbarSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Text("The bar at the foot is `.toolbar(.bottom)`: a phone's bottom toolbar, a desktop's thin "
+                + "status bar. Its `ToolbarLabel` counts the recent files, and its Save saves as the top one does.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Text("Lock disables the view declaring the actions: its switches go out of reach, "
-                + "and Save, Add, Clear and the File menu's items with them. The gallery's own "
+                + "and Save, Add, Sort, the star, Clear and the File menu's items with them. The gallery's own "
                 + "actions, declared around it, stay.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

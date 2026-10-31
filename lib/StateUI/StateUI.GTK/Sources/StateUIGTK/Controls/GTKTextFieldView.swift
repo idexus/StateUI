@@ -12,6 +12,7 @@ import CStateUIGTK
 class GTKTextFieldView: GTKView, GTKTextInputView {
     /// What the field does when its words change, handed all of them.
     var onTextChanged: ((String) -> Void)?
+    var outlineClass: String?
 
     /// What the field does when the user presses Enter in it.
     var onSubmitted: (() -> Void)?
@@ -103,7 +104,7 @@ class GTKTextFieldView: GTKView, GTKTextInputView {
         gtk_text_set_visibility(words, hidden ? 0 : 1)
     }
 
-    func setBehaviour(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose) {
+    func setBehavior(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose) {
         gtk_editable_set_editable(editable, readOnly ? 0 : 1)
         gtk_text_set_input_hints(words, hints)
         gtk_text_set_input_purpose(words, purpose)
@@ -115,6 +116,15 @@ class GTKTextFieldView: GTKView, GTKTextInputView {
 
     func setWordsClass(_ name: String?) {
         swapClass(&wordsClass, to: name)
+    }
+
+    func setTabularDigits(_ tabular: Bool) {
+        let words = UnsafeMutablePointer<GtkText>(gtk_editable_get_delegate(editable))
+        guard tabular else { return gtk_text_set_attributes(words, nil) }
+        let list = pango_attr_list_new()
+        defer { pango_attr_list_unref(list) }
+        pango_attr_list_insert(list, pango_attr_font_features_new("tnum 1"))
+        gtk_text_set_attributes(words, list)
     }
 
     func select(start: Int, length: Int) {

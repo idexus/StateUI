@@ -7,11 +7,32 @@
 extension VisualElementProperties {
     /// What a screen reader says this view is.
     ///
-    ///     Button(icon: "bin.png").accessibilityLabel("Delete")
+    ///     Image("bin.png").accessibilityLabel("Bin")
     ///
-    /// For a control whose meaning is carried by a picture, a colour or where
+    /// For a control whose meaning is carried by a picture, a color or where
     /// it sits. On a control that shows its own words it replaces them.
     public func accessibilityLabel(_ value: String) -> Modified { setValue(VisualElementContract.accessibilityLabel, value) }
+
+    /// What kind of thing a screen reader says this view is, where no control's own kind says it - a view composed
+    /// of parts.
+    ///
+    ///     HStack { … }
+    ///         .accessibilityLabel("Rating")
+    ///         .accessibilityRole(.adjustable)
+    ///         .accessibilityValue("\(rating) of 5")
+    ///
+    /// A control is its own kind already: a button is one, a switch a toggle.
+    public func accessibilityRole(_ value: AccessibilityRole) -> Modified {
+        setValue(VisualElementContract.accessibilityRole, value)
+    }
+
+    /// What this view holds, which a screen reader says after its label - for a view composed of parts, whose value
+    /// no control's own says.
+    ///
+    ///     HStack { … }.accessibilityRole(.adjustable).accessibilityValue("3 of 5")
+    public func accessibilityValue(_ value: String) -> Modified {
+        setValue(VisualElementContract.accessibilityValue, value)
+    }
 
     /// What a screen reader says using the view does, after saying what it is.
     ///
@@ -24,7 +45,9 @@ extension VisualElementProperties {
 
     /// Whether a screen reader skips this view.
     ///
-    ///     Rectangle().fill(.silver).isAccessibilityHidden(true)
+    ///     Rectangle()
+    ///         .fill(.silver)
+    ///         .isAccessibilityHidden(true)
     ///
     /// For decoration: a rule, a shadow, a picture repeating the words beside
     /// it. Left unsaid, the platform decides, which is nearly always right; say
@@ -34,11 +57,11 @@ extension VisualElementProperties {
 
     /// Whether a screen reader skips this view and everything inside it.
     ///
-    ///     VStack { … }.automationExcludedWithChildren(true)
+    ///     VStack { … }.hidesChildrenFromAccessibility(true)
     ///
     /// For a panel on screen that is not the user's business - a decorative
     /// header, a card standing behind the one in front.
-    public func automationExcludedWithChildren(_ value: Bool) -> Modified { setValue(VisualElementContract.automationExcludedWithChildren, value) }
+    public func hidesChildrenFromAccessibility(_ value: Bool) -> Modified { setValue(VisualElementContract.hidesChildrenFromAccessibility, value) }
 
     /// That this view is a heading, and how deep.
     ///
@@ -56,10 +79,10 @@ extension VisualElement {
         words(AutomationElementContract.accessibilityIdentifier, by: state)
     }
 
-    /// `automationExcludedWithChildren` from a state, `$x`: the host sets each
+    /// `hidesChildrenFromAccessibility` from a state, `$x`: the host sets each
     /// new value as it stands, and no view is rebuilt for it.
-    public func automationExcludedWithChildren(_ state: Binding<Bool>) -> Modified {
-        twin(VisualElementContract.automationExcludedWithChildren, by: state)
+    public func hidesChildrenFromAccessibility(_ state: Binding<Bool>) -> Modified {
+        twin(VisualElementContract.hidesChildrenFromAccessibility, by: state)
     }
 
     /// `isAccessibilityHidden` from a state, `$x`: the host sets each new value
@@ -84,5 +107,17 @@ extension VisualElement {
     /// and no view is rebuilt for it.
     public func accessibilityHint(_ state: Binding<String>) -> Modified {
         words(VisualElementContract.accessibilityHint, by: state)
+    }
+
+    /// `accessibilityRole` from a state, `$x`: the host sets each new value
+    /// as it stands, and no view is rebuilt for it.
+    public func accessibilityRole(_ state: Binding<AccessibilityRole>) -> Modified {
+        twin(VisualElementContract.accessibilityRole, by: state)
+    }
+
+    /// `accessibilityValue` from a state, `$x`: the host writes each new text,
+    /// and no view is rebuilt for it.
+    public func accessibilityValue(_ state: Binding<String>) -> Modified {
+        words(VisualElementContract.accessibilityValue, by: state)
     }
 }

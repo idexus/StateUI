@@ -18,8 +18,85 @@ private struct ChoosingPage: View {
     }
 }
 
+/// Mail whose items offer their actions in a context menu, each action written into `done`.
+private struct MailPage: View {
+    @State private var done: [String] = []
+
+    var body: some View {
+        VStack {
+            Text(done.joined(separator: " ")).id("done")
+            ItemsView(["mail"]) { item in
+                Text(item).padding(12).contextMenu {
+                    MenuItem("Archive").onClicked { done.append("archived") }
+                    MenuSeparator()
+                    MenuItem("Delete").role(.destructive).onClicked { done.append("deleted") }
+                }
+            }
+            .width(300).height(400)
+        }
+    }
+}
+
+/// A list choosing many above one choosing one.
+private struct ChoicesPage: View {
+    @State private var many: Set<String> = []
+    @State private var one: String?
+
+    var body: some View {
+        VStack {
+            ItemsView(["a", "b"]) { Text($0).padding(12) }.selection($many).width(300).height(200)
+            ItemsView(["a", "b"]) { Text($0).padding(12) }.selection($one).width(300).height(200)
+        }
+    }
+}
+
+/// A hundred rows, scrolled to their last as the list is made.
+private struct OpeningAtTheEnd: View {
+    @Aim(ItemsView<Int>.self) private var list
+
+    var body: some View {
+        ItemsView(0..<100) { Text("Row \($0)").fontSize(14).padding(10) }
+            .aim(list)
+            .onCreated { try await list.scrollTo(99, anchor: .end) }
+            .width(300).height(400)
+    }
+}
+
 @MainActor
 final class UIKitItemsViewTests: XCTestCase {
+    /// A tap extends a choice of many - UIKit performs no primary action there, which would choose the item alone -
+    /// and opens an item of a list choosing one, as every host's tap does (`ItemsTap`).
+    @MainActor
+    func testATapExtendsAChoiceOfManyAndOpensAnItemElsewhere() throws {
+        let host = UIKitRenderer.running { ChoicesPage() }
+        defer { host.finish() }
+        let lists = host.views(UIKitItemsView.self)
+        let first = IndexPath(item: 0, section: 0)
+
+        let opens = lists.map { $0.collection.delegate?.collectionView?($0.collection, canPerformPrimaryActionForItemAt: first) }
+
+        XCTAssertEqual(lists.map(\.modeForTesting), [.multiple, .single])
+        XCTAssertEqual(opens, [false, true], "a tap opens only where it changes no choice of many")
+    }
+
+    /// A list item's context menu stands as its swipe actions too - its items in order, a destructive one UIKit's
+    /// destructive style - and an action swiped to runs the item's handler.
+    @MainActor
+    func testAnItemsContextMenuStandsAsItsSwipeActions() throws {
+        let host = UIKitRenderer.running { MailPage() }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        host.settle { items.collection.visibleCells.count == 1 }
+
+        let swipe = try XCTUnwrap(items.swipeActionsForTesting("mail"), "the item swipes to its actions")
+        XCTAssertEqual(swipe.actions.map(\.title), ["Archive", "Delete"])
+        XCTAssertEqual(swipe.actions.map(\.style), [.normal, .destructive])
+        swipe.actions[1].handler(swipe.actions[1], items.collection) { _ in }
+        host.settle { host.views(UIKitTextView.self).first?.text == "deleted" }
+
+        XCTAssertEqual(host.views(UIKitTextView.self).first?.text, "deleted", "the action ran its handler")
+    }
+
     /// A cell at rest shows the page through it, as every host's list does; a chosen one shows the user's choice in
     /// the platform's accent, UIKit's tint, laid over the page.
     @MainActor
@@ -72,6 +149,140 @@ final class UIKitItemsViewTests: XCTestCase {
         host.settle { headers() == ["Today", "Yesterday"] }
 
         XCTAssertEqual(headers(), ["Today", "Yesterday"])
+    }
+
+    /// A change to the entries waiting for a turn as the collection asks for a cell in its own layout - a scroll
+    /// bringing a row near the end of those built - waits for the cell: the turn the cell's entry asks for renders
+    /// it, but the snapshot stands only once the cell is the collection's. Applied inside the request, UIKit ends the
+    /// application with "Expected dequeued view to be returned to the collection view".
+    @MainActor
+    func testEntriesChangedWhileTheCollectionAsksForACellWaitForTheCell() throws {
+        let numbers = State(wrappedValue: Array(0..<1_000))
+        let host = UIKitRenderer.running {
+            ItemsView(numbers.wrappedValue) { Text("Row \($0)").fontSize(14).padding(10) }
+                .width(300).height(500)
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        let collection = items.collection
+        host.settle {
+            collection.visibleCells.count > 5
+                && collection.visibleCells.allSatisfy { ($0 as? UIKitItemCell)?.holding.shown != nil }
+        }
+
+        let renders = host.runtime.core.tally.renders
+        numbers.wrappedValue = [999] + Array(0..<999)
+        collection.setContentOffset(CGPoint(x: 0, y: 600), animated: false)
+        collection.layoutIfNeeded()
+        XCTAssertGreaterThan(host.runtime.core.tally.renders, renders, "the cells asked for rendered the tree")
+        XCTAssertEqual(items.appliedWhileAskingForTesting, 0, "no snapshot while the collection asked for a cell")
+        host.settle { collection.visibleCells.contains { ($0 as? UIKitItemCell)?.holding.shown != nil } }
+        collection.setContentOffset(.zero, animated: false)
+        host.settle {
+            collection.layoutIfNeeded()
+            return (collection.cellForItem(at: IndexPath(item: 0, section: 0)) as? UIKitItemCell)?.holding.identity == "999"
+        }
+
+        let first = collection.cellForItem(at: IndexPath(item: 0, section: 0)) as? UIKitItemCell
+        XCTAssertEqual(first?.holding.identity, "999", "the change stands once the cell is returned")
+    }
+
+    /// A scroll the program asks for stands its item though the bars over the list change what it keeps clear while
+    /// it glides there - a list in a sheet still coming in, its page's bars first laid out: at the list's end, clear
+    /// of the bar at its foot.
+    @MainActor
+    func testAScrollStandsItsItemThoughTheBarsChangeAsItGlides() throws {
+        // Under a heading, so the list is no page's scroller and keeps clear only what the test says.
+        let host = UIKitRenderer.running {
+            VStack {
+                Text("Rows")
+                ItemsView(0..<100) { Text("Row \($0)").fontSize(14).padding(10) }
+                    .width(300).height(400)
+            }
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        host.settle { items.collection.visibleCells.count > 5 }
+
+        items.scroll(to: "99", anchor: .end)
+        items.keepClear(Clearance(top: 50, left: 0, bottom: 60, right: 0))
+        let collection = items.collection
+        let foot = { (collection.layoutAttributesForItem(at: IndexPath(item: 99, section: 0))?.frame.maxY ?? 0)
+            - collection.contentOffset.y }
+        host.settle { abs(foot() - (collection.bounds.height - 60)) < 1 }
+
+        XCTAssertEqual(foot(), collection.bounds.height - 60, accuracy: 1, "at the list's end, clear of the foot")
+    }
+
+    /// A scroll the program asks for as the list is made - before UIKit ever laid it out - stands its item once the
+    /// list is laid out: a conversation opening at its last message.
+    @MainActor
+    func testAScrollAskedAsTheListIsMadeStandsOnceItIsLaidOut() throws {
+        let host = UIKitRenderer.running { OpeningAtTheEnd() }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        let collection = items.collection
+        let foot = { (collection.layoutAttributesForItem(at: IndexPath(item: 99, section: 0))?.frame.maxY ?? 0)
+            - collection.contentOffset.y }
+        host.settle { abs(foot() - collection.bounds.height) < 1 }
+
+        XCTAssertEqual(foot(), collection.bounds.height, accuracy: 1, "at the list's end")
+    }
+
+    /// The item the program scrolled to stands again as the list's room changes, until anything else moves it - a
+    /// sheet lays its list out at the screen's size first, where every row fits and the last stands at the top,
+    /// then at its own: at the list's end there.
+    @MainActor
+    func testAnItemScrolledToStandsAgainAsTheListsRoomChanges() throws {
+        let tall = State(wrappedValue: 1_000.0)
+        let host = UIKitRenderer.running {
+            ItemsView(0..<15) { Text("Row \($0)").fontSize(14).padding(10) }
+                .width(300).height(tall.wrappedValue)
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        let collection = items.collection
+        host.settle { collection.visibleCells.count == 15 }
+        items.scroll(to: "14", anchor: .end)
+        host.settle { collection.contentOffset.y == 0 }
+
+        tall.wrappedValue = 300
+        let foot = { (collection.layoutAttributesForItem(at: IndexPath(item: 14, section: 0))?.frame.maxY ?? 0)
+            - collection.contentOffset.y }
+        host.settle { collection.bounds.height == 300 && abs(foot() - 300) < 1 }
+        XCTAssertEqual(foot(), 300, accuracy: 1, "at the list's end in its room")
+    }
+
+    /// A scroll the program asks for to an item that has just come - before the collection laid it out - glides
+    /// there once it can stand, a change of the bars over the list on the way included: a message sent slides into
+    /// view, never jumps there.
+    @MainActor
+    func testAScrollToAnItemJustComeGlidesThere() throws {
+        let numbers = State(wrappedValue: Array(0..<30))
+        let host = UIKitRenderer.running {
+            VStack {
+                Text("Rows")
+                ItemsView(numbers.wrappedValue) { Text("Row \($0)").fontSize(14).padding(10) }
+                    .width(300).height(400)
+            }
+        }
+        defer { host.finish() }
+        let items = try XCTUnwrap(host.views(UIKitItemsView.self).first)
+        let collection = items.collection
+        host.settle { collection.visibleCells.count > 5 }
+        let start = collection.contentOffset.y
+
+        numbers.wrappedValue.append(30)
+        host.runtime.pump.turn()
+        items.scroll(to: "30", anchor: .end)
+        items.keepClear(Clearance(top: 0, left: 0, bottom: 40, right: 0))
+        collection.layoutIfNeeded()
+        // The end as the cells measure it: the layout's estimates give way as the cells take their entries.
+        let reach = { collection.contentSize.height + 40 - collection.bounds.height }
+        XCTAssertLessThan(collection.contentOffset.y, reach() - 1, "on its way, not there at once (from \(start))")
+
+        host.settle { abs(collection.contentOffset.y - reach()) < 1 }
+        XCTAssertEqual(collection.contentOffset.y, reach(), accuracy: 1, "at the new item")
     }
 
     /// Every row moved one place down travels from where it stood to its new place, never above where it stood, and

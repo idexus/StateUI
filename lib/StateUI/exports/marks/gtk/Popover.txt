@@ -1,0 +1,4 @@
+# revision 5.1
+Popover: ✅
+Popover.isPresented: ✅
+Popover.isPresentedChanged: ✓ close on Popover: the popover popped down as a click beside it pops it down, no click sent

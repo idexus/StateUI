@@ -87,7 +87,7 @@ final class WebKeyboardTests: XCTestCase {
                     MenuItem("Copy")
                     MenuItem("Cut").isEnabled(false)
                     MenuItem("Paste")
-                    MenuItem("Ruler").isOn(true)
+                    MenuToggle("Ruler", isOn: true)
                 }
             }
         }
@@ -120,7 +120,7 @@ final class WebKeyboardTests: XCTestCase {
                     MenuItem("Paste")
                 }
             }
-            .onKeyPressed(.downArrow, .upArrow, .return, .escape) { taken.append($0) }
+            .onKeyPressed(.downArrow, .upArrow, .return, .escape) { taken.append($0.key) }
         }
         host.step()
         let row = try XCTUnwrap(host.views(WebTextView.self).first)

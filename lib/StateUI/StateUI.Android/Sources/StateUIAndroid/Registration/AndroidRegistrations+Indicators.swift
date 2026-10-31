@@ -5,15 +5,15 @@
 @_spi(Host) import StateUIHost
 
 extension AndroidRegistrations {
-    /// Progress and activity: one value each, a colour, and no event.
+    /// Progress and activity: one value each, a color, and no event.
     static func indicators(_ registry: Registry<AndroidView>) {
         registry.add(ProgressBarContract.self, create: { _ in AndroidProgressBarView() }) { bar in
             bar.property(ProgressBarContract.progress) { view, progress in view.setProgress(progress ?? 0) }
             bar.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
         }
 
-        registry.add(ActivityIndicatorContract.self, create: { _ in AndroidActivityIndicatorView() }) { activity in
-            activity.property(ActivityIndicatorContract.isAnimating) { view, running in view.setRunning(running ?? false) }
+        registry.add(SpinnerContract.self, create: { _ in AndroidSpinnerView() }) { activity in
+            activity.property(SpinnerContract.isAnimating) { view, running in view.setRunning(running ?? false) }
             activity.property(TintElementContract.tint) { view, tint in view.setTint(tint?.propValue) }
         }
     }

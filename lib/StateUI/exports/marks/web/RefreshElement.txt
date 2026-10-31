@@ -1,0 +1,7 @@
+# revision 1.1
+ItemsView.isRefreshEnabled: – The DOM offers no pull to refresh of a part of a page - a browser's own pull reloads the whole page: a page refreshes by a command.
+ItemsView.isRefreshing: – The DOM offers no pull to refresh of a part of a page - a browser's own pull reloads the whole page: a page refreshes by a command.
+ItemsView.refreshRequested: – The DOM offers no pull to refresh of a part of a page - a browser's own pull reloads the whole page: a page refreshes by a command.
+ScrollView.isRefreshEnabled: – The DOM offers no pull to refresh of a part of a page - a browser's own pull reloads the whole page: a page refreshes by a command.
+ScrollView.isRefreshing: – The DOM offers no pull to refresh of a part of a page - a browser's own pull reloads the whole page: a page refreshes by a command.
+ScrollView.refreshRequested: – The DOM offers no pull to refresh of a part of a page - a browser's own pull reloads the whole page: a page refreshes by a command.

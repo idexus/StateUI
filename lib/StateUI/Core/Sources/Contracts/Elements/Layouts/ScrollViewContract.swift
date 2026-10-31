@@ -9,9 +9,10 @@ public enum ScrollViewContract: ElementContract {
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native
 
-    /// A scroller is a view, padded around what it holds.
+    /// A scroller is a view, padded around what it holds, pulled to refresh it.
     public static let tiers: [any Contract.Type] = [
         ViewContract.self, PaddingElementContract.self, BorderElementContract.self, FocusElementContract.self,
+        RefreshElementContract.self,
     ]
 
     /// Whether the bar along the bottom is drawn.
@@ -29,19 +30,12 @@ public enum ScrollViewContract: ElementContract {
     /// The scroller came to rest.
     public static let scrollStopped = ElementEvent<Self, Void>("scrollStopped", layer: .native)
 
-    /// The scroller moved across, to the offset it carries.
-    public static let scrollXChanged = ElementEvent<Self, Double>("scrollXChanged", layer: .native)
-
-    /// The scroller moved down, to the offset it carries.
-    public static let scrollYChanged = ElementEvent<Self, Double>("scrollYChanged", layer: .native)
-
     /// Whether the bar down the side is drawn.
     public static let verticalScrollIndicator = ElementProperty<Self, ScrollIndicatorVisibility>(
         "verticalScrollIndicator", layer: .adaptive)
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        horizontalScrollIndicator, orientation, scrollOffset, scrollStopped, scrollXChanged,
-        scrollYChanged, verticalScrollIndicator,
+        horizontalScrollIndicator, orientation, scrollOffset, scrollStopped, verticalScrollIndicator,
     ]
 }

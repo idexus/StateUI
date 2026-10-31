@@ -7,7 +7,7 @@ import CStateUIWinUI
 
 /// A SearchField: WinUI's `AutoSuggestBox` with its search glyph, whose query submits. The box types in the text box
 /// its template holds, which takes what the box says of it: whether it is read only, the case typing takes, the words
-/// typed across it and how typing is checked, predicted and keyed; the placeholder's colour stands in the box's theme
+/// typed across it and how typing is checked, predicted and keyed; the placeholder's color stands in the box's theme
 /// resources.
 @MainActor
 final class WinUISearchFieldView: WinUITextInputView {
@@ -43,7 +43,7 @@ final class WinUISearchFieldView: WinUITextInputView {
         styleTheBox()
     }
 
-    /// The placeholder's colour; nil for the theme's.
+    /// The placeholder's color; nil for the theme's.
     func setPlaceholderColor(_ color: HostValue?) {
         let argb = color?.argb
         stateui_winui_search_set_placeholder_color(handle, argb ?? 0, argb != nil)

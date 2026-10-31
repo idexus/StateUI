@@ -10,6 +10,12 @@ import UIKit
 /// takes here, by the host layer's reading of it.
 extension UIKitElement {
     func makeView() -> UIView? {
+        let view = makeOwnView()
+        (view as? UIKitRefreshing)?.refresh.onPulled = { [weak self] in self?.pulled() ?? false }
+        return view
+    }
+
+    private func makeOwnView() -> UIView? {
         if type == .itemsView, let host {
             return UIKitItemsView(cells: ItemsCells(element, in: host.runtime), reducesMotion: { [weak host] in
                 host?.runtime.reducesMotion() ?? false
@@ -33,6 +39,10 @@ extension UIKitElement {
     }
 
     func applyProperties(changed: Set<Prop>) {
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) {
+            (page.native as? UIKitElement)?.applyProperties(changed: [.background])
+        }
         guard let view else {
             if !changed.isDisjoint(with: MountedElement.arrangedProperties) { parent?.invalidateMeasurements() }
             return
@@ -54,9 +64,9 @@ extension UIKitElement {
                 // Ignored, the view and all in it are passed over: a touch goes to what is under it.
                 case .ignoresInput: view.isUserInteractionEnabled = element.bool(.ignoresInput) != true
                 case .background:
-                    view.backgroundColor = HostMaterial(value(.background)).painted.flatMap(UIColor.init(stateUI:))
+                    view.backgroundColor = HostMaterial(element.drawnBackground).painted.flatMap(UIColor.init(stateUI:))
                     (controller as? UIKitPageController)?.showBackground()
-                case .avoidsSafeArea:
+                case .ignoresSafeArea:
                     // A page's content standing against the safe area otherwise: its page stands again.
                     (parent?.controller as? UIKitPageController)?.view.setNeedsLayout()
                 default: break
@@ -84,6 +94,11 @@ extension UIKitElement {
             (entry.parent?.uiKit.view as? UIKitItemsView)?.remeasure(entry)
             return
         }
+        // A bottom bar's size is its page's to place: the page under the arrangement around the bar lays out again.
+        if let slot = walk.layouts.firstIndex(where: { $0.type == .bottomBar }),
+           let around = walk.layouts[slot...].first(where: { NodeType.pageTypes.contains($0.type) }) {
+            around.visiblePage?.uiKit.controller?.view.setNeedsLayout()
+        }
         view?.window?.rootViewController?.view.setNeedsLayout()
     }
 }
@@ -92,10 +107,59 @@ extension UIKitElement {
     /// What VoiceOver meets of the view, by the host layer's rule - its words and taps as they stand now.
     func applyAccessibility() {
         guard let view else { return }
-        if accessibilityStanding == nil { accessibilityStanding = view.isAccessibilityElement }
-        view.accessibility(
-            element.accessibilityWords, holdingNoChildren: element.children.isEmpty,
-            standing: accessibilityStanding ?? false)
+        let target = (view as? UIKitAccessibilityPresenting)?.presentedControl ?? view
+        if accessibilityStanding == nil { accessibilityStanding = target.isAccessibilityElement }
+        let words = element.accessibilityWords
+        target.accessibility(words, holdingNoChildren: element.children.isEmpty, standing: accessibilityStanding ?? false)
+        (view as? UIKitSwitchView)?.authoredLabel = words.label
+        // A kind said stands in place of the view's own kind, and a value said over its own: unsaid again, the view's
+        // own come back.
+        if accessibilityOwnKind == nil { accessibilityOwnKind = target.accessibilityTraits.intersection(Self.kinds) }
+        if let role = words.role {
+            target.accessibilityTraits = target.accessibilityTraits.subtracting(Self.kinds)
+                .union(Self.accessibilityTrait(role))
+        } else if accessibilityKindSaid {
+            target.accessibilityTraits = target.accessibilityTraits.subtracting(Self.kinds)
+                .union(accessibilityOwnKind ?? [])
+        }
+        accessibilityKindSaid = words.role != nil
+        if words.value != nil || accessibilityValueSaid { target.accessibilityValue = words.value }
+        accessibilityValueSaid = words.value != nil
+        applyReaderActions(words, to: target)
+    }
+
+    /// The actions VoiceOver offers on the view, and its steps of a view StateUI draws that says it is adjustable -
+    /// each heard by the host layer's rule.
+    /// Design: docs/design/platforms/uikit/controls.md#accessibility
+    private func applyReaderActions(_ words: AccessibilityWords, to target: UIView) {
+        let heard: (HeardInput) -> Bool = { [weak self] heard in
+            guard let self, let host else { return false }
+            return element.hear(heard, in: host.runtime)
+        }
+        if !words.actions.isEmpty || accessibilityActionsSaid {
+            target.accessibilityCustomActions = words.actions.isEmpty ? nil : words.actions.map { name in
+                UIAccessibilityCustomAction(name: name) { _ in heard(.accessibilityAction(name)) }
+            }
+        }
+        accessibilityActionsSaid = !words.actions.isEmpty
+        (target as? UIKitSteppable)?.stepAction = words.role == .adjustable
+            ? { step in _ = heard(.accessibilityAdjustment(step)) }
+            : nil
+    }
+
+    /// The traits saying what kind of thing a view is.
+    static let kinds: UIAccessibilityTraits = [.button, .toggleButton, .adjustable, .link, .image, .staticText]
+
+    /// UIKit's trait for a kind the element says it is.
+    static func accessibilityTrait(_ role: AccessibilityRole) -> UIAccessibilityTraits {
+        switch role {
+        case .button: .button
+        case .toggle: .toggleButton
+        case .adjustable: .adjustable
+        case .link: .link
+        case .image: .image
+        case .text: .staticText
+        }
     }
 }
 
@@ -116,7 +180,7 @@ extension UIView {
 }
 
 extension UIColor {
-    /// A StateUI colour: four sRGB channels, drawn in sRGB exactly; nil for a value that is no colour.
+    /// A StateUI color: four sRGB channels, drawn in sRGB exactly; nil for a value that is no color.
     convenience init?(stateUI value: HostValue) {
         guard let color = value.fractions else { return nil }
         self.init(red: color.red, green: color.green, blue: color.blue, alpha: color.alpha)

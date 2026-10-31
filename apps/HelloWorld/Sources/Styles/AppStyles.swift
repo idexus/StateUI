@@ -12,7 +12,7 @@ enum AppStyles {
     /// into the controls it applies to.
     static var sheet: StyleSheet {
         StyleSheet {
-            // Both colours carry both themes, so the app follows the system
+            // Both colors carry both themes, so the app follows the system
             // with nothing else to write.
             Style<Text>()
                 .textColor(Color(light: .black, dark: .white))
@@ -20,7 +20,7 @@ enum AppStyles {
 
             Style<Button>()
                 .textColor(.white)
-                .background(Color(light: Color("#512BD4"), dark: Color("#7B5CE0")))
+                .background(Color(light: Color(hex: 0x512BD4), dark: Color(hex: 0x7B5CE0)))
                 .fontSize(14)
                 .fontWeight(.bold)
                 .shape(.roundedRectangle(10))

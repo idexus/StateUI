@@ -3,6 +3,21 @@
 How the GTK host presents a window's pages as GNOME's own applications do:
 each page under a header bar of its own, which slides with it.
 
+## A bar with no room
+
+A header bar asks for every group it holds, and a split view's breakpoint
+lets the window stand narrower than that: libadwaita gives the bar what it
+asks and the window cuts it off, its own buttons first. So the bar stands its
+groups by the host layer's rule ([a bar with no room](../../host/pages.md#a-bar-with-no-room)):
+after the window's surface is laid out, and as the page's groups change, the
+frame tries each standing `BarFit` offers on the bar itself - a title in the
+middle needs the bar's natural width, a title between its least - and keeps
+the first that fits its room. The room is the bar's width, but no further
+than any widget around it reaches. The groups that leave stand behind the
+bar's More, each apart, ahead of what is placed there anyway; the part over
+a sidebar fits its own pane. A header bar stands a pixel past its toolbar on
+each side by its own style, which is no crowding.
+
 ## A page and its header bar
 
 A page GTK shows stands in a frame: an `AdwToolbarView` whose top bar is the
@@ -21,18 +36,20 @@ of it go once the slide is over.
 The chrome is composed by one function from what the window shows, after
 every render, and written on the header bar of each page shown:
 
-- the page's title, at the middle of its bar, with the line under it its
-  path declares (`barSubtitle`) - libadwaita's window title holds both - or
-  its title view in its place, where an application puts its search. A
-  header bar names its page: the application's own name and mark
-  (`barTitle`, `barIcon`) stand on no GNOME header bar;
-- the groups of actions its path declares, composed by the host layer
-  ([the actions of a path](../../host/pages.md#the-actions-of-a-path)): the
+- the page's title, at the middle of its bar, with the line under it the
+  page says (`barSubtitle`) - libadwaita's window title holds both - or its
+  title view in its place, where an application puts its search. A header
+  bar names its page - a sidebar's page that says no title, the
+  application - and shows no application's mark;
+- the groups of actions its page declares, composed by the host layer
+  ([a page's actions](../../host/pages.md#a-pages-actions)): the
   leading groups at the bar's start, after the sidebar's toggle, the
   trailing ones at its end, each group a box of its own, apart from the
   next by twice the room between two buttons of a group - a header bar
-  draws no shared background - and the actions placed in overflow behind
-  the bar's menu at its end, before the main menu. An action with a picture stands on the
+  draws no shared background, a setting a `GtkToggleButton` pressed in
+  while on - and the actions placed in overflow behind
+  the bar's menu at its end, before the main menu, its tooltip - and its
+  name to assistive technology - More, as the main menu's is its own. An action with a picture stands on the
   bar as an icon, the way a header bar's buttons stand, its title its
   tooltip and its name to assistive technology; one that shows its words
   stands with its picture before them, as libadwaita's button content
@@ -48,20 +65,49 @@ every render, and written on the header bar of each page shown:
   page has one below it and the page does not refuse it;
 - no bar at all, for a page that hides its navigation bar;
 - a split view's sidebar toggle, at the start of the bar of the page the user
-  sees in its detail, pressed in while the sidebar shows;
+  sees in its detail, pressed in while the sidebar shows - where the split view
+  offers it (`offersSidebarToggle`);
 - for a tabbed view, its switcher beneath the bar, under the chosen tab's
   page's chrome;
-- the bar's colours: a page's header bar is painted in the colours its path
-  declares, the nearest arrangement's (`barColors`), and what stands on it -
-  the title, the way back, the toggles and the switcher's captions - in its
-  foreground, else light on a dark band and dark on a light one ([words on
-  a painted band](../../host/layout.md#words-on-a-painted-band)), as a class
-  of the host's style sheet ([a widget's own
-  box](drawing.md#a-widgets-own-box)); a bar no arrangement colours keeps
-  the platform's.
+- the bar's look ([the bar's look](#the-bars-look)).
 
 The page the user sees names the window, for the desktop's switcher and dock;
 a page with no title leaves the window's own.
+
+A bar's button holding a menu is the button a button's menu makes - GTK's
+menu button, libadwaita's split button, or held - and behind the overflow a
+flat menu button opening what it offers there.
+
+## The bar at the foot
+
+A page's actions for the bar at its foot (`.toolbar(.bottom)`) stand on
+GNOME's action bar (`GtkActionBar`), a bottom bar of the page's toolbar view
+beneath the holder of its view bar (`.bottomBar`): the toolbar view stands
+its bottom bars in the order they came, so the holder and the action bar are
+made together, the holder first, each shown only while it holds anything.
+Its leading groups stand at its start and the rest at its end, as the header
+bar's buttons, and a More menu button of those placed behind it ends it; the
+bottom bars' edge is the view bar's (`showBottomEdge`). Words on a bar
+(`ToolbarLabel`), on either bar, are a label GNOME dims as a secondary one
+(`dim-label`), its picture before it; behind a More they are a flat button
+nobody can choose.
+
+## The bar's look
+
+A page's header bar is painted in the colors its path declares, the nearest
+arrangement's (`barColors`) - a blur as its color, as GNOME blurs nothing
+inside a window, a gradient as CSS draws one ([drawn by
+CSS](../../types/brushes.md#drawn-by-css)) - and what stands on it - the
+title, the way back, the toggles and the switcher's captions - in its
+foreground, else light on a dark band and dark on a light one ([words on a
+painted band](../../host/layout.md#words-on-a-painted-band)), as a class of
+the host's style sheet ([a widget's own box](drawing.md#a-widgets-own-box)); a
+bar no arrangement colors keeps the platform's. A gradient's class is written
+for the header bar's size as it stands - again once it has one, where it was
+painted before it was laid out - and not as the user resizes the window: each
+new class loads the whole sheet again. A gradient across or down the bar is
+the same at every size; one across a corner, or out from a point, keeps the
+proportions the bar was painted at, which the register records (☑️).
 
 ## A navigation stack
 
@@ -114,18 +160,18 @@ Beside the detail libadwaita's opaque sidebar pane gives way: with no
 material it lets the window through shaded a breath (`alpha(@shade_color,
 0.6)`, GNOME's own shade), and under a material it
 is clear, so the material lies on the window; the class is the split's, over
-its `.sidebar-pane` node. Over the detail the pane stays libadwaita's own -
-never the window. GTK blurs nothing inside a window, so a blur stands as its
-colour.
+its `.sidebar-pane` node. Over the detail the pane stays libadwaita's own,
+the fill laid over it, so a clear window still leaves the sidebar opaque. GTK
+blurs nothing inside a window, so a blur stands as its color.
 
 ## Tabs
 
 A tabbed view is a `GtkStack` of its tabs, each named by its page's title,
 in the tree's order - the stack adds a page last alone, so from the first tab
 out of its place each is taken off and added again in turn - and its
-`GtkStackSwitcher` - the captions joined in one control - stands at
-the start of a bar of its own beneath the header bar of the frame the tabbed
-view stands in, painted as the header bar is. The header bar keeps its room
+`GtkStackSwitcher` - the captions joined in one control - stands in
+the middle of a bar of its own beneath the header bar of the frame the
+tabbed view stands in, painted as the header bar is. The header bar keeps its room
 for the title - the host layer's: tabs on a stack name it by their own
 title, else by the page beneath - the chosen tab's actions and the window's buttons,
 and the tabs' bar scrolls them across where the page is narrower than they
@@ -134,9 +180,15 @@ switcher's choice is the user's: the pages hear it, then the selection's
 state, and the header bar follows the chosen tab whether or not the
 application renders again. Over a tab that is a stack the stack's bar is the
 one (the host layer's `showsTheStacksBar`): the tabbed view's frame shows no
-header bar, and the switcher - with a split view's sidebar toggle - stands
+header bar - hidden at once with the tab's page, as it comes back at once
+for another tab; libadwaita's reveal, which a page hiding its own bar keeps,
+slid it and jumped the page by the bar's height - and the switcher - with a
+split view's sidebar toggle - stands
 beneath the header bar of the stack's page the user sees, moving with it as
-pages come and go.
+pages come and go. A widget stands in one place at a time: shown over
+another tab meanwhile, the switcher is taken back by the frame of the
+stack's page, which held it before - each frame asks where it stands, not
+only whether it was handed the same.
 
 A tab shows its caption alone. The switcher draws a page's icon in place of
 its caption, never beside it, so a tab's picture is not given to it.
@@ -164,15 +216,39 @@ overflow's menu whichever changed last - GNOME's
 `open-menu-symbolic` button - each a submenu holding its entries, joined by
 the host layer's rule. A page that declares none shows no main menu.
 
+## The Edit menu
+
+GNOME keeps no Edit menu of its own, so a menu joining `StandardMenu.edit`
+holds the host layer's entries (`ChromeMenus.editing`), Redo's keys GNOME's
+Ctrl+Shift+Z. Each is the text widget's own action - `text.undo`,
+`text.redo`, `clipboard.cut`, `clipboard.copy`, `clipboard.paste`,
+`selection.delete`, `selection.select-all` - which a `GtkText` and a
+`GtkTextView` both answer (`GTKEditing`). The main menu's popover takes the
+focus as it opens, so the window keeps the widget the user last typed into
+(`notify::focus-widget`, under a weak pointer GTK clears as the widget goes)
+and hands the focus back to it before the action runs.
+
 ## Sheets
 
-A page a window's modal stack presents is a sheet: libadwaita's `AdwDialog`
-over the window, each over those before it, the last on top - a page in a
-frame of its own, whose header bar holds the dialog's close button, or an
-arrangement whose pages carry theirs. A sheet asks for 560 by 480, which
-libadwaita fits to the window, rising from its bottom where the window is
-narrow. The user's close - Escape, the close button - takes the top sheet
-away through the host layer's way back, the modal stack told how many remain;
+A page a view presents is a sheet: libadwaita's `AdwDialog`
+over the window, each over those before it, the last on top - a page alone,
+as a sheet has no bar of its own, or an arrangement whose pages carry theirs,
+a stack's header bar holding the dialog's close button, hidden where its page
+says it offers none (`show-end-title-buttons`); a tabbed view stands in a frame
+holding its switcher. A sheet asks the dialog for its page's size ([a
+sheet's size](../../host/pages.md#a-sheets-size)) - at least 320 by 180, 560
+by 480 for a page asking none, at most the window less 24 pixels a side, the
+size the window asks for while it is not laid out yet, asked again as the
+window is laid out at a size of its own (a window on X11 with no compositor
+stands smaller than it asked) - which libadwaita fits to the window, rising
+from its bottom where the window is narrow. The sheet
+stands on its window's background ([a page's
+ground](../../host/pages.md#a-pages-ground)): a class of the host's style
+sheet on the dialog lays it over the surface libadwaita paints its `sheet`
+node in, a blur as its color; libadwaita's own where the window says none.
+The window grounds its sheets and its split views again as its background
+changes. The user's close - Escape, the close button - takes the top sheet
+away through the host layer's way back, false written onto its state;
 a sheet the program takes away closes and tells nothing. A sheet starts a path
 of its own ([the visible path](../../host/pages.md#the-visible-path)): it
 wears no bar of what stands around it, and names the dialog by its page's
@@ -182,6 +258,21 @@ A window asked to close while a dialog stands over it - a sheet, a question -
 closes the dialog first, as libadwaita closes it, and stays: the user's close
 answers the question "no" or takes the sheet away, and the next closes the
 window. A window the tree closes goes at once, its dialogs with it.
+
+## A popover
+
+A view's popover is a `GtkPopover` holding the popover's panel, a child of
+the anchor's widget, popped up on it - its arrow and its closing on a click
+beside it or Escape GTK's own. The host keeps whether it wants it shown:
+`closed` while it does is the user's. As the element leaves, the popover
+lets go of the panel and comes off the anchor's widget - the anchor leaves
+first, but its widget stands until its view goes.
+
+It pops up on idle, after the frame lays its view out: popped up by a view
+mapped but not yet laid out, it would never show. A view that goes lets go
+of the popovers standing by it - one whose view a flipped branch made anew -
+as GTK keeps no parent it lost; the host layer hears their closing as
+nobody's, and the popover comes up again by the new view after the render.
 
 ## The window's overlays
 

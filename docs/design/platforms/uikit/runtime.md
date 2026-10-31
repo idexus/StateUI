@@ -81,6 +81,15 @@ windows do not own their scenes (`ownsScenes` off) - the tests' host, which
 stands its window in the one scene the runner has - does not own that scene,
 so its windows only leave it.
 
+## A link opened
+
+A scene's delegate hears the links it is asked to open: those it connects with
+(`UIScene.ConnectionOptions.urlContexts`) and those a running scene is handed
+(`scene(_:openURLContexts:)`), each named by the scene's window where it
+stands. The application's delegate, `StateUIApplicationDelegate`, is open: an
+application whose SDK asks for a delegate subclasses it, calling `super` where
+it overrides, and hands it to `StateUIUIKit.run(delegate:)`.
+
 ## The environment
 
 The device, the application and the main display are told as the runtime
@@ -98,7 +107,10 @@ it brings back. A battery UIKit knows
 nothing of - the simulator's - is none, full, on mains; Low Power Mode is the
 battery saver. The network is reachable when its path is satisfied, local
 when interfaces stand but no route leads out; each interface available to
-the path - Wi-Fi, wired, cellular - is a connection profile.
+the path - Wi-Fi, wired, cellular - is a connection profile. The accessibility
+settings are UIKit's - Reduce Motion, darker colors for more contrast,
+VoiceOver - and the scale of words the size the user chose draws the body's
+17 points at; each is told again as UIKit announces its change.
 
 The display is told again as UIKit sets out to give a window a new size
 (`viewWillTransition(to:with:)` on its root): the scene stands turned
@@ -116,11 +128,24 @@ is its toolkit's. The clock and the zones are the device's. A word to the
 screen reader is VoiceOver's announcement. On iOS only a field or an editor
 takes the focus: an act focusing a view gives it to the view, or the first
 view in it that takes it, and answers whether one did; taking the keyboard
-down ends the editing in the window the user is looking at. Where the focus
+down ends the editing in the window that asked. Where the focus
 is, each element following it hears as it moves - a field and an editor say
 so as their editing begins and ends, and every focus act says so too, as not
 every view taking the focus does. Kept values stand in the preferences, read
 before the first render.
+
+## The clipboard
+
+The clipboard is the general pasteboard: words are written as its string and
+read back at once. iOS asks the user before an application reads what another
+put there, and a refusal reads none. A conformance run writes to a pasteboard
+of the driver's own name, as the simulator's general one is the Mac's too.
+
+## Sharing
+
+What the user shares is offered in UIKit's activity sheet over what the window
+shows - from its middle on an iPad, a popover with no arrow: the words and the
+link as its items, the answer whether the user completed an activity.
 
 ## Questions for the user
 

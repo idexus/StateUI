@@ -40,7 +40,7 @@ final class AppKitItemsViewTests: XCTestCase {
             .sorted { $0.frame.minY < $1.frame.minY }
         XCTAssertEqual(cells.count, 3)
         XCTAssertEqual(cells.first?.fill, NSColor.controlAccentColor.withAlphaComponent(0.2), "the choice in the accent")
-        XCTAssertEqual(cells.dropFirst().map(\.fill), [nil, nil], "an item at rest lays a colour")
+        XCTAssertEqual(cells.dropFirst().map(\.fill), [nil, nil], "an item at rest lays a color")
     }
     /// A group added before the others brings its own header, and every other group keeps its own: a group is known
     /// by its name, not its place.

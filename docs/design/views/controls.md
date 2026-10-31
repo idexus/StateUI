@@ -11,7 +11,7 @@ and acts it declares, and the binding twins of its values.
       public var node: Node                      Node(contract: SliderContract.self)
       init()                                     nothing set: what a Style<Slider> uses
       init(_ value: Double)                      the purpose value, one-way
-      init(_ value: Binding<Double>)             the purpose value, two-way
+      init(_ state: Binding<Double>)             the purpose value, two-way
       func value(_:) / minimum(_:) / …           properties, from SliderProperties
       func onValueChanged(_:)                    events, through onEvent(member)
   }
@@ -22,9 +22,8 @@ What gives a control its purpose - a label's text, a picker's options, a
 path's outline, an image's source - goes in the initializer; everything else is
 a modifier (composition.md, what goes in the initializer). A two-way control
 whose bound value is its purpose takes its binding in the initializer and in a
-modifier of the same name; a picker and a radio button, whose initializers take
-their options and their caption, take it in the modifier alone (bindings.md,
-both spellings).
+modifier of the same name; a picker takes its values and the state holding the
+chosen one together, in its initializer alone (bindings.md, both spellings).
 
 ## Closed vocabularies are numbered here
 
@@ -38,12 +37,12 @@ free to renumber its enumeration would otherwise make every report read as a
 different member, silently. A member a host has no case for arrives as
 `.unknown` where the vocabulary has one.
 
-## A colour stroke is a solid brush
+## A color stroke is a solid brush
 
 `stroke(_ value: Color)` is written over the brush form, on a layout as on a
 shape, so a layout's outline and a shape's put the same value in the patch for
-the same colour. A bare
-colour written out instead would make one property arrive in two shapes and
+the same color. A bare
+color written out instead would make one property arrive in two shapes and
 leave the host carrying a branch to tell them apart.
 
 ## Opening a picker
@@ -56,7 +55,7 @@ nothing, since an application that opened it from a button of its own already
 knows. The user can still close it by choosing, tapping away or pressing
 Escape, which `onClosed` reports.
 
-A date picker and a time picker take `textColor` through `TextStyleElement`
+A date picker and a time picker take `textColor` through `TextColorElement`
 but have no `text` and no letter spacing: the field shows the formatted value,
 which a native picker spaces as it does. The
 host does the formatting, where the calendar and the user's locale are, so
@@ -132,8 +131,8 @@ same on every host.
 
 ## Text runs
 
-A `TextSpan` is one run of text inside a Text, with its own colour, size and
-weight; text in two colours is two runs. It is named `TextSpan` rather than
+A `TextSpan` is one run of text inside a Text, with its own color, size and
+weight; text in two colors is two runs. It is named `TextSpan` rather than
 `Span` because the standard library's `Span<Element>` is in scope in every file
 without an import: an application writing `Span("…")` would get "no exact
 matches in call to initializer", and a plain `[Span]` "reference to generic
@@ -190,11 +189,3 @@ touch screen, and on Windows and in the browser the user's asking for a
 menu - a finger or a pen held still, the mouse's other button. A button holding
 a menu offers no context menu of its own: on AppKit and WinUI the button's menu
 and the view's are one property.
-
-## Radio groups
-
-A radio button's group is a name - every button in the set writes the same one
-- and the host resolves it within one window without relying on how native
-views are nested. Picking one unchecks the others and reports both changes
-together, which is why a `toggled` handler acts on `true` alone. One state for the
-whole group, rather than one flag per button, holds what is chosen.

@@ -87,6 +87,40 @@ final class HandHearingTests: XCTestCase {
         XCTAssertEqual(handed.last ?? 0, 3, accuracy: 0.001, "a card a notch")
     }
 
+    /// A LAYOUT MIRRORED RIGHT TO LEFT HEARS THE HAND TURNED: laid out right to left, the hand moving right moves the
+    /// run on as moving left does left to right - and a layout placing as written hears the hand as it is.
+    func testALayoutMirroredRightToLeftHearsTheHandTurned() throws {
+        for mirrors in [true, false] {
+            let (runtime, clock) = running(RightToLeftApplication(mirrors: mirrors))
+            let ring = try ring(in: runtime)
+
+            ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
+            ring.hear(.hand(.changed, moved: Point(140, 0), speed: nil), in: runtime)
+            frames(runtime, clock, until: 32)
+
+            if mirrors {
+                XCTAssertEqual(handed.last ?? 0, 1.4, accuracy: 0.001, "moved on, as the hand goes in the mirror")
+            } else {
+                XCTAssertLessThan(handed.last ?? 0, 0, "back past the first card, as written")
+            }
+        }
+    }
+
+    /// THE VIEW UNDER THE HAND OF A MIRRORED LAYOUT IS THE ONE DRAWN THERE: the hand at the right edge takes the
+    /// view the run wrote at the left, and the author is told the point as the arithmetic reads it.
+    func testTheViewUnderTheHandOfAMirroredLayoutIsTheOneDrawnThere() throws {
+        let (runtime, clock) = running(RightToLeftApplication(mirrors: true))
+        let ring = try ring(in: runtime)
+
+        ring.hear(.hand(.began, moved: .zero, speed: nil, point: Point(295, 5)), in: runtime)
+        ring.hear(.hand(.changed, moved: Point(0, 30), speed: nil, point: Point(295, 35)), in: runtime)
+        frames(runtime, clock, until: 64)
+
+        let drag = try XCTUnwrap(dragged.first)
+        XCTAssertEqual(drag.item, 0, "the view drawn at the right edge")
+        XCTAssertEqual(drag.at.x, 5, accuracy: 0.001, "the point mirrored about the room's width")
+    }
+
     /// Display frames until `end`, sixteen milliseconds apart, the clock standing at each.
     private func frames(_ runtime: HostRuntime, _ clock: HandClock, until end: Double) {
         while clock.time < end {
@@ -96,9 +130,11 @@ final class HandHearingTests: XCTestCase {
         }
     }
 
-    private func running() -> (HostRuntime, HandClock) {
+    private func running(_ application: some Application = HandApplication()) -> (HostRuntime, HandClock) {
         handed = []
-        stateUIUseApp(HandApplication())
+        tapped = 0
+        dragged = []
+        stateUIUseApp(application)
         let clock = HandClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
@@ -108,14 +144,56 @@ final class HandHearingTests: XCTestCase {
         return (runtime, clock)
     }
 
+    /// A HAND TAKING THE TOUCH TAKES EVERY PRESS UNDER WAY IN THE LAYOUT: a press on it, or on a view it holds, let
+    /// go once the hand moved the run, taps nothing - a swipe across the cards opens none.
+    func testAHandTakingTheTouchTakesThePressesInIt() throws {
+        let (runtime, clock) = running(TappedHandApplication())
+        let ring = try ring(in: runtime)
+        let card = try XCTUnwrap(ring.first(type: .text))
+        let size = LayoutSize(width: 10, height: 10)
+
+        for pressed in [ring, card] { pressed.hear(.press(.began, at: Point(5, 5), size: size, byFinger: true), in: runtime) }
+        ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
+        ring.hear(.hand(.changed, moved: Point(-140, 0), speed: nil), in: runtime)
+        for pressed in [ring, card] { pressed.hear(.press(.ended, at: Point(5, 5), size: size, byFinger: true), in: runtime) }
+        ring.hear(.hand(.ended, moved: .zero, speed: nil), in: runtime)
+        frames(runtime, clock, until: 600)
+
+        XCTAssertEqual(tapped, 0, "the hand took the presses: no tap")
+    }
+
+    /// A TAP UNDER A STILL HAND IS A TAP: the hand over the layout hears the press go down and stand still, and the
+    /// card's press let go over it taps.
+    func testAStillHandLeavesAPressItsTap() throws {
+        let (runtime, clock) = running(TappedHandApplication())
+        let ring = try ring(in: runtime)
+        let card = try XCTUnwrap(ring.first(type: .text))
+        let size = LayoutSize(width: 10, height: 10)
+
+        card.hear(.press(.began, at: Point(5, 5), size: size, byFinger: true), in: runtime)
+        ring.hear(.hand(.began, moved: .zero, speed: nil), in: runtime)
+        ring.hear(.hand(.changed, moved: .zero, speed: nil), in: runtime)
+        ring.hear(.hand(.ended, moved: .zero, speed: nil), in: runtime)
+        card.hear(.press(.ended, at: Point(5, 5), size: size, byFinger: true), in: runtime)
+        frames(runtime, clock, until: 600)
+
+        XCTAssertEqual(tapped, 1, "the hand moved nothing: the card's press taps")
+    }
+
     /// The page's layout, where the tree mounted it.
     private func ring(in runtime: HostRuntime) throws -> MountedElement {
-        try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
     }
 }
 
 /// Where the run stood each time its arithmetic was handed the phase.
 @MainActor private var handed: [Double] = []
+
+/// How many taps the layout and its cards heard.
+@MainActor private var tapped = 0
+
+/// What the layout's drags of one view told: the view and the point.
+@MainActor private var dragged: [(item: Int, at: Point)] = []
 
 /// A clock the test winds.
 @MainActor
@@ -130,11 +208,10 @@ private struct HandPage: View {
     @State private var turn = 0.0
 
     var body: some View {
-        LayoutEngine([0, 1, 2, 3, 4]) { Text("\($0)") } placements: { _, phase in
+        MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)") } placements: { _, phase in
             handed.append(phase)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .phase($turn)
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
         .motion(.eased(.milliseconds(200), .linear))
     }
@@ -142,4 +219,46 @@ private struct HandPage: View {
 
 private struct HandApplication: Application {
     var body: some Scene { WindowGroup { HandPage() } }
+}
+
+/// A run of cards a hand moves, the layout and each card hearing a tap.
+private struct TappedHandPage: View {
+    @State private var turn = 0.0
+
+    var body: some View {
+        MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)").onTapped { tapped += 1 } } placements: { _, _ in
+            (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
+        }
+        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
+        .onItemTapped { _ in tapped += 1 }
+    }
+}
+
+private struct TappedHandApplication: Application {
+    var body: some Scene { WindowGroup { TappedHandPage() } }
+}
+
+/// A run of cards laid out right to left, mirrored or placed as written, the hand taking one card by moving across.
+private struct RightToLeftPage: View {
+    let mirrors: Bool
+    @State private var turn = 0.0
+
+    var body: some View {
+        MotionLayout([0, 1, 2, 3, 4], parameters: $turn) { Text("\($0)") } placements: { _, phase in
+            handed.append(phase)
+            return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
+        }
+        .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
+        .motion(.eased(.milliseconds(200), .linear))
+        .mirrorsRightToLeft(mirrors)
+        .itemDrag(begins: .perpendicular)
+        .onItemDragged { drag in dragged.append((drag.item, drag.at)) }
+        .layoutDirection(.rightToLeft)
+    }
+}
+
+private struct RightToLeftApplication: Application {
+    let mirrors: Bool
+
+    var body: some Scene { WindowGroup { RightToLeftPage(mirrors: mirrors) } }
 }

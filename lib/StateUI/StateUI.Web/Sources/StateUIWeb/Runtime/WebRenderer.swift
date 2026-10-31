@@ -19,7 +19,7 @@ final class WebRenderer {
     /// Whether the user asked for less motion: every animation arrives at once.
     private let reducesMotion: () -> Bool
 
-    /// Where the children of the page's travelling layouts stand, read around each call's changes.
+    /// Where the children of the page's traveling layouts stand, read around each call's changes.
     let placements = WebPlacements()
 
     /// The application's name, which the core tells the application.
@@ -38,7 +38,7 @@ final class WebRenderer {
     /// The Web's part of the acts and of the files, and what performs them and answers them by the host layer's rules.
     private(set) lazy var actToolkit = WebActToolkit(renderer: self)
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: WebFileToolkit(renderer: self), answers: runtime.core,
+        toolkit: actToolkit, files: WebFileToolkit(renderer: self), network: WebNetwork(), answers: runtime.core,
         tree: { [unowned self] in runtime.tree })
 
     /// Whether the call ending reports what it laid out: a call the browser makes inside it reports nothing.
@@ -49,6 +49,13 @@ final class WebRenderer {
 
     /// The window element the browser shows, which a question and a file dialog stand over.
     var shownWindow: MountedElement? { roster.windows.first?.element }
+
+    /// The window a window's act asks in: the one the browser shows, where the act names it or none; nil for
+    /// another.
+    func window(asked element: MountedElement?) -> MountedElement? {
+        guard let shownWindow, element == nil || element?.enclosing(type: .window) === shownWindow else { return nil }
+        return shownWindow
+    }
 
     /// What is kept of the scenes for the page's next start.
     let scenes = SceneKeeper()
@@ -89,6 +96,14 @@ final class WebRenderer {
         pageListeners += [shortcuts, keys]
         WebRelay.hear(WebRelay.body, .shortcut, shortcuts)
         WebRelay.hear(WebRelay.body, .key, keys)
+        // A link into the application is the page's address with a fragment, as it starts and as the fragment moves.
+        // Design: docs/design/platforms/web/runtime.md#a-link-opened
+        let links = WebRelay.listener { [weak self] in
+            let address = WebRelay.pageLink
+            if !address.isEmpty { self?.runtime.openLink(address) }
+        }
+        pageListeners.append(links)
+        WebRelay.listenForLinks(links)
         runtime.start(
             realizing: WebRegistrations.registry.realization, unrealized: WebRealization.unmade,
             register: WebRealization.register,
@@ -99,7 +114,7 @@ final class WebRenderer {
                     self?.runtime.environmentChanged { WebEnvironment.reportChanging(to: core) }
                 })
             },
-            kept: { WebKeptValues.restore(into: core, application: applicationName) },
+            kept: { WebKeptValues.readKept(into: core, application: applicationName) },
             // The scenes kept when the page was left come back; else the window launch opens.
             windows: { scenes.restore(WebKeptValues.readScenes(applicationName), in: runtime) },
             turns: entryEnded)
@@ -185,9 +200,15 @@ final class WebRenderer {
         roster.controllers.first?.refreshChrome()
     }
 
-    /// Where the window's room - its content, clear of its bar - stands on the page.
+    /// Where a page's content may stand on the page: the window's room below its bar, which stands over the room's
+    /// top - as deep as the room keeps its content clear of it - or the whole room where no bar shows.
+    /// Design: docs/design/platforms/web/pages.md#the-safe-area
     var contentBox: Rect {
-        roster.controllers.first.map { WebRelay.box(of: $0.window.room.node) } ?? Rect(x: 0, y: 0, width: 0, height: 0)
+        guard let window = roster.controllers.first?.window else { return Rect(x: 0, y: 0, width: 0, height: 0) }
+        let room = WebRelay.box(of: window.room.node)
+        let bar = WebRelay.box(of: window.bar.node)
+        let top = max(room.y, bar.height > 0 ? bar.y + bar.height : room.y)
+        return Rect(x: room.x, y: top, width: room.width, height: max(0, room.y + room.height - top))
     }
 }
 
@@ -196,6 +217,7 @@ extension WebRenderer: HostPresenter {
         if touchedChrome { showWindows() } else { roster.controllers.first?.adaptSidebar() }
         // What a render wrote may move a view without resizing it, which no observer of the page tells.
         runtime.frames.laidOut()
+        for popover in runtime.tree.takeWaitingPopovers() { popover.web.configurePopover() }
         if let text = scenes.changed(root: runtime.tree.root) { WebKeptValues.writeScenes(text, application: applicationName) }
     }
 
@@ -207,6 +229,10 @@ extension WebRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+
+    func open(link address: String) {
+        acts.open(link: address)
     }
 
     func focus(_ element: MountedElement) {

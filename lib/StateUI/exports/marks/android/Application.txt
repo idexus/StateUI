@@ -1,7 +1,8 @@
-# revision 5.1
+# revision 12.1
 Application: ✅
 Application.alert: ✓ read a question: what the relay keeps of the dialog it showed
-Application.announce: cannot read what the screen reader said - Android's driver has no path for it yet
+Application.announce: ✓ read what the screen reader said: the host's own list of what it handed Android to announce
+Application.cancelCall: ✅
 Application.chooseAction: ✓ read a question: what the relay keeps of the dialog it showed
 Application.confirm: ✓ read a question: what the relay keeps of the dialog it showed
 Application.currentTime: ✅
@@ -14,7 +15,12 @@ Application.openFiles: ✓ read a file dialog: the picker the relay holds, which
 Application.persistSceneValue: ✅
 Application.persistValue: ✅
 Application.prompt: ✓ read a question: what the relay keeps of the dialog it showed
+Application.readClipboard: ✅
 Application.readFile: ✓ read a file dialog: the picker the relay holds, which a test never hands the system
 Application.saveFile: ✓ read a file dialog: the picker the relay holds, which a test never hands the system
-Application.useColorScheme: ☑️ Before Android 12 an application holds no night mode of its own: it shows the system's.
+Application.sendRequest: ✅
+Application.share: ✓ read a share sheet: what the host holds of a chooser a test never shows
+Application.useAccentColor: – Android draws its controls in the theme's accent, set before the activity starts - from 12 the user's.
+Application.useColorScheme: ✅
 Application.utcOffset: ✅
+Application.writeClipboard: ✅

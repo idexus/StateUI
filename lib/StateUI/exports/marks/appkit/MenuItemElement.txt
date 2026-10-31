@@ -1,13 +1,17 @@
-# revision 4.1
-MenuItem.clicked: ✅
+# revision 6.1
 MenuItem.icon: ✅
-MenuItem.isDestructive: ✅
 MenuItem.isEnabled: ✅
 MenuItem.keyboardShortcut: ✅
 MenuItem.text: ✅
-ToolbarItem.clicked: ✓ activate on ToolbarItem: the host's toolbar entry called, no toolbar item touched
-ToolbarItem.icon: ✅
-ToolbarItem.isDestructive: not realized
-ToolbarItem.isEnabled: ✅
-ToolbarItem.keyboardShortcut: ✅
-ToolbarItem.text: ✅
+MenuToggle.icon: ✅
+MenuToggle.isEnabled: ✅
+MenuToggle.keyboardShortcut: ✅
+MenuToggle.text: ✅
+ToolbarButton.icon: ✅
+ToolbarButton.isEnabled: ✅
+ToolbarButton.keyboardShortcut: ✅
+ToolbarButton.text: ✅
+ToolbarToggle.icon: ✅
+ToolbarToggle.isEnabled: ✅
+ToolbarToggle.keyboardShortcut: ✅
+ToolbarToggle.text: ✅

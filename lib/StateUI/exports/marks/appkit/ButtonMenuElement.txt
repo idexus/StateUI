@@ -1,0 +1,5 @@
+# revision 1.1
+Button.menuKind: ✅
+Button.showsMenuArrow: ✅
+ToolbarButton.menuKind: ✓ activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched
+ToolbarButton.showsMenuArrow: ✅

@@ -289,9 +289,9 @@ final class ConformanceRunnerTests: XCTestCase {
             """)
     }
 
-    /// A colour StateUI draws shows as the screen shows it: each channel a few steps off, as smoothing an edge leaves
-    /// it, is the colour; more is another, and nothing is none.
-    func testAColourShowsWithinTheStepsSmoothingTakes() {
+    /// A color StateUI draws shows as the screen shows it: each channel a few steps off, as smoothing an edge leaves
+    /// it, is the color; more is another, and nothing is none.
+    func testAColorShowsWithinTheStepsSmoothingTakes() {
         let red = Color(red: 255, green: 0, blue: 0)
         XCTAssertTrue(ShownColor(Color(red: 253, green: 0, blue: 0)).shows(red))
         XCTAssertTrue(ShownColor(Color(red: 251, green: 4, blue: 0, alpha: 251)).shows(red))

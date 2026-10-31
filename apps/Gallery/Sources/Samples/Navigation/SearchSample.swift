@@ -3,6 +3,7 @@ import StateUI
 /// A `SearchField` on the navigation bar in place of the title, and the rows it filters.
 struct SearchSample: SampleContent, ExampleContent {
     // listing: SearchSample
+    @Environment(\.window) private var window
     /// Where the gallery is: choosing a suggestion pushes a page.
     let nav: Navigation
 
@@ -76,7 +77,7 @@ struct SearchSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`OnScreenKeyboard.hide()` takes the focus off whatever holds it - the box on "
+            Text("`window.hideOnScreenKeyboard()` takes the focus off whatever holds it - the box on "
                 + "the bar included. On iOS a focused search box takes over the bar, back "
                 + "button and all, and unfocusing it gives the bar back.")
                 .fontSize(12)

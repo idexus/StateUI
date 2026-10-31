@@ -78,7 +78,7 @@
                 try s.perform(.activate, on: s.element("ask again"))
                 try s.settle { try s.question()?.title == "Close draft?" }
                 s.expect(try s.question()?.title, "Close draft?", "the question over the window gone is in no way")
-                try s.perform(.answer("Close"), on: s.element(ofType: WindowContract.nodeType))
+                try s.perform(.answer(.accept), on: s.element(ofType: WindowContract.nodeType))
                 s.settle { said.values.last == true }
                 s.expect(said.values.filter { $0 }, [true], "the one over the window gone, where heard at all, not accepted")
             },
@@ -116,7 +116,7 @@ struct ApplicationPage: View {
 /// `said`.
 struct AskingApplication: Application {
     /// The kind of the draft's window.
-    static let draft = WindowType("conformance.draft")
+    static let draft = WindowType<Void>("conformance.draft")
 
     let said: Received<Bool>
 
@@ -138,16 +138,17 @@ struct AskingScene: Scene {
 /// The page launch opens in `AskingApplication`: a button asking whether to delete the draft, one opening it.
 struct AskingPage: View {
     @Environment(\.application) private var application
+    @Environment(\.window) private var window
     let said: Received<Bool>
 
     var body: some View {
-        let (application, said) = (self.application, self.said)
+        let (application, window, said) = (self.application, self.window, self.said)
         return VStack {
-            Button("Ask").onClicked(gate: .ignoreWhileRunning) {
-                said.values.append(try await Dialogs.confirm(
+            Button("Ask").onClicked(.ignoreWhileRunning) {
+                said.values.append(try await window.confirm(
                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
             }.id("ask")
-            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+            Button("Open").onClicked(.ignoreWhileRunning) {
                 try await application.openWindow(AskingApplication.draft)
             }.id("open")
         }
@@ -156,13 +157,14 @@ struct AskingPage: View {
 
 /// The draft's page in `AskingApplication`: a button asking whether to close it.
 struct DraftPage: View {
+    @Environment(\.window) private var window
     let said: Received<Bool>
 
     var body: some View {
-        let said = self.said
+        let (window, said) = (self.window, self.said)
         return VStack {
-            Button("Ask again").onClicked(gate: .ignoreWhileRunning) {
-                said.values.append(try await Dialogs.confirm(
+            Button("Ask again").onClicked(.ignoreWhileRunning) {
+                said.values.append(try await window.confirm(
                     "Close draft?", message: "It is kept", accept: "Close", cancel: "Stay"))
             }.id("ask again")
         }

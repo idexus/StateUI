@@ -20,12 +20,12 @@ final class WinUIButtonView: WinUIView {
         stateui_winui_button_set_accent(handle, role == .primary)
     }
 
-    /// Stands the words in the theme's critical colour, as WinUI marks a destructive entry, or in the button's own.
+    /// Stands the words in the theme's critical color, as WinUI marks a destructive entry, or in the button's own.
     func setCritical(_ critical: Bool) {
         stateui_winui_button_set_critical(handle, critical)
     }
 
-    /// Whether the words stand in the theme's critical colour.
+    /// Whether the words stand in the theme's critical color.
     var isCritical: Bool { stateui_winui_button_critical(handle) }
 
     override var takesDirection: Bool { true }
@@ -40,6 +40,10 @@ final class WinUIButtonView: WinUIView {
     private var bounded: Double?
     private var words = ""
     private var look = Shown()
+
+    /// The caption shown before the tree's last one, and the caption written last.
+    private var formerWords: String?
+    private var written: String?
 
     /// How the button opens its menu, which WinUI makes a control of its own of.
     let opening: ButtonMenuOpening
@@ -69,15 +73,37 @@ final class WinUIButtonView: WinUIView {
         }
     }
 
-    /// The caption.
+    /// The caption; a new one while one is held back shows at once.
     func setText(_ text: String) {
+        let former = words
         words = text
+        if text != former, heldWords != nil { return heldWords = nil }
+        if text != former { formerWords = former }
         show()
     }
 
+    /// The caption held back's former one while the box grows, else the tree's.
+    /// Design: docs/design/host/motion.md#words-on-the-way
+    override func holdWords(_ holding: Bool) {
+        if !holding { formerWords = nil }
+        if inSight != written { show() }
+    }
+
+    /// The caption in sight: the former one while new words are held back.
+    private var inSight: String {
+        guard showsWords else { return "" }
+        return heldWords == nil ? words : formerWords ?? words
+    }
+
+    /// Whether the caption stands beside the picture: out of sight, it names the button to Narrator through the host
+    /// layer's words (`AccessibilityWords`).
+    private var showsWords = true
+
     /// The picture beside the caption - the files it may stand in (`PictureArithmetic.files`), none for none -
-    /// where it stands, how far from the words (nil for WinUI's own gap), and how it fills the button alone.
-    func setIcon(_ icon: [String], position: IconPosition, spacing: Double?, aspect: ContentMode) {
+    /// where it stands, how far from the words (nil for WinUI's own gap), how it fills the button alone, and whether
+    /// the caption stands beside it.
+    func setIcon(_ icon: [String], position: IconPosition, spacing: Double?, aspect: ContentMode, showsText: Bool) {
+        showsWords = showsText
         look.icon = icon
         look.position = position
         look.spacing = spacing
@@ -93,17 +119,27 @@ final class WinUIButtonView: WinUIView {
 
     /// Writes what the button shows: all of it where its shape changed, else the words in their place.
     private func show() {
+        let inSight = self.inSight
+        written = inSight
         var next = look
-        next.hasWords = !words.isEmpty
+        next.hasWords = !inSight.isEmpty
         guard next != shown else {
-            stateui_winui_button_set_words(handle, words)
+            stateui_winui_button_set_words(handle, inSight)
             return
         }
         shown = next
         bounded = nil
         stateui_winui_button_set_content(
-            handle, words, WinUIStrings.lines(next.icon), next.position.rawValue, next.spacing ?? -1,
+            handle, inSight, WinUIStrings.lines(next.icon), next.position.rawValue, next.spacing ?? -1,
             next.aspect.rawValue, next.lineBreak?.wraps ?? false, next.lineBreak?.truncates ?? false)
+    }
+
+    /// A picture alone stands at its own size, whatever the room offered: the box filling the button with it would
+    /// grow to any room it is measured in.
+    /// Design: docs/design/platforms/winui/controls.md#a-button
+    override func measure(width: Double?, height: Double?) -> LayoutSize {
+        guard let shown, !shown.hasWords, !shown.icon.isEmpty else { return super.measure(width: width, height: height) }
+        return super.measure(width: nil, height: nil)
     }
 
     /// A picture beside the words stands no taller than the button's place leaves it.
@@ -120,7 +156,7 @@ final class WinUIButtonView: WinUIView {
     private struct Shown: Equatable {
         var hasWords = false
         var icon: [String] = []
-        var position = IconPosition.leading
+        var position = IconPosition.start
         var spacing: Double?
         var aspect = ContentMode.fit
         var lineBreak: LineBreak?

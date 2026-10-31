@@ -220,6 +220,7 @@ final class CompleteContractTests: XCTestCase {
         "SceneElement.swift": ["Window"],
         "WindowSession.swift": ["Window"],
         "View+PageValues.swift": ["Page"],
+        "View+Toolbar.swift": ["ToolbarGroup"],
         "StyleSheet.swift": ["VisualElement", "Button"],
     ]
 

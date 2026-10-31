@@ -25,19 +25,19 @@ private struct Areas: ExampleContent {
             // differ asks, so the only closure this switch rebuilds is that one.
             ZStack {
                 // No area: the whole room, filled.
-                Rectangle(Palette.outline)
+                Fill(Palette.outline)
 
                 // The panel fills the area it names: the right half of the
                 // room, or 120 by 60 at 16, 16 whatever the room's size.
-                Rectangle(Color("#1E88E5"))
+                Fill(Color(hex: 0x1E88E5))
                     .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                 // Its natural size, where its alignments put it.
-                Badge(text: "start", color: "#E53935")
+                Badge(text: "start", color: Color(hex: 0xE53935))
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
 
-                Badge(text: "end", color: "#00897B")
+                Badge(text: "end", color: Color(hex: 0x00897B))
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)
             }
@@ -67,13 +67,15 @@ private struct Layers: ExampleContent {
             // Left alone, the child written last is drawn on top; the higher
             // zIndex is nearer the front, and nothing moves.
             ZStack {
-                Rectangle(Color("#E53935"))
+                Rectangle()
+                    .fill(Color(hex: 0xE53935))
                     .width(150)
                     .height(70)
                     .horizontalAlignment(.start)
                     .zIndex(redInFront ? 1 : 0)
 
-                Rectangle(Color("#1E88E5"))
+                Rectangle()
+                    .fill(Color(hex: 0x1E88E5))
                     .width(150)
                     .height(70)
                     .horizontalAlignment(.end)
@@ -94,17 +96,17 @@ private struct Layers: ExampleContent {
 }
 
 // listing: Areas
-/// One labelled badge, so the sample says what is being positioned rather than
+/// One labeled badge, so the sample says what is being positioned rather than
 /// how it is drawn.
 private struct Badge: View {
     let text: String
-    let color: String
+    let color: Color
 
     var body: some View {
         Text(text)
             .fontSize(12)
             .textColor(.white)
-            .background(Color(color))
+            .background(color)
             .padding(horizontal: 10, vertical: 6)
     }
 }

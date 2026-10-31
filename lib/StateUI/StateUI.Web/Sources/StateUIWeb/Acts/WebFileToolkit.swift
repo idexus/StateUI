@@ -17,9 +17,10 @@ final class WebFileToolkit: FileToolkit {
     }
 
     func show(
-        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+        _ dialog: HostFileDialog, over window: MountedElement?,
+        answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = renderer.shownWindow else { return nil }
+        guard let window = renderer.window(asked: window) else { return nil }
         let listener = WebRelay.once {
             guard WebRelay.fileKept else { return answered(.failure(ActFailure(WebRelay.fileWords))) }
             answered(.success(WebRelay.filesChosen.map { ChosenFile(address: String($0.number), name: $0.name) }))

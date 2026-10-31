@@ -171,11 +171,30 @@ enum WebRelay {
         stateui_web_listen_menu(element, HandReading.hold, WebPress.finger, listener)
     }
 
+    /// Calls `listener` as the user holds the element down `hold` milliseconds, no farther than a drag's distance.
+    static func listenForHold(_ element: Int32, _ hold: Double, _ listener: Int32) {
+        stateui_web_listen_hold(element, hold, WebPress.finger, WebPress.pointer, listener)
+    }
+
+    /// Makes the element's hold wait `hold` milliseconds.
+    static func waitForHold(_ element: Int32, _ hold: Double) {
+        stateui_web_hold_time(element, hold)
+    }
+
     /// The number at `index` of the event being heard - what a listener of its kind is told.
     static func eventNumber(_ index: Int) -> Double { stateui_web_event_number(Int32(index)) }
 
     /// How many clicks the event being heard counts.
     static var eventClicks: Int { Int(stateui_web_event_number(0)) }
+
+    /// The press being heard: its phase, where it stands from the element's top left corner, the element's size, and
+    /// whether a finger presses.
+    static var eventPress: (phase: GesturePhase, at: Point, size: LayoutSize, byFinger: Bool) {
+        (GesturePhase(rawValue: Int32(stateui_web_event_number(0))) ?? .cancelled,
+         Point(x: stateui_web_event_number(1), y: stateui_web_event_number(2)),
+         LayoutSize(width: stateui_web_event_number(3), height: stateui_web_event_number(4)),
+         stateui_web_event_number(5) != 0)
+    }
 
     /// Where the pointer of the event being heard is, from the listening element's top left corner.
     static var eventPoint: Point { Point(x: stateui_web_event_number(1), y: stateui_web_event_number(2)) }
@@ -261,6 +280,16 @@ enum WebRelay {
     /// the browser leaves the page.
     static func listenToPage(changed: Int32, leaving: Int32) {
         stateui_web_listen_page(changed, leaving)
+    }
+
+    /// Calls `listener` as the page starts and each time the fragment of its address changes.
+    static func listenForLinks(_ listener: Int32) {
+        stateui_web_listen_links(listener)
+    }
+
+    /// The page's address where it carries a fragment - a link into the application; empty otherwise.
+    static var pageLink: String {
+        copyRead(length: stateui_web_page_link())
     }
 
     /// Calls `listener` whenever the browser's history moves.
@@ -398,6 +427,16 @@ enum WebRelay {
         stateui_web_stands_over(element) != 0
     }
 
+    /// Whether a bar's buttons and title stand over one another or beyond its edges.
+    static func crowded(_ element: Int32) -> Bool {
+        stateui_web_crowded(element) != 0
+    }
+
+    /// Moves the element from `dx`, `dy` points off its place to it, on the sidebar's slide.
+    static func slide(_ element: Int32, from dx: Double, _ dy: Double) {
+        stateui_web_slide_from(element, dx, dy)
+    }
+
     /// The element's box on the page, from the page's top left.
     static func box(of element: Int32) -> Rect {
         let read = numbers(4) { stateui_web_read_box(element, $0) }
@@ -407,6 +446,12 @@ enum WebRelay {
     /// The element's size in its layout, before any transform.
     static func size(of element: Int32) -> LayoutSize {
         let read = numbers(2) { stateui_web_read_size(element, $0) }
+        return LayoutSize(width: read[0], height: read[1])
+    }
+
+    /// The room the element's words take as they stand: their lines' extent, with its padding and border.
+    static func natural(of element: Int32) -> LayoutSize {
+        let read = numbers(2) { stateui_web_read_natural(element, $0) }
         return LayoutSize(width: read[0], height: read[1])
     }
 
@@ -443,10 +488,10 @@ enum WebRelay {
         }
     }
 
-    /// The page wears `colour` under its window, and keeps it for its next start, under the system's light or dark;
+    /// The page wears `color` under its window, and keeps it for its next start, under the system's light or dark;
     /// nil wears and keeps none.
-    static func keepPageColour(_ colour: String?) {
-        utf8(colour ?? "") { stateui_web_keep_page_colour($0, $1) }
+    static func keepPageColor(_ color: String?) {
+        utf8(color ?? "") { stateui_web_keep_page_color($0, $1) }
     }
 
     static func setTitle(_ title: String) {
@@ -469,10 +514,15 @@ enum WebRelay {
 
     static var prefersDark: Bool { stateui_web_prefers_dark() != 0 }
 
-    /// The accent the browser draws its own controls in, as ARGB.
+    /// The accent the page draws its controls in, as ARGB.
     static var accentColor: UInt32 { UInt32(bitPattern: stateui_web_accent_color()) }
 
-    /// Shows the page in `theme`: the root's colour scheme, which the browser's controls and the host's colours
+    /// Draws the page's controls in `argb`, the host's own accent again where nil.
+    static func useAccentColor(_ argb: UInt32?) {
+        stateui_web_use_accent_color(Int32(bitPattern: argb ?? 0), argb == nil ? 0 : 1)
+    }
+
+    /// Shows the page in `theme`: the root's color scheme, which the browser's controls and the host's colors
     /// follow; none for the system's.
     static func useColorScheme(_ theme: ColorScheme) {
         stateui_web_use_color_scheme(theme.rawValue)
@@ -510,11 +560,38 @@ enum WebRelay {
         utf8(words) { stateui_web_announce($0, $1) }
     }
 
+    /// Offers `text` and `link` - each where given - to the browser's share sheet, `listener` told once it answers:
+    /// event 1 and "1" shared or "0" cancelled, or 0 and why not, read by `file_words`.
+    static func share(text: String?, link: String?, _ listener: Int32) {
+        utf8(text ?? "") { words, wordsLength in
+            utf8(link ?? "") { address, addressLength in
+                stateui_web_share(words, text == nil ? -1 : wordsLength, address, link == nil ? -1 : addressLength, listener)
+            }
+        }
+    }
+
+    /// Puts `words` on the browser's clipboard, where the page may write it.
+    static func writeClipboard(_ words: String) {
+        utf8(words) { stateui_web_clipboard_write($0, $1) }
+    }
+
+    /// Reads the browser's clipboard, `listener` told once it answers: event 1 and its words, or 0 and why not, both
+    /// read by `file_words`.
+    static func readClipboard(_ listener: Int32) {
+        stateui_web_clipboard_read(listener)
+    }
+
     /// Takes the focus off the field holding it; whether one held it.
     static func blurField() -> Bool { stateui_web_blur_field() != 0 }
 
     /// Puts the focus on `element` or the first in it that takes it; whether it holds it.
     static func focus(_ element: Int32) -> Bool { stateui_web_focus(element) != 0 }
+
+    /// Does an Edit menu's own entry to the field the user last typed into, which takes the focus back.
+    /// Design: docs/design/platforms/web/pages.md#the-edit-menu
+    static func edit(_ command: EditCommand) {
+        stateui_web_edit(Int32(EditCommand.allCases.firstIndex(of: command) ?? 0))
+    }
 
     static func unfocus(_ element: Int32) {
         stateui_web_unfocus(element)
@@ -538,6 +615,14 @@ enum WebRelay {
 
     /// Whether the user asked for less motion.
     static var reducesMotion: Bool { stateui_web_reduces_motion() != 0 }
+
+    /// Whether the user asked for more contrast.
+    static var prefersMoreContrast: Bool { stateui_web_prefers_more_contrast() != 0 }
+
+    /// Calls `listener` whenever less motion or more contrast is asked for, or no longer.
+    static func listenToAccessibility(_ listener: Int32) {
+        stateui_web_listen_accessibility(listener)
+    }
 
     static func listenToAppearance(_ listener: Int32) {
         stateui_web_listen_appearance(listener)

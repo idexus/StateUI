@@ -21,7 +21,7 @@ extension BorderElement {
         setValue(BorderElementContract.stroke, value)
     }
 
-    /// The outline in one colour.
+    /// The outline in one color.
     public func stroke(_ value: Color) -> Modified {
         stroke(.solidColor(value))
     }

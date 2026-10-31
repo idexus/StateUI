@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 5.1
 Button.fontAttributes: ✅
 Button.fontFamily: ✅
 Button.fontSize: ✅
@@ -17,12 +17,6 @@ Picker.fontSize: ✅
 Picker.fontWeight: ✅
 Picker.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 Picker.textStyle: ✅
-RadioButton.fontAttributes: ✅
-RadioButton.fontFamily: ✅
-RadioButton.fontSize: ✅
-RadioButton.fontWeight: ✅
-RadioButton.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
-RadioButton.textStyle: ✅
 SearchField.fontAttributes: ✅
 SearchField.fontFamily: ✅
 SearchField.fontSize: ✅
@@ -59,3 +53,15 @@ TimePicker.fontSize: ✅
 TimePicker.fontWeight: ✅
 TimePicker.isFontAutoScalingEnabled: – macOS gives an application no text size of the user's to follow.
 TimePicker.textStyle: ✅
+ToolbarButton.fontAttributes: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.fontFamily: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.fontSize: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.fontWeight: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.isFontAutoScalingEnabled: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarButton.textStyle: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.fontAttributes: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.fontFamily: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.fontSize: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.fontWeight: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.isFontAutoScalingEnabled: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarToggle.textStyle: – The Mac's toolbar draws its items in the Mac's own look.

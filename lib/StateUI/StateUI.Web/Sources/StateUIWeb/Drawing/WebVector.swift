@@ -84,7 +84,7 @@ enum WebVector {
         let stops: [HostBrush.Stop]
     }
 
-    /// The gradient `brush` is over `painted`; nil for a brush of one colour or none.
+    /// The gradient `brush` is over `painted`; nil for a brush of one color or none.
     static func gradient(_ brush: HostBrush, over painted: Rect, id: String) -> Gradient? {
         let n: (Double) -> String = WebCSS.number
         func x(_ share: Double) -> String { n(painted.x + share * painted.width) }

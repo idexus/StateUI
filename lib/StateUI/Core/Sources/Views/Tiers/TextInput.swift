@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// What `TextField`, `TextEditor` and `SearchField` share: the placeholder
-/// and its colour, the keyboard, the caret and selection, the length cap and
+/// and its color, the keyboard, the caret and selection, the length cap and
 /// read-only.
 public protocol TextInputProperties: ViewProperties {}
 
@@ -16,9 +16,14 @@ extension TextInput {
         onEvent(TextInputContract.textChanged, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onTextChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onTextChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+        onEvent(TextInputContract.textChanged, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onTextChanged(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         onEvent(TextInputContract.textChanged, gate: gate, handler)
     }
 }
@@ -42,7 +47,7 @@ extension TextInputProperties {
         setValue(TextInputContract.selectionLength, value)
     }
 
-    /// Whether the platform underlines what it thinks is misspelt.
+    /// Whether the platform underlines what it thinks is misspelled.
     ///
     /// Worth turning off for anything that is not prose - a code, a name, a
     /// serial number.
@@ -63,7 +68,7 @@ extension TextInputProperties {
         setValue(TextInputContract.placeholder, value)
     }
 
-    /// The placeholder's colour.
+    /// The placeholder's color.
     public func placeholderColor(_ value: Color) -> Modified {
         setValue(TextInputContract.placeholderColor, value)
     }

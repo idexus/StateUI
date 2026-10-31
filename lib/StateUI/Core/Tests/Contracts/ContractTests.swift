@@ -119,7 +119,6 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(Name("Menlo").propValue, .name("Menlo"))
         XCTAssertEqual(Name(propValue: .name("Menlo")), "Menlo")
         XCTAssertNil(Name(propValue: .string("Menlo")), "prose is not a name")
-        XCTAssertEqual(WindowType("document").propValue, .name("document"))
     }
 
     /// A shape, a grid's lengths, a web view's source and a drawing cross as
@@ -153,7 +152,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(
             CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4).propValue,
             .numbers([1, 2, 3, 4]))
-        XCTAssertEqual(MapRegion(latitude: 52, longitude: 21, radiusMeters: 1500).propValue, .numbers([52, 21, 1500]))
+        XCTAssertEqual(MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 1500).propValue, .numbers([52, 21, 1500]))
 
         let brush = Brush.linearGradient([GradientStop(.gold, 0), GradientStop(.tomato, 1)])
 
@@ -161,16 +160,11 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(Material.gradient(brush).propValue, brush.propValue)
         XCTAssertEqual(Material(propValue: Color.tomato.propValue), .color(.tomato))
         XCTAssertEqual(Material(propValue: brush.propValue), .gradient(brush))
-        XCTAssertEqual(Brush(propValue: Color.tomato.propValue), .solidColor(.tomato), "a colour state's fill")
+        XCTAssertEqual(Brush(propValue: Color.tomato.propValue), .solidColor(.tomato), "a color state's fill")
 
-        XCTAssertEqual(SafeAreaEdges.uniform(.none).propValue, .enumeration(0))
-        XCTAssertEqual(
-            SafeAreaEdges.edges(left: .none, top: .container, right: .none, bottom: .container).propValue,
-            .values([.enumeration(0), .enumeration(2), .enumeration(0), .enumeration(2)]))
-        XCTAssertEqual(SafeAreaEdges(propValue: .enumeration(3)), .uniform(.all))
-        XCTAssertEqual(
-            SafeAreaEdges(propValue: .values([.enumeration(0), .enumeration(1), .enumeration(2), .enumeration(3)])),
-            .edges(left: .none, top: .keyboard, right: .container, bottom: .all))
+        XCTAssertEqual(SafeAreaEdges.none.propValue, .enumeration(0))
+        XCTAssertEqual(SafeAreaEdges([.start, .top]).propValue, .enumeration(3))
+        XCTAssertEqual(SafeAreaEdges(propValue: .enumeration(15)), .all)
     }
 
     /// Every value a member holds comes back from its host form as itself -
@@ -190,40 +184,40 @@ final class ContractTests: XCTestCase {
             Material.color(.tomato), Material.gradient(.linearGradient([GradientStop(.gold, 0)])),
             Material.blur(.thin.tint(.indigo)), Material.glass(.clear.tint(.indigo).isInteractive(true)),
             Material(light: nil, dark: .blur(.thick)), Blur.Thickness.ultraThick, Glass.Clarity.clear,
-            Insets(left: 1, top: 2, right: 3, bottom: 4), Rect(1, 2, 3, 4), Point(5, 6),
+            Insets(start: 1, top: 2, end: 3, bottom: 4), Rect(1, 2, 3, 4), Point(5, 6),
             [Point(1, 2), Point(3, 4)] as [Point], [1, 2.5] as [Double], ["a", "b"] as [String],
             ImageSource("logo.png"), ImageSource(light: "logo.png", dark: "logo_dark.png"),
             ViewTransform.rotate(15).scaleX(1.2),
-            SafeAreaEdges.uniform(.all),
-            SafeAreaEdges.edges(left: .none, top: .container, right: .none, bottom: .container),
+            SafeAreaEdges.all, SafeAreaEdges([.start, .bottom]),
             CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
             WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseURL: nil),
             WebViewSource.html("<p/>", baseURL: "https://example.com"),
-            MapRegion(latitude: 52.25, longitude: 21.01, radiusMeters: 1500),
+            MapRegion(center: Location(latitude: 52.25, longitude: 21.01), radiusMeters: 1500),
             Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),
             ContainerShape.rectangle, ContainerShape.roundedRectangle(12), ContainerShape.ellipse,
             ContainerShape.capsule,
             [GridLength.auto, .proportional(2), .fixed(100)] as [GridLength],
             [Draw.fillColor(.gold)] as [DrawCommand],
-            WindowType("document"),
             FontAttributes.italic, FontWeight.semibold, TextStyle.title, PickerPresentation.radio,
-            ButtonMenuKind.held,
+            ButtonMenuKind.held, ToolbarStyle.rounded,
             TextDecorations(rawValue: 1),
             KeyboardShortcut("s"), KeyboardShortcut(.f5, modifiers: [.primary, .shift, .alt]),
             Area.absolute(0, 0, 120, 40), Area.proportional(0.5, 0, 0.5, 1), SwipeDirection.all,
             Alignment(rawValue: 1)!, TextAlignment.center, LineBreak(rawValue: 1)!, TextCase(rawValue: 1)!,
             InputPurpose(rawValue: 1)!, SubmitLabel(rawValue: 1)!, ScrollOrientation(rawValue: 1)!,
             MarkerType(rawValue: 1)!, ContentMode(rawValue: 1)!, LayoutDirection(rawValue: 1)!,
-            AccessibilityHeadingLevel(rawValue: 1)!, ScrollIndicatorVisibility(rawValue: 1)!,
+            AccessibilityHeadingLevel(rawValue: 1)!, AccessibilityRole.adjustable, ScrollIndicatorVisibility(rawValue: 1)!,
             LineCap(rawValue: 1)!, LineJoin(rawValue: 1)!,
-            FillRule(rawValue: 1)!, IndicatorShape(rawValue: 1)!, ToolbarItemPlacement(rawValue: 1)!, ToolbarSide.leading,
-            SafeArea(rawValue: 1)!, IconPosition(rawValue: 1)!, ButtonRole.cancel, [Key.escape, "a"], MapType(rawValue: 1)!,
+            FillRule(rawValue: 1)!, DotShape(rawValue: 1)!, ToolbarPosition.overflow, ToolbarPart.sidebar,
+            SafeAreaEdges.top, IconPosition(rawValue: 1)!, ButtonRole.cancel, ActionRole.destructive, DateStyle.medium,
+            [Key.escape, "a"], MapType(rawValue: 1)!,
             WebNavigationType(rawValue: 1)!, WebNavigationResult(rawValue: 1)!, GesturePhase.changed,
-            LayoutInput.Axis.vertical,
-            ItemDragStart.held,
+            LayoutInput.Orientation.vertical,
+            ItemDragStart.longPress,
             ItemsLayout.list(), ItemsLayout.row(spacing: 8), ItemsLayout.grid(minimumItemWidth: 120, spacing: 4),
-            SelectionMode.multiple, ScrollAnchor.center,
+            SelectionMode.multiple, ScrollAnchor.center, ScrollEdge.hard, ToolbarEdge.bottom,
+            LayoutBody.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)),
             ItemsEntries(header: "h", sections: [ItemsEntries.Section("0", footer: "f", items: ["1", "2"])]),
             [0, 7, 255] as [UInt8], FileType("Page", extensions: ["html", "htm"]),
             [FileType("Text", extensions: ["txt"]), FileType("Page", extensions: ["html"])] as [FileType],

@@ -5,8 +5,9 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// What the device, the application, the user's locale, the battery, the network, the system's theme and the screen
-/// are, told to the core as the host starts, and again whenever Windows says one changed.
+/// What the device, the application, the user's locale, the battery, the network, the system's theme, the screen and
+/// the accessibility settings are, told to the core as the host starts, and again whenever Windows says one changed -
+/// the screen reader, which Windows tells no change of, with any other.
 /// Design: docs/design/platforms/winui/runtime.md#the-environment
 @MainActor
 enum WinUIEnvironment {
@@ -24,7 +25,8 @@ enum WinUIEnvironment {
         reportChanging(to: core)
     }
 
-    /// Tells `core` the theme and the accent, the user's locale, the battery and the network, as they stand now.
+    /// Tells `core` the theme and the accent, the user's locale, the battery, the network and the accessibility
+    /// settings, as they stand now.
     static func reportChanging(to core: CoreLink) {
         let theme = facts(.theme)
         core.setColorScheme(theme.first == "1" ? .dark : .light)
@@ -46,6 +48,13 @@ enum WinUIEnvironment {
         if network.count == 2 {
             core.setConnectivityInfo(HostConnectivityInfo(
                 access: Int32(Double(network[0]) ?? 0), connections: Int32(Double(network[1]) ?? 0)))
+        }
+
+        let accessibility = facts(.accessibility)
+        if accessibility.count == 4 {
+            core.setAccessibilityInfo(HostAccessibilityInfo(
+                reducesMotion: accessibility[0] == "1", prefersHigherContrast: accessibility[1] == "1",
+                isScreenReaderOn: accessibility[2] == "1", textScale: Double(accessibility[3]) ?? 1))
         }
     }
 

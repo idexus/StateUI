@@ -14,6 +14,7 @@ enum GalleryEventSources {
     /// The battery as it was last said, so a notice that changed nothing of it raises nothing.
     @MainActor private static var lastSaid: (level: Double, charging: Bool)?
 
+    // listing: gtk.md.event
     /// Declares what the host raises and wires its source. Said once, before the application runs.
     @MainActor
     static func start() {
@@ -41,5 +42,6 @@ enum GalleryEventSources {
         lastSaid = (level, charging)
         StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
+    // listing: end
 }
 // listing: end

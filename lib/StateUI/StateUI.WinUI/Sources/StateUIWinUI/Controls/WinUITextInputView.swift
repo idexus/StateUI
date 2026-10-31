@@ -12,6 +12,8 @@ import CStateUIWinUI
 class WinUITextInputView: WinUIView {
     override var takesDirection: Bool { true }
 
+    override var keepsTyping: Bool { true }
+
     /// What the view does when the user changes its words, handed all of them.
     var onTextChanged: ((String) -> Void)?
 
@@ -32,6 +34,20 @@ class WinUITextInputView: WinUIView {
         words.replacing("\r\n", with: "\n").replacing("\r", with: "\n")
     }
 
+    /// The outline the tree gives the field - its color and width - and the shape its corners take, over the theme's
+    /// frame in every state of the field's; the theme's where it gives none.
+    /// Design: docs/design/platforms/winui/controls.md#a-fields-outline
+    func setOutline(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
+        let outlined = shape.map(BoxArithmetic.outline)
+        let outline = WinUIBrush(stroke)
+        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
+        let rounds = outlined.map { $0 != .rectangle } ?? false
+        paint(.look, followsSize: outline.followsSize || rounds) { [handle] size in
+            let radius = outlined.map { BoxArithmetic.cornerRadius(of: $0, width: size.width, height: size.height) } ?? -1
+            outline.withRelayBrush(over: size) { brush in stateui_winui_field_set_outline(handle, brush, width, radius) }
+        }
+    }
+
     /// Writes the words where they differ from the view's, with the caret after them.
     func setText(_ text: String) {
         stateui_winui_field_set_text(handle, text)
@@ -43,8 +59,8 @@ class WinUITextInputView: WinUIView {
     }
 
     /// How the words are taken: read only, and with `traits` - spell checked, predicted, and the keyboard's scope.
-    func setBehaviour(readOnly: Bool, traits: InputTraits) {
-        stateui_winui_field_set_behaviour(
+    func setBehavior(readOnly: Bool, traits: InputTraits) {
+        stateui_winui_field_set_behavior(
             handle, readOnly, traits.checksSpelling, traits.predicts, WinUIInputScope(traits).rawValue)
     }
 
@@ -53,7 +69,7 @@ class WinUITextInputView: WinUIView {
         stateui_winui_field_set_casing(handle, textCase.rawValue)
     }
 
-    /// The words across the view, and the placeholder's colour; nil for the platform's.
+    /// The words across the view, and the placeholder's color; nil for the platform's.
     func setLook(alignment: TextAlignment, placeholderColor: HostValue?) {
         let argb = placeholderColor?.argb
         stateui_winui_field_set_look(handle, alignment.rawValue, argb ?? 0, argb != nil)
@@ -83,5 +99,8 @@ class WinUITextInputView: WinUIView {
         super.detach()
         onTextChanged = nil
         onSubmitted = nil
+        // Gone from the tree, the field is typed into no more.
+        stateui_winui_hear_focus(handle, number, false)
+        if WinUIEditing.typed === self { WinUIEditing.typed = nil }
     }
 }

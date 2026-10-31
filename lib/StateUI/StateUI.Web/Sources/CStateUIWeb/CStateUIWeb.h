@@ -82,6 +82,15 @@ STATEUI_WEB(hear) void stateui_web_hear(int32_t element, int32_t kind, int32_t l
 /// milliseconds no farther than `reach` points from where it pressed.
 STATEUI_WEB(listen_menu) void stateui_web_listen_menu(int32_t element, double hold, double reach, int32_t listener);
 
+/// Calls listener `listener` whenever the user holds the element down - a finger, a pen or the mouse's main button -
+/// `hold` milliseconds no farther than `fingerReach` points from where a finger pressed, `reach` for the others; the
+/// held press's click is taken.
+STATEUI_WEB(listen_hold) void stateui_web_listen_hold(
+    int32_t element, double hold, double fingerReach, double reach, int32_t listener);
+
+/// Makes the element's hold wait `hold` milliseconds.
+STATEUI_WEB(hold_time) void stateui_web_hold_time(int32_t element, double hold);
+
 /// What the event a listener is hearing carries: 0 how many clicks it counts, 1 and 2 where the pointer is from the
 /// listening element's top left corner; 3 the pointer's number, 4 and 5 where it is on the page, 6 its kind - 0 a
 /// mouse, 1 a pen, 2 a touch - 7 its button; 8 a wheel's turn down, 9 whether a key made it a pinch, 10 a gesture's
@@ -120,7 +129,7 @@ STATEUI_WEB(frame_evaluate) int32_t stateui_web_frame_evaluate(int32_t element, 
 
 /// Puts one entry of the page's own on the browser's history; `back_history` goes back over it where it stands on
 /// it, 1 where it went; `listen_history` calls `listener` whenever the browser's history moves - its way back, or
-/// forward - until `forget` takes it off.
+/// forward, the fragment staying: a fragment's move is a link (`listen_links`) - until `forget` takes it off.
 STATEUI_WEB(push_history) void stateui_web_push_history(void);
 STATEUI_WEB(back_history) int32_t stateui_web_back_history(void);
 STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
@@ -129,6 +138,12 @@ STATEUI_WEB(listen_history) void stateui_web_listen_history(int32_t listener);
 /// page starts and again as either changes, and `leaving` as the browser leaves the page.
 STATEUI_WEB(page_state) int32_t stateui_web_page_state(void);
 STATEUI_WEB(listen_page) void stateui_web_listen_page(int32_t changed, int32_t leaving);
+
+/// A link into the application: `listen_links` calls `listener` once as the page starts and again as the fragment of
+/// its address changes; `page_link` is the address where it carries a fragment, read as `copy_read` reads - none
+/// otherwise.
+STATEUI_WEB(listen_links) void stateui_web_listen_links(int32_t listener);
+STATEUI_WEB(page_link) int32_t stateui_web_page_link(void);
 
 /// Calls the act `name` of the application's own scripts - `StateUI.acts` - with the words, and `listener` once its
 /// promise settles: the event's number 0 is 1 kept, 0 broken, and `script_words` reads what it gave, or why.
@@ -167,12 +182,21 @@ STATEUI_WEB(observe_size) void stateui_web_observe_size(int32_t element, int32_t
 STATEUI_WEB(is_laid_out) int32_t stateui_web_is_laid_out(int32_t element);
 /// 1 where the style sheet stands the element out of its parent's flow, over its siblings - absolutely - else 0.
 STATEUI_WEB(stands_over) int32_t stateui_web_stands_over(int32_t element);
+/// 1 where a bar's buttons and title stand over one another or beyond its edges, else 0.
+STATEUI_WEB(crowded) int32_t stateui_web_crowded(int32_t element);
+/// Moves the element from `dx`, `dy` points off its place to it, as the sidebar slides; nothing where the user asks
+/// for less motion.
+STATEUI_WEB(slide_from) void stateui_web_slide_from(int32_t element, double dx, double dy);
 
 /// Writes the element's box on the page - x, y, width and height from the page's top left - into `into`.
 STATEUI_WEB(read_box) void stateui_web_read_box(int32_t element, double *into);
 
 /// Writes the element's size in its layout, before any transform, into `into`: width, height.
 STATEUI_WEB(read_size) void stateui_web_read_size(int32_t element, double *into);
+
+/// Writes the room the element's words take as they stand into `into`: their lines' width and height, its padding
+/// and border around them.
+STATEUI_WEB(read_natural) void stateui_web_read_natural(int32_t element, double *into);
 
 /// Where each child of `count` pairs `(layout, child)` stands in its layout, before any transform: four numbers a
 /// child - from the layout's top left, then its size - and four NaN for one the page lays out nowhere; a pair whose
@@ -188,9 +212,9 @@ STATEUI_WEB(scroll_to) void stateui_web_scroll_to(int32_t element, double x, dou
 /// The document's title, which the browser shows on the tab.
 STATEUI_WEB(set_title) void stateui_web_set_title(const char *text, int32_t length);
 
-/// The colour the page wears under its window, kept in the browser for the page's next start under the system's
+/// The color the page wears under its window, kept in the browser for the page's next start under the system's
 /// light or dark; empty for none.
-STATEUI_WEB(keep_page_colour) void stateui_web_keep_page_colour(const char *text, int32_t length);
+STATEUI_WEB(keep_page_color) void stateui_web_keep_page_color(const char *text, int32_t length);
 
 /// The site's name the page's head gives - its `application-name` - read in two steps: its length in bytes, then
 /// `copy_read`; 0 where the head gives none.
@@ -210,6 +234,7 @@ STATEUI_WEB(prefers_dark) int32_t stateui_web_prefers_dark(void);
 
 /// Shows the page in `scheme`, a `ColorScheme`.
 STATEUI_WEB(use_color_scheme) void stateui_web_use_color_scheme(int32_t scheme);
+STATEUI_WEB(use_accent_color) void stateui_web_use_accent_color(int32_t argb, int32_t has);
 
 STATEUI_WEB(accent_color) int32_t stateui_web_accent_color(void);
 STATEUI_WEB(listen_appearance) void stateui_web_listen_appearance(int32_t listener);
@@ -227,6 +252,10 @@ STATEUI_WEB(touch_screen) double stateui_web_touch_screen(void);
 
 /// Whether the user asked for less motion.
 STATEUI_WEB(reduces_motion) int32_t stateui_web_reduces_motion(void);
+
+/// Whether the user asked for more contrast; `listen_accessibility` calls `listener` when it, or less motion, turns.
+STATEUI_WEB(prefers_more_contrast) int32_t stateui_web_prefers_more_contrast(void);
+STATEUI_WEB(listen_accessibility) void stateui_web_listen_accessibility(int32_t listener);
 
 /// Draws a canvas's drawing on the `<canvas>` element, sized to its room at the screen's own density: `count`
 /// numbers of operations (WebCanvasStroke.swift), and the words they write, each ended by a zero byte.
@@ -251,6 +280,22 @@ STATEUI_WEB(read_file) void stateui_web_read_file(int32_t file, int32_t maximum,
 
 /// What a file's act answered last, read by `copy_read`: its length.
 STATEUI_WEB(file_words) int32_t stateui_web_file_words(void);
+
+/// Sends a request with the browser's `fetch` - the headers as names and values a unit separator apart - against the
+/// page's address: `listener` hears event 1 and the status, the headers and the body read by `request_words` and
+/// `request_body`, or 0 and why, read by `request_words`.
+STATEUI_WEB(send_request) void stateui_web_send_request(
+    const char *address, int32_t addressLength, const char *method, int32_t methodLength, const char *headers,
+    int32_t headersLength, const uint8_t *body, int32_t bodyLength, int32_t listener);
+
+/// Stops the request `listener` waits for, through its `AbortController`: the listener hears event 0 and why.
+STATEUI_WEB(cancel_request) void stateui_web_cancel_request(int32_t listener);
+
+/// The answered request's headers, or why none came, read by `copy_read`: its length.
+STATEUI_WEB(request_words) int32_t stateui_web_request_words(void);
+
+/// The answered request's body, read by `copy_read`: its length.
+STATEUI_WEB(request_body) int32_t stateui_web_request_body(void);
 
 /// Opens the file, or the address, in a window of its own; `listener` hears event 1 where the browser opened one.
 STATEUI_WEB(launch_file) void stateui_web_launch_file(int32_t file, int32_t listener);
@@ -279,8 +324,22 @@ STATEUI_WEB(utc_offset) double stateui_web_utc_offset(
 /// Tells a screen reader the words, through the page's polite live region.
 STATEUI_WEB(announce) void stateui_web_announce(const char *words, int32_t length);
 
+/// Offers the words and the link - a length of -1 for one not given - to the browser's share sheet, `listener` told
+/// once it answers: event 1 and "1" shared or "0" cancelled, or 0 and why not, each read by `file_words`.
+STATEUI_WEB(share) void stateui_web_share(const char *words, int32_t wordsLength, const char *link, int32_t linkLength,
+                                          int32_t listener);
+
+/// Puts the words on the browser's clipboard; `clipboard_read` tells `listener` once the browser answers: event 1
+/// and the words it holds, or 0 and why not, each read by `file_words`.
+STATEUI_WEB(clipboard_write) void stateui_web_clipboard_write(const char *words, int32_t length);
+STATEUI_WEB(clipboard_read) void stateui_web_clipboard_read(int32_t listener);
+
 /// Takes the focus off the field holding it, whose on-screen keyboard goes with it; whether one held it.
 STATEUI_WEB(blur_field) int32_t stateui_web_blur_field(void);
+
+/// Does an Edit menu's own entry - undo 0, redo 1, cut 2, copy 3, paste 4, delete 5, select all 6 - to the field the
+/// user last typed into, which takes the focus back.
+STATEUI_WEB(edit) void stateui_web_edit(int32_t command);
 
 /// Puts the focus on the element, or the first in it that takes it; whether the element or one in it holds it.
 STATEUI_WEB(focus) int32_t stateui_web_focus(int32_t element);

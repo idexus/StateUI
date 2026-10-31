@@ -8,7 +8,7 @@ import UIKit
 @_spi(Host) import StateUIConformance
 
 /// What the UIKit driver reads of a run of a text's words: the part of its label's words the run stands over
-/// (`RunPlace`), and the attributes UIKit draws there - the label's own font and colour where the run has none.
+/// (`RunPlace`), and the attributes UIKit draws there - the label's own font and color where the run has none.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
     func spanHolds(_ property: Prop, on span: MountedElement) throws -> HostValue? {
@@ -29,9 +29,7 @@ extension UIKitDriver {
             }.propValue
         case .fontFamily: return Name(font.familyName).propValue
         case .fontWeight: return FontWeight(uiKit: font.weight).propValue
-        case .fontAttributes:
-            let italic = font.fontDescriptor.symbolicTraits.contains(.traitItalic)
-            return (italic ? FontAttributes.italic : .none).propValue
+        case .fontAttributes: return Self.attributes(of: font).propValue
         case .textColor: return Self.color(attributes[.foregroundColor] as? UIColor ?? label.textColor).propValue
         case .background: return (attributes[.backgroundColor] as? UIColor).map { Self.color($0).propValue }
         case .tracking: return ((attributes[.kern] as? NSNumber)?.doubleValue ?? 0).propValue

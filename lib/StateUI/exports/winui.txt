@@ -1,6 +1,3 @@
-ActivityIndicator
-  isAnimating
-  tint
 Button
   contentMode
   fontAttributes
@@ -17,6 +14,7 @@ Button
   padding
   role
   shape
+  showsText
   stroke
   text
   textCase
@@ -42,8 +40,15 @@ Capsule
   stroke
 CheckBox
   isOn
+  text
+  textCase
+  textColor
   tint
   toggled()
+ColorPicker
+  choosesOpacity
+  color
+  colorChanged()
 DatePicker
   date
   fontAttributes
@@ -60,7 +65,6 @@ DatePicker
   closed()
   dateChanged()
   opened()
-Divider
 Ellipse
   contentMode
   dash
@@ -69,6 +73,10 @@ Ellipse
   geometryTransform
   lineCap
   lineWidth
+  stroke
+Fill
+  lineWidth
+  shape
   stroke
 Grid
   clipsContent
@@ -82,11 +90,14 @@ Grid
   stroke
 HStack
   clipsContent
+  lineAlignment
   lineWidth
   padding
+  rowSpacing
   shape
   spacing
   stroke
+  wraps
 Image
   contentMode
   source
@@ -100,11 +111,6 @@ ItemsView
   itemActivated()
   realizedChanged()
   selectedItemsChanged()
-LayoutEngine
-  clipsContent
-  lineWidth
-  shape
-  stroke
 Line
   contentMode
   dash
@@ -117,6 +123,17 @@ Line
   x2
   y1
   y2
+Link
+  destination
+  text
+  textCase
+  textColor
+  clicked()
+MotionLayout
+  clipsContent
+  lineWidth
+  shape
+  stroke
 Path
   contentMode
   dash
@@ -175,19 +192,6 @@ Polyline
 ProgressBar
   progress
   tint
-RadioButton
-  fontAttributes
-  fontFamily
-  fontSize
-  fontWeight
-  isFontAutoScalingEnabled
-  isOn
-  padding
-  text
-  textCase
-  textColor
-  textStyle
-  toggled()
 Rectangle
   contentMode
   cornerRadius
@@ -202,6 +206,8 @@ Rectangle
   stroke
 ScrollView
   horizontalScrollIndicator
+  isRefreshEnabled
+  isRefreshing
   lineWidth
   orientation
   padding
@@ -209,9 +215,8 @@ ScrollView
   shape
   stroke
   verticalScrollIndicator
+  refreshRequested()
   scrollStopped()
-  scrollXChanged()
-  scrollYChanged()
 SearchField
   fontAttributes
   fontFamily
@@ -223,22 +228,32 @@ SearchField
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
+  shape
+  stroke
   text
   textCase
   textColor
   textStyle
   submitted()
   textChanged()
+Separator
 Slider
   maximum
   minimum
   tint
   value
   valueChanged()
-Spacer
+Space
+  lineWidth
+  shape
+  stroke
+Spinner
+  isAnimating
+  tint
 Stepper
   maximum
   minimum
@@ -247,6 +262,9 @@ Stepper
   valueChanged()
 Switch
   isOn
+  text
+  textCase
+  textColor
   tint
   toggled()
 Text
@@ -281,10 +299,13 @@ TextEditor
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor
@@ -303,10 +324,13 @@ TextField
   isReadOnly
   isSpellCheckEnabled
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor
@@ -350,9 +374,10 @@ ZStack
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  accessibilityRole
+  accessibilityValue
   allowsDrop
   area
-  automationExcludedWithChildren
   background
   canDrag
   dragText
@@ -363,6 +388,8 @@ ZStack
   gridRow
   gridRowSpan
   height
+  hidesChildrenFromAccessibility
+  holdDuration
   horizontalAlignment
   isAccessibilityHidden
   isEnabled
@@ -401,6 +428,7 @@ ZStack
   drop()
   filesDropped()
   frameChanged()
+  held()
   isFocusedChanged()
   keyPressed()
   panUpdated()
@@ -410,11 +438,13 @@ ZStack
   pointerMoved()
   pointerPressed()
   pointerReleased()
+  rotationUpdated()
   swiped()
   tapped()
 (acts)
   alert()
   announce()
+  cancelCall()
   chooseAction()
   confirm()
   currentTime()
@@ -428,9 +458,14 @@ ZStack
   persistSceneValue()
   persistValue()
   prompt()
+  readClipboard()
   readFile()
   saveFile()
   scrollTo()
+  sendRequest()
+  share()
   unfocus()
+  useAccentColor()
   useColorScheme()
   utcOffset()
+  writeClipboard()

@@ -25,7 +25,7 @@ extension Scenes {
 
     /// Where the scene declaring windows of `type` stands - the group with no name for nil - the first where several
     /// do; nil where none does.
-    func index(declaring type: WindowType?) -> Int? {
+    func index(declaring type: KeyName?) -> Int? {
         windows.firstIndex { $0.declaration(of: type) != nil }
     }
 

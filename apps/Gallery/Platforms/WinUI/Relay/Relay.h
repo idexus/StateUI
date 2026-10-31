@@ -63,7 +63,7 @@ namespace gallery {
         return object.as<T>();
     }
 
-    /// A solid brush of a colour, its channels 0 through 255.
+    /// A solid brush of a color, its channels 0 through 255.
     inline xaml::Media::SolidColorBrush brush(uint8_t red, uint8_t green, uint8_t blue) {
         return xaml::Media::SolidColorBrush(winrt::Windows::UI::Color{255, red, green, blue});
     }

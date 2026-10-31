@@ -73,7 +73,7 @@ public final class WebPageElement {
 /// The application's own scripts - its head's `Page/*.js` - as Swift reaches them: an act they answer, and what
 /// they tell. A script answers an act by name on `StateUI.acts`, and tells with `StateUI.tell(name, words)`:
 ///
-///     StateUI.acts.readClipboard = () => navigator.clipboard.readText();
+///     StateUI.acts.log = (line) => { console.log(line); return ""; };
 ///     StateUI.tell("battery", `${battery.level} ${battery.charging}`);
 ///
 /// Words cross both ways: an application says in them what it hands over and reads back.
@@ -107,11 +107,11 @@ public enum StateUIScripts {
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
-    /// `stateUICall`. A performer may await - a browser reads its clipboard asynchronously - and the call is
+    /// `stateUICall`. A performer may await - a page's script answers through a promise - and the call is
     /// answered once it returns; what it throws fails the call. A second registration replaces the first.
     ///
-    ///     StateUIActs.add(GalleryContract.readClipboard) {
-    ///         try await StateUIScripts.call("readClipboard")
+    ///     StateUIActs.add(GalleryContract.log) { line in
+    ///         _ = try await StateUIScripts.call("log", line)
     ///     }
     public static func add<
         Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
@@ -201,9 +201,9 @@ public enum StateUIControls {
     }
 }
 
-/// What an element of the APPLICATION'S OWN tells the application: an event of its own, and a value its user
-/// changed. Handed to the control where it is made, so the control names members of its contract and never a
-/// handler.
+/// What an element of the APPLICATION'S OWN tells the application: an event of its own or of a tier it wears, and a
+/// value its user changed. Handed to the control where it is made, so the control names members of its contract and
+/// never a handler.
 public struct WebReports<Realized: ElementContract> {
     private let reports: Reports<Realized>
 
@@ -211,9 +211,11 @@ public struct WebReports<Realized: ElementContract> {
         self.reports = reports
     }
 
-    /// Raises one of the element's own events with the values its contract declares.
-    public func raise<each Value: HostRepresentable>(
-        _ event: ElementEvent<Realized, (repeat each Value)>,
+    /// Raises an event with the values its contract declares - one of the
+    /// element's own, or one a tier it wears declares. An event of a contract
+    /// the element does not wear is refused, and said once.
+    public func raise<Owner: Contract, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) {
         reports.raise(event, repeat each value)
@@ -255,15 +257,18 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
     /// before its page, takes them at once. Members of the element's contract or of the tiers it wears; any other is
     /// left out, and said once.
     ///
-    ///     web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+    ///     web.applies(WebViewContract.userAgent, WebViewContract.source) { control, values in
     ///         control.show(values[WebViewContract.source], userAgent: values[WebViewContract.userAgent])
     ///     }
     ///
     /// - Parameters:
-    ///   - members: the properties, written with their contracts.
+    ///   - properties: the properties, written with their contracts.
     ///   - apply: puts the values on the control.
-    public func applies(_ members: [any ContractMember], _ apply: @escaping (Made, ControlValues<Realized>) -> Void) {
-        registration.applies(members) { hosted, values in apply(hosted.control, ControlValues(values)) }
+    public func applies<each Owner: Contract, each Value: HostRepresentable>(
+        _ properties: repeat ElementProperty<each Owner, each Value>,
+        apply: @escaping (Made, ControlValues<Realized>) -> Void
+    ) {
+        registration.applies(repeat each properties) { hosted, values in apply(hosted.control, ControlValues(values)) }
     }
 
     /// An event the control raises through its reports - recorded, so the core knows this host reports it.
@@ -273,18 +278,23 @@ public final class WebRegistration<Realized: ElementContract, Made: WebControl> 
 
     /// The children of one contract the control draws itself - a map's markers - handed over whole, in the tree's
     /// order, whenever the element's children change: one added, moved, taken away, or given another value. Such a
-    /// child has no element of its own on the page. `members` are what the control realizes of each child - a
-    /// property or an event of the child's contract or of a tier it wears; anything else is left out, and said once.
+    /// child has no element of its own on the page. `properties` and `events` are what the control realizes of each
+    /// child - members of the child's contract or of a tier it wears; any other is left out, and said once.
     ///
-    ///     map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, markers in
+    ///     map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) {
+    ///         control, markers in
     ///         control.show(markers)
     ///     }
-    public func children<Child: ElementContract>(
+    public func children<
+        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
+        each EventOwner: Contract, each Payload
+    >(
         _ contract: Child.Type,
-        members: [any ContractMember],
-        _ apply: @escaping (Made, [WebChild<Child>]) -> Void
+        properties: repeat ElementProperty<each PropertyOwner, each Value>,
+        events: repeat ElementEvent<each EventOwner, each Payload>,
+        apply: @escaping (Made, [WebChild<Child>]) -> Void
     ) {
-        registration.children(contract, members: members) { hosted, children in
+        registration.children(contract, properties: repeat each properties, events: repeat each events) { hosted, children in
             apply(hosted.control, children.map(WebChild.init))
         }
     }

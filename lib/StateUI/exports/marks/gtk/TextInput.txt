@@ -1,6 +1,6 @@
-# revision 6.1
+# revision 7.1
 SearchField.cursorPosition: ✅
-SearchField.inputPurpose: ✅
+SearchField.inputPurpose: ☑️ Filling in: GNOME keeps no saved names, passwords or codes to fill a field in from; a name, a password and a code get their keys and checking all the same.
 SearchField.isReadOnly: ✅
 SearchField.isSpellCheckEnabled: ✅
 SearchField.isTextPredictionEnabled: ✅
@@ -10,7 +10,7 @@ SearchField.placeholderColor: ✓ read placeholderColor of SearchField: the clas
 SearchField.selectionLength: ✅
 SearchField.textChanged: ✅
 TextEditor.cursorPosition: ✅
-TextEditor.inputPurpose: ✅
+TextEditor.inputPurpose: ☑️ Filling in: GNOME keeps no saved names, passwords or codes to fill a field in from; a name, a password and a code get their keys and checking all the same.
 TextEditor.isReadOnly: ✅
 TextEditor.isSpellCheckEnabled: ✅
 TextEditor.isTextPredictionEnabled: ✅
@@ -20,7 +20,7 @@ TextEditor.placeholderColor: ✓ read placeholderColor of TextEditor: the class 
 TextEditor.selectionLength: ✅
 TextEditor.textChanged: ✅
 TextField.cursorPosition: ✅
-TextField.inputPurpose: ✅
+TextField.inputPurpose: ☑️ Filling in: GNOME keeps no saved names, passwords or codes to fill a field in from; a name, a password and a code get their keys and checking all the same.
 TextField.isReadOnly: ✅
 TextField.isSpellCheckEnabled: ✅
 TextField.isTextPredictionEnabled: ✅

@@ -2,14 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Where a picture comes from: one file, or one for each theme.
-// Design: docs/design/types/colour-and-theme.md#pictures-for-each-theme
+// Design: docs/design/types/color-and-theme.md#pictures-for-each-theme
 
 /// A picture: a file by name - one, or one for each theme - an icon of the
 /// platform's own, or an encoded picture's bytes.
 ///
 ///     Image("tab_list.png")
-///     ToolbarItem("Media").icon("tab_list.png")
-///     Image(light: "tab_list.png", dark: "tab_list_dark.png")
+///     ToolbarButton("Media").icon("tab_list.png")
+///     Image(ImageSource(light: "tab_list.png", dark: "tab_list_dark.png"))
 ///     Image(.icon(.share))
 ///     Image(ImageSource(bytes: downloaded))
 ///
@@ -60,7 +60,7 @@ public struct ImageSource: Equatable, Sendable, ExpressibleByStringLiteral, Host
         self.init(.file(light, dark: dark))
     }
 
-    /// The platform's own icon for `icon`, drawn in the colour of the words
+    /// The platform's own icon for `icon`, drawn in the color of the words
     /// around it where the platform tints its icons.
     ///
     ///     Button("Share").icon(.icon(.share))

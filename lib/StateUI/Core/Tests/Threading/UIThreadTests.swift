@@ -30,7 +30,7 @@ private struct Shows: View {
     let fade: State<Double>
 
     var body: some View {
-        ModifiedContent(node: label("\(fade.get())"))
+        AnyView(node: label("\(fade.get())"))
     }
 }
 
@@ -38,7 +38,7 @@ private struct Shows: View {
 private final class Posts: Sendable {
     let count = Atomic<Int>(0)
 
-    /// Signalled once a turn.
+    /// Signaled once a turn.
     let asked = DispatchSemaphore(value: 0)
 
     func post() {
@@ -61,7 +61,7 @@ final class UIThreadTests: XCTestCase {
 
         let patch = renders.render(
             Button("Nap")
-                .onClicked(gate: .none) {
+                .onClicked(.runConcurrently) {
                     try await Task.sleep(nanoseconds: 30_000_000)
                     woke = true
                 }
@@ -184,7 +184,7 @@ final class UIThreadTests: XCTestCase {
         stateUIRunJobs()
         Renderer.shared.clearInvalidation()
 
-        let key = PersistentKey("mainThread.kept", of: Double.self)
+        let key = PersistentKey<Double>("mainThread.kept")
         let kept = State(wrappedValue: 1.0, persistentKey: key)
 
         XCTAssertEqual(asked { kept.wrappedValue = 0.5 }, 1, "the write asked for no turn")
@@ -221,7 +221,7 @@ final class UIThreadTests: XCTestCase {
 
         XCTAssertEqual(asked { fade.wrappedValue = 0.5 }, 1, "the write asked for no turn")
         XCTAssertFalse(Renderer.shared.needsRender, "nobody reads it, so no render was asked for")
-        XCTAssertGreaterThan(Renderer.shared.cycleAwake(), 0, "and what waits on its board is work")
+        XCTAssertTrue(Renderer.shared.cycleAwake(), "and what waits on its board is work")
     }
 
     /// A POST FROM THE POOL reaches the host: its job is `MainActor`'s - where the
@@ -288,11 +288,11 @@ final class UIThreadTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         Renders().render(Text("worn").opacity(fade.projectedValue).id("worn").node)
 
-        _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
+        _ = HostBoundary.cycle(now: 0, reducesMotion: false)
         Renderer.shared.clearInvalidation()
 
         XCTAssertNotNil(fade.number, "the view wears the state")
-        XCTAssertEqual(Renderer.shared.cycleAwake(), 0, "and its board has nothing waiting")
+        XCTAssertFalse(Renderer.shared.cycleAwake(), "and its board has nothing waiting")
 
         return fade
     }
@@ -355,8 +355,8 @@ final class UIThreadTests: XCTestCase {
 
         let patch = renders.render(
             Button("Go")
-                .onClicked(gate: .none) {
-                    try await Dialogs.alert("//list", message: "saved")
+                .onClicked(.runConcurrently) {
+                    try await WindowSession().alert("//list", message: "saved")
                     reached = true
                 }
                 .node)

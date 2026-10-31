@@ -48,6 +48,10 @@ final class Differ {
     /// Whether the element described next is the view a page shows, whose page values the page takes.
     var describesPageRoot = false
 
+    /// Whether the element described next stands where a page stands - in a window, an arrangement, a sheet, or an
+    /// anchor standing there.
+    var describesPagePosition = false
+
     /// The handlers this walk found to run - `.onChanged`, `.onCreated` and
     /// `.onVisualStateChanged` - in the order reached.
     /// Design: docs/design/core/render.md#handlers-in-the-message
@@ -175,6 +179,7 @@ final class Differ {
                 node: placeholder,
                 forced: true,
                 sizesArrive: rendered.sizesArrive,
+                atPagePosition: rendered.atPagePosition,
                 from: Self.start(of: rendered, changed: changed))
         }
 

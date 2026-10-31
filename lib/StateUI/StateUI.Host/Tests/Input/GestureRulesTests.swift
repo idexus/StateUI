@@ -9,7 +9,8 @@ import XCTest
 @MainActor
 final class GestureRulesTests: XCTestCase {
     /// A view listens for what its handlers and channels ask: taps for a tap handler, a press dragged for a pan's
-    /// channel - one pointer's alone - the pointer and a pinch for theirs, nothing for none.
+    /// channel - one pointer's alone - the pointer, a pinch and a hold for theirs, nothing for none; a hold waits
+    /// the time it says, or the platform's own.
     func testAViewListensForWhatItsHandlersAsk() throws {
         let runtime = HostRuntime.still()
         func view(_ id: String, _ properties: [Prop: HostValue], _ events: [Event: Int32]) -> HostPatch {
@@ -24,6 +25,8 @@ final class GestureRulesTests: XCTestCase {
             view("panned", [.panXChannel: .number(7)], [.pointerMoved: 3]),
             view("twoFingers", [.panXChannel: .number(7), .panTouchCount: .number(2)], [:]),
             view("deaf", [:], [:]),
+            view("held", [.holdDuration: .number(800)], [.held: 4]),
+            view("heldUnsaid", [:], [.held: 5]),
         ])
         runtime.tree.apply(root, complete: true)
         func hearing(_ id: String) throws -> Hearing { try XCTUnwrap(runtime.tree.root?.first(id: .manual(id))).hearing }
@@ -32,6 +35,10 @@ final class GestureRulesTests: XCTestCase {
         XCTAssertEqual(try hearing("panned"), [.drags, .pointer])
         XCTAssertEqual(try hearing("twoFingers"), [], "a pan of more than one pointer is not recognized")
         XCTAssertEqual(try hearing("deaf"), [])
+        XCTAssertEqual(try hearing("held"), [.holds])
+        XCTAssertEqual(try XCTUnwrap(runtime.tree.root?.first(id: .manual("held"))).holdDuration, 800)
+        XCTAssertNil(try XCTUnwrap(runtime.tree.root?.first(id: .manual("heldUnsaid"))).holdDuration,
+                     "the platform's own time")
     }
 
     /// Each step of a pinch is its scale since the last, 1 as it begins and ends; where it stands is a share of the

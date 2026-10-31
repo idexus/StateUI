@@ -31,10 +31,16 @@ final class AndroidNavigationView: AndroidLayoutView {
     }
 
     /// Begins Android's transition over the pages' change the next frame lays out: the page arriving slides in from
-    /// one edge, the page leaving out toward the other.
+    /// one edge, the page leaving out toward the other - on one easing, so the arriving page's edge travels on the
+    /// leaving one's and neither page crosses the other.
+    /// Design: docs/design/platforms/android/pages.md#a-navigation-stack
     private func slide(pushed: Bool) {
         let (arriving, leaving) = pushed ? (Self.end, Self.start) : (Self.start, Self.end)
         let transitions = Java.new(JavaAPI.transitionSet, JavaAPI.newTransitionSet)
+        let easing = Java.new(
+            JavaAPI.pathInterpolator, JavaAPI.newPathInterpolator, .float(0.4), .float(0), .float(0.2), .float(1))
+        Java.release(local: Java.callObject(
+            transitions.reference, JavaAPI.setTransitionsInterpolator, .object(easing.reference)))
         for (edge, mode) in [(arriving, Self.appearing), (leaving, Self.disappearing)] {
             let slide = Java.new(JavaAPI.slide, JavaAPI.newSlide, .int(edge))
             Java.call(slide.reference, JavaAPI.setVisibilityMode, .int(mode))
@@ -85,20 +91,23 @@ final class AndroidNavigationView: AndroidLayoutView {
         return LayoutSize(width: page.width, height: page.height + barHeight(width: width))
     }
 
+    /// The bar along the top, reaching under what stands over it there, the top page below it with the rest
+    /// (`Clearance.underABarAtTheTop`).
+    /// Design: docs/design/platforms/android/pages.md#the-safe-area
     override func arrange(in bounds: Rect) {
+        let (barInsets, pageInsets) = showsBar ? roomInsets.underABarAtTheTop : (.none, roomInsets)
+        bar.pad(barInsets)
         let height = barHeight(width: bounds.width)
         if showsBar { bar.layout(Rect(x: 0, y: 0, width: bounds.width, height: height)) }
         guard let page = items.last else { return }
 
+        (page.view as? AndroidLayoutView)?.roomInsets = pageInsets
         let room = Rect(x: 0, y: height, width: bounds.width, height: max(0, bounds.height - height))
         page.view.layout(SingleChildArithmetic.place(of: page, in: room, direction: direction))
     }
 
     /// The bar's own height for `width` points, in points; none while it is hidden.
     private func barHeight(width: Double?) -> Double {
-        guard showsBar else { return 0 }
-
-        let widthSpec = width.map { ViewConstants.spec(ViewConstants.exactly, pixels($0)) } ?? ViewConstants.unspecified
-        return Double(bar.measure(width: widthSpec, height: ViewConstants.unspecified).height) / density
+        showsBar ? bar.height(width: width) : 0
     }
 }

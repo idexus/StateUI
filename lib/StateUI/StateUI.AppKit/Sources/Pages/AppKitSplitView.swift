@@ -20,6 +20,12 @@ import AppKit
 final class AppKitSplitView: AppKitHitTestView {
     var onPresentationChanged: ((Bool) -> Void)?
 
+    /// What the window does as the shown sidebar takes another width: its bar's part over it fits itself again.
+    var onSidebarResized: (() -> Void)?
+
+    /// The shown sidebar's width as last laid out.
+    private var sidebarWidth: CGFloat = 0
+
     /// The native split view controller the window's toolbar toggles.
     let splitController = NSSplitViewController()
 
@@ -40,10 +46,10 @@ final class AppKitSplitView: AppKitHitTestView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
 
-        sidebarSurface.insetsBySafeArea = true
-        detailSurface.insetsBySafeArea = true
         sidebarController.view = sidebarSurface
         detailController.view = detailSurface
+        // A sidebar's toolbar wears macOS's own soft edge; the detail's none, which the pane draws.
+        sidebarSurface.macOSDrawsItsEdge = true
         sidebarItem.canCollapse = true
         sidebarItem.allowsFullHeightLayout = true
         sidebarItem.minimumThickness = 260
@@ -98,10 +104,10 @@ final class AppKitSplitView: AppKitHitTestView {
         detailSurface.needsLayout = true
     }
 
-    /// Paints the part of the detail the window's bars cover in the colour
+    /// Paints the part of the detail the window's bars cover with the brush
     /// written for them, or leaves it to the system's material.
-    func setDetailBarColor(_ color: NSColor?) {
-        detailSurface.barColor = color
+    func setDetailBarBrush(_ brush: AppKitBrush) {
+        detailSurface.barBrush = brush
     }
 
     /// Stands the sidebar on the material its split view says for it beside the detail; nil for the system's
@@ -114,8 +120,9 @@ final class AppKitSplitView: AppKitHitTestView {
     var sidebarGroundForTesting: AppKitDecoration { sidebarSurface.ground }
     var sidebarLayerColorForTesting: CGColor? { sidebarSurface.layer?.backgroundColor }
 
-    var detailBarColorForTesting: NSColor? { detailSurface.barColor }
-    var sidebarBarColorForTesting: NSColor? { sidebarSurface.barColor }
+    var detailBarBrushForTesting: AppKitBrush { detailSurface.barBrush }
+    var detailSurfaceForTesting: AppKitPaneView { detailSurface }
+    var sidebarBarBrushForTesting: AppKitBrush { sidebarSurface.barBrush }
 
     var detailRowForTesting: NSView? {
         detailItem.topAlignedAccessoryViewControllers.first?.view
@@ -123,6 +130,18 @@ final class AppKitSplitView: AppKitHitTestView {
 
     var detailRowAccessoryForTesting: NSSplitViewItemAccessoryViewController? {
         detailItem.topAlignedAccessoryViewControllers.first
+    }
+
+    /// The columns' arrangements, whose visible pages say which edges each pane's content runs under.
+    func setColumns(sidebar: MountedElement?, detail: MountedElement?) {
+        sidebarSurface.column = sidebar
+        detailSurface.column = detail
+    }
+
+    /// A column's page changed - pushed, popped, its edges said anew: each pane lays its column again.
+    func columnsChanged() {
+        sidebarSurface.showBottomBar()
+        detailSurface.showBottomBar()
     }
 
     func setItems(_ items: [AppKitLayoutItem]) {
@@ -198,6 +217,11 @@ final class AppKitSplitView: AppKitHitTestView {
 
     @objc private func splitViewResized(_ notification: Notification) {
         guard !ProgramWrite.isWriting else { return }
+        let width = splitController.splitView.subviews.first?.frame.width ?? 0
+        if !sidebarItem.isCollapsed, width != sidebarWidth {
+            sidebarWidth = width
+            onSidebarResized?()
+        }
         let presented = !sidebarItem.isCollapsed
         guard presented != lastEffectivePresentation else { return }
 

@@ -50,24 +50,26 @@ struct AimSample: SampleContent, ExampleContent {
                 // in the HANDLER, because the walk fills it after the body
                 // that describes the view was built.
                 Button("Focus the first")
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         try await field.focus()
                         says = "focused \(field)"
                     }
 
                 Button("Focus the second")
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         try await note.focus()
                         says = "focused \(note)"
                     }
-
-                Button("Let go")
-                    .onClicked(gate: .ignoreWhileRunning) {
-                        try await field.unfocus()
-                        says = "let go of \(field)"
-                    }
             }
             .spacing(10)
+
+            // Each aim reaches its own field: letting go of both is two acts.
+            Button("Let go")
+                .onClicked(.ignoreWhileRunning) {
+                    try await field.unfocus()
+                    try await note.unfocus()
+                    says = "let go of \(field) and \(note)"
+                }
 
             Text(says)
                 .fontSize(13)
@@ -84,7 +86,7 @@ struct AimSample: SampleContent, ExampleContent {
                 + "@State, which the modifier that shows it also animates through its $ "
                 + "binding. A control is @Aim: `.aim(field)` puts the view's address into "
                 + "the aim, and on the aim you call the control's methods - `focus()`, "
-                + "`unfocus()`, a WebView's `goBack()`, a Map's `moveToRegion(latitude:longitude:radiusMeters:)`.")
+                + "`unfocus()`, a WebView's `goBack()`, a Map's `moveToRegion(_:)`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -26,16 +26,18 @@ WebAssembly most of a frame.
 
 An element's words for assistive technology are ARIA's: its label
 `aria-label`, what it does `aria-description`, its level as a heading the
-`heading` role with `aria-level`, hidden with what it holds `aria-hidden`, and
-hidden alone the `none` role. One writer says the role, from all the element
-is: a heading, else skipped, else its own - a container the user taps a
-button - so a tap coming or going leaves a heading a heading. Its
+`heading` role with `aria-level`, hidden with what it holds `aria-hidden`,
+hidden alone the `none` role, its value `aria-valuetext`. One writer says the
+role, from all the element is: a heading, else skipped, else the kind it says
+- `button`, `switch`, `slider`, `link`, `img`, `paragraph` - else its own - a
+container the user taps a button - so a tap coming or going leaves a heading
+a heading. Its
 identifier, which a driver finds it by, is `data-identifier`.
 
 ## Words
 
 A Text is a `<span>` whose words wrap at the width it is given and keep their
-line breaks. A font, a colour and the room around the words are CSS's
+line breaks. A font, a color and the room around the words are CSS's
 `font-size`, `font-weight`, `font-style`, `font-family`, `color` and
 `padding`; what the application leaves unsaid is the page's, and the page's
 font is the system's own.
@@ -53,7 +55,7 @@ text's size.
 
 A Text holding spans shows its runs in place of its own words, each a `<span>`
 of its own look (`MountedElement.textRuns`). A run says only what it says
-itself - its font, its colour, the space between its letters, its lines'
+itself - its font, its color, the space between its letters, its lines'
 height, its decorations, what stands behind it - and takes the rest from the
 text around it, as the page's styles inherit. A span is kept for each run by
 its place: every span's words are written again as the runs change, and of its
@@ -80,13 +82,42 @@ line where the tree says nothing. A pointer taking hold of it is its press,
 and its release comes once - lifted, called off, or gone off the button; a
 slider's are heard the same.
 
+A button - the bar's, a menu's entry, a tab, a page's - lights under a pointer
+only where the pointer hovers (`@media (hover: hover)`): a finger hovers
+nowhere, and a touch screen's browser holds the button it tapped hovered until
+the next tap, so a light under the pointer would stay on it. A press lights
+it while the finger is down, on every screen.
+
 ## A button's menu
 
 A button opening a menu says so (`aria-haspopup`) and wears a `▾` after its
 words. The browser draws no split button, so a split button is one `<button>`
 whose last part, its arrow - a `▾` set off by a line - opens the menu; a click
 there is the arrow's, never the button's. A right click or a finger held opens
-the menu too, as on any view offering one.
+the menu too, as on any view offering one. A bar's button holding a menu opens
+it the same way - one opener for both - and is made again where its item comes
+to open its menu another way.
+
+## A link
+
+A link is an `<a>` in the page's `LinkText` color, underlined. It holds its
+address as its `href` only where the page launches addresses, so the browser's
+own reading of a link - its address shown, copied - stays; its click's
+default is taken, and the host layer opens the address
+(`host/runtime.md#a-link-chosen`). It is not draggable: a press dragged over
+it moves what the hand moves, not the address. An `<a>` has no disabled state
+of its own: one that cannot be chosen is `aria-disabled`, grayed, holds no
+`href` - nothing for the browser to follow or Tab to stop at - and its click
+opens nothing.
+
+## A color picker
+
+A color picker is the browser's `<input type=color>`, which opens its
+platform's own picker. Each `input` the user's choice raises reports the
+input's six hex digits as the host layer reports a color
+(`host/runtime.md#a-color-chosen`); a value the program writes raises
+nothing. The input chooses no opacity - every color it gives is opaque - so
+`choosesOpacity` is `–` on the Web.
 
 ## A field
 
@@ -117,7 +148,7 @@ scale 1, set on iOS alone, where the user's fingers still zoom the page.
 ## Toggles
 
 A Switch is the browser's checkbox with the role of a switch, drawn as one -
-a track and a knob, the accent colour while it is on, the application's tint
+a track and a knob, the accent color while it is on, the application's tint
 in its place where it gives one - and a CheckBox the checkbox as it is. Each
 says when the user turns it (`change`), and the tree turns it through its
 `checked`. Each stands at its own size in the middle of a `<label>` that takes
@@ -125,10 +156,10 @@ the view's frame: the browser draws a checkbox over its whole box, so a frame
 larger than the box - a touch target's 44 points - would draw a larger box,
 where every other host draws its own at its size inside the frame. A click
 anywhere in the frame turns it, and assistive technology meets the checkbox
-by the view's name and hint. A RadioButton is a `<label>` holding the browser's radio button and
-its caption, so a click anywhere on it chooses it. Its group is the host
-layer's: the button holds no `name`, so the browser turns no peer off of
-itself, and the peers the host layer turns off are turned off on the page.
+by the view's name and hint. Its words are a `<span>` in the same label, so
+they name it and a click on them turns it: a switch's from its start and the
+switch at its end, a box's after the box, and the label's direction mirrors
+them right to left.
 
 ## Values in a range
 
@@ -137,7 +168,8 @@ A Slider is the browser's range, which says each move of its thumb as it goes
 for such a range Blink and WebKit move the thumb a hundredth of the range for
 an arrow key and a tenth for a page key - the host layer's rule
 (`ValueArithmetic.sliderSteps`) already. A Stepper is a field of words with the role of a spin button
-between a button taking a step down and one taking a step up, the keyboard's
+between a button taking a step down and one taking a step up, each named in
+the library's words (`ControlWords`) in the system's language, the keyboard's
 arrows a step too. A step is a whole step from where the number stands, kept
 inside its range, and a number typed past an end stands at it. Words that are
 not wholly a number - `5x` - leave the number where it was, and a step or
@@ -183,9 +215,9 @@ calendar opening and closing reach no event of the page's, so `isOpen`,
 ## Indicators
 
 A ProgressBar is the browser's `<progress>`, its share of the work done from 0
-to 1, drawn as a thin rounded bar in the accent colour or the application's
+to 1, drawn as a thin rounded bar in the accent color or the application's
 tint across the middle of a box that takes the view's frame - a cell taller
-than the bar leaves the bar thin and the frame the cell's. An ActivityIndicator is a ring turning while work goes on - the browser
+than the bar leaves the bar thin and the frame the cell's. An Spinner is a ring turning while work goes on - the browser
 has no spinner of its own - with the role of a busy progress bar; stopped, it
 shows nothing and keeps its room, and it turns slower where the user asks for
 less motion. The ring stands at its own size in the middle of the view's
@@ -270,6 +302,7 @@ at the page's 15 in semibold, `.body` at the page's 15 and `.caption` at 12.
 The size and weight the tree gives stand over the style's
 (`TextLook.standing`); a size stands in rems where the words scale, so the
 browser's text size grows it, and a weight is CSS's `font-weight` number.
+Digits of one width are `font-variant-numeric: tabular-nums`.
 
 ## Selectable words
 
@@ -290,8 +323,8 @@ tree's choice without an event and tells the user's.
 
 A browser ships no icons, so the Web's are StateUI's own: one stroke drawn
 on a 24-point square for each `Icon` (`WebIcons`), worn as a CSS mask over
-the colour of the words around it, so an icon takes a button's or a bar's
-colour and the theme's. Its `<img>` shows a drawing of nothing 24 points
+the color of the words around it, so an icon takes a button's or a bar's
+color and the theme's. Its `<img>` shows a drawing of nothing 24 points
 square, which gives the icon its size. A picture from bytes is a `data:` URL,
 its type read from its own first bytes (`WebPictureData`).
 

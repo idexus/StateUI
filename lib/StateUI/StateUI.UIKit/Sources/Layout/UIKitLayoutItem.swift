@@ -15,7 +15,7 @@ struct UIKitLayoutItem: LayoutChild {
 
     var isShown = true
 
-    /// The mounted element the view is, which a travelling place follows.
+    /// The mounted element the view is, which a traveling place follows.
     var mount: UInt64 = 0
 
     /// The element that stands the view where it is placed; nil where the layout sets its frame itself.
@@ -35,10 +35,17 @@ struct UIKitLayoutItem: LayoutChild {
     /// The view's size offered `width`, as the tree's values bound it: a layout's by its arithmetic, a control's
     /// as UIKit fits it.
     func size(offered width: Double?) -> LayoutSize {
+        // A view holding new words back is measured at their size.
+        if let held = placed?.heldWords { return held }
         let offer = values.offer(width)
         if let layout = view as? UIKitLayoutView { return values.sized(layout.measuredSize(width: offer)) }
         let fitted = view.sizeThatFits(CGSize(width: offer ?? .greatestFiniteMagnitude, height: .greatestFiniteMagnitude))
         return values.sized(LayoutSize(width: fitted.width, height: fitted.height))
+    }
+
+    func firstBaseline(offered width: Double?) -> Double? {
+        if let layout = view as? UIKitLayoutView { return layout.firstBaseline(width: values.offer(width)) }
+        return (view as? UIKitTextView)?.firstBaseline
     }
 
     func arranges(like other: UIKitLayoutItem) -> Bool {

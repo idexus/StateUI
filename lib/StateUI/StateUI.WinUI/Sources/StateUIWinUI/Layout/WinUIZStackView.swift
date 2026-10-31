@@ -4,32 +4,37 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
+/// A ZStack: its children one over another, each in its area, or where a motion layout's placements put it.
 /// Design: docs/design/platforms/winui/drawing.md#a-placed-child
 @MainActor
-final class WinUIZStackView: WinUITravellingLayout {
+final class WinUIZStackView: WinUITravelingLayout {
     /// The placement a state drives, one per child; nil while each child stands in its own area.
     var placement: HostPlacementRun? {
         didSet {
             guard placement != oldValue else { return }
             holdInDrawingOrder()
 
-            // A run moving on asks only for an arrangement: its places need no room, so nothing around is measured.
-            if let placements = placement?.placements, !placements.isEmpty, oldValue?.placements.isEmpty == false {
-                apply(placements)
+            // A run moving on asks only for an arrangement in the room it last stood its children in: nothing around
+            // is measured.
+            if let run = placement, !run.placements.isEmpty, oldValue?.placements.isEmpty == false,
+               let room = runRoom {
+                apply(run, in: room)
             } else {
                 invalidateMeasurements()
             }
         }
     }
 
+    /// The room the run last stood its children in, where a run moving on stands them again.
+    private var runRoom: Rect?
+
     /// The room inside the ZStack's own edge, in DIPs.
     var padding = Insets(0) {
         didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
-    /// Whether the ZStack stands a layout engine, which has no size of its own.
-    var engine = false
+    /// Whether the ZStack stands a motion layout, which has no size of its own.
+    var motionLayout = false
 
     @discardableResult
     override func setItems(_ items: [WinUILayoutItem]) -> Bool {
@@ -38,12 +43,13 @@ final class WinUIZStackView: WinUITravellingLayout {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width, engine: engine)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout)
     }
 
     override func arrange(in bounds: Rect) {
-        if let placements = placement?.placements, !placements.isEmpty {
-            return apply(placements)
+        if let run = placement, !run.placements.isEmpty {
+            runRoom = bounds
+            return apply(run, in: bounds)
         }
 
         beginArrangement(width: bounds.width)
@@ -66,13 +72,14 @@ final class WinUIZStackView: WinUITravellingLayout {
 
     /// Stands each child where the run says, drawn as it says: at once inside a pass, and between passes in the
     /// arrangement each place asks for.
-    private func apply(_ placements: [HostPlacement]) {
+    private func apply(_ run: HostPlacementRun, in room: Rect) {
+        let placements = run.placements
         let count = min(items.count, placements.count)
         for index in 0..<count {
             let placement = placements[index]
             let view = items[index].view
-            view.layout(placement.place)
-            view.setPlacedDrawing(placement.drawing, opacity: placement.drawnOpacity)
+            view.layout(run.place(of: index, in: room))
+            view.setPlacedDrawing(run.drawing(of: index), opacity: placement.drawnOpacity)
             (view as? WinUIGridView)?.setShadeOpacity(placement.drawnShade)
         }
         for item in items[count...] { item.view.setPlacedDrawing(nil, opacity: 1) }

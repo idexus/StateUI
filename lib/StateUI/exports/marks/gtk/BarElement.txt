@@ -1,21 +1,16 @@
-# revision 4.1
-ModalStack.barBackgroundColor: ✅
-ModalStack.barForegroundColor: ✅
-ModalStack.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
-ModalStack.barSubtitle: ✅
-ModalStack.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
-NavigationStack.barBackgroundColor: ✅
+# revision 15.1
+NavigationStack.barBackground: ✓ read barBackground of NavigationStack: the class of the host's style sheet the header wears: GTK reads back no background
 NavigationStack.barForegroundColor: ✅
-NavigationStack.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
-NavigationStack.barSubtitle: ✅
-NavigationStack.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
-SplitView.barBackgroundColor: ✅
+NavigationStack.barScrollEdge: ☑️ No edge: GNOME's flat header bar shows its shadow while the content scrolls.
+NavigationStack.toolbarSpacing: – A header bar's buttons stand in libadwaita's own look.
+NavigationStack.toolbarStyle: – The header bar's buttons keep libadwaita's own look.
+SplitView.barBackground: ☑️ GNOME blurs nothing inside a window: a blur or glass shows its color. A gradient across a corner or out from a point keeps the header bar's proportions as it was painted, not as the window resizes.
 SplitView.barForegroundColor: ✅
-SplitView.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
-SplitView.barSubtitle: ✅
-SplitView.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
-TabView.barBackgroundColor: ✅
+SplitView.barScrollEdge: ☑️ No edge: GNOME's flat header bar shows its shadow while the content scrolls.
+SplitView.toolbarSpacing: – A header bar's buttons stand in libadwaita's own look.
+SplitView.toolbarStyle: – The header bar's buttons keep libadwaita's own look.
+TabView.barBackground: ☑️ GNOME blurs nothing inside a window: a blur or glass shows its color. A gradient across a corner or out from a point keeps the header bar's proportions as it was painted, not as the window resizes.
 TabView.barForegroundColor: ✅
-TabView.barIcon: – A GNOME header bar is its page's own and shows no application's mark.
-TabView.barSubtitle: ✅
-TabView.barTitle: – A GNOME header bar is its page's own and names that page; an application names itself in none.
+TabView.barScrollEdge: ☑️ No edge: GNOME's flat header bar shows its shadow while the content scrolls.
+TabView.toolbarSpacing: – A header bar's buttons stand in libadwaita's own look.
+TabView.toolbarStyle: – The header bar's buttons keep libadwaita's own look.

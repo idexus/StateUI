@@ -8,7 +8,8 @@ names.
 
 Read this page before contributing. A change follows these decisions; a
 proposal to change one starts as a Proposal issue that answers the reason given
-here ([Contributing](../../CONTRIBUTING.md)).
+here ([Contributing](../../CONTRIBUTING.md)). The last section says what a
+consistent API is and the rules every change to it keeps.
 
 ## A property is one modifier: a value or a state
 
@@ -41,8 +42,10 @@ body is built again, compared, and the host is sent the difference. A state
 handed as `$weight` is carried by the host: a write reaches the native control
 on the host's own cycle and no body is built again; a value that can move
 travels to each new one ([Motion and journeys](motion-and-journeys.md)); and
-what the platform reports lands on the same state. Every property the host can
-carry offers both paths, because each has the same shape.
+what the platform reports lands on the same state. Every property that crosses
+to the host as it is offers both paths, because each has the same shape; one
+the library translates to the host's shape takes the state alone
+([Two words and a part](#two-words-and-a-part-state-binding-statepart)).
 
 **Deliberately rejected:** a modifier without an argument that sets one value
 of a property - `.bold()`, `.italic()`, `.center()`, `.leading()` and their
@@ -123,6 +126,67 @@ declared journey type, and an engine woken by what it reads. Each would double
 every API that takes a state, and where a state is used already says what it
 is.
 
+## Two words and a part: `@State`, `@Binding`, `StatePart`
+
+One rule names how a view holds a value:
+
+- `@State` owns the value and manages its state;
+- `@Binding` borrows a whole state, with the host's reactive channel;
+- a `StatePart` - `$mix.volume`, `$levels[1]` - is one property or element of
+  a state, read and written through the whole, and nothing in the library
+  takes it.
+
+Every member takes a value, which a body reads, or a `Binding`, which the
+host carries - `Text(name)` reads, `Text($name)` is the channel. A
+part is neither, so it reaches no control
+([Editing a record: two ways](state-and-reactivity.md#editing-a-record-two-ways)):
+
+```swift
+final class Mix {
+    @State var volume = 0.5
+}
+
+struct Mixer: View {
+    @State private var mix = Mix()
+    @State private var master = 0.5
+
+    var body: some View {
+        VStack {
+            Slider(mix.$volume)     // the field's own state, carried by the host
+            Slider($master)         // carried by the host, on a journey
+        }
+        .engine(following: $master) { _ in }
+    }
+}
+```
+
+- **The road is the type's.** A `Binding` rides the host's channel, has a
+  journey and wakes an engine; a value is read where the body is built.
+  Nothing decides it at run time.
+- **A mistake the compiler refuses.** A part handed to a control, a journey,
+  a driven modifier, `engine(following:)` or `convert` does not compile: the
+  error names a `StatePart` where a `Binding` is asked, rather than a control
+  that quietly rebuilds its body on every keystroke.
+- **The write stands where it is seen.** A record kept as a value gives each
+  control the value and writes the user's change in the control's event - by
+  identity, in the handler.
+- **One language.** Two words say who holds the value, and the part's name
+  says what it is: a child borrowing a state says `@Binding`, a child given a
+  value takes the value.
+- **A translated value is a state, read by its element.** A value that
+  crosses to the host as it is - text, on or off, a number, a day, a color -
+  takes a value or a state. A value the library translates to the host's
+  shape - a picker's place, a list's chosen items, a tab, a stack's pages, a
+  sheet - takes the state alone, and the element reads it as it is described:
+  handing a state over never makes the body its reader.
+
+**Deliberately rejected:** one protocol a whole state and a part both keep,
+through which a control takes either - a part then compiles into a control and
+takes the slower road unseen; a part refused at run time with a complaint,
+which still compiles; a binding made from closures, which promises nothing its
+type can keep; and a property wrapper for a part - two wrappers that look
+alike and behave apart.
+
 ## Native controls, through what they expose
 
 Each host renders with its platform's own controls, so an application looks
@@ -151,7 +215,7 @@ is a thin layer of its toolkit's calls.
 
 **Deliberately rejected:** a serialized wire between the core and a host, a
 host written in its platform's own language, and a rule kept in one host that
-another decides too. One copy of a rule is one behaviour on every platform, and
+another decides too. One copy of a rule is one behavior on every platform, and
 every host's suite proves it through the same conformance cases.
 
 ## Navigation and presentation are state
@@ -185,7 +249,10 @@ does not compile, and the core tells a navigation stack, a split view or a tab
 view from other views by its type.
 
 **Deliberately rejected:** `any View` and type-erased wrappers in the public
-API, which would turn those compile errors into failures at run time.
+API, which would turn those compile errors into failures at run time - an
+array of `any View` placed as views among them, and a menu's entries handed
+over as a list of `any`. The one list of `any` that stands is a contract's
+`members`: metadata of members of different types, never a view.
 
 ## A mistake is refused by its type, or said once
 
@@ -217,14 +284,14 @@ reasons about threads in every handler.
 
 A handler with no `await` runs whole inside its event and names nothing. A
 handler that awaits can still be running when its event comes again, so it
-names a gate, which says what happens then: the event is let go, cancels the
+names a policy, which says what happens then: the event is let go, cancels the
 run before it, waits, or runs beside it
 ([When the event comes again](../interface/concurrency.md#when-the-event-comes-again)):
 
 ```swift
 @MainActor
 final class Document {
-    let saving = Gatekeeper(.ignoreWhileRunning)
+    let saving = Gate(.ignoreWhileRunning)
 
     func save() async {}
     func autosave() { Task(gate: saving) { await self.save() } }
@@ -241,7 +308,7 @@ struct Toolbar: View {
                 .isEnabled(!document.saving.isBusy)
                 .onClicked(gate: document.saving) { await document.save() }
             SearchField($query)
-                .onTextChanged(gate: .cancelPrevious) { text in
+                .onTextChanged(.cancelPrevious) { text in
                     try await Task.sleep(for: .milliseconds(250))
                     found = text
                 }
@@ -251,15 +318,16 @@ struct Toolbar: View {
 ```
 
 - **The compiler asks the question, and only where there is one.** An
-  awaiting handler without a gate does not compile, and the message says what
-  to write; a handler with no `await` takes none.
-- **One gate for everything that touches one thing.** A policy given as the
-  gate is the handler's own; a `Gatekeeper` is shared by every handler and
-  task written with it - two buttons, an autosave - and its `isBusy` is a
-  state a body reads. The type says which kind a gate is: only a gatekeeper
-  has `isBusy`, and only it takes a task.
-- **One spelling.** Work passes a gate written `gate:` wherever it starts, an
-  event or the application's code.
+  awaiting handler without a policy does not compile, and the message says
+  what to write; a handler with no `await` takes none.
+- **One gate for everything that touches one thing.** A policy given alone is
+  the handler's own gate; a `Gate` is shared by every handler and task written
+  with it - two buttons, an autosave - and its `isBusy` is a state a body
+  reads. The label says which kind a handler has: a policy needs none, or
+  `policy:` after the event's own arguments, and a shared gate is always
+  `gate:` - only it has `isBusy`, and only it takes a task.
+- **One spelling.** Shared work passes its gate written `gate:` wherever it
+  starts, an event or the application's code.
 
 **Deliberately rejected:** a default gate, which would hide the one question
 an awaiting handler has to answer; a policy on each event
@@ -288,7 +356,10 @@ let a page already left write through a shared model.
 
 The StateUI library never imports Foundation; an application may. Handlers run
 on `MainActor`, drained by the platform's own loop on Apple, and by the host
-through `HostBoundary.runJobs` elsewhere.
+through `HostBoundary.runJobs` elsewhere. The library's own ground is
+`StateUIFoundation`: the platform's C library behind one import - `exp`, `sin`
+and the rest - which an application may import too; what the library builds on
+it is the host's.
 
 **Deliberately rejected:** Foundation in the library, and its timers, run loops
 and main queue as the library's clock. The library runs on macOS, iOS, Android,
@@ -328,3 +399,44 @@ not `min`). One concept has one word across the whole library.
 **Deliberately rejected:** a verb or a value as a modifier (`.center()`),
 abbreviations, and names that say what something resembles rather than what it
 is.
+
+## One road to one place
+
+A consistent API is one where every place is reached one way, spelled one way,
+and handed a type that says what it is: what an author learns once holds
+everywhere, and a mistake shows where it is written. Every change to the
+public API keeps to these rules:
+
+- **One road.** A concept has one spelling and one way in: a property its
+  member's modifier, several states read together `.multi`, a scroller's
+  offset `.scrollOffset($offset)`, the application `registerApplication()`. A
+  second road to the same place - an alias, a shortcut, an event repeating a
+  state - is removed, not kept beside the first.
+- **Through the contract.** A property, an event and an act are written with
+  the contract that declares them. What only a host needs - a key made from a
+  name, the renderer, the lists of properties the hosts share - stands behind
+  `@_spi(Host)`: an application meets what it writes, and the library exports
+  no C function.
+- **Typed values.** A value's type says what it is: a color is
+  `Color(hex: 0x512BD4)`, and text read as one is `Color(parsing:)`, which may
+  fail; insets name their edges `start` and `end`, which follow the reading
+  direction; a button's purpose is an `ActionRole`. No string, number or flag
+  stands for something that has a type of its own.
+- **One shape for one kind.** A modifier gives back `Modified` - a composed
+  view's configures the view and gives it back - and names a state it borrows
+  `state`; a host's `run` ends the process where its toolkit
+  holds the thread; every host's facade takes what the core takes, in the
+  same words.
+- **What an element starts, it ends.** A subscription, a ticker's run and a
+  handler's writes end with the element or the run that made them:
+  `.onHostEvent` ends with its view, and a run another replaced starts nothing.
+- **A rule is a test.** Where a type can refuse a mistake, it does, and a
+  closed road is proved by a listing that must not compile beside the open
+  one; where only the sources can tell, a guard reads them. A rule nothing
+  checks is not yet a rule.
+
+**Deliberately rejected:** an old spelling kept beside a new one, a
+convenience overload that reaches a member a second way, and a public
+declaration only a host uses. Each doubles what a reader learns and what every
+host must prove, and an API with two roads to one place has no one place where
+its behavior is decided.

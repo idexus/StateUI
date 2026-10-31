@@ -26,9 +26,10 @@ final class AndroidFileToolkit: FileToolkit {
     }
 
     func show(
-        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+        _ dialog: HostFileDialog, over asked: MountedElement?,
+        answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = AndroidRenderer.window else { return nil }
+        guard let window = AndroidRenderer.window(asked: asked) else { return nil }
         let ticket = dialogs.hold(answered)
         Java.frame {
             switch dialog.kind {

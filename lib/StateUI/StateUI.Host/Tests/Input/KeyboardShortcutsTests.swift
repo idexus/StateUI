@@ -115,8 +115,8 @@ final class KeyboardShortcutsTests: XCTestCase {
     func testAnArrangementsBarItemsShortcutReachesIt() throws {
         var page = HostPatch(id: .manual("page"), type: .page)
         page.children = .arranged([element("body", .text, nil)])
-        var group = HostPatch(id: .manual("window"), type: .toolbarItemGroup)
-        group.children = .arranged([element("account", .toolbarItem, save)])
+        var group = HostPatch(id: .manual("window"), type: .toolbarGroup)
+        group.children = .arranged([element("account", .toolbarButton, save)])
         var stack = HostPatch(id: .manual("stack"), type: .navigationStack)
         stack.children = .arranged([page, group])
         let runtime = mount([stack])

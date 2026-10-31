@@ -19,5 +19,5 @@ What differs is each platform's own and stays in its host, a subclass of the
 shared map: the recognizer that hears a click or a tap on the map itself
 beside MapKit's own, the details button a marker's callout shows - AppKit's
 an `info.circle` button, UIKit's the details disclosure, whose tap the map's
-delegate hears - and the platform's colours and symbol images a marker is
+delegate hears - and the platform's colors and symbol images a marker is
 dressed in (`MarkerLook`).

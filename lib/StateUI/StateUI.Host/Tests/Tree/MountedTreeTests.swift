@@ -22,6 +22,21 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(log.applied.last, "stack", "a parent is presented after its children")
     }
 
+    /// A page made under an arrangement's ground presents the background it never wrote, so its host draws it there;
+    /// one with its own presents its own.
+    @MainActor
+    func testAPageMadeUnderAGroundPresentsItsBackground() {
+        let (tree, log) = Self.tree()
+        var plain = HostPatch(id: .manual("plain"), type: .page)
+        plain.children = .arranged([])
+        var stack = HostPatch(id: .manual("stack"), type: .navigationStack)
+        stack.properties[.background] = .string("stack")
+        stack.children = .arranged([plain])
+        tree.apply(stack, complete: true)
+
+        XCTAssertEqual(log.changed["plain"]?.contains(.background), true)
+    }
+
     /// A sparse message naming a child the element does not hold is drift, and mounts nothing.
     @MainActor
     func testASparseMessageNamingAStrangerDrifts() {
@@ -241,7 +256,26 @@ final class MountedTreeTests: XCTestCase {
         tree.apply(Self.stack("stack", ["a", "b"]), complete: true)
 
         let runs = HostBoundary.tally.runs
-        XCTAssertTrue(written.first?.contains("  runs \(runs)  views 7  apply ") ?? false, written.joined())
+        let elements = MountedElement.liveCount
+        XCTAssertTrue(written.first?.contains("  runs \(runs)  views 7  elements \(elements)  apply ") ?? false, written.joined())
+    }
+
+    /// An element the tree dropped is counted alive while something still holds it, and out once it is let go - what
+    /// finds a host holding an element after it left.
+    @MainActor
+    func testAnElementHeldAfterTheTreeDroppedItIsCountedAlive() throws {
+        let (tree, _) = Self.tree()
+        tree.apply(Self.stack("stack", ["a", "b"]), complete: true)
+        let standing = MountedElement.liveCount
+        var held = try XCTUnwrap(tree.root?.children.last)
+
+        tree.apply(Self.stack("stack", ["a"]), complete: true)
+        XCTAssertEqual(tree.root?.children.count, 1)
+        XCTAssertEqual(MountedElement.liveCount, standing, "dropped, still held")
+
+        held = try XCTUnwrap(tree.root?.children.first)
+        XCTAssertEqual(MountedElement.liveCount, standing - 1, "let go")
+        XCTAssertEqual(held.id, .manual("a"))
     }
 
     /// With the passes asked for, the tree starts the inspector's recording, and each message applied writes
@@ -315,6 +349,35 @@ final class MountedTreeTests: XCTestCase {
 
         tree.present(states: [:], properties: [layoutMount: [.padding]])
         XCTAssertEqual(log.arranged, ["layout"], "a padding moved arranges them")
+    }
+
+    /// A LAYOUT'S RUN TURNS WITH ITS DIRECTION: the language's direction turning presents the run again, standing
+    /// the other way where the layout mirrors right to left, and as written where it does not.
+    @MainActor
+    func testALayoutsRunTurnsWithItsDirection() {
+        let (tree, log) = Self.tree(viewless: [])
+        let locale = StandardEnvironment.locale
+        defer { locale.layoutDirection = .leftToRight }
+        func layout(_ name: String, mirrors: Bool) -> HostPatch {
+            var layout = HostPatch(id: .manual(name), type: .motionLayout)
+            layout.driven = .replace([.area: HostStateBinding(state: name == "mirrored" ? 901 : 902, mode: .out,
+                                                              kind: .placement, laneKind: .number)])
+            if mirrors { layout.properties[.mirrorsRightToLeft] = .bool(true) }
+            layout.children = .arranged([HostPatch(id: .manual("\(name).a"), type: .text)])
+            return layout
+        }
+        var stack = HostPatch(id: .manual("stack"), type: .vStack)
+        stack.children = .arranged([layout("mirrored", mirrors: true), layout("written", mirrors: false)])
+        tree.apply(stack, complete: true)
+        let (mirrored, written) = (tree.root!.children[0], tree.root!.children[1])
+        XCTAssertEqual([mirrored.runDirection, written.runDirection], [.leftToRight, .leftToRight])
+        log.presented.removeAll()
+
+        locale.layoutDirection = .rightToLeft
+        tree.followTheLanguagesDirection()
+
+        XCTAssertEqual(log.presented["mirrored"], [.area], "its run presented again")
+        XCTAssertEqual([mirrored.runDirection, written.runDirection], [.rightToLeft, .leftToRight])
     }
 
     /// A CHILD A NEW ARRANGEMENT KEEPS AS IT WAS IS NOT PRESENTED AGAIN: a list's next rows name the rows it keeps for
@@ -409,13 +472,13 @@ final class MountedTreeTests: XCTestCase {
         tree.apply(stack, complete: true)
         let element = try XCTUnwrap(tree.root)
 
-        XCTAssertEqual(element.insets(.padding), Insets(left: 1, top: 2, right: 3, bottom: 4))
+        XCTAssertEqual(element.insets(.padding), Insets(start: 1, top: 2, end: 3, bottom: 4))
         XCTAssertEqual(element.insets(.margin), Insets(0), "fewer than four")
         XCTAssertEqual(element.insets(Prop("sides")), Insets(0), "none given")
     }
 
-    /// What a frame asks is the host layer's, the same on every host: a colour moved presents the element alone, a
-    /// width moved arranges its parent too, and a bar's colour moved composes the window's chrome again.
+    /// What a frame asks is the host layer's, the same on every host: a color moved presents the element alone, a
+    /// width moved arranges its parent too, and a bar's color moved composes the window's chrome again.
     @MainActor
     func testWhatAFrameAsksFollowsWhatMoved() {
         let (tree, log) = Self.tree(viewless: [])
@@ -428,16 +491,16 @@ final class MountedTreeTests: XCTestCase {
         let (labelMount, barsMount) = (tree.root!.children[0].mount, tree.root!.children[1].mount)
 
         log.arranged.removeAll()
-        let colour = tree.present(states: [:], properties: [labelMount: [.textColor]])
-        XCTAssertEqual(log.arranged, ["label"], "a colour moves the label alone")
-        XCTAssertFalse(colour.windowChrome)
+        let color = tree.present(states: [:], properties: [labelMount: [.textColor]])
+        XCTAssertEqual(log.arranged, ["label"], "a color moves the label alone")
+        XCTAssertFalse(color.windowChrome)
 
         log.arranged.removeAll()
         tree.present(states: [:], properties: [labelMount: [.width]])
         XCTAssertEqual(log.arranged, ["label", "stack"], "a width moves the label's place too")
 
-        let bar = tree.present(states: [:], properties: [barsMount: [.barBackgroundColor]])
-        XCTAssertTrue(bar.windowChrome, "a bar's colour is the window's chrome")
+        let bar = tree.present(states: [:], properties: [barsMount: [.barBackground]])
+        XCTAssertTrue(bar.windowChrome, "a bar's color is the window's chrome")
     }
 
     /// What of a page the chrome shows - its title, its way back, its bar, the back button's words - moved from a
@@ -483,6 +546,22 @@ final class MountedTreeTests: XCTestCase {
         let (tree, _) = Self.tree()
         tree.apply(layered(.vStack, children), complete: true)
         XCTAssertEqual(Self.names(tree.root?.children), ["a", "b", "c", "d"], "a stack keeps the order written")
+    }
+
+    /// A space grows along its stack into the room the others leave; a fill takes only what it is offered, as a
+    /// layout holding nothing does.
+    @MainActor
+    func testASpaceGrowsAlongItsStackAndAFillDoesNot() {
+        let (tree, _) = Self.tree()
+        var column = HostPatch(id: .manual("column"), type: .vStack)
+        column.children = .arranged([
+            HostPatch(id: .manual("fill"), type: .fill),
+            HostPatch(id: .manual("space"), type: .space),
+            HostPatch(id: .manual("layers"), type: .zStack),
+        ])
+        tree.apply(column, complete: true)
+
+        XCTAssertEqual(tree.root?.children.map(\.layoutValues.grows), [false, true, false])
     }
 
     /// The area a child names reaches its ZStack's arithmetic as it was written, and a child naming none
@@ -560,30 +639,14 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(tree.root?.takeCreatedHandlers(), [])
     }
 
-    /// A radio button's peers are its group's in its window, the whole tree where it stands in none, or every radio
-    /// button beside it where it names none.
-    @MainActor
-    func testARadioButtonsPeersAreItsGroupOrItsSiblings() {
-        let (tree, _) = Self.tree()
-        func radio(_ id: String, group: String?) -> HostPatch {
-            var radio = HostPatch(id: .manual(id), type: .radioButton)
-            if let group { radio.properties = [.groupName: .name(group)] }
-            return radio
-        }
-        var left = HostPatch(id: .manual("left"), type: .vStack)
-        left.children = .arranged([radio("s", group: "size"), radio("x", group: nil), radio("y", group: nil)])
-        var right = HostPatch(id: .manual("right"), type: .vStack)
-        right.children = .arranged([radio("m", group: "size"), radio("red", group: "colour")])
-        var root = HostPatch(id: .manual("root"), type: .hStack)
-        root.children = .arranged([left, right])
-        tree.apply(root, complete: true)
-
-        func peers(_ id: String) -> [String] {
-            (tree.root?.first(id: .manual(id))?.radioPeers ?? []).map { "\($0.id)" }
-        }
-        XCTAssertEqual(peers("s"), ["\(ElementID.manual("m"))"])
-        XCTAssertEqual(peers("x"), ["\(ElementID.manual("s"))", "\(ElementID.manual("y"))"], "every radio beside it")
-        XCTAssertEqual(peers("red"), [])
+    /// Every word assistive technology meets of an element is realized on every element: a host meeting assistive
+    /// technology and taking a reader's actions says them all, so no case of one is left unrun.
+    func testEveryWordForAssistiveTechnologyIsRealized() {
+        let registry = Registry<AnyObject>()
+        registry.everyElementMeetsAssistiveTechnology()
+        registry.everyElementTakesAccessibilityActions()
+        let unrealized = Set(MountedElement.accessibilityProperties.map(\.name)).subtracting(registry.sharedNames)
+        XCTAssertEqual(unrealized, [])
     }
 
     /// What assistive technology meets of an element is its words and its presence: left out with its children
@@ -603,7 +666,12 @@ final class MountedTreeTests: XCTestCase {
                 .accessibilityHint: .string("Says hello"), .accessibilityHeading: .enumeration(2),
                 .isAccessibilityHidden: .bool(false),
             ]),
-            label("both", [.isAccessibilityHidden: .bool(true), .automationExcludedWithChildren: .bool(true)]),
+            label("rated", [
+                .accessibilityLabel: .string("Rating"), .accessibilityRole: .enumeration(3),
+                .accessibilityValue: .string("3 of 5"),
+            ]),
+            label("kind", [.accessibilityRole: .enumeration(1)]),
+            label("both", [.isAccessibilityHidden: .bool(true), .hidesChildrenFromAccessibility: .bool(true)]),
             label("hidden", [.isAccessibilityHidden: .bool(true)]),
             label("silent", [:]),
         ])
@@ -612,6 +680,10 @@ final class MountedTreeTests: XCTestCase {
 
         XCTAssertEqual(words("said"), AccessibilityWords(
             identifier: "greeting", label: "Hello", hint: "Says hello", headingLevel: 2, presence: .met))
+        XCTAssertEqual(words("rated"), AccessibilityWords(
+            identifier: nil, label: "Rating", hint: nil, role: .adjustable, value: "3 of 5", headingLevel: 0,
+            presence: .met))
+        XCTAssertEqual(words("kind")?.presence, .met, "a kind of its own said is words of its own")
         XCTAssertEqual(words("both")?.presence, .hiddenWithChildren)
         XCTAssertEqual(words("hidden")?.presence, .hidden)
         XCTAssertEqual(words("silent"), AccessibilityWords(
@@ -632,11 +704,11 @@ final class MountedTreeTests: XCTestCase {
         }
         var root = HostPatch(id: .manual("root"), type: .vStack)
         root.children = .arranged([
-            stack("labelled", [.accessibilityLabel: .string("Card")]),
+            stack("labeled", [.accessibilityLabel: .string("Card")]),
             stack("hinted", [.accessibilityHint: .string("Opens it")]),
             stack("heading", [.accessibilityHeading: .enumeration(1)]),
             stack("tapped", [:], tapped: true),
-            stack("labelled but hidden", [.accessibilityLabel: .string("Card"), .isAccessibilityHidden: .bool(true)]),
+            stack("labeled but hidden", [.accessibilityLabel: .string("Card"), .isAccessibilityHidden: .bool(true)]),
             stack("plain", [:]),
         ])
         tree.apply(root, complete: true)
@@ -645,9 +717,41 @@ final class MountedTreeTests: XCTestCase {
         }
 
         XCTAssertEqual(
-            ["labelled", "hinted", "heading", "tapped"].map(presence), [.met, .met, .met, .met], "each met")
-        XCTAssertEqual(presence("labelled but hidden"), .hidden, "as the author says")
+            ["labeled", "hinted", "heading", "tapped"].map(presence), [.met, .met, .met, .met], "each met")
+        XCTAssertEqual(presence("labeled but hidden"), .hidden, "as the author says")
         XCTAssertNil(presence("plain"), "as its view stands of itself")
+    }
+
+    /// A button whose words stand out of sight beside its picture is named by them, unless the author names it; its
+    /// words, its picture and whether they show put its words for assistive technology on its view again.
+    @MainActor
+    func testWordsOutOfSightNameTheButton() throws {
+        let (tree, _) = Self.tree()
+        func button(_ id: String, _ properties: [Prop: HostValue]) -> HostPatch {
+            var button = HostPatch(id: .manual(id), type: .button)
+            button.properties = properties
+            return button
+        }
+        var root = HostPatch(id: .manual("root"), type: .vStack)
+        root.children = .arranged([
+            button("alone", [.text: .string("Delete"), .icon: .string("trash.png"), .showsText: .bool(false)]),
+            button("named", [
+                .text: .string("Delete"), .icon: .string("trash.png"), .showsText: .bool(false),
+                .accessibilityLabel: .string("Bin"),
+            ]),
+            button("beside", [.text: .string("Delete"), .icon: .string("trash.png")]),
+            button("bare", [.text: .string("Delete"), .showsText: .bool(false)]),
+        ])
+        tree.apply(root, complete: true)
+        func element(_ id: String) throws -> MountedElement { try XCTUnwrap(tree.root?.first(id: .manual(id))) }
+
+        XCTAssertEqual(try element("alone").accessibilityWords.label, "Delete")
+        XCTAssertEqual(try element("named").accessibilityWords.label, "Bin", "the author's words first")
+        XCTAssertNil(try element("beside").accessibilityWords.label, "words in sight name it themselves")
+        XCTAssertNil(try element("bare").accessibilityWords.label, "with no picture its words show")
+        XCTAssertTrue(try element("alone").changesAccessibility([.text]))
+        XCTAssertTrue(try element("beside").changesAccessibility([.showsText]))
+        XCTAssertFalse(try element("beside").changesAccessibility([.text]), "words in sight change nothing of it")
     }
 
     /// Whether a view is an element to assistive technology: as its presence says, else as the view stood of itself
@@ -715,7 +819,7 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertNil(tree.root?.first(id: .manual("plain"))?.textRuns)
     }
 
-    /// An element's own look is read from its own values: its font, its colour, its letters' spacing, its lines'
+    /// An element's own look is read from its own values: its font, its color, its letters' spacing, its lines'
     /// height and its decorations.
     @MainActor
     func testAnElementsLookIsItsOwnValues() {
@@ -816,7 +920,7 @@ final class MountedTreeTests: XCTestCase {
             image.laneKind = .number
         }
         for state in states { state.wrappedValue = 1 }
-        _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
+        _ = HostBoundary.cycle(now: 0, reducesMotion: false)
         let bindings = images.map {
             HostStateBinding(state: Renderer.shared.number(for: $0), mode: .out, kind: .property, laneKind: .number)
         }
@@ -842,7 +946,8 @@ final class MountedTreeTests: XCTestCase {
     }
 
     /// A PATCH SAYS WHETHER THE ELEMENT ARRANGES ITS CHILDREN AGAIN: a new arrangement, a child made anew or drawn by
-    /// the element, a child's place or size changed - not a change inside a child that stands where it stood.
+    /// the element, a child's place or size changed, or anything its measure reads - its words - and not a change
+    /// only drawn or inside a child.
     @MainActor
     func testAPatchSaysWhetherTheElementArrangesItsChildrenAgain() throws {
         let (tree, _) = Self.tree(viewless: ["drawn"])
@@ -859,7 +964,8 @@ final class MountedTreeTests: XCTestCase {
             return stack.childrenNeedArranging
         }
 
-        XCTAssertFalse(changed("a") { $0.properties[.text] = .string("words") }, "a child's words, in its place")
+        XCTAssertTrue(changed("a") { $0.properties[.text] = .string("words") }, "a child's words, which size it")
+        XCTAssertFalse(changed("a") { $0.properties[.opacity] = .number(0.5) }, "a child's opacity, drawn in its place")
         XCTAssertTrue(changed("a") { $0.properties[.width] = .number(80) }, "a child's size")
         XCTAssertTrue(changed("a") { $0.properties[.margin] = .numbers([1, 2, 3, 4]) }, "a child's place")
         XCTAssertTrue(changed("drawn") { $0.properties[.text] = .string("words") }, "a child the element draws")
@@ -938,9 +1044,11 @@ final class MountedTreeTests: XCTestCase {
 @MainActor
 private final class NativeLog {
     var applied: [String] = []
+    var changed: [String: Set<Prop>] = [:]
     var arranged: [String] = []
     var left: [String] = []
     var presentedWriting: [Bool] = []
+    var presented: [String: Set<Prop>] = [:]
     var turned: [String] = []
 }
 
@@ -966,11 +1074,17 @@ private final class RecordingNative: NativeElement {
 
     func standingValue(_ property: Prop) -> HostValue? { nil }
     func animates(_ property: Prop) -> Bool { false }
-    func applied(changed: Set<Prop>, wasDescribed: Bool) { log.applied.append(name) }
+    func applied(changed: Set<Prop>, wasDescribed: Bool) {
+        log.applied.append(name)
+        log.changed[name, default: []].formUnion(changed)
+    }
     func presentFrame(_ changed: Set<Prop>) {
         log.presentedWriting.append(ProgramWrite.isWriting)
+        log.presented[name, default: []].formUnion(changed)
     }
     func arrangeChildren() { log.arranged.append(name) }
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func directionChanged() { log.turned.append(name) }
     func leave() { log.left.append(name) }
 }
@@ -988,6 +1102,8 @@ private final class ReadingNative: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) { _ = element.resolvedValue(.value) }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func directionChanged() {}
     func leave() {}
 }

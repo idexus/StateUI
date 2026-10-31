@@ -16,21 +16,21 @@ final class HostFileDialogTests: XCTestCase {
     /// act asks for no dialog.
     func testTheActSaysWhatTheDialogAsksFor() throws {
         let one = try XCTUnwrap(HostFileDialog(HostActCall(
-            act: .openFiles, arguments: [[page].propValue, .bool(false)], completion: 1)))
+            act: .openFiles, arguments: HostActCall.usersWindow + [[page].propValue, .bool(false)], completion: 1)))
         XCTAssertEqual(one.kind, .open)
         XCTAssertEqual(one.types, [page])
         let several = try XCTUnwrap(HostFileDialog(HostActCall(
-            act: .openFiles, arguments: [[FileType]().propValue, .bool(true)], completion: 1)))
+            act: .openFiles, arguments: HostActCall.usersWindow + [[FileType]().propValue, .bool(true)], completion: 1)))
         XCTAssertEqual(several.kind, .openSeveral)
         XCTAssertEqual(several.types, [], "none for any file")
 
         let save = try XCTUnwrap(HostFileDialog(HostActCall(
-            act: .saveFile, arguments: [[UInt8]([1, 2, 255]).propValue, .string("Report"), [page].propValue],
+            act: .saveFile, arguments: HostActCall.usersWindow + [[UInt8]([1, 2, 255]).propValue, .string("Report"), [page].propValue],
             completion: 1)))
         XCTAssertEqual(save.kind, .save)
         XCTAssertEqual(save.contents, [1, 2, 255])
         XCTAssertEqual(save.name, "Report.html")
-        XCTAssertNil(HostFileDialog(HostActCall(act: .confirm, arguments: [], completion: 1)))
+        XCTAssertNil(HostFileDialog(HostActCall(act: .confirm, arguments: HostActCall.usersWindow, completion: 1)))
     }
 
     /// A save's name gains the first kind's first extension where it ends in none of the kinds' - in any case of
@@ -49,7 +49,7 @@ final class HostFileDialogTests: XCTestCase {
     func testASavesExtensionIsItsNamesElseItsFirstKinds() throws {
         func save(_ name: String, _ types: [FileType]) throws -> HostFileDialog {
             try XCTUnwrap(HostFileDialog(HostActCall(
-                act: .saveFile, arguments: [[UInt8]().propValue, .string(name), types.propValue], completion: 1)))
+                act: .saveFile, arguments: HostActCall.usersWindow + [[UInt8]().propValue, .string(name), types.propValue], completion: 1)))
         }
         XCTAssertEqual(try save("Report", [page]).savedExtension, "html")
         XCTAssertEqual(try save("Report.HTM", [page]).savedExtension, "htm")
@@ -62,17 +62,17 @@ final class HostFileDialogTests: XCTestCase {
     /// A dialog filtering by extension alone shows every kind's, in order, each once.
     func testEveryKindsExtensionsStandOnce() throws {
         let dialog = try XCTUnwrap(HostFileDialog(HostActCall(
-            act: .openFiles, arguments: [[page, text].propValue, .bool(false)], completion: 1)))
+            act: .openFiles, arguments: HostActCall.usersWindow + [[page, text].propValue, .bool(false)], completion: 1)))
         XCTAssertEqual(dialog.extensions, ["html", "htm", "txt"])
     }
 
     /// An open answers the files chosen, none for a cancel; a save the file it wrote, nothing for a cancel.
     func testTheAnswerIsTheFilesChosenOrTheFileSaved() throws {
         let file = ChosenFile(address: "C:\\Reports\\Report.html", name: "Report.html")
-        let open = try XCTUnwrap(HostFileDialog(HostActCall(act: .openFiles, arguments: [], completion: 1)))
+        let open = try XCTUnwrap(HostFileDialog(HostActCall(act: .openFiles, arguments: HostActCall.usersWindow, completion: 1)))
         XCTAssertEqual(open.answer([file]), [[file].propValue])
         XCTAssertEqual(open.answer([]), [[ChosenFile]().propValue])
-        let save = try XCTUnwrap(HostFileDialog(HostActCall(act: .saveFile, arguments: [], completion: 1)))
+        let save = try XCTUnwrap(HostFileDialog(HostActCall(act: .saveFile, arguments: HostActCall.usersWindow, completion: 1)))
         XCTAssertEqual(save.answer([file]), [file.propValue])
         XCTAssertEqual(save.answer([]), [.nothing])
     }

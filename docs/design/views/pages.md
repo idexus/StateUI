@@ -48,7 +48,7 @@ Window* one more, `openWindow` one of a kind - and ends with its last
       var body: some Scene {
           WindowGroup { MainPage() }.environment(theme)       launch, New Window: one more
           Window(.fonts) { FontsPanel() }.environment(theme)  one
-          WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
+          WindowGroup(.document) { $id in DocumentPage(id: id) }
       }
   }
 ```
@@ -100,9 +100,9 @@ order makes the window's children the same list in every run.
 
 ```text
   Window
-   ├── ModalStack    the window's page, here a modal stack
-   │    ├── Page         what it holds
-   │    └── Page …       its sheets, the last on top
+   ├── SplitView     the window's page, here a split view
+   │    ├── Page         its sidebar and its detail
+   │    └── Sheet        what a view in it presents, holding its page
    └── Overlay       the library's: a docked inspector's panel
         └── ZStack       lets a click beside it through
 ```
@@ -169,24 +169,33 @@ view hears; a host raises a phase for which the page carries a handler.
 The place decides, not the type, since any view may stand on a page. An
 arrangement standing where a page stands is the page. A `NavigationStack`, a
 `TabView` or a `SplitView` takes the title and the icon itself, for where it is
-shown as an item of something else, such as a tab; anything else said of a page
-there - and on a `ModalStack`, whose contract declares neither, the title and
-the icon too - is said once (`complain`) and left out.
+shown as an item of something else, such as a tab, and the background, the
+ground of its pages that say none; anything else said of a page there is said
+once (`complain`) and left out.
 Written on a view no page shows - inside a layout, deeper in a body - what a
 view says of its page says nothing, and is said once.
 
+
+A link the application is asked to open is said of the page too: its window is
+given the link, and the page hears it - written on any view the page shows,
+or on the arrangement where a page stands, which takes it as it takes a
+title. A link is what moves a window's navigation, which a page and an
+arrangement own; a view that is no page's says nothing of it.
 ## An arrangement is a view
 
-`NavigationStack`, `TabView`, `SplitView` and `ModalStack` are views
+`NavigationStack`, `TabView` and `SplitView` are views
 (`ElementView`), so a view's `body` may be one. An arrangement stands where a
 page stands - a window's view, a page of another arrangement - as the page
 itself, with no page element around it. Whether a view builds one is told by
 its type (`Node.isArrangement`): an arrangement, or a composed view whose
 `body`, followed down, ends on one; the placeholder records the view's type,
-so a modifier written on the view keeps the answer. A `body` whose `if`
-chooses between an arrangement and another view, or that ends on a modifier
-written on a composed view (`ModifiedContent`), cannot be told by its type,
-and stands as a view.
+and a modifier written on a composed view or a branch names the view it was
+written on (`ModifiedContent<Content>`), so a modifier keeps the answer
+wherever it stands. A `body` whose `if` chooses between an arrangement and
+another view, or that is an `AnyView`, cannot be told by its type, and stands
+as a view. A view whose `if/else` chooses between two arrangements, with what
+outlives a branch written on it, stands on an anchor holding the arrangement:
+the anchor stands where the page stands, and so does what it holds.
 
 Anywhere else an arrangement is left out of what is described and said once
 (`complain`): inside a layout, and inside a page, where a view's branch chose
@@ -199,7 +208,7 @@ gesture.
 
 What a screen is - its title, its buttons - its view says of its page. An
 arrangement's bar belongs to the arrangement (`BarElement`) and looks the same
-whichever page it shows. An arrangement other than a `ModalStack` standing
+whichever page it shows. An arrangement standing
 where a page stands takes its own title and icon from the same modifiers, for
 where it is shown as an item of something else, such as a tab.
 
@@ -232,8 +241,6 @@ mechanism; an `.id()` written on the view stays on the view the page shows.
 ```text
   NavigationStack   the root              "root"
                     a pushed page         "<depth>/<route>"
-  ModalStack        the root              "root"
-                    a presented page      "<depth>/<sheet>"
   TabView           a tab's page          "<tab>"
   SplitView         the two pages         "sidebar", "detail"
 ```
@@ -275,11 +282,11 @@ carry.
 ## Tabs report an index
 
 Which tabs there are is a collection the author holds, of the author's own
-type; which one shows is a binding of that same type. A collection rather than
-a builder of pages is what makes the keys work: a tab is a value, so the page
-for it can be keyed by it. The tabs are held as `AnyHashable`, since a
-`TabView` is not generic, and opened again in `selection`, whose binding
-says which type to expect.
+type; which one shows is a state of that same type, given beside the tabs:
+`TabView(Tab.allCases) { … }.selection($tab)`. A collection rather than a
+builder of pages is what makes the keys work: a tab is a value, so the page
+for it can be keyed by it. `TabView` is generic over the tab, so a selection
+of another type does not compile.
 
 The selection crosses as the index of the current page among the children -
 the list the initializer described, so the two cannot mean different things. A
@@ -312,20 +319,27 @@ choice closes the sidebar is the author's, and the place is what decides it.
 A guess by device - a desktop never closes, a tablet always does - is wrong
 in a narrow window and on a tablet turned across.
 
-## The modal stack is the state
+## A sheet is a state
 
-What is presented over a window is a stack of the author's own values, the
-last on top: presenting is `sheets.append(.settings)`, closing is
-`sheets.removeLast()`, closing everything is `sheets = []`. There is no present
-call and no completion to await. It is a stack because the platforms make it
-one: a sheet may present a sheet.
+What is presented over a window is a state of the view presenting it:
+`.sheet(isPresented: $editing) { … }` while a flag holds true, `.sheet(item:
+$note) { note in … }` while a value holds one. Presenting is writing the
+state, closing is writing it back; there is no present call and no completion
+to await. The sheet is a slot of the view (`Sheet`), one a view - written
+again it stands in - holding its page only while it shows, so its content is
+built as it shows and a value's page is keyed by the value: another value is
+another page in its place.
 
-`ModalStack` is an arrangement of `NavigationStack`'s shape, standing as a
-window's page: the page it holds first, the sheets after it, each built as
-the arrangement builds from the array as it stands then, so what builds the
-arrangement is what builds again when the array moves. A sheet's identity
-carries its depth and its value, as a stack's page does. The report that a
-sheet has gone is the stack's own (`popped`), with how many remain.
+A sheet closes three ways, each written onto its state: the user's dismissal
+(`isPresentedChanged`), the application's own write, and the view presenting
+it leaving the tree (`onDestroying`), which takes the sheet with it. A sheet
+declared in a sheet's content stands over it; one presented from beneath
+stands over the top one - the host layer orders a window's sheets as they
+showed. A sheet has no bar of its own: a `NavigationStack` in it brings one,
+in the look of the bar over the view presenting the sheet and with nothing
+else from around it, the sheet standing where a page stands; the
+bar offers the sheet's close button unless the page it shows says not
+(`showsCloseButton`), as it says whether it offers its way back.
 
 ## What an arrangement does not offer
 
@@ -339,19 +353,37 @@ sheet has gone is the stack's own (`popped`), with how many remain.
   its own padding.
 - No builder of tab pages: a builder hands back an anonymous list whose only
   identity is position.
+- A toolbar on a stack or tabs stands over every page they show, as a split
+  view's stands over the pages of the part it names ([a split view's
+  bar](#a-split-views-bar)): each page of a stack or of tabs its own beside it,
+  a pushed page none of the page under it.
 - No sidebar item type, template, header or footer: the sidebar is a page, and
   a header is a view at its top. No way to keep a split view with its sidebar
   turned off for good: an application with nothing for a sidebar does not use
   one. No shared overlay or split policy: that belongs to a platform's own
   container, and the host adapts its presentation.
 
+## A split view's bar
+
+A split view stands under one bar in two parts - over its sidebar and over its
+detail. A page's actions stand in its own column's part, and a split view's own
+over every page of the part each names. Where an action stands, it says
+itself: `.placement(part, at:, order:)`, each only where said - the part
+unsaid being its declarer's (a sidebar page's the sidebar's, a detail page's
+and the split view's the detail's), the position the bar's end. The
+`ToolbarButton` keeps what it says of where it stands beside its node (`alone`)
+and stands in a group of its own built from it; in a `ToolbarGroup` the group
+says it, and an item's own is left out and said once. So a host meets the
+placement on groups alone (`ToolbarGroupContract`), never on an item.
+
 ## The application is named once
 
 `stateUIUseApp` is the one line an application writes outside its interface,
-in `stateui_app_register()`, a `@_cdecl` function in the application's own
+in `registerApplication()`, a Swift function in the application's own
 module. Each platform's head calls it at startup: its `main.swift`, or on
 Android `JNI_OnLoad`, which Android calls by name as it loads the
-application's library.
+application's library. The application exports no C function to be named:
+its heads are Swift and call it as Swift calls a function.
 
 The application is made at its first need - the first render, or the host
 reading the keys it keeps - after anything an earlier one wrote into the

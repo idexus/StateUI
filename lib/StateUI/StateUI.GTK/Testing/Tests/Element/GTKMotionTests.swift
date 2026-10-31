@@ -70,7 +70,7 @@ final class GTKMotionTests: XCTestCase {
                 host.frame()
             }
 
-            XCTAssertLessThanOrEqual(GTKStyleSheet.ruleCount, rules + 1, "a rule for each colour on its way")
+            XCTAssertLessThanOrEqual(GTKStyleSheet.ruleCount, rules + 1, "a rule for each color on its way")
             XCTAssertFalse(GTKTransitionSurface.presents(.background, on: .image))
             XCTAssertFalse(GTKTransitionSurface.presents(.tint, on: .checkBox))
             XCTAssertTrue(GTKTransitionSurface.presents(.background, on: .vStack), "a layout draws its own box")
@@ -105,7 +105,7 @@ final class GTKMotionTests: XCTestCase {
                     Text(arrived.wrappedValue ? "arrived" : "away")
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
-                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Go").onClicked(.ignoreWhileRunning) {
                         try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), .linear)).arrived()
                         arrived.wrappedValue = true
                     }
@@ -168,7 +168,7 @@ final class GTKMotionTests: XCTestCase {
             let host = GTKRenderer.running(clock: clock) {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
-                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Go").onClicked(.ignoreWhileRunning) {
                         try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), .linear)).arrived()
                     }
                 }
@@ -187,16 +187,26 @@ final class GTKMotionTests: XCTestCase {
         }
     }
 
-    /// A view moved, turned or scaled draws its own colour wherever GSK renders it - the cairo renderer, without GL,
+    /// A view moved, turned or scaled draws its own color wherever GSK renders it - the cairo renderer, without GL,
     /// draws a transform of no known kind as hot pink.
-    func testAMovedViewDrawsItsOwnColour() throws {
+    func testAMovedViewDrawsItsOwnColor() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack {
                     ZStack {
-                        Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                        Rectangle()
+                            .fill(.red)
+                            .width(20)
+                            .height(20)
+                            .horizontalAlignment(.start)
+                            .verticalAlignment(.start)
                             .translationX(30).translationY(30)
-                        Rectangle().fill(.blue).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                        Rectangle()
+                            .fill(.blue)
+                            .width(20)
+                            .height(20)
+                            .horizontalAlignment(.start)
+                            .verticalAlignment(.start)
                             .translationX(60).rotation(45)
                     }.width(100).height(100).id("room")
                 }.horizontalAlignment(.start).verticalAlignment(.start)

@@ -28,11 +28,13 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Alert").onClicked(gate: .ignoreWhileRunning) {
-                            try await Dialogs.alert("Saved", message: "The draft is kept", cancel: "Fine")
-                            said.values.append("dismissed")
-                        }.id("ask")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Alert").onClicked(.ignoreWhileRunning) {
+                                try await window.alert("Saved", message: "The draft is kept", accept: "Fine")
+                                said.values.append("dismissed")
+                            }.id("ask")
+                        }
                     }
                 }
 
@@ -42,7 +44,7 @@
                 s.turn()
                 s.expect(said.values, [], "the handler waits for the answer")
 
-                try s.perform(.answer("Fine"), on: s.element(ofType: WindowContract.nodeType))
+                try s.perform(.answer(.accept), on: s.element(ofType: WindowContract.nodeType))
                 s.settle { said.values == ["dismissed"] }
                 s.expect(said.values, ["dismissed"])
                 s.expect(try s.question(), nil, "and the question is gone")
@@ -52,11 +54,13 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<Bool>()
                 s.start {
-                    VStack {
-                        Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
-                            said.values.append(try await Dialogs.confirm(
-                                "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
-                        }.id("ask")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Confirm").onClicked(.ignoreWhileRunning) {
+                                said.values.append(try await window.confirm(
+                                    "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep"))
+                            }.id("ask")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -65,26 +69,29 @@
                 try s.settle { try s.question() != nil }
                 s.expect(try s.question(),
                          Question(title: "Delete draft?", message: "It goes for good", buttons: ["Delete", "Keep"]))
-                try s.perform(.answer("Delete"), on: window)
+                try s.perform(.answer(.accept), on: window)
                 s.settle { said.values == [true] }
 
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
-                try s.perform(.answer("Keep"), on: window)
+                try s.perform(.answer(.cancel), on: window)
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, [true, false], "accepted, then cancelled")
             },
-            ConformanceCase("aChoiceAnswersTheCaptionPressed", proves: [
+            ConformanceCase("aChoiceAnswersTheActionChosen", proves: [
                 Covered(ApplicationContract.chooseAction),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Share").onClicked(gate: .ignoreWhileRunning) {
-                            let chosen = try await Dialogs.chooseAction(
-                                "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
-                            said.values.append(chosen ?? "nothing")
-                        }.id("ask")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Share").onClicked(.ignoreWhileRunning) {
+                                let chosen = try await window.chooseAction(
+                                    "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete",
+                                    cancel: "Cancel")
+                                said.values.append(chosen ?? "nothing")
+                            }.id("ask")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -92,32 +99,34 @@
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
                 s.expect(try s.question()?.buttons, ["Cancel", "Delete", "Mail", "Message"])
-                try s.perform(.answer("Mail"), on: window)
+                try s.perform(.answer(.action(0)), on: window)
                 s.settle { said.values == ["Mail"] }
 
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
-                try s.perform(.answer("Delete"), on: window)
+                try s.perform(.answer(.action(2)), on: window)
                 s.settle { said.values.count == 2 }
 
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
-                try s.perform(.answer("Cancel"), on: window)
+                try s.perform(.answer(.cancel), on: window)
                 s.settle { said.values.count == 3 }
-                s.expect(said.values, ["Mail", "Delete", "Cancel"], "a choice, the dangerous one, and the cancel")
+                s.expect(said.values, ["Mail", "Delete", "nothing"], "an action, the dangerous one, and the cancel")
             },
             ConformanceCase("aPromptAnswersTheWordsTypedOrNothing", proves: [
                 Covered(ApplicationContract.prompt),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Rename").onClicked(gate: .ignoreWhileRunning) {
-                            let typed = try await Dialogs.prompt(
-                                "Rename", message: "A new name", accept: "Save", cancel: "Cancel",
-                                placeholder: "Name", initialValue: "Draft")
-                            said.values.append(typed ?? "nothing")
-                        }.id("ask")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Rename").onClicked(.ignoreWhileRunning) {
+                                let typed = try await window.prompt(
+                                    "Rename", message: "A new name", accept: "Save", cancel: "Cancel",
+                                    placeholder: "Name", initialValue: "Draft")
+                                said.values.append(typed ?? "nothing")
+                            }.id("ask")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -126,12 +135,12 @@
                 try s.settle { try s.question() != nil }
                 s.expect(try s.question(), Question(
                     title: "Rename", message: "A new name", buttons: ["Cancel", "Save"], field: "Draft"))
-                try s.perform(.answer("Save", typing: "Ada"), on: window)
+                try s.perform(.answer(.accept, typing: "Ada"), on: window)
                 s.settle { said.values == ["Ada"] }
 
                 try s.perform(.activate, on: s.element("ask"))
                 try s.settle { try s.question() != nil }
-                try s.perform(.answer("Cancel"), on: window)
+                try s.perform(.answer(.cancel), on: window)
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, ["Ada", "nothing"], "the words typed, then nothing for the cancel")
             },
@@ -140,15 +149,17 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Alert").onClicked(gate: .ignoreWhileRunning) {
-                            try await Dialogs.alert("First", message: "")
-                            said.values.append("first")
-                        }.id("first")
-                        Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
-                            let accepted = try await Dialogs.confirm("Second", message: "", accept: "Yes", cancel: "No")
-                            said.values.append("second \(accepted)")
-                        }.id("second")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Alert").onClicked(.ignoreWhileRunning) {
+                                try await window.alert("First", message: "")
+                                said.values.append("first")
+                            }.id("first")
+                            Button("Confirm").onClicked(.ignoreWhileRunning) {
+                                let accepted = try await window.confirm("Second", message: "", accept: "Yes", cancel: "No")
+                                said.values.append("second \(accepted)")
+                            }.id("second")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -157,10 +168,10 @@
                 try s.perform(.activate, on: s.element("second"))
                 try s.settle { try s.question()?.title == "First" }
                 s.expect(try s.question()?.title, "First", "the first asked stands first")
-                try s.perform(.answer("OK"), on: window)
+                try s.perform(.answer(.accept), on: window)
                 try s.settle { try s.question()?.title == "Second" }
                 s.expect(try s.question()?.title, "Second", "then the second")
-                try s.perform(.answer("Yes"), on: window)
+                try s.perform(.answer(.accept), on: window)
                 s.settle { said.values.count == 2 }
                 s.expect(said.values, ["first", "second true"])
             },
@@ -171,17 +182,19 @@
                 let said = Received<String>()
                 let text = FileType("Text", extensions: ["txt"])
                 s.start {
-                    VStack {
-                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
-                            let saved = try await Dialogs.saveFile(Array("Kept words".utf8), name: "note", types: [text])
-                            said.values.append(saved?.name ?? "nothing")
-                        }.id("save")
-                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
-                            guard let file = try await Dialogs.openFile(types: [text]) else {
-                                return said.values.append("nothing")
-                            }
-                            said.values.append("\(file.name): \(String(decoding: try await file.read(), as: UTF8.self))")
-                        }.id("open")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Save").onClicked(.ignoreWhileRunning) {
+                                let saved = try await window.saveFile(Array("Kept words".utf8), name: "note", types: [text])
+                                said.values.append(saved?.name ?? "nothing")
+                            }.id("save")
+                            Button("Open").onClicked(.ignoreWhileRunning) {
+                                guard let file = try await window.openFile(types: [text]) else {
+                                    return said.values.append("nothing")
+                                }
+                                said.values.append("\(file.name): \(String(decoding: try await file.read(), as: UTF8.self))")
+                            }.id("open")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -209,21 +222,23 @@
                 let said = Received<String>()
                 let text = FileType("Text", extensions: ["txt"])
                 s.start {
-                    VStack {
-                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
-                            let saved = try await Dialogs.saveFile(Array("Kept words".utf8), name: "start", types: [text])
-                            said.values.append(saved?.name ?? "nothing")
-                        }.id("save")
-                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
-                            guard let file = try await Dialogs.openFile(types: [text]) else {
-                                return said.values.append("nothing")
-                            }
-                            let parts = [
-                                try await file.read(atMost: 4), try await file.read(atMost: 0),
-                                try await file.read(atMost: 100),
-                            ]
-                            said.values.append(parts.map { String(decoding: $0, as: UTF8.self) }.joined(separator: "|"))
-                        }.id("open")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Save").onClicked(.ignoreWhileRunning) {
+                                let saved = try await window.saveFile(Array("Kept words".utf8), name: "start", types: [text])
+                                said.values.append(saved?.name ?? "nothing")
+                            }.id("save")
+                            Button("Open").onClicked(.ignoreWhileRunning) {
+                                guard let file = try await window.openFile(types: [text]) else {
+                                    return said.values.append("nothing")
+                                }
+                                let parts = [
+                                    try await file.read(atMost: 4), try await file.read(atMost: 0),
+                                    try await file.read(atMost: 100),
+                                ]
+                                said.values.append(parts.map { String(decoding: $0, as: UTF8.self) }.joined(separator: "|"))
+                            }.id("open")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -244,14 +259,16 @@
             ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
-                            said.values.append(try await Dialogs.saveFile([1], name: "file.txt")?.name ?? "nothing")
-                        }.id("save")
-                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
-                            let names = try await Dialogs.openFiles().map(\.name).sorted()
-                            said.values.append(names.joined(separator: " "))
-                        }.id("open")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Save").onClicked(.ignoreWhileRunning) {
+                                said.values.append(try await window.saveFile([1], name: "file.txt")?.name ?? "nothing")
+                            }.id("save")
+                            Button("Open").onClicked(.ignoreWhileRunning) {
+                                let names = try await window.openFiles().map(\.name).sorted()
+                                said.values.append(names.joined(separator: " "))
+                            }.id("open")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -274,14 +291,16 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Open").onClicked(gate: .ignoreWhileRunning) {
-                            said.values.append("opened \(try await Dialogs.openFiles().count)")
-                        }.id("open")
-                        Button("Save").onClicked(gate: .ignoreWhileRunning) {
-                            let saved = try await Dialogs.saveFile([1], name: "never.txt")
-                            said.values.append("saved \(saved?.name ?? "nothing")")
-                        }.id("save")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Open").onClicked(.ignoreWhileRunning) {
+                                said.values.append("opened \(try await window.openFiles().count)")
+                            }.id("open")
+                            Button("Save").onClicked(.ignoreWhileRunning) {
+                                let saved = try await window.saveFile([1], name: "never.txt")
+                                said.values.append("saved \(saved?.name ?? "nothing")")
+                            }.id("save")
+                        }
                     }
                 }
                 let window = try s.element(ofType: WindowContract.nodeType)
@@ -297,18 +316,76 @@
                 s.expect(said.values, ["opened 0", "saved nothing"])
                 s.expect(try s.fileDialog(), nil, "and the dialog is gone")
             },
+            ConformanceCase("aRequestIsAnsweredAsTheServerSaidIt", proves: [
+                Covered(ApplicationContract.sendRequest),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let address = try s.served()
+                let said = Received<String>()
+                s.start {
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Send").onClicked(.ignoreWhileRunning) {
+                                let response = try await application.send(HTTPRequest(
+                                    address + "/parcels", method: .post, headers: ["X-Asked": "kept"],
+                                    body: Array("Kept words".utf8)))
+                                said.values.append([
+                                    String(response.status), response.header("X-Method") ?? "-",
+                                    response.header("x-asked") ?? "-", response.text,
+                                ].joined(separator: " "))
+                            }.id("send")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("send"))
+                s.settle { !said.values.isEmpty }
+                s.expect(said.values, ["201 POST kept Kept words"], "the status, the headers both ways and the body")
+            },
+            ConformanceCase("aRequestEndsWithItsRun", proves: [
+                Covered(ApplicationContract.cancelCall),
+            ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.sendRequest)]) { s in
+                let address = try s.served()
+                let before = try s.held()
+                let said = Received<String>()
+                let presses = Received<Int>()
+                s.start {
+                    WithSessions { _, application in
+                        VStack {
+                            // The first press asks for what the server holds; the second ends the first's run.
+                            Button("Send").onClicked(.cancelPrevious) {
+                                presses.values.append(presses.values.count)
+                                let path = presses.values.count == 1 ? "/held" : "/parcels"
+                                let response = try await application.send(HTTPRequest(address + path))
+                                said.values.append("\(path) \(response.status)")
+                            }.id("send")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("send"))
+                try s.settle { try s.held().taken > before.taken }
+                try s.perform(.activate, on: s.element("send"))
+                try s.settle {
+                    let stopped = try s.held().stopped
+                    return !said.values.isEmpty && stopped > before.stopped
+                }
+                s.expect(said.values, ["/parcels 201"], "the first run ended with no answer; the second's came")
+                s.expect(try s.held().stopped - before.stopped, 1, "the first run's request stopped as the run ended")
+            },
             ConformanceCase("anAddressAndAFileAreLaunched", proves: [
                 Covered(ApplicationContract.launchLink), Covered(ApplicationContract.launchFile),
             ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
                 let said = Received<Bool>()
                 s.start {
-                    VStack {
-                        Button("Launch").onClicked(gate: .ignoreWhileRunning) {
-                            said.values.append(try await Links.launch("https://www.swift.org"))
-                            if let saved = try await Dialogs.saveFile(Array("<p>Report</p>".utf8), name: "report.html") {
-                                said.values.append(try await saved.launch())
-                            }
-                        }.id("launch")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Launch").onClicked(.ignoreWhileRunning) {
+                                said.values.append(try await application.launch("https://www.swift.org"))
+                                if let saved = try await window.saveFile(Array("<p>Report</p>".utf8), name: "report.html") {
+                                    said.values.append(try await saved.launch())
+                                }
+                            }.id("launch")
+                        }
                     }
                 }
 
@@ -324,11 +401,13 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Say").onClicked(gate: .ignoreWhileRunning) {
-                            try await ScreenReader.announce("Saved the draft")
-                            said.values.append("announced")
-                        }.id("say")
+                    WithSessions { window, application in
+                        VStack {
+                            Button("Say").onClicked(.ignoreWhileRunning) {
+                                try await application.announce("Saved the draft")
+                                said.values.append("announced")
+                            }.id("say")
+                        }
                     }
                 }
 
@@ -336,6 +415,50 @@
                 s.settle { said.values == ["announced"] }
                 s.expect(said.values, ["announced"])
                 s.expect(try s.announced(), ["Saved the draft"])
+            },
+            ConformanceCase("wordsPutOnTheClipboardAreReadBack", proves: [
+                Covered(ApplicationContract.writeClipboard), Covered(ApplicationContract.readClipboard),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let read = Received<String>()
+                s.start {
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Copy").onClicked(.ignoreWhileRunning) {
+                                try await application.clipboard.write(text: "Copied with StateUI")
+                                read.values.append(try await application.clipboard.text() ?? "nothing")
+                            }.id("copy")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("copy"))
+                s.settle { !read.values.isEmpty }
+                s.expect(read.values, ["Copied with StateUI"], "the words written, read back from the platform's clipboard")
+            },
+            ConformanceCase("wordsAndALinkAreOfferedToShare", proves: [Covered(ApplicationContract.share)],
+                            needs: [Covered(ButtonContract.clicked)]) { s in
+                let said = Received<Bool>()
+                s.start {
+                    WithSessions { window, _ in
+                        VStack {
+                            Button("Share").onClicked(.ignoreWhileRunning) {
+                                said.values.append(try await window.share(text: "Notes", link: "https://www.swift.org"))
+                            }.id("share")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("share"))
+                try s.settle { try s.shared() != nil }
+                s.expect(try s.shared(), "Notes\nhttps://www.swift.org", "the words and the link offered")
+                try s.perform(.answerShare(shared: true), on: s.element(ofType: WindowContract.nodeType))
+                s.settle { said.values.count == 1 }
+
+                try s.perform(.activate, on: s.element("share"))
+                try s.settle { try s.shared() != nil }
+                try s.perform(.answerShare(shared: false), on: s.element(ofType: WindowContract.nodeType))
+                s.settle { said.values.count == 2 }
+                s.expect(said.values, [true, false], "shared, then cancelled")
             },
             ConformanceCase("theApplicationShowsInTheThemeItHolds", proves: [
                 Covered(ApplicationContract.useColorScheme),
@@ -363,11 +486,30 @@
                 try s.settle { try agree() }
                 s.expect(try agree(), true, "the system's theme, shown and resolved alike")
             },
+            ConformanceCase("theApplicationDrawsInTheAccentItHolds", proves: [
+                Covered(ApplicationContract.useAccentColor),
+            ], needs: [Covered(ButtonContract.clicked), Covered(TextualElementContract.text, on: TextContract.self)]) { s in
+                s.start { AccentChoices() }
+
+                @MainActor func inForce() throws -> String? {
+                    try s.held(TextualElementContract.text, on: s.element("inForce"))
+                }
+                let own = try s.accent()
+                try s.perform(.activate, on: s.element("brick"))
+                try s.settle { try s.accent() == .firebrick && inForce() == "brick" }
+                s.expect(try s.accent(), .firebrick, "the platform draws the application's controls in its accent")
+                s.expect(try inForce(), "brick", "and Color.accent is it")
+
+                try s.perform(.activate, on: s.element("platform"))
+                try s.settle { try s.accent() == own && inForce() == "own" }
+                s.expect(try s.accent(), own, "the platform's own again")
+                s.expect(try inForce(), "own")
+            },
             ConformanceCase("theHostTellsTheTimeOfDay", proves: [
                 Covered(ApplicationContract.currentTime),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<ClockTime>()
-                s.start { VStack { Button("Time").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await ClockTime.now()) }.id("ask") } }
+                s.start { VStack { Button("Time").onClicked(.ignoreWhileRunning) { said.values.append(try await ClockTime.now()) }.id("ask") } }
 
                 try s.perform(.activate, on: s.element("ask"))
                 s.settle { !said.values.isEmpty }
@@ -381,7 +523,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Zones").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Zones").onClicked(.ignoreWhileRunning) {
                             let zone = try await TimeZoneInfo.local()
                             let local = try await TimeZoneInfo.utcOffset(of: zone)
                             let own = try await TimeZoneInfo.utcOffset()
@@ -400,7 +542,7 @@
                 let said = Received<[Int64]>()
                 s.start {
                     VStack {
-                        Button("Offsets").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Offsets").onClicked(.ignoreWhileRunning) {
                             let tokyo = try await TimeZoneInfo.utcOffset(of: "Asia/Tokyo")
                             let winter = try await TimeZoneInfo.utcOffset(
                                 of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 1, day: 15))
@@ -421,7 +563,7 @@
                 let said = Received<String>()
                 s.start {
                     VStack {
-                        Button("Nowhere").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Nowhere").onClicked(.ignoreWhileRunning) {
                             do {
                                 _ = try await TimeZoneInfo.utcOffset(of: "Nowhere/Else")
                                 said.values.append("answered")
@@ -441,9 +583,11 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<Bool>()
                 s.start {
-                    VStack {
-                        TextField("").id("field")
-                        Button("Done").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await OnScreenKeyboard.hide()) }.id("done")
+                    WithSessions { window, application in
+                        VStack {
+                            TextField("").id("field")
+                            Button("Done").onClicked(.ignoreWhileRunning) { said.values.append(try await window.hideOnScreenKeyboard()) }.id("done")
+                        }
                     }
                 }
                 let field = try s.element("field")
@@ -458,13 +602,13 @@
             ConformanceCase("aValueIsKeptForTheNextLaunch", proves: [
                 Covered(ApplicationContract.persistValue),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let name = State(wrappedValue: "", persistentKey: PersistentKey("conformance.name", of: String.self))
+                let name = State(wrappedValue: "", persistentKey: PersistentKey<String>("conformance.name"))
                 s.start { VStack { Button("Ada").onClicked { name.wrappedValue = "Ada" }.id("write") } }
                 s.expect(try s.kept("conformance.name"), nil, "nothing kept before the case wrote it")
 
                 try s.perform(.activate, on: s.element("write"))
-                try s.settle { try s.kept("conformance.name") == .string("Ada") }
-                s.expect(try s.kept("conformance.name"), .string("Ada"))
+                try s.settle { try s.kept("conformance.name") == "Ada" }
+                s.expect(try s.kept("conformance.name"), "Ada")
             },
             ConformanceCase("aScenesValueIsKeptForItsNextLaunch", proves: [
                 Covered(ApplicationContract.persistSceneValue),
@@ -473,8 +617,8 @@
                 s.expect(try s.kept("conformance.section", inScene: true), nil, "nothing kept before the case wrote it")
 
                 try s.perform(.activate, on: s.element("write"))
-                try s.settle { try s.kept("conformance.section", inScene: true) == .number(2) }
-                s.expect(try s.kept("conformance.section", inScene: true), .number(2))
+                try s.settle { try s.kept("conformance.section", inScene: true) == "2" }
+                s.expect(try s.kept("conformance.section", inScene: true), "2")
             },
             ConformanceCase("aHandlersFailureIsReportedToTheHost", proves: [
                 Covered(ApplicationContract.handlerFailed),
@@ -498,7 +642,7 @@
 /// A page whose scene keeps the section it shows, with the button that shows the second: the state is the page's,
 /// so its scene claims it.
 struct SectionPage: View {
-    @State(sceneKey: SceneKey("conformance.section", of: Int.self)) private var section = 0
+    @State(sceneKey: SceneKey<Int>("conformance.section")) private var section = 0
 
     var body: some View {
         let section = $section
@@ -513,6 +657,20 @@ struct ConformanceFailure: Error, CustomStringConvertible {
 }
 
 /// Buttons that hold the application's theme, over the theme in force as words.
+/// Buttons giving the application an accent and the platform's back, over the accent in force.
+private struct AccentChoices: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        let application = self.application
+        return VStack {
+            Text(application.info.accentColor == .firebrick ? "brick" : "own").id("inForce")
+            Button("Brick").onClicked { application.accentColor = .firebrick }.id("brick")
+            Button("Platform").onClicked { application.accentColor = nil }.id("platform")
+        }
+    }
+}
+
 private struct ThemeChoices: View {
     @Environment(\.application) private var application
 

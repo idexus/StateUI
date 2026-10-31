@@ -9,9 +9,9 @@ public enum TimePickerContract: ElementContract {
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native
 
-    /// A time picker is a view whose text has a colour, a spacing and a font.
+    /// A time picker is a view whose text has a color, a spacing and a font.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, TextStyleElementContract.self, FontElementContract.self, FocusElementContract.self,
+        ViewContract.self, TextColorElementContract.self, FontElementContract.self, FocusElementContract.self,
     ]
 
     /// The clock face has closed.

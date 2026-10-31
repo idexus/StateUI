@@ -15,34 +15,36 @@
     /// nowhere in a stack.
     public static func make(_ element: String, _ dressing: Dressing) -> (any View)? {
         switch element {
-        case "ActivityIndicator": return dressing.dress(ActivityIndicator(true))
+        case "Spinner": return dressing.dress(Spinner(true))
         case "Button": return dressing.dress(Button())
         case "Canvas": return dressing.dress(Canvas())
         case "Capsule": return dressing.dress(Capsule())
         case "CheckBox": return dressing.dress(CheckBox())
+        case "ColorPicker": return dressing.dress(ColorPicker(Color(hex: 0x4682B4)))
         case "DatePicker": return dressing.dress(DatePicker())
-        case "Divider": return dressing.dress(Divider())
+        case "Separator": return dressing.dress(Separator())
         case "Ellipse": return dressing.dress(Ellipse())
         case "Grid": return dressing.dress(Grid())
         case "HStack": return dressing.dress(HStack())
         case "Image": return dressing.dress(Image())
         case "ItemsView": return dressing.dress(ItemsView(0..<20) { Text("Item \($0)") }.width(240).height(160))
-        case "LayoutEngine":
-            return dressing.dress(ModifiedContent(node: LayoutEngine([Int]()) { _ in Spacer() } placements: { _, _ in [] }.node))
+        case "MotionLayout":
+            return dressing.dress(AnyView(MotionLayout([Int](), parameters: State(wrappedValue: 0.0).projectedValue) { _ in Space() } placements: { _, _ in [] }))
         case "Text": return dressing.dress(Text())
         case "Line": return dressing.dress(Line())
+        case "Link": return dressing.dress(Link("Swift", destination: "https://www.swift.org"))
         case "Map": return dressing.dress(Map())
         case "Path": return dressing.dress(Path())
         case "Picker": return dressing.dress(Picker())
         case "Polygon": return dressing.dress(Polygon())
         case "Polyline": return dressing.dress(Polyline())
         case "ProgressBar": return dressing.dress(ProgressBar())
-        case "RadioButton": return dressing.dress(RadioButton())
         case "Rectangle": return dressing.dress(Rectangle())
+        case "Fill": return dressing.dress(Fill())
         case "ScrollView": return dressing.dress(ScrollView())
         case "SearchField": return dressing.dress(SearchField())
         case "Slider": return dressing.dress(Slider())
-        case "Spacer": return dressing.dress(Spacer())
+        case "Space": return dressing.dress(Space())
         case "Stepper": return dressing.dress(Stepper())
         case "Switch": return dressing.dress(Switch())
         case "TextEditor": return dressing.dress(TextEditor())
@@ -57,15 +59,15 @@
 
     /// `element`'s control wearing `worn`, found by `id` - or words naming the element that stands in no stack, which
     /// the case finding it by its id then fails on.
-    public static func view(_ element: String, _ worn: [any Worn] = [], id: String = "specimen") -> ModifiedContent {
+    public static func view(_ element: String, _ worn: [any Worn] = [], id: String = "specimen") -> AnyView {
         // Chosen by name, so held as `any View` and handed on as its node.
         let view: any View = make(element, Dressing(worn, id: id)) ?? Text("no specimen of \(element)")
-        return ModifiedContent(node: view.node)
+        return AnyView(view)
     }
 
     /// The layout `layout` - a stack, a grid, a ZStack or a scroll view - holding `child`, wearing `worn`, found by
     /// the id "specimen"; words naming the layout for any other element, which the case finding it then fails on.
-    public static func holding(_ layout: String, _ child: some View, _ worn: [any Worn] = []) -> ModifiedContent {
+    public static func holding(_ layout: String, _ child: some View, _ worn: [any Worn] = []) -> AnyView {
         let dressing = Dressing(worn)
         let view: any View = switch layout {
         case "Grid": dressing.dress(Grid { child })
@@ -73,23 +75,23 @@
         case "ScrollView": dressing.dress(ScrollView { child })
         case "VStack": dressing.dress(VStack { child })
         case "ZStack": dressing.dress(ZStack { child })
-        case "LayoutEngine": dressing.dress(ModifiedContent(node: Specimens.engine(holding: child).node))
+        case "MotionLayout": dressing.dress(AnyView(Specimens.motionLayout(holding: child)))
         default: Text("no layout \(layout) holding a child")
         }
-        return ModifiedContent(node: view.node)
+        return AnyView(view)
     }
 
-    /// A layout engine holding `child` across its whole room, as a ZStack holds a child naming no area.
-    public static func engine(holding child: some View) -> some View {
-        LayoutEngine([0]) { _ in child } placements: { room, _ in [Placement(room)] }
+    /// A motion layout holding `child` across its whole room, as a ZStack holds a child naming no area.
+    public static func motionLayout(holding child: some View) -> some View {
+        MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in child } placements: { room, _ in [Placement(room)] }
     }
 
     /// A page holding `element`'s specimen wearing `worn` where an application puts one, `beside` it on the page. A
     /// session finds it by the id "specimen", or - a span, an arrangement - as the one element of its kind
     /// (`Session.specimen(_:)`).
-    public static func page(_ element: String, _ worn: [any Worn] = [], beside: [any View] = []) -> ModifiedContent {
+    public static func page(_ element: String, _ worn: [any Worn] = [], beside: [any View] = []) -> AnyView {
         // Chosen by name, so held as `any View` and handed on as its node.
-        ModifiedContent(node: chosen(element, worn, beside: beside).node)
+        AnyView(chosen(element, worn, beside: beside))
     }
 
     /// The page `page(_:_:beside:)` shows, chosen by name.
@@ -98,31 +100,46 @@
         let others: [any View] = beside
         switch element {
         case "TextSpan":
-            return VStack { [Text().spans { dressing.wear(TextSpan("Some words")) }] + others }
+            return VStack { Beside([Text().spans { dressing.wear(TextSpan("Some words")) }] + others) }
         case "MenuItem":
             return VStack {
-                [Text("Row").contextMenu { dressing.wear(MenuItem("Copy")).id(dressing.id) }.id("row")] + others
+                Beside([Text("Row").contextMenu { dressing.wear(MenuItem("Copy")).id(dressing.id) }.id("row")] + others)
             }
-        case "ToolbarItem":
+        case "MenuToggle":
+            return VStack {
+                Beside([
+                    Text("Row").contextMenu { dressing.wear(MenuToggle("Ruler", isOn: false)).id(dressing.id) }.id("row"),
+                ] + others)
+            }
+        case "ToolbarToggle":
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarItem("Save")).id(dressing.id)] }
+                DeclaringPage(beside: others, key: "\(worn)", toggles: {
+                    [dressing.wear(ToolbarToggle("Ruler", isOn: false)).id(dressing.id)]
+                })
+            } destination: { _ in Text("Pushed") }
+        case "ToolbarButton":
+            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                DeclaringPage(beside: others, key: "\(worn)") { [dressing.wear(ToolbarButton("Save")).id(dressing.id)] }
+            } destination: { _ in Text("Pushed") }
+        case "ToolbarGroup":
+            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                DeclaringPage(beside: others, key: "\(worn)", groups: {
+                    [dressing.wear(ToolbarGroup { ToolbarButton("Add"); ToolbarButton("Edit") }).id(dressing.id)]
+                })
             } destination: { _ in Text("Pushed") }
         case "NavigationStack":
             return dressing.wear(NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Text("Root")] + others }
+                VStack { Beside([Text("Root")] + others) }
             } destination: { _ in Text("Pushed") })
         case "SplitView":
-            return dressing.wear(SplitView(State(wrappedValue: true).projectedValue) {
+            return dressing.wear(SplitView {
                 Text("Sidebar")
-            } detail: { VStack { [Text("Detail")] + others } })
-        case "ModalStack":
-            return dressing.wear(ModalStack(State(wrappedValue: [Int]()).projectedValue) {
-                VStack { [Text("Root")] + others }
-            } destination: { _ in Text("Sheet") })
+            } detail: { VStack { Beside([Text("Detail")] + others) } }
+            .showsSidebar(State(wrappedValue: true).projectedValue))
         case "TabView":
-            return dressing.wear(TabView([0, 1]) { tab in VStack { [Text("Tab \(tab)")] + (tab == 0 ? others : []) } })
+            return dressing.wear(TabView([0, 1]) { tab in VStack { Beside([Text("Tab \(tab)")] + (tab == 0 ? others : [])) } })
         default:
-            return VStack { [view(element, worn)] + others }
+            return VStack { Beside([view(element, worn)] + others) }
         }
     }
 
@@ -157,7 +174,7 @@ public struct WindowSessionPage: View {
 
     public var body: some View {
         let (write, window) = (self.write, self.window)
-        return VStack { [Text("Page")] + beside }
+        return VStack { Beside([Text("Page")] + beside) }
             .onCreated { write(window) }
             .onChanged(key) { write(window) }
     }
@@ -173,41 +190,58 @@ public struct DeclaringPage: View {
     /// What it declares, said as words: a change in them builds it again.
     let key: String
 
-    /// The edge of the bar its group stands at.
-    let side: ToolbarSide
-
-    /// Where its group stands among the others at its edge.
-    let order: Int
-
-    /// The id of the group its items join or start; nil for a group of its own.
-    let group: String?
-
     /// The view it declares in its title's place; nil for none.
     let title: (any View)?
 
-    /// Its group's items.
-    let items: @MainActor () -> [ToolbarItem]
+    /// Its items, each standing where its own placement says.
+    let items: @MainActor () -> [ToolbarButton]
 
-    /// A page declaring `items` at `side` in `order` - joining `group` where one is named - and `title`, `beside` its
-    /// words.
+    /// Its settings, after its items.
+    let toggles: @MainActor () -> [ToolbarToggle]
+
+    /// Its groups, after its settings.
+    let groups: @MainActor () -> [ToolbarGroup]
+
+    /// Its words, after its groups.
+    let labels: @MainActor () -> [ToolbarLabel]
+
+    /// A page declaring `items`, `toggles`, `groups`, `labels` and `title`, `beside` its words.
     public init(
-        beside: [any View] = [], key: String = "", side: ToolbarSide = .trailing, order: Int = 0, group: String? = nil,
-        title: (any View)? = nil, _ items: @escaping @MainActor () -> [ToolbarItem] = { [] }
+        beside: [any View] = [], key: String = "", title: (any View)? = nil,
+        _ items: @escaping @MainActor () -> [ToolbarButton] = { [] },
+        toggles: @escaping @MainActor () -> [ToolbarToggle] = { [] },
+        groups: @escaping @MainActor () -> [ToolbarGroup] = { [] },
+        labels: @escaping @MainActor () -> [ToolbarLabel] = { [] }
     ) {
         self.beside = beside
         self.key = key
-        self.side = side
-        self.order = order
-        self.group = group
         self.title = title
+        self.toggles = toggles
         self.items = items
+        self.groups = groups
+        self.labels = labels
     }
 
     public var body: some View {
-        let (items, words) = (self.items, VStack { [Text("Page")] + beside })
-        let grouped = group.map { words.toolbar(side, id: $0, order: order) { items() } }
-            ?? words.toolbar(side, order: order) { items() }
-        guard let title else { return grouped }
-        return grouped.titleView { ModifiedContent(node: title.node) }
+        let (items, toggles, groups, labels) = (self.items, self.toggles, self.groups, self.labels)
+        let words = VStack { Beside([Text("Page")] + beside) }
+        let declared = words.toolbar {
+            items()
+            toggles()
+            groups()
+            labels()
+        }
+        guard let title else { return declared }
+        return declared.titleView { AnyView(title) }
+    }
+}
+
+/// Views written as a list, beside the one a case dresses: what a page places in order, matched by their places.
+@MainActor
+struct Beside: Views {
+    let nodes: [Node]
+
+    init(_ views: [any View]) {
+        nodes = views.map(\.node)
     }
 }

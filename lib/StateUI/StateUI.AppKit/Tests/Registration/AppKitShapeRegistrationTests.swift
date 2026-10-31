@@ -57,14 +57,42 @@ final class AppKitShapeRegistrationTests: XCTestCase {
 
     /// An ellipse has no geometry of its own to describe, and is registered all
     /// the same: the tier it wears is the whole of what it takes.
+    /// A figure made of a blur stands AppKit's effect view lowest, cut to the figure, its outline drawn over it; a
+    /// paint again takes both away.
+    @MainActor
+    func testAFigureMadeOfABlurStandsAppKitsEffectUnderItsOutline() throws {
+        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var capsule = HostPatch(id: .manual("capsule"), type: .capsule)
+        capsule.properties[.fill] = Material.blur(.thin).propValue
+        capsule.properties[.stroke] = Brush.solidColor(Color(hex: 0xFFFFFF)).propValue
+        capsule.properties[.width] = .number(80)
+        capsule.properties[.height] = .number(30)
+        renderer.applyForTesting(tree(capsule))
+        let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("capsule")) as? AppKitShapeView)
+        native.setFrameSize(NSSize(width: 80, height: 30))
+
+        let surface = try XCTUnwrap(native.surface as? AppKitMaterialView, "the blur is AppKit's own effect view")
+        XCTAssertEqual(native.subviews.first, surface, "lowest in the figure")
+        XCTAssertTrue(native.subviews.last is AppKitShapeOutline, "the outline over it")
+        let cut = try XCTUnwrap(surface.layer?.mask as? CAShapeLayer, "cut to the figure")
+        XCTAssertFalse(try XCTUnwrap(cut.path).boundingBox.isEmpty)
+
+        capsule.properties[.fill] = Material.color(Color(hex: 0xFF0000)).propValue
+        renderer.applyForTesting(tree(capsule))
+        XCTAssertNil(native.surface, "a paint stands no surface")
+        XCTAssertTrue(native.subviews.isEmpty, "and no outline over one")
+    }
+
     @MainActor
     func testAnEllipseIsMadeAndDrawnFromItsTierAlone() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var ellipse = HostPatch(id: .manual("ellipse"), type: .ellipse)
-        ellipse.properties[.fill] = Brush.solidColor(Color(red: 51, green: 102, blue: 153)).propValue
-        ellipse.properties[.stroke] = Brush.solidColor(Color("#000000")).propValue
+        ellipse.properties[.fill] = Material.color(Color(red: 51, green: 102, blue: 153)).propValue
+        ellipse.properties[.stroke] = Brush.solidColor(Color(hex: 0x000000)).propValue
         ellipse.properties[.lineWidth] = .number(3)
         ellipse.properties[.dash] = .numbers([2, 1])
         renderer.applyForTesting(tree(ellipse))
@@ -72,7 +100,7 @@ final class AppKitShapeRegistrationTests: XCTestCase {
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("ellipse")) as? AppKitShapeView)
 
-        XCTAssertNotNil(native.fillForTesting.color, "the fill reaches the ellipse as the brush its contract declares")
+        XCTAssertNotNil(native.fillForTesting.color, "the fill reaches the ellipse as the material its contract declares")
         XCTAssertEqual(native.dashPatternForTesting, [6, 3], "a dash is in stroke widths")
         XCTAssertFalse(
             native.pathForTesting(in: NSRect(x: 0, y: 0, width: 40, height: 20)).isEmpty,

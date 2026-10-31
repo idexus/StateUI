@@ -27,8 +27,15 @@
                 VStack {
                     Stacked.stack(element, spacing: wide.wrappedValue ? 20 : 10) {
                         [
-                            Rectangle().fill(.red).width(20).height(20),
-                            Rectangle().fill(.blue).width(20).height(20).onEvent(ViewContract.frameChanged) { second.values.append($0) },
+                            Rectangle()
+                                .fill(.red)
+                                .width(20)
+                                .height(20),
+                            Rectangle()
+                                .fill(.blue)
+                                .width(20)
+                                .height(20)
+                                .onEvent(ViewContract.frameChanged) { second.values.append($0) },
                         ]
                     }
                     Button("Wider").onClicked { wide.wrappedValue = true }.id("change")
@@ -51,9 +58,9 @@
 @MainActor
 enum Stacked {
     /// A stack of `element`'s kind, its children `spacing` apart.
-    static func stack(_ element: String, spacing: Double, _ children: () -> [any View]) -> ModifiedContent {
+    static func stack(_ element: String, spacing: Double, _ children: () -> [any View]) -> AnyView {
         let held = children()
-        let stack: any View = element == "HStack" ? HStack { held }.spacing(spacing) : VStack { held }.spacing(spacing)
-        return ModifiedContent(node: stack.node)
+        let stack: any View = element == "HStack" ? HStack { Beside(held) }.spacing(spacing) : VStack { Beside(held) }.spacing(spacing)
+        return AnyView(stack)
     }
 }

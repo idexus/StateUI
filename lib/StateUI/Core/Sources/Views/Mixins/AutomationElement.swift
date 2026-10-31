@@ -9,7 +9,7 @@ extension AutomationElement {
     /// A stable name that automation finds this by.
     ///
     ///     Button("Save").accessibilityIdentifier("save")
-    ///     ToolbarItem("Home").accessibilityIdentifier("chrome.home")
+    ///     ToolbarButton("Home").accessibilityIdentifier("chrome.home")
     ///
     /// Nothing shows it and no screen reader says it: it is the handle a UI
     /// test, a script or an agent asks the platform's automation for. What a

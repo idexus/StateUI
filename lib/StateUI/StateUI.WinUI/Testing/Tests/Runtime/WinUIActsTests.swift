@@ -17,10 +17,9 @@ final class WinUIActsTests: XCTestCase {
             stateui_winui_set_store(folder)
             defer { stateui_winui_set_store("") }
 
-            let keys = [PersistentKey("com.example.name", of: String.self), PersistentKey("com.example.on", of: Bool.self)]
             var kept = KeptValuesText("")
-            kept.keep([.name("com.example.name"), .string("Zażółć\tgęślą\njaźń \\ end")], keys: keys)
-            kept.keep([.name("com.example.on"), .bool(true)], keys: keys)
+            kept.keep([.name("com.example.name"), .string("Zażółć\tgęślą\njaźń \\ end")])
+            kept.keep([.name("com.example.on"), .bool(true)])
             WinUIPersistence.write(kept)
 
             XCTAssertEqual(WinUIPersistence.read(), kept)
@@ -80,7 +79,7 @@ final class WinUIActsTests: XCTestCase {
     func testAPromptsFieldHoldsItsBoundInCharacters() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                Text("Draft").onCreated { _ = try await Dialogs.prompt("Name", maximumLength: 3) }
+                Text("Draft").onCreated { _ = try await WindowSession().prompt("Name", maximumLength: 3) }
             }
             let window = try XCTUnwrap(host.window)
             host.settle(until: { Self.asks(window) })
@@ -98,7 +97,9 @@ final class WinUIActsTests: XCTestCase {
     /// A question asked as its window's page is made, before WinUI has loaded the window, stands once it is loaded.
     func testAQuestionAskedAsItsWindowOpensStandsOverIt() throws {
         try onUIThread {
-            let host = WinUIRenderer.running { Text("Draft").onCreated { try await Dialogs.alert("Saved", message: "The draft is safe") } }
+            let host = WinUIRenderer.running {
+                Text("Draft").onCreated { try await WindowSession().alert("Saved", message: "The draft is safe") }
+            }
             let window = try XCTUnwrap(host.window)
             host.settle(until: { Self.asks(window) })
             XCTAssertTrue(Self.asks(window), "over the window just opened")
@@ -139,9 +140,9 @@ final class WinUIActsTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Text(outcome.wrappedValue)
-                    Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Ask").onClicked(.ignoreWhileRunning) {
                         do {
-                            outcome.wrappedValue = "answered \(try await Dialogs.confirm("Delete?", message: "The draft goes", accept: "Delete", cancel: "Keep"))"
+                            outcome.wrappedValue = "answered \(try await WindowSession().confirm("Delete?", message: "The draft goes", accept: "Delete", cancel: "Keep"))"
                         } catch {
                             outcome.wrappedValue = "failed"
                         }
@@ -154,9 +155,9 @@ final class WinUIActsTests: XCTestCase {
             "Standing".withCString { title in
                 "OK".withCString { accept in
                     var other = StateUIQuestion(
-                        kind: .alert, title: title, message: nil, accept: accept, cancel: nil, destruction: nil, choices: nil,
-                        choiceCount: 0, placeholder: nil, maximumLength: 0, spellChecked: false, predicted: false, scope: 0,
-                        initial: nil)
+                        kind: .alert, title: title, message: nil, accept: accept, cancel: nil, choices: nil, choiceCount: 0,
+                        destructive: -1, placeholder: nil, maximumLength: 0, spellChecked: false, predicted: false,
+                        scope: 0, initial: nil)
                     stateui_winui_ask(content.handle, -1, &other)
                 }
             }
@@ -198,9 +199,7 @@ private struct AskingApplication: Application {
 private struct AskingScene: Scene {
     var body: some Scene {
         WindowGroup { AskingOpeningPage() }
-        Window(WindowType("acts.tool")) {
-            Button("Ask").onClicked(gate: .ignoreWhileRunning) { try await Dialogs.alert("Saved", message: "The draft is safe") }
-        }
+        Window(WindowType("acts.tool")) { AskingToolPage() }
     }
 }
 
@@ -222,20 +221,21 @@ private struct ClosingOpeningPage: View {
 
     var body: some View {
         let application = self.application
-        return Button("Tool").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("acts.closed")) }
+        return Button("Tool").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("acts.closed")) }
     }
 }
 
 private struct ClosedToolPage: View {
+    @Environment(\.window) private var window
     @Environment(\.application) private var application
 
     var body: some View {
         let application = self.application
         return VStack {
             Text("Tool")
-            Button("Close").onClicked(gate: .ignoreWhileRunning) { try await application.closeWindow(WindowType("acts.closed")) }
+            Button("Close").onClicked(.ignoreWhileRunning) { try await application.closeWindow(WindowType("acts.closed")) }
         }
-        .onCreated { try await Dialogs.alert("Saved", message: "The draft is safe") }
+        .onCreated { try await window.alert("Saved", message: "The draft is safe") }
     }
 }
 
@@ -244,6 +244,16 @@ private struct AskingOpeningPage: View {
 
     var body: some View {
         let application = self.application
-        return Button("Tool").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("acts.tool")) }
+        return Button("Tool").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("acts.tool")) }
+    }
+}
+
+/// The tool window's page in `AskingApplication`: a button asking the user over its own window.
+private struct AskingToolPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        let window = self.window
+        return Button("Ask").onClicked(.ignoreWhileRunning) { try await window.alert("Saved", message: "The draft is safe") }
     }
 }

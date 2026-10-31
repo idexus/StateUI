@@ -20,21 +20,43 @@ extension AppKitDriver {
         return Self.said(view.menu?.items ?? [])
     }
 
-    /// The menu the button standing for `button` opens.
+    /// The menu the button standing for `button` opens - a toolbar's button, the menu of its toolbar item.
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton {
+            let identifier = NSToolbarItem.Identifier("StateUI.action.\(button.mount)")
+            guard let item = try controller(of: button).toolbarForTesting.itemForTesting(identifier)
+                as? NSMenuToolbarItem
+            else { throw DriverCannot("read the menu \(button.type.name) opens: its toolbar item opens none") }
+            return Self.said(item.menu.items)
+        }
         guard let view = (button.native as? AppKitElement)?.view as? AppKitButtonView, view.opening != .none else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
         return Self.said(view.offeredItems)
     }
 
-    /// The bar the window of `page` shows, read from its toolbar: the actions before the first flexible space and
-    /// after the last, each run between two spaces a group, then the overflow's actions.
-    func bar(of page: MountedElement) throws -> String {
-        let toolbar = try controller(of: page).toolbarForTesting
-        let identifiers = toolbar.identifiersForTesting
+    /// The bar at `edge` of `page`: at its top the window's toolbar - the actions before the first flexible space and
+    /// after the last, each run between two spaces a group, then the overflow's actions - at its foot the strip of
+    /// its room's bottom bar.
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
         var root = page
         while let parent = root.parent { root = parent }
+        guard edge == .top else {
+            guard let shown = bottomToolbar(of: page)?.shownForTesting else {
+                return BarWords.said(leading: [], trailing: [], overflow: [])
+            }
+            let word = { (identifier: String, enabled: Bool) -> String? in
+                guard let mount = UInt64(identifier.dropFirst("StateUI.action.".count)),
+                      let element = Self.element(mounted: mount, in: root)
+                else { return nil }
+                return BarWords.word(element, enabled: enabled)
+            }
+            let groups = { (groups: [[(String, Bool)]]) in groups.map { $0.compactMap(word) }.filter { !$0.isEmpty } }
+            return BarWords.said(
+                leading: groups(shown.leading), trailing: groups(shown.trailing), overflow: shown.overflow.compactMap(word))
+        }
+        let toolbar = try controller(of: page).toolbarForTesting
+        let identifiers = toolbar.identifiersForTesting
         let word = { (identifier: NSToolbarItem.Identifier, enabled: Bool) -> String? in
             guard identifier.rawValue.hasPrefix("StateUI.action."),
                   let mount = UInt64(identifier.rawValue.dropFirst("StateUI.action.".count)),
@@ -47,11 +69,25 @@ extension AppKitDriver {
                 run.compactMap { word($0, toolbar.itemForTesting($0)?.isEnabled ?? true) }
             }.filter { !$0.isEmpty }
         }
-        let first = identifiers.firstIndex(of: .flexibleSpace) ?? identifiers.endIndex
-        let last = identifiers.lastIndex(of: .flexibleSpace).map { $0 + 1 } ?? identifiers.endIndex
+        // A split view's page reads its part: the sidebar's before the separator tracking it, the detail's after.
+        let separator = identifiers.firstIndex(of: .sidebarTrackingSeparator)
+        let inSidebar = page.splitBarPart?.part == .sidebar
+        let part = separator.map { inSidebar ? identifiers[..<$0] : identifiers[($0 + 1)...] } ?? identifiers[...]
+        let first = part.firstIndex(of: .flexibleSpace) ?? part.endIndex
+        let last = part.lastIndex(of: .flexibleSpace).map { $0 + 1 } ?? part.endIndex
+        let overflow = inSidebar ? toolbar.sidebarOverflowForTesting : toolbar.overflowForTesting
         return BarWords.said(
-            leading: groups(identifiers[..<first]), trailing: groups(identifiers[last...]),
-            overflow: toolbar.overflowForTesting.compactMap { word($0.identifier, $0.isEnabled) })
+            leading: groups(part[..<first]), trailing: groups(part[last...]),
+            overflow: overflow.compactMap { word($0.identifier, $0.isEnabled) })
+    }
+
+    /// The strip at the foot of `page`, standing in its room's bottom bar in any window the host shows; nil for none.
+    func bottomToolbar(of page: MountedElement) -> AppKitBottomToolbar? {
+        func search(_ view: NSView) -> AppKitBottomToolbar? {
+            if let bar = view as? AppKitBottomBarView, bar.page === page, bar.showsAnything { return bar.toolbar }
+            return view.subviews.lazy.compactMap(search).first
+        }
+        return NSApp.windows.lazy.compactMap { $0.contentView.flatMap(search) }.first
     }
 
     /// The element of `mount` in the tree under `root`, its slots included.
@@ -83,14 +119,7 @@ extension AppKitDriver {
         case .maximumHeight: return Double(window.contentMaxSize.height - chrome).rounded().propValue
         case .isMaximizable: return (window.standardWindowButton(.zoomButton)?.isEnabled ?? false).propValue
         case .isMinimizable: return window.styleMask.contains(.miniaturizable).propValue
-        case .background:
-            // A blur the desktop shows through, in the colour laid over it; else the window's own colour.
-            let content = window.contentView as? AppKitWindowContentView
-            if let role = content?.materialForTesting?.material, let thickness = AppKitMaterialView.thickness(role) {
-                let blur = Blur(thickness)
-                return Material.blur(content?.materialTint.map { blur.tint(Self.color($0)) } ?? blur).propValue
-            }
-            return window.backgroundColor.map { Material.color(Self.color($0)).propValue }
+        case .background: return Self.ground(of: window)
         case .floatsOnTop: return (window.level == .floating).propValue
         case .windowType: return controller.restorationRecordForTesting.kind.map { .name($0) }
         case .windowValue: return controller.restorationRecordForTesting.value.map { .string($0) }
@@ -98,31 +127,36 @@ extension AppKitDriver {
         }
     }
 
-    /// What the title area of the window `element` stands in shows: the application's name and the line under it,
-    /// nil where the window shows no title area.
-    func titleAreaHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
-        let controller = try controller(of: element)
-        guard controller.titleAccessoryForTesting != nil else { return nil }
-        let words = property == .barTitle
-            ? controller.titleClusterForTesting.titleForTesting : controller.titleClusterForTesting.subtitleForTesting
+    /// What `window` stands on: a blur the desktop shows through, in the color laid over it; else its own color.
+    static func ground(of window: NSWindow) -> HostValue? {
+        let content = window.contentView as? AppKitWindowContentView
+        if let role = content?.materialForTesting?.material, let thickness = AppKitMaterialView.thickness(role) {
+            let blur = Blur(thickness)
+            return Material.blur(content?.materialTint.map { blur.tint(Self.color($0)) } ?? blur).propValue
+        }
+        return window.backgroundColor.map { Material.color(Self.color($0)).propValue }
+    }
+
+    /// What the sheet `element` stands on, as its window shows it.
+    func sheetGround(_ element: MountedElement) throws -> HostValue? {
+        guard let page = element.children.first, let window = try sheet(of: page).window else {
+            throw DriverCannot("read the ground of a sheet")
+        }
+        return Self.ground(of: window)
+    }
+
+    /// The line under the title of the page `element`, naming its window: the window's subtitle; nil for none.
+    func subtitleHolds(_ element: MountedElement) throws -> HostValue? {
+        let words = try controller(of: element).window?.subtitle ?? ""
         return words.isEmpty ? nil : words.propValue
     }
 
-    /// The colour the bar's words of the window `element` stands in are drawn in: its painted title's, which a band
-    /// painted in a bar colour shows; nil on the system's material, where the system draws the title.
+    /// The color the bar's words of the window `element` stands in are drawn in: its painted title's, which a band
+    /// painted in a bar color shows; nil on the system's material, where the system draws the title.
     func barWordsColor(_ element: MountedElement) throws -> HostValue? {
         let controller = try controller(of: element)
         guard controller.bandTitle.window != nil else { return nil }
         return controller.bandTitle.textColor.map { Self.color($0).propValue }
-    }
-
-    /// The picture the title area of the window `element` stands in shows, told by the picture of a name the host
-    /// gave it; nil where it shows none.
-    func titleAreaIcon(_ element: MountedElement) throws -> HostValue? {
-        let controller = try controller(of: element)
-        guard controller.titleAccessoryForTesting != nil, let shown = controller.titleClusterForTesting.imageForTesting
-        else { return nil }
-        return pictureName(shown)
     }
 
     /// The name of the picture `shown` is, among the pictures the suite shows: the host gives a control the
@@ -134,25 +168,24 @@ extension AppKitDriver {
         return names.first { renderer?.image(named: $0) === picture }.map { .string($0) }
     }
 
-    /// The colour the bar of the window `element` stands in is painted: the band the title bar lets show only while
-    /// a colour is painted; nil on the system's material.
+    /// The color the bar of the window `element` stands in - its sheet's, in one - is painted: the band the title bar
+    /// lets show only while a color is painted; nil on the system's material.
     func barHolds(_ element: MountedElement) throws -> HostValue? {
-        guard let window = try controller(of: element).window, window.titlebarAppearsTransparent,
-              let band = (window.contentView as? AppKitWindowContentView)?.barColor
+        let inSheet = element.enclosing(type: .sheet) != nil
+        guard let window = inSheet ? try sheet(of: element).window : try controller(of: element).window,
+              window.titlebarAppearsTransparent,
+              let band = (window.contentView as? AppKitWindowContentView)?.barBrush
         else { return nil }
-        return Self.color(band).propValue
+        // What paints the band - its color, or the blur it stands in for, or its gradient.
+        return StandIns.material(painted: band.brush)?.propValue
     }
 
-    /// What the host keeps under `key`, as the next launch reads it: a value every scene shares from the driver's
-    /// preferences, as its words read back; one of the first scene from its first window's restoration record.
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+    /// The words the host keeps under `key`, as the next launch reads them: a value every scene shares from the
+    /// driver's preferences; one of the first scene from its first window's restoration record.
+    func kept(_ key: String, inScene: Bool) throws -> String? {
         guard let renderer else { throw DriverCannot("read what is kept before a host runs") }
-        if inScene { return renderer.windowsForTesting.first?.restorationRecordForTesting.kept[key] }
-        guard let word = store.string(forKey: key) else { return nil }
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { KeptWord.restored([key: word], for: [$0])[key] }.first
+        if inScene { return renderer.windowsForTesting.first?.restorationRecordForTesting.kept[key]?.string }
+        return store.string(forKey: key)
     }
 
     /// The question AppKit's alert shows now, as it shows it.
@@ -176,6 +209,11 @@ extension AppKitDriver {
         renderer?.fileToolkit.showing.map { $0.dialog.kind == .save ? .save : .open }
     }
 
+    /// What the sharing picker the host holds offers: its words, then its link on a line of its own.
+    func shared(over element: MountedElement) throws -> String? {
+        renderer?.actToolkit.sharing?.shared.together
+    }
+
     /// What the host handed macOS to launch, in order: an address as written, a file by its name.
     func launched() throws -> [String] {
         (renderer?.fileToolkit.launchedForTesting ?? []).map { target in
@@ -192,16 +230,16 @@ extension AppKitDriver {
         AppKitElement.liveViewCount
     }
 
-    /// The colour the view draws at `point` of its own, as AppKit displays it into a bitmap; nil where it draws
+    /// The color the view draws at `point` of its own, as AppKit displays it into a bitmap; nil where it draws
     /// nothing there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         guard let view = (element.native as? AppKitElement)?.view else {
-            throw DriverCannot("read the colour of \(element.type.name)")
+            throw DriverCannot("read the color of \(element.type.name)")
         }
         view.window?.contentView?.layoutSubtreeIfNeeded()
         let size = view.bounds.size
         let (width, height) = (Int(size.width.rounded(.up)), Int(size.height.rounded(.up)))
-        // The view displayed into a context of its points in sRGB, which StateUI's colours are: AppKit converts
+        // The view displayed into a context of its points in sRGB, which StateUI's colors are: AppKit converts
         // what it draws into it.
         guard point.x >= 0, point.y >= 0, point.x < size.width, point.y < size.height, width > 0, height > 0,
               let space = CGColorSpace(name: CGColorSpace.sRGB),

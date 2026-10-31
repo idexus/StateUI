@@ -111,6 +111,26 @@ are the host layer's (`MountedElement.hearing`, `hear`), and so is the one
 pointer a drag is heard from: an element asking a pan of more gets no drag
 recognizer.
 
+## A press as a button takes it
+
+A view that hears taps follows its press with a recognizer of its own
+(`AppKitPressRecognizer`): from `mouseDown` to `mouseUp`, each phase told with
+where the pointer stands in the view, while it recognizes nothing and so keeps
+no other gesture from the press; the host layer lights the view and taps it by
+its rule ([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)).
+A press begun on a control inside that a click works - a button, a field -
+or on a view hearing its own taps is that one's; one on a label's words or a
+picture, which AppKit makes controls though they only show, is the view's, and
+one on the parts of a view that is a control is its own. AppKit's click recognizer stays for a run of taps alone, counting it
+by the event's `clickCount`.
+
+## A press held
+
+A hold is AppKit's press recognizer, waiting the view's time or AppKit's own.
+Recognized, it keeps the press from the view's click and drag recognizers, as
+AppKit lets one recognizer of a view have a press: a click held long is no
+click.
+
 ## The hand over a layout
 
 A layout an engine moves hears the hand on its own view (`AppKitHandReader`):

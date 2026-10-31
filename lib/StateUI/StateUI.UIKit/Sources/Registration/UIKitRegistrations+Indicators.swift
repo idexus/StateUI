@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension UIKitRegistrations {
-    /// A ProgressBar and an ActivityIndicator: how far the work went, whether it runs, and the tint it shows in.
+    /// A ProgressBar and an Spinner: how far the work went, whether it runs, and the tint it shows in.
     static func indicators(_ registry: Registry<UIView>) {
         registry.add(ProgressBarContract.self, create: { _ in UIKitProgressBarView() }) { bar in
             bar.property(ProgressBarContract.progress) { view, progress in
@@ -17,8 +17,8 @@ extension UIKitRegistrations {
                 view.bar.progressTintColor = tint.flatMap { UIColor(stateUI: $0.propValue) }
             }
         }
-        registry.add(ActivityIndicatorContract.self, create: { _ in UIKitActivityIndicatorView() }) { activity in
-            activity.property(ActivityIndicatorContract.isAnimating) { view, running in view.setRunning(running ?? false) }
+        registry.add(SpinnerContract.self, create: { _ in UIKitSpinnerView() }) { activity in
+            activity.property(SpinnerContract.isAnimating) { view, running in view.setRunning(running ?? false) }
             activity.property(TintElementContract.tint) { view, tint in
                 view.color = tint.flatMap { UIColor(stateUI: $0.propValue) }
             }

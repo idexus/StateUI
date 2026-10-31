@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 5.1
 Button.fontAttributes: ✅
 Button.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 Button.fontSize: ✅
@@ -17,12 +17,6 @@ Picker.fontSize: ✅
 Picker.fontWeight: ✅
 Picker.isFontAutoScalingEnabled: ✅
 Picker.textStyle: ✅
-RadioButton.fontAttributes: ✅
-RadioButton.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
-RadioButton.fontSize: ✅
-RadioButton.fontWeight: ✅
-RadioButton.isFontAutoScalingEnabled: ✅
-RadioButton.textStyle: ✅
 SearchField.fontAttributes: ✅
 SearchField.fontFamily: does not apply - read a family - Android's typeface keeps no family's name
 SearchField.fontSize: ✅
@@ -59,3 +53,15 @@ TimePicker.fontSize: ✅
 TimePicker.fontWeight: ✅
 TimePicker.isFontAutoScalingEnabled: ✅
 TimePicker.textStyle: ✅
+ToolbarButton.fontAttributes: – A toolbar's actions stand in Android's own look.
+ToolbarButton.fontFamily: – A toolbar's actions stand in Android's own look.
+ToolbarButton.fontSize: – A toolbar's actions stand in Android's own look.
+ToolbarButton.fontWeight: – A toolbar's actions stand in Android's own look.
+ToolbarButton.isFontAutoScalingEnabled: – A toolbar's actions stand in Android's own look.
+ToolbarButton.textStyle: – A toolbar's actions stand in Android's own look.
+ToolbarToggle.fontAttributes: – A toolbar's actions stand in Android's own look.
+ToolbarToggle.fontFamily: – A toolbar's actions stand in Android's own look.
+ToolbarToggle.fontSize: – A toolbar's actions stand in Android's own look.
+ToolbarToggle.fontWeight: – A toolbar's actions stand in Android's own look.
+ToolbarToggle.isFontAutoScalingEnabled: – A toolbar's actions stand in Android's own look.
+ToolbarToggle.textStyle: – A toolbar's actions stand in Android's own look.

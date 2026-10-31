@@ -60,9 +60,10 @@ extension GTKDriver {
     }
 
     func place(of element: MountedElement) throws -> Rect {
-        guard let view = (element.native as? GTKElement)?.view, let root = gtk_widget_get_root(view.widget) else {
+        guard let view = (element.native as? GTKElement)?.view else {
             throw DriverCannot("read where \(element.type.name) stands")
         }
+        guard let root = gtk_widget_get_root(view.widget) else { throw NotPlaced(element) }
         renderer?.layOut()
         var bounds = graphene_rect_t()
         let window = UnsafeMutableRawPointer(root).assumingMemoryBound(to: GtkWidget.self)
@@ -95,6 +96,13 @@ extension GTKDriver {
         GTKActToolkit.announcedForTesting ?? []
     }
 
+    /// The accent libadwaita draws the application's controls in, as its `accent` class colors words - none to
+    /// read of the application's where the user chooses the desktop's.
+    func accent() throws -> Color {
+        if GTKEnvironment.userChoosesAccent { throw DriverCannot("read an accent of the application's") }
+        return GTKEnvironment.accent
+    }
+
     /// Whether libadwaita shows the application dark now.
     func theme() throws -> ColorScheme {
         adw_style_manager_get_dark(adw_style_manager_get_default()) != 0 ? .dark : .light
@@ -108,14 +116,9 @@ extension GTKDriver {
         GTKView.liveCount
     }
 
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
-        if inScene { return GTKKeptValues.readScenes(applicationID: "").scenes.first?.values[key] }
-        let kept = GTKKeptValues.read(GTKKeptValues.file(for: ""))
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Int.self),
-            PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { kept.restored(for: [$0])[key] }.first
+    func kept(_ key: String, inScene: Bool) throws -> String? {
+        if inScene { return GTKKeptValues.readScenes(applicationID: "").scenes.first?.values[key]?.string }
+        return GTKKeptValues.read(GTKKeptValues.file(for: "")).words[key]
     }
 
     /// Performs a window's act: its question answered, or its life as the desktop would tell it - the driver tells
@@ -128,8 +131,8 @@ extension GTKDriver {
             self.renderer?.runtime.windowStateChanged(window, minimized: minimized, activated: activated)
         }
         switch act {
-        case .answer(let caption, let words):
-            try renderer?.answer(caption, typing: words, over: try? window(of: element))
+        case .answer(let button, let words):
+            try renderer?.answer(button, typing: words, over: try? window(of: element))
         case .switchAway:
             for window in renderer?.windows.compactMap(\.element) ?? [] { tell(window, false, false) }
         case .switchBack, .restore: tell(element, false, true)

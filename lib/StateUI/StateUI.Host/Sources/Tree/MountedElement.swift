@@ -18,7 +18,7 @@
     /// The element that holds this one.
     public private(set) weak var parent: MountedElement?
 
-    /// The elements this one holds, in order - a grid's, a ZStack's and a layout engine's in the order they are
+    /// The elements this one holds, in order - a grid's, a ZStack's and a motion layout's in the order they are
     /// drawn, by `zIndex`, ties in the order written.
     public private(set) var children: [MountedElement] = []
 
@@ -54,6 +54,9 @@
     /// Whether this element was last told the focus stands in it.
     var reportedFocus = false
 
+    /// Whether the pointer stands over the element's view, as its toolkit last told it.
+    var pointerIsOver = false
+
     /// The frame report this element last said, which a report the same says again to nobody.
     var reportedFrame: [Double] = []
 
@@ -79,8 +82,29 @@
     /// A wheel turned as a pinch over the element, while one is under way.
     var wheelPinch = WheelPinch()
 
+    /// A press on the view as a button takes it, while the view hears taps.
+    var buttonPress = ButtonPress()
+
+    /// Whether the hand over the layout took the presses in it, in the touch under way.
+    var handTookPresses = false
+
     /// A press dragged with ⌥/Alt over the element, read as two fingers, while one is under way.
     var mirroredFingers = MirroredFingers()
+
+    /// How far the pinch heard on the element has spread since it began - what it tells, as a pan tells its totals;
+    /// nil while none is under way.
+    var pinchFromStart: Double?
+
+    /// How far the two fingers heard on the element have turned since they began, in degrees; nil while they are not.
+    var rotationFromStart: Double?
+
+    /// How far the pan heard on the element has come since it began, as it last told.
+    var panFromStart = Point(x: 0, y: 0)
+
+    /// How fast the pan, the pinch and the rotation heard on the element go (`SpeedReading`).
+    var panSpeed = SpeedReading()
+    var pinchSpeed = SpeedReading()
+    var rotationSpeed = SpeedReading()
 
     /// The toolkit's half of the element.
     public private(set) var native: (any NativeElement)!
@@ -104,7 +128,15 @@
     private var created = false
     private var described = false
 
+    /// Whether this popover is on its way to a view made anew (`showsAnew`).
+    var isMoving = false
+
+    /// How many elements are alive: those the tree holds, and any a host still holds after the tree dropped it.
+    /// Design: docs/design/host/conformance.md#nothing-left-behind
+    public private(set) static var liveCount = 0
+
     init(_ patch: HostPatch, tree: MountedTree, parent: MountedElement?) {
+        Self.liveCount += 1
         id = patch.id
         type = patch.type
         self.tree = tree
@@ -120,6 +152,10 @@
         apply(patch)
     }
 
+    isolated deinit {
+        Self.liveCount -= 1
+    }
+
     /// The patch the element is made from while its native half is made - what a toolkit making another control of
     /// what the element holds reads (`Reports.made`); nil after.
     public private(set) var made: HostPatch?
@@ -131,8 +167,10 @@
         guard let tree else { return }
 
         let applying = received(patch, tree: tree)
+        if case .unchanged = patch.children {} else { willShowAnew() }
         childrenApplied(patch.children, tree: tree)
         settled(patch, applying, tree: tree)
+        if childrenChanged { showsAnew() }
     }
 
     /// What applying a patch carries from before the children to after them: when a scene began, the pages shown,
@@ -165,6 +203,7 @@
         tree.tally?.nodes += 1
 
         let previouslyShown = isPagePresented ? shownChildren : []
+        let heardPull = hearsPull
         var changed = Set(patch.clearedProperties)
         changed.formUnion(patch.properties.keys)
         if case .replace(let replacement) = patch.driven {
@@ -209,6 +248,8 @@
         for (property, binding) in driven where binding.mode != .in {
             drivenValues[property] = tree.core.value(for: binding)
         }
+        // What hears the pull changed: the offer its view is given follows (`offeredRefresh`).
+        if hearsPull != heardPull { changed.insert(.isRefreshEnabled) }
 
         if let motion = patch.motion {
             self.motion = motion
@@ -254,12 +295,10 @@
         }
         let child = children.first { $0.id == childPatch.id } ?? slots.first { $0.id == childPatch.id }
         guard let child, child.native.presentsView else { return true }
-        return !Self.arrangingProperties.isDisjoint(with: childPatch.properties.keys)
-            || !Self.arrangingProperties.isDisjoint(with: childPatch.clearedProperties)
+        // What its measure reads may size it anew - its words - as its place, size and drawing order move it.
+        return childPatch.properties.keys.contains { !Self.unmeasuredProperties.contains($0) }
+            || childPatch.clearedProperties.contains { !Self.unmeasuredProperties.contains($0) }
     }
-
-    /// What of a child moves it among its siblings: its place and size, and its drawing order.
-    private static let arrangingProperties = arrangedProperties.union([.zIndex])
 
     /// A child the patch names among those it has, applied - or made again where it is replaced.
     private func applied(_ childPatch: HostPatch, tree: MountedTree) {
@@ -295,7 +334,7 @@
                 mount: mount,
                 property: property,
                 standing: applying.standing[property],
-                target: resolvedValue(property),
+                target: resolvedValue(property) ?? identity(of: property),
                 motion: hasDrivenPresentation || !native.animates(property)
                     ? nil
                     : patch.transitions[property]?.motion)
@@ -310,8 +349,11 @@
         }
         framesRead = driven[.frame] != nil || events[.frameChanged] != nil
             || held.contains { $0.framesRead }
-        // Made in a disabled branch, it presents an `isEnabled` it never wrote; untouched, it presents nothing.
-        let presenting = !described && parent?.isEffectivelyEnabled == false ? changed.union([.isEnabled]) : changed
+        // Made in a disabled branch, it presents an `isEnabled` it never wrote; a page made under an arrangement's
+        // ground, a `background` it never wrote; untouched, it presents nothing.
+        var presenting = changed
+        if !described, parent?.isEffectivelyEnabled == false { presenting.insert(.isEnabled) }
+        if !described, type == .page, value(.background) == nil, pageBackground != nil { presenting.insert(.background) }
         if !applying.untouched { native.applied(changed: presenting, wasDescribed: described) }
         described = true
         reconcilePresentation(from: applying.previouslyShown)
@@ -376,7 +418,7 @@
     var held: [MountedElement] { children + slots }
 
     /// The arrangements of pages, which keep their slots apart from their pages.
-    private static let arrangements: Set<NodeType> = [.navigationStack, .tabView, .splitView, .modalStack]
+    private static let arrangements: Set<NodeType> = [.navigationStack, .tabView, .splitView]
 
     /// Puts a grid's or a ZStack's children in the order they are drawn: by `zIndex`, ties in the order
     /// written. Answers whether the order moved.
@@ -400,6 +442,8 @@
     /// Design: docs/design/host/layout.md#right-to-left
     func directionTurned(arrangingItself: Bool) {
         native.directionChanged()
+        // A motion layout's run stands in its direction: presented again, it turns with it.
+        if !ownPlacementRun.isEmpty { native.presentFrame(ownPlacementRun) }
         if arrangingItself, !children.isEmpty { native.arrangeChildren() }
         for child in children where child.inheritsDirection {
             child.directionTurned(arrangingItself: true)
@@ -415,7 +459,7 @@
     private var zIndex: Double { number(.zIndex) ?? 0 }
 
     /// The layouts whose children can overlap, drawn in `zIndex` order.
-    private static let layered: Set<NodeType> = [.grid, .zStack, .layoutEngine]
+    private static let layered: Set<NodeType> = [.grid, .zStack, .motionLayout]
 
     /// Detaches every one of `previous` that is no longer a child.
     private func leave(_ previous: [MountedElement]) {
@@ -472,6 +516,11 @@
     /// The window elements in this subtree, in the tree's order; a window holds none.
     public var windows: [MountedElement] {
         type == .window ? [self] : children.flatMap(\.windows)
+    }
+
+    /// The pages in this subtree, in the tree's order, this one first.
+    public var pages: [MountedElement] {
+        (type == .page ? [self] : []) + held.flatMap(\.pages)
     }
 
     /// The first element with key `sought` in this subtree, this one first.
@@ -612,11 +661,12 @@
 
     /// Presents `changed` on a frame and says what that asks around the element, the same on every host: its own
     /// presentation; its parent's arrangement where it moved in its slot or shows no view of its own, being drawn
-    /// by its parent's; the window's chrome where the chrome shows what moved.
-    /// Design: docs/design/host/runtime.md#one-frame
+    /// by its parent's; the window's chrome where the chrome shows what moved. A motion layout's phase moves its
+    /// children through its run's places alone.
+    /// Design: docs/design/host/tree.md#a-frame-arranges-what-moved
     private func presentFrame(_ changed: Set<Prop>) -> FrameImpact {
         native.presentFrame(changed)
-        let moved = changed.subtracting(ownPlacementRun)
+        let moved = changed.subtracting(ownPlacementRun).subtracting([.parameters])
         return FrameImpact(
             arrangesChildren: !moved.subtracting(Self.drawnOverProperties).isEmpty,
             arrangement: !native.presentsView || !moved.isDisjoint(with: Self.arrangedProperties),
@@ -647,7 +697,7 @@
     /// The four sides `property` gives - leading, top, trailing, bottom - or nothing all round where it gives none.
     public func insets(_ property: Prop) -> Insets {
         guard let sides = value(property)?.numbers, sides.count >= 4 else { return Insets(0) }
-        return Insets(left: sides[0], top: sides[1], right: sides[2], bottom: sides[3])
+        return Insets(start: sides[0], top: sides[1], end: sides[2], bottom: sides[3])
     }
 
     /// The handler of `event`, when the tree listens to it.
@@ -684,7 +734,8 @@
         values.rowSpan = max(whole(.gridRowSpan) ?? 1, 1)
         values.columnSpan = max(whole(.gridColumnSpan) ?? 1, 1)
         values.area = value(.area).flatMap(Area.init(propValue:))
-        values.grows = type == .spacer
+        values.grows = type == .space
+        values.words = NodeType.laidOutWords[type] ?? .none
         return values
     }
 
@@ -772,19 +823,29 @@
                 return .numbers(Array(repeating: 0, count: radii.count))
             }
             return nil
+        default:
+            return identity(of: property)
+        }
+    }
+
+    /// What a transform the tree states none of stands at, on every host: no turn, no shift, a scale of one. A
+    /// transform taken away travels back there, as it traveled out from there.
+    /// Design: docs/design/host/tree.md#standing-values
+    private func identity(of property: Prop) -> HostValue? {
+        switch property {
         case .rotation, .translationX, .translationY:
-            return .number(0)
+            .number(0)
         case .scale:
-            return .number(1)
+            .number(1)
         case .scaleX, .scaleY:
-            return .number(resolvedValue(.scale)?.number ?? 1)
+            .number(resolvedValue(.scale)?.number ?? 1)
         case .geometryTransform:
-            return .values([
+            .values([
                 .number(1), .number(0), .number(0),
                 .number(1), .number(0), .number(0),
             ])
         default:
-            return nil
+            nil
         }
     }
 

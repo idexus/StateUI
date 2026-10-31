@@ -73,11 +73,11 @@ final class AppKitTextViewTests: XCTestCase {
 
         XCTAssertGreaterThan(
             ink[1], ink[0] + 40,
-            "centred words start well right of words at the start "
+            "centered words start well right of words at the start "
                 + "(\(ink[1]) against \(ink[0]))")
         XCTAssertGreaterThan(
             ink[2], ink[1] + 40,
-            "words at the end start well right of centred words "
+            "words at the end start well right of centered words "
                 + "(\(ink[2]) against \(ink[1]))")
     }
 
@@ -105,6 +105,37 @@ final class AppKitTextViewTests: XCTestCase {
         XCTAssertEqual(renderer.nativeViews(AppKitTextFieldView.self).first?.textField.alignment, .left, "a field")
         XCTAssertEqual(renderer.nativeViews(AppKitSearchFieldView.self).first?.alignment, .left, "a search field")
         XCTAssertEqual(renderer.nativeViews(AppKitTextEditorView.self).first?.textView.alignment, .left, "an editor")
+    }
+
+    /// A padding's start and end follow the direction: a text's and a button's start stand at the left left to right
+    /// and at the right right to left - again as the direction turns.
+    @MainActor
+    func testAPaddingsStartStandsWhereTheDirectionStarts() throws {
+        let rightToLeft = State(wrappedValue: false)
+        let renderer = AppKitRenderer.running {
+            VStack {
+                Text("Ada").padding(start: 16, top: 0, end: 2, bottom: 0)
+                Button("Go").padding(start: 16, top: 0, end: 2, bottom: 0)
+            }
+            .layoutDirection(rightToLeft.wrappedValue ? .rightToLeft : .leftToRight)
+        }
+        defer { renderer.closeForTesting() }
+        let label = try XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first)
+        let cell = try XCTUnwrap(renderer.nativeViews(NSButton.self).first?.cell as? AppKitButtonCell)
+        func settle(until done: () -> Bool) {
+            for _ in 0..<100 {
+                guard !done() else { break }
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+                renderer.runtime.pump.turn()
+            }
+        }
+        XCTAssertEqual([label.padding.left, label.padding.right], [16, 2], "a text's start at the left")
+        XCTAssertEqual([cell.padding.left, cell.padding.right], [16, 2], "a button's start at the left")
+
+        rightToLeft.wrappedValue = true
+        settle { label.padding.right == 16 && cell.padding.right == 16 }
+        XCTAssertEqual([label.padding.left, label.padding.right], [2, 16], "a text's start at the right")
+        XCTAssertEqual([cell.padding.left, cell.padding.right], [2, 16], "a button's start at the right")
     }
 
     /// A long text a scroller shows part of draws strip by strip from one layout of its words: uncovering more of
@@ -158,11 +189,11 @@ final class AppKitTextViewTests: XCTestCase {
 
         XCTAssertGreaterThan(
             ink[1], ink[0] + 10,
-            "centred words sit below words at the start "
+            "centered words sit below words at the start "
                 + "(\(ink[1]) against \(ink[0]))")
         XCTAssertGreaterThan(
             ink[2], ink[1] + 10,
-            "words at the end sit below centred words "
+            "words at the end sit below centered words "
                 + "(\(ink[2]) against \(ink[1]))")
     }
 

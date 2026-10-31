@@ -1,9 +1,18 @@
 import StateUI
 
-/// The two non-wrapping stack directions.
+/// The two stack directions, and a row that wraps.
 struct StackLayoutSample: SampleContent, ExampleContent {
     // listing: StackLayoutSample
     @State private var spaced = true
+    @State private var onBaseline = true
+    @State private var wraps = true
+
+    /// Where a wrapped line shorter than the row stands.
+    @State private var lines = TextAlignment.start
+    static let tags = [
+        "Button", "Toggle", "Slider", "Picker", "Text", "Image", "Stack", "Grid",
+        "Scroll", "List", "Map", "Sheet", "Menu", "Toolbar", "Tab", "Split",
+    ]
     // listing: end
 
     static let id = "stackLayout"
@@ -49,32 +58,84 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             }
             .spacing(8)
 
-            SectionTitle("Spacer")
+            SectionTitle("First baseline")
 
-            // A spacer takes the room the other children leave.
+            // A label and a value of other sizes reading as one line: each
+            // rests its first line of words on the row's baseline.
+            HStack {
+                Text("Total")
+                    .fontSize(13)
+                    .verticalAlignment(onBaseline ? .firstBaseline : .center)
+                Text("€120")
+                    .fontSize(34)
+                    .fontWeight(.bold)
+                    .verticalAlignment(onBaseline ? .firstBaseline : .center)
+            }
+            .spacing(8)
+
+            Switch($onBaseline)
+                .text("On one baseline")
+                .accessibilityIdentifier("stackLayout.baseline")
+
+            SectionTitle("Space")
+
+            // A space takes the room the other children leave.
             HStack {
                 StackCell(text: "Draft")
-                if spaced { Spacer() }
+                if spaced { Space() }
                 StackCell(text: "Send")
             }
             .spacing(8)
 
+            Switch($spaced)
+                .text("Space")
+                .accessibilityIdentifier("stackLayout.spaced")
+
+            SectionTitle("Short of room")
+
+            // A row short of room takes it from its words: the button stays
+            // whole, and the title wraps to what is left - or, kept to one
+            // line, ends where the room does.
             HStack {
-                Switch($spaced)
-                    .accessibilityIdentifier("stackLayout.spaced")
-                    .accessibilityLabel("Spacer")
-
-                Text("Spacer")
-                    .verticalAlignment(.center)
+                Text("A title longer than the row has room for beside its button")
+                Button("Open")
             }
-            .spacing(12)
+            .spacing(8)
 
-            SectionTitle("Divider")
+            HStack {
+                Text("A title longer than the row has room for beside its button")
+                    .maximumLines(1)
+                Button("Open")
+            }
+            .spacing(8)
+
+            SectionTitle("Wraps")
+
+            // A row that wraps goes on onto the next line where its room
+            // ends; on one line, its words share the room it has.
+            HStack {
+                ForEach(Self.tags, id: \.self) { StackCell(text: $0) }
+            }
+            .wraps(wraps)
+            .lineAlignment(lines)
+            .spacing(8)
+            .rowSpacing(8)
+
+            Switch($wraps)
+                .text("Wraps")
+                .accessibilityIdentifier("stackLayout.wraps")
+
+            // Where a line shorter than the row stands.
+            Picker([TextAlignment.start, .center, .end], selection: $lines) { "\($0)".titled }
+                .accessibilityLabel("Lines")
+                .presentation(.segmented)
+
+            SectionTitle("Separator")
 
             // The platform's own line, across its stack.
             VStack {
                 Text("Inbox")
-                Divider()
+                Separator()
                 Text("Archive")
             }
             .spacing(8)
@@ -82,7 +143,7 @@ struct StackLayoutSample: SampleContent, ExampleContent {
             HStack {
                 Text("Bold")
                     .fontWeight(.bold)
-                Divider()
+                Separator()
                 Text("Italic")
                     .fontAttributes(.italic)
             }
@@ -93,15 +154,17 @@ struct StackLayoutSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("`.horizontalAlignment` places a child across the room its stack gives it. A `Spacer` takes the room "
-            + "its siblings leave; a `Divider` draws the platform's line across its stack.")
+        Text("`.horizontalAlignment` places a child across the room its stack gives it; `.firstBaseline` rests "
+            + "words of other sizes on one line. A `Space` takes the room its siblings leave; a row short of room "
+            + "takes it from its words, and `.wraps(true)` goes on onto further lines, each standing where "
+            + "`.lineAlignment` says; a `Separator` draws the platform's line across its stack.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }
 }
 
 // listing: StackLayoutSample
-/// One block of colour with a word in it, so an arrangement is visible.
+/// One block of color with a word in it, so an arrangement is visible.
 private struct StackCell: View {
     let text: String
 

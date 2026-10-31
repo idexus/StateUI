@@ -44,7 +44,7 @@ final class WinUISplitView: WinUILayoutView {
     }
 
     /// The grounds the pane last stood on, once it stood on any.
-    private var painted: (beside: PaneGround, over: PaneGround)?
+    private var painted: (beside: WinUIGround, over: WinUIGround)?
 
     override init() {
         super.init()
@@ -133,6 +133,7 @@ final class WinUISplitView: WinUILayoutView {
     override func arrange(in bounds: Rect) {
         let size = LayoutSize(width: bounds.width, height: bounds.height)
         if size != arranged {
+            if let arranged, arranged.height != size.height { sidebar.measurePaneAgain() }
             arranged = size
             asked = sidebar.measure(width: size.width, height: size.height)
         }
@@ -176,7 +177,8 @@ final class WinUISplitView: WinUILayoutView {
     /// Design: docs/design/platforms/winui/pages.md#a-split-view
     func paintPane() {
         let page = (pages.first?.view as? WinUILayoutView)?.box.fill?.argb
-        let grounds = (beside: PaneGround(grounds.beside, page: page), over: PaneGround(grounds.over, page: page))
+        let grounds = (
+            beside: WinUIGround(grounds.beside, page: page), over: WinUIGround(grounds.over, page: page, over: true))
         guard painted.map({ $0 != grounds }) ?? true else { return }
 
         painted = grounds
@@ -190,25 +192,5 @@ final class WinUISplitView: WinUILayoutView {
         super.detach()
         onPresentationChanged = nil
         sidebar.detach()
-    }
-}
-
-/// A ground of WinUI's split pane, as the relay takes it: WinUI's own, a colour, or the in-app acrylic - a blur at its
-/// thickness, in its colour, the tint over the theme's.
-/// Design: docs/design/platforms/winui/pages.md#a-split-view
-struct PaneGround: Equatable {
-    var kind: StateUIGround = .own
-    var argb: UInt32 = 0
-    var opacity: Float = 0
-    var tintOpacity: Float = 0
-
-    /// The ground `material` is, the sidebar page's `page` colour standing in for none.
-    @MainActor init(_ material: HostMaterial, page: UInt32?) {
-        if let thickness = material.blur, let colour = material.painted.flatMap({ HostBrush($0).firstColor })?.argb {
-            let acrylic = WinUIWindow.acrylic(thickness)
-            (kind, argb, opacity, tintOpacity) = (.acrylic, colour, acrylic.opacity, acrylic.tintOpacity)
-        } else if let colour = material.paint.flatMap({ HostBrush($0).firstColor })?.argb ?? page {
-            (kind, argb) = (.colour, colour)
-        }
     }
 }

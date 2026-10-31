@@ -47,7 +47,7 @@ private struct Place {
     var section: Binding<GallerySection> { nav.$section }
     var path: Binding<[Route]> { nav.$path }
     var menu: Binding<Bool> { nav.$menuOpen }
-    var sheets: Binding<[Sheet]> { nav.$sheets }
+    var presentsPage: Binding<Bool> { nav.$presentsPage }
     var tabs: Binding<[DemoTab]> { nav.$tabs }
     var tab: Binding<DemoTab> { nav.$tab }
     var tabsPath: Binding<[Route]> { nav.$tabsPath }
@@ -161,7 +161,7 @@ private func verticalScrollers(in node: Node) -> Int {
 
 /// Everything a tree SAYS, node by node - one string, or the runs one spells.
 ///
-/// A `CodeBlock` colours its snippet with spans under one formatted label, so
+/// A `CodeBlock` colors its snippet with spans under one formatted label, so
 /// the visible text is what those runs spell together.
 @MainActor
 private func shownTexts(in node: Node) -> [String] {
@@ -533,7 +533,7 @@ final class CatalogTests: XCTestCase {
     /// The window showing `page` as the host is first told about it: registered as an
     /// application of one window and rendered as a complete typed host patch -
     /// which is where what `.onCreated` writes into a session lands: the title
-    /// bar, the modal stack, every page's title.
+    /// bar, every page's title.
     private func firstPatch(_ page: MainPage) -> HostPatch {
         OpenScenes.shared.reset()
         Renderer.shared.clearInvalidation()
@@ -592,7 +592,7 @@ final class CatalogTests: XCTestCase {
         // Every OTHER sample is everywhere: hiding is the exception, and one
         // hidden by accident would simply vanish from a phone with no test
         // the wiser.
-        let hidden = notOnAPhone
+        let hidden = notOnAPhone.union(["window", "tooltip"])
 
         for group in catalog.groups {
             for other in group.samples where !hidden.contains(other.id) {
@@ -614,6 +614,27 @@ final class CatalogTests: XCTestCase {
             XCTAssertFalse(sample.isShown(on: silent), "\(id) is listed where the host says nothing of it")
         }
         XCTAssertTrue(try XCTUnwrap(catalog.sample(id: "deviceInfo")).isShown(on: silent), "a sample of no such fact")
+    }
+
+    /// A sample of what a host may not honor is listed where it does: the Window sample where the host sizes a
+    /// window - not where the system or the browser does - and the Tooltip sample where the host shows tooltips.
+    func testASampleOfWhatAHostMayNotHonorIsListedWhereItDoes() throws {
+        let honoring = [
+            "window": HostRealizedMember(element: "Window", owner: "Window", member: "width"),
+            "tooltip": HostRealizedMember(element: "Button", owner: "VisualElement", member: "tooltip"),
+        ]
+        defer { HostBoundary.setRealization(HostRealization()) }
+
+        for (id, member) in honoring.sorted(by: { $0.key < $1.key }) {
+            let sample = try XCTUnwrap(catalog().sample(id: id))
+            HostBoundary.setRealization(HostRealization())
+            XCTAssertFalse(sample.isShown(on: Self.device(.desktop)), "\(id) listed where the host does not honor it")
+            XCTAssertFalse(sample.isShown(on: Self.device(.phone)), "\(id) listed on a phone that does not")
+
+            HostBoundary.setRealization(HostRealization(members: [member]))
+            XCTAssertTrue(sample.isShown(on: Self.device(.desktop)), "\(id) hidden where the host honors it")
+            XCTAssertTrue(sample.isShown(on: Device()), "a headless test sees everything")
+        }
     }
 
     /// A device of `formFactor` whose host reports its display, its network and its battery.
@@ -997,9 +1018,9 @@ final class CatalogTests: XCTestCase {
         let held = try XCTUnwrap(catalog().groups.first { $0.route == "gestures" }?.samples.first)
         let scrolling = try XCTUnwrap(catalog().groups.flatMap(\.samples).first { $0.scrolls })
 
-        XCTAssertEqual(SamplePage.shown(held, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.type, .tabView)
+        XCTAssertEqual(SamplePage.shown(held, nav: Place().nav).node.type, .tabView)
         XCTAssertEqual(
-            SamplePage.shown(scrolling, nav: Place().nav, look: SessionStyle().look(dark: false), system: .blue).node.stateful?.viewType.name,
+            SamplePage.shown(scrolling, nav: Place().nav).node.stateful?.viewType.name,
             String(reflecting: SamplePage.self))
         XCTAssertEqual(held.tabs, [.example(0), .code])
         XCTAssertEqual(held.tabs.map(held.caption(of:)), ["Example", "In Code"])
@@ -1023,7 +1044,7 @@ final class CatalogTests: XCTestCase {
 
     /// The gallery is a menu over a stack, and both halves are pages.
     ///
-    /// Every structural claim the rest of this app rests on: the flyout holds
+    /// Every structural claim the rest of this app rests on: the split view holds
     /// two children wearing the identity of their halves, its bars clear
     /// until the Appearance sample chooses otherwise, the pane has a native
     /// title, and the detail is a stack that opens on its root alone.
@@ -1033,36 +1054,35 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(window.type, "Window")
 
-        let modal = try XCTUnwrap(window.children.first)
-        XCTAssertEqual(modal.type, "ModalStack", "what is presented over it all")
-        let flyout = try XCTUnwrap(modal.children.first)
+        let split = try XCTUnwrap(window.children.first)
 
-        XCTAssertEqual(flyout.type, "SplitView")
-        XCTAssertEqual(flyout.props["showsSidebar"], .bool(false))
-        XCTAssertEqual(flyout.props["barBackgroundColor"], Color.transparent.propValue,
+        XCTAssertEqual(split.type, "SplitView")
+        XCTAssertEqual(split.props["showsSidebar"], .bool(false))
+        XCTAssertEqual(split.props["barBackground"], Color.transparent.propValue,
                        "both panes' bars clear, what stands behind them showing")
-        XCTAssertEqual(flyout.props["barForegroundColor"], Palette.text.propValue)
-        XCTAssertNotNil(flyout.events["showsSidebarChanged"],
+        XCTAssertEqual(split.props["barForegroundColor"], Palette.text.propValue)
+        XCTAssertNotNil(split.events["showsSidebarChanged"],
                         "a native presentation change would not reach the binding")
 
-        XCTAssertEqual(flyout.children.compactMap { $0.id }, ["sidebar", "detail", "gallery"],
-                       "the two halves, then the gallery's own actions declared around every page")
-        XCTAssertEqual(flyout.children.map(\.type).filter { $0 == .overlay || $0 == .menuBar }, [.overlay],
+        XCTAssertEqual(split.children.compactMap { $0.id }, ["sidebar", "detail"], "the two halves")
+        XCTAssertEqual(split.children.filter { $0.type == "ToolbarGroup" }.count, 1,
+                       "then the gallery's own actions, for every page of its detail")
+        XCTAssertEqual(split.children.map(\.type).filter { $0 == .overlay || $0 == .menuBar }, [.overlay],
                        "and its notice; a menu stands only where a sample declares one")
 
-        let pane = try XCTUnwrap(flyout.children.first).built
+        let pane = try XCTUnwrap(split.children.first).built
 
         XCTAssertEqual(pane.type, "Page")
 
         // The pane's title is its session's, written as the pane comes in, so
         // it is in the complete patch that brings the pane to the host.
         let first = firstPatch(mainPage(Place().nav))
-        let shownPane = try XCTUnwrap(first.children.first?.children.first?.children.first)
+        let shownPane = try XCTUnwrap(first.children.first?.children.first)
 
         XCTAssertEqual(shownPane.type, "Page")
-        XCTAssertNotNil(prop(shownPane, .title), "the flyout pane has no native title")
+        XCTAssertNotNil(prop(shownPane, .title), "the sidebar pane has no native title")
 
-        let detail = flyout.children[1].built
+        let detail = split.children[1].built
 
         XCTAssertEqual(detail.type, "NavigationStack")
         XCTAssertNotNil(detail.events["popped"], "a back gesture would not reach the path")
@@ -1088,69 +1108,71 @@ final class CatalogTests: XCTestCase {
         XCTAssertNil(prop(shown, .y))
     }
 
-    /// The window declares its bar on its page, on every device: the gallery's
-    /// name and mark, the line the Window bar sample types, and "Surprise me"
-    /// among the gallery's actions while the sample says so.
+    /// The window's bar, on every device: the menu's page names the gallery -
+    /// its name and mark - and "Surprise me" stands among the gallery's
+    /// actions while the Window bar sample says so.
     func testTheWindowDeclaresItsBar() throws {
         let state = WindowBarState()
-        state.subtitle = "Shared"
         let quiet = firstPatch(mainPage(Place().nav, bar: state))
-        let split = try XCTUnwrap(quiet.children.first { $0.type == "ModalStack" }?.children.first)
+        let split = try XCTUnwrap(quiet.children.first)
+        let menu = try XCTUnwrap(split.children.first)
 
         XCTAssertEqual(split.type, .splitView)
-        XCTAssertEqual(prop(split, .barTitle), .string("StateUI"))
-        XCTAssertEqual(prop(split, .barSubtitle), .string("Shared"))
-        XCTAssertEqual(prop(split, .barIcon), .string("stateui_mark.png"))
+        XCTAssertEqual(menu.type, .page)
+        XCTAssertEqual(prop(menu, .title), .string("StateUI"))
+        XCTAssertEqual(prop(menu, .icon), .string("stateui_mark.png"))
         XCTAssertFalse(actions(on: split).contains("Surprise me"), "no action until the sample asks for one")
 
         state.showsSurprise = true
         let asked = firstPatch(mainPage(Place().nav, bar: state))
-        let declaring = try XCTUnwrap(asked.children.first { $0.type == "ModalStack" }?.children.first)
+        let declaring = try XCTUnwrap(asked.children.first)
         XCTAssertTrue(actions(on: declaring).contains("Surprise me"))
     }
 
-    /// And what is presented over all of it: the window's page is a modal
-    /// stack holding the split view, the sheets after it.
-    func testTheWindowsPageIsAModalStack() throws {
+    /// And what is presented over all of it: a sheet the split view
+    /// declares, holding nothing until the state says so.
+    func testTheWindowPresentsAPageOverItAll() throws {
         let shown = firstPatch(mainPage(Place().nav))
 
-        let presented = try XCTUnwrap(shown.children.first { $0.type == "ModalStack" })
+        let sheet = try XCTUnwrap(shown.children.first?.children.first { $0.type == .sheet })
 
-        XCTAssertEqual(presented.children.map(\.type), [.splitView], "the gallery opens with nothing over it")
-        XCTAssertNotNil(presented.events?[.popped], "a sheet the user drags down would not reach the array")
+        XCTAssertTrue(sheet.children.isEmpty, "the gallery opens with nothing over it")
+        XCTAssertNotNil(sheet.events?[.isPresentedChanged], "a sheet the user drags down would not reach the state")
     }
 
-    /// Presenting and closing are the array growing and shrinking - the same
-    /// two moves a navigation path has, one level up.
-    func testPresentingAndClosingAreTheArray() {
+    /// Presenting is the state turning true: the page stands over it all.
+    func testPresentingIsTheState() throws {
         let place = Place()
+        place.presentsPage.wrappedValue = true
 
-        place.nav.present(.page)
-        XCTAssertEqual(place.sheets.wrappedValue, [.page])
+        let shown = firstPatch(mainPage(place.nav))
+        let sheet = try XCTUnwrap(shown.children.first?.children.first { $0.type == .sheet })
 
-        place.nav.present(.page)
-        XCTAssertEqual(place.sheets.wrappedValue.count, 2, "a sheet may present a sheet")
+        XCTAssertEqual(sheet.children.count, 1, "the page over it all")
+    }
 
-        place.nav.dismiss()
-        XCTAssertEqual(place.sheets.wrappedValue, [.page])
+    /// The page presented closes itself by writing its state false - the
+    /// same move a pushed page makes on its path, one level up.
+    func testAPagePresentedClosesItselfByItsState() throws {
+        let shown = State(wrappedValue: true)
+        let close = try XCTUnwrap(clicked("Close", in: ModalPage(shown: shown.projectedValue, depth: 1).node))
 
-        place.nav.dismiss()
-        XCTAssertTrue(place.sheets.wrappedValue.isEmpty)
+        Renderer.shared.start(EventRegistration(close))
 
-        place.nav.dismiss()
-        XCTAssertTrue(place.sheets.wrappedValue.isEmpty, "and closing nothing is nothing")
+        XCTAssertFalse(shown.wrappedValue)
     }
 
     /// The galleries are a SCENE: gallery windows, as many as are opened - what
     /// launch and *File ▸ New Window* open - and beside them the Fonts and
-    /// Colours windows and the inspector, one of each, and a swatch window per
+    /// Colors windows and the inspector, one of each, and a swatch window per
     /// number.
     func testTheGalleriesAreASceneWithTheirToolsBeside() {
         let windows = GalleryScene().declaredWindows.declared
 
-        XCTAssertEqual(windows.map(\.type), [nil, .fonts, .colours, .debugInspector, .swatch])
-        XCTAssertEqual(windows.filter(\.single).compactMap(\.type), [.fonts, .colours, .debugInspector])
-        XCTAssertEqual(windows.filter { $0.valueType != nil }.compactMap(\.type), [.swatch])
+        let (fonts, colors, inspector) = (WindowType.fonts.key, WindowType.colors.key, WindowType.debugInspector.key)
+        XCTAssertEqual(windows.map(\.type), [nil, fonts, colors, inspector, WindowType.swatch.key])
+        XCTAssertEqual(windows.filter(\.single).compactMap(\.type), [fonts, colors, inspector])
+        XCTAssertEqual(windows.filter { $0.valueType != nil }.compactMap(\.type), [WindowType.swatch.key])
         XCTAssertEqual(windows.first?.page(nil, nil).stateful?.viewType.name, String(reflecting: GalleryWindow.self))
     }
 
@@ -1164,8 +1186,8 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(scenes.declared[1] is ScratchpadScene)
         XCTAssertTrue(scenes.declared[2] is AboutScene)
         XCTAssertEqual(scenes.launching, 0, "launch opens a gallery window")
-        XCTAssertEqual(scenes.windows[1].declared.map(\.type), [.scratchpad])
-        XCTAssertEqual(scenes.windows[2].declared.map(\.type), [.about])
+        XCTAssertEqual(scenes.windows[1].declared.map(\.type), [WindowType.scratchpad.key])
+        XCTAssertEqual(scenes.windows[2].declared.map(\.type), [WindowType.about.key])
         XCTAssertEqual(scenes.windows[2].declared.map(\.single), [true])
     }
 
@@ -1261,12 +1283,31 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(place.path.wrappedValue, [.sample(sample.id)])
     }
 
+    /// A link given to a gallery window shows the sample it names over its group - the window's own navigation,
+    /// heard by the arrangement where its page stands.
+    func testAWindowGivenALinkShowsItsSample() throws {
+        let nav = Navigation()
+        let window = firstPatch(mainPage(nav))
+        let linked = try XCTUnwrap(hostEventId(.linkOpened, in: window), "no page of the window hears a link")
+        // The payload stays the event buffer's until the next event: a test after this one starts with none.
+        defer { EventBuffer.current = [] }
+
+        XCTAssertTrue(HostBoundary.dispatch(linked, payload: [.string("stateui-gallery://sample/tap")]))
+        XCTAssertEqual(nav.path, [.group("gestures"), .sample("tap")])
+    }
+
+    /// The id a host patch gave an event, wherever in the tree it landed.
+    private func hostEventId(_ event: Event, in patch: HostPatch) -> Int32? {
+        if case .replace(let events)? = patch.events, let id = events[event] { return id }
+        return patch.children.lazy.compactMap { self.hostEventId(event, in: $0) }.first
+    }
+
     /// The way home is one assignment to the path the application owns.
     func testTheWayHomeIsOneAssignment() throws {
         let place = Place()
         place.path.wrappedValue = [.group("layout"), .sample("grid"), .level(1)]
 
-        let home = try XCTUnwrap(ToolbarItem.home(place.nav).node.events["clicked"])
+        let home = try XCTUnwrap(ToolbarButton.home(place.nav).node.events["clicked"])
         Renderer.shared.start(EventRegistration(home))
 
         XCTAssertEqual(place.section.wrappedValue, .home)
@@ -1285,7 +1326,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let detail = mainPage(place.nav).detail().node
+        let detail = mainPage(place.nav).detail().node.built
 
         XCTAssertEqual(detail.type, "TabView")
         XCTAssertEqual(detail.props["selectedTab"], .number(0))
@@ -1294,7 +1335,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertEqual(detail.children.count, DemoTab.opening.count)
 
         let shown = firstPatch(mainPage(place.nav))
-        let tabbed = try XCTUnwrap(shown.children.first?.children.first?.children.first { $0.type == "TabView" })
+        let tabbed = try XCTUnwrap(shown.children.first?.children.first { $0.type == "TabView" })
         let stack = try XCTUnwrap(tabbed.children.first)
         let second = try XCTUnwrap(tabbed.children.last)
 
@@ -1318,11 +1359,11 @@ final class CatalogTests: XCTestCase {
         place.tabs.wrappedValue = [.stack, .second, .extra(1)]
         place.tab.wrappedValue = .second
 
-        let before = mainPage(place.nav).detail().node.props["selectedTab"]
+        let before = mainPage(place.nav).detail().node.built.props["selectedTab"]
 
         place.nav.reverseTabs(showing: .second)
 
-        let after = mainPage(place.nav).detail().node.props["selectedTab"]
+        let after = mainPage(place.nav).detail().node.built.props["selectedTab"]
 
         XCTAssertEqual(place.tabs.wrappedValue, [.extra(1), .second, .stack])
         XCTAssertEqual(before, .number(1))
@@ -1492,7 +1533,7 @@ final class CatalogTests: XCTestCase {
 
     /// The words of the actions an element declares on the bar.
     private func actions(on patch: HostPatch) -> [String] {
-        patch.children.filter { $0.type == .toolbarItemGroup }
+        patch.children.filter { $0.type == .toolbarGroup }
             .flatMap(\.children)
             .compactMap { $0.properties[.text]?.string }
     }
@@ -1538,7 +1579,7 @@ final class CatalogTests: XCTestCase {
 
         // TWO rooms: the page's own, which that height is arithmetic over,
         // and the gallery's, which its cards are placed in.
-        XCTAssertEqual(rooms, ["Grid", "LayoutEngine"],
+        XCTAssertEqual(rooms, ["Grid", "MotionLayout"],
                        "the page and its run are measured onto numbers")
 
         // And the entrance is the third number - so the page waits for its room
@@ -1637,7 +1678,7 @@ final class CatalogTests: XCTestCase {
 
             /// What a node says, whether that is one string or a set of runs.
             ///
-            /// A `CodeBlock` colours its snippet with spans under one formatted
+            /// A `CodeBlock` colors its snippet with spans under one formatted
             /// label, so the visible text is what those runs spell together.
             func shownText(_ node: Node) -> String? {
                 func text(_ node: Node) -> String? {
@@ -1662,7 +1703,7 @@ final class CatalogTests: XCTestCase {
                     caught.append(contentsOf: handled)
 
                     // The code is the one thing that DOES scroll. It is drawn as
-                    // coloured runs rather than one string, so the runs are put
+                    // colored runs rather than one string, so the runs are put
                     // back together to recognize it.
                     codeScrolls = codeScrolls || sample.examples.contains { $0.code == shownText(node) }
                 }
@@ -1718,8 +1759,8 @@ final class CatalogTests: XCTestCase {
     /// The pinch works on a platform that never sends `.began`.
     ///
     /// A native trackpad magnification may arrive as `.changed` followed by
-    /// `.ended`, with no `.began`. Multiplying by each report's change
-    /// keeps the interaction independent of that optional phase.
+    /// `.ended`, with no `.began`: the host layer begins the pinch itself, so
+    /// the sample always knows the size it had when the pinch began.
     func testThePinchSampleDoesNotWaitForAStatusThatMayNeverCome() throws {
         // The sample owns its state now, so the test goes through a render the
         // way the app does: fire the handler the host reports, then read the
@@ -1729,22 +1770,23 @@ final class CatalogTests: XCTestCase {
         let first = renders.render(PinchSample().node)
         let pinchUpdated = try XCTUnwrap(eventId("pinchUpdated", in: first))
 
-        // Exactly what the platform sent, in the order it sent it.
-        renders.fire(pinchUpdated, with: [
-            .enumeration(GesturePhase.changed.rawValue), .number(1.02), .numbers([0.5, 0.45]),
-        ])
-        renders.fire(pinchUpdated, with: [
-            .enumeration(GesturePhase.ended.rawValue), .number(1), .numbers([0, 0]),
-        ])
+        // What the element tells of a step and an end with no beginning: one begun for it, the spread from it.
+        for (phase, scale) in [(GesturePhase.began, 1.0), (.changed, 1.02), (.ended, 1.02)] {
+            renders.fire(pinchUpdated, with: [
+                .enumeration(phase.rawValue), .number(scale), .numbers([0.5, 0.45]), .number(0),
+            ])
+        }
 
         let second = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: second)), 1.02, accuracy: 0.0001,
                        "the scale did not follow a pinch that never said .began")
 
         // And a second gesture goes on from where the first left off.
-        renders.fire(pinchUpdated, with: [
-            .enumeration(GesturePhase.changed.rawValue), .number(1.02), .numbers([0.5, 0.45]),
-        ])
+        for (phase, scale) in [(GesturePhase.began, 1.0), (.changed, 1.02)] {
+            renders.fire(pinchUpdated, with: [
+                .enumeration(phase.rawValue), .number(scale), .numbers([0.5, 0.45]), .number(0),
+            ])
+        }
 
         let third = renders.render(PinchSample().node, changed: Renderer.shared.pendingChanges)
         XCTAssertEqual(try XCTUnwrap(number("scale", in: third)), 1.0404, accuracy: 0.0001)
@@ -1760,7 +1802,7 @@ final class CatalogTests: XCTestCase {
 
         let first = renders.render(tree())
         let remove = try XCTUnwrap(buttons(in: first).first { $0.props[.text] == .string("Remove") })
-        let phase = try XCTUnwrap(driven(.phase, in: first))
+        let phase = try XCTUnwrap(driven(.parameters, in: first))
 
         // From the second of four cards: twice the card at the front leaves
         // and the one behind stands there, the second of two - the last.
@@ -1771,7 +1813,7 @@ final class CatalogTests: XCTestCase {
         XCTAssertTrue(renders.fire(try XCTUnwrap(remove.events?[.clicked])))
 
         // One frame: what the host is given to show.
-        _ = HostBoundary.cycle(.display, now: 16, reducesMotion: false)
+        _ = HostBoundary.cycle(now: 16, reducesMotion: false)
 
         let journey = try XCTUnwrap(HostBoundary.value(for: phase).flatMap(HostBoundary.journey(from:)))
         XCTAssertEqual(journey.destination, [0], "the card behind, at the front")
@@ -1787,19 +1829,19 @@ final class CatalogTests: XCTestCase {
 
         let first = renders.render(tree())
         func layout(in patch: HostPatch) -> HostPatch? {
-            patch.type == .layoutEngine ? patch : patch.children.lazy.compactMap(layout).first
+            patch.type == .motionLayout ? patch : patch.children.lazy.compactMap(layout).first
         }
         let engine = try XCTUnwrap(layout(in: first))
         guard case .replace(let driven)? = engine.driven, let room = driven[.frame] else {
             return XCTFail("the boards report no room")
         }
-        let moved = try XCTUnwrap(engine.events?[.itemMoved])
+        let moved = try XCTUnwrap(engine.events?[.itemDragUpdated])
 
         // The boards placed in a room of 360 by 600: four icons across, five down.
         var now = 50_000_000.0
         func frame() {
             now += 16
-            _ = HostBoundary.cycle(.display, now: now, reducesMotion: false)
+            _ = HostBoundary.cycle(now: now, reducesMotion: false)
         }
         frame()
         XCTAssertTrue(HostBoundary.report(.lanes([0, 0, 360, 600]), through: room))

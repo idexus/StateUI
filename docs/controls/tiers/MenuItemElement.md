@@ -2,14 +2,14 @@
 
 # MenuItemElement
 
-What every item a user chooses from has - a menu's entry, a toolbar's item: a caption, a picture, and something to run.
+What every item a user chooses from says - a menu's entry, a toolbar's item, an action or a setting: a caption, a picture, whether it can be chosen, and the keys that choose it.
 
 ```swift
 @State var saved = false
 
 Text(saved ? "Saved" : "Draft")
     .toolbar {
-        ToolbarItem("Save")
+        ToolbarButton("Save")
             .icon("save.png")
             .isEnabled(!saved)
             .onClicked { saved = true }
@@ -18,7 +18,7 @@ Text(saved ? "Saved" : "Draft")
 
 Wears: [AutomationElement](AutomationElement.md)
 
-Worn by: [MenuItem](../MenuItem.md) · [ToolbarItem](../ToolbarItem.md)
+Worn by: [MenuItem](../MenuItem.md) · [MenuToggle](../MenuToggle.md) · [ToolbarButton](../ToolbarButton.md) · [ToolbarToggle](../ToolbarToggle.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/MenuItemElementContract.swift`.
 
@@ -26,9 +26,7 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `onClicked` (`clicked`) | event |  | native |
 | `icon` | property | `ImageSource` | adaptive |
-| `isDestructive` | property | `Bool` | adaptive |
 | `isEnabled` | property | `Bool` | native |
 | `keyboardShortcut` | property | `KeyboardShortcut` | native |
 | `text` | property | `String` | native |

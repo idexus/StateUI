@@ -33,7 +33,7 @@ struct IconSample: SampleContent, ExampleContent {
             .rows(.auto(count: 8))
             .rowSpacing(12)
 
-            SectionTitle("In the button's colour")
+            SectionTitle("In the button's color")
 
             HStack {
                 Button("Share")
@@ -43,8 +43,9 @@ struct IconSample: SampleContent, ExampleContent {
                     .icon(.icon(.delete))
                     .role(.destructive)
 
-                Button(icon: .icon(.settings))
-                    .accessibilityLabel("Settings")
+                Button("Settings")
+                    .icon(.icon(.settings))
+                    .showsText(false)
             }
             .spacing(12)
 
@@ -68,7 +69,7 @@ struct IconSample: SampleContent, ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("Each icon is the platform's own, in the colour of what holds it; press Make another for new bytes.")
+        Text("Each icon is the platform's own, in the color of what holds it; press Make another for new bytes.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

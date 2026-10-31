@@ -153,7 +153,7 @@ final class PumpTests: XCTestCase {
     func testARunStandsWithTheViewsTheRenderDealt() throws {
         let runtime = TurnRuntime(DealingApplication())
         runtime.pump.turn()
-        let layout = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
         _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]))
         runtime.frame()
         XCTAssertEqual(layout.placement?.placements.count, 2)
@@ -184,7 +184,7 @@ final class PumpTests: XCTestCase {
     func testATurnLeavesAnEngineGoingOnToTheFrame() throws {
         let runtime = TurnRuntime(DealingApplication())
         runtime.pump.turn()
-        let layout = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        let layout = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
         _ = runtime.core.report(.lanes([0, 0, 300, 200]), through: try XCTUnwrap(layout.driven[.frame]))
         runtime.frame()
         runtime.time += 16
@@ -203,6 +203,7 @@ final class PumpTests: XCTestCase {
 
 /// A page whose handlers add one, the second also calling an act.
 private struct CountingPage: View {
+    @Environment(\.window) private var window
     @State private var count = 0
 
     var body: some View {
@@ -211,9 +212,9 @@ private struct CountingPage: View {
             Button("Add")
                 .onClicked { count += 1 }
             Button("Add and hide")
-                .onClicked(gate: .none) {
+                .onClicked(.runConcurrently) {
                     count += 1
-                    _ = try? await OnScreenKeyboard.hide()
+                    _ = try? await window.hideOnScreenKeyboard()
                 }
         }
     }
@@ -236,7 +237,7 @@ private struct DealingPage: View {
         return VStack {
             Button("Deal")
                 .onClicked { cards.append(cards.count) }
-            LayoutEngine(cards) { Text("\($0)") } placements: { _, _ in
+            MotionLayout(cards, parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in
                 dealtRuns += 1
                 return (0..<count).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
             }
@@ -369,5 +370,7 @@ private final class HeldNative: NativeElement {
     }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func leave() {}
 }

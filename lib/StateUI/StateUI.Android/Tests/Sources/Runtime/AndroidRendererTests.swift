@@ -20,9 +20,18 @@ struct CounterPage: View {
     }
 }
 
+/// A page showing its window's phase.
+struct WindowPhasePage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        Text("\(window.phase)")
+    }
+}
+
 /// A page showing what its scene keeps, which a click changes.
 struct KeptSectionPage: View {
-    @State(sceneKey: SceneKey("android.section", of: Int.self)) private var section = 0
+    @State(sceneKey: SceneKey<Int>("android.section")) private var section = 0
 
     var body: some View {
         VStack {
@@ -72,8 +81,9 @@ final class AndroidRendererTests: XCTestCase {
             ("testAClickRendersWhatItsHandlerChanged", testAClickRendersWhatItsHandlerChanged),
             ("testAControlNoRegistrationAnswersShowsItsName", testAControlNoRegistrationAnswersShowsItsName),
             ("testAnActivityMadeAgainShowsTheSceneWithItsState", testAnActivityMadeAgainShowsTheSceneWithItsState),
+            ("testAnActivityMadeAgainLeavesItsWindowsPhaseAlone", testAnActivityMadeAgainLeavesItsWindowsPhaseAlone),
             ("testANewDensityMakesTheWindowAgainInIt", testANewDensityMakesTheWindowAgainInIt),
-            ("testAQuestionWaitingAsTheActivityFinishesIsDismissed", testAQuestionWaitingAsTheActivityFinishesIsDismissed),
+            ("testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent", testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent),
             ("testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext", testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext),
             ("testTheDeviceIsCalledWhatItsUserNamedIt", testTheDeviceIsCalledWhatItsUserNamedIt),
             ("testAnActivityAfterBackShowsANewScene", testAnActivityAfterBackShowsANewScene),
@@ -82,6 +92,8 @@ final class AndroidRendererTests: XCTestCase {
             ("testAStartedHostSaysWhatItRealizes", testAStartedHostSaysWhatItRealizes),
             ("testTheWindowsTitleNamesTheActivity", testTheWindowsTitleNamesTheActivity),
             ("testTheHostReportsTheLocaleTheBatteryAndTheNetwork", testTheHostReportsTheLocaleTheBatteryAndTheNetwork),
+            ("testTheHostReportsTheAccessibilitySettings", testTheHostReportsTheAccessibilitySettings),
+            ("testTheEnvironmentReachesTheHostOnTheUIThreadWhicheverThreadTellsIt", testTheEnvironmentReachesTheHostOnTheUIThreadWhicheverThreadTellsIt),
             ("testTheLocaleIsTheHostLayersReadingOfTheRelaysWords", testTheLocaleIsTheHostLayersReadingOfTheRelaysWords),
         ]
     }
@@ -132,14 +144,41 @@ final class AndroidRendererTests: XCTestCase {
         }
     }
 
+    /// An activity Android makes again for a new configuration - a theme the application or the system chose -
+    /// pauses and stops on its way, and its window hears nothing of it: the next resumes at once. An activity that
+    /// stops for good leaves its window stopped.
+    func testAnActivityMadeAgainLeavesItsWindowsPhaseAlone() throws {
+        onMainActor {
+            let first = AndroidRenderer.running { WindowPhasePage() }
+            first.setPhase(.active)
+            let shown = { (host: AndroidRenderer) -> [String] in
+                host.runtime.pump.turn()
+                TestWindow.run(for: 20)
+                return host.views(AndroidTextView.self).map(\.text)
+            }
+            XCTAssertEqual(shown(first), ["activated"])
+
+            first.setPhase(.inactive, beingMadeAgain: true)
+            first.setPhase(.background, beingMadeAgain: true)
+            XCTAssertEqual(shown(first), ["activated"], "the window stands as it stood")
+            let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
+            second.setPhase(.active)
+            XCTAssertEqual(shown(second), ["activated"], "and stands so in the next")
+
+            second.setPhase(.inactive)
+            second.setPhase(.background)
+            XCTAssertEqual(shown(second), ["stopped"], "stopped for good")
+        }
+    }
+
     /// A question waiting as Android makes its activity again is asked again in the next - its dialog went with the
     /// first - and the answer given there reaches the handler that asked: acts are the process's.
     func testAQuestionWaitingAsTheActivityIsMadeAgainIsAnsweredInTheNext() throws {
         try onMainActor {
             let answers = Received<Bool>()
             let first = AndroidRenderer.running {
-                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
-                    answers.values.append(try await Dialogs.confirm("Sure?", message: "Both", accept: "Yes", cancel: "No"))
+                Button("Ask").onClicked(.ignoreWhileRunning) {
+                    answers.values.append(try await WindowSession().confirm("Sure?", message: "Both", accept: "Yes", cancel: "No"))
                 }
             }
             try XCTUnwrap(first.views(AndroidButtonView.self).first).click()
@@ -153,7 +192,8 @@ final class AndroidRendererTests: XCTestCase {
 
             let pressed = Java.frame {
                 Java.callStaticBool(
-                    AndroidDriver.dialogs, AndroidDriver.answer, .object(Java.string("Yes")), .object(nil))
+                    AndroidDriver.dialogs, AndroidDriver.answer, .int(AndroidAnswer.accept.rawValue), .int(-1),
+                    .object(nil))
             }
             XCTAssertTrue(pressed)
             // The dialog hands its button's press on in a message of the UI thread's own.
@@ -176,38 +216,45 @@ final class AndroidRendererTests: XCTestCase {
 
     @MainActor private static let leaveAll = Java.staticMethod(AndroidDriver.dialogs, "leaveAll", "()V")
 
-    /// A question waiting as Back finishes the activity is answered as dismissed: the next activity of the process
-    /// finds nothing waiting before what it asks.
-    func testAQuestionWaitingAsTheActivityFinishesIsDismissed() throws {
+    /// A question waiting as Back finishes the activity is answered as dismissed once its window went, every time:
+    /// its handler hears it, a write of its run is refused, and the next activity of the process finds nothing
+    /// waiting before what it asks.
+    func testAQuestionWaitingAsTheActivityFinishesIsDismissedOnceItsWindowWent() throws {
         try onMainActor {
-            let answers = Received<Bool>()
-            let thrown = Received<String>()
+            let heard = Heard()
+            let written = Received<Bool>()
             let host = AndroidRenderer.running {
-                Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                Button("Ask").onClicked(.ignoreWhileRunning) {
                     do {
-                        answers.values.append(
-                            try await Dialogs.confirm("Sure?", message: "", accept: "Yes", cancel: "No"))
+                        let answer = try await WindowSession()
+                            .confirm("Sure?", message: "", accept: "Yes", cancel: "No")
+                        heard.words.append("\(answer)")
+                        written.values.append(answer)
                     } catch {
-                        thrown.values.append("\(error)")
+                        heard.words.append("threw \(error)")
                     }
                 }
             }
-            let said = Said.shared.everySaid.count
             let button = try XCTUnwrap(host.views(AndroidButtonView.self).first)
             button.click()
             host.settle { Self.asked() != nil }
             XCTAssertEqual(Self.asked(), "Sure?", "the question shows")
-            let stood = host.views(AndroidButtonView.self).first === button
+            let said = Said.shared.everySaid.count
 
             host.destroying()
-            host.settle { !answers.values.isEmpty || !thrown.values.isEmpty }
+            host.settle { !heard.words.isEmpty }
 
-            XCTAssertEqual(
-                answers.values, [false],
-                "answered as dismissed; the handler threw \(thrown.values); the button stood until Back: \(stood); "
-                    + Self.waiting(saidSince: said))
+            XCTAssertEqual(heard.words, ["false"], "answered as dismissed; " + Self.waiting(saidSince: said))
+            XCTAssertEqual(written.values, [], "its run went with the window")
+            let refused = Said.shared.everySaid.dropFirst(said).contains { $0.contains("superseded") }
+            XCTAssertTrue(refused, "its write refused; " + Self.waiting(saidSince: said))
             Java.callStatic(AndroidDriver.dialogs, AndroidDriver.dismissAll)
         }
+    }
+
+    /// What a handler heard, kept by reference rather than in a state: a run its element outlived writes no state.
+    private final class Heard: @unchecked Sendable {
+        var words: [String] = []
     }
 
     /// What still waits in the core - replies, handlers resumed and not run, jobs - and what it said since `first`:
@@ -280,7 +327,7 @@ final class AndroidRendererTests: XCTestCase {
 
             let kept = AndroidPersistence.readScenes(context: TestContext.context.reference)
             XCTAssertEqual(second.views(AndroidTextView.self).map(\.text), ["section 2"])
-            XCTAssertEqual(kept.scenes.map(\.values), [["android.section": .number(2)]])
+            XCTAssertEqual(kept.scenes.map(\.values), [["android.section": .string("2")]])
         }
     }
 
@@ -338,6 +385,41 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertFalse(texts.contains("network unknown"), "\(texts)")
         }
     }
+
+    /// Android tells some of what the environment watch hears on a thread of its own - the animations' scale on a
+    /// binder's: each listener reaches the host on the UI thread, whichever thread tells it.
+    func testTheEnvironmentReachesTheHostOnTheUIThreadWhicheverThreadTellsIt() throws {
+        try onMainActor {
+            _ = AndroidRenderer.running { Text("Watched") }
+            let context = TestContext.context.reference
+            let watch = try XCTUnwrap(Java.callStaticObject(JavaAPI.environment, EnvironmentWatch.watch, .object(context)))
+            defer {
+                Java.callStatic(JavaAPI.environment, EnvironmentWatch.unwatch, .object(context), .object(watch))
+                Java.release(local: watch)
+            }
+
+            Java.callStatic(EnvironmentWatch.test, EnvironmentWatch.tellOffTheUIThread, .object(context), .object(watch))
+            TestWindow.run(for: 50)
+
+            XCTAssertNotNil(AndroidRenderer.shared, "the host heard each change, and stands")
+        }
+    }
+
+    /// The accessibility settings reported are the device's: less motion where the system's animations are off, as
+    /// the renderer reads them for its own motion, no screen reader under a test, and the scale of the system's words.
+    func testTheHostReportsTheAccessibilitySettings() {
+        onMainActor {
+            HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+                reducesMotion: !AndroidRenderer.animationsRemoved(), prefersHigherContrast: false,
+                isScreenReaderOn: true, textScale: 0))
+            _ = AndroidRenderer.running { Text("Settings") }
+            let settings = StandardEnvironment.device.accessibility
+
+            XCTAssertEqual(settings.reducesMotion, AndroidRenderer.animationsRemoved())
+            XCTAssertFalse(settings.isScreenReaderOn)
+            XCTAssertGreaterThan(settings.textScale, 0.5)
+        }
+    }
 }
 
 extension AndroidRendererTests {
@@ -375,4 +457,15 @@ private struct TitlingPage: View {
         let title = self.title
         return Text(title).onCreated { window.title = title }
     }
+}
+
+/// The host's watch on the environment, and the test's own teller of it.
+@MainActor
+private enum EnvironmentWatch {
+    static let watch = Java.staticMethod(JavaAPI.environment, "watch", "(Landroid/content/Context;)[Ljava/lang/Object;")
+    static let unwatch = Java.staticMethod(
+        JavaAPI.environment, "unwatch", "(Landroid/content/Context;[Ljava/lang/Object;)V")
+    static let test = Java.findClass("stateui/android/test/TestEnvironment")
+    static let tellOffTheUIThread = Java.staticMethod(
+        test, "tellOffTheUIThread", "(Landroid/content/Context;[Ljava/lang/Object;)V")
 }

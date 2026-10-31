@@ -67,6 +67,23 @@ final class GTKRendererTests: XCTestCase {
         }
     }
 
+    /// The accent read is the one drawn now: an accent the application gives is read at once, and libadwaita's own
+    /// again once taken away - however many times it was read before.
+    func testTheAccentReadIsTheOneDrawnNow() throws {
+        try onUIThread {
+            _ = GTKRenderer.running { Text("Accent") }
+            try XCTSkipUnless(GTKEnvironment.offersAccent, "this libadwaita takes no accent of the application's")
+            let own = GTKEnvironment.accent
+            let brick = try XCTUnwrap(GTKBrush.rgba(Color.firebrick.propValue))
+            GTKStyleSheet.accent(brick, variables: true)
+            defer { GTKStyleSheet.accent(nil, variables: true) }
+            XCTAssertEqual(GTKEnvironment.accent, .firebrick, "the application's")
+
+            GTKStyleSheet.accent(nil, variables: true)
+            XCTAssertEqual(GTKEnvironment.accent, own, "libadwaita's own again")
+        }
+    }
+
     /// A page's controls are GTK's, shown in a window: the words it describes are the words GTK holds.
     func testThePageShowsItsControlsInAWindow() {
         onUIThread {
@@ -223,6 +240,24 @@ extension GTKRendererTests {
             XCTAssertNotEqual(said[3], "\(NetworkAccess.unknown)", "the network")
         }
     }
+
+    /// The accessibility settings reported are the desktop's: its animations, libadwaita's contrast, GNOME's screen
+    /// reader and the text scale, as GTK reads them for its own drawing.
+    func testThePageReadsTheDesktopsAccessibilitySettings() {
+        onUIThread {
+            HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+                reducesMotion: !GTKEnvironment.reducesMotion, prefersHigherContrast: true,
+                isScreenReaderOn: !GTKEnvironment.isScreenReaderOn, textScale: 0))
+            _ = GTKRenderer.running { Text("Settings") }
+            let settings = StandardEnvironment.device.accessibility
+
+            XCTAssertEqual(settings.reducesMotion, GTKEnvironment.reducesMotion)
+            XCTAssertEqual(
+                settings.prefersHigherContrast, adw_style_manager_get_high_contrast(adw_style_manager_get_default()) != 0)
+            XCTAssertEqual(settings.isScreenReaderOn, GTKEnvironment.isScreenReaderOn)
+            XCTAssertEqual(settings.textScale, GTKEnvironment.textScale)
+        }
+    }
 }
 
 /// A page saying the locale's name and zone, the battery's state and the network's access.
@@ -309,6 +344,6 @@ private struct OpeningSecondPage: View {
 
     var body: some View {
         let application = self.application
-        return Button("Open").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("frames.second")) }
+        return Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("frames.second")) }
     }
 }

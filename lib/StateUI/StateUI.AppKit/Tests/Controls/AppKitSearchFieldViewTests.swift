@@ -11,10 +11,10 @@ import XCTest
 
 @MainActor
 final class AppKitSearchFieldViewTests: XCTestCase {
-    /// A coloured placeholder stands and is set as the search's words would be: centred where they are, at their
+    /// A colored placeholder stands and is set as the search's words would be: centered where they are, at their
     /// size.
     @MainActor
-    func testAColouredPlaceholderStandsAsTheWordsWould() throws {
+    func testAColoredPlaceholderStandsAsTheWordsWould() throws {
         let search = AppKitSearchFieldView()
         search.frame = NSRect(x: 0, y: 0, width: 300, height: 44)
         search.apply(
@@ -25,7 +25,7 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         search.layoutSubtreeIfNeeded()
 
         let ink = try XCTUnwrap(try inkBounds(of: search, where: isRed), "the placeholder is drawn")
-        XCTAssertGreaterThan(ink.minX, 90, "centred, not at the leading edge")
+        XCTAssertGreaterThan(ink.minX, 90, "centered, not at the leading edge")
         XCTAssertGreaterThan(ink.height, 14, "at the search's 22 points")
     }
 
@@ -95,8 +95,8 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         XCTAssertEqual(submits, 1)
     }
 
-    /// A field given a colour stands in its bezel's shape filled with it - the search field's capsule, the text
-    /// field's rounded box - with no bezel to draw its own ground over the colour, and no square under it.
+    /// A field given a color stands in its bezel's shape filled with it - the search field's capsule, the text
+    /// field's rounded box - with no bezel to draw its own ground over the color, and no square under it.
     @MainActor
     func testAFieldsBackgroundFillsItsShape() throws {
         let renderer = AppKitRenderer.running {
@@ -114,10 +114,10 @@ final class AppKitSearchFieldViewTests: XCTestCase {
         let red = NSColor(red: 1, green: 0, blue: 0, alpha: 1)
         XCTAssertEqual(search.fill, red)
         XCTAssertEqual(search.layer?.cornerRadius, search.bounds.height / 2, "the search field's capsule")
-        XCTAssertFalse(search.isBezeled, "AppKit's bezel would draw its own ground over the colour")
+        XCTAssertFalse(search.isBezeled, "AppKit's bezel would draw its own ground over the color")
         XCTAssertEqual(field.fill, red)
         XCTAssertEqual(field.layer?.cornerRadius, AppKitTextEditorView.cornerRadius, "the text field's rounded box")
-        XCTAssertFalse(field.textField.isBezeled, "AppKit's bezel would draw its own ground over the colour")
+        XCTAssertFalse(field.textField.isBezeled, "AppKit's bezel would draw its own ground over the color")
         XCTAssertGreaterThan(field.textField.frame.minX, 0, "its words set in from the box's edge")
     }
 

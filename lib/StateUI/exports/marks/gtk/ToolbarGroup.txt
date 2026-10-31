@@ -1,0 +1,10 @@
+# revision 9.1
+ToolbarGroup: ✅
+ToolbarGroup.barEdge: ✅
+ToolbarGroup.hidesWithSidebar: ✅
+ToolbarGroup.isEnabled: ✅
+ToolbarGroup.order: ✅
+ToolbarGroup.part: ✅
+ToolbarGroup.position: ✅
+ToolbarGroup.spacing: – A header bar's buttons stand in libadwaita's own look.
+ToolbarGroup.standsAlone: – A header bar draws its buttons flat: no background stands behind a group.

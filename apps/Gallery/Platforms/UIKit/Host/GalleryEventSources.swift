@@ -15,7 +15,7 @@ import UIKit
 /// THE SPLIT IS THE PLATFORM'S: a device UIKit knows no battery of - the
 /// simulator - reports nothing at all, and the sample's own words say so.
 /// What is watched here is the battery, which UIKit reports through the
-/// notification centre once its monitoring is on.
+/// notification center once its monitoring is on.
 @MainActor
 enum GalleryEventSources {
 // listing: end
@@ -25,6 +25,7 @@ enum GalleryEventSources {
     private static var observers: [NSObjectProtocol] = []
 
     // listing: InteropEventsSample.UIKit.swift
+    // listing: uikit.md.event
     /// Declares what the gallery raises and starts watching. Said once,
     /// before the application runs.
     static func start() {
@@ -51,5 +52,6 @@ enum GalleryEventSources {
         lastSaid = (level, charging)
         StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
+    // listing: end
 }
 // listing: end

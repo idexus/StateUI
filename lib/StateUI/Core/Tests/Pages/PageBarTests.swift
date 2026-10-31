@@ -16,21 +16,35 @@ private struct BarredPage: View {
     var body: some View {
         Text("one")
             .toolbar {
-                ToolbarItem("Save")
-                    .id("save")
-                    .text("Save")
-                    .icon("nav_media.png")
-                    .showsText(true)
-                    .isEnabled(true)
-                    .onClicked {}
+                ToolbarGroup {
+                    ToolbarButton("Save")
+                        .id("save")
+                        .text("Save")
+                        .icon("nav_media.png")
+                        .showsText(true)
+                        .isEnabled(true)
+                        .onClicked {}
 
-                ToolbarItem("Delete")
-                    .id("delete")
-                    .placement(.overflow)
-                    .isDestructive(true)
-            }
-            .toolbar(.leading, id: "edit", order: 1) {
-                ToolbarItem("Undo").id("undo")
+                    ToolbarButton("Delete")
+                        .id("delete")
+                        .role(.destructive)
+                }
+                .placement(at: .overflow)
+                .hidesWithSidebar(true)
+                .isEnabled(false)
+                .spacing(2)
+
+                ToolbarButton("Undo")
+                    .id("undo")
+                    .placement(.sidebar, at: .start, order: 1)
+                    .hidesWithSidebar(true)
+
+                ToolbarToggle("Ruler", isOn: true)
+                    .id("ruler")
+                    .icon("ruler.png", on: "ruler_on.png")
+                    .showsText(true)
+                    .placement(at: .start)
+                    .onToggled { _ in }
             }
             .menuBar(order: 1) {
                 Menu("File") {
@@ -38,11 +52,12 @@ private struct BarredPage: View {
                         .id("new")
                         .text("New")
                         .icon("nav_media.png")
-                        .isDestructive(false)
+                        .role(.normal)
                         .isEnabled(true)
-                        .isOn(false)
-                        .onToggled { _ in }
                         .onClicked {}
+                    MenuToggle("Ruler", isOn: false)
+                        .id("ruler")
+                        .onToggled { _ in }
                     MenuSeparator().id("sep")
                     Menu("Recent") {
                         MenuItem("a.txt").id("a")
@@ -73,20 +88,30 @@ final class PageBarTests: XCTestCase {
 
         XCTAssertEqual(page.children.map { $0.type }, ["Text"])
         let label = page.children[0]
-        XCTAssertEqual(label.children.map { $0.type }, ["ToolbarItemGroup", "ToolbarItemGroup", "MenuBar"])
+        XCTAssertEqual(label.children.map { $0.type }, ["ToolbarGroup", "ToolbarGroup", "ToolbarGroup", "MenuBar"])
 
         let toolbar = label.children[0]
-        XCTAssertEqual(toolbar.props["side"], .enumeration(0))
-        XCTAssertEqual(toolbar.props["order"], .number(0))
-        let edit = label.children[1]
-        XCTAssertEqual(edit.id, .manual("edit"), "the group's own id, which a group further in joins")
-        XCTAssertEqual(edit.props["side"], .enumeration(1))
-        XCTAssertEqual(edit.props["order"], .number(1))
+        XCTAssertEqual(toolbar.props["position"], .enumeration(2), "ToolbarPosition.overflow")
+        XCTAssertEqual(toolbar.props["hidesWithSidebar"], .bool(true))
+        XCTAssertNil(toolbar.props["part"], "unsaid: its declarer's")
         XCTAssertEqual(toolbar.children.map { $0.id }, [.manual("save"), .manual("delete")])
         XCTAssertEqual(toolbar.children[0].props["text"], .string("Save"))
-        XCTAssertEqual(toolbar.children[1].props["placement"], .enumeration(2),
-                       "ToolbarItemPlacement.Overflow")
+        XCTAssertEqual(toolbar.props["isEnabled"], .bool(false), "the group's, its items out of reach with it")
         XCTAssertNotNil(toolbar.children[0].events?["clicked"])
+
+        let undo = label.children[1]
+        XCTAssertEqual(undo.props["part"], .enumeration(0), "ToolbarPart.sidebar")
+        XCTAssertEqual(undo.props["position"], .enumeration(1), "ToolbarPosition.start")
+        XCTAssertEqual(undo.props["order"], .number(1))
+        XCTAssertEqual(undo.props["hidesWithSidebar"], .bool(true))
+        XCTAssertEqual(undo.children.map { $0.id }, [.manual("undo")])
+        XCTAssertNil(undo.children[0].props["position"], "the item says nothing of where it stands")
+
+        let ruler = try XCTUnwrap(label.children[2].children.first)
+        XCTAssertEqual(ruler.type, "ToolbarToggle")
+        XCTAssertEqual(ruler.props["isOn"], .bool(true))
+        XCTAssertEqual(ruler.props["onIcon"], .string("ruler_on.png"))
+        XCTAssertNotNil(ruler.events?["toggled"])
 
         let menus = try XCTUnwrap(label.children.first { $0.type == "MenuBar" })
         XCTAssertEqual(menus.props["order"], .number(1))
@@ -94,8 +119,8 @@ final class PageBarTests: XCTestCase {
 
         XCTAssertEqual(file.type, "Menu")
         XCTAssertEqual(file.children.map { $0.type },
-                       ["MenuItem", "MenuSeparator", "Menu"])
-        XCTAssertEqual(file.children[2].children[0].props["text"], .string("a.txt"))
+                       ["MenuItem", "MenuToggle", "MenuSeparator", "Menu"])
+        XCTAssertEqual(file.children[3].children[0].props["text"], .string("a.txt"))
     }
 
     /// The same guarantee `testEveryModifierIsExercised` gives a control, for
@@ -104,7 +129,10 @@ final class PageBarTests: XCTestCase {
     func testEveryToolbarAndMenuModifierIsExercised() throws {
         let sent = Self.keys(in: Self.arrived())
 
-        for source in ["ToolbarItem.swift", "View+Toolbar.swift", "Menu.swift", "MenuItem.swift", "View+MenuBar.swift"] {
+        for source in [
+            "ToolbarButton.swift", "ToolbarGroup.swift", "ToolbarToggle.swift", "Menu.swift", "MenuItem.swift",
+            "MenuToggle.swift", "View+MenuBar.swift",
+        ] {
             let declared = try SourceTree.propertyKeys(in: source)
 
             XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")
@@ -136,13 +164,57 @@ final class PageBarTests: XCTestCase {
         }
 
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Plain() } destination: { _ in Plain() }
-            .toolbar { ToolbarItem("Share").id("share") }
+            .toolbar { ToolbarButton("Share").id("share") }
             .titleView { Text("title") }
         let built = stack.node
 
-        XCTAssertEqual(built.children.map { $0.type }.suffix(2), ["ToolbarItemGroup", "TitleView"], "after the root page")
+        XCTAssertEqual(built.children.map { $0.type }.suffix(2), ["ToolbarGroup", "TitleView"], "after the root page")
         XCTAssertEqual(built.children.count, 3)
         XCTAssertEqual(built.children[2].children.map { $0.type }, ["Text"])
+    }
+
+    /// A toolbar at a page's foot says so on each of its groups, a label's among them; one at the top says nothing.
+    func testAToolbarAtThePagesFootSaysItOnEachGroup() {
+        let page = Text("one")
+            .toolbar(.bottom) {
+                ToolbarButton("Share")
+                ToolbarLabel("3 items").id("count")
+            }
+            .toolbar { ToolbarButton("Edit") }
+
+        XCTAssertEqual(page.node.children.map(\.type), ["ToolbarGroup", "ToolbarGroup", "ToolbarGroup"])
+        XCTAssertEqual(page.node.children.map { $0.props["barEdge"] }, [.enumeration(1), .enumeration(1), nil])
+        XCTAssertEqual(page.node.children[1].children.map(\.type), ["ToolbarLabel"])
+    }
+
+    /// An item in a group stands where its group does: its own placement is
+    /// left out, and said once.
+    func testAnItemsPlacementInAGroupIsLeftOut() {
+        let group = ToolbarGroup {
+            ToolbarButton("Bold").placement(at: .start)
+            ToolbarButton("Italic")
+        }
+        .placement(at: .end, order: 2)
+
+        XCTAssertEqual(group.node.props.keys.map(\.name).sorted(), ["order", "position"])
+        XCTAssertEqual(group.node.children.map { $0.props.keys.map(\.name).sorted() }, [["text"], ["text"]])
+        XCTAssertTrue(hasComplained("A toolbar item in a ToolbarGroup stands where its group does"))
+    }
+
+    /// A split view's groups hang on the split view after its columns, each
+    /// saying the part of its bar it names.
+    func testASplitViewsGroupsFollowItsColumns() {
+        let split = SplitView { Text("Folders") } detail: { Text("Notes") }
+            .showsSidebar(State(wrappedValue: true).projectedValue)
+            .toolbar {
+                ToolbarButton("Add").placement(.sidebar)
+                ToolbarButton("Share")
+            }
+        let groups = split.node.children.suffix(2)
+
+        XCTAssertEqual(split.node.children.count, 4)
+        XCTAssertEqual(groups.map(\.type), ["ToolbarGroup", "ToolbarGroup"])
+        XCTAssertEqual(groups.map { $0.props["part"] }, [.enumeration(0), nil], "the detail's unsaid")
     }
 
     /// A group keeps its element as the view it hangs on gains and loses
@@ -154,11 +226,11 @@ final class PageBarTests: XCTestCase {
                 Text("one")
                 if more { Text("two") }
             }
-            if grouped { stack = stack.toolbar { ToolbarItem("Save").id("save") } }
+            if grouped { stack = stack.toolbar { ToolbarButton("Save").id("save") } }
             return stack.node
         }
         let differ = Differ()
-        let group = { (patch: HostPatch) in patch.children.first { $0.type == "ToolbarItemGroup" } }
+        let group = { (patch: HostPatch) in patch.children.first { $0.type == "ToolbarGroup" } }
 
         let first = differ.reconcile(nil, with: view(false, true))
         let before = try XCTUnwrap(group(first.patch)?.id)
@@ -168,7 +240,7 @@ final class PageBarTests: XCTestCase {
         XCTAssertEqual(grown.node.children.last?.children.first?.id, .manual("save"))
 
         let gone = differ.reconcile(grown.node, with: view(true, false))
-        XCTAssertFalse(gone.node.children.contains { $0.type == "ToolbarItemGroup" })
+        XCTAssertFalse(gone.node.children.contains { $0.type == "ToolbarGroup" })
 
         let back = differ.reconcile(gone.node, with: view(true, true))
         XCTAssertNotEqual(back.node.children.last?.id, before, "a group declared anew is another element")

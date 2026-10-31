@@ -1,7 +1,7 @@
-# revision 2.1
-ActivityIndicator.tint: – AppKit draws it in the accent colour the user chooses: it takes none of its own.
+# revision 3.1
 CheckBox.tint: ✅
 Picker.tint: ✅
-ProgressBar.tint: – AppKit draws it in the accent colour the user chooses: it takes none of its own.
+ProgressBar.tint: – AppKit draws it in the accent color the user chooses: it takes none of its own.
 Slider.tint: ✅
-Switch.tint: – AppKit draws it in the accent colour the user chooses: it takes none of its own.
+Spinner.tint: – AppKit draws it in the accent color the user chooses: it takes none of its own.
+Switch.tint: – AppKit draws it in the accent color the user chooses: it takes none of its own.

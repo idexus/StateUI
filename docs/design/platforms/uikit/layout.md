@@ -8,9 +8,9 @@ puts them.
 A layout is a view of the host's own: it measures its children by the host
 layer's arithmetic - a layout child by its own measurement, a control as
 UIKit fits it - keeps what it measured until something in it changes, and
-stands each child by its bounds and centre, on its way there where the
+stands each child by its bounds and center, on its way there where the
 layout moves. A change that alters a size is measured again up to the
-window; one that does not - a colour, a value - measures nothing.
+window; one that does not - a color, a value - measures nothing.
 
 ## Scrolling
 

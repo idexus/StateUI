@@ -72,16 +72,15 @@ struct FilesApp: Application {
     }
 }
 
-@_cdecl("stateui_app_register")
 @MainActor
-public func stateui_app_register() {
+public func registerApplication() {
     stateUIUseApp(FilesApp())
 }
 
 // AppLanguage.swift
 
 /// The languages Files speaks, in its interface and in its documents.
-enum AppLanguage: String, CaseIterable, Sendable {
+enum AppLanguage: LocaleTag, CaseIterable {
     case english = "en"
     case polish = "pl"
 }
@@ -446,8 +445,8 @@ Below it, a view reads:
   number or a day, or to change a choice.
 
 A part with no localization of its catalog above stops the program with both
-names, as an object nobody gave does. A part lends nothing: `$res.title` does
-not compile, because a part is a value, not an object to write through.
+names, as an object nobody gave does. A part is read, never written:
+`$res.title` does not compile, as an `@Environment` has no projected value.
 
 ## Changing the language
 
@@ -509,7 +508,7 @@ The same formats are on the localization and on a message's context, and
 StateUI writes them itself:
 
 ```swift
-enum ShopLanguage: String, CaseIterable, Sendable {
+enum ShopLanguage: LocaleTag, CaseIterable {
     case english = "en"
     case polish = "pl"
 }
@@ -569,10 +568,15 @@ typeface never come from two variants.
 ## The library's own words
 
 A dialog shows its own captions where the application gives none:
-`Dialogs.alert` its "OK", `Dialogs.prompt` its "OK" and "Cancel". StateUI says
+`window.alert` its "OK", `window.prompt` its "OK" and "Cancel". StateUI says
 them in the system's language - Polish "Anuluj" on a Polish system - as the
 platform's own buttons beside them do. An application that speaks another
 language than the system's passes its own captions from its resources.
+
+A control a host builds where its platform has none names its own parts to a
+screen reader in the same language: a `Stepper`'s buttons say "Decrease" and
+"Increase" - "Zmniejsz" and "Zwiększ" on a Polish system - on the Web and on
+Android. Where the platform has the control, it names those parts itself.
 
 ## What a host adds
 

@@ -80,9 +80,9 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
 
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
         XCTAssertEqual(native.orientation, .horizontal)
-        XCTAssertEqual(native.padding.left, 4)
+        XCTAssertEqual(native.padding.start, 4)
         XCTAssertEqual(native.padding.top, 8)
-        XCTAssertEqual(native.padding.right, 12)
+        XCTAssertEqual(native.padding.end, 12)
         XCTAssertEqual(native.padding.bottom, 16)
         XCTAssertFalse(native.hasVerticalScroller, "`.never` takes the bar away")
     }
@@ -101,9 +101,9 @@ final class AppKitLayoutRegistrationTests: XCTestCase {
 
         let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("stack")) as? AppKitStackView)
         XCTAssertEqual(native.spacing, 12)
-        XCTAssertEqual(native.padding.left, 4)
+        XCTAssertEqual(native.padding.start, 4)
         XCTAssertEqual(native.padding.top, 8)
-        XCTAssertEqual(native.padding.right, 12)
+        XCTAssertEqual(native.padding.end, 12)
         XCTAssertEqual(native.padding.bottom, 16)
 
         var closer = HostPatch(id: .manual("stack"), type: .vStack)

@@ -1,7 +1,7 @@
 # Values an application passes
 
 `lib/StateUI/Core/Sources/Types` holds the values an application hands to StateUI:
-colours, insets, rectangles, brushes, motion, transforms, placements, dates
+colors, insets, rectangles, brushes, motion, transforms, placements, dates
 and times, gestures, the closed vocabularies, and the objects that carry what
 the host knows. Each value says how it crosses to a host and how it comes
 back, so no host parses or guesses anything. These notes give the reasons;
@@ -9,7 +9,7 @@ the declarations' own documentation says how to use them.
 
 The sources stand in a folder per topic: `Geometry` points, rectangles,
 insets and transforms; `Layout` alignment, grid lengths, safe areas and
-placements; `Colour` colours, gradients, brushes and backgrounds; `Drawing`
+placements; `Color` colors, gradients, brushes and backgrounds; `Drawing`
 pictures, shapes, strokes and the canvas; `Text` names and the text and
 keyboard vocabularies; `Time` days, times of day and zones; `Motion` the
 timing laws and their groups; `Gestures` what a gesture reports;
@@ -26,9 +26,9 @@ language.
   a number StateUI owns.
 - [How a value crosses](values.md) - which kind of `PropValue` each value
   becomes, and how it is read back.
-- [Colour and theme](colour-and-theme.md) - four channels, and a half for
+- [Color and theme](color-and-theme.md) - four channels, and a half for
   each theme picked as an element builds.
-- [Brushes](brushes.md) - a colour or a gradient, as typed parts.
+- [Brushes](brushes.md) - a color or a gradient, as typed parts.
 - [Drawing on a canvas](drawing.md) - a drawing as a list of records.
 - [Motion](motion.md) - the timing laws, the groups of values, a view's plan.
 - [Transforms](transforms.md) - one transform, worked out in the core.
@@ -50,7 +50,7 @@ Every value a member holds is `HostRepresentable`: it turns itself into a
 the member its contract declares, and the differ carries it to the host.
 
 ```text
-  an application's value              Color("#512BD4")   Insets(24)
+  an application's value              Color(hex: 0x512BD4)   Insets(24)
                                       .tailTruncation    CalendarDate(year: 2026, month: 8, day: 2)
        |
        |  value.propValue             the type says what it is
@@ -99,14 +99,14 @@ back as the types `ApplicationContract.currentTime` declares.
 | Kind | What it carries | Used by |
 | --- | --- | --- |
 | `.string` | text an author wrote | captions, placeholders, picture file names, path data, formats |
-| `.name` | a word from an open vocabulary | `Name`: font families, radio groups, kept keys; a style key is resolved in the core |
-| `.enumeration` | a member's number, or a flag set's bits | every closed vocabulary, `FontAttributes`, `SwipeDirection` |
+| `.name` | a word from an open vocabulary | `Name`: font families, kept keys; a style key is resolved in the core |
+| `.enumeration` | a member's number, or a flag set's bits | every closed vocabulary, `FontAttributes`, `SwipeDirection`, `SafeAreaEdges` |
 | `.number` | one number | `Double`, `Int`, a uniform `CornerRadius` |
 | `.bool` | true or false | `Bool` |
 | `.numbers` | a run of numbers in a stated order | `Insets`, `Rect`, `Point`, a list of points, `CalendarDate`, `ClockTime` |
 | `.strings` | a list of text | a `Picker`'s options |
 | `.color` | four channels | `Color` |
-| `.values` | parts of different kinds | `Brush`, `GridLength`, `ContainerShape`, `SafeAreaEdges`, `ViewTransform`, a drawing |
+| `.values` | parts of different kinds | `Brush`, `GridLength`, `ContainerShape`, `ViewTransform`, a drawing |
 | `.nothing` | a position with no value | an optional argument or payload position |
 | `.themed` | a half for each theme | `Color(light:dark:)`, `ImageSource(light:dark:)`; resolved by the differ, never handed to a host |
 | `.systemColor` | the accent in force and its alpha | `Color.accent`; resolved by the differ, never handed to a host |

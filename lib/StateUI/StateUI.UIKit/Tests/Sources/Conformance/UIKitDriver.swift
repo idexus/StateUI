@@ -38,10 +38,13 @@ final class UIKitDriver: HostDriver {
                     "StateUI places and moves a shape's figure into its layer's path, which holds no \(member); its drawing proves it"
             }
         }
+        for region in ["Fill", "Space"] {
+            none["read shape of \(region)"] = "UIKit holds a box's outline as its layer's path, no shape; its drawing proves it"
+        }
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
             none["read shape of \(layout)"] =
                 "UIKit holds a layout's outline as its layer's path, no shape; its drawing proves it"
-            for member in ["padding", "avoidsSafeArea"] {
+            for member in ["padding", "ignoresSafeArea"] {
                 none["read \(member) of \(layout)"] =
                     "UIKit's view places its children where StateUI's layout says; their frames prove it"
             }
@@ -192,6 +195,8 @@ final class UIKitDriver: HostDriver {
         try? FileManager.default.createDirectory(at: files, withIntermediateDirectories: true)
         renderer.fileToolkit.holdsLaunchesForTesting = true
         renderer.actToolkit.announcedForTesting = []
+        // A pasteboard of the driver's own name: a run never writes over the simulator's, which the Mac's follows.
+        renderer.actToolkit.pasteboard = UIPasteboard(name: UIPasteboard.Name("org.stateui.conformance"), create: true)!
     }
 
     /// One pass of the main loop, 20 ms long: a case's 150 steps wait three seconds, which a page WebKit loads in a
@@ -250,7 +255,9 @@ final class UIKitDriver: HostDriver {
             items.activateForTesting(identity)
         case (.choose(let place), let items as UIKitItemsView): items.chooseForTesting(place)
         case (.scroll(let target), let items as UIKitItemsView): items.scrollForTesting(to: target)
-        case (.activate, let button as UIKitButtonView): button.sendActions(for: .primaryActionTriggered)
+        // UIKit lets a touch reach no control that is not enabled.
+        case (.activate, let button as UIKitButtonView): if button.isEnabled { button.sendActions(for: .primaryActionTriggered) }
+        case (.activate, let link as UIKitLinkView): if link.isEnabled { link.sendActions(for: .primaryActionTriggered) }
         case (.type(let words), let editor as UIKitTextEditorView):
             // UIKit asks the editor's delegate before any change a key makes.
             let whole = NSRange(location: 0, length: editor.text.utf16.count)
@@ -267,8 +274,8 @@ final class UIKitDriver: HostDriver {
             field.sendActions(for: .editingChanged)
         case (.submit, let field as UITextField & UIKitTextInputView): _ = field.delegate?.textFieldShouldReturn?(field)
         case (.toggle, let toggle as UIKitSwitchView):
-            toggle.setOn(!toggle.isOn, animated: false)
-            toggle.sendActions(for: .valueChanged)
+            toggle.control.setOn(!toggle.isOn, animated: false)
+            toggle.control.sendActions(for: .valueChanged)
         case (.toggle, let check as UIKitCheckView): check.sendActions(for: .primaryActionTriggered)
         case (.slide(let value), let slider as UIKitSliderView):
             slider.sendActions(for: .touchDown)
@@ -284,10 +291,15 @@ final class UIKitDriver: HostDriver {
             stepper.sendActions(for: .valueChanged)
         case (.enterWords, is UIKitStepperView):
             throw DriverCannot("type words into a Stepper", because: "iOS's stepper is two buttons, with no field")
+        case (.pullToRefresh, let pulled as any UIKitRefreshing):
+            // A finger pulls past the top far enough: the control spins, and says it was pulled.
+            guard let control = pulled.refresh.scroller?.refreshControl else { throw DriverCannot(act, on: element) }
+            control.beginRefreshing()
+            control.sendActions(for: .valueChanged)
         case (.scroll(let target), let scroll as UIKitScrollView):
             // A finger takes the scroller, moves it there, and lets go without a throw.
             scroll.scrollViewWillBeginDragging(scroll.scroller)
-            scroll.scroller.contentOffset = CGPoint(x: target.x, y: target.y)
+            scroll.scroller.contentOffset = scroll.native(of: target)
             scroll.scrollViewDidEndDragging(scroll.scroller, willDecelerate: false)
         case (.choose(let place), let picker as any UIKitChoosing): picker.userChose(place)
         case (.endContent, let web as WebKitView):
@@ -298,9 +310,9 @@ final class UIKitDriver: HostDriver {
             guard let focusable = Self.focusable(in: view) else { throw DriverCannot(act, on: element) }
             focusable.becomeFirstResponder()
             renderer?.focusMoved()
-        case (.answer(let caption, let words), _):
-            guard renderer?.actToolkit.showing?.press(caption, typing: words) == true else {
-                throw DriverCannot("press \(caption): no question shows it")
+        case (.answer(let button, let words), _):
+            guard renderer?.actToolkit.showing?.press(button, typing: words) == true else {
+                throw DriverCannot("press \(button): no question shows it")
             }
         case (.dragAndDrop(let target, let across), _):
             try dragAndDrop(element, onto: target, across: across)
@@ -311,11 +323,21 @@ final class UIKitDriver: HostDriver {
             let files = names.map { Self.files.appendingPathComponent($0) }
             for file in files { try Data(file.lastPathComponent.utf8).write(to: file) }
             dragAndDrop.hearForTesting(.filesDropped(files.map(ChosenFile.init)))
+        case (.answerShare(let shared), _):
+            guard let sheet = renderer?.actToolkit.sharing else { throw DriverCannot("answer a share sheet: none shows") }
+            sheet.answerForTesting(shared: shared)
         case (.answerFiles(let names), _):
             guard let dialog = renderer?.fileToolkit.showing, dialog.picker != nil else {
                 throw DriverCannot("answer a file dialog: none shows")
             }
             dialog.chooseForTesting(names.map { Self.files.appendingPathComponent($0) })
+        case (.openLink(let address), _):
+            // The scene's delegate hands its URL contexts to the host's entry, which no driver can make.
+            let window = element.type == .window ? element : element.enclosing(type: .window)
+            guard let scene = renderer?.roster.windows.first(where: { $0.0 === window })?.1.window?.windowScene else {
+                throw DriverCannot(act, on: element)
+            }
+            renderer?.openLinks([address], in: scene)
         case (.switchAway, _) where element.type == .window: renderer?.window(element, movedTo: .inactive)
         case (.switchBack, _) where element.type == .window: renderer?.window(element, movedTo: .active)
         case (.minimize, _) where element.type == .window:
@@ -330,6 +352,18 @@ final class UIKitDriver: HostDriver {
                 renderer?.window(other, movedTo: .inactive)
             }
             renderer?.window(element, movedTo: .active)
+        case (.close, _) where element.type == .popover:
+            // As a tap beside it: UIKit takes the popover away, then tells its delegate.
+            guard let popover = (element.native as? UIKitElement)?.shownPopover,
+                  let presentation = popover.controller.presentationController
+            else { throw DriverCannot(act, on: element) }
+            popover.controller.dismiss(animated: false) { popover.presentationControllerDidDismiss(presentation) }
+        case (.close, _) where element.type == .page:
+            // The close button on the bar over the page, as the user presses it.
+            guard let controller = (element.native as? UIKitElement)?.controller,
+                  let close = Self.closeAction(on: controller)
+            else { throw DriverCannot(act, on: element) }
+            UIButton().sendAction(close)
         case (.close, _) where element.type == .window:
             // As the user swipes a window's scene away: it leaves the front, goes behind, then closes.
             renderer?.window(element, movedTo: .inactive)
@@ -341,8 +375,8 @@ final class UIKitDriver: HostDriver {
             try performOnPages(act, on: element)
         case (.toggle, _) where element.type == .splitView:
             try performOnPages(act, on: element)
-        case (.activate, _) where element.type == .toolbarItem: try performOnPages(act, on: element)
-        case (.activate, _) where element.type == .menuItem:
+        case (.activate, _) where [.toolbarButton, .toolbarToggle].contains(element.type): try performOnPages(act, on: element)
+        case (.activate, _) where [.menuItem, .menuToggle].contains(element.type):
             // The item as the menu UIKit is handed shows it, taken where it can be: a key command up the responder
             // chain to the window's root, an action to its handler.
             if let command = menuCommand(of: element) {
@@ -352,6 +386,7 @@ final class UIKitDriver: HostDriver {
             guard let action = menuAction(of: element) else { throw DriverCannot(act, on: element) }
             if !action.attributes.contains(.disabled) { UIButton().sendAction(action) }
         case (.tap(let count), _): try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
+        case (.hold, _): try touch(element) { listening, view in Self.hold(listening, on: view) }
         case (.pan(let offset), _): try touch(element) { listening, view in Self.pan(listening, on: view, by: offset) }
         case (.sweep(let offset, let speed), _):
             try touch(element) { listening, _ in
@@ -376,6 +411,19 @@ final class UIKitDriver: HostDriver {
         case (.pickTime(let time), let picker as UIKitTimePickerView):
             picker.setTime(time)
             picker.sendActions(for: .valueChanged)
+        case (.pickColor(let color), let picker as UIKitColorPickerView):
+            // What the system's picker does as the user chooses: the well takes the color, then says it changed.
+            picker.selectedColor = UIColor(stateUI: color.propValue)
+            picker.sendActions(for: .valueChanged)
+        case (.performAccessibilityAction(let name), let view?):
+            // The action VoiceOver offers on what it meets of the view, run as VoiceOver runs it.
+            if let action = Self.met(view).accessibilityCustomActions?.first(where: { $0.name == name }) {
+                _ = action.actionHandler?(action)
+            }
+        case (.adjust(let step), let view?):
+            // VoiceOver's swipe up or down: the step of what it meets.
+            let met = Self.met(view)
+            if step == .increment { met.accessibilityIncrement() } else { met.accessibilityDecrement() }
         default: throw DriverCannot(act, on: element)
         }
     }
@@ -387,21 +435,38 @@ final class UIKitDriver: HostDriver {
         return WebDocument.document(at: address).map { .html($0, baseURL: nil) } ?? .url(address)
     }
 
-    /// Where the element's view stands in its window, as UIKit placed it.
+    /// Where the element's view stands in its window once UIKit has laid it out, as the display's next pass shows it.
     func place(of element: MountedElement) throws -> Rect {
-        guard let view = (element.native as? UIKitElement)?.view, view.window != nil else {
+        renderer?.layOut()
+        guard let view = (element.native as? UIKitElement)?.view else {
             throw DriverCannot("read where \(element.type.name) stands")
         }
+        guard view.window != nil else { throw NotPlaced(element) }
         let frame = view.convert(view.bounds, to: nil)
         return Rect(x: frame.minX, y: frame.minY, width: frame.width, height: frame.height)
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         if element.type == .window { return try windowHolds(property, element) }
+        if element.type == .sheet, property == .background {
+            // A sheet shows its page, which stands on the ground it paints - the window's, where it says none.
+            let page = element.children.first.map { $0.visiblePage ?? $0 }
+            guard let view = (page?.native as? UIKitElement)?.controller?.view else {
+                throw DriverCannot(reading: property, of: element)
+            }
+            return view.backgroundColor.map { Material.color(Self.color($0)).propValue }
+        }
+        if element.type == .popover, property == .isPresented {
+            let controller = (element.native as? UIKitElement)?.shownPopover?.controller
+            return (controller?.presentingViewController != nil && controller?.isBeingDismissed == false).propValue
+        }
         if element.type == .marker { return try markerHolds(property, element) }
         if element.type == .textSpan { return try spanHolds(property, on: element) }
         if let map = (element.native as? UIKitElement)?.view as? UIKitMapView, let held = mapHolds(property, map) {
             return held
+        }
+        if property == .holdDuration, let time = (element.native as? UIKitElement)?.listening?.holdTime {
+            return .number(time)
         }
         if let held = try pageHolds(property, element) { return held }
         let view = (element.native as? UIKitElement)?.view
@@ -409,11 +474,20 @@ final class UIKitDriver: HostDriver {
         case (.selectedItems, let items as UIKitItemsView): return .strings(items.selectedForTesting)
         case (.selectionMode, let items as UIKitItemsView): return items.modeForTesting.propValue
         case (.text, let label as UIKitTextView): return (label.text ?? "").propValue
+        case (.text, let link as UIKitLinkView): return (link.configuration?.attributedTitle.map { String($0.characters) } ?? "").propValue
         case (.text, let label as UIKitSelectableTextView): return (label.text ?? "").propValue
         // A label selects nothing; selectable words stand in a text view.
         case (.isSelectable, is UIKitTextView): return false.propValue
         case (.isSelectable, let label as UIKitSelectableTextView): return label.isSelectable.propValue
         case (.text, let field as any UIKitTextInputView): return field.words.propValue
+        // A field's outline as its layer draws it: its color, its width, and its corners - none for a rectangle.
+        case (.stroke, let field as any UIKitTextInputView):
+            guard field.layer.borderWidth > 0 else { return nil }
+            return field.layer.borderColor.map { Brush.solidColor(Self.color(UIColor(cgColor: $0))).propValue }
+        case (.lineWidth, let field as any UIKitTextInputView): return Double(field.layer.borderWidth).propValue
+        case (.shape, let field as any UIKitTextInputView):
+            let radius = Double(field.layer.cornerRadius)
+            return (radius == 0 ? ContainerShape.rectangle : .roundedRectangle(radius)).propValue
         case (.cursorPosition, let field as any UIKitTextInputView): return field.selection.start.propValue
         case (.selectionLength, let field as any UIKitTextInputView): return field.selection.length.propValue
         case (.placeholder, let field as UITextField): return field.attributedPlaceholder?.string.propValue
@@ -433,6 +507,7 @@ final class UIKitDriver: HostDriver {
         case (.isOn, let toggle as UIKitSwitchView): return toggle.isOn.propValue
         case (.isOn, let check as UIKitCheckView): return check.isOn.propValue
         case (.text, let check as UIKitCheckView): return (check.configuration?.title ?? "").propValue
+        case (.text, let toggle as UIKitSwitchView): return (toggle.caption.text ?? "").propValue
         case (.value, let slider as UIKitSliderView): return Double(slider.value).propValue
         case (.minimum, let slider as UIKitSliderView): return Double(slider.minimumValue).propValue
         case (.maximum, let slider as UIKitSliderView): return Double(slider.maximumValue).propValue
@@ -441,11 +516,11 @@ final class UIKitDriver: HostDriver {
         case (.maximum, let stepper as UIKitStepperView): return stepper.maximumValue.propValue
         case (.step, let stepper as UIKitStepperView): return stepper.stepValue.propValue
         case (.progress, let bar as UIKitProgressBarView): return Double(bar.bar.progress).propValue
-        case (.isAnimating, let spinner as UIKitActivityIndicatorView): return spinner.isAnimating.propValue
+        case (.isAnimating, let spinner as UIKitSpinnerView): return spinner.isAnimating.propValue
         case (.tint, let bar as UIKitProgressBarView): return bar.bar.progressTintColor.map { Self.color($0).propValue }
-        case (.tint, let spinner as UIKitActivityIndicatorView): return spinner.color.map { Self.color($0).propValue }
+        case (.tint, let spinner as UIKitSpinnerView): return spinner.color.map { Self.color($0).propValue }
         case (.tint, let slider as UIKitSliderView): return slider.minimumTrackTintColor.map { Self.color($0).propValue }
-        case (.tint, let toggle as UIKitSwitchView): return toggle.onTintColor.map { Self.color($0).propValue }
+        case (.tint, let toggle as UIKitSwitchView): return toggle.control.onTintColor.map { Self.color($0).propValue }
         case (.tint, let box as UIKitCheckView): return Self.color(box.tintColor).propValue
         case (.horizontalTextAlignment, let picker as UIKitPickerView):
             let alignments: [(UIControl.ContentHorizontalAlignment, TextAlignment)] = [
@@ -459,10 +534,19 @@ final class UIKitDriver: HostDriver {
         case (.placeholder, let picker as UIKitPickerView): return picker.title.propValue
         case (.date, let picker as UIKitDatePickerView): return picker.day.propValue
         case (.time, let picker as UIKitTimePickerView): return picker.time.propValue
+        case (.color, let picker as UIKitColorPickerView): return picker.selectedColor.map { Self.color($0).propValue }
+        case (.choosesOpacity, let picker as UIKitColorPickerView): return picker.supportsAlpha.propValue
         case (.minimumDate, let picker as UIKitDatePickerView): return picker.minimumDate.map(UIDatePicker.day(of:))?.propValue
         case (.maximumDate, let picker as UIKitDatePickerView): return picker.maximumDate.map(UIDatePicker.day(of:))?.propValue
+        case (.isRefreshEnabled, let pulled as any UIKitRefreshing):
+            return (pulled.refresh.scroller?.refreshControl != nil).propValue
+        case (.isRefreshing, let pulled as any UIKitRefreshing):
+            return (pulled.refresh.scroller?.refreshControl?.isRefreshing ?? false).propValue
+        case (.edge, let shown?):
+            let bar = sequence(first: shown, next: \.superview).lazy.compactMap { $0 as? UIKitBottomBarView }.first
+            return bar?.shownEdge?.propValue
         case (.scrollOffset, let scroll as UIKitScrollView):
-            return Point(x: scroll.scroller.contentOffset.x, y: scroll.scroller.contentOffset.y).propValue
+            return scroll.toolkitStanding.propValue
         case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
         case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
         case (.userAgent, let web as WebKitView): return web.customUserAgent.propValue
@@ -472,6 +556,8 @@ final class UIKitDriver: HostDriver {
             return (view.window != nil && sequence(first: view, next: \.superview).allSatisfy { !$0.isHidden }).propValue
         case (.opacity, let view?): return Double(view.alpha).propValue
         case (.isEnabled, let control as UIControl): return control.isEnabled.propValue
+        // A switch stands beside its words: the switch itself takes the input.
+        case (.isEnabled, let toggle as UIKitSwitchView): return toggle.control.isEnabled.propValue
         case (.submitLabel, let field as UITextField):
             let key: SubmitLabel? = switch field.returnKeyType {
             case .go: .go
@@ -495,9 +581,13 @@ final class UIKitDriver: HostDriver {
         case (.isEnabled, let view?): return (!view.accessibilityTraits.contains(.notEnabled)).propValue
         case (.padding, let button as UIButton):
             guard let insets = button.configuration?.contentInsets else { return nil }
-            return Insets(left: insets.leading, top: insets.top, right: insets.trailing, bottom: insets.bottom).propValue
+            return Insets(start: insets.leading, top: insets.top, end: insets.trailing, bottom: insets.bottom).propValue
         case (.padding, let label as UIKitTextView):
-            return Insets(left: label.padding.left, top: label.padding.top, right: label.padding.right, bottom: label.padding.bottom).propValue
+            let padding = label.padding
+            let rightToLeft = label.effectiveUserInterfaceLayoutDirection == .rightToLeft
+            return Insets(
+                start: rightToLeft ? padding.right : padding.left, top: padding.top,
+                end: rightToLeft ? padding.left : padding.right, bottom: padding.bottom).propValue
         case (_, let view?):
             if let held = try Self.viewHolds(property, view, element.native as? UIKitElement) { return held }
             throw DriverCannot(reading: property, of: element)

@@ -18,7 +18,7 @@ optional, several statements `Statements`, repetition a `ForEach`, and a list
 of `any View` an array. Everything a container holds is `Views`: every view is
 one, and so is each of these. A composed view's `body` and a one-view slot
 take a `View`, so two statements or an `if` with no `else` there do not compile,
-and neither does `VStack { ToolbarItem("Save") }`: an action, a run of text
+and neither does `VStack { ToolbarButton("Save") }`: an action, a run of text
 and a marker each go where they belong; an arrangement of pages compiles there
 but is left out, and said once (pages.md). A modifier on a view
 gives back a view (`View where Modified: View`), so a chain goes on on
@@ -26,7 +26,7 @@ gives back a view (`View where Modified: View`), so a chain goes on on
 
 The builder has no `buildExpression`. An overload taking `any View` is chosen
 for every view and erases it while type-checking stays green, so a value held
-as `any View` goes in explicitly, as `ModifiedContent(node: view.node)`. A
+as `any View` goes in explicitly, as `AnyView(view)`. A
 function returning views is `@ViewBuilder` and `some View`: several `return`s of
 different types become an `if`/`else`.
 
@@ -130,20 +130,21 @@ whose length changes wants `ForEach` instead.
 A piece writes its segment onto the nodes its views build (`BuilderPath`), a
 composed view's placeholder included, which is where a key has to sit for the
 differ to see it; a `ForEach` writes its item's identity as the node's `id`. A
-Text, a composed view and a hand-written `Node` in `ModifiedContent(node:)`
-take a segment the same way. A container asks for the nodes in its producer,
+Text, a composed view and an `AnyView` take a segment the same way. A container asks for the nodes in its producer,
 so its views are built only when the differ reaches the container.
 
 ## Menus collect without keys
 
-`MenuBuilder` collects `[Element]`, and its expressions are a menu's entries
+`MenuBuilder` collects `MenuEntries`, and its expressions are a menu's entries
 alone - a `MenuItem`, a `Menu`, a `MenuSeparator`, a list of items - so a view
-in a menu does not compile. `if` and `if/else` work in a menu, and a plain `for`
+in a menu does not compile; what it hands a menu is typed, never a list of
+`any`. A list of views written as an array is no `Views` either: a list of
+views is a `ForEach` over data, or the statements of a builder. `if` and `if/else` work in a menu, and a plain `for`
 does not. It records no path. An entry is matched by its `.id()` and otherwise
 by its position, so an `if` whose entry comes and goes re-matches every entry
 below it against a different one. An entry standing beside a conditional, and
 each of a list of entries that changes, wants an id. `MenuBarBuilder`, `ToolbarBuilder`, `TextSpanBuilder` and `MarkerBuilder`
-collect one type each - a `Menu`, a `ToolbarItem`, a `TextSpan`, a `Marker` - the
+collect one type each - a `Menu`, a `ToolbarButton`, a `TextSpan`, a `Marker` - the
 same way, an array of them standing for a loop.
 
 ## Scenes and styles

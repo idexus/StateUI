@@ -11,7 +11,7 @@ public enum PickerContract: ElementContract {
 
     /// A picker is a view of text in a font, aligned and tinted.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, TextStyleElementContract.self, FontElementContract.self,
+        ViewContract.self, TextColorElementContract.self, FontElementContract.self,
         TextAlignmentElementContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 

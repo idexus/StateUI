@@ -9,8 +9,11 @@ import XCTest
 /// arrow shows, and its menu's entries.
 @MainActor
 final class ButtonMenuTests: XCTestCase {
-    private func button(menu: Bool, clicks: Bool, kind: ButtonMenuKind? = nil, arrow: Bool? = nil) -> HostPatch {
-        var button = HostPatch(id: .manual("button"), type: .button)
+    private func button(
+        menu: Bool, clicks: Bool, kind: ButtonMenuKind? = nil, arrow: Bool? = nil, type: NodeType = .button
+    ) -> HostPatch {
+        var button = HostPatch(id: .manual("button"), type: type)
+        button.properties[.text] = .string("Save")
         if clicks { button.events = .replace([.clicked: 1]) }
         if let kind { button.properties[.menuKind] = kind.propValue }
         if let arrow { button.properties[.showsMenuArrow] = .bool(arrow) }
@@ -65,5 +68,38 @@ final class ButtonMenuTests: XCTestCase {
         XCTAssertEqual(ButtonMenu.opening(of: mounted), .click)
         XCTAssertEqual(ButtonMenu.entries(of: mounted).map(\.kind), [.item, .separator, .item])
         XCTAssertTrue(mounted.children.first?.isViewless == true, "a button's menu has no view of its own")
+    }
+
+    /// A bar's button holding a menu opens it as a button does: its click where it has none of its own, else an
+    /// arrow or held.
+    func testABarsButtonOpensItsMenuAsAButtonDoes() throws {
+        func opening(_ patch: HostPatch) throws -> ButtonMenuOpening {
+            let runtime = HostRuntime.still()
+            runtime.tree.apply(patch, complete: true)
+            return ButtonMenu.opening(of: try XCTUnwrap(runtime.tree.root))
+        }
+        XCTAssertEqual(try opening(button(menu: true, clicks: false, type: .toolbarButton)), .click)
+        XCTAssertEqual(try opening(button(menu: true, clicks: true, type: .toolbarButton)), .arrow)
+        XCTAssertEqual(try opening(button(menu: true, clicks: true, kind: .held, type: .toolbarButton)), .hold)
+        XCTAssertEqual(try opening(button(menu: false, clicks: true, type: .toolbarButton)), .none)
+    }
+
+    /// Behind the overflow a bar's button holding a menu offers its own action first where its click is its own,
+    /// then a line and its menu's entries; one whose click opens its menu, the entries alone.
+    func testABarsButtonOffersItsActionAndItsMenuBehindTheOverflow() throws {
+        func offered(_ patch: HostPatch) throws -> [String] {
+            let runtime = HostRuntime.still()
+            runtime.tree.apply(patch, complete: true)
+            return ButtonMenu.inOverflow(try XCTUnwrap(runtime.tree.root)).map { entry in
+                entry.kind == .separator ? "-" : entry.element.map { "\($0.id)" } ?? "?"
+            }
+        }
+        XCTAssertEqual(
+            try offered(button(menu: true, clicks: true, type: .toolbarButton)),
+            ["manual(\"button\")", "-", "manual(\"mail\")", "-", "manual(\"link\")"])
+        XCTAssertEqual(
+            try offered(button(menu: true, clicks: false, type: .toolbarButton)),
+            ["manual(\"mail\")", "-", "manual(\"link\")"])
+        XCTAssertEqual(try offered(button(menu: false, clicks: true, type: .toolbarButton)), [])
     }
 }

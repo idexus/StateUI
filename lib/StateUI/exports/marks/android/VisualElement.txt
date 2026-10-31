@@ -1,42 +1,16 @@
-# revision 14.1
-ActivityIndicator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-ActivityIndicator.accessibilityHint: ✅
-ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.automationExcludedWithChildren: ✅
-ActivityIndicator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
-ActivityIndicator.frame: ✅
-ActivityIndicator.height: ✅
-ActivityIndicator.ignoresInput: not realized
-ActivityIndicator.isAccessibilityHidden: ✅
-ActivityIndicator.isEnabled: ✅
-ActivityIndicator.isVisible: ✅
-ActivityIndicator.layoutDirection: ✅
-ActivityIndicator.maximumHeight: ✅
-ActivityIndicator.maximumWidth: ✅
-ActivityIndicator.minimumHeight: ✅
-ActivityIndicator.minimumWidth: ✅
-ActivityIndicator.opacity: ✅
-ActivityIndicator.pivotX: ✅
-ActivityIndicator.pivotY: ✅
-ActivityIndicator.rotation: ✅
-ActivityIndicator.rotationX: ✅
-ActivityIndicator.rotationY: ✅
-ActivityIndicator.scale: ✅
-ActivityIndicator.scaleX: ✅
-ActivityIndicator.scaleY: ✅
-ActivityIndicator.style: ✅
-ActivityIndicator.tooltip: ✅
-ActivityIndicator.translationX: ✅
-ActivityIndicator.translationY: ✅
-ActivityIndicator.width: ✅
-ActivityIndicator.zIndex: ✅
+# revision 22.1
+Button.accessibilityActionPerformed: ✅
+Button.accessibilityActions: ✅
+Button.accessibilityAdjusted: ✅
 Button.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
-Button.automationExcludedWithChildren: ✅
-Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Button.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Button.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Button.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Button.frame: ✅
 Button.height: ✅
+Button.hidesChildrenFromAccessibility: ✅
 Button.ignoresInput: not realized
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
@@ -61,13 +35,18 @@ Button.translationX: ✅
 Button.translationY: ✅
 Button.width: ✅
 Button.zIndex: – Android draws a raised button over the flat views beside it whatever their depth: its elevation is the native button's own.
+Canvas.accessibilityActionPerformed: ✅
+Canvas.accessibilityActions: ✅
+Canvas.accessibilityAdjusted: ✅
 Canvas.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
-Canvas.automationExcludedWithChildren: ✅
-Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Canvas.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Canvas.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Canvas.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Canvas.frame: ✅
 Canvas.height: ✅
+Canvas.hidesChildrenFromAccessibility: ✅
 Canvas.ignoresInput: not realized
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
@@ -92,13 +71,18 @@ Canvas.translationX: ✅
 Canvas.translationY: ✅
 Canvas.width: ✅
 Canvas.zIndex: ✅
+Capsule.accessibilityActionPerformed: ✅
+Capsule.accessibilityActions: ✅
+Capsule.accessibilityAdjusted: ✅
 Capsule.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
-Capsule.automationExcludedWithChildren: ✅
-Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Capsule.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Capsule.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Capsule.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Capsule.frame: ✅
 Capsule.height: ✅
+Capsule.hidesChildrenFromAccessibility: ✅
 Capsule.ignoresInput: not realized
 Capsule.isAccessibilityHidden: ✅
 Capsule.isEnabled: ✅
@@ -123,13 +107,18 @@ Capsule.translationX: ✅
 Capsule.translationY: ✅
 Capsule.width: ✅
 Capsule.zIndex: ✅
+CheckBox.accessibilityActionPerformed: ✅
+CheckBox.accessibilityActions: ✅
+CheckBox.accessibilityAdjusted: ✅
 CheckBox.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
-CheckBox.automationExcludedWithChildren: ✅
-CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+CheckBox.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+CheckBox.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+CheckBox.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 CheckBox.frame: ✅
 CheckBox.height: ✅
+CheckBox.hidesChildrenFromAccessibility: ✅
 CheckBox.ignoresInput: not realized
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
@@ -154,13 +143,54 @@ CheckBox.translationX: ✅
 CheckBox.translationY: ✅
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
+ColorPicker.accessibilityActionPerformed: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityActions: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityAdjusted: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityHeading: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityHint: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityLabel: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityRole: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.accessibilityValue: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.background: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.frame: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.height: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.hidesChildrenFromAccessibility: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.ignoresInput: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.isAccessibilityHidden: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.isEnabled: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.isVisible: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.layoutDirection: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.maximumHeight: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.maximumWidth: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.minimumHeight: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.minimumWidth: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.opacity: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pivotX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.pivotY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.rotation: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.rotationX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.rotationY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.scale: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.scaleX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.scaleY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.style: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.tooltip: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.translationX: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.translationY: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.width: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.zIndex: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+DatePicker.accessibilityActionPerformed: ✅
+DatePicker.accessibilityActions: ✅
+DatePicker.accessibilityAdjusted: ✅
 DatePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
-DatePicker.automationExcludedWithChildren: ✅
-DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+DatePicker.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+DatePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+DatePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 DatePicker.frame: ✅
 DatePicker.height: ✅
+DatePicker.hidesChildrenFromAccessibility: ✅
 DatePicker.ignoresInput: not realized
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
@@ -185,44 +215,18 @@ DatePicker.translationX: ✅
 DatePicker.translationY: ✅
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
-Divider.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-Divider.accessibilityHint: ✅
-Divider.accessibilityLabel: ✅
-Divider.automationExcludedWithChildren: ✅
-Divider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
-Divider.frame: ✅
-Divider.height: ✅
-Divider.ignoresInput: not realized
-Divider.isAccessibilityHidden: ✅
-Divider.isEnabled: ✅
-Divider.isVisible: ✅
-Divider.layoutDirection: ✅
-Divider.maximumHeight: ✅
-Divider.maximumWidth: ✅
-Divider.minimumHeight: ✅
-Divider.minimumWidth: ✅
-Divider.opacity: ✅
-Divider.pivotX: ✅
-Divider.pivotY: ✅
-Divider.rotation: ✅
-Divider.rotationX: ✅
-Divider.rotationY: ✅
-Divider.scale: ✅
-Divider.scaleX: ✅
-Divider.scaleY: ✅
-Divider.style: ✅
-Divider.tooltip: ✅
-Divider.translationX: ✅
-Divider.translationY: ✅
-Divider.width: ✅
-Divider.zIndex: ✅
+Ellipse.accessibilityActionPerformed: ✅
+Ellipse.accessibilityActions: ✅
+Ellipse.accessibilityAdjusted: ✅
 Ellipse.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
-Ellipse.automationExcludedWithChildren: ✅
-Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Ellipse.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Ellipse.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Ellipse.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Ellipse.frame: ✅
 Ellipse.height: ✅
+Ellipse.hidesChildrenFromAccessibility: ✅
 Ellipse.ignoresInput: not realized
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
@@ -247,14 +251,55 @@ Ellipse.translationX: ✅
 Ellipse.translationY: ✅
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
+Fill.accessibilityActionPerformed: ✅
+Fill.accessibilityActions: ✅
+Fill.accessibilityAdjusted: ✅
+Fill.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Fill.accessibilityHint: ✅
+Fill.accessibilityLabel: ✅
+Fill.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Fill.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Fill.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Fill.frame: ✅
+Fill.height: ✅
+Fill.hidesChildrenFromAccessibility: ✅
+Fill.ignoresInput: ✅
+Fill.isAccessibilityHidden: ✅
+Fill.isEnabled: ✅
+Fill.isVisible: ✅
+Fill.layoutDirection: ✅
+Fill.maximumHeight: ✅
+Fill.maximumWidth: ✅
+Fill.minimumHeight: ✅
+Fill.minimumWidth: ✅
+Fill.opacity: ✅
+Fill.pivotX: ✅
+Fill.pivotY: ✅
+Fill.rotation: ✅
+Fill.rotationX: ✅
+Fill.rotationY: ✅
+Fill.scale: ✅
+Fill.scaleX: ✅
+Fill.scaleY: ✅
+Fill.style: ✅
+Fill.tooltip: ✅
+Fill.translationX: ✅
+Fill.translationY: ✅
+Fill.width: ✅
+Fill.zIndex: ✅
+Grid.accessibilityActionPerformed: ✅
+Grid.accessibilityActions: ✅
+Grid.accessibilityAdjusted: ✅
 Grid.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
-Grid.automationExcludedWithChildren: ✅
-Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Grid.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Grid.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Grid.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Grid.frame: ✅
 Grid.height: ✅
-Grid.ignoresInput: cannot read what reaches Grid - Android's driver has no path for it yet
+Grid.hidesChildrenFromAccessibility: ✅
+Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
 Grid.isVisible: ✅
@@ -278,14 +323,19 @@ Grid.translationX: ✅
 Grid.translationY: ✅
 Grid.width: ✅
 Grid.zIndex: ✅
+HStack.accessibilityActionPerformed: ✅
+HStack.accessibilityActions: ✅
+HStack.accessibilityAdjusted: ✅
 HStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
-HStack.automationExcludedWithChildren: ✅
-HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+HStack.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+HStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+HStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 HStack.frame: ✅
 HStack.height: ✅
-HStack.ignoresInput: cannot read what reaches HStack - Android's driver has no path for it yet
+HStack.hidesChildrenFromAccessibility: ✅
+HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
 HStack.isVisible: ✅
@@ -309,13 +359,18 @@ HStack.translationX: ✅
 HStack.translationY: ✅
 HStack.width: ✅
 HStack.zIndex: ✅
+Image.accessibilityActionPerformed: ✅
+Image.accessibilityActions: ✅
+Image.accessibilityAdjusted: ✅
 Image.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
-Image.automationExcludedWithChildren: ✅
-Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Image.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Image.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Image.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Image.frame: ✅
 Image.height: ✅
+Image.hidesChildrenFromAccessibility: ✅
 Image.ignoresInput: not realized
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
@@ -340,13 +395,18 @@ Image.translationX: ✅
 Image.translationY: ✅
 Image.width: ✅
 Image.zIndex: ✅
+ItemsView.accessibilityActionPerformed: ✅
+ItemsView.accessibilityActions: ✅
+ItemsView.accessibilityAdjusted: ✅
 ItemsView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
-ItemsView.automationExcludedWithChildren: ✅
-ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+ItemsView.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+ItemsView.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+ItemsView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ItemsView.frame: ✅
 ItemsView.height: ✅
+ItemsView.hidesChildrenFromAccessibility: ✅
 ItemsView.ignoresInput: not realized
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
@@ -371,44 +431,18 @@ ItemsView.translationX: ✅
 ItemsView.translationY: ✅
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
-LayoutEngine.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-LayoutEngine.accessibilityHint: ✅
-LayoutEngine.accessibilityLabel: ✅
-LayoutEngine.automationExcludedWithChildren: ✅
-LayoutEngine.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
-LayoutEngine.frame: ✅
-LayoutEngine.height: ✅
-LayoutEngine.ignoresInput: cannot read what reaches LayoutEngine - Android's driver has no path for it yet
-LayoutEngine.isAccessibilityHidden: ✅
-LayoutEngine.isEnabled: ✅
-LayoutEngine.isVisible: ✅
-LayoutEngine.layoutDirection: ✅
-LayoutEngine.maximumHeight: ✅
-LayoutEngine.maximumWidth: ✅
-LayoutEngine.minimumHeight: ✅
-LayoutEngine.minimumWidth: ✅
-LayoutEngine.opacity: ✅
-LayoutEngine.pivotX: ✅
-LayoutEngine.pivotY: ✅
-LayoutEngine.rotation: ✅
-LayoutEngine.rotationX: ✅
-LayoutEngine.rotationY: ✅
-LayoutEngine.scale: ✅
-LayoutEngine.scaleX: ✅
-LayoutEngine.scaleY: ✅
-LayoutEngine.style: not realized
-LayoutEngine.tooltip: ✅
-LayoutEngine.translationX: ✅
-LayoutEngine.translationY: ✅
-LayoutEngine.width: ✅
-LayoutEngine.zIndex: ✅
+Line.accessibilityActionPerformed: ✅
+Line.accessibilityActions: ✅
+Line.accessibilityAdjusted: ✅
 Line.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
-Line.automationExcludedWithChildren: ✅
-Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Line.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Line.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Line.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Line.frame: ✅
 Line.height: ✅
+Line.hidesChildrenFromAccessibility: ✅
 Line.ignoresInput: not realized
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
@@ -433,13 +467,54 @@ Line.translationX: ✅
 Line.translationY: ✅
 Line.width: ✅
 Line.zIndex: ✅
+Link.accessibilityActionPerformed: ✅
+Link.accessibilityActions: ✅
+Link.accessibilityAdjusted: ✅
+Link.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Link.accessibilityHint: ✅
+Link.accessibilityLabel: ✅
+Link.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Link.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Link.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Link.frame: ✅
+Link.height: ✅
+Link.hidesChildrenFromAccessibility: ✅
+Link.ignoresInput: not realized
+Link.isAccessibilityHidden: ✅
+Link.isEnabled: ✅
+Link.isVisible: ✅
+Link.layoutDirection: ✅
+Link.maximumHeight: ✅
+Link.maximumWidth: ✅
+Link.minimumHeight: ✅
+Link.minimumWidth: ✅
+Link.opacity: ✅
+Link.pivotX: ✅
+Link.pivotY: ✅
+Link.rotation: ✅
+Link.rotationX: ✅
+Link.rotationY: ✅
+Link.scale: ✅
+Link.scaleX: ✅
+Link.scaleY: ✅
+Link.style: ✅
+Link.tooltip: ✅
+Link.translationX: ✅
+Link.translationY: ✅
+Link.width: ✅
+Link.zIndex: ✅
+Map.accessibilityActionPerformed: 🧩
+Map.accessibilityActions: 🧩
+Map.accessibilityAdjusted: 🧩
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
-Map.automationExcludedWithChildren: 🧩
+Map.accessibilityRole: 🧩
+Map.accessibilityValue: 🧩
 Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
+Map.hidesChildrenFromAccessibility: 🧩
 Map.ignoresInput: 🧩
 Map.isAccessibilityHidden: 🧩
 Map.isEnabled: 🧩
@@ -464,13 +539,54 @@ Map.translationX: 🧩
 Map.translationY: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
+MotionLayout.accessibilityActionPerformed: ✅
+MotionLayout.accessibilityActions: ✅
+MotionLayout.accessibilityAdjusted: ✅
+MotionLayout.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+MotionLayout.accessibilityHint: ✅
+MotionLayout.accessibilityLabel: ✅
+MotionLayout.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+MotionLayout.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+MotionLayout.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+MotionLayout.frame: ✅
+MotionLayout.height: ✅
+MotionLayout.hidesChildrenFromAccessibility: ✅
+MotionLayout.ignoresInput: ✅
+MotionLayout.isAccessibilityHidden: ✅
+MotionLayout.isEnabled: ✅
+MotionLayout.isVisible: ✅
+MotionLayout.layoutDirection: ✅
+MotionLayout.maximumHeight: ✅
+MotionLayout.maximumWidth: ✅
+MotionLayout.minimumHeight: ✅
+MotionLayout.minimumWidth: ✅
+MotionLayout.opacity: ✅
+MotionLayout.pivotX: ✅
+MotionLayout.pivotY: ✅
+MotionLayout.rotation: ✅
+MotionLayout.rotationX: ✅
+MotionLayout.rotationY: ✅
+MotionLayout.scale: ✅
+MotionLayout.scaleX: ✅
+MotionLayout.scaleY: ✅
+MotionLayout.style: not realized
+MotionLayout.tooltip: ✅
+MotionLayout.translationX: ✅
+MotionLayout.translationY: ✅
+MotionLayout.width: ✅
+MotionLayout.zIndex: ✅
+Path.accessibilityActionPerformed: ✅
+Path.accessibilityActions: ✅
+Path.accessibilityAdjusted: ✅
 Path.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
-Path.automationExcludedWithChildren: ✅
-Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Path.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Path.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Path.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Path.frame: ✅
 Path.height: ✅
+Path.hidesChildrenFromAccessibility: ✅
 Path.ignoresInput: not realized
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
@@ -495,13 +611,18 @@ Path.translationX: ✅
 Path.translationY: ✅
 Path.width: ✅
 Path.zIndex: ✅
+Picker.accessibilityActionPerformed: ✅
+Picker.accessibilityActions: ✅
+Picker.accessibilityAdjusted: ✅
 Picker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
-Picker.automationExcludedWithChildren: ✅
-Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Picker.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Picker.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Picker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Picker.frame: ✅
 Picker.height: ✅
+Picker.hidesChildrenFromAccessibility: ✅
 Picker.ignoresInput: not realized
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
@@ -526,13 +647,18 @@ Picker.translationX: ✅
 Picker.translationY: ✅
 Picker.width: ✅
 Picker.zIndex: ✅
+Polygon.accessibilityActionPerformed: ✅
+Polygon.accessibilityActions: ✅
+Polygon.accessibilityAdjusted: ✅
 Polygon.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
-Polygon.automationExcludedWithChildren: ✅
-Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Polygon.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Polygon.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Polygon.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Polygon.frame: ✅
 Polygon.height: ✅
+Polygon.hidesChildrenFromAccessibility: ✅
 Polygon.ignoresInput: not realized
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
@@ -557,13 +683,18 @@ Polygon.translationX: ✅
 Polygon.translationY: ✅
 Polygon.width: ✅
 Polygon.zIndex: ✅
+Polyline.accessibilityActionPerformed: ✅
+Polyline.accessibilityActions: ✅
+Polyline.accessibilityAdjusted: ✅
 Polyline.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
-Polyline.automationExcludedWithChildren: ✅
-Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Polyline.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Polyline.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Polyline.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Polyline.frame: ✅
 Polyline.height: ✅
+Polyline.hidesChildrenFromAccessibility: ✅
 Polyline.ignoresInput: not realized
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
@@ -588,13 +719,18 @@ Polyline.translationX: ✅
 Polyline.translationY: ✅
 Polyline.width: ✅
 Polyline.zIndex: ✅
+ProgressBar.accessibilityActionPerformed: ✅
+ProgressBar.accessibilityActions: ✅
+ProgressBar.accessibilityAdjusted: ✅
 ProgressBar.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
-ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+ProgressBar.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+ProgressBar.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+ProgressBar.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
+ProgressBar.hidesChildrenFromAccessibility: ✅
 ProgressBar.ignoresInput: not realized
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
@@ -619,44 +755,18 @@ ProgressBar.translationX: ✅
 ProgressBar.translationY: ✅
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
-RadioButton.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-RadioButton.accessibilityHint: ✅
-RadioButton.accessibilityLabel: ✅
-RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
-RadioButton.frame: ✅
-RadioButton.height: ✅
-RadioButton.ignoresInput: not realized
-RadioButton.isAccessibilityHidden: ✅
-RadioButton.isEnabled: ✅
-RadioButton.isVisible: ✅
-RadioButton.layoutDirection: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.opacity: ✅
-RadioButton.pivotX: ✅
-RadioButton.pivotY: ✅
-RadioButton.rotation: ✅
-RadioButton.rotationX: ✅
-RadioButton.rotationY: ✅
-RadioButton.scale: ✅
-RadioButton.scaleX: ✅
-RadioButton.scaleY: ✅
-RadioButton.style: ✅
-RadioButton.tooltip: ✅
-RadioButton.translationX: ✅
-RadioButton.translationY: ✅
-RadioButton.width: ✅
-RadioButton.zIndex: ✅
+Rectangle.accessibilityActionPerformed: ✅
+Rectangle.accessibilityActions: ✅
+Rectangle.accessibilityAdjusted: ✅
 Rectangle.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
-Rectangle.automationExcludedWithChildren: ✅
-Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Rectangle.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Rectangle.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Rectangle.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Rectangle.frame: ✅
 Rectangle.height: ✅
+Rectangle.hidesChildrenFromAccessibility: ✅
 Rectangle.ignoresInput: not realized
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
@@ -681,13 +791,18 @@ Rectangle.translationX: ✅
 Rectangle.translationY: ✅
 Rectangle.width: ✅
 Rectangle.zIndex: ✅
+ScrollView.accessibilityActionPerformed: ✅
+ScrollView.accessibilityActions: ✅
+ScrollView.accessibilityAdjusted: ✅
 ScrollView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
-ScrollView.automationExcludedWithChildren: ✅
-ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+ScrollView.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+ScrollView.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+ScrollView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ScrollView.frame: ✅
 ScrollView.height: ✅
+ScrollView.hidesChildrenFromAccessibility: ✅
 ScrollView.ignoresInput: not realized
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
@@ -712,13 +827,18 @@ ScrollView.translationX: ✅
 ScrollView.translationY: ✅
 ScrollView.width: ✅
 ScrollView.zIndex: ✅
+SearchField.accessibilityActionPerformed: ✅
+SearchField.accessibilityActions: ✅
+SearchField.accessibilityAdjusted: ✅
 SearchField.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
-SearchField.automationExcludedWithChildren: ✅
-SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+SearchField.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+SearchField.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+SearchField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 SearchField.frame: ✅
 SearchField.height: ✅
+SearchField.hidesChildrenFromAccessibility: ✅
 SearchField.ignoresInput: not realized
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
@@ -743,13 +863,54 @@ SearchField.translationX: ✅
 SearchField.translationY: ✅
 SearchField.width: ✅
 SearchField.zIndex: ✅
+Separator.accessibilityActionPerformed: ✅
+Separator.accessibilityActions: ✅
+Separator.accessibilityAdjusted: ✅
+Separator.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Separator.accessibilityHint: ✅
+Separator.accessibilityLabel: ✅
+Separator.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Separator.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Separator.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Separator.frame: ✅
+Separator.height: ✅
+Separator.hidesChildrenFromAccessibility: ✅
+Separator.ignoresInput: not realized
+Separator.isAccessibilityHidden: ✅
+Separator.isEnabled: ✅
+Separator.isVisible: ✅
+Separator.layoutDirection: ✅
+Separator.maximumHeight: ✅
+Separator.maximumWidth: ✅
+Separator.minimumHeight: ✅
+Separator.minimumWidth: ✅
+Separator.opacity: ✅
+Separator.pivotX: ✅
+Separator.pivotY: ✅
+Separator.rotation: ✅
+Separator.rotationX: ✅
+Separator.rotationY: ✅
+Separator.scale: ✅
+Separator.scaleX: ✅
+Separator.scaleY: ✅
+Separator.style: ✅
+Separator.tooltip: ✅
+Separator.translationX: ✅
+Separator.translationY: ✅
+Separator.width: ✅
+Separator.zIndex: ✅
+Slider.accessibilityActionPerformed: ✅
+Slider.accessibilityActions: ✅
+Slider.accessibilityAdjusted: ✅
 Slider.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
-Slider.automationExcludedWithChildren: ✅
-Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Slider.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Slider.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Slider.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Slider.frame: ✅
 Slider.height: ✅
+Slider.hidesChildrenFromAccessibility: ✅
 Slider.ignoresInput: not realized
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
@@ -774,44 +935,90 @@ Slider.translationX: ✅
 Slider.translationY: ✅
 Slider.width: ✅
 Slider.zIndex: ✅
-Spacer.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
-Spacer.accessibilityHint: ✅
-Spacer.accessibilityLabel: ✅
-Spacer.automationExcludedWithChildren: ✅
-Spacer.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
-Spacer.frame: ✅
-Spacer.height: ✅
-Spacer.ignoresInput: not realized
-Spacer.isAccessibilityHidden: ✅
-Spacer.isEnabled: ✅
-Spacer.isVisible: ✅
-Spacer.layoutDirection: ✅
-Spacer.maximumHeight: ✅
-Spacer.maximumWidth: ✅
-Spacer.minimumHeight: ✅
-Spacer.minimumWidth: ✅
-Spacer.opacity: ✅
-Spacer.pivotX: ✅
-Spacer.pivotY: ✅
-Spacer.rotation: ✅
-Spacer.rotationX: ✅
-Spacer.rotationY: ✅
-Spacer.scale: ✅
-Spacer.scaleX: ✅
-Spacer.scaleY: ✅
-Spacer.style: ✅
-Spacer.tooltip: ✅
-Spacer.translationX: ✅
-Spacer.translationY: ✅
-Spacer.width: ✅
-Spacer.zIndex: ✅
+Space.accessibilityActionPerformed: ✅
+Space.accessibilityActions: ✅
+Space.accessibilityAdjusted: ✅
+Space.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Space.accessibilityHint: ✅
+Space.accessibilityLabel: ✅
+Space.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Space.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Space.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Space.frame: ✅
+Space.height: ✅
+Space.hidesChildrenFromAccessibility: ✅
+Space.ignoresInput: ✅
+Space.isAccessibilityHidden: ✅
+Space.isEnabled: ✅
+Space.isVisible: ✅
+Space.layoutDirection: ✅
+Space.maximumHeight: ✅
+Space.maximumWidth: ✅
+Space.minimumHeight: ✅
+Space.minimumWidth: ✅
+Space.opacity: ✅
+Space.pivotX: ✅
+Space.pivotY: ✅
+Space.rotation: ✅
+Space.rotationX: ✅
+Space.rotationY: ✅
+Space.scale: ✅
+Space.scaleX: ✅
+Space.scaleY: ✅
+Space.style: ✅
+Space.tooltip: ✅
+Space.translationX: ✅
+Space.translationY: ✅
+Space.width: ✅
+Space.zIndex: ✅
+Spinner.accessibilityActionPerformed: ✅
+Spinner.accessibilityActions: ✅
+Spinner.accessibilityAdjusted: ✅
+Spinner.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
+Spinner.accessibilityHint: ✅
+Spinner.accessibilityLabel: ✅
+Spinner.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Spinner.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Spinner.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
+Spinner.frame: ✅
+Spinner.height: ✅
+Spinner.hidesChildrenFromAccessibility: ✅
+Spinner.ignoresInput: not realized
+Spinner.isAccessibilityHidden: ✅
+Spinner.isEnabled: ✅
+Spinner.isVisible: ✅
+Spinner.layoutDirection: ✅
+Spinner.maximumHeight: ✅
+Spinner.maximumWidth: ✅
+Spinner.minimumHeight: ✅
+Spinner.minimumWidth: ✅
+Spinner.opacity: ✅
+Spinner.pivotX: ✅
+Spinner.pivotY: ✅
+Spinner.rotation: ✅
+Spinner.rotationX: ✅
+Spinner.rotationY: ✅
+Spinner.scale: ✅
+Spinner.scaleX: ✅
+Spinner.scaleY: ✅
+Spinner.style: ✅
+Spinner.tooltip: ✅
+Spinner.translationX: ✅
+Spinner.translationY: ✅
+Spinner.width: ✅
+Spinner.zIndex: ✅
+Stepper.accessibilityActionPerformed: ✅
+Stepper.accessibilityActions: ✅
+Stepper.accessibilityAdjusted: ✅
 Stepper.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
-Stepper.automationExcludedWithChildren: ✅
-Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Stepper.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Stepper.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Stepper.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Stepper.frame: ✅
 Stepper.height: ✅
+Stepper.hidesChildrenFromAccessibility: ✅
 Stepper.ignoresInput: not realized
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
@@ -836,13 +1043,18 @@ Stepper.translationX: ✅
 Stepper.translationY: ✅
 Stepper.width: ✅
 Stepper.zIndex: ✅
+Switch.accessibilityActionPerformed: ✅
+Switch.accessibilityActions: ✅
+Switch.accessibilityAdjusted: ✅
 Switch.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
-Switch.automationExcludedWithChildren: ✅
-Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Switch.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Switch.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Switch.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Switch.frame: ✅
 Switch.height: ✅
+Switch.hidesChildrenFromAccessibility: ✅
 Switch.ignoresInput: not realized
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
@@ -867,13 +1079,18 @@ Switch.translationX: ✅
 Switch.translationY: ✅
 Switch.width: ✅
 Switch.zIndex: ✅
+Text.accessibilityActionPerformed: ✅
+Text.accessibilityActions: ✅
+Text.accessibilityAdjusted: ✅
 Text.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
-Text.automationExcludedWithChildren: ✅
-Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+Text.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+Text.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+Text.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 Text.frame: ✅
 Text.height: ✅
+Text.hidesChildrenFromAccessibility: ✅
 Text.ignoresInput: not realized
 Text.isAccessibilityHidden: ✅
 Text.isEnabled: ✅
@@ -898,13 +1115,18 @@ Text.translationX: ✅
 Text.translationY: ✅
 Text.width: ✅
 Text.zIndex: ✅
+TextEditor.accessibilityActionPerformed: ✅
+TextEditor.accessibilityActions: ✅
+TextEditor.accessibilityAdjusted: ✅
 TextEditor.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
-TextEditor.automationExcludedWithChildren: ✅
-TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+TextEditor.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+TextEditor.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+TextEditor.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TextEditor.frame: ✅
 TextEditor.height: ✅
+TextEditor.hidesChildrenFromAccessibility: ✅
 TextEditor.ignoresInput: not realized
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
@@ -929,13 +1151,18 @@ TextEditor.translationX: ✅
 TextEditor.translationY: ✅
 TextEditor.width: ✅
 TextEditor.zIndex: ✅
+TextField.accessibilityActionPerformed: ✅
+TextField.accessibilityActions: ✅
+TextField.accessibilityAdjusted: ✅
 TextField.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
-TextField.automationExcludedWithChildren: ✅
-TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+TextField.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+TextField.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+TextField.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TextField.frame: ✅
 TextField.height: ✅
+TextField.hidesChildrenFromAccessibility: ✅
 TextField.ignoresInput: not realized
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
@@ -960,13 +1187,18 @@ TextField.translationX: ✅
 TextField.translationY: ✅
 TextField.width: ✅
 TextField.zIndex: ✅
+TimePicker.accessibilityActionPerformed: ✅
+TimePicker.accessibilityActions: ✅
+TimePicker.accessibilityAdjusted: ✅
 TimePicker.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
-TimePicker.automationExcludedWithChildren: ✅
-TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+TimePicker.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+TimePicker.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+TimePicker.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 TimePicker.frame: ✅
 TimePicker.height: ✅
+TimePicker.hidesChildrenFromAccessibility: ✅
 TimePicker.ignoresInput: not realized
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
@@ -991,14 +1223,19 @@ TimePicker.translationX: ✅
 TimePicker.translationY: ✅
 TimePicker.width: ✅
 TimePicker.zIndex: ✅
+VStack.accessibilityActionPerformed: ✅
+VStack.accessibilityActions: ✅
+VStack.accessibilityAdjusted: ✅
 VStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
-VStack.automationExcludedWithChildren: ✅
-VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+VStack.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+VStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+VStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 VStack.frame: ✅
 VStack.height: ✅
-VStack.ignoresInput: cannot read what reaches VStack - Android's driver has no path for it yet
+VStack.hidesChildrenFromAccessibility: ✅
+VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
 VStack.isVisible: ✅
@@ -1022,13 +1259,18 @@ VStack.translationX: ✅
 VStack.translationY: ✅
 VStack.width: ✅
 VStack.zIndex: ✅
+WebView.accessibilityActionPerformed: ✅
+WebView.accessibilityActions: ✅
+WebView.accessibilityAdjusted: ✅
 WebView.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
-WebView.automationExcludedWithChildren: ✅
-WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+WebView.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+WebView.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+WebView.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 WebView.frame: ✅
 WebView.height: ✅
+WebView.hidesChildrenFromAccessibility: ✅
 WebView.ignoresInput: not realized
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
@@ -1053,14 +1295,19 @@ WebView.translationX: ✅
 WebView.translationY: ✅
 WebView.width: ✅
 WebView.zIndex: ✅
+ZStack.accessibilityActionPerformed: ✅
+ZStack.accessibilityActions: ✅
+ZStack.accessibilityAdjusted: ✅
 ZStack.accessibilityHeading: ☑️ Android marks a heading, not its level: every level is a heading.
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
-ZStack.automationExcludedWithChildren: ✅
-ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's colour standing in, its tint over it.
+ZStack.accessibilityRole: ☑️ A link: Android names no kind for one, and the view is said as what it is.
+ZStack.accessibilityValue: ☑️ Before Android 11 a view says no value of its own words.
+ZStack.background: ☑️ Android blurs nothing behind a view: a blur or glass shows the theme's color standing in, its tint over it.
 ZStack.frame: ✅
 ZStack.height: ✅
-ZStack.ignoresInput: cannot read what reaches ZStack - Android's driver has no path for it yet
+ZStack.hidesChildrenFromAccessibility: ✅
+ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅
 ZStack.isVisible: ✅

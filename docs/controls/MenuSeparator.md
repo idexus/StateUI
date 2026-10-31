@@ -10,7 +10,7 @@ Text("Report.pdf")
         MenuItem("Open")
         MenuItem("Rename")
         MenuSeparator()
-        MenuItem("Delete").isDestructive(true)
+        MenuItem("Delete").role(.destructive)
     }
 ```
 

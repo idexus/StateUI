@@ -141,9 +141,9 @@ public enum StateUIEvents {
     }
 }
 
-/// What an element of the APPLICATION'S OWN tells the application: an event of its own, and a value its user
-/// changed. Handed to the control where it is made, so the control names members of its contract and never a
-/// handler.
+/// What an element of the APPLICATION'S OWN tells the application: an event of its own or of a tier it wears, and a
+/// value its user changed. Handed to the control where it is made, so the control names members of its contract and
+/// never a handler.
 public struct AndroidReports<Realized: ElementContract> {
     private let reports: Reports<Realized>
 
@@ -151,13 +151,15 @@ public struct AndroidReports<Realized: ElementContract> {
         self.reports = reports
     }
 
-    /// Raises one of the element's own events with the values its contract declares.
+    /// Raises an event with the values its contract declares - one of the
+    /// element's own, or one a tier it wears declares. An event of a contract
+    /// the element does not wear is refused, and said once.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - value: what it carries, in the order its contract declares.
-    public func raise<each Value: HostRepresentable>(
-        _ event: ElementEvent<Realized, (repeat each Value)>,
+    public func raise<Owner: Contract, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) {
         reports.raise(event, repeat each value)
@@ -208,15 +210,18 @@ public final class AndroidRegistration<Realized: ElementContract, Made: AndroidC
     /// before its page, takes them at once. Members of the element's contract or of the tiers it wears; any other is
     /// left out, and said once.
     ///
-    ///     web.applies([WebViewContract.userAgent, WebViewContract.source]) { control, values in
+    ///     web.applies(WebViewContract.userAgent, WebViewContract.source) { control, values in
     ///         control.show(values[WebViewContract.source], userAgent: values[WebViewContract.userAgent])
     ///     }
     ///
     /// - Parameters:
-    ///   - members: the properties, written with their contracts.
+    ///   - properties: the properties, written with their contracts.
     ///   - apply: puts the values on the control.
-    public func applies(_ members: [any ContractMember], _ apply: @escaping (Made, ControlValues<Realized>) -> Void) {
-        registration.applies(members) { hosted, values in apply(hosted.control, ControlValues(values)) }
+    public func applies<each Owner: Contract, each Value: HostRepresentable>(
+        _ properties: repeat ElementProperty<each Owner, each Value>,
+        apply: @escaping (Made, ControlValues<Realized>) -> Void
+    ) {
+        registration.applies(repeat each properties) { hosted, values in apply(hosted.control, ControlValues(values)) }
     }
 
     /// An event the control raises through its reports - recorded, so the core knows this host reports it.
@@ -228,23 +233,29 @@ public final class AndroidRegistration<Realized: ElementContract, Made: AndroidC
 
     /// The children of one contract the control draws itself - a map's markers - handed over whole, in the tree's
     /// order, whenever the element's children change: one added, moved, taken away, or given another value. Such a
-    /// child has no view of its own. `members` are what the control realizes of each child - a property or an
-    /// event of the child's contract or of a tier it wears; anything else is left out, and said once.
+    /// child has no view of its own. `properties` and `events` are what the control realizes of each child - members of
+    /// the child's contract or of a tier it wears; any other is left out, and said once.
     ///
-    ///     map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, markers in
+    ///     map.children(MarkerContract.self, properties: MarkerContract.location, events: MarkerContract.selected) {
+    ///         control, markers in
     ///         control.show(markers)
     ///     }
     ///
     /// - Parameters:
     ///   - contract: the children's contract.
-    ///   - members: what the control realizes of each child, written with their contracts.
+    ///   - properties: the children's properties the control realizes, written with their contracts.
+    ///   - events: the children's events the control raises, written with their contracts.
     ///   - apply: hands the control every child of the contract.
-    public func children<Child: ElementContract>(
+    public func children<
+        Child: ElementContract, each PropertyOwner: Contract, each Value: HostRepresentable,
+        each EventOwner: Contract, each Payload
+    >(
         _ contract: Child.Type,
-        members: [any ContractMember],
-        _ apply: @escaping (Made, [AndroidChild<Child>]) -> Void
+        properties: repeat ElementProperty<each PropertyOwner, each Value>,
+        events: repeat ElementEvent<each EventOwner, each Payload>,
+        apply: @escaping (Made, [AndroidChild<Child>]) -> Void
     ) {
-        registration.children(contract, members: members) { hosted, children in
+        registration.children(contract, properties: repeat each properties, events: repeat each events) { hosted, children in
             apply(hosted.control, children.map(AndroidChild.init))
         }
     }

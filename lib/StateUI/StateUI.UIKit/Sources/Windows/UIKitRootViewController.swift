@@ -130,8 +130,9 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
     private func presentEach(_ coming: [UIViewController], animated: Bool) {
         guard let sheet = coming.first else { return presentPassing() }
         let presenter = sheets.last ?? self
-        sheet.modalPresentationStyle = .pageSheet
+        sheet.modalPresentationStyle = .formSheet
         sheet.presentationController?.delegate = self
+        (sheet as? UIKitSheetStanding)?.leftScreen = { [weak self] in self?.heardSheetsGo() }
         sheets.append(sheet)
         moving = true
         presenter.present(sheet, animated: animated && coming.count == 1, completion: ending { root in
@@ -171,7 +172,7 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
         if !moving { letPassingGo() }
     }
 
-    /// The first thing passing, over the top sheet - centred where it stands as a popover with no anchor of its own.
+    /// The first thing passing, over the top sheet - centered where it stands as a popover with no anchor of its own.
     private func presentPassing() {
         guard appeared, !moving, standing == nil, waiting == nil, !passing.isEmpty else { return }
         let next = passing.removeFirst()
@@ -237,7 +238,15 @@ final class UIKitRootViewController: UIViewController, UIAdaptivePresentationCon
 
     /// The user took the top sheet away - swiped it down: the window hears how many stay.
     func presentationControllerDidDismiss(_ presentation: UIPresentationController) {
-        guard let index = sheets.firstIndex(where: { $0 === presentation.presentedViewController }) else { return }
+        heardSheetsGo(told: sheets.firstIndex { $0 === presentation.presentedViewController })
+    }
+
+    /// The sheets UIKit took away, `told` the first by the presentation's delegate or not: from the first going or
+    /// gone, each over it - the window hears how many stay. One the root moves itself is none of them.
+    /// Design: docs/design/platforms/uikit/pages.md#sheets
+    private func heardSheetsGo(told: Int? = nil) {
+        let gone = moving ? nil : sheets.firstIndex { $0.isBeingDismissed || $0.presentingViewController == nil }
+        guard let index = [told, gone].compactMap({ $0 }).min() else { return }
         sheets.removeSubrange(index...)
         onSheetDismissed?(index)
     }

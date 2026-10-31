@@ -24,9 +24,9 @@ final class JourneyStopTests: XCTestCase {
         XCTAssertEqual(Stage.held.fade, Stage.held.$fade.journey.value, accuracy: 0.001, "and the state answers it")
     }
 
-    /// A themed colour stopped half-way stands at the colour it showed, across the render the stop's own handler
+    /// A themed color stopped half-way stands at the color it showed, across the render the stop's own handler
     /// causes - which lays a themed pair the state still kept.
-    func testAStoppedColourStaysWhereItStood() throws {
+    func testAStoppedColorStaysWhereItStood() throws {
         let (runtime, clock) = start()
 
         Stage.held.$wash.journey.move(to: Stage.brand, .eased(.milliseconds(1000), .linear))
@@ -39,8 +39,8 @@ final class JourneyStopTests: XCTestCase {
         XCTAssertEqual(Stage.held.wash, stood, "and the state answers it")
     }
 
-    /// A themed colour sent somewhere is where the state answers it is going, the moment it is sent.
-    func testAMovedColourAnswersWhereItIsGoing() throws {
+    /// A themed color sent somewhere is where the state answers it is going, the moment it is sent.
+    func testAMovedColorAnswersWhereItIsGoing() throws {
         let (runtime, clock) = start()
 
         Stage.held.$wash.journey.move(to: Stage.brand, .eased(.milliseconds(1000), .linear))
@@ -50,9 +50,9 @@ final class JourneyStopTests: XCTestCase {
         XCTAssertEqual(lanes(Stage.held.$wash.journey.value), lanes(Stage.brand), "and arrives there")
     }
 
-    /// A colour as the host draws it in the theme in force.
-    private func lanes(_ colour: Color) -> [UInt8] {
-        StateImage.bytes(of: colour.carried(in: .current))
+    /// A color as the host draws it in the theme in force.
+    private func lanes(_ color: Color) -> [UInt8] {
+        StateImage.bytes(of: color.carried(in: .current))
     }
 
     /// The stage shown, with nothing moving yet, on a clock the test turns.
@@ -98,8 +98,8 @@ private final class TurnedClock: FrameClock {
 private struct Stage {
     static var held = Stage()
 
-    static let accent = Color(light: Color("#7C3AED"), dark: Color("#A78BFA"))
-    static let brand = Color(light: Color("#EA580C"), dark: Color("#F05037"))
+    static let accent = Color(light: Color(hex: 0x7C3AED), dark: Color(hex: 0xA78BFA))
+    static let brand = Color(light: Color(hex: 0xEA580C), dark: Color(hex: 0xF05037))
 
     @State var fade = 1.0
     @State var wash = Stage.accent
@@ -112,7 +112,7 @@ private struct StageApplication: Application {
     }
 }
 
-/// A box whose opacity and colour the states drive, under a caption that reads whether it plays.
+/// A box whose opacity and color the states drive, under a caption that reads whether it plays.
 private struct StageView: View {
     @Binding var fade: Double
     @Binding var wash: Color
@@ -121,7 +121,8 @@ private struct StageView: View {
     var body: some View {
         VStack {
             Text(playing ? "playing" : "stopped")
-            Rectangle().fill(.white)
+            Rectangle()
+                .fill(.white)
                 .opacity($fade)
                 .background($wash)
         }

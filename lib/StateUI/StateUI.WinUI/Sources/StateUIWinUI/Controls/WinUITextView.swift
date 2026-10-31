@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// A Text: a `TextBlock` - its words, or runs of them each in its own colour, size, weight, family, letter spacing
+/// A Text: a `TextBlock` - its words, or runs of them each in its own color, size, weight, family, letter spacing
 /// and background - standing in a `Border`, which draws what the label is drawn over and stands the words across its
 /// height.
 /// Design: docs/design/platforms/winui/controls.md#runs-of-words
@@ -20,7 +20,7 @@ final class WinUITextView: WinUITextualView {
         if runs == nil { super.setText(text) }
     }
 
-    /// What the label is drawn over: a colour, a gradient, or nothing.
+    /// What the label is drawn over: a color, a gradient, or nothing.
     override func setBackground(_ value: HostValue?) {
         let brush = WinUIBrush(value)
         paint(.background, followsSize: brush.followsSize) { [handle] size in
@@ -62,6 +62,7 @@ final class WinUITextView: WinUITextualView {
                         text: texts[index], color: color ?? 0, background: background ?? 0, size: size ?? 0,
                         hasColor: color != nil, hasBackground: background != nil,
                         weight: Int32(weight?.number ?? 0), italic: look.attributes.contains(.italic),
+                        tabularDigits: look.attributes.contains(.monospacedDigits),
                         underline: look.decorations.contains(.underline),
                         strikethrough: look.decorations.contains(.strikethrough), family: families[index],
                         spacing: Int32((spacing * 1000).rounded()))

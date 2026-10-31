@@ -7,8 +7,8 @@ import QuartzCore
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// What a layout draws of its own box: its background - a colour or a gradient, or a blur or glass with its tint -
-/// and its outline on its shape, and - where it clips - the cut of what it holds to that shape. A plain colour on a
+/// What a layout draws of its own box: its background - a color or a gradient, or a blur or glass with its tint -
+/// and its outline on its shape, and - where it clips - the cut of what it holds to that shape. A plain color on a
 /// plain box is the layer's own, with nothing drawn.
 /// Design: docs/design/platforms/appkit/views.md#a-layouts-own-box
 @MainActor
@@ -24,27 +24,41 @@ final class AppKitDecoration {
     private(set) var surface: (any AppKitBoxSurface)?
 
     /// Whether the view draws the box: an outline, a shape or a gradient with no blur or glass; otherwise the layer
-    /// paints its colour, or the blur's or glass's surface the box.
+    /// paints its color, or the blur's or glass's surface the box.
     var draws: Bool {
-        surface == nil && (lineWidth > 0 && stroke.lineColor != nil || shape != .rectangle || fill.isGradient)
+        surface == nil && (lineWidth > 0 && stroke.lineColor != nil || shape != .rectangle || fill.brush.isGradient)
     }
 
-    /// The colour the layer paints where nothing is drawn.
+    /// The color the layer paints where nothing is drawn.
     var layerColor: CGColor? {
         draws || surface != nil ? nil : fill.color?.cgColor
     }
 
+    /// Whether the box has been applied once.
+    private var applied = false
+
     /// Takes the element's values - its background by the host layer's reading of it (`HostMaterial`), its outline
-    /// by the host layer's rule (`BoxArithmetic`); the view draws again.
+    /// by the host layer's rule (`BoxArithmetic`); the view draws again where they changed.
     func apply(
         background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool,
         to view: NSView
     ) {
-        material = HostMaterial(background)
+        let material = HostMaterial(background)
+        let outline = AppKitBrush(stroke)
+        let width = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth))
+        let shape = BoxArithmetic.outline(shape)
+        // The same box again - a run placing the layout every frame - draws nothing anew.
+        // Design: docs/design/platforms/appkit/views.md#the-same-box-again
+        guard !applied || material != self.material || outline != self.stroke || width != self.lineWidth
+            || shape != self.shape || clips != self.clips
+        else { return }
+
+        applied = true
+        self.material = material
         fill = AppKitBrush(material.paint)
-        self.stroke = AppKitBrush(stroke)
-        self.lineWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth))
-        self.shape = BoxArithmetic.outline(shape)
+        self.stroke = outline
+        self.lineWidth = width
+        self.shape = shape
         self.clips = clips
         clip(view)
         view.layer?.backgroundColor = layerColor

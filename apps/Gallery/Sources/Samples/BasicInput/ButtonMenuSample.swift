@@ -48,9 +48,10 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
             .spacing(12)
 
             HStack {
-                Button(icon: .icon(.more))
+                Button("More")
+                    .icon(.icon(.more))
+                    .showsText(false)
                     .style(look)
-                    .accessibilityLabel("More")
                     .menu {
                         MenuItem("Rename").onClicked { last = "Renamed" }
                         MenuItem("Delete").onClicked { last = "Deleted" }
@@ -66,14 +67,8 @@ struct ButtonMenuSample: SampleContent, ExampleContent {
             }
             .spacing(12)
 
-            HStack {
-                Switch($platformLook)
-                    .accessibilityLabel("Platform look")
-
-                Text("Platform look")
-                    .verticalAlignment(.center)
-            }
-            .spacing(12)
+            Switch($platformLook)
+                .text("Platform look")
 
             Text("Last: \(last)")
                 .fontSize(14)

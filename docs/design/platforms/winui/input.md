@@ -40,11 +40,26 @@ state on WinUI: the host layer hears nothing of the hand in it.
 
 ## Taps
 
+A single tap is the view's press, taken as a button takes one by the host
+layer's rule ([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)):
+from `PointerPressed`, the view capturing the pointer as a `Button` does, to
+`PointerReleased`, each phase told with where the pointer stands in the view;
+`PointerCaptureLost` and `PointerCanceled` - a scroller's manipulation taking
+the touch - are the press taken away. The press is the first view's to hear
+it: a view around one leaves it, so a tappable row inside another answers
+alone; a control under the pointer handles its own press, which never reaches
+the view around it. Assistive technology's invoke taps at once.
+
 WinUI tells a tap, and a second tap soon after as a double tap in place of a
-tap. The relay counts a quick run: a tap within the system's double-click
-time of the last one continues it. A view asking for `count` taps answers
-each time the run reaches a multiple of it. A tap is handled where a view
-listens for it, so a tappable row inside another answers alone.
+tap; these count a run of taps alone. The relay counts a quick run: a tap
+within the system's double-click time of the last one continues it. A view
+asking for `count` taps answers each time the run reaches a multiple of it.
+
+## A press held
+
+A hold is WinUI's `Holding` as it starts, which Windows raises for a finger
+and a pen after its own time: a mouse button held is no hold, and a view
+keeps no time of its own. A press held raises no tap.
 
 ## Pressed by assistive technology
 
@@ -92,7 +107,7 @@ wheel's step enters inertia with no fingers down, and how far the platform
 would scroll for it - its resting place from where the last step aimed - is
 told as a wheel; so a mouse's notch goes as far as the platform scrolls for
 it rather than to the next target, the tracker telling no notch
-(`handStepped` stands `–`). Nothing is bound to the tracker's position.
+(`wheelStepped` stands `–`). Nothing is bound to the tracker's position.
 
 ## A pinch
 

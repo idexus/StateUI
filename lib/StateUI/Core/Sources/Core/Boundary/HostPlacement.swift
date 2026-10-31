@@ -31,21 +31,17 @@
     public let shade: Double
 }
 
-extension HostPlacement {
-    /// How the placed child is drawn over its rectangle: moved, turned and
-    /// sized about the rectangle's centre.
-    public var drawing: HostDrawingTransform {
-        HostDrawingTransform(
-            translationX: translationX,
-            translationY: translationY,
-            rotation: rotation,
-            scaleX: scaleX,
-            scaleY: scaleY)
-    }
-}
-
 /// A complete engine-authored arrangement for one native layout.
 @_spi(Host) public struct HostPlacementRun: Equatable, Sendable {
-    /// One placement for each child, in child order.
+    /// One placement for each child, in child order, as the run wrote them.
     public let placements: [HostPlacement]
+
+    /// The direction the run stands in: right to left only where its layout mirrors and lays out right to left.
+    public let direction: LayoutDirection
+
+    /// `placements` standing in `direction`.
+    public init(placements: [HostPlacement], direction: LayoutDirection) {
+        self.placements = placements
+        self.direction = direction
+    }
 }

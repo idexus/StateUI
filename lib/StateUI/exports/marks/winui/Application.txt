@@ -1,7 +1,8 @@
-# revision 5.1
+# revision 12.1
 Application: ✅
 Application.alert: ✅
-Application.announce: ✅
+Application.announce: ✓ read what the screen reader said: the relay's own list of what it handed UI Automation to announce
+Application.cancelCall: ✅
 Application.chooseAction: ✅
 Application.confirm: ✅
 Application.currentTime: ✅
@@ -14,7 +15,12 @@ Application.openFiles: ✅
 Application.persistSceneValue: ✅
 Application.persistValue: ✅
 Application.prompt: ✅
+Application.readClipboard: ✅
 Application.readFile: ✅
 Application.saveFile: ✅
+Application.sendRequest: ✅
+Application.share: ✓ read a share sheet: what the host holds of a share sheet a test never shows
+Application.useAccentColor: – The user's accent stands on Windows: StateUI does not override it with the application's.
 Application.useColorScheme: ✅
 Application.utcOffset: ✅
+Application.writeClipboard: ✅

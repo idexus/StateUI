@@ -17,9 +17,9 @@ inside `ProgramWrite` and told nobody. An item is opened by a double-click
 or by Return on the chosen item, as on a Mac. A chosen item is drawn on a
 rounded band of the platform's accent at a fifth of its strength, over the
 page, as every host's list shows the user's choice; an item at rest draws
-nothing, and the page shows through. The selected content colour is the
+nothing, and the page shows through. The selected content color is the
 accent at full strength, which stands as a block against a page of another
-colour.
+color.
 
 ## The layout
 
@@ -61,3 +61,14 @@ settles once more as it stops. The cells take their entries a turn later and
 measure then, so while the host layer holds the item, every pass that brings
 entries stands it again; a live scroll of the user's lets it go, and a glide a
 later scroll took over stands nothing.
+
+
+The list a page scrolls by keeps the bars over it clear as a ScrollView does
+([a bar at the foot](../../host/layout.md#a-bar-at-the-foot)): the clearance
+is its scroll view's content insets, AppKit's own guess turned off, its
+offsets counted from its first item clear and its end kept where the bars
+grow (`ScrollArithmetic.keptAtEnd`); it says where it stands, so a bottom bar
+over it shows its ground while items pass under. An item is scrolled to
+within the room the insets leave, and a room that changes - size or inset -
+stands the item the program scrolled to again (`ItemsCells.roomChanged`), a
+glide going on there.

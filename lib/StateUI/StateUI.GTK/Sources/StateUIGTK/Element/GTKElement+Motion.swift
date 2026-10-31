@@ -8,9 +8,9 @@
 /// both by the host layer's rule.
 /// Design: docs/design/host/motion.md#layout-motion
 extension GTKElement {
-    /// Hands a travelling layout what its children travel under, and tells it a patch reached it.
+    /// Hands a traveling layout what its children travel under, and tells it a patch reached it.
     func configureLayoutMotion() {
-        guard let layout = view as? GTKTravellingLayout else { return }
+        guard let layout = view as? GTKTravelingLayout else { return }
 
         layout.places.layoutMotion = host?.runtime.layoutMotion
         layout.places.motion = element.motion
@@ -32,7 +32,7 @@ extension GTKElement {
     /// Crosses a change of visibility by the host layer's rule; as a fade out ends, the layout closes over it.
     func crossVisibility() {
         guard let view else { return }
-        element.crossVisibility(view, closingIn: (layoutParent?.view as? GTKTravellingLayout)?.places)
+        element.crossVisibility(view, closingIn: (layoutParent?.view as? GTKTravelingLayout)?.places)
     }
 }
 

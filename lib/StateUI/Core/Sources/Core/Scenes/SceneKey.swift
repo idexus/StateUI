@@ -1,36 +1,29 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The name a scene keeps a value under, and what kind of value it is -
+/// The name a scene keeps a value under, typed by the value it keeps -
 /// `@State(sceneKey:)`'s key. This library's own.
 ///
-///     extension SceneKey {
-///         static let section = SceneKey("section", of: Int.self)
+///     extension SceneKey where Value == [Route] {
+///         static let path = SceneKey("path")
 ///     }
 ///
-///     @State(sceneKey: .section) private var section = 0
+///     @State(sceneKey: .path) private var path: [Route] = []
 ///
-/// Each scene keeps its own value under the name, handed back with the scene when
-/// the system restores it; where a platform restores no scenes, the value lives as
-/// long as its scene. A value every scene shares is a `PersistentKey`.
-public struct SceneKey: Hashable, Sendable, CustomStringConvertible {
+/// Each scene keeps its own value under the name - any `Codable`, written down
+/// as text - handed back with the scene when the system restores it; where a
+/// platform restores no scenes, the value lives as long as its scene. A value
+/// every scene shares is a `PersistentKey`.
+public struct SceneKey<Value: Codable>: Hashable, Sendable, CustomStringConvertible {
     /// The name - what the value is written down under.
     public var name: String { key.name }
 
     /// The name and the number the key is worked by (`KeyName`).
     let key: KeyName
 
-    /// What kind of value it holds, taken from the type it was declared with.
-    public let kind: PersistentKind
-
-    /// A key from its name and the type of the value it keeps.
-    ///
-    /// - Parameters:
-    ///   - name: the application's own name for it.
-    ///   - type: the type of the state kept under it.
-    public init<Value: PersistentValue>(_ name: String, of type: Value.Type) {
+    /// A key from the application's own name for it.
+    public init(_ name: String) {
         key = KeyName(name)
-        kind = Value.persistentKind
     }
 
     /// The name, so an interpolated diagnostic prints it plainly.

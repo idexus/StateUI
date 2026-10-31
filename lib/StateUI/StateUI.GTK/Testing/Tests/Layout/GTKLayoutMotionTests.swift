@@ -9,7 +9,7 @@ import CStateUIGTK
 import StateUIConformance
 import XCTest
 
-/// A caption whose words a button lengthens, in a stack 300 wide travelling on a 200 ms linear law.
+/// A caption whose words a button lengthens, in a stack 300 wide traveling on a 200 ms linear law.
 private struct LengtheningPage: View {
     @State private var long = false
 
@@ -25,12 +25,43 @@ private struct LengtheningPage: View {
     }
 }
 
+/// A button whose words a state lengthens, in the middle of a stack whose children travel for 200 ms.
+private struct SwitchedPage: View {
+    let on: State<Bool>
+
+    var body: some View {
+        VStack {
+            Button(on.wrappedValue ? "On" : "Switched off").horizontalAlignment(.center)
+        }
+        .motion(.eased(.milliseconds(200), .linear))
+        .width(300)
+        .verticalAlignment(.start)
+    }
+}
+
+/// Words in a stack as wide as they are, which travels on a 400 ms linear law as they change.
+private struct SaidPage: View {
+    let open: State<Bool>
+
+    var body: some View {
+        VStack {
+            VStack {
+                Text(open.wrappedValue ? "The popover shows" : "The popover is closed").fontSize(13).id("said")
+            }
+            .horizontalAlignment(.start)
+            .id("stack")
+        }
+        .motion(.eased(.milliseconds(400), .linear))
+        .verticalAlignment(.start)
+    }
+}
+
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
 @MainActor
 final class GTKLayoutMotionTests: XCTestCase {
-    /// A label whose width travels lays its words out at the width it is bound for: they keep the one line they fit
-    /// there, never breaking at the widths its place passes through.
-    func testATextsWordsStandAtTheWidthItTravelsTo() throws {
+    /// A label whose words lengthen stands at the width they need from the start: they keep the one line they fit
+    /// where it is bound, never breaking at the widths its place passes through.
+    func testATextsWordsStandAtTheWidthTheyNeed() throws {
         try onUIThread {
             let clock = TestClock()
             let host = GTKRenderer.running(clock: clock) { LengtheningPage() }
@@ -44,12 +75,71 @@ final class GTKLayoutMotionTests: XCTestCase {
 
             var natural: Int32 = 0
             gtk_widget_measure(label.widget, GTK_ORIENTATION_HORIZONTAL, -1, nil, &natural, nil, nil)
-            XCTAssertLessThan(label.placedFrame.width, Double(natural) - 1, "its place on its way")
-            XCTAssertEqual(gtk_widget_get_width(label.widget), natural, "its words at the width it is bound for")
+            XCTAssertEqual(gtk_widget_get_width(label.widget), natural, "midway, its words at the width they need")
         }
     }
 
-    /// A vertical stack of 100 x 40 labels in `order`, travelling on a 200 ms linear law; `hidden` fade out in 100 ms.
+    /// A button whose new words need more than its box keeps showing its former words while the box grows, and
+    /// shows the new ones as it lands.
+    func testAButtonsGrownWordsShowOnceItsBoxHoldsThem() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let on = State(wrappedValue: true)
+            let host = GTKRenderer.running(clock: clock) { SwitchedPage(on: on) }
+            host.layOut()
+            let button = try XCTUnwrap(host.views(GTKButtonView.self).first)
+            @MainActor func said() -> String {
+                button.captionLabel.map { String(cString: gtk_label_get_text($0)) } ?? ""
+            }
+            let start = Double(gtk_widget_get_width(button.widget))
+
+            on.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+            clock.now += 100
+            host.frame()
+            let (midway, saidMidway) = (Double(gtk_widget_get_width(button.widget)), said())
+            clock.now += 100
+            host.frame()
+            let end = Double(gtk_widget_get_width(button.widget))
+
+            XCTAssertEqual(saidMidway, "On", "midway, its former words")
+            XCTAssertEqual(midway, (start + end) / 2, accuracy: 1.5, "in a box halfway grown")
+            XCTAssertEqual(said(), "Switched off", "and the new ones as it lands")
+            XCTAssertGreaterThan(end, start + 10)
+        }
+    }
+
+    /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
+    /// stack lays its children out there, its own place traveling around them - the words never break onto a second
+    /// line on the way, as the Popover sample's did as its popover closed.
+    func testALabelInAStackThatTravelsKeepsItsWordsOnOneLine() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let open = State(wrappedValue: true)
+            let host = GTKRenderer.running(clock: clock) { SaidPage(open: open) }
+            host.layOut()
+            let said = try XCTUnwrap(host.view(id: .manual("said")))
+            let stack = try XCTUnwrap(host.view(id: .manual("stack")))
+            let line = gtk_widget_get_height(said.widget)
+
+            open.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+            var (heights, widths) = ([gtk_widget_get_height(said.widget)], [gtk_widget_get_width(stack.widget)])
+            for now in stride(from: 50, through: 800, by: 50) {
+                clock.now = Double(now)
+                host.frame()
+                heights.append(gtk_widget_get_height(said.widget))
+                widths.append(gtk_widget_get_width(stack.widget))
+            }
+
+            XCTAssertTrue(widths.contains { $0 > widths[0] + 1 && $0 < widths[widths.count - 1] - 1 }, "\(widths)")
+            XCTAssertEqual(heights.max() ?? 0, line, "one line all the way: \(heights)")
+        }
+    }
+
+    /// A vertical stack of 100 x 40 labels in `order`, traveling on a 200 ms linear law; `hidden` fade out in 100 ms.
     private static func stack(_ order: [String], hidden: Set<String> = []) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)

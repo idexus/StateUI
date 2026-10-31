@@ -1,0 +1,88 @@
+// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
+// SPDX-License-Identifier: Apache-2.0
+
+extension View {
+    /// Shows what `content` describes in the platform's popover by this view while the state holds true, both
+    /// ways: the user dismissing it - a tap beside it, Escape, the way back - writes false, and so does this view
+    /// leaving.
+    ///
+    ///     @State private var filtering = false
+    ///
+    ///     Button("Filters")
+    ///         .onClicked { filtering = true }
+    ///         .popover(isPresented: $filtering) { FiltersPanel() }
+    ///
+    /// The content sizes the popover, and stands with the view whether it shows or not: its state lasts from one
+    /// showing to the next. A view holds one popover: written again, it stands in.
+    ///
+    /// - Parameters:
+    ///   - state: whether the popover shows, written false as it closes.
+    ///   - content: what the popover shows.
+    /// - Returns: this view, with its popover.
+    public func popover<Content: View>(
+        isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content
+    ) -> Modified {
+        showing(PopoverElement(content: { [content().node] }, presented: state))
+    }
+
+    /// Shows in the platform's popover by this view what `content` makes of the value the state holds, while it
+    /// holds one: the user dismissing it writes nil, and so does this view leaving. Another value shows what the
+    /// content makes of it in its place.
+    ///
+    ///     @State private var explained: String?
+    ///
+    ///     Button("Why?")
+    ///         .onClicked { explained = "Sync" }
+    ///         .popover(item: $explained) { topic in Text(topic) }
+    ///
+    /// - Parameters:
+    ///   - state: the value the popover shows, written nil as it closes.
+    ///   - content: what the popover shows of a value.
+    /// - Returns: this view, with its popover.
+    public func popover<Item: Hashable, Content: View>(
+        item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content
+    ) -> Modified {
+        // The value read as the popover's content runs, in the popover's own scope, never the body's.
+        return showing(PopoverElement(
+            content: {
+                state.wrappedValue.map { item in
+                    var shown = content(item).node
+                    shown.identify(item)
+                    return [shown]
+                } ?? []
+            },
+            read: { state.wrappedValue != nil }, write: { if !$0 { state.wrappedValue = nil } }))
+    }
+
+    /// This view with `popover`, in the place of one written before.
+    /// Design: docs/design/views/modifiers.md#slot-children
+    private func showing(_ popover: PopoverElement) -> Modified {
+        modified {
+            $0.children.removeAll { $0.type == PopoverContract.nodeType }
+            $0.children.append(popover.node)
+        }
+    }
+}
+
+/// The popover a view declares, holding what it shows.
+struct PopoverElement: ElementView {
+    var node = Node(contract: PopoverContract.self)
+
+    /// What `content` makes, shown while `state` holds true - carried by the host both ways; leaving the tree
+    /// writes false.
+    init(content: @escaping () -> [Node], presented state: Binding<Bool>) {
+        node.producer = content
+        self = plain(PopoverContract.isPresented.token, by: state, mode: .inOut)
+        node.destroying.append { if state.wrappedValue { state.wrappedValue = false } }
+    }
+
+    /// What `content` makes, shown while `read` says so - a value worked out from another, described: the user's
+    /// dismissal written through `write`; leaving the tree writes false.
+    init(content: @escaping () -> [Node], read: @escaping @MainActor () -> Bool,
+         write: @escaping @MainActor (Bool) -> Void) {
+        node.producer = content
+        self = described(PopoverContract.isPresented.token, read: read, write: write,
+                         on: PopoverContract.isPresentedChanged.token)
+        node.destroying.append { if read() { write(false) } }
+    }
+}

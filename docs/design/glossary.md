@@ -22,16 +22,18 @@ and this table maps the two.
 | watcher (`.onChanged`) | change observer | a view that runs code when a value it watches changes |
 | mixin tier | mixin, trait | a tier several contracts wear for one group of members |
 | Normal (visual state) | default visual state | the visual state a control is in when none of its other states holds |
-| arrangement | page container | a page that arranges other pages: a stack, tabs, a split view, a modal stack |
-| arrangement (navigation) | navigation container | `NavigationStack`, `TabView`, `SplitView` and `ModalStack`: what decides which page shows |
+| anchor | - | the element a view whose root may change stands on, holding what is written on it to outlive a branch; no view of its own |
+| arrangement | page container | a page that arranges other pages: a stack, tabs, a split view |
+| arrangement (navigation) | navigation container | `NavigationStack`, `TabView` and `SplitView`: what decides which page shows |
 | session | per-instance runtime state | the values one opening of an application, a scene or a window holds |
 
 ## State and reactivity
 
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
-| `@State` | state | the one declaration of mutable state |
-| `Binding` (`$x`) | binding | a borrowed reference to a state |
+| `@State` | state | the one declaration of mutable state: owns the value and manages its state |
+| `Binding` (`$x`, `@Binding`) | binding | a whole state borrowed, with the host's reactive channel - what every member taking a state takes |
+| `StatePart` (`$x.member`, `$x[i]`) | lens | one property or element of a state, read and written through the whole; nothing in the library takes it |
 | body rebuild, reactive path 1 | re-render | a body that read a written state runs again and is diffed |
 | reader (of a state) | dependent, subscriber | the body or content that read a state and is rebuilt when it changes |
 | binding twin | binding overload | the `Binding` form of a value modifier |
@@ -39,7 +41,7 @@ and this table maps the two.
 | follow (`following:`) | depend on, subscribe to | what wakes an engine: a write to a state it follows |
 | track (`tracking:`) | follow continuously | an engine that follows and keeps running on the next cycles while it answers `.again` |
 | conversion (`convert`) | derived binding | a binding that reads and writes another state through a mapping |
-| lender, lent | source storage | what a `Binding` borrows its value from |
+| lender, lent | source storage | what a `StatePart` reads and writes through: the state's storage and which part of it |
 | reading, sample (`.samples`) | throttled copy | an animated value copied into ordinary state at a pace |
 | host-carried state, reactive path 2 | bound control value | a state a native control shows and changes with no rebuild |
 | attachment, wear (a state), wearer | binding, bound control | a control property tied to a state |
@@ -67,6 +69,7 @@ and this table maps the two.
 | carry, carried view | skipped subtree | a composed view whose inputs and reads held is not built, compared or sent |
 | inputs (`Input`) | props | a view's stored values, compared to decide whether to carry it |
 | placeholder (`Node.Stateful`) | lazy node | a composed view not built yet |
+| group (`Group`) | transparent container | a composed view written in place, holding one view: no element and no layout of its own |
 | producer | deferred children | a container's content, run when the element is described |
 | generation, baseline | version | the tree a patch was computed against |
 | drift | desync | a patch that does not match the tree the host holds |
@@ -94,12 +97,12 @@ and this table maps the two.
 | journey (`$x.journey`) | animated value | a state's value with its destination, speed and timing |
 | animation (`Animation`) | animation | one running animation of one value |
 | animator (`Animator`), advance | animator, advance a frame | the one place a runtime advances every animation |
-| lane | component | one number of an animated value: x of a point, red of a colour |
-| lane kind (`LaneKind`) | component type | what a host reads a carried value's lanes as: numbers, a Boolean, a choice, a colour, a material |
+| lane | component | one number of an animated value: x of a point, red of a color |
+| lane kind (`LaneKind`) | component type | what a host reads a carried value's lanes as: numbers, a Boolean, a choice, a color, a material |
 | land, arrive | finish | an animation reaching its destination |
 | snap | jump | a change applied at once, with no animation |
 | travels, cleared, moves (member facts) | animatable, reset when unset, animation group | what a member's contract says about how its value changes |
-| travel, travelling layout | layout animation | a layout's children animating to their new places |
+| travel, traveling layout | layout animation | a layout's children animating to their new places |
 | state channel | animated state source | the one place a runtime animates a bound state for every control tied to it |
 | described motion | property animation | the animation a patch describes for a property |
 
@@ -119,7 +122,7 @@ and this table maps the two.
 | program write | programmatic change | a write to a control made by the program, not the user |
 | act | imperative control call | a call the application makes on a control, such as `focus` |
 | run | in-flight handler call | one going of a handler that awaits, or of a task through a gate, from its start to its end |
-| gate (`Gate`, `Gatekeeper`) | concurrency policy | what an event or a task does while a run is under way: let go, cancel the run before it, wait, or run beside it - a handler's own, or shared by every handler and task written with it |
+| gate (`GatePolicy`, `Gate`) | concurrency policy | what an event or a task does while a run is under way: let go, cancel the run before it, wait, or run beside it - a handler's own, or shared by every handler and task written with it |
 | superseded run | cancelled task | a run a later event, its task's cancellation or its element leaving ended: it changes nothing more |
 | chosen file (`ChosenFile`) | file handle, picked file | a file the user opened or saved in a dialog: its name, and its place, which only the host reads |
 | kind of file (`FileType`) | file type filter | a caption and the extensions a dialog shows or offers |
@@ -127,12 +130,13 @@ and this table maps the two.
 | aim (`@Aim`) | control reference | the reference an act is called through |
 | completion id | continuation handle | the negative id an awaited act or animation is answered by |
 | declaration (`HostDeclaration`) | capability manifest | which elements and members a host realizes: presence, not ownership |
-| honours (`device.honours(member)`) | supports | whether the host the application runs on realizes a member, in full or in part, by its register: what an application asks before relying on it |
+| honors (`device.honors(member)`) | supports | whether the host the application runs on realizes a member, in full or in part, by its register: what an application asks before relying on it |
 | tally, pass, complaint | render counters, trace record, logged warning | what the core's diagnostics count, trace and say once |
-| sync (`Sync`) | frame source | the clock a cycle runs on |
 | arrangement (layout) | layout pass | a layout placing its children |
 | placement | frame | the rectangle a layout gives a child |
 | shade, rank | dimming overlay, z-order | what a placement run draws over a child, and its order among siblings |
+| motion layout (`MotionLayout`) | custom layout driven by a value | views placed by the application's own arithmetic on the host's frames, worked out from the room and the layout's parameters |
+| layout parameters (`LayoutParameters`) | animatable layout parameters | the state a motion layout is worked out from: one number an axis, each axis one degree of freedom, moved by the user's hand or the program |
 | room | layout boundary | a container its place sizes, which lays out a change inside itself; in a view's own text, the space it is given |
 | seat | layout position | a child's place in a layout while it animates |
 | record, mark (the dictionary) | declaration entry, support status | a host's statement that it realizes a member, and the ✅ or ☑️ it earns |

@@ -25,8 +25,16 @@ final class AndroidShapeViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start)
-                    Ellipse().fill(.red).width(20).height(20).horizontalAlignment(.start)
+                    Rectangle()
+                        .fill(.red)
+                        .width(20)
+                        .height(20)
+                        .horizontalAlignment(.start)
+                    Ellipse()
+                        .fill(.red)
+                        .width(20)
+                        .height(20)
+                        .horizontalAlignment(.start)
                 }
             }
             host.layOut()
@@ -62,7 +70,7 @@ final class AndroidShapeViewTests: XCTestCase {
             host.layOut()
             let arc = try XCTUnwrap(host.views(AndroidShapeView.self).first)
 
-            // Centred, the half circle stands from 10 to 30 pixels down: its top middle is filled, the
+            // Centered, the half circle stands from 10 to 30 pixels down: its top middle is filled, the
             // corner beside it is not.
             XCTAssertEqual(arc.pixels(at: [(20, 12), (2, 12)]), [Self.red, 0])
         }
@@ -71,7 +79,11 @@ final class AndroidShapeViewTests: XCTestCase {
     func testAShapeAsksForNoRoom() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                VStack { Rectangle().fill(.red).horizontalAlignment(.start) }
+                VStack {
+                    Rectangle()
+                        .fill(.red)
+                        .horizontalAlignment(.start)
+                }
             }
             host.layOut()
             let rectangle = try XCTUnwrap(host.views(AndroidShapeView.self).first)
@@ -84,9 +96,10 @@ final class AndroidShapeViewTests: XCTestCase {
     func testARectangleDrawsWithinItsCornersOverItsBackground() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Rectangle().fill(Color("#FF0000"))
+                Rectangle()
+                    .fill(Color(hex: 0xFF0000))
                     .cornerRadius(topLeft: 0, topRight: 0, bottomLeft: 20, bottomRight: 0)
-                    .background(Color("#00FF00"))
+                    .background(Color(hex: 0x00FF00))
                     .width(100)
                     .height(100)
                     .horizontalAlignment(.start)
@@ -106,9 +119,10 @@ final class AndroidShapeViewTests: XCTestCase {
     func testACornerRoundsNoMoreThanHalfTheShorterSide() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                Rectangle().fill(Color("#FF0000"))
+                Rectangle()
+                    .fill(Color(hex: 0xFF0000))
                     .cornerRadius(100)
-                    .background(Color("#00FF00"))
+                    .background(Color(hex: 0x00FF00))
                     .width(200)
                     .height(40)
                     .horizontalAlignment(.start)

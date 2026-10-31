@@ -25,14 +25,36 @@ final class WebLayoutViewTests: XCTestCase {
         XCTAssertEqual(WebPage.children(of: layout.node), [b.node, a.node], "a child no longer held leaves")
     }
 
+    /// A ROW SHORT OF ROOM TAKES IT FROM ITS WORDS: the browser shrinks a label by its natural width, as the host
+    /// layer's rule does on every other host, down to nothing; a button keeps its own width, and a column shrinks
+    /// none.
+    func testARowShortOfRoomTakesItFromItsWords() {
+        let row = WebLayoutView(arrangement: .stack(.horizontal))
+        let column = WebLayoutView(arrangement: .stack(.vertical))
+        let (title, button, line) = (WebTextView(), WebTextView(), WebTextView())
+        defer { for view in [row, column, title, button, line] { view.release() } }
+        var words = LayoutValues()
+        words.words = .bare
+        var boxed = LayoutValues()
+        boxed.words = .boxed
+
+        row.setItems([(title, { words }), (button, { boxed })])
+        column.setItems([(line, { words })])
+
+        XCTAssertEqual(WebPage.style(of: title.node, "flex"), "0 1 auto")
+        XCTAssertEqual(WebPage.style(of: title.node, "min-width"), "0")
+        XCTAssertEqual(WebPage.style(of: button.node, "flex"), "none")
+        XCTAssertEqual(WebPage.style(of: line.node, "flex"), "none")
+    }
+
     /// A margin below nothing shifts the child as a margin does on every host - the clock's marks stand left of
-    /// and above the centre by such margins; a padding is never below nothing.
+    /// and above the center by such margins; a padding is never below nothing.
     func testAMarginBelowNothingShiftsTheChild() {
         let layout = WebLayoutView(arrangement: .grid)
         let mark = WebTextView()
         defer { for view in [layout, mark] { view.release() } }
         var values = LayoutValues()
-        values.margin = Insets(left: -188, top: -94, right: 0, bottom: 0)
+        values.margin = Insets(start: -188, top: -94, end: 0, bottom: 0)
         layout.setItems([(mark, { values })])
 
         XCTAssertEqual(WebPage.style(of: mark.node, "margin-inline-start"), "-188px", "left of where it would stand")

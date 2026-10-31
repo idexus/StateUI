@@ -32,9 +32,11 @@ extension UIKitDriver {
         case (.placeholderColor, let editor as UIKitTextEditorView):
             return editor.subviews.lazy.compactMap { $0 as? UILabel }.first?.textColor.map { color($0).propValue }
         case (.inputPurpose, let field as UITextField):
-            return purpose(field.keyboardType, spelling: field.spellCheckingType).propValue
+            return purpose(field.keyboardType, spelling: field.spellCheckingType, content: field.textContentType)
+                .propValue
         case (.inputPurpose, let editor as UITextView):
-            return purpose(editor.keyboardType, spelling: editor.spellCheckingType).propValue
+            return purpose(editor.keyboardType, spelling: editor.spellCheckingType, content: editor.textContentType)
+                .propValue
         case (.contentMode, let image as UIImageView):
             let aspects: [UIView.ContentMode: StateUI.ContentMode] = [
                 .scaleAspectFit: .fit, .scaleAspectFill: .fill, .scaleToFill: .stretch, .center: .center,
@@ -44,7 +46,7 @@ extension UIKitDriver {
         }
     }
 
-    /// A layout's box: what clips it, the colour its fill layer paints and the outline its stroke layer draws.
+    /// A layout's box: what clips it, the color its fill layer paints and the outline its stroke layer draws.
     private static func boxHolds(_ property: Prop, _ layout: UIKitLayoutView) -> HostValue? {
         let layers = layout.layer.sublayers ?? []
         let outline = layers.first { $0.zPosition == -1 } as? CAShapeLayer
@@ -72,7 +74,7 @@ extension UIKitDriver {
         return .glass(given.isInteractive(glass.isInteractive))
     }
 
-    /// A shape's paint: the colour over its fill and its outline, and how its outline's mask draws the line.
+    /// A shape's paint: the color over its fill and its outline, and how its outline's mask draws the line.
     private static func shapeHolds(_ property: Prop, _ shape: UIKitShapeView) throws -> HostValue? {
         let painted = shape.layer.sublayers ?? []
         let fill = painted.first { ($0.mask as? CAShapeLayer)?.fillColor != nil }
@@ -84,7 +86,9 @@ extension UIKitDriver {
         if line == nil, outlines.contains(property) { throw DriverCannot("read the line of a shape drawing no outline") }
         let width = Double(line?.lineWidth ?? 0)
         switch property {
-        case .fill: return fill?.backgroundColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
+        case .fill:
+            if let shown = shape.backdropForTesting?.shown { return material(shown).propValue }
+            return fill?.backgroundColor.map { Material.color(color(UIColor(cgColor: $0))).propValue }
         case .stroke: return stroke?.backgroundColor.map { Brush.solidColor(color(UIColor(cgColor: $0))).propValue }
         case .lineWidth: return width.propValue
         case .dash:
@@ -118,13 +122,14 @@ extension UIKitDriver {
             return (radius > 0 ? ContainerShape.roundedRectangle(radius) : .rectangle).propValue
         case .iconPosition:
             let positions: [(NSDirectionalRectEdge, IconPosition)] = [
-                (.leading, .leading), (.top, .top), (.trailing, .trailing), (.bottom, .bottom),
+                (.leading, .start), (.top, .top), (.trailing, .end), (.bottom, .bottom),
             ]
             return positions.first { $0.0 == configuration.imagePlacement }?.1.propValue
         case .iconSpacing: return Double(configuration.imagePadding).propValue
         case .icon: return configuration.image?.accessibilityIdentifier.map { .string($0) }
         case .lineBreak: return lineBreak(configuration.titleLineBreakMode).propValue
         case .showsMenuArrow: return button.showsMenuMark.propValue
+        case .showsText: return button.showsWordsForTesting.propValue
         case .role:
             let roles: [UIButton.Role: ButtonRole] = [.primary: .primary, .cancel: .cancel, .destructive: .destructive]
             return roles[button.role].map(\.propValue) ?? HostValue.nothing
@@ -155,9 +160,16 @@ extension UIKitDriver {
         }
     }
 
-    /// What the keyboard a field raises says it is for.
-    private static func purpose(_ keyboard: UIKeyboardType, spelling: UITextSpellCheckingType) -> InputPurpose {
-        switch keyboard {
+    /// What a field's words are for, as iOS was told: what it fills them in from where it fills them in, else what
+    /// the keyboard the field raises says.
+    private static func purpose(
+        _ keyboard: UIKeyboardType, spelling: UITextSpellCheckingType, content: UITextContentType?
+    ) -> InputPurpose {
+        let filled: [UITextContentType: InputPurpose] = [
+            .username: .username, .newPassword: .newPassword, .oneTimeCode: .oneTimeCode,
+        ]
+        if let content, let purpose = filled[content] { return purpose }
+        return switch keyboard {
         case .emailAddress: .email
         case .URL: .url
         case .phonePad: .telephone

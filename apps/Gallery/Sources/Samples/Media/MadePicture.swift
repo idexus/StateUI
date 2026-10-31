@@ -1,9 +1,9 @@
 /// A picture the application makes itself: its pixels written as a PNG's bytes.
 enum MadePicture {
     /// A `side` by `side` picture of rings in `hue` (0 to 1), as a PNG - each pixel the share of it every
-    /// colour covers, so its edges stand smooth.
+    /// color covers, so its edges stand smooth.
     static func rings(side: Int, hue: Double) -> [UInt8] {
-        let colour = rgb(hue: hue).map(Double.init)
+        let color = rgb(hue: hue).map(Double.init)
         let (radius, band, samples) = (Double(side) / 2, Double(side) / 18, 4)
         var pixels: [UInt8] = []
         pixels.reserveCapacity(side * side * 4)
@@ -16,7 +16,7 @@ enum MadePicture {
                         let dy = Double(y) + (Double(row) + 0.5) / Double(samples) - radius
                         let distance = (dx * dx + dy * dy).squareRoot()
                         guard distance <= radius else { continue }
-                        let ink = Int(distance / band) % 2 == 0 ? colour : [255, 255, 255]
+                        let ink = Int(distance / band) % 2 == 0 ? color : [255, 255, 255]
                         sum = zip(sum, ink).map(+)
                         covered += 1
                     }
@@ -29,7 +29,7 @@ enum MadePicture {
         return png(width: side, height: side, rgba: pixels)
     }
 
-    /// The colour of `hue` at full saturation and brightness.
+    /// The color of `hue` at full saturation and brightness.
     private static func rgb(hue: Double) -> [UInt8] {
         let sector = hue * 6
         let rising = sector - sector.rounded(.down)

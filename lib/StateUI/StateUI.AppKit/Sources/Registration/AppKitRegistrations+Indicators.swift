@@ -15,8 +15,8 @@ extension AppKitRegistrations {
             }
         }
 
-        registry.add(ActivityIndicatorContract.self, create: { _ in AppKitActivityIndicatorView() }) { activity in
-            activity.property(ActivityIndicatorContract.isAnimating) { view, running in
+        registry.add(SpinnerContract.self, create: { _ in AppKitSpinnerView() }) { activity in
+            activity.property(SpinnerContract.isAnimating) { view, running in
                 view.apply(running: running ?? false)
             }
         }

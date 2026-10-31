@@ -29,7 +29,10 @@ final class AppKitFrameTests: XCTestCase {
         let heard = Received<[Double]>()
         let renderer = AppKitRenderer.running {
             VStack {
-                Rectangle().fill(.steelBlue).width(120).height(60)
+                Rectangle()
+                    .fill(.steelBlue)
+                    .width(120)
+                    .height(60)
                     .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
             }
             .horizontalAlignment(.start)
@@ -51,7 +54,10 @@ final class AppKitFrameTests: XCTestCase {
             VStack {
                 Text("above").height(20)
                 if shown.wrappedValue {
-                    Rectangle().fill(.steelBlue).width(120).height(60)
+                    Rectangle()
+                        .fill(.steelBlue)
+                        .width(120)
+                        .height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
             }
@@ -70,13 +76,14 @@ final class AppKitFrameTests: XCTestCase {
     @MainActor
     func testAViewOnASheetSaysWhereItStandsAsTheSheetIsLaidOut() throws {
         let heard = Received<[Double]>()
-        let sheets = State(wrappedValue: [1])
+        let shows = State(wrappedValue: true)
         let renderer = AppKitRenderer.running {
-            ModalStack(sheets.projectedValue) {
-                Text("home")
-            } destination: { _ in
+            Text("home").sheet(isPresented: shows.projectedValue) {
                 VStack {
-                    Rectangle().fill(.steelBlue).width(120).height(60)
+                    Rectangle()
+                        .fill(.steelBlue)
+                        .width(120)
+                        .height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)
@@ -100,7 +107,10 @@ final class AppKitFrameTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             VStack {
                 ItemsView(0..<100) { item in
-                    Rectangle().fill(item == 2 ? .firebrick : .steelBlue).width(120).height(60)
+                    Rectangle()
+                        .fill(item == 2 ? .firebrick : .steelBlue)
+                        .width(120)
+                        .height(60)
                         .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
                 }
                 .width(200).height(300)
@@ -130,12 +140,14 @@ final class AppKitFrameTests: XCTestCase {
         let heard = Received<[Double]>()
         let shown = State(wrappedValue: true)
         let renderer = AppKitRenderer.running {
-            SplitView(shown.projectedValue) {
+            SplitView {
                 Text("Menu")
             } detail: {
-                Rectangle().fill(.steelBlue)
+                Rectangle()
+                    .fill(.steelBlue)
                     .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
             }
+            .showsSidebar(shown.projectedValue)
         }
         defer { renderer.closeForTesting() }
         let split = try XCTUnwrap(renderer.nativeViews(AppKitSplitView.self).first)

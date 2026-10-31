@@ -110,6 +110,8 @@ enum TestJava {
     static let getTop = Java.method(JavaAPI.view, "getTop", "()I")
     static let getWidth = Java.method(JavaAPI.view, "getWidth", "()I")
     static let getHeight = Java.method(JavaAPI.view, "getHeight", "()I")
+    static let getPaddingTop = Java.method(JavaAPI.view, "getPaddingTop", "()I")
+    static let getPaddingBottom = Java.method(JavaAPI.view, "getPaddingBottom", "()I")
     static let getChildCount = Java.method(JavaAPI.viewGroup, "getChildCount", "()I")
     static let indexOfChild = Java.method(JavaAPI.viewGroup, "indexOfChild", "(Landroid/view/View;)I")
     static let getToolbarTitle = Java.method(
@@ -199,6 +201,7 @@ enum TestJava {
     static let isPressed = Java.method(JavaAPI.view, "isPressed", "()Z")
     static let isClickable = Java.method(JavaAPI.view, "isClickable", "()Z")
     static let isEnabled = Java.method(JavaAPI.view, "isEnabled", "()Z")
+    static let getContentDescription = Java.method(JavaAPI.view, "getContentDescription", "()Ljava/lang/CharSequence;")
     static let getLetterSpacing = Java.method(JavaAPI.textView, "getLetterSpacing", "()F")
     static let getLineCount = Java.method(JavaAPI.textView, "getLineCount", "()I")
     static let getVisibility = Java.method(JavaAPI.view, "getVisibility", "()I")
@@ -292,11 +295,11 @@ extension AndroidRenderer {
 }
 
 extension AndroidView {
-    /// Where the view stands in its parent, and its size, in pixels.
+    /// Where the view stands in its parent, and its size, in pixels - the view its parent holds.
     var frame: (x: Int32, y: Int32, width: Int32, height: Int32) {
         (
-            Java.callInt(reference, TestJava.getLeft), Java.callInt(reference, TestJava.getTop),
-            Java.callInt(reference, TestJava.getWidth), Java.callInt(reference, TestJava.getHeight)
+            Java.callInt(outermost, TestJava.getLeft), Java.callInt(outermost, TestJava.getTop),
+            Java.callInt(outermost, TestJava.getWidth), Java.callInt(outermost, TestJava.getHeight)
         )
     }
 

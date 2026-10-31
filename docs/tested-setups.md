@@ -14,7 +14,7 @@ Last verified 2026-10-08.
 | Machine | Apple M1 Max |
 | System | macOS 26.6.2 (25G83) |
 | Xcode | 27.0 (27A266a), with its Swift 6.4 (`swiftlang-6.4.0.34.1`) |
-| Editor | VS Code 1.142.0; the StateUI extension 0.7.1, Swift (`swiftlang.swift-vscode`) 2.16.7, LLDB DAP 0.4.1 |
+| Editor | VS Code 1.144.0; the StateUI extension 0.8.0, Swift (`swiftlang.swift-vscode`) 2.18.0, LLDB DAP 0.4.1 |
 | Node.js | 26.10.0, for building and testing the extension |
 
 ### AppKit
@@ -26,8 +26,8 @@ Xcode 27's Swift 6.4, on macOS 26.6.2.
 | | |
 | --- | --- |
 | Toolchain | Xcode 27's Swift 6.4 and its iOS SDK |
-| Simulator runtime | iOS 27.0 (24A434) |
-| Simulators | iPhone 18 Pro; iPad Air 13-inch (M4) |
+| Simulator runtimes | iOS 27.0 (24A434); iOS 27.1 (24A94425) |
+| Simulators | iPhone 18 Pro and iPad Air 13-inch (M4) on 27.0; iPhone Duo on 27.1 |
 
 The iPad Pro 13-inch (M5) simulator shows a black screen on runtime 27.0,
 Settings included; the iPad Air stands in for it.

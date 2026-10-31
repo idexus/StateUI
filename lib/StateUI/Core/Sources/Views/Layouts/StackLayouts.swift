@@ -45,9 +45,10 @@ public struct VStack: Stack {
 ///     }
 ///     .spacing(8)
 ///
-/// A stack takes as much room as its children need and does not wrap. Use a
-/// `Grid` when children must divide a known width into rows and columns.
-public struct HStack: Stack {
+/// A stack takes as much room as its children need, on one line; `.wraps(true)`
+/// goes on onto further lines where its room ends. Use a `Grid` when children
+/// must divide a known width into rows and columns.
+public struct HStack: Stack, HStackProperties {
     /// The node this control describes.
     public var node: Node
 

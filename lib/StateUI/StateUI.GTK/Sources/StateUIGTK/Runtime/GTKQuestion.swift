@@ -13,8 +13,8 @@ final class GTKQuestion {
     /// What the act asks, read by the host layer's rule.
     let question: HostQuestion
 
-    /// What hears the answer: whether it was accepted, and the words chosen or typed.
-    private let answered: (Bool, String?) -> Void
+    /// What hears the answer.
+    private let answered: (HostQuestion.Given) -> Void
 
     /// The questions showing, by the number their dialog's answer comes back under.
     private static let showing = Numbered<GTKQuestion>()
@@ -22,38 +22,41 @@ final class GTKQuestion {
     /// A prompt's field, while its dialog shows.
     private var field: GTKWidget?
 
-    /// Each response's caption, by its id.
-    private var captions: [String: String] = [:]
+    /// What each response answers, by its id.
+    private var roles: [String: QuestionButton] = [:]
 
-    init(_ question: HostQuestion, answered: @escaping (Bool, String?) -> Void) {
+    init(_ question: HostQuestion, answered: @escaping (HostQuestion.Given) -> Void) {
         self.question = question
         self.answered = answered
     }
 
-    /// Shows the dialog over `window`.
+    /// The id of the response doing `button`.
+    static func response(of button: QuestionButton) -> String {
+        switch button {
+        case .accept: "accept"
+        case .cancel: "cancel"
+        case .action(let place): "action-\(place)"
+        }
+    }
+
+    /// Shows the dialog over `window`: its cancel first, as GNOME stands it, which a dialog dismissed any other
+    /// way - Escape among them - answers as; an alert's one button answers its dismissal.
     func show(over window: GTKWindow) {
         let number = Self.showing.hold(self)
 
-        let dialog: UnsafeMutablePointer<AdwDialog>
-        switch question.kind {
-        case .alert:
-            dialog = adw_alert_dialog_new(question.title, question.message)
-            respond(dialog, "accept", question.accept, .suggested, closes: true)
-        case .confirm:
-            dialog = adw_alert_dialog_new(question.title, question.message)
-            respond(dialog, "cancel", question.cancelling, nil, closes: true)
-            respond(dialog, "accept", question.accept, .suggested)
-        case .chooseAction:
-            // Dismissed any other way than by a button - Escape among them - nothing was chosen.
-            dialog = adw_alert_dialog_new(question.title, nil)
-            adw_alert_dialog_set_close_response(dialog.of(AdwAlertDialog.self), "close")
-            if let destruction = question.destruction { respond(dialog, "destroy", destruction, .destructive) }
-            for (index, choice) in question.choices.enumerated() { respond(dialog, "choice-\(index)", choice, nil) }
-            if let cancel = question.cancel { respond(dialog, "cancel", cancel, nil) }
-        case .prompt:
-            dialog = adw_alert_dialog_new(question.title, question.message)
-            respond(dialog, "cancel", question.cancelling, nil, closes: true)
-            respond(dialog, "accept", question.accept, .suggested)
+        let dialog = adw_alert_dialog_new(question.title, question.kind == .chooseAction ? nil : question.message)!
+        let buttons = question.buttons
+        for (caption, role) in buttons.filter({ $0.role == .cancel }) + buttons.filter({ $0.role != .cancel }) {
+            let appearance: Appearance? = switch role {
+            case .accept: .suggested
+            case .action(let place) where place == question.destructive: .destructive
+            case .cancel, .action: nil
+            }
+            respond(dialog, role, caption, appearance)
+        }
+        adw_alert_dialog_set_close_response(
+            dialog.of(AdwAlertDialog.self), Self.response(of: question.kind == .alert ? .accept : .cancel))
+        if question.kind == .prompt {
             let field = makeField()
             adw_alert_dialog_set_extra_child(dialog.of(AdwAlertDialog.self), field)
             // The words are typed at once: the dialog gives the keyboard to its field as it shows.
@@ -67,23 +70,10 @@ final class GTKQuestion {
         adw_dialog_present(dialog, window.widget)
     }
 
-    /// The user answered by the response `id`.
+    /// The user answered by the response `id`: what its button does, with the words a prompt's field holds.
     private func respond(_ id: String) {
-        let (accepted, words) = answer(id)
-        answered(accepted, words)
-    }
-
-    /// What the user answered by the response `id`: whether it was accepted, and the words chosen or typed.
-    private func answer(_ id: String) -> (accepted: Bool, words: String?) {
-        switch question.kind {
-        case .chooseAction:
-            return (captions[id] != nil, captions[id])
-        case .prompt:
-            let words = field.map { String(cString: gtk_editable_get_text($0.opaque)) }
-            return (id == "accept", words)
-        case .alert, .confirm:
-            return (id == "accept", nil)
-        }
+        answered(HostQuestion.Given(
+            pressed: roles[id] ?? .cancel, typing: field.map { String(cString: gtk_editable_get_text($0.opaque)) }))
     }
 
     private enum Appearance {
@@ -91,14 +81,13 @@ final class GTKQuestion {
         case destructive
     }
 
-    /// Adds a button answering `id` under `caption`; `closes` makes it the answer of a dialog dismissed, and the
-    /// suggested one is what Enter answers.
+    /// Adds a button doing `role` under `caption`; the suggested one is what Enter answers.
     private func respond(
-        _ dialog: UnsafeMutablePointer<AdwDialog>, _ id: String, _ caption: String, _ appearance: Appearance?,
-        closes: Bool = false
+        _ dialog: UnsafeMutablePointer<AdwDialog>, _ role: QuestionButton, _ caption: String, _ appearance: Appearance?
     ) {
         let alert = dialog.of(AdwAlertDialog.self)
-        captions[id] = caption
+        let id = Self.response(of: role)
+        roles[id] = role
         adw_alert_dialog_add_response(alert, id, caption)
         switch appearance {
         case .suggested?:
@@ -109,7 +98,6 @@ final class GTKQuestion {
         case nil:
             break
         }
-        if closes { adw_alert_dialog_set_close_response(alert, id) }
     }
 
     /// A prompt's field: its placeholder, the most characters, the keyboard its purpose asks for, and the words it

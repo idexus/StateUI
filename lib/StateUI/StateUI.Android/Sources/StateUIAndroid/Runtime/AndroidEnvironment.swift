@@ -46,7 +46,8 @@ enum AndroidEnvironment {
         Double(Java.callStaticFloat(JavaAPI.environment, JavaAPI.density, .object(context)))
     }
 
-    /// Tells `core` the user's locale, the battery and the network, as `context` reads them.
+    /// Tells `core` the user's locale, the battery, the network and the accessibility settings, as `context` reads
+    /// them.
     static func reportChanging(to core: CoreLink, context: jobject) {
         Java.frame {
             let locale = Java.texts(Java.callStaticObject(JavaAPI.environment, JavaAPI.localeFacts, .object(context)))
@@ -59,6 +60,14 @@ enum AndroidEnvironment {
                 Java.callStaticObject(JavaAPI.environment, JavaAPI.connectivityFacts, .object(context)))
             if network.count == 2 {
                 core.setConnectivityInfo(HostConnectivityInfo(access: network[0], connections: network[1]))
+            }
+
+            let accessibility = floats(
+                Java.callStaticObject(JavaAPI.environment, JavaAPI.accessibilityFacts, .object(context)))
+            if accessibility.count == 4 {
+                core.setAccessibilityInfo(HostAccessibilityInfo(
+                    reducesMotion: accessibility[0] == 1, prefersHigherContrast: accessibility[1] == 1,
+                    isScreenReaderOn: accessibility[2] == 1, textScale: Double(accessibility[3])))
             }
         }
     }

@@ -4,7 +4,7 @@
 // The platform's C maths library, for the spring's `exp`, `sin` and `cos`.
 import StateUIFoundation
 
-// The two motion laws as numbers, in closed form in the time since an animation
+// The motion laws as numbers, in closed form in the time since an animation
 // began. Every runtime animates with these; `MotionLawTests` holds them to
 // their promises.
 // Design: docs/design/core/journeys.md#motion-laws
@@ -14,23 +14,29 @@ import StateUIFoundation
     /// The value of each lane.
     public let value: [Double]
 
-    /// How fast each lane is going, per millisecond.
+    /// How fast each lane is going, per second.
     public let velocity: [Double]
 
     /// Whether the animation has arrived: every lane at its destination and still.
     public let rested: Bool
 }
 
-/// The two motion laws, evaluated from the time since an animation began.
+/// The motion laws, evaluated from the time since an animation began.
 ///
-/// Time is in milliseconds, the unit of `Motion`'s numbers, so velocity is per
-/// millisecond. A journey reports its velocity per second; an animator converts
-/// where it reports.
+/// Time is in milliseconds, the unit of `Motion`'s numbers; a speed is per
+/// second, as a journey's is, told in and answered.
 @_spi(Host) public enum HostMotionLaw {
-    /// How near its destination and how slow a lane is when it counts as arrived: in
-    /// the value's own units, and per millisecond for the speed. A thousandth of a
-    /// colour channel or of a point is below any display's resolution.
+    /// How near its destination a lane is when it counts as arrived, in the value's
+    /// own units. A thousandth of a color channel or of a point is below any
+    /// display's resolution.
     public static let still = 0.001
+
+    /// How slow a lane is when it counts as still, per second: a thousandth of a unit
+    /// a millisecond.
+    public static let stillSpeed = 1.0
+
+    /// The shortest a glide takes, in milliseconds: a hand let go fast slows over no less.
+    public static let shortestGlide = 80.0
 
     /// The longest a spring animates, in milliseconds. A spring has no stated end;
     /// this keeps any animation from holding a display clock awake for ever.
@@ -39,17 +45,17 @@ import StateUIFoundation
     /// Where an animation stands `elapsed` milliseconds after it began.
     ///
     /// An eased animation from a standstill follows its curve exactly. A lane that
-    /// began moving follows the cubic Hermite of the same length instead, from the
-    /// value and speed it had to its destination at a standstill. A spring settles
-    /// each lane on its own, and the animation rests when all of them have.
+    /// began moving follows its curve too, bent at its start to set out at the speed
+    /// it had and landing where the curve does - an overshooting curve still
+    /// overshoots. A spring settles each lane on its own, and the animation rests
+    /// when all of them have.
     ///
     /// - Parameters:
     ///   - motion: The law and its numbers.
     ///   - elapsed: Milliseconds since the animation began.
     ///   - from: Where each lane began.
     ///   - destination: Where each lane is going.
-    ///   - velocity: How fast each lane was going when it began, per
-    ///     millisecond.
+    ///   - velocity: How fast each lane was going when it began, per second.
     /// - Returns: The value and velocity at that instant, and whether the
     ///   animation has arrived. Lanes that do not pair up land at once.
     public static func sample(
@@ -63,24 +69,35 @@ import StateUIFoundation
             return landed(destination)
         }
 
-        switch motion.law {
-        case .eased:
-            return eased(
-                length: Double(motion.milliseconds),
-                curve: motion.curve,
+        // The arithmetic runs in milliseconds: a speed is told per second and answered so.
+        let velocity = velocity.map { $0 / 1_000 }
+        let sample: HostMotionSample
+        switch motion.kind {
+        case .eased(let milliseconds, let curve):
+            sample = eased(
+                length: Double(milliseconds),
+                curve: curve,
                 elapsed: elapsed,
                 from: from,
                 destination: destination,
                 velocity: velocity)
-        case .spring:
-            return spring(
-                response: Double(max(motion.milliseconds, 1)),
-                damping: max(motion.factor, 0.01),
+        case .spring(let milliseconds, let damping):
+            sample = spring(
+                response: Double(max(milliseconds, 1)),
+                damping: max(damping, 0.01),
                 elapsed: elapsed,
                 from: from,
                 destination: destination,
                 velocity: velocity)
+        case .glide(let milliseconds):
+            sample = glide(
+                longest: Double(milliseconds), elapsed: elapsed, from: from, destination: destination,
+                velocity: velocity)
+        case .inherited, .none, .custom:
+            sample = landed(destination)
         }
+        return HostMotionSample(
+            value: sample.value, velocity: sample.velocity.map { $0 * 1_000 }, rested: sample.rested)
     }
 
     /// An animation at its destination, standing still.
@@ -105,33 +122,52 @@ import StateUIFoundation
         let amount = ease(curve, at: progress)
         let climb = slope(curve, at: progress)
 
-        // The Hermite basis and its derivative, which only a lane that began
-        // moving needs.
-        let h00 = ((2 * progress) - 3) * progress * progress + 1
-        let h10 = ((progress - 2) * progress + 1) * progress
-        let h01 = (3 - (2 * progress)) * progress * progress
-        let d00 = (6 * progress * progress) - (6 * progress)
-        let d10 = (3 * progress * progress) - (4 * progress) + 1
-        let d01 = (6 * progress) - (6 * progress * progress)
+        // A lane already moving is the curve bent by p(1 - p)²: nothing at either end, its slope at the start the
+        // difference between the speed it had and the curve's own.
+        // Design: docs/design/core/journeys.md#motion-laws
+        let rest = 1 - progress
+        let bend = progress * rest * rest
+        let bending = rest * (1 - 3 * progress)
+        let setsOut = slope(curve, at: 0)
 
         var value = Array(repeating: 0.0, count: from.count)
         var speed = value
 
         for lane in value.indices {
-            if velocity[lane] == 0 {
-                value[lane] = from[lane] + ((destination[lane] - from[lane]) * amount)
-                speed[lane] = (destination[lane] - from[lane]) * climb / length
-            } else {
-                value[lane] = (h00 * from[lane])
-                    + (h10 * length * velocity[lane])
-                    + (h01 * destination[lane])
-                speed[lane] = ((d00 * from[lane])
-                    + (d10 * length * velocity[lane])
-                    + (d01 * destination[lane])) / length
-            }
+            let span = destination[lane] - from[lane]
+            let difference = velocity[lane] == 0 ? 0 : length * velocity[lane] - span * setsOut
+            value[lane] = from[lane] + span * amount + difference * bend
+            speed[lane] = (span * climb + difference * bending) / length
         }
 
         return HostMotionSample(value: value, velocity: speed, rested: false)
+    }
+
+    /// A glide: each lane on `cubicOut` over the length that sets it out at the speed it had, held to
+    /// `shortestGlide` and `longest` - where held, bent to set out at that speed as an eased lane is; a lane setting
+    /// out still, or away from its destination, over half of `longest`.
+    /// Design: docs/design/types/motion.md#a-glide
+    private static func glide(
+        longest: Double, elapsed: Double, from: [Double], destination: [Double], velocity: [Double]
+    ) -> HostMotionSample {
+        let setsOut = slope(.cubicOut, at: 0)
+        var value = Array(repeating: 0.0, count: from.count)
+        var speed = value
+        var rested = true
+
+        for lane in value.indices {
+            let span = destination[lane] - from[lane]
+            let length = velocity[lane] * span > 0
+                ? min(max(setsOut * abs(span / velocity[lane]), shortestGlide), longest) : longest / 2
+            let one = eased(
+                length: length, curve: .cubicOut, elapsed: elapsed, from: [from[lane]], destination: [destination[lane]],
+                velocity: [velocity[lane]])
+            value[lane] = one.value[0]
+            speed[lane] = one.velocity[0]
+            rested = rested && one.rested
+        }
+
+        return rested ? landed(destination) : HostMotionSample(value: value, velocity: speed, rested: false)
     }
 
     /// A mass on a spring, in closed form about the distance left rather than
@@ -186,7 +222,7 @@ import StateUIFoundation
                     + (c2 * second * exp(second * elapsed))
             }
 
-            if abs(remaining) <= still && abs(derivative) <= still {
+            if abs(remaining) <= still && abs(derivative) * 1_000 <= stillSpeed {
                 value[lane] = target
                 speed[lane] = 0
             } else {
@@ -235,6 +271,23 @@ import StateUIFoundation
             let shifted = value - 1
             return (shifted * shifted * ((2.70158 * shifted) + 1.70158)) + 1
         }
+    }
+
+    /// How steeply `motion` sets out, per unit of its length: eased, its curve's first slope; a glide, `cubicOut`'s;
+    /// a spring, as a `cubicOut` of its response does - never under a tenth, so a curve setting out flat reaches a
+    /// finite way.
+    static func setsOut(_ motion: Motion) -> Double {
+        if case .eased(_, let curve) = motion.kind { return max(slope(curve, at: 0), 0.1) }
+        return slope(.cubicOut, at: 0)
+    }
+
+    /// How far a value going at `speed` a second carries on under `motion` alone: its speed for the motion's length
+    /// over how steeply the motion sets out; none under a motion that does not animate.
+    /// Design: docs/design/types/motion.md#where-a-throw-reaches
+    static func carried(_ speed: Double, under motion: Motion) -> Double {
+        guard motion.animates else { return 0 }
+
+        return speed * Double(motion.milliseconds) / 1_000 / setsOut(motion)
     }
 
     /// How steeply `curve` climbs at `progress`, per unit of progress: a central

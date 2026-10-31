@@ -8,53 +8,52 @@
 /// Design: docs/design/host/pages.md#the-visible-path
 extension MountedElement {
     /// The elements of `sought` this page's chrome takes, in the path's order, each with its level - 0 for the
-    /// outermost arrangement's, the page's own last. A sheet and a split view's sidebar start a path of their own - a
-    /// modal stack's root stands on the path around the stack - and a native collection's items belong to no page.
+    /// outermost arrangement's, the page's own last. A sheet and a split view's sidebar start a path of their own, and
+    /// a native collection's items belong to no page.
     public func declared(_ sought: NodeType) -> [(element: MountedElement, level: Int)] {
         let arrangements = arrangementsAround
         var found: [(element: MountedElement, level: Int)] = []
         for (level, arrangement) in arrangements.enumerated() {
             found += arrangement.slots.filter { $0.type == sought }.map { ($0, level) }
         }
-        found += declarations(sought).map { ($0, arrangements.count) }
+        found += declarations(sought).map { ($0.element, arrangements.count) }
         return found
     }
 
     /// The arrangements around this element on its path, the outermost first: up to its window, a split view's
     /// sidebar and a sheet stopping at theirs.
     var arrangementsAround: [MountedElement] {
-        arrangements(sidebarWearsItsSplitView: false)
+        arrangements(look: false)
     }
 
-    /// The arrangements whose bar this element's bar wears, the outermost first: those around it on its path, and a
-    /// sidebar's own split view, whose bar is both its panes'.
+    /// The arrangements whose bar's look this element's bar wears, the outermost first: those around it on its path -
+    /// on past a sheet to the view presenting it - and a sidebar's own split view, whose bar is both its panes'.
     /// Design: docs/design/host/pages.md#the-bar-a-path-declares
     var barArrangements: [MountedElement] {
-        arrangements(sidebarWearsItsSplitView: true)
+        arrangements(look: true)
     }
 
-    private func arrangements(sidebarWearsItsSplitView: Bool) -> [MountedElement] {
+    private func arrangements(look: Bool) -> [MountedElement] {
         var arrangements: [MountedElement] = []
         var (child, each) = (self, parent)
-        while let element = each, element.type != .window {
+        while let element = each, element.type != .window, look || element.type != .sheet {
             if element.type == .splitView, element.children.first === child {
-                if sidebarWearsItsSplitView { arrangements.insert(element, at: 0) }
+                if look { arrangements.insert(element, at: 0) }
                 break
             }
-            if element.type == .modalStack, element.children.first !== child { break }
             if NodeType.pageTypes.contains(element.type) { arrangements.insert(element, at: 0) }
             (child, each) = (element, element.parent)
         }
         return arrangements
     }
 
-    /// The elements of `sought` in this element's tree, in the tree's order, looking into none of them and into no
-    /// collection's items.
-    private func declarations(_ sought: NodeType) -> [MountedElement] {
-        children.flatMap { child -> [MountedElement] in
-            if child.type == sought { return [child] }
+    /// The elements of `sought` in this element's tree, in the tree's order, each with its depth - how many
+    /// elements stand between this one and it - looking into none of them and into no collection's items.
+    func declarations(_ sought: NodeType, depth: Int = 0) -> [(element: MountedElement, depth: Int)] {
+        children.flatMap { child -> [(element: MountedElement, depth: Int)] in
+            if child.type == sought { return [(child, depth)] }
             if NodeType.slotTypes.contains(child.type) || child.type == .itemsView { return [] }
-            return child.declarations(sought)
+            return child.declarations(sought, depth: depth + 1)
         }
     }
 }

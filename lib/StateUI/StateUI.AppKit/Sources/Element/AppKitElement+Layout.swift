@@ -8,9 +8,18 @@ import AppKit
 
 /// Children placed: the layout item each child gives its parent.
 extension AppKitElement {
-    /// The view lays out, and its control writes, in the element's direction.
+    /// The view lays out, and its control writes, in the element's direction; a text's and a button's padding stand
+    /// by it.
     func directionChanged() {
         view?.userInterfaceLayoutDirection = element.layoutDirection == .rightToLeft ? .rightToLeft : .leftToRight
+        if let button = view as? NSButton, value(.padding) != nil {
+            (button.cell as? AppKitButtonCell)?.padding = nativeInsets(.padding)
+        }
+        if view is AppKitTextView { arrangeChildren() }
+    }
+
+    func invalidateMeasurements() {
+        view?.invalidateMeasurements()
     }
 
     func arrangeChildren() {
@@ -22,7 +31,7 @@ extension AppKitElement {
         if let label = view as? AppKitTextView {
             label.apply(
                 attributedText: attributedLabelText(),
-                padding: insets(.padding),
+                padding: nativeInsets(.padding),
                 horizontalAlignment: NSTextAlignment(
                     enumeration(.horizontalTextAlignment).flatMap(TextAlignment.init(rawValue:)),
                     in: label.userInterfaceLayoutDirection),
@@ -41,6 +50,7 @@ extension AppKitElement {
 
         if let split = view as? AppKitSplitView {
             split.setItems(items)
+            split.setColumns(sidebar: element.arrangedChildren.first, detail: element.arrangedChildren.dropFirst().first)
             return
         }
 

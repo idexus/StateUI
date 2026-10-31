@@ -4,6 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
+import StateUIFoundation
 
 /// Runs a StateUI application as native WinUI 3 controls in the application's own process.
 ///
@@ -13,20 +14,24 @@ import CStateUIWinUI
 ///     import HelloWorldUI
 ///     import StateUIWinUI
 ///
-///     stateui_app_register()
+///     registerApplication()
 ///     StateUIWinUI.run()
 ///
 /// `.scripts/WinUI/run-app.ps1` builds the head and lays the Windows App SDK
 /// beside it. A control this host does not present yet shows its name in red
 /// where it belongs.
 public enum StateUIWinUI {
-    /// Starts WinUI on this thread and runs the application until its last window closes.
+    /// Starts WinUI on this thread, runs the application until its last window closes, and ends the process with
+    /// 0 - or with the failure WinUI started with.
     ///
-    /// - Returns: the process's exit code - 0, or the failure WinUI started with - which the head ends the process
-    ///   with: `exit(StateUIWinUI.run())`.
-    public static func run() -> Int32 {
+    ///     StateUIWinUI.run(linkSchemes: ["notes"])
+    ///
+    /// - Parameter linkSchemes: the schemes of the links the application opens - `notes://` - which it registers
+    ///   for the user as it starts; naming any makes it its one instance, a second start handing its link to the
+    ///   first.
+    public static func run(linkSchemes: [String] = []) -> Never {
         var callbacks = WinUICallbacks.table
-        return stateui_winui_run(&callbacks)
+        exit(linkSchemes.joined(separator: "\n").withCString { stateui_winui_run(&callbacks, $0) })
     }
 }
 
@@ -83,6 +88,9 @@ enum WinUICallbacks {
             held: { view, holding in
                 MainActor.assumeIsolated { WinUIView.find(view)?.held(holding) }
             },
+            refreshPulled: { view in
+                MainActor.assumeIsolated { (WinUIView.find(view) as? WinUIRefreshView)?.onPulled?() ?? false }
+            },
             chosen: { view, index in
                 MainActor.assumeIsolated { WinUIView.find(view)?.chose(Int(index)) }
             },
@@ -97,18 +105,32 @@ enum WinUICallbacks {
                     guard let phase = StateUIPressPhase(rawValue: phase) else { return }
                     return MainActor.assumeIsolated { WinUIView.find(view)?.heardPress(phase, at: Point(x: x, y: y)) }
                 }
+                if what == .hold {
+                    return MainActor.assumeIsolated { WinUIView.find(view)?.heardHold() }
+                }
                 if what == .tap {
                     return MainActor.assumeIsolated {
                         WinUIView.find(view)?.heardTap(at: Point(x: x, y: y), time: .milliseconds(Int(phase)))
                     }
                 }
+                if what == .buttonPress {
+                    guard let phase = GesturePhase(rawValue: phase) else { return }
+                    return MainActor.assumeIsolated {
+                        WinUIView.find(view)?.heardButtonPress(phase, at: Point(x: x, y: y), byFinger: scale != 0)
+                    }
+                }
+                if what == .invoked {
+                    return MainActor.assumeIsolated { WinUIView.find(view)?.heard(.tap(run: 0)) }
+                }
                 guard let heard = HeardInput(what, phase: phase, x: x, y: y, scale: scale) else { return }
                 MainActor.assumeIsolated { WinUIView.find(view)?.heard(heard) }
             },
-            answered: { ticket, accepted, utf8, failure in
+            answered: { ticket, accepted, utf8, chosen, failure in
                 let words = utf8.map { String(cString: $0) }
+                let given = chosen >= 0
+                    ? HostQuestion.Given(chosen: Int(chosen)) : HostQuestion.Given(accepted: accepted, words: words)
                 let answer: Result<HostQuestion.Given, ActFailure> = failure.map { .failure(ActFailure(String(cString: $0))) }
-                    ?? .success(HostQuestion.Given(accepted: accepted, words: words))
+                    ?? .success(given)
                 MainActor.assumeIsolated { WinUIRenderer.shared?.answered(ticket: ticket, answer) }
             },
             filesChosen: { ticket, count, paths, names, failure in
@@ -123,6 +145,15 @@ enum WinUICallbacks {
                 let read = bytes.map { Array(UnsafeBufferPointer(start: $0, count: Int(length))) } ?? []
                 let why = failure.map { String(cString: $0) }
                 MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.read(ticket: ticket, bytes: read, failure: why) }
+            },
+            requestAnswered: { ticket, status, headers, body, length, failure in
+                let said = headers.map { String(cString: $0) } ?? ""
+                let read = body.map { Array(UnsafeBufferPointer(start: $0, count: Int(length))) } ?? []
+                let why = failure.map { String(cString: $0) }
+                MainActor.assumeIsolated {
+                    WinUIRenderer.shared?.network.answered(
+                        ticket: ticket, status: Int(status), headers: said, body: read, failure: why)
+                }
             },
             launchAnswered: { ticket, taken in
                 MainActor.assumeIsolated { WinUIRenderer.shared?.fileToolkit.launched(ticket: ticket, taken: taken) }
@@ -145,6 +176,9 @@ enum WinUICallbacks {
             },
             picked: { view, first, second, third in
                 MainActor.assumeIsolated { WinUIView.find(view)?.picked(first, second, third) }
+            },
+            colorChosen: { view, argb in
+                MainActor.assumeIsolated { WinUIView.find(view)?.colorChosen(argb) }
             },
             menuChosen: { view, index in
                 MainActor.assumeIsolated { WinUIView.find(view)?.menuChosen(Int(index)) }
@@ -221,6 +255,11 @@ enum WinUICallbacks {
                     guard let phase = GesturePhase(rawValue: phase) else { return }
                     WinUIView.find(view)?.heard(.mirrored(phase, at: Point(x: x, y: y), middle: Point(x: middleX, y: middleY)))
                 }
+            },
+            linkOpened: { address in
+                guard let address else { return }
+                let opened = String(cString: address)
+                MainActor.assumeIsolated { WinUIRenderer.shared?.openLinks([opened]) }
             })
     }
 }

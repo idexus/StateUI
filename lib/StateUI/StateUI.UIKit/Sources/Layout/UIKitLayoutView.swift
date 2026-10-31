@@ -7,13 +7,20 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 /// A StateUI layout: its children's views placed by the host layer's arithmetic, each on its way to its place where
-/// the layout moves (`TravellingPlaces`), its measurements kept until something in it changes.
+/// the layout moves (`TravelingPlaces`), its measurements kept until something in it changes.
 @MainActor
-class UIKitLayoutView: UIView {
+class UIKitLayoutView: UIView, UIKitSteppable {
+    /// What a reader's step performs, while the element says it is adjustable.
+    var stepAction: ((AccessibilityAdjustment) -> Void)?
+
+    override func accessibilityIncrement() { stepAction?(.increment) }
+
+    override func accessibilityDecrement() { stepAction?(.decrement) }
+
     let measurements = MeasurementCache()
 
     /// How the children travel to their places, by the host layer's rule.
-    let places = TravellingPlaces()
+    let places = TravelingPlaces()
 
     private(set) var items: [UIKitLayoutItem] = []
 
@@ -26,7 +33,7 @@ class UIKitLayoutView: UIView {
     }
 
     /// What the layout paints of its own box, and whether it cuts what it shows to the box's outline.
-    private(set) var box = UIKitBox()
+    let box = UIKitBox()
 
     /// Whether a touch beside every child goes on to what stands under the layout.
     var passesBeside = false
@@ -45,19 +52,46 @@ class UIKitLayoutView: UIView {
         guard items.count != self.items.count || !zip(items, self.items).allSatisfy({ $0.arranges(like: $1) })
         else { return }
 
-        for gone in self.items where gone.view.superview === self && !items.contains(where: { $0.view === gone.view }) {
+        let hosts = [self, box.backdropView?.contentView]
+        for gone in self.items
+        where hosts.contains(where: { $0 === gone.view.superview }) && !items.contains(where: { $0.view === gone.view }) {
             gone.view.removeFromSuperview()
         }
-        // The backdrop stands beneath the children.
-        let first = box.backdropView == nil ? 0 : 1
-        for (index, item) in items.enumerated()
-        where item.view.superview !== self || subviews.firstIndex(of: item.view) != first + index {
-            insertSubview(item.view, at: first + index)
-        }
         self.items = items
+        standChildren()
         forgetMeasurements()
         setNeedsLayout()
     }
+
+    /// Where the children stand: in the box's interactive glass, so a touch on them is the glass's as well - else in
+    /// the layout, above its backdrop.
+    /// Design: docs/design/platforms/uikit/drawing.md#interactive-glass
+    var childrenHost: UIView {
+        box.backdropView.flatMap { $0.holdsChildren ? $0.contentView : nil } ?? self
+    }
+
+    /// Stands each child in the children's host in the tree's order - the backdrop beneath them in the layout - then
+    /// in the order the layout draws them (`orderChildren`).
+    private func standChildren() {
+        let host = childrenHost
+        let first = host === self && box.backdropView != nil ? 1 : 0
+        for (index, item) in items.enumerated()
+        where item.view.superview !== host || host.subviews.firstIndex(of: item.view) != first + index {
+            host.insertSubview(item.view, at: first + index)
+        }
+        orderChildren()
+    }
+
+    /// Stands the children again where their host changed - the box's interactive glass came or went - their order
+    /// otherwise left as it is.
+    private func followChildrenHost() {
+        let host = childrenHost
+        guard items.contains(where: { $0.view.superview !== host }) else { return }
+        standChildren()
+    }
+
+    /// Orders the children back to front as the layout draws them; most draw them in the tree's order.
+    func orderChildren() {}
 
     func forgetMeasurements() {
         measurements.invalidate()
@@ -78,14 +112,28 @@ class UIKitLayoutView: UIView {
         .zero
     }
 
+    /// How far below its top its first line of words rests, laid out `width` wide; nil for a layout that answers none.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(width: Double?) -> Double? {
+        nil
+    }
+
     /// Stands every child in `bounds`, by this layout's arithmetic.
     func arrange(in bounds: Rect) {}
+
+    /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#a-layout-bound-for-a-size
+    var arrangementRoom: CGSize? {
+        didSet { if arrangementRoom != oldValue { setNeedsLayout() } }
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()
         box.paint(on: self)
-        places.begin(width: bounds.width)
-        arrange(in: Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
+        followChildrenHost()
+        let room = arrangementRoom ?? bounds.size
+        places.begin(width: room.width)
+        arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
         laidOut?()
     }
 
@@ -94,6 +142,7 @@ class UIKitLayoutView: UIView {
     func setBox(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
         box.set(background: background, stroke: stroke, width: width, shape: shape, clips: clips)
         box.paint(on: self)
+        followChildrenHost()
     }
 
     /// A touch outside the shape the layout cuts to reaches nothing of it: UIKit tests a touch against the bounds.
@@ -103,7 +152,8 @@ class UIKitLayoutView: UIView {
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
         let hit = super.hitTest(point, with: event)
-        return passesBeside && hit === self ? nil : hit
+        let beside = hit === self || hit === box.backdropView || hit === box.backdropView?.contentView
+        return passesBeside && beside ? nil : hit
     }
 
     /// Stands `item` at `place`, or on its way there.
@@ -112,7 +162,9 @@ class UIKitLayoutView: UIView {
             item.view.frame = CGRect(x: place.x, y: place.y, width: place.width, height: place.height)
             return
         }
-        places.place(placed, mount: item.mount, at: place, values: item.values, fadeIn: item.fadeIn)
+        places.place(
+            placed, mount: item.mount, at: place, values: item.values, natural: { item.size(offered: nil) },
+            fadeIn: item.fadeIn)
     }
 }
 #endif

@@ -13,7 +13,7 @@ import java.util.List;
 public final class TestAccessibility {
     private TestAccessibility() {}
 
-    /** One of the words assistive technology meets of the view - "label", "hint" or "id" - or none. */
+    /** One of the words assistive technology meets of the view - "label", "hint", "id", "kind" or "value" - or none. */
     public static String word(View view, String name) {
         AccessibilityNodeInfo info = view.createAccessibilityNodeInfo();
         CharSequence word;
@@ -21,9 +21,35 @@ public final class TestAccessibility {
             case "label": word = view.getContentDescription(); break;
             case "hint": word = info.getHintText(); break;
             case "id": word = info.getViewIdResourceName(); break;
+            case "kind": word = info.getClassName(); break;
+            case "value": word = Build.VERSION.SDK_INT >= 30 ? view.getStateDescription() : null; break;
             default: word = null; break;
         }
         return word == null ? null : word.toString();
+    }
+
+    /** Performs the action of the view's node named `label`, as TalkBack does: whether the view took it. */
+    public static boolean perform(View view, String label) {
+        for (AccessibilityNodeInfo.AccessibilityAction action : view.createAccessibilityNodeInfo().getActionList()) {
+            CharSequence named = action.getLabel();
+            if (named != null && label.contentEquals(named)) return view.performAccessibilityAction(action.getId(), null);
+        }
+        return false;
+    }
+
+    /** How many items the view's node tells TalkBack the user may choose, as `CollectionInfo` numbers it; -1 for none. */
+    public static int selectionMode(View view) {
+        AccessibilityNodeInfo.CollectionInfo collection = view.createAccessibilityNodeInfo().getCollectionInfo();
+        return collection == null ? -1 : collection.getSelectionMode();
+    }
+
+    /** Steps the view up or down as TalkBack steps a slider, where its node offers the step: whether it took it. */
+    public static boolean step(View view, boolean up) {
+        AccessibilityNodeInfo.AccessibilityAction wanted = up
+                ? AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_FORWARD
+                : AccessibilityNodeInfo.AccessibilityAction.ACTION_SCROLL_BACKWARD;
+        if (!view.createAccessibilityNodeInfo().getActionList().contains(wanted)) return false;
+        return view.performAccessibilityAction(wanted.getId(), null);
     }
 
     /**

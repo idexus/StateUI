@@ -18,7 +18,7 @@ public enum WindowContract: ElementContract {
     /// The window is showing behind another.
     public static let deactivated = ElementEvent<Self, Void>("deactivated", layer: .adaptive)
 
-    /// What the window is made of behind its pages: a colour, or a blur or
+    /// What the window is made of behind its pages: a color, or a blur or
     /// glass the desktop shows through.
     public static let background = ElementProperty<Self, Material>("background", layer: .adaptive)
 
@@ -27,7 +27,7 @@ public enum WindowContract: ElementContract {
 
     /// Whether the window floats above the application's other windows.
     public static let floatsOnTop = ElementProperty<Self, Bool>(
-        "floatsOnTop", layer: .adaptive, cleared: false)
+        "floatsOnTop", layer: .adaptive, cleared: false, unsaid: false)
 
     /// How tall the window is, in device units.
     public static let height = ElementProperty<Self, Double>("height", layer: .native, moves: .height)
@@ -35,7 +35,7 @@ public enum WindowContract: ElementContract {
     /// Whether the window hides while another scene of the application is in
     /// front.
     public static let hidesWhenInactive = ElementProperty<Self, Bool>(
-        "hidesWhenInactive", layer: .adaptive, cleared: false)
+        "hidesWhenInactive", layer: .adaptive, cleared: false, unsaid: false)
 
     /// Whether the user can make the window fill the screen.
     public static let isMaximizable = ElementProperty<Self, Bool>("isMaximizable", layer: .adaptive)
@@ -72,7 +72,7 @@ public enum WindowContract: ElementContract {
     public static let width = ElementProperty<Self, Double>("width", layer: .native, moves: .width)
 
     /// What kind of window it is - the kind a scene declares it under.
-    public static let windowType = ElementProperty<Self, WindowType>(
+    public static let windowType = ElementProperty<Self, Name>(
         "windowType", layer: .structure, cleared: false)
 
     /// The value a window of the kind was opened for, written down with it.

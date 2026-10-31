@@ -40,8 +40,6 @@ final class HostStorage: NamedState {
     /// Design: docs/design/core/state.md#a-state-nobody-wears
     var ties = 0
 
-    /// Which board's cycle owns it.
-    var board: Int = 0
 
     /// What the author calls it - the reflection walk's, as a state's is.
     var origin: String?

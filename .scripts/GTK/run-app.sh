@@ -67,16 +67,26 @@ if [[ -n "$application_id" && -f "$app_dir/Resources/AppIcon/appicon_gnome.svg" 
   data="${XDG_DATA_HOME:-$HOME/.local/share}"
   mkdir -p "$data/icons/hicolor/scalable/apps" "$data/applications"
   cp "$app_dir/Resources/AppIcon/appicon_gnome.svg" "$data/icons/hicolor/scalable/apps/$application_id.svg"
+  # The links the application opens: the schemes its head lists in Platforms/GTK/link-schemes, one a line.
+  schemes=""
+  if [[ -f "$app_dir/Platforms/GTK/link-schemes" ]]; then
+    schemes="$(grep -v '^[[:space:]]*$' "$app_dir/Platforms/GTK/link-schemes")"
+  fi
+  mime_types="$(for scheme in $schemes; do printf 'x-scheme-handler/%s;' "$scheme"; done)"
   cat > "$data/applications/$application_id.desktop" <<ENTRY
 [Desktop Entry]
 Type=Application
 Name=$application
-Exec=$executable
+Exec=$executable %u
 Icon=$application_id
 StartupWMClass=$product
 Terminal=false
 Categories=Development;
+${mime_types:+MimeType=$mime_types}
 ENTRY
+  for scheme in $schemes; do
+    xdg-mime default "$application_id.desktop" "x-scheme-handler/$scheme" 2>/dev/null || true
+  done
 fi
 if [[ "$build_only" == 1 ]]; then
   echo "built:      $executable"

@@ -6,7 +6,7 @@
 
 /// How a shape's outline is drawn, read off what the host draws: its dashes, where they start, and its ends - each
 /// case made for every shape.
-/// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colours
+/// Design: docs/design/host/conformance.md#a-drawing-read-by-its-colors
 extension ShapeTests {
     /// The outline cases.
     @MainActor

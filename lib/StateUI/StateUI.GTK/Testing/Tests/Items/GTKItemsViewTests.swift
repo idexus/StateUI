@@ -73,9 +73,9 @@ extension GTKItemsViewTests {
         }
     }
 
-    /// The item chosen is shaded in the colour of the words around it, a list's row and a grid's tile alike: no hue
+    /// The item chosen is shaded in the color of the words around it, a list's row and a grid's tile alike: no hue
     /// of its own beside the page it stands on.
-    func testTheChosenItemIsShadedInItsWordsColour() throws {
+    func testTheChosenItemIsShadedInItsWordsColor() throws {
         try onUIThread {
             let (row, tile) = (State<Int?>(wrappedValue: 1), State<Int?>(wrappedValue: 1))
             let host = GTKRenderer.running {
@@ -93,7 +93,7 @@ extension GTKItemsViewTests {
                 let pixel = try XCTUnwrap(collection.pixels(at: [point]).first)
                 let (red, green, blue) = (pixel >> 16 & 0xFF, pixel >> 8 & 0xFF, pixel & 0xFF)
                 XCTAssertGreaterThan(pixel >> 24, 0, "shaded: \(String(pixel, radix: 16))")
-                XCTAssertTrue(red == green && green == blue, "in the words' colour: \(String(pixel, radix: 16))")
+                XCTAssertTrue(red == green && green == blue, "in the words' color: \(String(pixel, radix: 16))")
             }
         }
     }

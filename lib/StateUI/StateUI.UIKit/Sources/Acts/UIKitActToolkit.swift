@@ -45,17 +45,18 @@ final class UIKitActToolkit: ActToolkit {
         return zone.secondsFromGMT(for: date) / 60
     }
 
-    /// Asks in UIKit's alert over what the user's window shows - its top sheet, else its pages - once nothing moves.
+    /// Asks in UIKit's alert over what the window asked shows - its top sheet, else its pages - once nothing moves.
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let root = renderer.userRoot, let window = root.view.window.flatMap(renderer.element(of:))
+        guard let root = renderer.root(asked: window), let window = root.view.window.flatMap(renderer.element(of:))
         else { return nil }
         let asked = UIKitQuestion(question)
         showing = asked
-        asked.ask(in: root) { [weak self] accepted, words in
+        asked.ask(in: root) { [weak self] given in
             self?.showing = nil
-            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
+            answered(.success(given))
         }
         return window
     }
@@ -65,11 +66,53 @@ final class UIKitActToolkit: ActToolkit {
         UIAccessibility.post(notification: .announcement, argument: words)
     }
 
+    /// The share sheet showing now, where one does.
+    private(set) var sharing: UIKitShareSheet?
+
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let root = renderer.root(asked: window), let window = root.view.window.flatMap(renderer.element(of:))
+        else { return nil }
+        let sheet = UIKitShareSheet(shared)
+        sharing = sheet
+        sheet.offer(in: root) { [weak self] done in
+            self?.sharing = nil
+            answered(done)
+        }
+        return window
+    }
+
+    /// The pasteboard the clipboard's acts write and read: the system's general one - a test's own, of its own
+    /// name, where it gives one.
+    var pasteboard = UIPasteboard.general
+
+    func writeClipboard(_ words: String) {
+        pasteboard.string = words
+    }
+
+    /// iOS asks the user before an application reads what another put on the pasteboard; refused, it reads none.
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        answered(.success(pasteboard.string))
+    }
+
     /// Shows every window in `theme`: each window's own style, unspecified for the system's.
     func useColorScheme(_ theme: ColorScheme) {
         for (_, controller) in renderer.roster.windows {
             controller.window?.overrideUserInterfaceStyle = Self.style(theme)
         }
+    }
+
+    /// Tints every window in `accent`, the system's again where nil: iOS lets the user choose no accent, so the
+    /// application's stands.
+    func useAccentColor(_ accent: Color?) -> Bool {
+        for (_, controller) in renderer.roster.windows { controller.window?.tintColor = Self.tint(accent) }
+        return true
+    }
+
+    /// UIKit's tint for `accent`; nil for the system's.
+    static func tint(_ accent: Color?) -> UIColor? {
+        accent.flatMap { UIColor(stateUI: $0.propValue) }
     }
 
     /// UIKit's style for `theme`.
@@ -81,9 +124,9 @@ final class UIKitActToolkit: ActToolkit {
         }
     }
 
-    /// Takes the keyboard down: whatever holds the focus in the user's window gives it up; whether anything did.
-    func hideOnScreenKeyboard() -> Bool {
-        guard let window = renderer.userWindow, Self.holder(in: window) != nil else { return false }
+    /// Takes the keyboard down: whatever holds the focus in the window asked gives it up; whether anything did.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        guard let window = renderer.window(asked: window), Self.holder(in: window) != nil else { return false }
         return window.endEditing(true)
     }
 
@@ -141,8 +184,11 @@ final class UIKitActToolkit: ActToolkit {
                 core.fail(call, "moveToRegion is an act of a Map", log: { UIKitRenderer.log.error($0) })
                 return true
             }
-            let number = { call.arguments.value($0)?.number ?? 0 }
-            map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
+            guard let region = call.arguments.value(1).flatMap(MapRegion.init(propValue:)) else {
+                core.fail(call, "moveToRegion was given no region", log: { UIKitRenderer.log.error($0) })
+                return true
+            }
+            map.show(region, sliding: true)
             core.reply(call, [])
             return true
         }

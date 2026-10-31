@@ -15,7 +15,7 @@
 import StateUI
 
 // listing: Cube3D
-/// What colour the cube is painted.
+/// What color the cube is painted.
 ///
 /// A closed vocabulary, so it crosses as its member's number, and the host's
 /// registration is handed it back as a `CubeColor` rather than as that number.
@@ -43,7 +43,7 @@ public enum Cube3DContract: ElementContract {
     /// it is a cube that grows.
     public static let size = ElementProperty<Self, Double>("size")
 
-    /// Which colour the cube is painted. A vocabulary has no half way, so a
+    /// Which color the cube is painted. A vocabulary has no half way, so a
     /// change does not travel.
     public static let color = ElementProperty<Self, CubeColor>("color", travels: false)
 
@@ -64,7 +64,7 @@ public enum Cube3DContract: ElementContract {
 public struct Cube3D: ElementView {
     public var node = Node(contract: Cube3DContract.self)
 
-    /// A cube at whatever size, colour and motion its modifiers say.
+    /// A cube at whatever size, color and motion its modifiers say.
     public init() {}
 
     /// How long the cube's edge is, as a share of the room the view is given,
@@ -93,7 +93,7 @@ public struct Cube3D: ElementView {
         setValue(Cube3DContract.size, on: state, mode: .inOut, kind: .property)
     }
 
-    /// Which colour the cube is painted.
+    /// Which color the cube is painted.
     public func color(_ value: CubeColor) -> Self {
         setValue(Cube3DContract.color, value)
     }

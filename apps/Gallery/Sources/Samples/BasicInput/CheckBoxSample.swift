@@ -9,7 +9,7 @@ struct CheckBoxSample: SampleContent, ExampleContent {
 
     static let id = "checkBox"
     static let title = "CheckBox"
-    static let summary = "A box ticked or not, with no caption of its own."
+    static let summary = "A box ticked or not, with the words it says beside it."
 
     // listing: CheckBoxSample
     var body: some View {
@@ -17,17 +17,10 @@ struct CheckBoxSample: SampleContent, ExampleContent {
             // The ticks are read here, so every box builds this closure.
             DebugInfoLabel()
 
-            HStack {
-                CheckBox($agreed)
-                    .accessibilityIdentifier("checkBox.agreed")
-                    .accessibilityLabel("Agreed")
-                    .tint(Palette.accent)
-
-                Text("I have read the terms")
-                    .fontSize(15)
-                    .verticalAlignment(.center)
-            }
-            .spacing(4)
+            CheckBox($agreed)
+                .text("I have read the terms")
+                .accessibilityIdentifier("checkBox.agreed")
+                .tint(Palette.accent)
 
             Text(agreed ? "Ticked" : "Not ticked")
                 .fontSize(15)
@@ -37,19 +30,12 @@ struct CheckBoxSample: SampleContent, ExampleContent {
 
             ForEach(Array(["Cheese", "Bacon", "Egg"].enumerated()), id: \.offset) { pair in
                 let (index, name) = pair
-                return HStack {
-                    CheckBox(extras[index])
-                        .accessibilityIdentifier("checkBox.extra.\(index)")
-                        .accessibilityLabel(name)
-                        .tint(Palette.accent)
-                        .onToggled { ticked in extras[index] = ticked }
-
-                    Text(name)
-                        .fontSize(15)
-                        .verticalAlignment(.center)
-                }
-                .spacing(4)
-                .id(name)
+                return CheckBox(extras[index])
+                    .text(name)
+                    .accessibilityIdentifier("checkBox.extra.\(index)")
+                    .tint(Palette.accent)
+                    .onToggled { ticked in extras[index] = ticked }
+                    .id(name)
             }
 
             Text(chosen.isEmpty ? "Nothing extra" : "With \(chosen.joined(separator: ", "))")
@@ -61,14 +47,13 @@ struct CheckBoxSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("A `CheckBox` is the box and nothing else: it has no caption, so the words "
-                + "beside it are a `Text`. Tapping the words does nothing: they are a "
-                + "view of their own, not part of the box.")
+            Text("Tap the words: they belong to the box, so they tick it, and a screen "
+                + "reader calls the box by them.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("Boxes are independent - tick as many as you like. One choice out of "
-                + "several is a `RadioButton`.")
+                + "several is a `Picker` offered as radio buttons.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

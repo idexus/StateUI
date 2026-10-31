@@ -15,10 +15,10 @@
             ConformanceCase("aMapShowsTheRegionTheTreeGivesIt", proves: [
                 Covered(MapContract.region),
             ]) { s in
-                s.start { VStack { Map(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000).height(300).id("map") } }
+                s.start { VStack { Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000)).height(300).id("map") } }
 
                 let shown = try s.held(MapContract.region, on: s.element("map"))
-                s.expect(Self.shows(shown, MapRegion(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000)), true,
+                s.expect(Self.shows(shown, MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000)), true,
                          "shows \(String(describing: shown))")
             },
             ConformanceCase("anActMovesTheMapToARegion", proves: [
@@ -28,9 +28,9 @@
                 let moved = Received<String>()
                 s.start {
                     VStack {
-                        Map(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000).aim(map).height(300).id("map")
-                        Button("Kraków").onClicked(gate: .ignoreWhileRunning) {
-                            try await map.moveToRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2_000)
+                        Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000)).aim(map).height(300).id("map")
+                        Button("Kraków").onClicked(.ignoreWhileRunning) {
+                            try await map.moveToRegion(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2_000))
                             moved.values.append("moved")
                         }.id("move")
                     }
@@ -38,7 +38,7 @@
 
                 try s.perform(.activate, on: s.element("move"))
                 s.settle { moved.values == ["moved"] }
-                let krakow = MapRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2_000)
+                let krakow = MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2_000)
                 try s.settle { Self.shows(try s.held(MapContract.region, on: s.element("map")), krakow) }
                 s.expect(moved.values, ["moved"], "the act answered")
                 let shown = try s.held(MapContract.region, on: s.element("map"))
@@ -48,7 +48,7 @@
                 let heard = Received<Location>()
                 s.start {
                     VStack {
-                        Map(latitude: 52.23, longitude: 21.01, radiusMeters: 5_000)
+                        Map(region: MapRegion(center: Location(latitude: 52.23, longitude: 21.01), radiusMeters: 5_000))
                             .onMapClicked { heard.values.append($0) }.height(300).id("map")
                     }
                 }
@@ -65,12 +65,13 @@
         ]
     }
 
-    /// Whether a map showing `shown` shows `asked`: within about a meter of its centre and a percent of its radius,
+    /// Whether a map showing `shown` shows `asked`: within about a meter of its center and a percent of its radius,
     /// as a map's engine fits a region to its view.
     /// Design: docs/design/host/maps.md#what-a-map-shows
     static func shows(_ shown: MapRegion?, _ asked: MapRegion) -> Bool {
         guard let shown else { return false }
-        return abs(shown.latitude - asked.latitude) < 0.00001 && abs(shown.longitude - asked.longitude) < 0.00001
+        return abs(shown.center.latitude - asked.center.latitude) < 0.00001
+            && abs(shown.center.longitude - asked.center.longitude) < 0.00001
             && abs(shown.radiusMeters - asked.radiusMeters) <= asked.radiusMeters / 100
     }
 }

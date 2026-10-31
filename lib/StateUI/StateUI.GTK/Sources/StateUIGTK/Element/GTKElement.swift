@@ -30,6 +30,8 @@ final class GTKElement: NativeElement {
     var type: NodeType { element.type }
     var parent: GTKElement? { element.parent?.gtk }
     var children: [GTKElement] { element.children.map(\.gtk) }
+    /// The children it places, an anchor's in the anchor's place.
+    var arranged: [GTKElement] { element.arrangedChildren.map(\.gtk) }
     func value(_ property: Prop) -> HostValue? { element.value(property) }
 
     // MARK: - The native half's part in a patch
@@ -61,12 +63,15 @@ final class GTKElement: NativeElement {
         arrangePages(changed: changed)
         offerContextMenu()
         offerButtonMenu()
+        configurePopover()
         host?.runtime.frames.follow(self, of: element, reads: view != nil && readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if changed.contains(.isPresented) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials) { groundSidebar() }
+        if changed.contains(.showsSidebarToggle) { composeChrome() }
     }
 
     func leave() {

@@ -109,7 +109,7 @@ final class DesignNotesTests: XCTestCase {
         return found
     }
 
-    /// Counted comment lines and counted lines, the licence header aside. What the editor shows on `.` is
+    /// Counted comment lines and counted lines, the license header aside. What the editor shows on `.` is
     /// not counted: the `///` above a public declaration, an enum case, or a member of a public protocol or extension.
     static func measure(_ text: String) -> (comments: Int, lines: Int) {
         var lines = text.components(separatedBy: "\n")
@@ -199,6 +199,6 @@ final class DesignNotesTests: XCTestCase {
     }
 
     private static func isPublic(_ line: String) -> Bool {
-        (" " + line).range(of: #"\spublic[\s(]"#, options: .regularExpression) != nil
+        (" " + line).range(of: #"\spublic[\s(]|^\s*(override\s+)?open\s"#, options: .regularExpression) != nil
     }
 }

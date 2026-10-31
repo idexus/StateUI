@@ -22,11 +22,14 @@ final class StateUIHost {
     /** The display turned or resized, or the theme changed. */
     static native void configured();
 
+    /** What stands over the activity's root on each edge, in pixels: the system's bars and a cutout, the keyboard. */
+    static native void insets(int left, int top, int right, int bottom, int keyboard);
+
     /** The user asked to go back; whether the host went. */
     static native boolean back();
 
-    /** The activity's lifecycle moved the application's phase. */
-    static native void phase(int phase);
+    /** The activity's lifecycle moved the application's phase - or only on its way to being made again. */
+    static native void phase(int phase, boolean beingMadeAgain);
 
     /** A frame of the display began at {@code time}, in nanoseconds of the monotonic clock. */
     static native void frame(long time);
@@ -36,6 +39,12 @@ final class StateUIHost {
 
     /** A view was held down long: whether the view took the long press. */
     static native boolean longClicked(long view);
+
+    /** A screen reader performed one of a view's actions, by its words: whether the view took it. */
+    static native boolean accessibilityActed(long view, String action);
+
+    /** A screen reader stepped a view up or down: whether the view took the step. */
+    static native boolean accessibilityStepped(long view, boolean up);
 
     /** A tab was chosen, by its place among the tabs. */
     static native void tabSelected(long view, int tab);
@@ -79,13 +88,16 @@ final class StateUIHost {
     /** A scroller moved. */
     static native void scrolled(long view);
 
+    /** The user pulled a view to refresh it: whether its spinner stays. */
+    static native boolean refreshPulled(long view);
+
     /** A finger took hold of a view, or let go of it. */
     static native void held(long view, boolean holding);
 
     /** The user opened a view's list, calendar or clock. */
     static native void opened(long view);
 
-    /** A view's list, calendar or clock closed. */
+    /** A view's list, calendar, clock or popover closed. */
     static native void closed(long view);
 
     /** The user chose a day - year, month, day - or a time - hour, minute, 0 - in a date or time field. */
@@ -100,11 +112,17 @@ final class StateUIHost {
      */
     static native void answered(long ticket, boolean accepted, String words);
 
+    /** The choice of actions waiting under `ticket` was answered: the place of the action the user chose. */
+    static native void actionChosen(long ticket, int place);
+
     /** The document picker under `ticket` closed: the documents chosen, by address and name, or why it failed. */
     static native void filesChosen(long ticket, String[] addresses, String[] names, String failure);
 
     /** The document read under `ticket`: its bytes, or why they could not be read. */
     static native void fileRead(long ticket, byte[] bytes, String failure);
+
+    /** A request was answered - its status, its headers as names and values in turn, its body - or failed, why. */
+    static native void requestAnswered(long ticket, int status, String[] headers, byte[] body, String failure);
 
     /** A drag between views told the view: `StateUIDrags`'s kind, and the words a drop carried. */
     static native void dragHeard(long view, int kind, String words);
@@ -117,7 +135,7 @@ final class StateUIHost {
 
     /**
      * What the user did to a view, as `StateUIGestures` numbers its kind: a tap and its place in its run; a pinch's
-     * phase, its scale since the last and where it is centred; the pointer entering, moving, pressing, releasing or
+     * phase, its scale since the last and where it is centered; the pointer entering, moving, pressing, releasing or
      * leaving, and where - all in points.
      */
     static native void gestured(long view, int kind, int phase, float x, float y, float z);
@@ -148,11 +166,14 @@ final class StateUIHost {
     /** A view took the keyboard's focus, or lost it. */
     static native void focusChanged(long view, boolean focused);
 
-    /** The zone, the clock, the battery or the network changed: the host reads them again. */
+    /** The zone, the clock, the battery, the network or an accessibility setting changed: the host reads them again. */
     static native void environmentChanged();
 
     /** The activity is finishing - the user left it, or it finished itself: its window is going. */
     static native void destroying();
+
+    /** The system asked the application to open a link - its head's intent filter's scheme: its address. */
+    static native void linkOpened(String address);
 
     /** A web view's navigation started, and where it is going. */
     static native void webNavigating(long view, String address);

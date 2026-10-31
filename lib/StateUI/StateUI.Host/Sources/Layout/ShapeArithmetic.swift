@@ -16,7 +16,7 @@
 
     /// The affine transform - `a, b, c, d, tx, ty`, a point `(x, y)` going to `(a x + c y + tx, b x + d y + ty)` -
     /// that places a geometry whose bounds are `bounds` in a room `size`: scaled as `aspect` says - to fit keeping
-    /// its proportions, to cover, each axis on its own, or not at all - centred, then moved by the shape's own
+    /// its proportions, to cover, each axis on its own, or not at all - centered, then moved by the shape's own
     /// `transform`, as a transform moves a view after its layout.
     public static func placement(
         of bounds: Rect, in size: LayoutSize, aspect: ContentMode, transform: [Double]?

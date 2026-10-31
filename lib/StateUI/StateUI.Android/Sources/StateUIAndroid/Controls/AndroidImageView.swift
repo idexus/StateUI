@@ -79,7 +79,7 @@ final class AndroidImageView: AndroidView {
 
         let bitmap = AndroidPictures.take(picture, sample: needed)
         // Drawn at the host's density, as the picture was read and measured, not at the system's; an icon in the
-        // theme's colour.
+        // theme's color.
         Java.frame {
             let drawable = bitmap.flatMap { bitmap in
                 Java.callStaticObject(

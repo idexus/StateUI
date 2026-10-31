@@ -174,7 +174,7 @@ extension WinUIView {
         return (frame.x.rounded(), frame.y.rounded(), frame.width.rounded(), frame.height.rounded())
     }
 
-    /// The colours WinUI draws the element in at `points`, in DIPs of it, as ARGB - premultiplied, so a colour
+    /// The colors WinUI draws the element in at `points`, in DIPs of it, as ARGB - premultiplied, so a color
     /// drawn half opaque reads half as bright.
     func pixels(at points: [(Double, Double)]) -> [UInt32] {
         let flat = points.flatMap { [$0.0, $0.1] }
@@ -200,7 +200,7 @@ extension WinUIView {
         return tip
     }
 
-    /// The transform WinUI holds: translation, rotation, scale and the centre it turns about, in DIPs and degrees.
+    /// The transform WinUI holds: translation, rotation, scale and the center it turns about, in DIPs and degrees.
     var drawnTransform: (translationX: Double, translationY: Double, rotation: Double,
                          scaleX: Double, scaleY: Double, centerX: Double, centerY: Double) {
         var values = [Double](repeating: 0, count: 7)
@@ -219,16 +219,16 @@ extension WinUIView {
         return String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
     }
 
-    /// What assistive technology meets of the view, as its automation peer says it: its name, help text and
-    /// automation id.
-    var automationWords: (name: String, help: String, identifier: String) {
+    /// What assistive technology meets of the view, as its automation peer says it: its name, help text, automation
+    /// id and value.
+    var automationWords: (name: String, help: String, identifier: String, value: String) {
         func read(_ what: Int32) -> String {
             let length = Int(stateui_winui_automation_words(handle, what, nil, 0))
             var bytes = [CChar](repeating: 0, count: length + 1)
             _ = stateui_winui_automation_words(handle, what, &bytes, Int32(bytes.count))
             return String(decoding: bytes.prefix(length).map { UInt8(bitPattern: $0) }, as: UTF8.self)
         }
-        return (read(0), read(1), read(2))
+        return (read(0), read(1), read(2), read(3))
     }
 
     /// And its heading level, whether it is a control element and a content element, and how many within it are met.
@@ -282,7 +282,7 @@ extension WinUIPickerView {
 }
 
 extension WinUIToggleView {
-    /// Turns the control as UI Automation does: a switch or a check box toggled, a radio button chosen.
+    /// Turns the control as UI Automation does: a switch or a check box toggled.
     func toggle() {
         stateui_winui_toggle_press(handle)
     }

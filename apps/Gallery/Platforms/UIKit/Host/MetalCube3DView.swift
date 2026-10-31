@@ -29,7 +29,7 @@ final class MetalCube3DView: MTKView {
         didSet { if cubeSize != oldValue { drawIfStill() } }
     }
 
-    /// Which colour the cube is painted, as the member number the Swift side
+    /// Which color the cube is painted, as the member number the Swift side
     /// sends: teal 0, amber 1, violet 2. Anything else is teal.
     var color: Int32 = 0 {
         didSet { if color != oldValue { drawIfStill() } }
@@ -55,7 +55,7 @@ final class MetalCube3DView: MTKView {
     ]
 
     /// The eight corners as six faces, each face two triangles. `xyz` is the
-    /// corner and `w` is how brightly that face takes the colour - which is
+    /// corner and `w` is how brightly that face takes the color - which is
     /// what makes a solid read as a solid.
     private static let corners: [SIMD4<Float>] = {
         let faces: [(SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, Float)] = [
@@ -144,14 +144,14 @@ final class MetalCube3DView: MTKView {
     }
 
     /// One frame: the angle the clock has reached, the cube at the size and
-    /// colour it was given.
+    /// color it was given.
     override func draw(_ rect: CGRect) {
         let now = CACurrentMediaTime()
         let elapsed = now - lastTime
         lastTime = now
 
         // Only a turning cube moves with the clock. Stopped, the frame drawn
-        // for a changed size or colour finds the angle where it was left.
+        // for a changed size or color finds the angle where it was left.
         if isSpinning {
             angle += elapsed
         }
@@ -193,7 +193,7 @@ final class MetalCube3DView: MTKView {
             * Self.scaling(scale)
     }
 
-    /// The colour a member number names, opaque - teal for a number naming
+    /// The color a member number names, opaque - teal for a number naming
     /// none, so a value from outside the vocabulary paints rather than
     /// vanishes.
     private static func paint(_ color: Int32) -> SIMD4<Float> {
@@ -212,7 +212,7 @@ final class MetalCube3DView: MTKView {
     // listing: end
 
     /// Draws the one frame a stopped cube needs to show a changed size or
-    /// colour. A turning one is already drawing.
+    /// color. A turning one is already drawing.
     private func drawIfStill() {
         guard isPaused, window != nil else { return }
 

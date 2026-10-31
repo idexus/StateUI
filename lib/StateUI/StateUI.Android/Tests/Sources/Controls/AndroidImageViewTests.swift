@@ -15,11 +15,11 @@ final class AndroidImageViewTests: XCTestCase {
             ("testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows", testAPictureShownSmallKeepsAsManyOfItsPixelsAsTheViewShows),
             ("testAPictureNoViewShowsIsLetGo", testAPictureNoViewShowsIsLetGo),
             ("testEveryIconIsADrawableOfTheApplications", testEveryIconIsADrawableOfTheApplications),
-            ("testAnIconIsDrawnInTheWordsColour", testAnIconIsDrawnInTheWordsColour),
+            ("testAnIconIsDrawnInTheWordsColor", testAnIconIsDrawnInTheWordsColor),
         ]
     }
 
-    /// The colour `test_wide.svg` is drawn in.
+    /// The color `test_wide.svg` is drawn in.
     static let slate: UInt32 = 0xFF33_6699
 
     /// An SVG of 40 by 20 points, a PNG of 6 by 4 pixels kept at a pixel a point, and a name with no picture.
@@ -140,8 +140,8 @@ final class AndroidImageViewTests: XCTestCase {
         }
     }
 
-    /// An icon standing alone is drawn in the words' colour, as the label beside it is: its colour, as opaque.
-    func testAnIconIsDrawnInTheWordsColour() throws {
+    /// An icon standing alone is drawn in the words' color, as the label beside it is: its color, as opaque.
+    func testAnIconIsDrawnInTheWordsColor() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 HStack {
@@ -156,14 +156,14 @@ final class AndroidImageViewTests: XCTestCase {
             let image = try XCTUnwrap(host.views(AndroidImageView.self).first)
             let label = try XCTUnwrap(host.views(AndroidTextView.self).first)
             let ink = UInt32(bitPattern: Java.callStaticInt(TestJava.testPictures, TestJava.imageInk, .object(image.reference)))
-            let colour = UInt32(bitPattern: Java.callInt(label.reference, AndroidDriver.getCurrentTextColor))
+            let color = UInt32(bitPattern: Java.callInt(label.reference, AndroidDriver.getCurrentTextColor))
             XCTAssertGreaterThan(ink >> 24, 0, "the icon is drawn")
             // A partly opaque pixel is kept premultiplied: its channels come back a few steps apart.
             for shift: UInt32 in [0, 8, 16] {
-                let (drawn, given) = (Int(ink >> shift & 0xFF), Int(colour >> shift & 0xFF))
-                XCTAssertLessThanOrEqual(abs(drawn - given), 4, "\(String(ink, radix: 16)) for \(String(colour, radix: 16))")
+                let (drawn, given) = (Int(ink >> shift & 0xFF), Int(color >> shift & 0xFF))
+                XCTAssertLessThanOrEqual(abs(drawn - given), 4, "\(String(ink, radix: 16)) for \(String(color, radix: 16))")
             }
-            XCTAssertEqual(ink >> 24, colour >> 24, "\(String(ink, radix: 16)) for \(String(colour, radix: 16))")
+            XCTAssertEqual(ink >> 24, color >> 24, "\(String(ink, radix: 16)) for \(String(color, radix: 16))")
         }
     }
 }

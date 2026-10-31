@@ -27,8 +27,10 @@
                 Covered(TabViewContract.selectedTab),
             ]) { s in
                 s.start {
-                    TabView([0, 1]) { tab in Text("Tab \(tab)").id("tab\(tab)") }
-                        .selection(State(wrappedValue: 1).projectedValue)
+                    TabView([0, 1]) { tab in
+                        Text("Tab \(tab)").id("tab\(tab)")
+                    }
+                    .selection(State(wrappedValue: 1).projectedValue)
                 }
                 let tabs = try s.element(ofType: TabViewContract.nodeType)
 

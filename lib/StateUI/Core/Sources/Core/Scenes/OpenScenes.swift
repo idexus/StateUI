@@ -88,7 +88,7 @@ final class OpenScenes {
     }
 
     /// Whether `record`'s scene declares windows of `type`.
-    func declares(_ type: WindowType, in record: SceneRecord) -> Bool {
+    func declares(_ type: KeyName, in record: SceneRecord) -> Bool {
         scenes.map { $0.windows[record.declaration].declaration(of: type) != nil } ?? false
     }
 
@@ -114,13 +114,13 @@ final class OpenScenes {
     /// Opens a window of `type` - nil for one more of the group launch and *File ▸ New Window* make a window
     /// of - for `value`, written `text`, in the scene declaring it, which opens with it where it does not stand.
     /// Design: docs/design/core/scenes.md#opening-windows
-    func open(_ type: WindowType?, value: AnyHashable? = nil, text: String? = nil, of valueType: Any.Type? = nil)
+    func open(_ type: KeyName?, value: AnyHashable? = nil, text: String? = nil, of valueType: Any.Type? = nil)
         throws {
         guard Self.opensWindows else { throw WindowError.unsupported }
         guard let scenes else { throw WindowError.unsupported }
 
         let (index, declaration) = try Self.declaration(of: type, in: scenes)
-        guard declaration.takes(valueType) else { throw WindowError.wrongValue(type ?? declaration.type!) }
+        guard declaration.takes(valueType) else { throw WindowError.wrongValue(Name((type ?? declaration.type!).name)) }
 
         if let standing = standing(index), standing.holds(declaration, value: value) {
             throw WindowError.alreadyOpen
@@ -130,18 +130,18 @@ final class OpenScenes {
     }
 
     /// Closes the window of `type` for `value` - every window of a group of no value.
-    func close(_ type: WindowType, value: AnyHashable? = nil, of valueType: Any.Type? = nil) throws {
+    func close(_ type: KeyName, value: AnyHashable? = nil, of valueType: Any.Type? = nil) throws {
         guard let scenes else { throw WindowError.notOpen }
 
         let (index, declaration) = try Self.declaration(of: type, in: scenes)
-        guard declaration.takes(valueType) else { throw WindowError.wrongValue(type) }
+        guard declaration.takes(valueType) else { throw WindowError.wrongValue(Name(type.name)) }
         guard let record = standing(index) else { throw WindowError.notOpen }
 
         try record.close(type, value: value)
     }
 
     /// The scene declaring windows of `type` and the declaration - the window launch opens for nil.
-    private static func declaration(of type: WindowType?, in scenes: Scenes) throws -> (Int, DeclaredWindows) {
+    private static func declaration(of type: KeyName?, in scenes: Scenes) throws -> (Int, DeclaredWindows) {
         guard let type else {
             let index = scenes.launching
             guard let opening = scenes.windows[index].opening else { throw WindowError.unsupported }
@@ -149,7 +149,7 @@ final class OpenScenes {
         }
 
         guard let index = scenes.index(declaring: type), let declared = scenes.windows[index].declaration(of: type)
-        else { throw WindowError.undeclared(type) }
+        else { throw WindowError.undeclared(Name(type.name)) }
 
         return (index, declared)
     }
@@ -158,7 +158,7 @@ final class OpenScenes {
 
     /// The kind a scene declares under `name` - a kind the platform kept with a window, read as a file's word; nil
     /// where none is.
-    private static func declaredType(named name: String, in scenes: Scenes) -> WindowType? {
+    private static func declaredType(named name: String, in scenes: Scenes) -> KeyName? {
         scenes.windows.lazy.flatMap(\.declared).compactMap(\.type).first { $0.name == name }
     }
 

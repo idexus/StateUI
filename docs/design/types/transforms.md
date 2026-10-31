@@ -7,7 +7,7 @@
 ## One transform
 
 A transform is a chain of parts - move, turn, size, turn away, lean - each
-applied about the view's centre, after the layout has placed it, in the
+applied about the view's center, after the layout has placed it, in the
 order written. Each part applies to what the parts before it made, which is
 why the order matters: `.rotate(45).translate(100, 0)` moves the turned view
 to the right, while `.translate(100, 0).rotate(45)` swings the move round
@@ -32,7 +32,7 @@ host.
 
 ## Five view properties
 
-On a view the matrix comes to five ordinary properties about its centre:
+On a view the matrix comes to five ordinary properties about its center:
 `translationX`, `translationY`, `rotation`, `scaleX` and `scaleY`. A changed
 transform therefore animates like any other value, every part of it at once.
 The view's own `scale` is left alone, so a `.scale(_:)` written on the view
@@ -50,7 +50,10 @@ to it, and the slant alone is left out. `skew` on a view is read the same
 way: a lean along an unturned view changes nothing, and a lean down reads back
 as a turn and a sizing. A geometry is redrawn rather than carried by view
 properties, so `.geometryTransform(_:)` on a shape draws the whole matrix,
-lean included.
+lean included. A motion layout's placements cross as the same five numbers,
+and a change travelling or a pose blended between keyframes moves those five
+alone, as does a view's hit test (`ViewTransform.drawn`): what travels and
+what is hit is what is drawn.
 
 ## Turned away drawn flat
 

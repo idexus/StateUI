@@ -58,11 +58,13 @@ final class AndroidActToolkit: ActToolkit {
         return minutes == Int32.min ? nil : Int(minutes)
     }
 
-    /// Puts a question to the user in the platform's own dialog; its answer comes back by its ticket.
+    /// Puts a question to the user in the platform's own dialog over the activity's window - the one asked, which
+    /// is the one it shows; its answer comes back by its ticket.
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over asked: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = AndroidRenderer.window else { return nil }
+        guard let window = AndroidRenderer.window(asked: asked) else { return nil }
         let ticket = dialogs.hold(answered)
         Java.frame {
             let context = context
@@ -78,11 +80,11 @@ final class AndroidActToolkit: ActToolkit {
                     .object(Java.string(question.title ?? "")), .object(Java.string(question.message ?? "")),
                     .object(Java.string(question.accept)), .object(Java.string(question.cancelling)))
             case .chooseAction:
+                // Android's list of actions draws no dangerous one apart.
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.chooseAction, .object(context), .long(ticket),
-                    .object(Java.string(question.title ?? "")), .object(question.cancel.flatMap(Java.string)),
-                    .object(question.destruction.flatMap(Java.string)),
-                    .object(Java.strings(question.choices)))
+                    .object(Java.string(question.title ?? "")), .object(Java.strings(question.choices)),
+                    .object(Java.string(question.cancelling)))
             case .prompt:
                 Java.callStatic(
                     JavaAPI.dialogs, JavaAPI.prompt, .object(context), .long(ticket),
@@ -109,19 +111,86 @@ final class AndroidActToolkit: ActToolkit {
         dialogs.take(ticket)?(.success(HostQuestion.Given(accepted: accepted, words: words)))
     }
 
+    /// The choice of actions under `ticket` was answered by the action at `place`.
+    func actionChosen(ticket: Int64, place: Int) {
+        dialogs.take(ticket)?(.success(HostQuestion.Given(chosen: place)))
+    }
+
+    /// What the host told the screen reader, in order, where a test asked for it with `[]`; nil keeps nothing.
+    var announcedForTesting: [String]?
+
+    /// What the user is offered to share now, and whether the activity has left for the chooser since.
+    private(set) var sharing: (shared: HostShare, answered: (Result<Bool, ActFailure>) -> Void, left: Bool)?
+
+    /// Whether a test holds the chooser unshown and answers it itself (`answerShareForTesting`).
+    var holdsShareForTesting = false
+
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let element = AndroidRenderer.window(asked: window) else { return nil }
+        sharing = (shared, answered, false)
+        if !holdsShareForTesting {
+            Java.frame {
+                Java.callStatic(JavaAPI.share, JavaAPI.shareOffer, .object(context), .object(Java.string(shared.together)))
+            }
+        }
+        return element
+    }
+
+    /// The activity's phase turned: a chooser it left for is over once it comes back - shared where the user picked
+    /// a target, as Android tells nothing of a cancel.
+    /// Design: docs/design/platforms/android/runtime.md#sharing
+    func phaseTurned(_ phase: ApplicationPhase) {
+        guard var waiting = sharing else { return }
+        guard phase == .active else {
+            waiting.left = true
+            sharing = waiting
+            return
+        }
+        guard waiting.left else { return }
+        sharing = nil
+        waiting.answered(.success(Java.callStaticBool(JavaAPI.share, JavaAPI.shareTaken, .object(context))))
+    }
+
+    /// A test's answer for the user: shared, or cancelled.
+    func answerShareForTesting(shared: Bool) {
+        guard let waiting = sharing else { return }
+        sharing = nil
+        waiting.answered(.success(shared))
+    }
+
+    func writeClipboard(_ words: String) {
+        Java.frame { Java.callStatic(JavaAPI.clipboard, JavaAPI.clipboardWrite, .object(context), .object(Java.string(words))) }
+    }
+
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        let words: String? = Java.frame {
+            Java.callStaticObject(JavaAPI.clipboard, JavaAPI.clipboardRead, .object(context)).map { Java.text($0) }
+        }
+        answered(.success(words))
+    }
+
     func announce(_ words: String) {
+        announcedForTesting?.append(words)
         Java.frame {
             Java.call(root, JavaAPI.announceForAccessibility, .object(Java.string(words)))
         }
     }
 
-    /// Shows the application in `theme` as its own night mode, which the system keeps and every activity takes.
+    /// Shows the application in `theme` as its own night mode, which every activity takes: the system keeps it from
+    /// Android 12, the host before.
     func useColorScheme(_ theme: ColorScheme) {
         Java.callStatic(JavaAPI.environment, JavaAPI.useNightMode, .object(AndroidRenderer.context), .int(theme.rawValue))
     }
 
-    func hideOnScreenKeyboard() -> Bool {
-        Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
+    /// Keeps the theme's accent, set before the activity starts - from Android 12 the user's.
+    func useAccentColor(_ accent: Color?) -> Bool { false }
+
+    /// Takes the keyboard down from whatever holds the focus in the activity's window, the one asked.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        guard AndroidRenderer.window(asked: window) != nil else { return false }
+        return Java.callStaticBool(JavaAPI.environment, JavaAPI.hideKeyboard, .object(root))
     }
 
     func focus(_ element: MountedElement) -> Bool? {
@@ -137,7 +206,7 @@ final class AndroidActToolkit: ActToolkit {
 
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
-        case .persistValue: AndroidPersistence.keep(call, core: core, context: context)
+        case .persistValue: AndroidPersistence.keep(call, context: context)
         case .persistSceneValue: AndroidRenderer.shared?.keepSceneValue(call)
         default: return false
         }

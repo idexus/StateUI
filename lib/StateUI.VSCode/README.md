@@ -95,7 +95,7 @@ says **no host**, a launch says why it runs nothing, and the editor and
   otherwise - and started under `lldb-dap`. On Android
   `.scripts/Android/run-app.sh` builds the head, installs it on the device
   chosen below and starts it, and its terminal then follows the application's
-  log, in colour, until the task is stopped. StateUI:
+  log, in color, until the task is stopped. StateUI:
   Debug then attaches `lldb-dap` to the application through the NDK's
   `lldb-server`, which the script starts in the application's sandbox: a
   breakpoint is reached from the moment it attaches. StateUI: Release, and Run

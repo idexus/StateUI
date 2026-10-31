@@ -23,8 +23,14 @@ extension WinUIDriver {
         return view.menus
     }
 
-    /// The flyout the WinUI button standing for `button` opens, or the context menu it holds.
+    /// The flyout the WinUI button standing for `button` opens, or the context menu it holds - a bar's button, its
+    /// button's on the title bar.
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton {
+            let titleBar = try window(of: button).titleBar
+            guard let place = try actionPlace(of: button) else { throw DriverCannot("read the menu \(button.type.name) opens") }
+            return WinUIStrings.read { stateui_winui_title_bar_action_menu(titleBar.handle, Int32(place), $0, $1) }
+        }
         guard let view = (button.native as? WinUIElement)?.view as? WinUIButtonView, view.opening != .none else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
@@ -80,6 +86,11 @@ extension WinUIDriver {
         return words.isEmpty ? [] : words.split(separator: "\u{1F}", omittingEmptySubsequences: false).map(String.init)
     }
 
+    /// What the share sheet the host holds offers: its words, then its link on a line of its own.
+    func shared(over element: MountedElement) throws -> String? {
+        renderer?.actToolkit.sharing?.shared.together
+    }
+
     func fileDialog(over element: MountedElement) throws -> FileDialog? {
         switch stateui_winui_file_dialog() {
         case 0: .open
@@ -89,15 +100,20 @@ extension WinUIDriver {
     }
 
     func launched() throws -> [String] {
-        let targets = WinUIStrings.read { stateui_winui_launched($0, $1) }
         // An address as written; a file - a path, no scheme - by its name.
-        return targets.isEmpty ? [] : targets.split(separator: "\u{1F}", omittingEmptySubsequences: false).map { target in
+        Self.launches().dropFirst(launchesBefore).map { target in
             target.contains("://") ? String(target) : String(target.split { $0 == "\\" || $0 == "/" }.last ?? target)
         }
     }
 
+    /// Everything the relay launched since it started, in order.
+    static func launches() -> [Substring] {
+        let targets = WinUIStrings.read { stateui_winui_launched($0, $1) }
+        return targets.isEmpty ? [] : targets.split(separator: "\u{1F}", omittingEmptySubsequences: false)
+    }
+
     func color(of element: MountedElement, at point: Point) throws -> Color? {
-        guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read the colour of \(element.type.name)") }
+        guard let view = (element.native as? WinUIElement)?.view else { throw DriverCannot("read the color of \(element.type.name)") }
         // A shape or a picture renders only what it draws, from the first thing drawn; a layout renders whole from
         // its corner, so a point of any other view is read in the layout placing it, where StateUI placed the view.
         renderer?.layOut()
@@ -116,14 +132,9 @@ extension WinUIDriver {
         WinUIView.liveCount
     }
 
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
-        if inScene { return WinUIPersistence.readScenes().scenes.first?.values[key] }
-        let kept = WinUIPersistence.read()
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Int.self),
-            PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { kept.restored(for: [$0])[key] }.first
+    func kept(_ key: String, inScene: Bool) throws -> String? {
+        if inScene { return WinUIPersistence.readScenes().scenes.first?.values[key]?.string }
+        return WinUIPersistence.read().words[key]
     }
 
     /// The question showing over the window whose content is `content`, as WinUI's dialog holds it; nil for none.
@@ -146,13 +157,25 @@ extension WinUIDriver {
         var menu = element
         while let parent = menu.parent, ![.contextMenu, .buttonMenu, .page].contains(parent.type) { menu = parent }
         guard let top = menu.parent else { return nil }
-        let items = Self.flat(top).filter { $0.type == .menuItem }
+        let items = Self.flat(top).filter { Self.menuEntries.contains($0.type) }
         let index = items.firstIndex { $0 === element } ?? 0
         if top.type == .contextMenu || top.type == .buttonMenu, let owner = (top.parent?.native as? WinUIElement)?.view {
             return (owner, index)
         }
         guard let bar = renderer?.window?.menuBar else { return nil }
         return (bar, index)
+    }
+
+    /// The bar's button whose menu holds a menu's item, and the item's place among that menu's items.
+    func barMenuPlace(of element: MountedElement) -> (button: MountedElement, index: Int)? {
+        var menu = element
+        while let parent = menu.parent, parent.type != .buttonMenu {
+            guard parent.type == .menu else { return nil }
+            menu = parent
+        }
+        guard let slot = menu.parent, let button = slot.parent, button.type == .toolbarButton else { return nil }
+        let items = Self.flat(slot).filter { Self.menuEntries.contains($0.type) }
+        return items.firstIndex { $0 === element }.map { (button, $0) }
     }
 
     /// `element` and everything under it, in the order a menu lists them.
@@ -164,8 +187,12 @@ extension WinUIDriver {
     static func place(of element: MountedElement, among kind: NodeType) -> Int {
         var top = element
         while let parent = top.parent, ![.contextMenu, .buttonMenu, .page].contains(parent.type) { top = parent }
-        return flat(top.parent ?? top).filter { $0.type == kind }.firstIndex { $0 === element } ?? 0
+        let alike: Set<NodeType> = menuEntries.contains(kind) ? menuEntries : [kind]
+        return flat(top.parent ?? top).filter { alike.contains($0.type) }.firstIndex { $0 === element } ?? 0
     }
+
+    /// The kinds of a menu's entries WinUI lists as its items: an action's and a setting's.
+    static let menuEntries: Set<NodeType> = [.menuItem, .menuToggle]
 
     /// A menu's entries as WinUI's reader writes them - "Copy;-;!Paste;Share[Mail]" - each by its caption, whether
     /// it can be chosen and whether it opens a submenu; separators left out.

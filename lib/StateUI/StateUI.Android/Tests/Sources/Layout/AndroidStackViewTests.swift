@@ -31,7 +31,7 @@ final class AndroidStackViewTests: XCTestCase {
         [
             ("testAStatedWidthIsMeasuredWithinItsRoom", testAStatedWidthIsMeasuredWithinItsRoom),
             ("testAStackPlacesItsChildrenWhereTheArithmeticSays", testAStackPlacesItsChildrenWhereTheArithmeticSays),
-            ("testAStackWrapsItsChildrenWhereThePageCentresIt", testAStackWrapsItsChildrenWhereThePageCentresIt),
+            ("testAStackWrapsItsChildrenWhereThePageCentersIt", testAStackWrapsItsChildrenWhereThePageCentersIt),
             ("testALayoutDoesNotCutItsChildrenOff", testALayoutDoesNotCutItsChildrenOff),
             ("testAButtonWhoseWordsGrowIsMeasuredWider", testAButtonWhoseWordsGrowIsMeasuredWider),
             ("testARowRightToLeftFillsFromTheRightAndFollowsItsParentsTurn", testARowRightToLeftFillsFromTheRightAndFollowsItsParentsTurn),
@@ -59,7 +59,7 @@ final class AndroidStackViewTests: XCTestCase {
         }
     }
 
-    func testAStackWrapsItsChildrenWhereThePageCentresIt() throws {
+    func testAStackWrapsItsChildrenWhereThePageCentersIt() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
                 VStack {

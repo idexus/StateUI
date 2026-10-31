@@ -23,55 +23,52 @@ extension UIKitDriver {
         }
     }
 
-    /// Where a bar's action stands: on the bar as an item of its own, or in the overflow's menu - read off the
-    /// navigation item of the page it stands on; nil where no page's bar holds it.
-    static func placement(of action: UIAction, under element: MountedElement) -> HostValue? {
-        var each = element.parent
-        while let page = each {
-            if let item = (page.native as? UIKitElement)?.controller?.navigationItem {
-                let items = (item.leadingItemGroups + item.trailingItemGroups).flatMap(\.barButtonItems)
-                if items.contains(where: { $0.primaryAction?.identifier == action.identifier }) {
-                    return ToolbarItemPlacement.bar.propValue
-                }
-                let overflow = items.filter { $0.primaryAction == nil }.flatMap { $0.menu?.children ?? [] }
-                if overflow.contains(where: { ($0 as? UIAction)?.identifier == action.identifier }) {
-                    return ToolbarItemPlacement.overflow.propValue
-                }
-            }
-            each = page.parent
-        }
-        return nil
-    }
-
     /// What a page or an arrangement of pages holds: its tab's title and picture where it stands on a tab, its bar,
     /// a tabbed view's tab and a split view's sidebar; nil for any other element.
     func pageHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
-        if element.type == .menuItem, let command = menuCommand(of: element) {
+        if [.menuItem, .menuToggle].contains(element.type), let command = menuCommand(of: element) {
             switch property {
             case .text: return command.title.propValue
             case .icon: return command.image?.accessibilityIdentifier.map { .string($0) }
             case .isEnabled: return (!command.attributes.contains(.disabled)).propValue
-            case .isDestructive: return command.attributes.contains(.destructive).propValue
+            case .role: return (command.attributes.contains(.destructive) ? ActionRole.destructive : .normal).propValue
             case .isOn: return (command.state == .on).propValue
             case .accessibilityIdentifier: return command.accessibilityIdentifier.map { .string($0) }
             case .keyboardShortcut: return UIKitKeys.shortcut(of: command)?.propValue
             default: break
             }
         }
-        if element.type == .menuItem || element.type == .toolbarItem, let action = menuAction(of: element) {
+        // Words on a bar: its label, its picture before it.
+        if element.type == .toolbarLabel, let label = (element.native as? UIKitElement)?.barLabel {
             switch property {
-            case .keyboardShortcut where element.type == .toolbarItem: return element.value(.keyboardShortcut)
-            case .text: return action.title.propValue
-            case .icon: return action.image?.accessibilityIdentifier.map { .string($0) }
-            case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
-            case .isDestructive: return action.attributes.contains(.destructive).propValue
-            case .isOn: return (action.state == .on).propValue
-            case .accessibilityIdentifier: return action.accessibilityIdentifier.map { .string($0) }
-            case .placement: return Self.placement(of: action, under: element)
+            case .text: return label.words.text?.propValue
+            case .icon: return label.picture.image?.accessibilityIdentifier.map { .string($0) }
             default: break
             }
         }
-        if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {
+        if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle, .toolbarLabel].contains(element.type),
+           let action = menuAction(of: element) {
+            switch property {
+            case .keyboardShortcut where [.toolbarButton, .toolbarToggle].contains(element.type):
+                return element.value(.keyboardShortcut)
+            // A setting on the bar stands selected; one behind the overflow, checked.
+            case .isOn where element.type == .toolbarToggle:
+                return (barButton(answering: action)?.isSelected ?? (action.state == .on)).propValue
+            case .text: return action.title.propValue
+            case .icon: return action.image?.accessibilityIdentifier.map { .string($0) }
+            case .isEnabled: return (!action.attributes.contains(.disabled)).propValue
+            case .role: return (action.attributes.contains(.destructive) ? ActionRole.destructive : .normal).propValue
+            case .isOn: return (action.state == .on).propValue
+            case .accessibilityIdentifier: return action.accessibilityIdentifier.map { .string($0) }
+            default: break
+            }
+        }
+        if property == .barScrollEdge {
+            // The edge the page the arrangement shows has its scroller draw under the bar at its top.
+            return ((element.visiblePage?.native as? UIKitElement)?.controller as? UIKitPageController)?.topEdge.propValue
+        }
+        if [.barBackground, .barForegroundColor].contains(property)
+            || property == .subtitle && element.type == .page {
             return Self.barHolds(property, of: element)
         }
         guard NodeType.pageTypes.contains(element.type), let controller = (element.native as? UIKitElement)?.controller
@@ -82,6 +79,7 @@ extension UIKitDriver {
         case .icon where onTab: return controller.tabBarItem.image?.accessibilityIdentifier.map { .string($0) }
         case .title: return (controller.navigationItem.title ?? "").propValue
         case .showsBackButton: return (!controller.navigationItem.hidesBackButton).propValue
+        case .showsCloseButton: return (Self.closeAction(on: controller) != nil).propValue
         // The bar shows the title where it holds no view in its place.
         case .showsTitle: return (controller.navigationItem.titleView == nil).propValue
         case .backButtonTitle: return controller.navigationItem.backButtonTitle?.propValue
@@ -94,13 +92,16 @@ extension UIKitDriver {
         case .showsSidebar:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.displayMode != .secondaryOnly).propValue
+        case .showsSidebarToggle:
+            guard let split = controller as? UISplitViewController else { return nil }
+            return (split.displayModeButtonVisibility != .never).propValue
         case .sidebarOverlays:
             guard let split = controller as? UISplitViewController else { return nil }
             return (split.splitBehavior == .overlay).propValue
-        case .sidebarBackground, .flyoutBackground:
+        case .sidebarBackground, .sidebarOverlayBackground:
             // The sidebar page's view in the place it stands; the other place's material as the split view says it.
             guard let split = controller as? UIKitSplitViewController else { return nil }
-            guard split.overlays == (property == .flyoutBackground) else {
+            guard split.overlays == (property == .sidebarOverlayBackground) else {
                 return element.sidebarMaterial(over: !split.overlays).paint
             }
             let sidebar = (element.children.first?.native as? UIKitElement)?.controller
@@ -111,12 +112,12 @@ extension UIKitDriver {
     }
 
     /// What the bar an arrangement declares stands on: a tabbed view's tab bar, else the bar of the page it shows -
-    /// its colour, the colour of its title, and the line under the title.
+    /// its material, the color of its title, and the line under a page's title.
     private static func barHolds(_ property: Prop, of element: MountedElement) -> HostValue? {
         if let tabs = (element.native as? UIKitElement)?.controller as? UITabBarController {
             let appearance = tabs.tabBar.standardAppearance
             switch property {
-            case .barBackgroundColor: return appearance.backgroundColor.map { color($0).propValue }
+            case .barBackground: return material(of: appearance, asked: element.barMaterial.painted)
             case .barForegroundColor:
                 let words = appearance.stackedLayoutAppearance.selected.titleTextAttributes[.foregroundColor]
                 return (words as? UIColor).map { color($0).propValue }
@@ -125,12 +126,56 @@ extension UIKitDriver {
         }
         guard let item = (element.visiblePage?.native as? UIKitElement)?.controller?.navigationItem else { return nil }
         switch property {
-        case .barBackgroundColor: return item.standardAppearance?.backgroundColor.map { color($0).propValue }
+        case .barBackground:
+            return item.standardAppearance.flatMap { material(of: $0, asked: element.barMaterial.painted) }
         case .barForegroundColor:
             return (item.standardAppearance?.titleTextAttributes[.foregroundColor] as? UIColor).map { color($0).propValue }
-        case .barSubtitle: return item.subtitle.map { .string($0) }
+        case .subtitle: return item.subtitle.map { .string($0) }
         default: return nil
         }
+    }
+
+    /// What a bar's appearance stands on: the gradient its picture shows, UIKit's blur in one of its five thicknesses
+    /// under its tint, else its color.
+    private static func material(of appearance: UIBarAppearance, asked: HostValue?) -> HostValue? {
+        if let image = appearance.backgroundImage { return gradient(in: image, asked: asked) }
+        let tint = appearance.backgroundColor.map(color)
+        guard let effect = appearance.backgroundEffect, let thickness = Blur.Thickness.allCases.first(where: {
+            UIBlurEffect(style: UIKitBackdropView.style($0)).isEqual(effect)
+        }) else { return tint?.propValue }
+        let blur = Blur(thickness)
+        return Material.blur(tint.map(blur.tint) ?? blur).propValue
+    }
+
+    /// The gradient a bar's picture shows: `asked`, the line's gradient the tree asks of the bar, where the picture's
+    /// pixels show each of its stops' colors where the stop stands - the pixels decide, the tree's gradient says
+    /// where to look; nil where they show another.
+    private static func gradient(in image: UIImage, asked: HostValue?) -> HostValue? {
+        guard case .linear(let from, let to, let stops) = HostBrush(asked), let picture = image.cgImage,
+              let sRGB = CGColorSpace(name: CGColorSpace.sRGB)
+        else { return nil }
+        let (width, height) = (picture.width, picture.height)
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        let drawn = pixels.withUnsafeMutableBytes { bytes -> Bool in
+            guard let context = CGContext(
+                data: bytes.baseAddress, width: width, height: height, bitsPerComponent: 8, bytesPerRow: width * 4,
+                space: sRGB, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue)
+            else { return false }
+            context.draw(picture, in: CGRect(x: 0, y: 0, width: width, height: height))
+            return true
+        }
+        guard drawn else { return nil }
+        for stop in stops {
+            guard let wanted = stop.color.color else { return nil }
+            // The rows stand top first in memory.
+            let x = Int(((from.x + stop.offset * (to.x - from.x)) * Double(width - 1)).rounded())
+            let y = Int(((from.y + stop.offset * (to.y - from.y)) * Double(height - 1)).rounded())
+            let at = (y * width + x) * 4
+            let shown = [pixels[at], pixels[at + 1], pixels[at + 2]]
+            guard zip(shown, [wanted.red, wanted.green, wanted.blue]).allSatisfy({ abs(Int($0) - Int($1)) <= 3 })
+            else { return nil }
+        }
+        return asked
     }
 
     /// The user's acts on pages: the way back a stack's bar offers, a tab chosen on the tab bar, an action taken on
@@ -179,7 +224,7 @@ extension UIKitDriver {
             throw DriverCannot("go back in a window offering no way back")
         }
         switch way {
-        case .dismissSheet:
+        case .dismissSheets:
             // A user swipes a sheet down once UIKit shows it.
             let asked = controller.presentation.sheets.count
             if let root = controller.window?.rootViewController {
@@ -209,11 +254,46 @@ extension UIKitDriver {
         return count
     }
 
+    /// The close button's action on the bar over `controller`'s page; nil where it offers none.
+    static func closeAction(on controller: UIViewController) -> UIAction? {
+        controller.navigationItem.trailingItemGroups.flatMap(\.barButtonItems).lazy
+            .compactMap(\.primaryAction).first { $0.identifier == UIKitPageChrome.closeIdentifier }
+    }
+
     /// The controller presented last over `root`.
     private static func topSheet(over root: UIViewController) -> UIViewController? {
         var top = root.presentedViewController
         while let next = top?.presentedViewController { top = next }
         return top
+    }
+
+    /// The bar's button whose action is `action`; nil for one behind an overflow.
+    /// The menu a button on the bars the window shows opens, by its identifier.
+    func barMenu(identified identifier: UIMenu.Identifier) -> UIMenu? {
+        guard let window = renderer?.roster.windows.first?.1.window else { return nil }
+        func search(_ controller: UIViewController) -> UIMenu? {
+            if let menu = Self.barItems(of: controller).compactMap(\.menu).first(where: { $0.identifier == identifier }) {
+                return menu
+            }
+            return controller.children.lazy.compactMap(search).first
+        }
+        return window.rootViewController.flatMap(search)
+    }
+
+    private func barButton(answering action: UIAction) -> UIBarButtonItem? {
+        guard let window = renderer?.roster.windows.first?.1.window else { return nil }
+        func search(_ controller: UIViewController) -> UIBarButtonItem? {
+            if let item = Self.barItems(of: controller).first(where: { $0.primaryAction === action }) { return item }
+            return controller.children.lazy.compactMap(search).first
+        }
+        return window.rootViewController.flatMap(search)
+    }
+
+    /// The items on `controller`'s bars: at its top, and at its foot while its stack shows the toolbar.
+    private static func barItems(of controller: UIViewController) -> [UIBarButtonItem] {
+        let top = controller.navigationItem.leadingItemGroups + controller.navigationItem.trailingItemGroups
+        let foot = controller.navigationController?.isToolbarHidden == false ? controller.toolbarItems ?? [] : []
+        return top.flatMap(\.barButtonItems) + foot
     }
 
     /// Every action on the bars the window shows - its buttons', and its overflow menus' entries - and whether the
@@ -222,8 +302,7 @@ extension UIKitDriver {
         guard let window = renderer?.roster.windows.first?.1.window else { return [] }
         var found: [(action: UIAction, enabled: Bool)] = []
         func search(_ controller: UIViewController) {
-            let groups = controller.navigationItem.leadingItemGroups + controller.navigationItem.trailingItemGroups
-            for item in groups.flatMap(\.barButtonItems) {
+            for item in Self.barItems(of: controller) {
                 if let action = item.primaryAction { found.append((action, item.isEnabled)) }
                 for case let entry as UIAction in item.menu?.children ?? [] {
                     found.append((entry, !entry.attributes.contains(.disabled)))

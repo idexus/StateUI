@@ -18,13 +18,13 @@ final class UIKitAccessibilityTests: XCTestCase {
             VStack {
                 DatePicker(State(wrappedValue: CalendarDate(year: 2026, month: 9, day: 28)).projectedValue)
                     .isAccessibilityHidden(true)
-                ActivityIndicator().isAnimating(true).isAccessibilityHidden(true)
+                Spinner().isAnimating(true).isAccessibilityHidden(true)
                 VStack { Text("Met") }.isAccessibilityHidden(true)
             }
         }
         defer { host.finish() }
         let picker = try XCTUnwrap(host.views(UIKitDatePickerView.self).first)
-        let spinner = try XCTUnwrap(host.views(UIKitActivityIndicatorView.self).first)
+        let spinner = try XCTUnwrap(host.views(UIKitSpinnerView.self).first)
         XCTAssertTrue(picker.accessibilityElementsHidden, "the picker's parts")
         XCTAssertTrue(spinner.accessibilityElementsHidden, "the spinner's")
         let layout = try XCTUnwrap(host.views(UIKitStackView.self).last)

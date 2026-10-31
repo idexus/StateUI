@@ -11,7 +11,15 @@ import UIKit
 /// detail; in a wide one it stands beside it. The sidebar showing or hiding on screen is told, whoever moved it.
 /// Design: docs/design/platforms/uikit/pages.md#a-split-view
 @MainActor
-final class UIKitSplitViewController: UISplitViewController, UISplitViewControllerDelegate {
+final class UIKitSplitViewController: UISplitViewController, UISplitViewControllerDelegate, UIKitSheetStanding {
+    /// What runs once the controller has left the screen, as a sheet (`UIKitSheetStanding`).
+    var leftScreen: (() -> Void)?
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        leftScreen?()
+    }
+
     /// What the controller does when its sidebar showed or hid.
     var onPresentationChanged: ((Bool) -> Void)?
 
@@ -36,7 +44,7 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
     /// The pages a slide stood apart from the sidebar, cleared as it rests.
     private let slidPages = NSHashTable<UIKitPageController>.weakObjects()
 
-    /// Whether the application paints the sidebar: a line of UIKit's separator colour then parts it from the detail
+    /// Whether the application paints the sidebar: a line of UIKit's separator color then parts it from the detail
     /// (`separator`). It stands on UIKit's sidebar material all the same, under which the detail's column slides
     /// with the sidebar; on UIKit's plain column, which parts them by its own line, the detail jumps to its width.
     /// Design: docs/design/platforms/uikit/pages.md#a-split-view
@@ -47,7 +55,7 @@ final class UIKitSplitViewController: UISplitViewController, UISplitViewControll
         }
     }
 
-    /// The line down a painted sidebar's edge beside the detail, one point of UIKit's separator colour.
+    /// The line down a painted sidebar's edge beside the detail, one point of UIKit's separator color.
     let separator: UIView = {
         let line = UIView()
         line.backgroundColor = .opaqueSeparator

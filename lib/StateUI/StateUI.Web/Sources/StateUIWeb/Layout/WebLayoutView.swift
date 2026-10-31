@@ -35,11 +35,11 @@ class WebLayoutView: WebDOMView {
     private var valuesRead: [LayoutValues?] = []
 
     /// Each child's mounted element, by number, and how it fades in as it joins: what its place travels by.
-    private var travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
+    private var travelers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
 
     /// Where the children travel to their places, and who reads their places on the page; nil while they stand at
     /// once wherever the browser lays them out.
-    let places = TravellingPlaces()
+    let places = TravelingPlaces()
     weak var placing: WebPlacements?
 
     /// A grid's tracks as the element defines them.
@@ -73,9 +73,22 @@ class WebLayoutView: WebDOMView {
         }
     }
 
-    /// The room left between the children of a stack.
+    /// The room left between the children of a stack, along its axis.
     func setSpacing(_ spacing: Double) {
-        style("gap", spacing == 0 ? nil : WebCSS.pixels(spacing))
+        style(arrangement == .stack(.vertical) ? "row-gap" : "column-gap", spacing == 0 ? nil : WebCSS.pixels(spacing))
+    }
+
+    /// Whether a row wraps, its lines from its top the room between them apart, each standing as its alignment says.
+    /// Design: docs/design/platforms/web/layout.md#a-row-that-wraps
+    func setLines(_ lines: StackArithmetic.Lines) {
+        guard case .wrapped(let spacing, let alignment) = lines else {
+            return ["flex-wrap", "align-content", "row-gap", "justify-content"].forEach { style($0, nil) }
+        }
+        style("flex-wrap", "wrap")
+        style("align-content", "flex-start")
+        style("row-gap", spacing == 0 ? nil : WebCSS.pixels(spacing))
+        // Each line across the row as its alignment says; a growing child fills its line all the same.
+        style("justify-content", alignment == .center ? "center" : alignment == .end ? "flex-end" : nil)
     }
 
     /// The room left between a grid's rows and between its columns.
@@ -131,7 +144,7 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#children-in-order
     func setItems(
         _ items: [(view: WebDOMView, values: () -> LayoutValues)],
-        travellers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
+        travelers: [(mount: UInt64, fadeIn: ((Motion) -> Void)?)] = []
     ) {
         let views = items.map(\.view)
         if views.count != children.count || !zip(views, children).allSatisfy({ $0 === $1 }) {
@@ -146,7 +159,7 @@ class WebLayoutView: WebDOMView {
         children = views
         readValues = items.map(\.values)
         valuesRead = Array(repeating: nil, count: items.count)
-        self.travellers = travellers
+        self.travelers = travelers
         for view in views { view.placingLayout = self }
         if arrangement == .grid { writeTracks() }
         placeAll()
@@ -163,15 +176,18 @@ class WebLayoutView: WebDOMView {
 
     /// Stands the child at `index` at `slot`, where the browser laid it out, or on its way there.
     func place(_ child: WebDOMView, at index: Int, slot: Rect) {
-        let traveller = index < travellers.count ? travellers[index] : (mount: 0, fadeIn: nil)
-        places.place(child, mount: traveller.mount, at: slot, values: values(at: index), fadeIn: traveller.fadeIn)
+        let traveler = index < travelers.count ? travelers[index] : (mount: 0, fadeIn: nil)
+        places.place(
+            child, mount: traveler.mount, at: slot, values: values(at: index),
+            natural: { child.heldWords ?? WebRelay.natural(of: child.node) }, fadeIn: traveler.fadeIn)
     }
 
     private func placeAll() {
         if travels { placing?.arrange(self) }
         let run = arrangement == .layers ? placement?.placements ?? [] : []
-        // A ZStack draws every child in its order, the placed and the unplaced alike, back to front: each child's
-        // place in that order, worked out once.
+        // Children sharing room draw back to front - a grid's in their order, a ZStack's in its run's, the placed
+        // and the unplaced alike - each child's place in that order worked out once; else a child standing out of
+        // the page's flow, a shape, rises over the later ones.
         var drawnAt = Array(children.indices)
         if arrangement == .layers {
             for (place, index) in ZStackArithmetic.drawingOrder(of: children.count, placedBy: run).enumerated() {
@@ -179,12 +195,12 @@ class WebLayoutView: WebDOMView {
             }
         }
         for (index, view) in children.enumerated() {
-            if index < run.count {
-                placeByRun(view, run[index])
+            if index < run.count, let placement {
+                placeByRun(view, placement, at: index)
             } else {
                 place(view, values(at: index))
             }
-            if arrangement == .layers { view.style("z-index", String(drawnAt[index])) }
+            if arrangement == .layers || arrangement == .grid { view.style("z-index", String(drawnAt[index])) }
         }
     }
 
@@ -201,9 +217,13 @@ class WebLayoutView: WebDOMView {
     /// Design: docs/design/platforms/web/layout.md#a-childs-place
     func place(_ view: WebDOMView, _ values: LayoutValues) {
         view.placedByRun = nil
+        if view.placedFromRight {
+            view.style("right", nil)
+            view.placedFromRight = false
+        }
         view.drawInRun(nil, size: nil)
         view.style("will-change", nil)
-        for (side, length) in WebCSS.sides(values.margin, signed: true) { view.style("margin-\(side)", length) }
+        for (side, length) in WebCSS.sides(values.margin, margin: true) { view.style("margin-\(side)", length) }
         view.style("width", WebCSS.pixels(values.width))
         view.style("height", WebCSS.pixels(values.height))
         // A child is no larger than its slot - across a stack, in a cell, an area or a room it does not scroll in.
@@ -220,20 +240,23 @@ class WebLayoutView: WebDOMView {
         let sized = arrangement == .layers && values.area != nil
         let fillsAcross = across == "stretch" && arrangement != .stack(.horizontal)
         let fillsDown = down == "stretch" && arrangement != .stack(.vertical)
-        let yieldsAcross = stopsAcross || fillsAcross || sized
+        // A row short of room takes it from its words: the browser shrinks them alike, by their natural widths.
+        let wordsInARow = arrangement == .stack(.horizontal) && values.yieldsInARow
+        let yieldsAcross = stopsAcross || fillsAcross || sized || wordsInARow
         let yieldsDown = stopsDown || fillsDown || sized
         view.style("min-width", WebCSS.pixels(values.minimumWidth) ?? (yieldsAcross ? "0" : nil))
         view.style("min-height", WebCSS.pixels(values.minimumHeight) ?? (yieldsDown ? "0" : nil))
         switch arrangement {
         case .stack(let axis):
-            // A spacer takes an equal share of the room its siblings leave.
-            view.style("flex", values.grows(along: axis) ? "1 1 0" : "none")
+            // A space takes an equal share of the room its siblings leave.
+            view.style("flex", values.grows(along: axis) ? "1 1 0" : wordsInARow ? "0 1 auto" : "none")
             view.style("justify-self", nil)
             view.style("align-self", axis == .vertical ? across : down)
         case .single, .grid, .layers:
             view.style("flex", nil)
             view.style("justify-self", across)
-            view.style("align-self", down)
+            // A first baseline is a row's: anywhere else, the near edge.
+            view.style("align-self", values.vertical == Alignment.firstBaseline.rawValue ? "start" : down)
         }
         switch arrangement {
         case .grid:
@@ -256,8 +279,8 @@ class WebLayoutView: WebDOMView {
             view.style("grid-area", "1 / 1 / 2 / 2")
             return view.style("position", "relative")
         }
-        let (left, top) = (WebCSS.pixels(padding.left)!, WebCSS.pixels(padding.top)!)
-        let room = "(100% - \(WebCSS.pixels(padding.left + padding.right)!))"
+        let (left, top) = (WebCSS.pixels(padding.start)!, WebCSS.pixels(padding.top)!)
+        let room = "(100% - \(WebCSS.pixels(padding.start + padding.end)!))"
         let tall = "(100% - \(WebCSS.pixels(padding.top + padding.bottom)!))"
         view.style("position", "absolute")
         view.style("grid-area", nil)
@@ -277,30 +300,37 @@ class WebLayoutView: WebDOMView {
 
     /// A child where the run puts it, drawn as it says, over the children placed before it in the run's order.
     /// Design: docs/design/platforms/web/layout.md#a-placing-run
-    private func placeByRun(_ view: WebDOMView, _ placement: HostPlacement) {
+    private func placeByRun(_ view: WebDOMView, _ run: HostPlacementRun, at index: Int) {
         // A run moves its views every frame: what has not moved is not written again, not even as words.
         // Design: docs/design/platforms/web/layout.md#a-placing-run
-        let (place, last) = (placement.place, view.placedByRun)
+        let (placement, place, last) = (run.placements[index], run.writtenPlace(of: index), view.placedByRun)
         view.placedByRun = placement
         if last == nil {
             view.style("position", "absolute")
             view.style("grid-area", nil)
             // The place is a move drawn over the layout's corner, which the browser composes each frame without
             // laying the page out again, and the view its own layer to move.
-            view.style("left", "0px")
             view.style("top", "0px")
             view.style("will-change", "transform")
             // The run's size, whatever the room's: a slot's bound would squash a card a short room scales down.
             view.style("max-width", "none")
             view.style("max-height", "none")
         }
-        if last?.place.width != place.width || last?.place.height != place.height {
+        // Right to left the view stands at the right corner and moves left: the mirror of its place, the room unread.
+        let fromRight = run.direction == .rightToLeft
+        if last == nil || view.placedFromRight != fromRight {
+            view.style(fromRight ? "right" : "left", "0px")
+            view.style(fromRight ? "left" : "right", nil)
+            view.placedFromRight = fromRight
+        }
+        if last?.bounds.width != placement.bounds.width || last?.bounds.height != placement.bounds.height {
             view.style("width", WebCSS.pixels(place.width))
             view.style("height", WebCSS.pixels(place.height))
         }
         view.style("opacity", placement.drawnOpacity >= 1 ? nil : WebCSS.number(placement.drawnOpacity))
         view.drawInRun(
-            placement.drawing, size: LayoutSize(width: place.width, height: place.height), at: Point(place.x, place.y))
+            run.drawing(of: index), size: LayoutSize(width: place.width, height: place.height),
+            at: Point(fromRight ? -place.x : place.x, place.y))
         (view as? WebLayoutView)?.setShadeOpacity(placement.drawnShade)
     }
 

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // State that outlives the process: `@State(persistentKey:)`, its keys, and the
-// store that hydrates and saves them.
+// store that reads and saves them.
 // Design: docs/design/core/state.md#kept-state
 
 /// What kind of value a persistent key holds - what the host reads the store
@@ -134,105 +134,80 @@ extension PersistentValue where Self: RawRepresentable, Self.RawValue: Persisten
     }
 }
 
-/// The name a piece of state is kept under, and what kind of value it is.
+/// The name a piece of state is kept under, typed by the value it keeps.
 ///
-///     extension PersistentKey {
-///         static let lastGroup = PersistentKey("com.example.lastGroup", of: Int.self)
+///     extension PersistentKey where Value == Int {
+///         static let lastGroup = PersistentKey("com.example.lastGroup")
 ///     }
 ///
 ///     @State(persistentKey: .lastGroup) private var group = 0
 ///
-/// The application lists its keys in `persistentKeys`. The name sits in the
-/// platform's settings beside whatever else the app keeps there, so a reverse-DNS
-/// prefix keeps it apart. A key declared for another type than the state written
-/// with it stops the program the first time the view is built.
-public struct PersistentKey: Hashable, Sendable, CustomStringConvertible {
+/// The name sits in the platform's settings beside whatever else the app keeps
+/// there, so a reverse-DNS prefix keeps it apart. A state of another type than
+/// the key's does not compile.
+public struct PersistentKey<Value: PersistentValue>: Hashable, Sendable, CustomStringConvertible {
     /// The name in the store - what the host reads and writes under.
     public var name: String { key.name }
 
     /// The name and the number the key is worked by (`KeyName`).
     let key: KeyName
 
-    /// What kind of value it holds, taken from the type it was declared with.
-    public let kind: PersistentKind
-
-    /// A key from its name and the type of the value it keeps.
-    ///
-    ///     static let lastGroup = PersistentKey("com.example.lastGroup", of: Int.self)
-    ///
-    /// - Parameters:
-    ///   - name: the name in the platform's store, the application's own.
-    ///   - type: the type of the state kept under it.
-    public init<Value: PersistentValue>(_ name: String, of type: Value.Type) {
+    /// A key from its name in the platform's store, the application's own.
+    public init(_ name: String) {
         key = KeyName(name)
-        self.kind = Value.persistentKind
     }
 
     /// The name, so an interpolated diagnostic prints it plainly.
     public var description: String { name }
 }
 
-/// Where kept state lives on this side: what the host hydrated, the storage for
-/// each key, and the keys waiting to be saved.
+/// Where kept state lives on this side: the host's reader of its store, the storage for each key, and the keys
+/// waiting to be saved.
 @MainActor
 final class PersistentStore {
     /// The one store: a process has one host.
     static let shared = PersistentStore()
 
-    /// What the host read out of the store before the first render, by the name the store keeps it under: a key
-    /// claims its own by its name, and a word of the store never makes a key.
-    private var hydrated: [String: PropValue] = [:]
+    /// What reads a key out of the platform's store as the host gave it - a key's name and kind to its value, nil
+    /// where the store holds none; nil before the host gave one.
+    private var reader: (@MainActor (String, PersistentKind) -> PropValue?)?
 
-    /// The storage standing for each key, with the typed write that lands a restored
-    /// value in it - the first state to claim a key puts its own here.
-    private var storages: [KeyName: (storage: AnyObject, land: @MainActor (PropValue) -> Void)] = [:]
+    /// The storage standing for each key, the type it keeps, and the typed write that lands a read value in it - the
+    /// first state to claim a key puts its own here.
+    private var storages: [KeyName: (storage: AnyObject, type: ObjectIdentifier, kind: PersistentKind,
+                                     land: @MainActor (PropValue) -> Void)] = [:]
 
     /// The keys written since the last take, each with its last value.
     private var waiting: [KeyName: PropValue] = [:]
 
-    /// The keys the application lists, once the host has read them.
-    private var listed: Set<KeyName>?
-
-    /// The host read the keys the application lists: a key a state keeps and the list leaves out is said.
+    /// The host's reader of its store came: each key claimed before it takes what the store holds now.
     /// Design: docs/design/core/state.md#kept-state
-    func listed(_ keys: [PersistentKey]) {
-        listed = Set(keys.map { $0.key })
-        for key in storages.keys.sorted() { sayUnlisted(key) }
-    }
-
-    /// Says once that the host never reads `key` at launch, where the list leaves it out.
-    private func sayUnlisted(_ key: KeyName) {
-        guard let listed, !listed.contains(key) else { return }
-        complain("'\(key.name)' keeps a state but application.persistentKeys does not list it: the host never reads it "
-            + "at launch, so its value comes back one launch late. List it in the application's init.")
-    }
-
-    /// Takes what the host read out of the store, before the first render; a storage
-    /// claimed earlier takes its value now.
-    func hydrate(_ values: [(name: String, value: PropValue)]) {
-        let claimed = Dictionary(uniqueKeysWithValues: storages.map { ($0.key.name, $0.value.land) })
-        for pair in values {
-            hydrated[pair.name] = pair.value
-            claimed[pair.name]?(pair.value)
+    func reads(_ reader: @escaping @MainActor (String, PersistentKind) -> PropValue?) {
+        self.reader = reader
+        for (key, standing) in storages.sorted(by: { $0.key < $1.key }) {
+            if let held = reader(key.name, standing.kind) { standing.land(held) }
         }
     }
 
-    /// The storage this key means: the one standing, or the offered one adopted, with
-    /// a value the host already read landed in it.
+    /// The storage this key means: the one standing, or the offered one adopted, with what the store holds read
+    /// into it now - or once the host's reader comes.
     /// Design: docs/design/core/state.md#kept-state
-    func claim(
-        _ key: PersistentKey,
+    func claim<Value>(
+        _ key: PersistentKey<Value>,
         orAdopt storage: AnyObject,
         landing land: @escaping @MainActor (PropValue) -> Void
     ) -> AnyObject {
         if let standing = storages[key.key] {
+            // Two keys of one name and two types would write each other's value.
+            precondition(
+                standing.type == ObjectIdentifier(Value.self),
+                "'\(key.name)' is declared as a key of two types: one name, one value")
             return standing.storage
         }
 
-        storages[key.key] = (storage, land)
-        sayUnlisted(key.key)
+        storages[key.key] = (storage, ObjectIdentifier(Value.self), Value.persistentKind, land)
 
-        if let held = hydrated[key.key.name] {
+        if let held = reader?(key.name, Value.persistentKind) {
             land(held)
         }
 
@@ -240,7 +215,7 @@ final class PersistentStore {
     }
 
     /// Marks a key for saving with its value; the write wakes the host.
-    func record(_ key: PersistentKey, _ value: PropValue) {
+    func record<Value>(_ key: PersistentKey<Value>, _ value: PropValue) {
         waiting[key.key] = value
     }
 
@@ -257,9 +232,8 @@ final class PersistentStore {
 
     /// Forgets everything, for tests building many sessions in one process.
     func forgetAll() {
-        hydrated.removeAll()
+        reader = nil
         storages.removeAll()
         waiting.removeAll()
-        listed = nil
     }
 }

@@ -33,11 +33,9 @@ final class AppKitElement: NSObject, NativeElement {
     /// Whether a layout of StateUI's has placed the view.
     var isPlaced = false
 
-    /// Where a label's place travels: its words stand at that size meanwhile.
-    /// Design: docs/design/host/motion.md#words-at-their-destination
-    var wordsRoom: Rect?
-
     var tapRecognizer: AppKitTapRecognizer?
+    var pressRecognizer: AppKitPressRecognizer?
+    var holdRecognizer: AppKitHoldRecognizer?
     var panRecognizer: AppKitPanRecognizer?
     var handReader: AppKitHandReader?
     var pinchRecognizer: AppKitPinchRecognizer?
@@ -51,7 +49,13 @@ final class AppKitElement: NSObject, NativeElement {
     )?
     var accessibilityThroughCell: Bool?
     var accessibilityChildrenSuppressed = false
+    /// Whether the element said a value for assistive technology, which then stands over its view's own.
+    var accessibilityValueSaid = false
+    /// Whether the element offered a screen reader actions, which then stand in place of its view's own.
+    var accessibilityActionsSaid = false
     var platformMenuItem: NSMenuItem?
+    /// The popover this element is, while it has been shown.
+    var shownPopover: AppKitPopover?
 
     init(_ element: MountedElement, host: AppKitRenderer) {
         self.element = element
@@ -116,6 +120,16 @@ final class AppKitElement: NSObject, NativeElement {
 
     func applied(changed: Set<Prop>, wasDescribed: Bool) {
         if wasDescribed, changed.contains(.isVisible) { crossVisibility() }
+        // A page's content standing against the safe area otherwise: its window, and a split view's panes, lay their
+        // pages again.
+        if changed.contains(.ignoresSafeArea) {
+            view?.window?.contentView?.needsLayout = true
+            var holder = view?.superview
+            while let each = holder {
+                (each as? AppKitPaneView)?.needsLayout = true
+                holder = each.superview
+            }
+        }
         applyProperties(changed: changed)
         if let view, let host { element.applyDrawnChildren(to: view, through: AppKitRegistrations.registry, in: host.runtime) }
         configureContextMenu()
@@ -123,6 +137,7 @@ final class AppKitElement: NSObject, NativeElement {
         configureGestures()
         configureLayoutMotion()
         arrangeChildren()
+        configurePopover()
         configureFrameObservation()
     }
 
@@ -135,7 +150,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// element closes over it the way a patch moves its children.
     func crossVisibility() {
         guard view != nil else { return }
-        element.crossVisibility(self, closingIn: (view?.superview as? AppKitTravellingLayout)?.places)
+        element.crossVisibility(self, closingIn: (view?.superview as? AppKitTravelingLayout)?.places)
     }
 
     /// Shows, hides and fades the view as the tree says - kept visible and
@@ -156,6 +171,8 @@ final class AppKitElement: NSObject, NativeElement {
     }
 
     func releaseNativeAttachments() {
+        shownPopover?.close()
+        shownPopover = nil
         if observesFrame {
             NotificationCenter.default.removeObserver(
                 self, name: NSView.frameDidChangeNotification, object: nil)
@@ -166,12 +183,13 @@ final class AppKitElement: NSObject, NativeElement {
         }
 
         let recognizers: [NSGestureRecognizer?] = [
-            tapRecognizer, panRecognizer, pinchRecognizer, rotationRecognizer, mirroredRecognizer,
+            tapRecognizer, pressRecognizer, panRecognizer, pinchRecognizer, rotationRecognizer, mirroredRecognizer,
         ]
         for recognizer in recognizers.compactMap({ $0 }) {
             view?.removeGestureRecognizer(recognizer)
         }
         tapRecognizer = nil
+        pressRecognizer = nil
         panRecognizer = nil
         pinchRecognizer = nil
         rotationRecognizer = nil
@@ -189,7 +207,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// Only a patch says so. A frame the display cycle presents arranges the
     /// same children in a room that is moving, and they follow it.
     func configureLayoutMotion() {
-        guard let layout = view as? AppKitTravellingLayout else { return }
+        guard let layout = view as? AppKitTravelingLayout else { return }
         layout.places.layoutMotion = host?.runtime.layoutMotion
         layout.places.motion = motion
         layout.places.framesRead = framesRead
@@ -210,6 +228,7 @@ final class AppKitElement: NSObject, NativeElement {
     /// Presents one display frame of this element's own changed properties.
     func presentFrame(_ properties: Set<Prop>) {
         applyProperties(changed: properties)
+        if properties.contains(.isPresented) { configurePopover() }
     }
 
 }

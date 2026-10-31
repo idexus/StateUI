@@ -79,11 +79,13 @@ plutil -insert CFBundleIdentifier -string com.stateui.gallery "$plist"
 plutil -insert CFBundleInfoDictionaryVersion -string 6.0 "$plist"
 plutil -insert CFBundleName -string "StateUI Gallery" "$plist"
 plutil -insert CFBundlePackageType -string APPL "$plist"
-plutil -insert CFBundleShortVersionString -string 0.7.1 "$plist"
+plutil -insert CFBundleShortVersionString -string 0.8.0 "$plist"
 plutil -insert CFBundleVersion -string 1 "$plist"
 plutil -insert LSMinimumSystemVersion -string 26.0 "$plist"
 plutil -insert NSHighResolutionCapable -bool true "$plist"
 plutil -insert NSLocationUsageDescription -string "The map shows where you are." "$plist"
+# The links the Gallery opens: its own scheme, stateui-gallery://.
+plutil -insert CFBundleURLTypes -json '[{"CFBundleURLName":"com.stateui.gallery","CFBundleURLSchemes":["stateui-gallery"]}]' "$plist"
 
 codesign --force --deep --sign - "$application_dir"
 

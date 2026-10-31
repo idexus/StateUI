@@ -40,7 +40,8 @@ private struct PinchPage: View {
     var body: some View {
         VStack {
             Text("said \(said)")
-            Rectangle().fill(.steelBlue)
+            Rectangle()
+                .fill(.steelBlue)
                 .width(100)
                 .height(100)
                 .onPinchUpdated { pinch in said += "pinch \(pinch.scale); " }
@@ -102,6 +103,10 @@ final class WinUIGesturesTests: XCTestCase {
         XCTAssertEqual(Hearing.pointer.rawValue, UInt32(StateUIHearingPointer.rawValue))
         XCTAssertEqual(Hearing.drags.rawValue, UInt32(StateUIHearingDrags.rawValue))
         XCTAssertEqual(Hearing.pinches.rawValue, UInt32(StateUIHearingPinches.rawValue))
+        XCTAssertEqual(Hearing.hand.rawValue, UInt32(StateUIHearingHand.rawValue))
+        XCTAssertEqual(Hearing.rotations.rawValue, UInt32(StateUIHearingRotations.rawValue))
+        XCTAssertEqual(Hearing.holds.rawValue, UInt32(StateUIHearingHolds.rawValue))
+        XCTAssertEqual(Hearing.kinds.count, 7, "every kind the relay listens for has its bit here")
     }
 
     /// A view listens for what its handlers ask, and stops once it leaves the tree.

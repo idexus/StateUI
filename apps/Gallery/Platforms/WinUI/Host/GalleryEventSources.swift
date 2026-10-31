@@ -11,6 +11,7 @@ enum GalleryEventSources {
     /// The battery as it was last said, so a notice that changed nothing of it raises nothing.
     @MainActor private static var lastSaid: (level: Double, charging: Bool)?
 
+    // listing: winui.md.event
     /// Declares what the host raises and wires its source. Said once, before the application runs.
     @MainActor
     static func start() {
@@ -32,12 +33,15 @@ enum GalleryEventSources {
         lastSaid = (level, charging)
         StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
     }
+    // listing: end
 }
 
+// listing: winui.md.event
 /// What Windows calls as the battery's charge or the power source changes - on a thread of its own, and once as the
 /// watch begins: the report is the main actor's.
 /// It stands outside the main actor, as a closure written inside `start()` would be the main actor's.
 private let batteryChanged: @convention(c) () -> Void = {
     Task { @MainActor in GalleryEventSources.report() }
 }
+// listing: end
 // listing: end

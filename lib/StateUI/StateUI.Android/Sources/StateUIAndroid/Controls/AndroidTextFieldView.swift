@@ -10,6 +10,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-field-and-its-words
 @MainActor
 final class AndroidTextFieldView: AndroidTextualView {
+    /// The view's click is its own - its caret's - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// Which of the three the field is.
     enum Kind {
         /// One line, its return key submitting it.
@@ -71,6 +74,51 @@ final class AndroidTextFieldView: AndroidTextualView {
     }
 
     /// What the field's keyboard and its checking of the words do; the words and their weight stay.
+    // MARK: - Its box
+
+    /// The field's ground and the outline and shape the tree gives it: drawn as a shape in place of the theme's
+    /// underline where it outlines or shapes the field, else the ground alone over it.
+    private var box: (fill: HostValue?, stroke: HostValue?, width: Double?, shape: AndroidShapeDrawable.Shape) =
+        (nil, nil, nil, .rectangle)
+
+    /// The shape its box is drawn in; nil while the theme's look or a plain ground shows.
+    private var drawnBox: AndroidShapeDrawable?
+
+    override func setBackground(_ value: HostValue?) {
+        box.fill = value
+        drawBox()
+    }
+
+    /// The field's outline and shape, the width in points and one where none is said.
+    /// Design: docs/design/platforms/android/controls.md#a-fields-outline
+    func setOutline(stroke: HostValue?, width: Double?, shape: HostValue?) {
+        (box.stroke, box.width, box.shape) = (stroke, width, AndroidShapeDrawable.Shape(container: shape))
+        drawBox()
+    }
+
+    private func drawBox() {
+        guard box.stroke != nil || box.shape != .rectangle else {
+            drawnBox = nil
+            return super.setBackground(box.fill)
+        }
+        let shape = AndroidShapeDrawable()
+        shape.setStroke(box.stroke, width: box.width, density: density)
+        shape.setShape(box.shape, density: density)
+        shape.setFill(box.fill)
+        drawnBox = shape
+        if let size = placedSize { shape.fit(width: size.width, height: size.height) }
+        showBackground(shape.object)
+    }
+
+    override func sized(width: Int32, height: Int32) {
+        drawnBox?.fit(width: width, height: height)
+    }
+
+    /// The outline and the shape its box is drawn with, while it draws one; nil while the theme's look shows.
+    var drawnOutline: (stroke: HostValue?, width: Double, shape: AndroidShapeDrawable.Shape)? {
+        drawnBox == nil ? nil : (box.stroke, BoxArithmetic.outlineWidth(stroke: box.stroke, width: box.width), box.shape)
+    }
+
     func setTraits(_ traits: InputTraits) {
         guard traits != self.traits else { return }
 
@@ -153,7 +201,7 @@ final class AndroidTextFieldView: AndroidTextualView {
         Java.release(local: hint)
     }
 
-    /// The placeholder's colour; nil puts back the platform's.
+    /// The placeholder's color; nil puts back the platform's.
     func setPlaceholderColor(_ color: HostValue?) {
         if madeHintColors == nil {
             madeHintColors = JavaObject(Java.callObject(reference, JavaAPI.getHintTextColors)!)
@@ -191,9 +239,13 @@ final class AndroidTextFieldView: AndroidTextualView {
     }
 
     /// Gives the field its kind of input - which also gives it the key listener that kind edits with - and takes
-    /// the listener away again where the field is read only.
+    /// the listener away again where the field is read only; and tells autofill what its words are.
     private func applyInputType() {
         Java.call(reference, JavaAPI.setInputType, .int(inputType))
+        let hints = traits.autofillHints
+        Java.frame {
+            Java.call(reference, JavaAPI.setAutofillHints, .object(hints.isEmpty ? nil : Java.strings(hints)))
+        }
         if isReadOnly { Java.call(reference, JavaAPI.setKeyListener, .object(nil)) }
         Java.call(reference, JavaAPI.setShowSoftInputOnFocus, .bool(!isReadOnly))
     }

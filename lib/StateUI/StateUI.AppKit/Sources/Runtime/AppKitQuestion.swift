@@ -19,31 +19,22 @@ final class AppKitQuestion {
 
     let alert = NSAlert()
     private let field = AppKitWordsField(string: "")
-    private var answer: ((_ accepted: Bool, _ words: String?) -> Void)?
+    private var answer: ((HostQuestion.Given) -> Void)?
 
     /// Each button's caption and what pressing it answers, in the order AppKit shows them.
-    private var buttons: [(caption: String, accepts: Bool)] = []
+    private let buttons: [(caption: String, role: QuestionButton)]
 
     init(_ question: HostQuestion, in window: NSWindow) {
         self.question = question
         self.window = window
+        buttons = question.buttons
         alert.messageText = question.title ?? ""
         alert.informativeText = question.message ?? ""
-
-        switch question.kind {
-        case .alert:
-            add(question.accept, accepts: true)
-        case .confirm, .prompt:
-            add(question.accept, accepts: true)
-            if let cancel = question.cancel { add(cancel, accepts: false) }
-        case .chooseAction:
-            // A choice answers the caption pressed, its cancel included.
-            for choice in question.choices { add(choice, accepts: true) }
-            if let destruction = question.destruction {
-                add(destruction, accepts: true)
+        for (caption, role) in buttons {
+            alert.addButton(withTitle: caption)
+            if case .action(let place) = role, place == question.destructive {
                 alert.buttons.last?.hasDestructiveAction = true
             }
-            if let cancel = question.cancel { add(cancel, accepts: true) }
         }
 
         if question.kind == .prompt {
@@ -56,34 +47,22 @@ final class AppKitQuestion {
         }
     }
 
-    private func add(_ caption: String, accepts: Bool) {
-        alert.addButton(withTitle: caption)
-        buttons.append((caption, accepts))
-    }
-
     /// Shows the question as a sheet on its window where `presents`, else holds it unshown; `answer` hears the
     /// user's answer once.
-    func ask(presenting presents: Bool, answer: @escaping (_ accepted: Bool, _ words: String?) -> Void) {
+    func ask(presenting presents: Bool, answer: @escaping (HostQuestion.Given) -> Void) {
         self.answer = answer
         guard presents, let window else { return }
         alert.beginSheetModal(for: window) { [weak self] response in self?.respond(response) }
         if question.kind == .prompt { alert.window.makeFirstResponder(field) }
     }
 
-    /// The button at `response` was pressed: accepted or not, and the words - the caption a choice pressed, the
-    /// words a prompt holds, which the host layer cuts to its bound.
+    /// The button at `response` was pressed: what it does, with the words a prompt holds, which the host layer cuts
+    /// to its bound.
     private func respond(_ response: NSApplication.ModalResponse) {
         let index = response.rawValue - NSApplication.ModalResponse.alertFirstButtonReturn.rawValue
         guard buttons.indices.contains(index), let answer else { return }
         self.answer = nil
-
-        let pressed = buttons[index]
-        let words: String? = switch question.kind {
-        case .chooseAction: pressed.caption
-        case .prompt: field.stringValue
-        case .alert, .confirm: nil
-        }
-        answer(pressed.accepts, words)
+        answer(HostQuestion.Given(pressed: buttons[index].role, typing: question.kind == .prompt ? field.stringValue : nil))
     }
 
     /// The question as it shows: its title, its message, its buttons' captions and a prompt's words.
@@ -92,9 +71,9 @@ final class AppKitQuestion {
          question.kind == .prompt ? field.stringValue : nil)
     }
 
-    /// Presses the button captioned `caption`, `typing` put in a prompt's field first, as the user does.
-    func pressForTesting(_ caption: String, typing: String?) -> Bool {
-        guard let index = buttons.firstIndex(where: { $0.caption == caption }) else { return false }
+    /// Presses the button doing `button`, `typing` put in a prompt's field first, as the user does.
+    func pressForTesting(_ button: QuestionButton, typing: String?) -> Bool {
+        guard let index = buttons.firstIndex(where: { $0.role == button }) else { return false }
         if let typing { field.stringValue = typing }
         let response = NSApplication.ModalResponse(
             rawValue: NSApplication.ModalResponse.alertFirstButtonReturn.rawValue + index)

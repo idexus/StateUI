@@ -67,8 +67,13 @@ final class TickerTests: XCTestCase {
 
     /// The point of the run token: a second `start()` while the first loop is
     /// mid-sleep must not leave two loops counting the same property up.
+    ///
+    /// One loop sleeps to deadlines an interval apart, so however late it wakes
+    /// a window holds at most one tick more than the intervals in it - one more
+    /// for the read after the window. Three loops would count three times that.
     func testStartingAgainLeavesOneLoopRunning() {
-        let ticker = Ticker(every: .milliseconds(40))
+        let lap = 40, window = 400
+        let ticker = Ticker(every: .milliseconds(lap))
 
         ticker.start()
         ticker.stop()
@@ -79,10 +84,10 @@ final class TickerTests: XCTestCase {
         XCTAssertTrue(drain(until: { ticker.ticks >= 1 }))
 
         let after = ticker.ticks
-        drain(until: { false }, within: 0.05)
+        drain(until: { false }, within: Double(window) / 1000)
 
         XCTAssertLessThanOrEqual(
-            ticker.ticks - after, 1,
+            ticker.ticks - after, window / lap + 2,
             "more than one loop is counting: three starts produced three ticks a lap")
     }
 
@@ -293,6 +298,30 @@ final class TickerTests: XCTestCase {
 
     // MARK: - What the interface hears
 
+    /// EACH PROPERTY IS A STATE OF ITS OWN: a tick rebuilds the views that read the count, and a limit written
+    /// rebuilds none of them.
+    func testEachPropertyIsAStateOfItsOwn() {
+        let ticker = Ticker(every: .milliseconds(10))
+        let renders = Renders()
+        let (counts, limits) = (Builds(), Builds())
+        renders.render(stack([
+            Shown { counts.count += 1; _ = ticker.ticks }.node,
+            Shown { limits.count += 1; _ = ticker.limit }.node,
+        ], id: "root"))
+
+        ticker.limit = 5
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+        XCTAssertEqual([counts.count, limits.count], [1, 2], "a limit written builds no reader of the count")
+        Renderer.shared.clearInvalidation()
+
+        ticker.start()
+        XCTAssertTrue(drain(until: { ticker.ticks >= 1 }))
+        ticker.stop()
+        _ = renders.revisit(changed: Renderer.shared.pendingChanges)
+        XCTAssertGreaterThan(counts.count, 1, "a tick builds the reader of the count")
+        XCTAssertEqual(limits.count, 2, "and no reader of the limit")
+    }
+
     /// A tick writes what the interface reads and asks for the next render.
     func testATickAsksForARender() {
         let ticker = Ticker(every: .milliseconds(10))
@@ -315,8 +344,7 @@ final class TickerTests: XCTestCase {
     /// asks for the render that shows the new value.
     func testWritingAPropertyAsksForARender() {
         let ticker = Ticker(every: .milliseconds(10))
-        let mine = ObjectIdentifier(ticker)
-        let reader = reading { _ = ticker.ticks }
+        let reader = reading { _ = (ticker.interval, ticker.isRepeating, ticker.limit) }
         defer { _ = reader }
 
         for write in [
@@ -324,11 +352,11 @@ final class TickerTests: XCTestCase {
             ("isRepeating", { ticker.isRepeating = false }),
             ("limit", { ticker.limit = 3 }),
         ] as [(String, () -> Void)] {
-            Renderer.shared.clearInvalidation()
+            _ = Renderer.shared.renderHost(baseline: 0)
             write.1()
 
             XCTAssertTrue(
-                Renderer.shared.pendingChanges.contains(mine),
+                Renderer.shared.needsRender,
                 "writing \(write.0) asked for no render, so a view reading it "
                 + "would go on showing the old value")
         }
@@ -361,5 +389,24 @@ final class TickerTests: XCTestCase {
 
         XCTAssertEqual(ticker.ticks, 3)
         XCTAssertFalse(ticker.isRunning)
+    }
+}
+
+/// How many times a closure was built - a class, so a closure the view keeps can count into it.
+private final class Builds {
+    var count = 0
+}
+
+/// A view whose content is one read the test chooses.
+private struct Shown: View {
+    let read: () -> Void
+
+    init(_ read: @escaping () -> Void) {
+        self.read = read
+    }
+
+    var body: some View {
+        read()
+        return Text("shown")
     }
 }

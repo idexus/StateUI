@@ -110,6 +110,16 @@ and a dictionary keyed by other than words or whole numbers - which writes its
 pairs as a list - hand theirs over in that order too; each element is written
 apart and the list is sorted by the elements' text (the key's, for a pair).
 
+## A window for a value
+
+`WindowGroup(.kind) { $value in … }` hands its view a `Binding` to a `State` of
+the window's own, made when its page is first built and kept with its
+`WindowSession`. The state's keep hook retargets the window - its value and the
+text the platform keeps - so a write lands the same way whoever makes it: the
+view, a control the binding is handed to, the host. The scene reads what it has
+open and builds the window again; its key stays, so it is the same window about
+another value.
+
 ## Sessions
 
 Each scene has a `SceneSession` in the environment of everything under it, and

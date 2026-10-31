@@ -79,7 +79,7 @@ private struct Holding: Application {
     var body: some Scene { WindowGroup { First() } }
 }
 
-private extension WindowType {
+private extension WindowType where Value == Void {
     static let second = WindowType("inspection.second")
 }
 
@@ -356,7 +356,7 @@ final class InspectionTests: XCTestCase {
         Renderer.shared.setApplication(ShowingApplication())
         _ = Renderer.shared.renderHost(baseline: 0)
 
-        Inspection.ownStates = [ObjectIdentifier(try XCTUnwrap(drawn.$revision.described))]
+        Inspection.ownStates = [ObjectIdentifier(drawn.$revision.storage)]
         Inspection.clear()
         drawn.revision += 1
 
@@ -479,13 +479,13 @@ final class InspectionTests: XCTestCase {
         let second = OpenScenes.shared.list[1]
         let window = second.windowSession(second.windows[0].key)
 
-        Inspector.toggle(in: window)
+        window.toggleInspector()
         XCTAssertEqual(Array(InspectorModel.shared.places.keys), ["2"])
-        XCTAssertTrue(Inspector.isOpen(in: window))
+        XCTAssertTrue(window.isInspectorOpen)
         let other = OpenScenes.shared.list[0]
-        XCTAssertFalse(Inspector.isOpen(in: other.windowSession(other.windows[0].key)))
+        XCTAssertFalse(other.windowSession(other.windows[0].key).isInspectorOpen)
 
-        Inspector.toggle(in: window)
+        window.toggleInspector()
         XCTAssertTrue(InspectorModel.shared.places.isEmpty)
     }
 
@@ -500,15 +500,15 @@ final class InspectionTests: XCTestCase {
         XCTAssertEqual(scene.windows.count, 2)
         let (first, second) = (scene.windowSession(scene.windows[0].key), scene.windowSession(scene.windows[1].key))
 
-        Inspector.toggle(in: second)
+        second.toggleInspector()
         XCTAssertEqual(windowsHoldingTheInspector(), [false, true], "in the window it was pressed in")
 
-        Inspector.toggle(in: first)
+        first.toggleInspector()
         XCTAssertEqual(windowsHoldingTheInspector(), [true, false], "moved, and open")
-        XCTAssertTrue(Inspector.isOpen(in: second), "open in every window's sense")
+        XCTAssertTrue(second.isInspectorOpen, "open in every window's sense")
 
-        Inspector.toggle(in: first)
-        XCTAssertFalse(Inspector.isOpen(in: second), "pressed where it stands, it closes")
+        first.toggleInspector()
+        XCTAssertFalse(second.isInspectorOpen, "pressed where it stands, it closes")
     }
 
     /// A scene that ends takes its docked inspector with it - and the record
@@ -563,13 +563,13 @@ final class InspectionTests: XCTestCase {
 
         let first = OpenScenes.shared.list[0].windowSession(OpenScenes.shared.list[0].windows[0].key)
 
-        Inspector.toggle(in: first)
+        first.toggleInspector()
 
         XCTAssertEqual(InspectorModel.shared.places["1"], .bottom)
         XCTAssertEqual(InspectorModel.shared.collapsed, ["1"])
         XCTAssertEqual(Array(docked()[0].suffix(2)), ["Expand", "Close"])
 
-        Inspector.open(.bottom, in: first)
+        first.openInspector(.bottom)
 
         XCTAssertTrue(InspectorModel.shared.collapsed.isEmpty)
         XCTAssertEqual(pair(from: "Collapse", in: docked()[0]), ["Collapse", "Close"])
@@ -599,7 +599,7 @@ final class InspectionTests: XCTestCase {
 
         Renderer.name(statesOf: application)
 
-        XCTAssertEqual(application.$menuOpen.described?.origin, "menuOpen")
+        XCTAssertEqual(application.$menuOpen.storage.origin, "menuOpen")
     }
 
     func testADifferenceIsNamedByItsProperty() {

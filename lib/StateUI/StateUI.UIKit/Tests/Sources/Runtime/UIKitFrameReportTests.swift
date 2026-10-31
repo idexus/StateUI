@@ -18,7 +18,10 @@ final class UIKitFrameReportTests: XCTestCase {
         let heard = Received<[Double]>()
         let host = UIKitRenderer.running {
             VStack {
-                Rectangle().fill(.steelBlue).width(120).height(60)
+                Rectangle()
+                    .fill(.steelBlue)
+                    .width(120)
+                    .height(60)
                     .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
             }
             .horizontalAlignment(.start)
@@ -40,7 +43,10 @@ final class UIKitFrameReportTests: XCTestCase {
             VStack {
                 Text("above").height(20)
                 if shown.wrappedValue {
-                    Rectangle().fill(.steelBlue).width(120).height(60)
+                    Rectangle()
+                        .fill(.steelBlue)
+                        .width(120)
+                        .height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
             }
@@ -64,7 +70,10 @@ final class UIKitFrameReportTests: XCTestCase {
         let host = UIKitRenderer.running {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 VStack {
-                    Rectangle().fill(.steelBlue).width(120).height(60)
+                    Rectangle()
+                        .fill(.steelBlue)
+                        .width(120)
+                        .height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)
@@ -86,7 +95,10 @@ final class UIKitFrameReportTests: XCTestCase {
     @MainActor
     func testAPageNarrowedByUIKitPlacesItsLayoutWithinThatPass() throws {
         let host = UIKitRenderer.running {
-            LayoutEngine([0]) { _ in Rectangle(.red) } placements: { room, _ in
+            MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+                Rectangle()
+                    .fill(.red)
+            } placements: { room, _ in
                 [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
             }
         }
@@ -121,9 +133,15 @@ final class UIKitFrameReportTests: XCTestCase {
         let host = UIKitRenderer.running {
             ScrollView {
                 VStack {
-                    Rectangle().fill(.steelBlue).width(120).height(60)
+                    Rectangle()
+                        .fill(.steelBlue)
+                        .width(120)
+                        .height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
-                    Rectangle().fill(.firebrick).width(120).height(3000)
+                    Rectangle()
+                        .fill(.firebrick)
+                        .width(120)
+                        .height(3000)
                 }
                 .horizontalAlignment(.start)
             }
@@ -150,7 +168,10 @@ final class UIKitFrameReportTests: XCTestCase {
         let host = UIKitRenderer.running {
             VStack {
                 ItemsView(0..<100) { item in
-                    Rectangle().fill(item == 2 ? .firebrick : .steelBlue).width(120).height(60)
+                    Rectangle()
+                        .fill(item == 2 ? .firebrick : .steelBlue)
+                        .width(120)
+                        .height(60)
                         .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
                 }
                 .width(200).height(300)

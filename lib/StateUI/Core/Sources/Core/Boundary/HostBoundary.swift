@@ -12,10 +12,12 @@
 
     /// Updates the appearance used to resolve themed values before rendering.
     public static func setColorScheme(_ theme: ColorScheme) {
+        let turned = StandardEnvironment.application.info.colorScheme != theme
         update(StandardEnvironment.application.info, \.colorScheme, theme)
+        if turned { StandardEnvironment.application.themeTurned() }
     }
 
-    /// Updates the accent the user chose for the system.
+    /// Updates the accent in force: the user's, or the application's where the platform took it.
     public static func setAccentColor(_ color: Color) {
         update(StandardEnvironment.application.info, \.accentColor, color)
     }
@@ -29,7 +31,7 @@
         update(device, \.manufacturer, info.manufacturer)
         update(device, \.name, info.name)
         update(device, \.versionString, info.versionString)
-        update(device, \.deviceType, info.deviceType)
+        update(device, \.isVirtual, info.isVirtual)
     }
 
     /// Replaces the standard main-display report used by application builds.
@@ -45,6 +47,10 @@
 
     /// The application's name, as the host reported it - what a host shows where a sidebar says no title.
     public static var applicationName: String { StandardEnvironment.application.info.name }
+
+    /// The application's session - what `@Environment(\.application)` reads - for a test that sets what the
+    /// application writes, its motion.
+    public static var application: ApplicationSession { StandardEnvironment.application }
 
     /// Replaces the standard application-manifest report used by builds.
     public static func setApplicationInfo(_ info: HostApplicationInfo) {
@@ -64,6 +70,15 @@
         update(battery, \.energySaverStatus, info.energySaverStatus)
     }
 
+    /// Replaces the standard report of the user's accessibility settings.
+    public static func setAccessibilityInfo(_ info: HostAccessibilityInfo) {
+        let settings = StandardEnvironment.device.accessibility
+        update(settings, \.reducesMotion, info.reducesMotion)
+        update(settings, \.prefersHigherContrast, info.prefersHigherContrast)
+        update(settings, \.isScreenReaderOn, info.isScreenReaderOn)
+        update(settings, \.textScale, info.textScale)
+    }
+
     /// Replaces the standard connectivity report.
     public static func setConnectivityInfo(_ info: HostConnectivityInfo) {
         let connectivity = StandardEnvironment.device.connectivity
@@ -73,6 +88,12 @@
 
     /// What a window's chrome says of its own controls - back, the sidebar, close, more - in the system's language.
     public static var chromeWords: ChromeWords { LibraryWords.inSystemLanguage.chrome }
+
+    /// What an Edit menu says of the entries a host keeps in it, in the system's language.
+    public static var editWords: EditWords { LibraryWords.inSystemLanguage.edit }
+
+    /// What a control a host composes says of its own parts - a stepper's step down and up - in the system's language.
+    public static var controlWords: ControlWords { LibraryWords.inSystemLanguage.control }
 
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
@@ -129,19 +150,12 @@
     /// Design: docs/design/types/environment.md#a-report-that-repeats-itself
     public private(set) static var environmentChanges = 0
 
-    /// The typed keys the host reads before the first application render - the application, made at its first
-    /// need, lists them as it is made.
-    public static var persistentKeys: [PersistentKey] {
-        Renderer.shared.madeApplication()
-        let keys = StandardEnvironment.application.persistentKeys
-        PersistentStore.shared.listed(keys)
-        return keys
-    }
-
-    /// Hydrates values found in the native store before the first render.
-    public static func restorePersistent(_ values: [String: HostValue]) {
-        PersistentStore.shared.hydrate(
-            values.sorted { $0.key < $1.key }.map { (name: $0.key, value: $0.value) })
+    /// Gives the core the reader of the host's store: a kept key's name and kind to the value the store holds under
+    /// it, nil for none. A state kept under a key reads it as it is first made - every key claimed before the reader
+    /// came reads it now - so a value is back at the launch it is first needed in.
+    /// Design: docs/design/core/state.md#kept-state
+    public static func readsKept(_ reader: @escaping @MainActor (_ name: String, _ kind: PersistentKind) -> HostValue?) {
+        PersistentStore.shared.reads(reader)
     }
 
     /// Decodes a complete property-state image for a native motion channel.
@@ -199,7 +213,8 @@
                     opacity: $0.opacity,
                     zIndex: $0.zIndex,
                     shade: $0.shade)
-            })
+            },
+            direction: .leftToRight)
     }
 
     /// Builds and returns a typed patch against the generation the host holds.
@@ -275,17 +290,13 @@
         return Renderer.shared.dispatch(completion)
     }
 
-    /// Advances one StateUI clock and returns the state values it published.
-    public static func cycle(
-        _ sync: Sync,
-        now: Double,
-        reducesMotion: Bool
-    ) -> HostCycle {
-        Renderer.shared.hostCycle(sync: sync, now: now, reducesMotion: reducesMotion)
+    /// Runs the display's cycle and returns the state values it published.
+    public static func cycle(now: Double, reducesMotion: Bool) -> HostCycle {
+        Renderer.shared.hostCycle(now: now, reducesMotion: reducesMotion)
     }
 
     /// Whether any state or engine is waiting for a host cycle.
-    public static var cyclesPending: Bool { Renderer.shared.cycleAwake() != 0 }
+    public static var cyclesPending: Bool { Renderer.shared.cycleAwake() }
 
     /// What this process's renders came to, for a host that prints the tally.
     public static var tally: HostTally {
@@ -332,7 +343,7 @@
         HostRealizations.current = realization
     }
 
-    /// Tells the core what the host judges it realizes, member by member - what `Device.honours` answers from. The
+    /// Tells the core what the host judges it realizes, member by member - what `Device.honors` answers from. The
     /// register is read when first asked, not as it is told: building it costs, and a host tells it at each start.
     ///
     /// - Parameter register: the host's register, its runtime's realization behind its own records.

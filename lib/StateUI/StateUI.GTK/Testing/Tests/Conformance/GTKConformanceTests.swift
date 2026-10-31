@@ -16,13 +16,15 @@ final class GTKConformanceTests: XCTestCase {
         onUIThread { GTKBackends.registered }
     }
 
-    func testActivityIndicator() { conform(ActivityIndicatorTests.self) }
+    func testSpinner() { conform(SpinnerTests.self) }
     func testButton() { conform(ButtonTests.self) }
     func testCanvas() { conform(CanvasTests.self) }
     func testCapsule() { conform(CapsuleTests.self) }
-    func testLayoutEngine() { conform(LayoutEngineTests.self) }
+    func testFill() { conform(FillTests.self) }
+    func testMotionLayout() { conform(MotionLayoutTests.self) }
     func testCheckBox() { conform(CheckBoxTests.self) }
-    func testSpacer() { conform(SpacerTests.self) }
+    func testColorPicker() { conform(ColorPickerTests.self) }
+    func testSpace() { conform(SpaceTests.self) }
     func testDatePicker() { conform(DatePickerTests.self) }
     func testEllipse() { conform(EllipseTests.self) }
     func testGrid() { conform(GridTests.self) }
@@ -36,7 +38,6 @@ final class GTKConformanceTests: XCTestCase {
     func testPolygon() { conform(PolygonTests.self) }
     func testPolyline() { conform(PolylineTests.self) }
     func testProgressBar() { conform(ProgressBarTests.self) }
-    func testRadioButton() { conform(RadioButtonTests.self) }
     func testRectangle() { conform(RectangleTests.self) }
     func testScrollView() { conform(ScrollViewTests.self) }
     func testItemsView() { conform(ItemsViewTests.self) }
@@ -52,15 +53,19 @@ final class GTKConformanceTests: XCTestCase {
     func testZStack() { conform(ZStackTests.self) }
     func testApplication() { conform(ApplicationTests.self) }
     func testContextMenu() { conform(ContextMenuTests.self) }
+    func testPopover() { conform(PopoverTests.self) }
     func testButtonMenu() { conform(ButtonMenuTests.self) }
     func testMenu() { conform(MenuTests.self) }
     func testMenuBar() { conform(MenuBarTests.self) }
     func testMenuItem() { conform(MenuItemTests.self) }
-    func testDivider() { conform(DividerTests.self) }
+    func testMenuToggle() { conform(MenuToggleTests.self) }
+    func testSeparator() { conform(SeparatorTests.self) }
     func testMenuSeparator() { conform(MenuSeparatorTests.self) }
-    func testModalStack() { conform(ModalStackTests.self) }
+    func testAnchor() { conform(AnchorTests.self) }
+    func testSheet() { conform(SheetTests.self) }
     func testNavigationStack() { conform(NavigationStackTests.self) }
     func testOverlay() { conform(OverlayTests.self) }
+    func testBottomBar() { conform(BottomBarTests.self) }
     func testPage() { conform(PageTests.self) }
     func testMarker() { conform(MarkerTests.self) }
     func testScene() { conform(SceneTests.self) }
@@ -69,8 +74,10 @@ final class GTKConformanceTests: XCTestCase {
     func testSplitView() { conform(SplitViewTests.self) }
     func testTabView() { conform(TabViewTests.self) }
     func testTitleView() { conform(TitleViewTests.self) }
-    func testToolbarItem() { conform(ToolbarItemTests.self) }
-    func testToolbarItemGroup() { conform(ToolbarItemGroupTests.self) }
+    func testToolbarButton() { conform(ToolbarButtonTests.self) }
+    func testToolbarGroup() { conform(ToolbarGroupTests.self) }
+    func testToolbarLabel() { conform(ToolbarLabelTests.self) }
+    func testToolbarToggle() { conform(ToolbarToggleTests.self) }
     func testWindow() { conform(WindowTests.self) }
     func testAutomationElement() { conform(AutomationElementTests.self) }
     func testVisualElement() { conform(VisualElementTests.self) }
@@ -82,7 +89,7 @@ final class GTKConformanceTests: XCTestCase {
     func testFilledShape() { conform(FilledShapeTests.self) }
     func testCorneredShape() { conform(CorneredShapeTests.self) }
     func testTextualElement() { conform(TextualElementTests.self) }
-    func testTextStyleElement() { conform(TextStyleElementTests.self) }
+    func testTextColorElement() { conform(TextColorElementTests.self) }
     func testFontElement() { conform(FontElementTests.self) }
     func testTextAlignmentElement() { conform(TextAlignmentElementTests.self) }
     func testLineHeightElement() { conform(LineHeightElementTests.self) }
@@ -94,8 +101,15 @@ final class GTKConformanceTests: XCTestCase {
     func testTintElement() { conform(TintElementTests.self) }
     func testKeyboardElement() { conform(KeyboardElementTests.self) }
     func testFocusElement() { conform(FocusElementTests.self) }
+    func testRefreshElement() { conform(RefreshElementTests.self) }
     func testBarElement() { conform(BarElementTests.self) }
+    func testBarItemElement() { conform(BarItemElementTests.self) }
+    func testBarButtonElement() { conform(BarButtonElementTests.self) }
     func testMenuItemElement() { conform(MenuItemElementTests.self) }
+    func testActionElement() { conform(ActionElementTests.self) }
+    func testButtonMenuElement() { conform(ButtonMenuElementTests.self) }
+    func testLink() { conform(LinkTests.self) }
+    func testTextAndIconElement() { conform(TextAndIconElementTests.self) }
     func testPageElement() { conform(PageElementTests.self) }
 
     /// Runs `family` on GTK, and holds its verdicts to the family's file of GTK's marks.

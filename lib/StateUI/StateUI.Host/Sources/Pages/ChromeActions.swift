@@ -3,127 +3,93 @@
 
 @_spi(Host) import StateUI
 
-/// The actions a chrome shows, composed from the groups the visible path declares, the same on every host: each
-/// edge's groups in reading order - a declaration and those joining it by id, one shared background - and the
-/// actions placed behind the overflow.
-/// Design: docs/design/host/pages.md#the-actions-of-a-path
+/// The actions a chrome shows, the same on every host: the groups standing on its page's bar - or on the part of its
+/// split view's one bar the page stands under - each at its position in reading order, one group one shared
+/// background, and the overflow's sections.
+/// Design: docs/design/host/pages.md#a-pages-actions
 @_spi(Host) @MainActor public struct ChromeActions {
-    /// The groups at the bar's leading edge, in reading order.
-    public private(set) var leading: [[MountedElement]] = []
+    /// The groups at the bar's start, in reading order.
+    public private(set) var start: [[MountedElement]] = []
 
-    /// The groups at the bar's trailing edge, in reading order.
-    public private(set) var trailing: [[MountedElement]] = []
+    /// The groups at the bar's end, in reading order.
+    public private(set) var end: [[MountedElement]] = []
 
-    /// The actions behind the overflow, in the order composed.
-    public private(set) var overflow: [MountedElement] = []
+    /// The groups behind the overflow, each a section of it, in reading order.
+    public private(set) var overflowSections: [[MountedElement]] = []
 
-    /// The trailing actions in reading order, for a bar that draws no groups.
-    public var primary: [MountedElement] { trailing.flatMap { $0 } }
+    /// The actions behind the overflow, in reading order.
+    public var overflow: [MountedElement] { overflowSections.flatMap { $0 } }
+
+    /// Whether the bar holds no action, on it or behind its overflow.
+    public var isEmpty: Bool { start.isEmpty && end.isEmpty && overflowSections.isEmpty }
+
+    /// The actions at the end in reading order, for a bar that draws no groups.
+    public var primary: [MountedElement] { end.flatMap { $0 } }
 
     /// None.
     public init() {}
 
-    /// The actions of `declared` - toolbar groups, each with its level on the path, the outermost 0.
-    init(_ declared: [(element: MountedElement, level: Int)]) {
-        let declarations = declared.enumerated().map { Declaration($1.element, level: $1.level, index: $0) }
-
-        // A group joins the one of its id declared further out; the outermost heads it.
-        // Design: docs/design/host/pages.md#the-actions-of-a-path
-        var groups: [[Declaration]] = []
-        var byId: [ElementID: Int] = [:]
-        for declaration in declarations {
-            let id = declaration.group.id
-            if id.isManual, let at = byId[id] {
-                groups[at].append(declaration)
-            } else {
-                if id.isManual { byId[id] = groups.count }
-                groups.append([declaration])
+    /// The actions of `declared` standing in `part` of a split view's bar - all of them where it is nil, a page off
+    /// any split view - its sidebar shown on screen or not.
+    init(_ declared: [Declared], part: ToolbarPart?, sidebarShown: Bool) {
+        var placed: [(group: Declared, position: ToolbarPosition, index: Int)] = []
+        for (index, group) in declared.enumerated() {
+            guard var position = group.position else { continue }
+            if let part {
+                var stands = group.part
+                // The sidebar's part not shown: its groups stand at the start of the detail's, or hide with it.
+                if stands == .sidebar, !sidebarShown {
+                    if group.hidesWithSidebar { continue }
+                    (stands, position) = (.detail, position == .overflow ? .overflow : .start)
+                }
+                guard stands == part else { continue }
             }
+            placed.append((group, position, index))
         }
 
-        let placed = groups.map { members -> (head: Declaration, items: [Placed]) in
-            let head = members[0]
-            let items = members.sorted { $0.key(on: head.side) < $1.key(on: head.side) }.flatMap { member in
-                member.group.children.filter { $0.type == .toolbarItem }.map { Placed(item: $0, from: member) }
+        for position in [ToolbarPosition.start, .end, .overflow] {
+            let outerFirst = position != .end
+            // By order, then the outer at the edge - first at the start, last at the end - then as declared.
+            let key = { (each: (group: Declared, position: ToolbarPosition, index: Int)) in
+                (each.group.order, outerFirst ? each.group.depth : -each.group.depth, each.index)
             }
-            return (head, items)
-        }
-
-        let composed = [ToolbarSide.leading, .trailing].flatMap { side in
-            placed.filter { $0.head.side == side }.sorted { $0.head.key(on: side) < $1.head.key(on: side) }
-        }
-        let standing = Self.standing(composed.flatMap(\.items))
-
-        for group in composed {
-            let items = group.items.compactMap { standing[ObjectIdentifier($0.item)] }
-            let onBar = items.filter { !$0.isOverflow }
-            overflow += items.filter(\.isOverflow)
-            guard !onBar.isEmpty else { continue }
-            if group.head.side == .leading { leading.append(onBar) } else { trailing.append(onBar) }
+            let standing = placed.filter { $0.position == position }.sorted { key($0) < key($1) }
+            for each in standing {
+                let items = each.group.element.children.filter { NodeType.toolbarItemTypes.contains($0.type) }
+                guard !items.isEmpty else { continue }
+                switch position {
+                case .start: start.append(items)
+                case .end: end.append(items)
+                case .overflow: overflowSections.append(items)
+                }
+            }
         }
     }
 
-    /// The item standing in each place: an item of an id declared further in stands in the place of the outermost
-    /// of that id, which the others leave; an item of no id stands in its own.
-    private static func standing(_ items: [Placed]) -> [ObjectIdentifier: MountedElement] {
-        var outermost: [ElementID: Placed] = [:]
-        var innermost: [ElementID: Placed] = [:]
-        for placed in items where placed.item.id.isManual {
-            let id = placed.item.id
-            if outermost[id].map({ placed.depth < $0.depth }) ?? true { outermost[id] = placed }
-            if innermost[id].map({ placed.depth > $0.depth }) ?? true { innermost[id] = placed }
-        }
+    /// A toolbar group as its declarer declares it.
+    @MainActor struct Declared {
+        let element: MountedElement
 
-        var standing: [ObjectIdentifier: MountedElement] = [:]
-        for placed in items {
-            guard placed.item.id.isManual else {
-                standing[ObjectIdentifier(placed.item)] = placed.item
-                continue
-            }
-            guard outermost[placed.item.id]?.item === placed.item else { continue }
-            standing[ObjectIdentifier(placed.item)] = innermost[placed.item.id]?.item
-        }
-        return standing
-    }
+        /// How far out its declarer stands: below nought for an arrangement's own, the outermost lowest, else how deep
+        /// in its page's tree it stands.
+        let depth: Int
 
-    /// One toolbar group as the path declares it.
-    @MainActor private struct Declaration {
-        let group: MountedElement
-        let level: Int
-        let index: Int
+        /// The part it stands in: its own, else its declarer's.
+        let part: ToolbarPart
+
         let order: Int
-        let side: ToolbarSide
+        let hidesWithSidebar: Bool
 
-        init(_ group: MountedElement, level: Int, index: Int) {
-            self.group = group
-            self.level = level
-            self.index = index
-            order = Int(group.value(.order)?.number ?? 0)
-            side = group.value(.side)?.enumeration.flatMap { ToolbarSide(rawValue: Int32($0)) } ?? .trailing
+        /// Where on the bar it stands; nil for a position no host knows.
+        let position: ToolbarPosition?
+
+        init(_ element: MountedElement, depth: Int, declarersPart: ToolbarPart) {
+            self.element = element
+            self.depth = depth
+            part = element.value(.part)?.enumeration.flatMap { ToolbarPart(rawValue: Int32($0)) } ?? declarersPart
+            order = Int(element.value(.order)?.number ?? 0)
+            hidesWithSidebar = element.value(.hidesWithSidebar)?.bool ?? false
+            position = element.value(.position)?.enumeration.map { ToolbarPosition(rawValue: Int32($0)) } ?? .end
         }
-
-        /// Where it stands at `side`: by its order, then the outer in place at the edge - first on the leading side,
-        /// last on the trailing - then as declared.
-        func key(on side: ToolbarSide) -> (Int, Int, Int) {
-            (order, side == .leading ? level : -level, index)
-        }
-    }
-
-    /// An item where a declaration puts it.
-    @MainActor private struct Placed {
-        let item: MountedElement
-        let depth: (Int, Int)
-
-        init(item: MountedElement, from declaration: Declaration) {
-            self.item = item
-            depth = (declaration.level, declaration.index)
-        }
-    }
-}
-
-extension MountedElement {
-    /// Whether this action stands behind the overflow.
-    fileprivate var isOverflow: Bool {
-        value(.placement)?.enumeration == ToolbarItemPlacement.overflow.rawValue
     }
 }

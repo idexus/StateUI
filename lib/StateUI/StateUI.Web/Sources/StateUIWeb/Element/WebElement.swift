@@ -22,6 +22,9 @@ final class WebElement: NativeElement {
     /// Whether the view's size changing is followed, for a frame the tree reads.
     var observesSize = false
 
+    /// A page's bottom bar over its foot, made once one is declared.
+    var bottomBar: WebBottomBar?
+
     /// Whether the view listens for the user's asking for its context menu.
     var listensForMenu = false
     var listensForButtonMenu = false
@@ -77,14 +80,19 @@ final class WebElement: NativeElement {
         }
         configureLayoutMotion()
         if !still { arrangeChildren() }
+        // A page stands against its safe area again as it or its content says another way (`standInTheSafeArea`).
+        if !still { standInTheSafeArea() }
+        if changed.contains(.ignoresSafeArea) { element.parent?.web.standInTheSafeArea() }
         listenForTheUser()
         offerContextMenu()
         offerButtonMenu()
+        configurePopover()
         followFrame()
     }
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if changed.contains(.isPresented) { configurePopover() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = view as? WebSplitView {
             split.ground(beside: element.sidebarMaterial(over: false), over: element.sidebarMaterial(over: true))
             host?.refreshChrome()
@@ -112,12 +120,10 @@ final class WebElement: NativeElement {
         element.chosen(in: host.runtime)
     }
 
-    /// A value the user changed in the view; a radio button's peers turned off on their own buttons.
+    /// A value the user changed in the view, by the host layer's rule (`reportUserChange`).
     func report(_ property: Prop, _ event: Event, _ value: HostValue) {
         guard let host else { return }
-        element.reportUserChange(property, event, value, in: host.runtime) { peer in
-            ((peer.native as? WebElement)?.view as? WebRadioView)?.setOn(false)
-        }
+        element.reportUserChange(property, event, value, in: host.runtime)
     }
 }
 

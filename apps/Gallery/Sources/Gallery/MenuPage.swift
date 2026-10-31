@@ -5,14 +5,28 @@ import StateUI
 // listing: MenuPage
 /// The gallery's sidebar - and it is an ordinary page.
 ///
-/// That is the whole point of it. Some rows, a line at the bottom, and - on
-/// Android, where nothing else names the gallery - the mark at the top. A row
+/// That is the whole point of it. Some rows and a line at the bottom. A row
 /// is a view with a tap on it that writes state. There is no menu vocabulary
 /// to learn: what can go in the pane is whatever can go on a page, and what a
 /// row does is whatever a handler can do.
 ///
-/// Its title names the pane on hosts whose navigation chrome exposes that name.
+/// Its title and picture name the gallery where the platform's chrome names
+/// an application over the sidebar.
 struct MenuPage: View {
+    /// The gallery's mark beside its name: none on Windows, where a mark on the
+    /// title bar reads as a button; the violet one on Android's sidebar bar,
+    /// which stands on the theme's light or dark ground.
+    private static var mark: ImageSource {
+        #if WINUI
+        ""
+        #elseif ANDROID
+        ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png")
+        #else
+        "stateui_mark.png"
+        #endif
+    }
+
+
     /// Everything the gallery shows - the rows are one per group.
     let catalog: Catalog
 
@@ -33,49 +47,24 @@ struct MenuPage: View {
     @Environment(\.device) private var device
 
     var body: some View {
+        // The rows run under the bars, the first and the last stopping clear
+        // of them.
         Grid {
-            // The name over the menu where the platform says it nowhere else:
-            // Android's drawer has no bar of its own. Everywhere else the
-            // window's chrome or the sidebar's bar names the gallery already.
-            #if ANDROID
-            header
-            #endif
-
             ScrollView {
                 rows
             }
-            .gridRow(1)
-
-            footer
-
-            WindowPhaseLog(log: log)
         }
-        // Three rows: the header and the footer keep their height, and the
-        // rows take what is left and scroll between them.
-        .rows(.auto, .fill, .auto)
+        .ignoresSafeArea(.all)
         .title("StateUI")
-        // The picture on the button that opens the menu, where the host draws
-        // that button from this page.
-        .icon(ImageSource(light: "nav_menu.png", dark: "nav_menu_dark.png"))
-    }
-
-    /// The mark and the name, on the pane the platform draws - where nothing
-    /// else names the gallery over its menu.
-    private var header: some View {
-        HStack {
-            Image(ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png"))
-                .width(28)
-                .height(28)
-                .verticalAlignment(.center)
-
-            Text("StateUI")
-                .fontSize(20)
-                .fontWeight(.bold)
-                .tracking(-0.3)
-                .verticalAlignment(.center)
+        .icon(Self.mark)
+        // The line about what this is stands at the menu's foot, and the rows
+        // scroll under it.
+        .bottomBar {
+            ZStack {
+                footer
+                WindowPhaseLog(log: log)
+            }
         }
-        .spacing(10)
-        .padding(left: 20, top: 12, right: 20, bottom: 8)   // listing: keep
     }
 
     /// Home, one row per group, the row that is not always listed, and the one
@@ -121,9 +110,13 @@ struct MenuPage: View {
             .fontSize(11)
             .textColor(Palette.subtle)
             .horizontalTextAlignment(.center)
-            .padding(12)   // listing: keep
-            // The footer's own row, written on the footer.
-            .gridRow(2)
+            #if UIKIT
+            // Above the home indicator's strip, which stands under it: none
+            // of its own beneath.
+            .padding(start: 12, top: 8, end: 12, bottom: 0)   // listing: keep
+            #else
+            .padding(horizontal: 12, vertical: 8)   // listing: keep
+            #endif
     }
 }
 // listing: end

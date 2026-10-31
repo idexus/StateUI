@@ -1,17 +1,24 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What kind of window a group opens - the name a scene declares one under,
-/// and a session's `openWindow` opens one by.
+/// What kind of window a group opens, and for what value - the name a scene declares one under, and a session's
+/// `openWindow` opens one by.
 ///
-///     extension WindowType {
+///     extension WindowType where Value == Void {
 ///         static let fonts = WindowType("fonts")
+///     }
+///
+///     extension WindowType where Value == UUID {
 ///         static let document = WindowType("document")
 ///     }
 ///
-/// The name is written down with every window the system may restore, so it
-/// should not change between versions of the application.
-public struct WindowType: Hashable, Sendable, CustomStringConvertible, HostRepresentable {
+///     try await application.openWindow(.fonts)
+///     try await application.openWindow(.document, value: id)
+///
+/// A kind of no value opens with none, and a kind of a value only with a value of its type: the compiler refuses
+/// the other. The name is written down with every window the system may restore, so it should not change between
+/// versions of the application.
+public struct WindowType<Value>: Hashable, Sendable, CustomStringConvertible {
     /// The name - what is written down with a window of this kind.
     public var name: String { key.name }
 
@@ -27,18 +34,9 @@ public struct WindowType: Hashable, Sendable, CustomStringConvertible, HostRepre
 
     /// The name, so an interpolated diagnostic prints it plainly.
     public var description: String { name }
+}
 
-    /// The name, crossing as a `.name`.
-    public var propValue: PropValue { .name(name) }
-
-    /// A kind back from its name - nil for any other kind of value.
-    /// - Parameter propValue: what the host sent.
-    public init?(propValue: PropValue) {
-        guard case .name(let name) = propValue else { return nil }
-
-        self.init(name)
-    }
-
+extension WindowType where Value == Void {
     /// The inspector that shows what every render costs and builds - see
     /// `DebugInspector`, which is its window.
     ///

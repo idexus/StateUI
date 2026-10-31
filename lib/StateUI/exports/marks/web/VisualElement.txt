@@ -1,42 +1,16 @@
-# revision 14.1
-ActivityIndicator.accessibilityHeading: ✅
-ActivityIndicator.accessibilityHint: ✅
-ActivityIndicator.accessibilityLabel: ✅
-ActivityIndicator.automationExcludedWithChildren: ✅
-ActivityIndicator.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
-ActivityIndicator.frame: ✅
-ActivityIndicator.height: ✅
-ActivityIndicator.ignoresInput: ✅
-ActivityIndicator.isAccessibilityHidden: ✅
-ActivityIndicator.isEnabled: ✅
-ActivityIndicator.isVisible: ✅
-ActivityIndicator.layoutDirection: ✅
-ActivityIndicator.maximumHeight: ✅
-ActivityIndicator.maximumWidth: ✅
-ActivityIndicator.minimumHeight: ✅
-ActivityIndicator.minimumWidth: ✅
-ActivityIndicator.opacity: ✅
-ActivityIndicator.pivotX: ✓ read pivotX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.pivotY: ✓ read pivotY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.rotation: ✓ read rotation of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.rotationX: ✓ read rotationX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.rotationY: ✓ read rotationY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.scale: ✓ read scale of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.scaleX: ✓ read scaleX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.scaleY: ✓ read scaleY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.style: ✅
-ActivityIndicator.tooltip: ✅
-ActivityIndicator.translationX: ✓ read translationX of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.translationY: ✓ read translationY of ActivityIndicator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ActivityIndicator.width: ✅
-ActivityIndicator.zIndex: ✅
+# revision 22.1
+Button.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Button.accessibilityActions: – ARIA offers no action of an application's own words.
+Button.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Button.accessibilityHeading: ✅
 Button.accessibilityHint: ✅
 Button.accessibilityLabel: ✅
-Button.automationExcludedWithChildren: ✅
-Button.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Button.accessibilityRole: ✅
+Button.accessibilityValue: ✅
+Button.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Button.frame: ✅
 Button.height: ✅
+Button.hidesChildrenFromAccessibility: ✅
 Button.ignoresInput: ✅
 Button.isAccessibilityHidden: ✅
 Button.isEnabled: ✅
@@ -61,13 +35,18 @@ Button.translationX: ✓ read translationX of Button: the host's own transform: 
 Button.translationY: ✓ read translationY of Button: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Button.width: ✅
 Button.zIndex: ✅
+Canvas.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Canvas.accessibilityActions: – ARIA offers no action of an application's own words.
+Canvas.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Canvas.accessibilityHeading: ✅
 Canvas.accessibilityHint: ✅
 Canvas.accessibilityLabel: ✅
-Canvas.automationExcludedWithChildren: ✅
-Canvas.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Canvas.accessibilityRole: ✅
+Canvas.accessibilityValue: ✅
+Canvas.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Canvas.frame: ✅
 Canvas.height: ✅
+Canvas.hidesChildrenFromAccessibility: ✅
 Canvas.ignoresInput: ✅
 Canvas.isAccessibilityHidden: ✅
 Canvas.isEnabled: ✅
@@ -92,13 +71,18 @@ Canvas.translationX: ✓ read translationX of Canvas: the host's own transform: 
 Canvas.translationY: ✓ read translationY of Canvas: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Canvas.width: ✅
 Canvas.zIndex: ✅
+Capsule.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Capsule.accessibilityActions: – ARIA offers no action of an application's own words.
+Capsule.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Capsule.accessibilityHeading: ✅
 Capsule.accessibilityHint: ✅
 Capsule.accessibilityLabel: ✅
-Capsule.automationExcludedWithChildren: ✅
-Capsule.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Capsule.accessibilityRole: ✅
+Capsule.accessibilityValue: ✅
+Capsule.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Capsule.frame: ✅
 Capsule.height: ✅
+Capsule.hidesChildrenFromAccessibility: ✅
 Capsule.ignoresInput: ✅
 Capsule.isAccessibilityHidden: ✅
 Capsule.isEnabled: ✅
@@ -123,13 +107,18 @@ Capsule.translationX: ✓ read translationX of Capsule: the host's own transform
 Capsule.translationY: ✓ read translationY of Capsule: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Capsule.width: ✅
 Capsule.zIndex: ✅
+CheckBox.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+CheckBox.accessibilityActions: – ARIA offers no action of an application's own words.
+CheckBox.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 CheckBox.accessibilityHeading: ✅
 CheckBox.accessibilityHint: ✅
 CheckBox.accessibilityLabel: ✅
-CheckBox.automationExcludedWithChildren: ✅
-CheckBox.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+CheckBox.accessibilityRole: ✅
+CheckBox.accessibilityValue: ✅
+CheckBox.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 CheckBox.frame: ✅
 CheckBox.height: ✅
+CheckBox.hidesChildrenFromAccessibility: ✅
 CheckBox.ignoresInput: ✅
 CheckBox.isAccessibilityHidden: ✅
 CheckBox.isEnabled: ✅
@@ -154,13 +143,54 @@ CheckBox.translationX: ✓ read translationX of CheckBox: the host's own transfo
 CheckBox.translationY: ✓ read translationY of CheckBox: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 CheckBox.width: ✅
 CheckBox.zIndex: ✅
+ColorPicker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ColorPicker.accessibilityActions: – ARIA offers no action of an application's own words.
+ColorPicker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+ColorPicker.accessibilityHeading: ✅
+ColorPicker.accessibilityHint: ✅
+ColorPicker.accessibilityLabel: ✅
+ColorPicker.accessibilityRole: ✅
+ColorPicker.accessibilityValue: ✅
+ColorPicker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+ColorPicker.frame: ✅
+ColorPicker.height: ✅
+ColorPicker.hidesChildrenFromAccessibility: ✅
+ColorPicker.ignoresInput: ✅
+ColorPicker.isAccessibilityHidden: ✅
+ColorPicker.isEnabled: ✅
+ColorPicker.isVisible: ✅
+ColorPicker.layoutDirection: ✅
+ColorPicker.maximumHeight: ✅
+ColorPicker.maximumWidth: ✅
+ColorPicker.minimumHeight: ✅
+ColorPicker.minimumWidth: ✅
+ColorPicker.opacity: ✅
+ColorPicker.pivotX: ✓ read pivotX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.pivotY: ✓ read pivotY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.rotation: ✓ read rotation of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.rotationX: ✓ read rotationX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.rotationY: ✓ read rotationY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.scale: ✓ read scale of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.scaleX: ✓ read scaleX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.scaleY: ✓ read scaleY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.style: ✅
+ColorPicker.tooltip: ✅
+ColorPicker.translationX: ✓ read translationX of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.translationY: ✓ read translationY of ColorPicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+ColorPicker.width: ✅
+ColorPicker.zIndex: ✅
+DatePicker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+DatePicker.accessibilityActions: – ARIA offers no action of an application's own words.
+DatePicker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 DatePicker.accessibilityHeading: ✅
 DatePicker.accessibilityHint: ✅
 DatePicker.accessibilityLabel: ✅
-DatePicker.automationExcludedWithChildren: ✅
-DatePicker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+DatePicker.accessibilityRole: ✅
+DatePicker.accessibilityValue: ✅
+DatePicker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 DatePicker.frame: ✅
 DatePicker.height: ✅
+DatePicker.hidesChildrenFromAccessibility: ✅
 DatePicker.ignoresInput: ✅
 DatePicker.isAccessibilityHidden: ✅
 DatePicker.isEnabled: ✅
@@ -185,44 +215,18 @@ DatePicker.translationX: ✓ read translationX of DatePicker: the host's own tra
 DatePicker.translationY: ✓ read translationY of DatePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 DatePicker.width: ✅
 DatePicker.zIndex: ✅
-Divider.accessibilityHeading: ✅
-Divider.accessibilityHint: ✅
-Divider.accessibilityLabel: ✅
-Divider.automationExcludedWithChildren: ✅
-Divider.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
-Divider.frame: ✅
-Divider.height: ✅
-Divider.ignoresInput: ✅
-Divider.isAccessibilityHidden: ✅
-Divider.isEnabled: ✅
-Divider.isVisible: ✅
-Divider.layoutDirection: ✅
-Divider.maximumHeight: ✅
-Divider.maximumWidth: ✅
-Divider.minimumHeight: ✅
-Divider.minimumWidth: ✅
-Divider.opacity: ✅
-Divider.pivotX: ✓ read pivotX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.pivotY: ✓ read pivotY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.rotation: ✓ read rotation of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.rotationX: ✓ read rotationX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.rotationY: ✓ read rotationY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.scale: ✓ read scale of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.scaleX: ✓ read scaleX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.scaleY: ✓ read scaleY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.style: ✅
-Divider.tooltip: ✅
-Divider.translationX: ✓ read translationX of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.translationY: ✓ read translationY of Divider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Divider.width: ✅
-Divider.zIndex: ✅
+Ellipse.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Ellipse.accessibilityActions: – ARIA offers no action of an application's own words.
+Ellipse.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Ellipse.accessibilityHeading: ✅
 Ellipse.accessibilityHint: ✅
 Ellipse.accessibilityLabel: ✅
-Ellipse.automationExcludedWithChildren: ✅
-Ellipse.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Ellipse.accessibilityRole: ✅
+Ellipse.accessibilityValue: ✅
+Ellipse.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Ellipse.frame: ✅
 Ellipse.height: ✅
+Ellipse.hidesChildrenFromAccessibility: ✅
 Ellipse.ignoresInput: ✅
 Ellipse.isAccessibilityHidden: ✅
 Ellipse.isEnabled: ✅
@@ -247,13 +251,54 @@ Ellipse.translationX: ✓ read translationX of Ellipse: the host's own transform
 Ellipse.translationY: ✓ read translationY of Ellipse: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Ellipse.width: ✅
 Ellipse.zIndex: ✅
+Fill.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Fill.accessibilityActions: – ARIA offers no action of an application's own words.
+Fill.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+Fill.accessibilityHeading: ✅
+Fill.accessibilityHint: ✅
+Fill.accessibilityLabel: ✅
+Fill.accessibilityRole: ✅
+Fill.accessibilityValue: ✅
+Fill.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+Fill.frame: ✅
+Fill.height: ✅
+Fill.hidesChildrenFromAccessibility: ✅
+Fill.ignoresInput: ✅
+Fill.isAccessibilityHidden: ✅
+Fill.isEnabled: ✅
+Fill.isVisible: ✅
+Fill.layoutDirection: ✅
+Fill.maximumHeight: ✅
+Fill.maximumWidth: ✅
+Fill.minimumHeight: ✅
+Fill.minimumWidth: ✅
+Fill.opacity: ✅
+Fill.pivotX: ✓ read pivotX of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.pivotY: ✓ read pivotY of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.rotation: ✓ read rotation of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.rotationX: ✓ read rotationX of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.rotationY: ✓ read rotationY of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.scale: ✓ read scale of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.scaleX: ✓ read scaleX of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.scaleY: ✓ read scaleY of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.style: ✅
+Fill.tooltip: ✅
+Fill.translationX: ✓ read translationX of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.translationY: ✓ read translationY of Fill: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Fill.width: ✅
+Fill.zIndex: ✅
+Grid.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Grid.accessibilityActions: – ARIA offers no action of an application's own words.
+Grid.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Grid.accessibilityHeading: ✅
 Grid.accessibilityHint: ✅
 Grid.accessibilityLabel: ✅
-Grid.automationExcludedWithChildren: ✅
-Grid.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+Grid.accessibilityRole: ✅
+Grid.accessibilityValue: ✅
+Grid.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 Grid.frame: ✅
 Grid.height: ✅
+Grid.hidesChildrenFromAccessibility: ✅
 Grid.ignoresInput: ✅
 Grid.isAccessibilityHidden: ✅
 Grid.isEnabled: ✅
@@ -278,13 +323,18 @@ Grid.translationX: ✓ read translationX of Grid: the host's own transform: the 
 Grid.translationY: ✓ read translationY of Grid: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Grid.width: ✅
 Grid.zIndex: ✅
+HStack.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+HStack.accessibilityActions: – ARIA offers no action of an application's own words.
+HStack.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 HStack.accessibilityHeading: ✅
 HStack.accessibilityHint: ✅
 HStack.accessibilityLabel: ✅
-HStack.automationExcludedWithChildren: ✅
-HStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+HStack.accessibilityRole: ✅
+HStack.accessibilityValue: ✅
+HStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 HStack.frame: ✅
 HStack.height: ✅
+HStack.hidesChildrenFromAccessibility: ✅
 HStack.ignoresInput: ✅
 HStack.isAccessibilityHidden: ✅
 HStack.isEnabled: ✅
@@ -309,13 +359,18 @@ HStack.translationX: ✓ read translationX of HStack: the host's own transform: 
 HStack.translationY: ✓ read translationY of HStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 HStack.width: ✅
 HStack.zIndex: ✅
+Image.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Image.accessibilityActions: – ARIA offers no action of an application's own words.
+Image.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Image.accessibilityHeading: ✅
 Image.accessibilityHint: ✅
 Image.accessibilityLabel: ✅
-Image.automationExcludedWithChildren: ✅
-Image.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Image.accessibilityRole: ✅
+Image.accessibilityValue: ✅
+Image.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Image.frame: ✅
 Image.height: ✅
+Image.hidesChildrenFromAccessibility: ✅
 Image.ignoresInput: ✅
 Image.isAccessibilityHidden: ✅
 Image.isEnabled: ✅
@@ -340,13 +395,18 @@ Image.translationX: ✓ read translationX of Image: the host's own transform: th
 Image.translationY: ✓ read translationY of Image: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Image.width: ✅
 Image.zIndex: ✅
+ItemsView.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ItemsView.accessibilityActions: – ARIA offers no action of an application's own words.
+ItemsView.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 ItemsView.accessibilityHeading: ✅
 ItemsView.accessibilityHint: ✅
 ItemsView.accessibilityLabel: ✅
-ItemsView.automationExcludedWithChildren: ✅
-ItemsView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+ItemsView.accessibilityRole: ✅
+ItemsView.accessibilityValue: ✅
+ItemsView.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 ItemsView.frame: ✅
 ItemsView.height: ✅
+ItemsView.hidesChildrenFromAccessibility: ✅
 ItemsView.ignoresInput: ✅
 ItemsView.isAccessibilityHidden: ✅
 ItemsView.isEnabled: ✅
@@ -371,44 +431,18 @@ ItemsView.translationX: ✓ read translationX of ItemsView: the host's own trans
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.width: ✅
 ItemsView.zIndex: ✅
-LayoutEngine.accessibilityHeading: ✅
-LayoutEngine.accessibilityHint: ✅
-LayoutEngine.accessibilityLabel: ✅
-LayoutEngine.automationExcludedWithChildren: ✅
-LayoutEngine.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
-LayoutEngine.frame: ✅
-LayoutEngine.height: ✅
-LayoutEngine.ignoresInput: ✅
-LayoutEngine.isAccessibilityHidden: ✅
-LayoutEngine.isEnabled: ✅
-LayoutEngine.isVisible: ✅
-LayoutEngine.layoutDirection: ✅
-LayoutEngine.maximumHeight: ✅
-LayoutEngine.maximumWidth: ✅
-LayoutEngine.minimumHeight: ✅
-LayoutEngine.minimumWidth: ✅
-LayoutEngine.opacity: ✅
-LayoutEngine.pivotX: ✓ read pivotX of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.pivotY: ✓ read pivotY of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.rotation: ✓ read rotation of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.rotationX: ✓ read rotationX of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.rotationY: ✓ read rotationY of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.scale: ✓ read scale of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.scaleX: ✓ read scaleX of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.scaleY: ✓ read scaleY of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.style: not realized
-LayoutEngine.tooltip: ✅
-LayoutEngine.translationX: ✓ read translationX of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.translationY: ✓ read translationY of LayoutEngine: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-LayoutEngine.width: ✅
-LayoutEngine.zIndex: ✅
+Line.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Line.accessibilityActions: – ARIA offers no action of an application's own words.
+Line.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Line.accessibilityHeading: ✅
 Line.accessibilityHint: ✅
 Line.accessibilityLabel: ✅
-Line.automationExcludedWithChildren: ✅
-Line.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Line.accessibilityRole: ✅
+Line.accessibilityValue: ✅
+Line.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Line.frame: ✅
 Line.height: ✅
+Line.hidesChildrenFromAccessibility: ✅
 Line.ignoresInput: ✅
 Line.isAccessibilityHidden: ✅
 Line.isEnabled: ✅
@@ -433,13 +467,54 @@ Line.translationX: ✓ read translationX of Line: the host's own transform: the 
 Line.translationY: ✓ read translationY of Line: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Line.width: ✅
 Line.zIndex: ✅
+Link.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Link.accessibilityActions: – ARIA offers no action of an application's own words.
+Link.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+Link.accessibilityHeading: ✅
+Link.accessibilityHint: ✅
+Link.accessibilityLabel: ✅
+Link.accessibilityRole: ✅
+Link.accessibilityValue: ✅
+Link.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Link.frame: ✅
+Link.height: ✅
+Link.hidesChildrenFromAccessibility: ✅
+Link.ignoresInput: ✅
+Link.isAccessibilityHidden: ✅
+Link.isEnabled: ✅
+Link.isVisible: ✅
+Link.layoutDirection: ✅
+Link.maximumHeight: ✅
+Link.maximumWidth: ✅
+Link.minimumHeight: ✅
+Link.minimumWidth: ✅
+Link.opacity: ✅
+Link.pivotX: ✓ read pivotX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.pivotY: ✓ read pivotY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.rotation: ✓ read rotation of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.rotationX: ✓ read rotationX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.rotationY: ✓ read rotationY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.scale: ✓ read scale of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.scaleX: ✓ read scaleX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.scaleY: ✓ read scaleY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.style: ✅
+Link.tooltip: ✅
+Link.translationX: ✓ read translationX of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.translationY: ✓ read translationY of Link: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Link.width: ✅
+Link.zIndex: ✅
+Map.accessibilityActionPerformed: 🧩
+Map.accessibilityActions: 🧩
+Map.accessibilityAdjusted: 🧩
 Map.accessibilityHeading: 🧩
 Map.accessibilityHint: 🧩
 Map.accessibilityLabel: 🧩
-Map.automationExcludedWithChildren: 🧩
+Map.accessibilityRole: 🧩
+Map.accessibilityValue: 🧩
 Map.background: 🧩
 Map.frame: 🧩
 Map.height: 🧩
+Map.hidesChildrenFromAccessibility: 🧩
 Map.ignoresInput: 🧩
 Map.isAccessibilityHidden: 🧩
 Map.isEnabled: 🧩
@@ -464,13 +539,54 @@ Map.translationX: 🧩
 Map.translationY: 🧩
 Map.width: 🧩
 Map.zIndex: 🧩
+MotionLayout.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+MotionLayout.accessibilityActions: – ARIA offers no action of an application's own words.
+MotionLayout.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+MotionLayout.accessibilityHeading: ✅
+MotionLayout.accessibilityHint: ✅
+MotionLayout.accessibilityLabel: ✅
+MotionLayout.accessibilityRole: ✅
+MotionLayout.accessibilityValue: ✅
+MotionLayout.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+MotionLayout.frame: ✅
+MotionLayout.height: ✅
+MotionLayout.hidesChildrenFromAccessibility: ✅
+MotionLayout.ignoresInput: ✅
+MotionLayout.isAccessibilityHidden: ✅
+MotionLayout.isEnabled: ✅
+MotionLayout.isVisible: ✅
+MotionLayout.layoutDirection: ✅
+MotionLayout.maximumHeight: ✅
+MotionLayout.maximumWidth: ✅
+MotionLayout.minimumHeight: ✅
+MotionLayout.minimumWidth: ✅
+MotionLayout.opacity: ✅
+MotionLayout.pivotX: ✓ read pivotX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.pivotY: ✓ read pivotY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.rotation: ✓ read rotation of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.rotationX: ✓ read rotationX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.scale: ✓ read scale of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.scaleX: ✓ read scaleX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.scaleY: ✓ read scaleY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.style: not realized
+MotionLayout.tooltip: ✅
+MotionLayout.translationX: ✓ read translationX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.translationY: ✓ read translationY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+MotionLayout.width: ✅
+MotionLayout.zIndex: ✅
+Path.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Path.accessibilityActions: – ARIA offers no action of an application's own words.
+Path.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Path.accessibilityHeading: ✅
 Path.accessibilityHint: ✅
 Path.accessibilityLabel: ✅
-Path.automationExcludedWithChildren: ✅
-Path.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Path.accessibilityRole: ✅
+Path.accessibilityValue: ✅
+Path.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Path.frame: ✅
 Path.height: ✅
+Path.hidesChildrenFromAccessibility: ✅
 Path.ignoresInput: ✅
 Path.isAccessibilityHidden: ✅
 Path.isEnabled: ✅
@@ -495,13 +611,18 @@ Path.translationX: ✓ read translationX of Path: the host's own transform: the 
 Path.translationY: ✓ read translationY of Path: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Path.width: ✅
 Path.zIndex: ✅
+Picker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Picker.accessibilityActions: – ARIA offers no action of an application's own words.
+Picker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Picker.accessibilityHeading: ✅
 Picker.accessibilityHint: ✅
 Picker.accessibilityLabel: ✅
-Picker.automationExcludedWithChildren: ✅
-Picker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Picker.accessibilityRole: ✅
+Picker.accessibilityValue: ✅
+Picker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Picker.frame: ✅
 Picker.height: ✅
+Picker.hidesChildrenFromAccessibility: ✅
 Picker.ignoresInput: ✅
 Picker.isAccessibilityHidden: ✅
 Picker.isEnabled: ✅
@@ -526,13 +647,18 @@ Picker.translationX: ✓ read translationX of Picker: the host's own transform: 
 Picker.translationY: ✓ read translationY of Picker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Picker.width: ✅
 Picker.zIndex: ✅
+Polygon.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Polygon.accessibilityActions: – ARIA offers no action of an application's own words.
+Polygon.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Polygon.accessibilityHeading: ✅
 Polygon.accessibilityHint: ✅
 Polygon.accessibilityLabel: ✅
-Polygon.automationExcludedWithChildren: ✅
-Polygon.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Polygon.accessibilityRole: ✅
+Polygon.accessibilityValue: ✅
+Polygon.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Polygon.frame: ✅
 Polygon.height: ✅
+Polygon.hidesChildrenFromAccessibility: ✅
 Polygon.ignoresInput: ✅
 Polygon.isAccessibilityHidden: ✅
 Polygon.isEnabled: ✅
@@ -557,13 +683,18 @@ Polygon.translationX: ✓ read translationX of Polygon: the host's own transform
 Polygon.translationY: ✓ read translationY of Polygon: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polygon.width: ✅
 Polygon.zIndex: ✅
+Polyline.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Polyline.accessibilityActions: – ARIA offers no action of an application's own words.
+Polyline.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Polyline.accessibilityHeading: ✅
 Polyline.accessibilityHint: ✅
 Polyline.accessibilityLabel: ✅
-Polyline.automationExcludedWithChildren: ✅
-Polyline.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Polyline.accessibilityRole: ✅
+Polyline.accessibilityValue: ✅
+Polyline.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Polyline.frame: ✅
 Polyline.height: ✅
+Polyline.hidesChildrenFromAccessibility: ✅
 Polyline.ignoresInput: ✅
 Polyline.isAccessibilityHidden: ✅
 Polyline.isEnabled: ✅
@@ -588,13 +719,18 @@ Polyline.translationX: ✓ read translationX of Polyline: the host's own transfo
 Polyline.translationY: ✓ read translationY of Polyline: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Polyline.width: ✅
 Polyline.zIndex: ✅
+ProgressBar.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ProgressBar.accessibilityActions: – ARIA offers no action of an application's own words.
+ProgressBar.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 ProgressBar.accessibilityHeading: ✅
 ProgressBar.accessibilityHint: ✅
 ProgressBar.accessibilityLabel: ✅
-ProgressBar.automationExcludedWithChildren: ✅
-ProgressBar.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+ProgressBar.accessibilityRole: ✅
+ProgressBar.accessibilityValue: ✅
+ProgressBar.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 ProgressBar.frame: ✅
 ProgressBar.height: ✅
+ProgressBar.hidesChildrenFromAccessibility: ✅
 ProgressBar.ignoresInput: ✅
 ProgressBar.isAccessibilityHidden: ✅
 ProgressBar.isEnabled: ✅
@@ -619,44 +755,18 @@ ProgressBar.translationX: ✓ read translationX of ProgressBar: the host's own t
 ProgressBar.translationY: ✓ read translationY of ProgressBar: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ProgressBar.width: ✅
 ProgressBar.zIndex: ✅
-RadioButton.accessibilityHeading: ✅
-RadioButton.accessibilityHint: ✅
-RadioButton.accessibilityLabel: ✅
-RadioButton.automationExcludedWithChildren: ✅
-RadioButton.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
-RadioButton.frame: ✅
-RadioButton.height: ✅
-RadioButton.ignoresInput: ✅
-RadioButton.isAccessibilityHidden: ✅
-RadioButton.isEnabled: ✅
-RadioButton.isVisible: ✅
-RadioButton.layoutDirection: ✅
-RadioButton.maximumHeight: ✅
-RadioButton.maximumWidth: ✅
-RadioButton.minimumHeight: ✅
-RadioButton.minimumWidth: ✅
-RadioButton.opacity: ✅
-RadioButton.pivotX: ✓ read pivotX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.pivotY: ✓ read pivotY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.rotation: ✓ read rotation of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.rotationX: ✓ read rotationX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.rotationY: ✓ read rotationY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.scale: ✓ read scale of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.scaleX: ✓ read scaleX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.scaleY: ✓ read scaleY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.style: ✅
-RadioButton.tooltip: ✅
-RadioButton.translationX: ✓ read translationX of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.translationY: ✓ read translationY of RadioButton: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-RadioButton.width: ✅
-RadioButton.zIndex: ✅
+Rectangle.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Rectangle.accessibilityActions: – ARIA offers no action of an application's own words.
+Rectangle.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Rectangle.accessibilityHeading: ✅
 Rectangle.accessibilityHint: ✅
 Rectangle.accessibilityLabel: ✅
-Rectangle.automationExcludedWithChildren: ✅
-Rectangle.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Rectangle.accessibilityRole: ✅
+Rectangle.accessibilityValue: ✅
+Rectangle.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Rectangle.frame: ✅
 Rectangle.height: ✅
+Rectangle.hidesChildrenFromAccessibility: ✅
 Rectangle.ignoresInput: ✅
 Rectangle.isAccessibilityHidden: ✅
 Rectangle.isEnabled: ✅
@@ -681,13 +791,18 @@ Rectangle.translationX: ✓ read translationX of Rectangle: the host's own trans
 Rectangle.translationY: ✓ read translationY of Rectangle: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Rectangle.width: ✅
 Rectangle.zIndex: ✅
+ScrollView.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ScrollView.accessibilityActions: – ARIA offers no action of an application's own words.
+ScrollView.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 ScrollView.accessibilityHeading: ✅
 ScrollView.accessibilityHint: ✅
 ScrollView.accessibilityLabel: ✅
-ScrollView.automationExcludedWithChildren: ✅
-ScrollView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+ScrollView.accessibilityRole: ✅
+ScrollView.accessibilityValue: ✅
+ScrollView.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 ScrollView.frame: ✅
 ScrollView.height: ✅
+ScrollView.hidesChildrenFromAccessibility: ✅
 ScrollView.ignoresInput: ✅
 ScrollView.isAccessibilityHidden: ✅
 ScrollView.isEnabled: ✅
@@ -712,13 +827,18 @@ ScrollView.translationX: ✓ read translationX of ScrollView: the host's own tra
 ScrollView.translationY: ✓ read translationY of ScrollView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ScrollView.width: ✅
 ScrollView.zIndex: ✅
+SearchField.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+SearchField.accessibilityActions: – ARIA offers no action of an application's own words.
+SearchField.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 SearchField.accessibilityHeading: ✅
 SearchField.accessibilityHint: ✅
 SearchField.accessibilityLabel: ✅
-SearchField.automationExcludedWithChildren: ✅
-SearchField.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+SearchField.accessibilityRole: ✅
+SearchField.accessibilityValue: ✅
+SearchField.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 SearchField.frame: ✅
 SearchField.height: ✅
+SearchField.hidesChildrenFromAccessibility: ✅
 SearchField.ignoresInput: ✅
 SearchField.isAccessibilityHidden: ✅
 SearchField.isEnabled: ✅
@@ -743,13 +863,54 @@ SearchField.translationX: ✓ read translationX of SearchField: the host's own t
 SearchField.translationY: ✓ read translationY of SearchField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 SearchField.width: ✅
 SearchField.zIndex: ✅
+Separator.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Separator.accessibilityActions: – ARIA offers no action of an application's own words.
+Separator.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+Separator.accessibilityHeading: ✅
+Separator.accessibilityHint: ✅
+Separator.accessibilityLabel: ✅
+Separator.accessibilityRole: ✅
+Separator.accessibilityValue: ✅
+Separator.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Separator.frame: ✅
+Separator.height: ✅
+Separator.hidesChildrenFromAccessibility: ✅
+Separator.ignoresInput: ✅
+Separator.isAccessibilityHidden: ✅
+Separator.isEnabled: ✅
+Separator.isVisible: ✅
+Separator.layoutDirection: ✅
+Separator.maximumHeight: ✅
+Separator.maximumWidth: ✅
+Separator.minimumHeight: ✅
+Separator.minimumWidth: ✅
+Separator.opacity: ✅
+Separator.pivotX: ✓ read pivotX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.pivotY: ✓ read pivotY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.rotation: ✓ read rotation of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.rotationX: ✓ read rotationX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.rotationY: ✓ read rotationY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.scale: ✓ read scale of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.scaleX: ✓ read scaleX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.scaleY: ✓ read scaleY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.style: ✅
+Separator.tooltip: ✅
+Separator.translationX: ✓ read translationX of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.translationY: ✓ read translationY of Separator: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Separator.width: ✅
+Separator.zIndex: ✅
+Slider.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Slider.accessibilityActions: – ARIA offers no action of an application's own words.
+Slider.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Slider.accessibilityHeading: ✅
 Slider.accessibilityHint: ✅
 Slider.accessibilityLabel: ✅
-Slider.automationExcludedWithChildren: ✅
+Slider.accessibilityRole: ✅
+Slider.accessibilityValue: ✅
 Slider.background: – The browser draws its slider over the whole box and paints no background under it.
 Slider.frame: ✅
 Slider.height: ✅
+Slider.hidesChildrenFromAccessibility: ✅
 Slider.ignoresInput: ✅
 Slider.isAccessibilityHidden: ✅
 Slider.isEnabled: ✅
@@ -774,44 +935,90 @@ Slider.translationX: ✓ read translationX of Slider: the host's own transform: 
 Slider.translationY: ✓ read translationY of Slider: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Slider.width: ✅
 Slider.zIndex: ✅
-Spacer.accessibilityHeading: ✅
-Spacer.accessibilityHint: ✅
-Spacer.accessibilityLabel: ✅
-Spacer.automationExcludedWithChildren: ✅
-Spacer.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
-Spacer.frame: ✅
-Spacer.height: ✅
-Spacer.ignoresInput: ✅
-Spacer.isAccessibilityHidden: ✅
-Spacer.isEnabled: ✅
-Spacer.isVisible: ✅
-Spacer.layoutDirection: ✅
-Spacer.maximumHeight: ✅
-Spacer.maximumWidth: ✅
-Spacer.minimumHeight: ✅
-Spacer.minimumWidth: ✅
-Spacer.opacity: ✅
-Spacer.pivotX: ✓ read pivotX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.pivotY: ✓ read pivotY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.rotation: ✓ read rotation of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.rotationX: ✓ read rotationX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.rotationY: ✓ read rotationY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.scale: ✓ read scale of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.scaleX: ✓ read scaleX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.scaleY: ✓ read scaleY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.style: ✅
-Spacer.tooltip: ✅
-Spacer.translationX: ✓ read translationX of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.translationY: ✓ read translationY of Spacer: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-Spacer.width: ✅
-Spacer.zIndex: ✅
+Space.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Space.accessibilityActions: – ARIA offers no action of an application's own words.
+Space.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+Space.accessibilityHeading: ✅
+Space.accessibilityHint: ✅
+Space.accessibilityLabel: ✅
+Space.accessibilityRole: ✅
+Space.accessibilityValue: ✅
+Space.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
+Space.frame: ✅
+Space.height: ✅
+Space.hidesChildrenFromAccessibility: ✅
+Space.ignoresInput: ✅
+Space.isAccessibilityHidden: ✅
+Space.isEnabled: ✅
+Space.isVisible: ✅
+Space.layoutDirection: ✅
+Space.maximumHeight: ✅
+Space.maximumWidth: ✅
+Space.minimumHeight: ✅
+Space.minimumWidth: ✅
+Space.opacity: ✅
+Space.pivotX: ✓ read pivotX of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.pivotY: ✓ read pivotY of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.rotation: ✓ read rotation of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.rotationX: ✓ read rotationX of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.rotationY: ✓ read rotationY of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.scale: ✓ read scale of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.scaleX: ✓ read scaleX of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.scaleY: ✓ read scaleY of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.style: ✅
+Space.tooltip: ✅
+Space.translationX: ✓ read translationX of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.translationY: ✓ read translationY of Space: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Space.width: ✅
+Space.zIndex: ✅
+Spinner.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Spinner.accessibilityActions: – ARIA offers no action of an application's own words.
+Spinner.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
+Spinner.accessibilityHeading: ✅
+Spinner.accessibilityHint: ✅
+Spinner.accessibilityLabel: ✅
+Spinner.accessibilityRole: ✅
+Spinner.accessibilityValue: ✅
+Spinner.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
+Spinner.frame: ✅
+Spinner.height: ✅
+Spinner.hidesChildrenFromAccessibility: ✅
+Spinner.ignoresInput: ✅
+Spinner.isAccessibilityHidden: ✅
+Spinner.isEnabled: ✅
+Spinner.isVisible: ✅
+Spinner.layoutDirection: ✅
+Spinner.maximumHeight: ✅
+Spinner.maximumWidth: ✅
+Spinner.minimumHeight: ✅
+Spinner.minimumWidth: ✅
+Spinner.opacity: ✅
+Spinner.pivotX: ✓ read pivotX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.pivotY: ✓ read pivotY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.rotation: ✓ read rotation of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.rotationX: ✓ read rotationX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.rotationY: ✓ read rotationY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.scale: ✓ read scale of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.scaleX: ✓ read scaleX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.scaleY: ✓ read scaleY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.style: ✅
+Spinner.tooltip: ✅
+Spinner.translationX: ✓ read translationX of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.translationY: ✓ read translationY of Spinner: the host's own transform: the page holds one matrix of it, its parts no longer told apart
+Spinner.width: ✅
+Spinner.zIndex: ✅
+Stepper.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Stepper.accessibilityActions: – ARIA offers no action of an application's own words.
+Stepper.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Stepper.accessibilityHeading: ✅
 Stepper.accessibilityHint: ✅
 Stepper.accessibilityLabel: ✅
-Stepper.automationExcludedWithChildren: ✅
-Stepper.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Stepper.accessibilityRole: ✅
+Stepper.accessibilityValue: ✅
+Stepper.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Stepper.frame: ✅
 Stepper.height: ✅
+Stepper.hidesChildrenFromAccessibility: ✅
 Stepper.ignoresInput: ✅
 Stepper.isAccessibilityHidden: ✅
 Stepper.isEnabled: ✅
@@ -836,13 +1043,18 @@ Stepper.translationX: ✓ read translationX of Stepper: the host's own transform
 Stepper.translationY: ✓ read translationY of Stepper: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Stepper.width: ✅
 Stepper.zIndex: ✅
+Switch.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Switch.accessibilityActions: – ARIA offers no action of an application's own words.
+Switch.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Switch.accessibilityHeading: ✅
 Switch.accessibilityHint: ✅
 Switch.accessibilityLabel: ✅
-Switch.automationExcludedWithChildren: ✅
-Switch.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Switch.accessibilityRole: ✅
+Switch.accessibilityValue: ✅
+Switch.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Switch.frame: ✅
 Switch.height: ✅
+Switch.hidesChildrenFromAccessibility: ✅
 Switch.ignoresInput: ✅
 Switch.isAccessibilityHidden: ✅
 Switch.isEnabled: ✅
@@ -867,13 +1079,18 @@ Switch.translationX: ✓ read translationX of Switch: the host's own transform: 
 Switch.translationY: ✓ read translationY of Switch: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Switch.width: ✅
 Switch.zIndex: ✅
+Text.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+Text.accessibilityActions: – ARIA offers no action of an application's own words.
+Text.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 Text.accessibilityHeading: ✅
 Text.accessibilityHint: ✅
 Text.accessibilityLabel: ✅
-Text.automationExcludedWithChildren: ✅
-Text.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+Text.accessibilityRole: ✅
+Text.accessibilityValue: ✅
+Text.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 Text.frame: ✅
 Text.height: ✅
+Text.hidesChildrenFromAccessibility: ✅
 Text.ignoresInput: ✅
 Text.isAccessibilityHidden: ✅
 Text.isEnabled: ✅
@@ -898,13 +1115,18 @@ Text.translationX: ✓ read translationX of Text: the host's own transform: the 
 Text.translationY: ✓ read translationY of Text: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 Text.width: ✅
 Text.zIndex: ✅
+TextEditor.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+TextEditor.accessibilityActions: – ARIA offers no action of an application's own words.
+TextEditor.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 TextEditor.accessibilityHeading: ✅
 TextEditor.accessibilityHint: ✅
 TextEditor.accessibilityLabel: ✅
-TextEditor.automationExcludedWithChildren: ✅
-TextEditor.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+TextEditor.accessibilityRole: ✅
+TextEditor.accessibilityValue: ✅
+TextEditor.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 TextEditor.frame: ✅
 TextEditor.height: ✅
+TextEditor.hidesChildrenFromAccessibility: ✅
 TextEditor.ignoresInput: ✅
 TextEditor.isAccessibilityHidden: ✅
 TextEditor.isEnabled: ✅
@@ -929,13 +1151,18 @@ TextEditor.translationX: ✓ read translationX of TextEditor: the host's own tra
 TextEditor.translationY: ✓ read translationY of TextEditor: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextEditor.width: ✅
 TextEditor.zIndex: ✅
+TextField.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+TextField.accessibilityActions: – ARIA offers no action of an application's own words.
+TextField.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 TextField.accessibilityHeading: ✅
 TextField.accessibilityHint: ✅
 TextField.accessibilityLabel: ✅
-TextField.automationExcludedWithChildren: ✅
-TextField.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+TextField.accessibilityRole: ✅
+TextField.accessibilityValue: ✅
+TextField.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 TextField.frame: ✅
 TextField.height: ✅
+TextField.hidesChildrenFromAccessibility: ✅
 TextField.ignoresInput: ✅
 TextField.isAccessibilityHidden: ✅
 TextField.isEnabled: ✅
@@ -960,13 +1187,18 @@ TextField.translationX: ✓ read translationX of TextField: the host's own trans
 TextField.translationY: ✓ read translationY of TextField: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TextField.width: ✅
 TextField.zIndex: ✅
+TimePicker.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+TimePicker.accessibilityActions: – ARIA offers no action of an application's own words.
+TimePicker.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 TimePicker.accessibilityHeading: ✅
 TimePicker.accessibilityHint: ✅
 TimePicker.accessibilityLabel: ✅
-TimePicker.automationExcludedWithChildren: ✅
-TimePicker.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+TimePicker.accessibilityRole: ✅
+TimePicker.accessibilityValue: ✅
+TimePicker.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 TimePicker.frame: ✅
 TimePicker.height: ✅
+TimePicker.hidesChildrenFromAccessibility: ✅
 TimePicker.ignoresInput: ✅
 TimePicker.isAccessibilityHidden: ✅
 TimePicker.isEnabled: ✅
@@ -991,13 +1223,18 @@ TimePicker.translationX: ✓ read translationX of TimePicker: the host's own tra
 TimePicker.translationY: ✓ read translationY of TimePicker: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 TimePicker.width: ✅
 TimePicker.zIndex: ✅
+VStack.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+VStack.accessibilityActions: – ARIA offers no action of an application's own words.
+VStack.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 VStack.accessibilityHeading: ✅
 VStack.accessibilityHint: ✅
 VStack.accessibilityLabel: ✅
-VStack.automationExcludedWithChildren: ✅
-VStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+VStack.accessibilityRole: ✅
+VStack.accessibilityValue: ✅
+VStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 VStack.frame: ✅
 VStack.height: ✅
+VStack.hidesChildrenFromAccessibility: ✅
 VStack.ignoresInput: ✅
 VStack.isAccessibilityHidden: ✅
 VStack.isEnabled: ✅
@@ -1022,13 +1259,18 @@ VStack.translationX: ✓ read translationX of VStack: the host's own transform: 
 VStack.translationY: ✓ read translationY of VStack: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 VStack.width: ✅
 VStack.zIndex: ✅
+WebView.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+WebView.accessibilityActions: – ARIA offers no action of an application's own words.
+WebView.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 WebView.accessibilityHeading: ✅
 WebView.accessibilityHint: ✅
 WebView.accessibilityLabel: ✅
-WebView.automationExcludedWithChildren: ✅
-WebView.background: ☑️ A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in.
+WebView.accessibilityRole: ✅
+WebView.accessibilityValue: ✅
+WebView.background: ☑️ A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in.
 WebView.frame: ✅
 WebView.height: ✅
+WebView.hidesChildrenFromAccessibility: ✅
 WebView.ignoresInput: ✅
 WebView.isAccessibilityHidden: ✅
 WebView.isEnabled: ✅
@@ -1053,13 +1295,18 @@ WebView.translationX: ✓ read translationX of WebView: the host's own transform
 WebView.translationY: ✓ read translationY of WebView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 WebView.width: ✅
 WebView.zIndex: ✅
+ZStack.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
+ZStack.accessibilityActions: – ARIA offers no action of an application's own words.
+ZStack.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
 ZStack.accessibilityHeading: ✅
 ZStack.accessibilityHint: ✅
 ZStack.accessibilityLabel: ✅
-ZStack.automationExcludedWithChildren: ✅
-ZStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour.
+ZStack.accessibilityRole: ✅
+ZStack.accessibilityValue: ✅
+ZStack.background: ☑️ A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color.
 ZStack.frame: ✅
 ZStack.height: ✅
+ZStack.hidesChildrenFromAccessibility: ✅
 ZStack.ignoresInput: ✅
 ZStack.isAccessibilityHidden: ✅
 ZStack.isEnabled: ✅

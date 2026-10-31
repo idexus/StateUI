@@ -14,7 +14,7 @@ final class WebPlacingRunTests: XCTestCase {
             HostPlacement(
                 bounds: Rect(x: 0, y: 0, width: width, height: height), translationX: 0, translationY: 0, rotation: 90,
                 scaleX: 1, scaleY: 1, opacity: 1, zIndex: 0, shade: shade),
-        ])
+        ], direction: .leftToRight)
     }
 
     /// The same turn at a new size is drawn about the new size's middle: the matrix's pivot is the place's, so a run
@@ -69,7 +69,7 @@ final class WebPlacingRunTests: XCTestCase {
             HostPlacement(
                 bounds: Rect(x: 0, y: 0, width: 10, height: 10), translationX: 0, translationY: 0, rotation: 0,
                 scaleX: 1, scaleY: 1, opacity: 1, zIndex: rank, shade: 0)
-        }))
+        }, direction: .leftToRight))
 
         XCTAssertEqual(children.map { WebPage.style(of: $0.node, "z-index") }, ["2", "0", "1", "3"])
     }
@@ -86,12 +86,38 @@ final class WebPlacingRunTests: XCTestCase {
             HostPlacement(
                 bounds: Rect(x: 30, y: 40, width: 100, height: 140), translationX: 0, translationY: 0, rotation: 0,
                 scaleX: 1, scaleY: 1, opacity: 1, zIndex: 0, shade: 0),
-        ]))
+        ], direction: .leftToRight))
 
         XCTAssertEqual(WebPage.style(of: card.node, "left"), "0px")
         XCTAssertEqual(WebPage.style(of: card.node, "top"), "0px")
         XCTAssertEqual(WebPage.style(of: card.node, "transform"), "translate(30px, 40px)")
         XCTAssertEqual(WebPage.style(of: card.node, "will-change"), "transform")
+    }
+
+    /// A RUN STANDING RIGHT TO LEFT STANDS ITS CARD FROM THE RIGHT CORNER and moves it left as far as the run wrote
+    /// it right - the mirror of its place, with no read of the room - its move along and its turn the other way.
+    func testARunRightToLeftStandsItsCardFromTheRightCorner() {
+        let layout = WebLayoutView(arrangement: .layers)
+        let card = WebLayoutView(arrangement: .single)
+        defer { for view in [layout, card] { view.release() } }
+        layout.setItems([(card, { LayoutValues() })])
+        func run(_ direction: LayoutDirection) -> HostPlacementRun {
+            HostPlacementRun(placements: [
+                HostPlacement(
+                    bounds: Rect(x: 30, y: 40, width: 100, height: 140), translationX: 0, translationY: 0, rotation: 0,
+                    scaleX: 1, scaleY: 1, opacity: 1, zIndex: 0, shade: 0),
+            ], direction: direction)
+        }
+
+        layout.setPlacement(run(.rightToLeft))
+        XCTAssertEqual(WebPage.style(of: card.node, "right"), "0px")
+        XCTAssertEqual(WebPage.style(of: card.node, "left"), "")
+        XCTAssertEqual(WebPage.style(of: card.node, "transform"), "translate(-30px, 40px)")
+
+        layout.setPlacement(run(.leftToRight))
+        XCTAssertEqual(WebPage.style(of: card.node, "left"), "0px")
+        XCTAssertEqual(WebPage.style(of: card.node, "right"), "", "the corner turned back")
+        XCTAssertEqual(WebPage.style(of: card.node, "transform"), "translate(30px, 40px)")
     }
 
     /// A card the run places wears the run's shade on its second layer - the dark over a far card - and none on its

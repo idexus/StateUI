@@ -1,0 +1,13 @@
+# revision 1.1
+ToolbarButton.background: – A bar's items stand in the system's own look.
+ToolbarButton.pointerEntered: – A bar's items stand in the system's own look.
+ToolbarButton.pointerExited: – A bar's items stand in the system's own look.
+ToolbarButton.style: – A bar's items stand in the system's own look.
+ToolbarGroup.background: – A bar's items stand in the system's own look.
+ToolbarGroup.pointerEntered: – A bar's items stand in the system's own look.
+ToolbarGroup.pointerExited: – A bar's items stand in the system's own look.
+ToolbarGroup.style: – A bar's items stand in the system's own look.
+ToolbarToggle.background: – A bar's items stand in the system's own look.
+ToolbarToggle.pointerEntered: – A bar's items stand in the system's own look.
+ToolbarToggle.pointerExited: – A bar's items stand in the system's own look.
+ToolbarToggle.style: – A bar's items stand in the system's own look.

@@ -6,7 +6,7 @@ import StateUI
 /// section, what is pushed and presented, whether the menu is open), what its
 /// bar says (`WindowBarState`), what it has said about its life (`WindowLog`)
 /// and the catalog of samples it shows. What it looks like is its scene's,
-/// handed to it: every gallery window wears the one look the Fonts and Colours
+/// handed to it: every gallery window wears the one look the Fonts and Colors
 /// windows choose.
 ///
 /// Each sample owns its own `@State`, declared on the sample itself - and since

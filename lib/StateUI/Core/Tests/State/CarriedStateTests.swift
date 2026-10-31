@@ -27,7 +27,7 @@ private struct Follower: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label("at \(value)"))
+        return AnyView(node: label("at \(value)"))
     }
 }
 
@@ -36,7 +36,7 @@ private struct Follower: View {
 private struct Rider: View {
     @Binding var level: Double
 
-    var body: some View { ModifiedContent(node: label("riding")) }
+    var body: some View { AnyView(node: label("riding")) }
 
     /// A handler's write, as a child handed the binding makes one.
     func bump() { level += 1 }
@@ -235,7 +235,7 @@ final class CarriedStateTests: XCTestCase {
 
     /// A twin over a member that travels is walked as a journey, whatever the member: a grid's spacings and a label's
     /// line height glide from a state as their described values do.
-    func testATwinOverATravellingMemberIsAJourney() {
+    func testATwinOverATravelingMemberIsAJourney() {
         let rows = State(wrappedValue: 8.0)
         let columns = State(wrappedValue: 4.0)
         let line = State(wrappedValue: 20.0)
@@ -262,7 +262,7 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(patch.driven?[.value]?.mode, .inOut)
         XCTAssertEqual(patch.driven?[.value]?.kind, .property)
 
-        let board = Renderer.shared.board(of: volume.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         _ = board.dirty()
 
@@ -359,7 +359,7 @@ final class CarriedStateTests: XCTestCase {
 
         XCTAssertNotNil(patch.children.first?.driven?[.value], "the slider is tied all the same")
 
-        let board = Renderer.shared.board(of: volume.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
 
@@ -386,7 +386,7 @@ final class CarriedStateTests: XCTestCase {
                 }
                 .node)
 
-        let board = Renderer.shared.board(of: volume.image)
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
 
@@ -516,8 +516,7 @@ final class CarriedStateTests: XCTestCase {
         XCTAssertEqual(
             patch.driven?[.scrollOffset],
             HostStateBinding(state: offset.number, mode: .inOut, kind: .property, laneKind: .number))
-        XCTAssertNil(patch.events?["scrollXChanged"])
-        XCTAssertNil(patch.events?["scrollYChanged"])
+        XCTAssertNil(patch.events, "the offset is carried, and nothing hears it besides")
     }
 
     /// A view whose drag is written into values says both numbers.
@@ -525,7 +524,11 @@ final class CarriedStateTests: XCTestCase {
         let across = State(wrappedValue: 0.0)
         let down = State(wrappedValue: 0.0)
 
-        let node = Rectangle().fill(Color("#000000")).panX(across.projectedValue).panY(down.projectedValue).node
+        let node = Rectangle()
+            .fill(Color(hex: 0x000000))
+            .panX(across.projectedValue)
+            .panY(down.projectedValue)
+            .node
 
         XCTAssertEqual(node.props[.panXChannel], .number(Double(across.number)))
         XCTAssertEqual(node.props[.panYChannel], .number(Double(down.number)))
@@ -562,7 +565,7 @@ final class CarriedStateTests: XCTestCase {
 
         renders.render(Text("x").motion(.spring()).opacity(fade.projectedValue).id("one").node)
 
-        XCTAssertTrue(fade.projectedValue.journey.motion.isInherited)
+        XCTAssertEqual(fade.projectedValue.journey.motion, .inherited)
     }
 
     /// An element given a NEW law answers for a value it was already driving:
@@ -581,11 +584,11 @@ final class CarriedStateTests: XCTestCase {
             .eased(.milliseconds(700), .cubicIn))
     }
 
-    /// A rule naming COLOURS answers a driven colour, which the property alone
+    /// A rule naming COLORS answers a driven color, which the property alone
     /// cannot say - `background` is in no group, and what puts it in one
     /// is the value it carries.
-    func testARuleNamingColoursAnswersADrivenColour() {
-        let tint = State(wrappedValue: Color("#102030"))
+    func testARuleNamingColorsAnswersADrivenColor() {
+        let tint = State(wrappedValue: Color(hex: 0x102030))
         let renders = Renders()
 
         renders.render(Text("x").motion(.none).motion(.eased(.milliseconds(640), .cubicIn), .color)
@@ -605,8 +608,8 @@ final class CarriedStateTests: XCTestCase {
         // a state nothing has walked has none until something asks.
         _ = loose.projectedValue.journeyImage
 
-        let storage = try XCTUnwrap(Renderer.shared.storage(of: loose.number))
-        let image = try XCTUnwrap(Renderer.shared.board(of: storage).whole(loose.number))
+        XCTAssertNotNil(Renderer.shared.storage(of: loose.number), "a state rides the number")
+        let image = try XCTUnwrap(Renderer.shared.board.whole(loose.number))
 
         XCTAssertEqual(
             JourneyLanes<Double>(carried: StateImage.carried(of: image, lanes: StateValueLanes.own))?.motion,
@@ -633,15 +636,14 @@ final class CarriedStateTests: XCTestCase {
     /// A PART of a carried state is not itself driven: the image is the whole
     /// value, and no message can say that a property rides one lane of it.
     ///
-    /// The part still reads and writes - through the whole, as any derived
-    /// binding does - so what this pins is which ROAD it takes, not whether it
-    /// works: the whole has an image, and a part of it is a binding made from
-    /// closures, which no driven modifier accepts.
+    /// The part still reads and writes - through the whole - so what this pins
+    /// is which ROAD it takes, not whether it works: the whole has an image, and
+    /// a part of it is a proxy, which no driven modifier accepts.
     func testAPartOfACarriedStateIsNotDriven() {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
         let whole: Binding<Rect> = room.projectedValue
-        let part: Binding<Double> = whole.width
+        let part: StatePart<Double> = whole.width
 
         part.wrappedValue = 90
 

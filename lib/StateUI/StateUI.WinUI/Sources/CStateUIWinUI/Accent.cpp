@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A control's one accent colour: a progress bar's and a spinner's foreground,
+// A control's one accent color: a progress bar's and a spinner's foreground,
 // and otherwise the brushes a template takes from the system's accent, written
 // into the control's own resources - the default, under the pointer and
-// pressed, as WinUI's accent brushes are. A new colour takes the brushes
+// pressed, as WinUI's accent brushes are. A new color takes the brushes
 // standing there in place; a brush coming or going has the theme read again.
 // Design: docs/design/platforms/winui/controls.md#a-controls-accent
 
@@ -44,13 +44,13 @@ extern "C" void stateui_winui_set_tint(
         auto control = as<xaml::FrameworkElement>(handle);
         if (auto shows = control.try_as<controls::Control>();
             shows && (control.try_as<controls::ProgressBar>() || control.try_as<controls::ProgressRing>())) {
-            auto colour = winrt::Windows::UI::Color{static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16),
+            auto color = winrt::Windows::UI::Color{static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16),
                                                     static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
-            if (tinted) shows.Foreground(media::SolidColorBrush(colour));
+            if (tinted) shows.Foreground(media::SolidColorBrush(color));
             else shows.ClearValue(controls::Control::ForegroundProperty());
             return;
         }
-        // WinUI's accent brushes: the colour, then fainter under the pointer and pressed.
+        // WinUI's accent brushes: the color, then fainter under the pointer and pressed.
         struct Variant { wchar_t const *suffix; double opacity; };
         Variant const variants[] = {{L"", 1}, {L"PointerOver", underPointer}, {L"Pressed", pressed}};
         std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;

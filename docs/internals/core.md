@@ -59,7 +59,7 @@ lib/StateUI/Core/Sources/
     Shapes/ Collections/
     Styles/ Inspector/              styles and visual states, the inspector
   Types/         the values an application passes, and how each crosses
-    Geometry/ Layout/ Colour/ Drawing/ Text/ Time/ Keyboard/ Localization/
+    Geometry/ Layout/ Color/ Drawing/ Text/ Time/ Keyboard/ Localization/
     Motion/ Gestures/ Environment/ Sessions/ Controls/ Collections/ Files/
   Contracts/     the library's contracts, and LibraryContracts
     Elements/    one contract per node type, in its view's topic folder
@@ -130,11 +130,11 @@ turns the nodes into the patch.
   to the host from the application's own registration function.
   *Application.* ([Pages and windows](../design/views/pages.md);
   [applications and sessions](../interface/application-and-sessions.md))
-- **`NavigationStack`**, **`TabView`**, **`SplitView`** and
-  **`ModalStack`** (`Navigation/`) are arrangements: views standing where a
-  page stands, which key the pages they hold, whose stack, chosen tab and
-  modal stack are state. `Menu`,
-  `MenuItem`, `MenuSeparator` and `ToolbarItem` (`Menus/`) are a menu's
+- **`NavigationStack`**, **`TabView`** and **`SplitView`** (`Navigation/`)
+  are arrangements: views standing where a page stands, which key the pages
+  they hold, whose stack, chosen tab and sidebar are state; `.sheet`
+  presents a page while a state says so. `Menu`,
+  `MenuItem`, `MenuSeparator` and `ToolbarButton` (`Menus/`) are a menu's
   entries and a page's actions, collected without keys. *Application.*
   ([An arrangement is a view](../design/views/pages.md#an-arrangement-is-a-view),
   [menus](../design/views/builders.md#menus-collect-without-keys);
@@ -154,7 +154,7 @@ turns the nodes into the patch.
   `setValue(_:on:mode:kind:)`, which carries an application's own property.
   *Application.* ([Bindings](../design/views/bindings.md);
   [described and carried values](../interface/controls-and-input.md#described-and-carried-values))
-- **`View`**, **`ModifiedContent`**, **`ViewBuilder`** and
+- **`View`**, **`ModifiedContent`**, **`AnyView`**, **`ViewBuilder`** and
   **`ForEach`** (`Composition/`) compose: a composed view is a placeholder
   the differ builds or carries whole, a builder records the path of every
   statement, and `ForEach` keys each view by its item. *Application.*
@@ -170,8 +170,8 @@ turns the nodes into the patch.
   `ItemsView` and `Marker` have none. *Application.*
   ([Controls](../design/views/controls.md);
   [controls and input](../interface/controls-and-input.md), [layout](../interface/layout.md))
-- **The composed layouts** - `GeometryReader` and `LayoutEngine` (`Layouts/`),
-  `GalleryView` and `PositionIndicator` (`Collections/`) - are StateUI's
+- **The composed layouts** - `GeometryReader` and `MotionLayout` (`Layouts/`),
+  `GalleryView` and `PositionDots` (`Collections/`) - are StateUI's
   composition over measurement, placement and scrolling, which no host builds
   again. *Application.*
   ([Measured layouts](../design/views/measured-layouts.md);
@@ -201,16 +201,16 @@ author's open vocabulary as a `Name`, and absence as `.nothing`.
 | Folder | What it holds | Reasons |
 | --- | --- | --- |
 | `Geometry/` | `Point`, `Rect`, `Insets`, `CornerRadius`, `ViewTransform` | [runs of numbers](../design/types/values.md#runs-of-numbers), [transforms](../design/types/transforms.md) |
-| `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeArea`, `SafeAreaEdges`, `Placement`, `PlacedRun`, `LayoutInput` | [placement](../design/types/placement.md), [layout engine](../design/views/layout-engine.md) |
-| `Colour/` | `Color`, `GradientStop`, `Brush`, `Material`, `Blur`, `Glass` | [colour and theme](../design/types/colour-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
+| `Layout/` | `Alignment`, `Area`, `GridLength`, `LayoutDirection`, `SafeAreaEdges`, `Placement`, `PlacedRun`, `LayoutInput` | [placement](../design/types/placement.md), [motion layout](../design/views/motion-layout.md) |
+| `Color/` | `Color`, `GradientStop`, `Brush`, `Material`, `Blur`, `Glass` | [color and theme](../design/types/color-and-theme.md), [brushes](../design/types/brushes.md); [styles and drawing](../interface/styles-and-drawing.md) |
 | `Drawing/` | `ImageSource`, `ContainerShape`, `ContentMode`, the strokes, `Draw`, `DrawCommand`, `DrawingBuilder` | [drawing on a canvas](../design/types/drawing.md) |
 | `Text/` | `Name`, `FontAttributes`, `LineBreak`, `TextAlignment`, `TextCase`, `TextDecorations`, `InputPurpose`, `SubmitLabel`, `AccessibilityHeadingLevel` | [text and names](../design/types/values.md#text-and-names), [closed vocabularies](../design/types/vocabularies.md) |
 | `Time/` | `CalendarDate`, `ClockTime`, `TimeZoneInfo`, `Weekday` | [dates and time](../design/types/dates-and-time.md) |
 | `Motion/` | `Motion`, `Easing`, `MotionValues`, `MotionLanes`; a view's `MotionPlan`, internal | [motion](../design/types/motion.md); [motion and journeys](../concepts/motion-and-journeys.md) |
 | `Gestures/` | `GesturePhase`, `PanUpdate`, `PinchUpdate`, `SwipeDirection` | [gestures](../design/types/gestures.md) |
-| `Environment/` | what the host knows - `Device` (`DeviceInfo`, `DeviceDisplay`, `Battery`, `Connectivity`), `LocaleInfo`, `AppInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
+| `Environment/` | what the host knows - `Device` (`DeviceInfo`, `DeviceDisplay`, `Battery`, `Connectivity`), `LocaleInfo`, `ApplicationInfo` - their vocabularies and `ColorScheme`; `StandardEnvironment`, internal | [the standard environment](../design/types/environment.md); [environment](../concepts/environment.md) |
 | `Sessions/` | `ApplicationSession`, `SceneSession`, `WindowSession`, their phases | [sessions](../design/types/sessions.md); [applications and sessions](../interface/application-and-sessions.md) |
-| `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarItemPlacement`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
+| `Controls/` | the vocabularies one control takes: `ScrollOrientation`, `ToolbarPosition`, `ToolbarPart`, `MarkerType` and their kin | [closed vocabularies](../design/types/vocabularies.md) |
 | `Collections/` | what an `ItemsView` takes: `ItemsEntries`, `ItemsLayout`, `ScrollAnchor`, `SelectionMode` | [items](../design/views/items.md), [closed vocabularies](../design/types/vocabularies.md) |
 | `Files/` | `ChosenFile`, `FileType`: the files the dialogs open and save | [files](../design/core/acts.md#files) |
 
@@ -272,8 +272,8 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   *Application.* ([The environment](../design/core/state.md#the-environment);
   [environment](../concepts/environment.md))
 - **`PersistentKey`**, **`PersistentValue`** and **`PersistentKind`** are kept
-  state, hydrated by the host before the first render (`PersistentStore`,
-  internal). *Application.* ([Kept state](../design/core/state.md#kept-state);
+  state, each key read through the host's reader as its first state is made
+  (`PersistentStore`, internal). *Application.* ([Kept state](../design/core/state.md#kept-state);
   [persistent state](../concepts/state-and-reactivity.md#persistent-state))
 - An `@Observable` model held in a `@State` is deprecated, since nothing arms
   its tracking. ([An observable model](../design/core/state.md#an-observable-model))
@@ -324,8 +324,8 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   *Internal*; the host runs it through `HostBoundary.cycle`.
   ([The board](../design/core/cycle.md#the-board),
   [where a write lands](../design/core/cycle.md#where-a-write-lands))
-- **`.engine(following:)`**, **`.engine(tracking:)`**, **`EngineCycle`**,
-  **`EngineAnswer`** and **`Sync`** make an engine: application frame code that
+- **`.engine(following:)`**, **`.engine(tracking:)`**, **`EngineCycle`**
+  and **`EngineAnswer`** make an engine: application frame code that
   runs while it has a reason - armed by a render, stirred by a write to a
   state it follows, awake after `.again`. Its own write never wakes it.
   *Application.* ([What wakes an engine](../design/core/cycle.md#what-wakes-an-engine);
@@ -339,10 +339,10 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 - **`Renderer`** is the one renderer, `Renderer.shared`: it holds the
   application, the states written since the last render and their live
   readers, the generation, the act queue and the completions, and takes one
-  of three roads - the clean walk, a build, or the complete tree. An
-  application reaches `setApplication` through `stateUIUseApp`, and
-  `setNeedsRender` to bridge a model it observes itself; a host reaches the
-  rest through `HostBoundary`.
+  of three roads - the clean walk, a build, or the complete tree. It is host
+  SPI (`@_spi(Host)`): an application reaches `setApplication` through
+  `stateUIUseApp` and tells every change by writing a state; a host reaches
+  the rest through `HostBoundary`.
   ([Three roads](../design/core/render.md#three-roads),
   [generations and baseline](../design/core/render.md#generations-and-baseline))
 - **`ReadScope`** and **`BuildScope`** record what a build reads and which
@@ -392,13 +392,14 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 - **`Aim`** is which control an act is aimed at: neither state nor a key.
   *Application.* ([Aims](../design/core/acts.md#aims);
   [aims and control methods](../interface/interaction-and-actions.md#aims-and-control-methods))
-- **`Dialogs`**, **`ScreenReader`**, **`OnScreenKeyboard`** and focus through
-  an aim are the library's own acts. *Application.*
-  ([Dialogs](../design/core/acts.md#dialogs),
+- A window's questions, file dialogs and keyboard (`WindowSession`), the
+  application's launches and announcements (`ApplicationSession`) and focus
+  through an aim are the library's own acts. *Application.*
+  ([A window's acts](../design/core/acts.md#a-windows-acts),
+  [Dialogs](../design/core/acts.md#dialogs),
   [focus and the keyboard](../design/core/acts.md#focus-and-the-keyboard))
-- **`ChosenFile`**, **`FileType`** (`Types/Files/`) and **`Links`** are the
-  files the dialogs open and save, read and launched, and an address
-  launched. *Application.*
+- **`ChosenFile`** and **`FileType`** (`Types/Files/`) are the files the
+  dialogs open and save, read and launched. *Application.*
   ([Files](../design/core/acts.md#files),
   [launching](../design/core/acts.md#launching);
   [files and links](../interface/interaction-and-actions.md#files-and-links))
@@ -413,11 +414,12 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 
 ### Runs
 
-- **`Gate`**, **`GatePolicy`** and **`Gatekeeper`** are what a handler that
-  awaits passes through - what an event that comes while a run is under way
-  does: a handler's own policy, or a gate kept in a state and shared by every
-  handler and task written with it; **`Task(gate:)`** starts work from code
-  through a gatekeeper. *Application.*
+- **`GatePolicy`** and **`Gate`** are what a handler that awaits passes
+  through - what an event that comes while a run is under way does: a
+  handler's own policy, or a gate kept in a state and shared by every handler
+  and task written with it; **`Gating`** is which of the two a handler keeps,
+  and **`Task(gate:)`** starts work from code through a shared gate.
+  *Application.*
   ([A gate](../design/core/runs.md#a-gate),
   [work started from code](../design/core/runs.md#work-started-from-code))
 - **`RunSlot`**, **`RunOwner`**, **`RunSlots`** and **`EventRegistration`**
@@ -500,7 +502,7 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 ### Threads
 
 - **`UIThreadExecutor`** (`UIThread.swift`) is `MainActor`'s executor where
-  nothing drains the platform's main queue, and the doorbell: a job queued, or
+  no run loop of the platform's turns its main queue, and the doorbell: a job queued, or
   work the UI thread made, posts a turn the host's way; `stateUIRunJobs` drains
   it on the calling thread, bounded.
   *Internal*; a host claims the UI thread through `HostBoundary.claimUIThread`,
@@ -578,8 +580,8 @@ the layer, and `placements(from:)` in AppKit's element too
 - **Windows and kept values.** `connectWindow(kind:value:restoring:)` hands
   the core a window the platform made - its first, a new one, or one it kept,
   with its scene's kept values - and answers the scene it opened in;
-  `persistentKeys` and `restorePersistent(_:)` hydrate kept state before the
-  first render.
+  `readsKept(_:)` gives the core the reader of the platform's store, which a
+  kept key reads as its first state is made.
   ([Kept state](../design/core/state.md#kept-state))
 - **Realization.** `setRealization(_:)` says what the host realizes, which
   `realizes(_:)` answers; the registrations stand in
@@ -587,7 +589,7 @@ the layer, and `placements(from:)` in AppKit's element too
 - **Drawing.** `HostPath` is a path's SVG text parsed once for every host -
   with `HostCurveCommand` for a toolkit with no arc - `HostDrawingTransform`
   and `HostMatrix` how a view is drawn over its place, and `PropValue.argb` a
-  colour as one number for a relay.
+  color as one number for a relay.
   ([canvas and path](../design/views/controls.md#canvas-and-path))
 - **Diagnostics.** `tally` is a `HostTally`; `inspecting`,
   `takeInspectionLog()` and `inspected(generation:scenes:apply:nodes:made:)`
@@ -614,9 +616,9 @@ never against a stored copy
 | `Rendering/` | builders and paths, builds and carried views, the diff, an element's release, determinism, the patch's shape, the typed render, drawings and SVG paths, the inspector, complaints (`ComplaintsTests`), who a view is (`IdentityTests`) |
 | `State/` | `@State`, readers and invalidation, what a state costs (`StateCostTests`), carried state and its cost, a material on it (`MaterialChannelTests`), carried views (`CarriedViewTests`), numbers no type holds (`NumberDecodingTests`), conversions, journeys and motion, the cycle and engines, the ticker, kept and model state, the environment, `.onChanged` and lifetime handlers, placed runs, driven patches |
 | `Contracts/` | the contracts and the library's list, closed vocabularies, payloads, the whole contract against every name the library uses, the registry, declarations, realizations, the register and its verdicts, and the rendered dictionary (`ControlDictionaryTests`) |
-| `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, the modal stack, the environment a host writes, a window's value as text (`ValueTextTests`) |
+| `Pages/` | scenes, windows, pages and their bars, the navigation stack, tabs, the split view, sheets, the environment a host writes, a window's value as text (`ValueTextTests`) |
 | `Acts/` | act calls and their shape, aims, host events |
-| `Views/` | controls, styles and visual states, colours and brushes, gestures, the frame reader, the gallery view, the position indicator (`PositionIndicatorTests`), the items view (`ItemsViewTests`), context menus, drawing transforms |
+| `Views/` | controls, styles and visual states, colors and brushes, gestures, the frame reader, the gallery view, the position dots (`PositionDotsTests`), the items view (`ItemsViewTests`), context menus, drawing transforms |
 | `Threading/` | the UI thread's executor and the doorbell, the jobs kept for later (`TimetableTests`), posts, the gates a handler or a task passes through and what a superseded run changes, acts sent from child tasks, no promise the compiler cannot check, every async function on its caller's executor, and the library's four rules: no Foundation, no `DispatchQueue.main` but the one drain, no `Timer` or `RunLoop`, no `strdup` |
 | `Project/` | the guards below |
 | `Support/` | what the tests share: a differ to talk to, a patch printed readably, the dictionary's rendering, the applications' sources as files |
@@ -625,7 +627,7 @@ never against a stored copy
   resolves every `Design:` reference and holds the golden rule of comments;
   `DocumentationTests` refuses an undocumented public declaration;
   `DocumentLinksTests` follows every document's links; `WebPageTests` holds
-  the page a Web head lays out; `LicenceTests` holds the SPDX lines;
+  the page a Web head lays out; `LicenseTests` holds the SPDX lines;
   `NativeProjectTests` keeps each host a sibling package named only under its
   condition, and a library that exports no C function;
   `RuntimeArchitectureTests` reads the layer's and every host's sources

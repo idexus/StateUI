@@ -86,7 +86,7 @@ final class WinUIRendererTests: XCTestCase {
     func testEveryCallbackTheRelayMakesIsSet() {
         let fields = Mirror(reflecting: WinUICallbacks.table).children
 
-        XCTAssertEqual(fields.count, 41, "the relay's callbacks changed; this test names how many there are")
+        XCTAssertEqual(fields.count, 45, "the relay's callbacks changed; this test names how many there are")
         for field in fields {
             let value = Mirror(reflecting: field.value)
             XCTAssertFalse(value.displayStyle == .optional && value.children.isEmpty, "\(field.label ?? "?") is not set")
@@ -138,6 +138,18 @@ final class WinUIRendererTests: XCTestCase {
         }
     }
 
+    /// The accessibility settings are Windows' own: less motion where its animations are off, as the renderer reads
+    /// them for its own motion, and the scale of the system's words, never below 1.
+    func testThePageReadsWindowsAccessibilitySettings() {
+        onUIThread {
+            let host = WinUIRenderer.running { AccessibilityPage() }
+            let words = host.views(WinUITextView.self).first?.text.split(separator: " ").map(String.init) ?? []
+
+            XCTAssertEqual(words.first, stateui_winui_animations_enabled() ? "moving" : "still")
+            XCTAssertGreaterThanOrEqual(Double(words.last ?? "") ?? 0, 1, "the scale of words")
+        }
+    }
+
     /// The environment is Windows' own: the page reads a desktop running Windows, and the system's theme as Windows
     /// has it now.
     func testThePageReadsWindowsAndItsTheme() {
@@ -172,6 +184,15 @@ private struct DisplayPage: View {
 }
 
 /// A page saying what it runs on and the theme it runs in.
+/// A page saying whether the user asked for less motion, and the scale of words.
+private struct AccessibilityPage: View {
+    @Environment(\.device) private var device
+
+    var body: some View {
+        Text("\(device.accessibility.reducesMotion ? "still" : "moving") \(device.accessibility.textScale)")
+    }
+}
+
 private struct EnvironmentPage: View {
     @Environment(\.device) private var device
     @Environment(\.application) private var app

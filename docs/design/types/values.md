@@ -16,7 +16,7 @@ a value as the thing it is, with nothing to parse and nothing to guess.
 ## Text and names
 
 A `Name` is a word an application chose that repeats across a tree and means
-the same thing every time: a font family, a radio group, a kept key. It
+the same thing every time: a font family, a kept key. It
 crosses as `.name`, which a host may match by what it names. A style key is a
 `StyleKey<Control>`, which the core resolves before any host sees it.
 A member holding a `String` crosses as text an author wrote. The member's declared type
@@ -59,7 +59,7 @@ arguments.
 ## Reading a value back
 
 Every value has `init?(propValue:)`, which answers nil for any shape but its
-own: a rectangle needs exactly four numbers, a colour the colour kind, a day
+own: a rectangle needs exactly four numbers, a color the color kind, a day
 three whole numbers. A whole number is read as the whole number nearest a
 number, as a carried lane is, and a number with none - infinity, not a number,
 one past `Int` - reads as nil.

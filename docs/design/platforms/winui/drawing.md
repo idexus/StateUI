@@ -38,8 +38,7 @@ rectangle, and a panel's own corner radius cuts none of its children.
 A view's background is the ground under its whole frame, painted the way
 WinUI's own templates paint one (`stateui_winui_set_background`): a control's
 `Background` and the theme resources its template draws that ground from -
-a radio button's own (`RadioButtonBackground`) and a check box's, checked or
-not (`CheckBoxBackgroundUnchecked`, `CheckBoxBackgroundChecked`,
+a check box's, checked or not (`CheckBoxBackgroundUnchecked`, `CheckBoxBackgroundChecked`,
 `CheckBoxBackgroundIndeterminate`), the container of a switch or a slider
 (`ToggleSwitchContainerBackground`, `SliderContainerBackground`), the field
 of a text box, a search box or a number box (`TextControlBackground`), of a
@@ -47,7 +46,7 @@ combo box (`ComboBoxBackground`), of a date picker
 (`CalendarDatePickerBackground`) and of a time picker
 (`TimePickerButtonBackground`), each in every state - and a panel's
 `Background`. A canvas clears its surface to its ground as it replays its
-drawing - a brush's first colour alone. A layout paints its box, a label its
+drawing - a brush's first color alone. A layout paints its box, a label its
 words' ground, a button its face. What paints no ground of its own takes
 none: a figure - a shape - and a picture, and the progress bar
 and ring, whose `Background` is their track; their pages in the dictionary
@@ -56,9 +55,9 @@ say so.
 ## A placed child
 
 A ZStack whose places a state drives stands each child where the run says, and
-draws it as the run says - moved, turned, scaled about its centre, and as
+draws it as the run says - moved, turned, scaled about its center, and as
 opaque as the run makes it - over the child's own transform and opacity. The
-run's order is the drawing order: `Canvas.ZIndex`, which every panel honours,
+run's order is the drawing order: `Canvas.ZIndex`, which every panel honors,
 ranks the children without moving them in the panel, so nothing is laid out
 again and a click reaches the one drawn in front. A placed grid's second child
 is its shade, drawn as opaque as the run says.
@@ -88,13 +87,13 @@ whose geometry the host hands over for the room its layout gives it, again
 whenever that room changes. A
 rectangle and an ellipse fill the room, drawn half their outline in from its
 edges so the outline stays inside, as WinUI's own `Rectangle` does - the
-outline drawn, none without a colour (`BoxArithmetic.outlineWidth`), while
+outline drawn, none without a color (`BoxArithmetic.outlineWidth`), while
 the `Path` holds the width the tree gave - then
 moved by their transform; a rectangle's corners are its own arcs, each
 corner its radius. A line, a
 path, a polygon and a polyline draw a geometry of their own - a path's data
 read by the core's parser, its arcs as curves - placed in the room by their
-aspect: fitted, covering, stretched or at their own size, centred, then
+aspect: fitted, covering, stretched or at their own size, centered, then
 moved by their transform, as every host places them
 ([a shape's own geometry](../../host/layout.md#a-shapes-own-geometry)). WinUI
 measures the geometry's bounds, once for each geometry, and the host hands
@@ -138,7 +137,7 @@ asked for one. What the canvas listens to beyond
 itself - its root's scale, the surfaces' loss - it hears for as long as it
 lives, through references that do not hold it.
 
-The replay keeps the colours, the widths, the text size, the opacity and the
+The replay keeps the colors, the widths, the text size, the opacity and the
 transform as the instructions set them, a saved set on a stack. A wedge, an
 arc of an oval and a path each arrive as curves - an arc as the host layer
 works it out, a whole turn the whole oval ([three lists for a

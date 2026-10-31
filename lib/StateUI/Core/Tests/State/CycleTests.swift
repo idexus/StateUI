@@ -43,7 +43,7 @@ private struct Shaped: View {
     let round: Bool
 
     var body: some View {
-        ModifiedContent(node: round ? label("round") : Button("square").node)
+        AnyView(node: round ? label("round") : Button("square").node)
     }
 }
 
@@ -269,11 +269,11 @@ private final class Stamped: FollowedState {
 
 @MainActor
 final class CycleTests: XCTestCase {
-    private var board: CycleBoard { Renderer.shared.board(for: .display) }
+    private var board: CycleBoard { Renderer.shared.board }
 
     /// A cycle at an instant, for arithmetic that needs one and nothing else.
     private func cycle(at now: Double) -> EngineCycle {
-        EngineCycle(sync: .display, now: now, elapsed: 16, count: 1, reducesMotion: false)
+        EngineCycle(now: now, elapsed: 16, count: 1, reducesMotion: false)
     }
 
     override func setUp() async throws {
@@ -300,8 +300,8 @@ final class CycleTests: XCTestCase {
         trip(false)
         trip(Point(x: 3, y: -4))
         trip(Rect(1, 2, 3, 4))
-        trip(Insets(left: 1, top: 2, right: 3, bottom: 4))
-        trip(Color("#8040C0FF"))
+        trip(Insets(start: 1, top: 2, end: 3, bottom: 4))
+        trip(Color(hex: 0x40C0FF, opacity: 0.5))
         trip("a caption, ż and 漢")
         trip("")
         trip(CalendarDate(year: 2026, month: 8, day: 2))
@@ -445,7 +445,7 @@ final class CycleTests: XCTestCase {
         _ = value.image
 
         value.wrappedValue = 7
-        _ = HostBoundary.cycle(.display, now: 0, reducesMotion: false)
+        _ = HostBoundary.cycle(now: 0, reducesMotion: false)
 
         XCTAssertFalse(HostBoundary.cyclesPending, "nothing waits for a reader that has no number to read")
         XCTAssertEqual(value.wrappedValue, 7)
@@ -750,12 +750,12 @@ final class CycleTests: XCTestCase {
         // Carried from here on, on the display's board.
         _ = value.image
 
-        board.arm(EngineEntry(id: 1, priority: 0, sync: .display, follows: []) { _ in
+        board.arm(EngineEntry(id: 1, priority: 0, follows: []) { _ in
             seen.append(value.wrappedValue)
             binding.post(2)
             return .wait
         })
-        board.arm(EngineEntry(id: 2, priority: 1, sync: .display, follows: []) { _ in
+        board.arm(EngineEntry(id: 2, priority: 1, follows: []) { _ in
             seen.append(value.wrappedValue)
             return .again
         })
@@ -1004,7 +1004,7 @@ final class CycleTests: XCTestCase {
     /// value from an engine has to read it in its BODY too, and hand it over.
     ///
     /// Measured live before it was written down: a gallery whose shape and
-    /// whose travelling law were read inside its engine alone kept the shape it
+    /// whose traveling law were read inside its engine alone kept the shape it
     /// was last placed in, however many times the user asked for another.
     func testAStateOnlyAnEngineReadsArmsNothing() {
         let ran = Ran()

@@ -8,7 +8,8 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
-/// The bar an arrangement declares, in AppKit's window chrome: the application's title area and the bar's colours.
+/// The bar in AppKit's window chrome: the title area a sidebar's page says, the line under the title, and the bar's
+/// colors an arrangement declares.
 @MainActor
 final class AppKitBarTests: XCTestCase {
     /// A window whose pages say no title is named by the application, as the system names it in the Window menu,
@@ -23,15 +24,15 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(window.title, renderer.runtime.core.applicationName)
     }
 
-    /// The title area is text at the trailing edge of the window's title bar, in the system's colours rather than a
-    /// toolbar control's glass, while the visible page names the window. A foreground with no background declared
-    /// keeps the system's colours: on the toolbar's material it could vanish.
+    /// The title area a sidebar's page says is text at the trailing edge of the window's title bar, in the system's
+    /// colors rather than a toolbar control's glass, while the visible page names the window. A foreground with no
+    /// background declared keeps the system's colors: on the toolbar's material it could vanish.
     @MainActor
-    func testTheTitleAreaStandsAtTheTrailingEdgeInSystemColours() throws {
+    func testTheTitleAreaStandsAtTheTrailingEdgeInSystemColors() throws {
         let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(tree(bar(background: nil), windowTitle: "Workspace"))
+        renderer.applyForTesting(flyoutTree(bar(background: nil), menu: menu()))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = try XCTUnwrap(controller.window)
@@ -53,15 +54,17 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
     }
 
-    /// With nothing declared any more - each value arriving as nothing - the window keeps the plain native chrome:
-    /// no accessory, the system's background.
+    /// With nothing said any more - each value arriving as nothing - the window keeps the plain native chrome:
+    /// no accessory, no line under the title, the system's background. A sidebar's page saying nothing names no
+    /// application: a Mac window names none of itself.
     @MainActor
     func testTakingTheBarAwayLeavesThePlainNativeWindowChrome() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(tree(bar()))
-        renderer.applyForTesting(tree(bar().mapValues { _ in .nothing }))
+        renderer.applyForTesting(flyoutTree(bar(), menu: menu(), line: "Today"))
+        renderer.applyForTesting(flyoutTree(
+            bar().mapValues { _ in .nothing }, menu: menu().mapValues { _ in .nothing }, line: nil))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = try XCTUnwrap(controller.window)
@@ -69,49 +72,52 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertNil(controller.titleAccessoryForTesting)
         XCTAssertTrue(window.titlebarAccessoryViewControllers.isEmpty)
         XCTAssertEqual(window.title, "Page")
-        XCTAssertEqual(window.subtitle, "")
+        XCTAssertEqual(window.subtitle, "", "no line under the title")
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
         XCTAssertFalse(window.titlebarAppearsTransparent)
-        XCTAssertNil((window.contentView as? AppKitWindowContentView)?.barColor)
+        XCTAssertNil((window.contentView as? AppKitWindowContentView)?.barBrush.color)
     }
 
-    /// A declared bar colour paints the band the title bar and toolbar cover and the window's background, and the
+    /// A declared bar color paints the band the title bar and toolbar cover and the window's background, and the
     /// title area takes the declared foreground there.
     @MainActor
-    func testADeclaredBarColourPaintsTheBandAndColoursTheTitleArea() throws {
+    func testADeclaredBarColorPaintsTheBandAndColorsTheTitleArea() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(tree(bar()))
+        renderer.applyForTesting(flyoutTree(bar(), menu: menu()))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = try XCTUnwrap(controller.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         XCTAssertTrue(window.titlebarAppearsTransparent)
-        XCTAssertEqual(content.barColor, NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
+        XCTAssertEqual(content.barBrush.color, NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
         XCTAssertEqual(controller.titleClusterForTesting.titleColorForTesting, NSColor(
             srgbRed: 246 / 255, green: 244 / 255, blue: 1, alpha: 1))
-        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' colour paints the bars alone")
+        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' color paints the bars alone")
     }
 
-    /// The title area follows what the arrangement declares, in the same toolbar and accessory.
+    /// The title area follows what the sidebar's page says, in the same toolbar and accessory; the line under the
+    /// title follows the page naming the window, as the window's own subtitle.
     @MainActor
     func testTheTitleAreaUpdatesInPlace() throws {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(tree(bar(title: "Notes", subtitle: "Personal")))
+        renderer.applyForTesting(flyoutTree(bar(), menu: menu(title: "Notes", subtitle: "Personal"), line: "Today"))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
         let window = try XCTUnwrap(controller.window)
         let toolbar = try XCTUnwrap(window.toolbar)
         let accessory = try XCTUnwrap(controller.titleAccessoryForTesting)
 
-        renderer.applyForTesting(tree(bar(title: "Archive", subtitle: "Shared")))
+        XCTAssertEqual(window.subtitle, "Today")
+        renderer.applyForTesting(flyoutTree(bar(), menu: menu(title: "Archive", subtitle: "Shared"), line: "Yesterday"))
 
         XCTAssertTrue(window.toolbar === toolbar)
         XCTAssertTrue(controller.titleAccessoryForTesting === accessory)
         XCTAssertEqual(window.title, "Page")
+        XCTAssertEqual(window.subtitle, "Yesterday")
         XCTAssertEqual(controller.titleClusterForTesting.titleForTesting, "Archive")
         XCTAssertEqual(controller.titleClusterForTesting.subtitleForTesting, "Shared")
     }
@@ -138,6 +144,107 @@ final class AppKitBarTests: XCTestCase {
         XCTAssertEqual(navigation.frame, content.safeAreaRect)
     }
 
+    /// The toolbar is part of the safe area of the page under it: the page's content stands clear of it, and where
+    /// it lets itself under the bars it reaches the window's top edge, under the toolbar.
+    @MainActor
+    func testAPagesContentReachesUnderTheToolbarWhereItSaysSo() throws {
+        let under = State(wrappedValue: false)
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                ZStack {}.ignoresSafeArea(under.wrappedValue ? .all : .none).id("content").title("Under")
+            } destination: { _ in Text("Next") }
+        }
+        defer { renderer.closeForTesting() }
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        let page = try XCTUnwrap(renderer.viewForTesting(id: .manual("content")))
+        content.layoutSubtreeIfNeeded()
+        XCTAssertGreaterThan(content.safeAreaRect.minY, 0, "a toolbar over the page")
+        XCTAssertEqual(content.convert(page.bounds, from: page).minY, content.safeAreaRect.minY, "clear of it")
+
+        under.wrappedValue = true
+        renderer.runtime.pump.turn()
+        content.layoutSubtreeIfNeeded()
+        page.superview?.layoutSubtreeIfNeeded()
+        XCTAssertEqual(content.convert(page.bounds, from: page).minY, 0, "under it")
+    }
+
+    /// A page's scroller let under the toolbar scrolls under it and keeps the toolbar's depth clear at its start, so
+    /// its first row stands clear of it at the offset the tree calls nothing.
+    @MainActor
+    func testAPagesScrollerUnderTheToolbarKeepsItsFirstRowClear() throws {
+        let offset = State(wrappedValue: Point(0, 0))
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
+                    .ignoresSafeArea(.all)
+                    .title("Rows")
+            } destination: { _ in Text("Next") }
+        }
+        defer { renderer.closeForTesting() }
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        let scroll = try XCTUnwrap(renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
+        content.layoutSubtreeIfNeeded()
+        scroll.layoutSubtreeIfNeeded()
+        let top = content.safeAreaRect.minY
+        XCTAssertGreaterThan(top, 0, "a toolbar over the page")
+        XCTAssertEqual(scroll.contentInsets.top, top, "its depth kept clear")
+        XCTAssertEqual(scroll.contentView.bounds.origin.y, -top, accuracy: 0.5, "its first row clear of it")
+        XCTAssertEqual(offset.wrappedValue, Point(0, 0), "where the tree calls nothing")
+
+        offset.wrappedValue = Point(0, 100)
+        for _ in 0..<100 {
+            guard abs(scroll.contentView.bounds.origin.y - (100 - top)) > 0.5 else { break }
+            RunLoop.current.run(until: Date().addingTimeInterval(0.02))
+            renderer.runtime.pump.turn()
+            renderer.displayFrameForTesting()
+            scroll.layoutSubtreeIfNeeded()
+        }
+        XCTAssertEqual(scroll.contentView.bounds.origin.y, 100 - top, accuracy: 0.5, "counted from its first row")
+    }
+
+    /// Under the toolbar over a page, where macOS draws no edge for StateUI's content, the host draws the bars' edge
+    /// while the rows pass under it: none at their start, a blur once they scroll under, a line along it where the edge
+    /// is hard.
+    @MainActor
+    func testTheToolbarShowsItsEdgeWhileRowsPassUnderIt() throws {
+        let (offset, edge) = (State(wrappedValue: Point(0, 0)), State(wrappedValue: ScrollEdge.automatic))
+        let renderer = AppKitRenderer.running {
+            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                Grid { ScrollView { Text("rows").height(2000) }.scrollOffset(offset.projectedValue).id("scroll") }
+                    .ignoresSafeArea(.all)
+                    .title("Rows")
+            } destination: { _ in Text("Next") }
+            .barScrollEdge(edge.wrappedValue)
+        }
+        defer { renderer.closeForTesting() }
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        let settle = { (done: () -> Bool) in
+            for _ in 0..<100 {
+                guard !done() else { break }
+                RunLoop.current.run(until: Date().addingTimeInterval(0.02))
+                renderer.runtime.pump.turn()
+                renderer.displayFrameForTesting()
+                window.layoutIfNeeded()
+            }
+        }
+        let band = { content.subviews.lazy.compactMap { $0 as? AppKitTopEdgeView }.first }
+        let line = { band()?.subviews.lazy.compactMap { $0 as? NSBox }.first }
+        content.layoutSubtreeIfNeeded()
+        XCTAssertEqual(band()?.isHidden, true, "the rows at their start")
+
+        offset.wrappedValue = Point(0, 300)
+        settle { band()?.isHidden == false }
+        XCTAssertEqual(band()?.isHidden, false, "a blur once they pass under")
+        XCTAssertEqual(line()?.isHidden, true, "no line for the automatic edge")
+
+        edge.wrappedValue = .hard
+        settle { line()?.isHidden == false }
+        XCTAssertEqual(line()?.isHidden, false, "a line for the hard one")
+    }
+
     /// A split view declaring the bar keeps its sidebar, its stack and a scroll view in the stack inside the native
     /// content.
     @MainActor
@@ -145,7 +252,7 @@ final class AppKitBarTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        renderer.applyForTesting(flyoutTree(bar()))
+        renderer.applyForTesting(flyoutTree(bar(), menu: menu()))
 
         let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
@@ -169,7 +276,7 @@ final class AppKitBarTests: XCTestCase {
 
 private extension AppKitBarTests {
     /// A window whose page is a stack declaring `bar` over a page titled "Page".
-    func tree(_ bar: [Prop: HostValue], windowTitle: String? = nil) -> HostPatch {
+    func tree(_ bar: [Prop: HostValue]) -> HostPatch {
         var label = HostPatch(id: .manual("page-label"), type: .text)
         label.properties[.text] = .string("Page")
 
@@ -182,32 +289,33 @@ private extension AppKitBarTests {
         navigation.children = .arranged([page])
 
         var window = HostPatch(id: .manual("window"), type: .window)
-        if let windowTitle { window.properties[.title] = .string(windowTitle) }
         window.children = .arranged([navigation])
         return application(window)
     }
 
-    /// What an arrangement declares of the bar: the application's name, line and mark, and the colours given.
+    /// What an arrangement declares of the bar: the colors given.
     func bar(
-        title: String = "Notes",
-        subtitle: String = "Personal",
         background: (UInt8, UInt8, UInt8)? = (54, 42, 86),
         foreground: (UInt8, UInt8, UInt8)? = (246, 244, 255)
     ) -> [Prop: HostValue] {
-        var bar: [Prop: HostValue] = [
-            .barTitle: .string(title), .barSubtitle: .string(subtitle), .barIcon: .string("notes.png"),
-        ]
+        var bar: [Prop: HostValue] = [:]
         if let foreground {
             bar[.barForegroundColor] = .color(red: foreground.0, green: foreground.1, blue: foreground.2, alpha: 255)
         }
         if let background {
-            bar[.barBackgroundColor] = .color(red: background.0, green: background.1, blue: background.2, alpha: 255)
+            bar[.barBackground] = .color(red: background.0, green: background.1, blue: background.2, alpha: 255)
         }
         return bar
     }
 
-    /// A window whose page is a split view declaring `bar`: a menu beside a stack over a long scrolling page.
-    func flyoutTree(_ bar: [Prop: HostValue]) -> HostPatch {
+    /// What a sidebar's page says of itself: its title, the line under it and its picture.
+    func menu(title: String = "Notes", subtitle: String = "Personal") -> [Prop: HostValue] {
+        [.title: .string(title), .subtitle: .string(subtitle), .icon: .string("notes.png")]
+    }
+
+    /// A window whose page is a split view declaring `bar`: a menu saying `menu` of itself beside a stack over a long
+    /// scrolling page, whose line is `line`.
+    func flyoutTree(_ bar: [Prop: HostValue], menu said: [Prop: HostValue] = [:], line: String? = nil) -> HostPatch {
         let rows = (0..<30).map { index -> HostPatch in
             var row = HostPatch(id: .manual("row-\(index)"), type: .text)
             row.properties[.text] = .string("Row \(index)")
@@ -220,6 +328,7 @@ private extension AppKitBarTests {
         scroll.children = .arranged([stack])
         var page = HostPatch(id: .manual("page"), type: .page)
         page.properties[.title] = .string("Page")
+        page.properties[.subtitle] = line.map { .string($0) } ?? .nothing
         page.children = .arranged([scroll])
         var navigation = HostPatch(id: .manual("navigation"), type: .navigationStack)
         navigation.children = .arranged([page])
@@ -227,6 +336,7 @@ private extension AppKitBarTests {
         var menuLabel = HostPatch(id: .manual("menu-label"), type: .text)
         menuLabel.properties[.text] = .string("Menu")
         var menu = HostPatch(id: .manual("menu"), type: .page)
+        menu.properties = said
         menu.children = .arranged([menuLabel])
 
         var flyout = HostPatch(id: .manual("flyout"), type: .splitView)

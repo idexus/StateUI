@@ -40,6 +40,7 @@ final class StateUIPicker extends Spinner implements StateUIChoosing, AdapterVie
     private int textUnit = TypedValue.COMPLEX_UNIT_SP;
     private int textColor;
     private Typeface typeface;
+    private String fontFeatures;
     private int gravity = Gravity.START | Gravity.CENTER_VERTICAL;
 
     StateUIPicker(Context context, long view) {
@@ -66,15 +67,16 @@ final class StateUIPicker extends Spinner implements StateUIChoosing, AdapterVie
 
     /**
      * The words' size in points - 0 for the theme's - and their unit, `TypedValue`'s scaled pixels where the user's
-     * font scale applies to them and its density-independent ones where not; their colour - 0 for the theme's -
-     * their face, and where they stand.
+     * font scale applies to them and its density-independent ones where not; their color - 0 for the theme's -
+     * their face, their font features - null for none - and where they stand.
      */
     @Override
-    public void setLook(float size, int unit, int color, Typeface face, int alignment) {
+    public void setLook(float size, int unit, int color, Typeface face, String features, int alignment) {
         textSize = size;
         textUnit = unit;
         textColor = color;
         typeface = face;
+        fontFeatures = features;
         gravity = alignment | Gravity.CENTER_VERTICAL;
         rows.notifyDataSetChanged();
     }
@@ -116,7 +118,7 @@ final class StateUIPicker extends Spinner implements StateUIChoosing, AdapterVie
 
     /** The title, then the options, all of one kind of row as a spinner asks. */
     private final class Rows extends BaseAdapter {
-        /** A row's words' colours and an open list's row height, as the theme made them. */
+        /** A row's words' colors and an open list's row height, as the theme made them. */
         private ColorStateList madeColors;
 
         /** The theme's size of a row of each layout, in scaled points, read from the first one made. */
@@ -180,6 +182,7 @@ final class StateUIPicker extends Spinner implements StateUIChoosing, AdapterVie
             row.setTextSize(textUnit, textSize > 0 ? textSize : madeSizes.get(layout));
             row.setTextColor(textColor != 0 ? ColorStateList.valueOf(textColor) : madeColors);
             row.setTypeface(typeface);
+            row.setFontFeatureSettings(fontFeatures);
             row.setGravity(gravity);
             return row;
         }

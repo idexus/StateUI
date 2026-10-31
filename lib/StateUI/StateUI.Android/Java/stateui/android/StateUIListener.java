@@ -51,9 +51,12 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
         return x;
     }
 
+    /** A long press the view took is no tap of the gestures' counting. */
     @Override
     public boolean onLongClick(View held) {
-        return StateUIHost.longClicked(view);
+        boolean taken = StateUIHost.longClicked(view);
+        if (taken && gestures != null) gestures.held();
+        return taken;
     }
 
     @Override
@@ -112,10 +115,10 @@ final class StateUIListener implements View.OnClickListener, View.OnLongClickLis
 
     /** What `touched`'s element listens for; see `StateUIGestures.configure`. A hand over a layout hears the wheel. */
     void setGestures(
-            View touched, float density, boolean countsTaps, boolean drags, boolean pinch, boolean pointer,
-            boolean hand, boolean rotation) {
+            View touched, float density, boolean countsTaps, boolean presses, boolean pressIsClick, boolean drags,
+            boolean pinch, boolean pointer, boolean hand, boolean rotation) {
         if (gestures == null) gestures = new StateUIGestures(touched, view, density);
-        gestures.configure(countsTaps, drags, pinch, pointer, hand, rotation);
+        gestures.configure(countsTaps, presses, pressIsClick, drags, pinch, pointer, hand, rotation);
         touched.setOnGenericMotionListener(hand ? this : null);
     }
 

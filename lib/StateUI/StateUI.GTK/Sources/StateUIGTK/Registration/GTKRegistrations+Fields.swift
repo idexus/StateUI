@@ -17,6 +17,7 @@ extension GTKRegistrations {
         }, members: { field in
             field.applies(inputMembers) { view, values in applyInput(view, values) }
             field.property(TextFieldContract.isPassword) { view, hidden in view.setPassword(hidden ?? false) }
+            field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.raises(TextInputContract.textChanged)
             field.raises(TextFieldContract.submitted)
         })
@@ -27,6 +28,7 @@ extension GTKRegistrations {
         }, members: { editor in
             editor.applies(inputMembers) { view, values in applyInput(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.setGrowsWithText(grows ?? false) }
+            editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.raises(TextInputContract.textChanged)
         })
         registry.add(SearchFieldContract.self, create: { reports in
@@ -36,9 +38,20 @@ extension GTKRegistrations {
             return search
         }, members: { search in
             search.applies(inputMembers) { view, values in applyInput(view, values) }
+            search.applies(outlineMembers) { view, values in applyOutline(view, values) }
             search.raises(TextInputContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })
+    }
+
+    /// A field's outline and the shape its ground and outline follow.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
+
+    private static func applyOutline<Realized: ElementContract>(_ view: any GTKTextInputView, _ values: ElementValues<Realized>) {
+        view.setOutline(
+            stroke: values[BorderElementContract.stroke]?.propValue, lineWidth: values[BorderElementContract.lineWidth],
+            shape: values[BorderElementContract.shape]?.propValue)
     }
 
     private static func hearInput<Realized: ElementContract>(_ view: any GTKTextInputView, _ reports: Reports<Realized>) {
@@ -47,15 +60,15 @@ extension GTKRegistrations {
 
     /// What every view the user types in takes: its words, their bound and what shows while they are none, whether
     /// and how it takes them, their look and where they stand, and the caret and the selection.
-    private static let inputMembers: [any ContractMember] = [
+    private static let inputMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength,
-        VisualElementContract.isEnabled, TextInputContract.isReadOnly, TextInputContract.isSpellCheckEnabled,
-        TextInputContract.isTextPredictionEnabled, TextInputContract.inputPurpose,
-    ] + TextMembers.lookMembers + [
-        TextInputContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
-        TextInputContract.cursorPosition, TextInputContract.selectionLength,
-    ]
+        TextInputContract.maximumLength, VisualElementContract.isEnabled, TextInputContract.isReadOnly,
+        TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
+        TextInputContract.inputPurpose)
+        + TextMembers.lookMembers
+        + PropertyList(
+            TextInputContract.placeholderColor, TextAlignmentElementContract.horizontalTextAlignment,
+            TextInputContract.cursorPosition, TextInputContract.selectionLength)
 
     private static func applyInput<Realized: ElementContract>(_ view: any GTKTextInputView, _ values: ElementValues<Realized>) {
         if values.changed(TextInputContract.maximumLength) {
@@ -72,12 +85,14 @@ extension GTKRegistrations {
         }
         if values.changed(TextInputContract.isReadOnly) || InputTraits.changed(values) != nil {
             let (hints, purpose) = GTKTextFieldView.input(InputTraits(values))
-            view.setBehaviour(readOnly: values[TextInputContract.isReadOnly] ?? false, hints: hints, purpose: purpose)
+            view.setBehavior(readOnly: values[TextInputContract.isReadOnly] ?? false, hints: hints, purpose: purpose)
         }
         if TextMembers.look(values) != nil || values.changed(TextInputContract.placeholderColor) {
+            let look = TextMembers.look(of: values)
             view.setWordsClass(GTKStyleSheet.words(
-                TextMembers.look(of: values),
-                placeholder: values[TextInputContract.placeholderColor].flatMap { GTKBrush.rgba($0.propValue) }))
+                look, placeholder: values[TextInputContract.placeholderColor].flatMap { GTKBrush.rgba($0.propValue) },
+                digits: false))
+            view.setTabularDigits(look.attributes.contains(.monospacedDigits))
         }
         if values.changed(TextAlignmentElementContract.horizontalTextAlignment) {
             view.setAlignment(values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)

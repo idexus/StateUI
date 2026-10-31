@@ -56,6 +56,14 @@ thread for work it made - a state written, an act sent - and on the thread
 that queued a job, a handler's resume or a post among them. No thread of the
 host's waits for a turn, and nothing on the path enters the JVM.
 
+## The main queue
+
+The main looper watches libdispatch's main queue's eventfd beside the
+doorbell's (`ALooper_addFd`) and drains the queue as it is readable
+([the main queue](../../host/runtime.md#the-main-queue)). The library loads on
+the UI thread - in the activity's creation, and in the test runner's - so the
+queue is bound to it.
+
 ## One frame
 
 The frame clock asks the UI thread's `Choreographer` for one frame at a time
@@ -99,6 +107,24 @@ system's dark or light theme is read with them, and the activity is made in
 the matching one: a change of theme makes Android create the activity again,
 and the new one takes the scene over, its controls drawn in the new theme.
 
+The application's own theme (`application.colorScheme`) is its night mode.
+From Android 12 the system holds it (`UiModeManager.setApplicationNightMode`)
+and makes every activity again in it. Before 12 the host holds it as the
+system would: an activity is made with its configuration's night overridden
+(`applyOverrideConfiguration`, as its base context is attached, before any
+resource is read), and a change makes the activity again. A StateUI activity
+is made again at any other night, its manifest's `uiMode` or not: a native
+control takes its theme only as it is made. An activity of another kind
+whose manifest takes the change itself - the test runner's, whose instance
+the runner holds - is told the new configuration instead.
+
+The theme outlives the process: from 12 the system keeps it, before 12 the
+host (its own preferences, `stateui.host`), so the next start's first
+activity is made in it - an application says its theme as it starts, after
+`onCreate`, and the activity would otherwise be made in the system's and at
+once again. Once the first render is over, an application that said none
+gets the system's back: it holds a theme only while it says so.
+
 The user's locale, the battery and the network are read with them and again
 whenever one changes: the activity watches the zone, the clock, the battery,
 its saver and the default network from its creation to its destruction, each
@@ -106,6 +132,17 @@ change read whole in one call per group. A change of language creates the
 activity again, so the locale - its direction with it - is read as the new one
 starts. The network needs `ACCESS_NETWORK_STATE`, which every head's manifest
 asks for; without it the network is reported unknown.
+
+The accessibility settings are read with them: less motion where the
+system's animations are off - the renderer's own reading for its motion -
+more contrast where Android says the user raised it (Android 14 on; none
+before), TalkBack where touch exploration is on, and the configuration's font
+scale. TalkBack, the animations' scale and the contrast are watched as the
+rest are; the font scale comes with a configuration change. Android tells
+some of what is watched on a thread of its own - the animations' scale on a
+binder's - so every change reaches the host through one door that hands it to
+the UI thread first (`StateUIEnvironment.changed`): the host reads it on the
+main actor alone.
 
 ## The activity's lifecycle
 
@@ -117,9 +154,20 @@ rendered before the next is heard, and a window shown again after it stopped
 resumed on its way to active. The window hears it was made as the host layer
 shows it, once; and it is going, and its scene that it closed, only when the
 activity finishes, not when Android makes the activity again for a new
-configuration. The window's title - the visible page's that names it, else
+configuration. Nor does it hear the pause and the stop the activity goes
+through on that way (`isChangingConfigurations`): the next resumes at once,
+and a window heard stopped would end what an application ends there - a
+shared terminal's session, at every change of theme. The window's title - the visible page's that names it, else
 the window's own, as the host layer's chrome says it - is the activity's, and
 the label its task shows among the recent ones.
+
+## A link opened
+
+An activity hears a link as the intent it is started with, `ACTION_VIEW` - not
+again when it is made anew for a new configuration - and as a new intent while
+it runs (`onNewIntent`), the activity `singleTask` in the head's manifest so the
+running one takes it. An application's own activity subclasses
+`StateUIActivity`, calling `super` where it overrides.
 
 ## Acts
 
@@ -142,9 +190,26 @@ takes its dialogs away unanswered, and the next asks the question showing
 again; the document picker stands in an activity of its own, which answers
 the next. An activity finishing answers every question and picker still
 waiting as dismissed (`HostActPerformer.dismissAll`), so the process's next
-activity finds none before what it asks. A ticket
+activity finds none before what it asks - once its window closed, as every
+host answers what stood over a window gone: the caller's run went with the
+window, so it hears the answer and changes nothing, every time. Answered
+first, the resumed caller raced the window's going, and wrote or did not by
+the threads' timing. A ticket
 is one number across the process, and an answer from a dialog that went
 answers nothing.
+
+## The clipboard
+
+The clipboard is the `ClipboardManager`'s primary clip: words are written as
+plain text in place of what it held, and read as the first item's text, none
+where it holds no clip.
+
+## Sharing
+
+What the user shares is Android's chooser: the words, then the link on a line
+of its own, sent as plain text. The chooser tells which target the user picked
+and nothing of a cancel, so the answer comes once the activity is back in
+front: shared where a target was picked, else not.
 
 ## Files
 
@@ -193,9 +258,10 @@ nothing of the host's numbering or listeners reaches the application.
 ## Kept values
 
 A kept state's key is in the platform's preferences, as the words its kind
-reads back. Every key the application lists is read before the first scene
-connects, in one call, and handed to the core ahead of the first view; a
-key's new value is written as its save arrives.
+reads back. The host gives the core a reader of them as it starts, through
+the application's context - the reader lasts as long as the process, and an
+activity does not - and a key is read as its first state is made; a key's
+new value is written as its save arrives.
 
 Android restores no windows, so the application's scenes are kept beside the
 values, under a key of the host's own, by the host layer's rule ([kept

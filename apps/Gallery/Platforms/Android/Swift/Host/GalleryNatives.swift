@@ -42,6 +42,25 @@ public func galleryCubeFrame(_ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jcl
     MainActor.assumeIsolated { (GalleryControls.control(control) as? GLESCube3DView)?.frame(at: time) }
 }
 
+@_cdecl("Java_com_stateui_gallery_GalleryNatives_mapClicked")
+public func galleryMapClicked(
+    _ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jclass?, _ control: jlong, _ latitude: jdouble, _ longitude: jdouble
+) {
+    MainActor.assumeIsolated {
+        (GalleryControls.control(control) as? GoogleMapView)?.clicked(latitude: latitude, longitude: longitude)
+    }
+}
+
+@_cdecl("Java_com_stateui_gallery_GalleryNatives_markerSelected")
+public func galleryMarkerSelected(_ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jclass?, _ control: jlong, _ marker: jlong) {
+    MainActor.assumeIsolated { (GalleryControls.control(control) as? GoogleMapView)?.selected(marker) }
+}
+
+@_cdecl("Java_com_stateui_gallery_GalleryNatives_markerDetails")
+public func galleryMarkerDetails(_ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jclass?, _ control: jlong, _ marker: jlong) {
+    MainActor.assumeIsolated { (GalleryControls.control(control) as? GoogleMapView)?.detailed(marker) }
+}
+
 // listing: InteropEventsSample.Android.swift
 @_cdecl("Java_com_stateui_gallery_GalleryNatives_batteryChanged")
 public func galleryBatteryChanged(

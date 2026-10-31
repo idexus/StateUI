@@ -65,6 +65,10 @@
     /// Design: docs/design/host/items.md#scrolling-to-an-item
     public private(set) var scrollTarget: ItemsScrollTarget?
 
+    /// The item the program last stood, kept past its standing while nothing else moved the list - no scroll of the
+    /// user's, no other of the program's, no entry come or gone - so a room that changes stands it again.
+    private var stood: ItemsScrollTarget?
+
     /// The cells of `element`, telling `runtime`.
     public init(_ element: MountedElement, in runtime: HostRuntime) {
         self.element = element
@@ -92,6 +96,7 @@
             holders[identity] = nil
         }
         if let scrollTarget, positions[scrollTarget.identity] == nil { self.scrollTarget = nil }
+        if old != identities { stood = nil }
         return ItemsChanges(from: old, to: identities)
     }
 
@@ -101,6 +106,7 @@
     /// waits for its entry.
     public func scroll(to identity: String, anchor: ScrollAnchor) {
         scrollTarget = ItemsScrollTarget(identity: identity, anchor: anchor)
+        stood = nil
     }
 
     /// The collection laid out what its cells hold: the item to stand again, where one is held - let go after this
@@ -109,13 +115,21 @@
     public func laidOut() -> ItemsScrollTarget? {
         guard let scrollTarget else { return nil }
         let waiting = holders.contains { $0.key == $0.value.identity && $0.value.shown == nil }
-        if holding(of: scrollTarget.identity)?.shown != nil, !waiting { self.scrollTarget = nil }
+        if holding(of: scrollTarget.identity)?.shown != nil, !waiting { (self.scrollTarget, stood) = (nil, scrollTarget) }
         return scrollTarget
+    }
+
+    /// The list's room changed - its size, or what it keeps clear of the bars over it: the item the program scrolled
+    /// to, to stand again where the program put it, held or stood since; nil once anything else moved the list.
+    /// Design: docs/design/host/items.md#scrolling-to-an-item
+    public func roomChanged() -> ItemsScrollTarget? {
+        scrollTarget ?? stood
     }
 
     /// The user moved the list: where it stands is theirs.
     public func userScrolled() {
         scrollTarget = nil
+        stood = nil
     }
 
     /// Down, across or in columns.
@@ -218,6 +232,14 @@
     /// The mounted subtree of `identity`, where there is one.
     public func item(_ identity: String) -> MountedElement? {
         element?.children.first { $0.id == .manual(identity) }
+    }
+
+    /// The actions on `identity`'s item as a list offers them to a swipe: the items of the context menu standing on
+    /// it that can be chosen, in order - a line and a submenu left out, as a swipe shows neither.
+    /// Design: docs/design/host/items.md#an-items-actions
+    public func actions(of identity: String) -> [MenuEntry] {
+        guard let menu = item(identity)?.children.first(where: { $0.type == .contextMenu }) else { return [] }
+        return MenuEntry.entries(of: menu).filter { $0.kind == .item && $0.isEnabled }
     }
 
     /// The user chose `chosen` - every item chosen now - told in the order they show; what the program selects is

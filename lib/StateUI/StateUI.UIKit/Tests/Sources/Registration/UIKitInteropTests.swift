@@ -82,7 +82,7 @@ private struct Calling: View {
 
     var body: some View {
         VStack {
-            Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+            Button("Ask").onClicked(.ignoreWhileRunning) {
                 do {
                     let doubled = try await stateUICall(InteropTestContract.doubled, 21)
                     said = "\(doubled)"
@@ -90,7 +90,7 @@ private struct Calling: View {
                     said = "thrown: \(error)"
                 }
             }
-            Button("Ask nobody").onClicked(gate: .ignoreWhileRunning) {
+            Button("Ask nobody").onClicked(.ignoreWhileRunning) {
                 do {
                     try await stateUICall(InteropTestContract.unregistered)
                     said = "that should have thrown"
@@ -98,7 +98,7 @@ private struct Calling: View {
                     said = "thrown: \(error)"
                 }
             }
-            Button("Flash").onClicked(gate: .ignoreWhileRunning) {
+            Button("Flash").onClicked(.ignoreWhileRunning) {
                 do {
                     try await lamp.flash()
                     said = "flashed"

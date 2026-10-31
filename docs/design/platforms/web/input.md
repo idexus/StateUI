@@ -8,7 +8,7 @@ turns the page's events into what the host layer hears (`hear`).
 ## Taps
 
 A tap is the element's `click`, the run of clicks its count. A click on a
-`<label>` beside its control - a radio button's caption - is no tap of its
+`<label>` beside its control - a toggle's words, a radio button's caption - is no tap of its
 own: the browser clicks the control next, and that click is the one tap. An
 element the
 user taps that is no control of the browser's own is a button for assistive
@@ -17,6 +17,19 @@ on it is a tap - a tap assistive technology makes, which the host layer
 answers at once whatever the count asked for. The pointer's events are the
 DOM's `pointerenter`, `pointerleave`, `pointermove`, `pointerdown` and
 `pointerup`, where the pointer is told from the element's top left corner.
+
+A pointer's tap is its press, taken as a button takes one by the host
+layer's rule ([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)):
+the relay follows a press on an element that hears taps from `pointerdown`,
+the pointer the element's (`setPointerCapture`) until `pointerup`, and the
+browser taking it - `pointercancel`, a layout capturing the pointer - is the
+press taken away. So is a scroll of what holds the element while it is
+pressed: iOS's WebKit scrolls a list under a finger and tells the page no
+cancel, the row riding along under the finger to its lift. A press begun on a control inside - a button, a field, a
+view hearing its own taps - is that control's. The element's `click` taps
+only where no pointer made it - the keyboard's, a screen reader's - or where
+the element counts a run of taps, as the page counts its clicks. A list's
+item takes its tap by the same press.
 
 A button pressed leaves the keyboard with the field being typed in, as a
 native button takes no keyboard of a field: the page's press on a button is
@@ -36,9 +49,23 @@ reaches the element only while the element still asks.
 
 A control answers every tap, however quickly the next follows: a button, a
 field, a choice and an element the user taps take `touch-action:
-manipulation` - in the window, on a sheet, in a question and in a menu - so
+manipulation` - in the window, on a sheet, in a popover, in a question and
+in a menu - so
 two taps in a row on a touch screen are two taps, never the page's zoom -
 which the rest of the page keeps.
+
+## A press held
+
+The browser tells no hold: the relay waits the view's time, or StateUI's own,
+from a press of a finger, a pen or the mouse's main button, and lets it go
+where the press moves as far as a drag or lifts. A web view's document of the
+page's site is heard too. The held press's click is taken before any view
+hears it, so a press held is no tap.
+
+A finger held on a button selects none of its words: a button is pressed,
+never read, so every button the page stands - the page's, the bar's, a tab's
+- stands out of the browser's selection and its callout, as a view hearing
+taps does.
 
 ## A press dragged and a pinch
 

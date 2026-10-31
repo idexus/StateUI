@@ -14,6 +14,7 @@ enum GalleryControls {
         TrafficLightView.register()
         RatingBarView.register()
         GLESCube3DView.register()
+        GoogleMapView.register()
     }
     // listing: end
 

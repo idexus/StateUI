@@ -6,6 +6,9 @@
 
 /// Children placed: each child's view in its layout, with its place written as CSS.
 extension WebElement {
+    /// The browser measures a layout again itself: the host keeps no measurement to forget.
+    func invalidateMeasurements() {}
+
     /// Hands a text its runs, a collection its changed entries and a page structure its pages; else a layout its
     /// children's views in order, each with what its place reads.
     func arrangeChildren() {
@@ -16,7 +19,7 @@ extension WebElement {
         let items = element.arrangedChildren.compactMap(\.web.placedElement)
         layout.setItems(
             items.map { item in (item.view!, { [weak item] in item?.element.layoutValues ?? LayoutValues() }) },
-            travellers: items.map { item in (item.element.mount, { [weak item] motion in item?.fadeIn(under: motion) }) })
+            travelers: items.map { item in (item.element.mount, { [weak item] motion in item?.fadeIn(under: motion) }) })
     }
 
     /// The element whose view stands in the layout for this one: itself, or the first with a view of an element with

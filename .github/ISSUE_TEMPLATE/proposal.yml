@@ -75,13 +75,13 @@ body:
       required: true
 
   - type: checkboxes
-    id: licence
+    id: license
     attributes:
-      label: Licence
+      label: License
       options:
         - label: >
             Anything I write here is offered under the project's Apache 2.0
-            licence, and I have the right to offer it. An idea needs nothing
+            license, and I have the right to offer it. An idea needs nothing
             more; code I want used travels as a pull request, where the CLA
             covers it.
           required: true

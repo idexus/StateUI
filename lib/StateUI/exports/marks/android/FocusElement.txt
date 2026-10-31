@@ -1,22 +1,25 @@
-# revision 3.1
+# revision 5.1
 Button.focus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
 Button.isFocusedChanged: – Button takes no keyboard focus here: it refuses it, and nothing is heard
 Button.unfocus: – Button takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.focus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.isFocusedChanged: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
 CheckBox.unfocus: – CheckBox takes no keyboard focus here: it refuses it, and nothing is heard
+ColorPicker.focus: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.isFocusedChanged: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
+ColorPicker.unfocus: – Android has no color picker of its own: neither the platform nor its own libraries offer one.
 DatePicker.focus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.isFocusedChanged: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 DatePicker.unfocus: – DatePicker takes no keyboard focus here: it refuses it, and nothing is heard
 ItemsView.focus: ✅
 ItemsView.isFocusedChanged: ✅
 ItemsView.unfocus: ✅
+Link.focus: – Link takes no keyboard focus here: it refuses it, and nothing is heard
+Link.isFocusedChanged: – Link takes no keyboard focus here: it refuses it, and nothing is heard
+Link.unfocus: – Link takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.focus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.isFocusedChanged: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
 Picker.unfocus: – Picker takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.focus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.isFocusedChanged: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
-RadioButton.unfocus: – RadioButton takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.focus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.isFocusedChanged: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard
 ScrollView.unfocus: – ScrollView takes no keyboard focus here: it refuses it, and nothing is heard

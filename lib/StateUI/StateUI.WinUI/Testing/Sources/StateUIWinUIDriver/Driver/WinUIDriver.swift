@@ -16,6 +16,9 @@ final class WinUIDriver: HostDriver {
     /// Why a field holds no word for its return key on WinUI.
     static let noReturnWord = "WinUI gives a text box no word for the return key of the keyboard on the screen"
 
+    /// Why a field holds nothing its platform fills it in from on WinUI.
+    static let nothingFilledIn = "WinUI's text box keeps no saved names, passwords or codes to fill it in from"
+
     /// Why a view that is no control holds no `isEnabled` on WinUI.
     static let noEnabledState =
         "WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it"
@@ -24,11 +27,15 @@ final class WinUIDriver: HostDriver {
     let cannot: [String: String] = [:]
     let platformHasNone = [
         "read submitLabel of TextField": WinUIDriver.noReturnWord,
+        "read what the platform fills in of TextField": WinUIDriver.nothingFilledIn,
+        "read what the platform fills in of SearchField": WinUIDriver.nothingFilledIn,
+        "read what the platform fills in of TextEditor": WinUIDriver.nothingFilledIn,
         "read submitLabel of SearchField": WinUIDriver.noReturnWord,
         "read isEnabled of Canvas": WinUIDriver.noEnabledState,
         "read isEnabled of Capsule": WinUIDriver.noEnabledState,
-        "read isEnabled of Divider": WinUIDriver.noEnabledState,
+        "read isEnabled of Separator": WinUIDriver.noEnabledState,
         "read isEnabled of Ellipse": WinUIDriver.noEnabledState,
+        "read isEnabled of Fill": WinUIDriver.noEnabledState,
         "read isEnabled of Grid": WinUIDriver.noEnabledState,
         "read isEnabled of HStack": WinUIDriver.noEnabledState,
         "read isEnabled of Image": WinUIDriver.noEnabledState,
@@ -37,11 +44,11 @@ final class WinUIDriver: HostDriver {
         "read isEnabled of Polygon": WinUIDriver.noEnabledState,
         "read isEnabled of Polyline": WinUIDriver.noEnabledState,
         "read isEnabled of Rectangle": WinUIDriver.noEnabledState,
-        "read isEnabled of Spacer": WinUIDriver.noEnabledState,
+        "read isEnabled of Space": WinUIDriver.noEnabledState,
         "read isEnabled of Text": WinUIDriver.noEnabledState,
         "read isEnabled of VStack": WinUIDriver.noEnabledState,
         "read isEnabled of ZStack": WinUIDriver.noEnabledState,
-        "read isEnabled of LayoutEngine": WinUIDriver.noEnabledState,
+        "read isEnabled of MotionLayout": WinUIDriver.noEnabledState,
         "read growsWithText of TextEditor":
             "an editor's growing is StateUI's measuring, which no property of WinUI's holds; its frames prove it",
         "read contentMode of Rectangle": "WinUI places a shape's figure itself, and holds no aspect; its drawing proves it",
@@ -81,6 +88,9 @@ final class WinUIDriver: HostDriver {
     /// What the host wrote to its log since the driver started it.
     let written = WinUILogLines()
 
+    /// How many launches the relay held before the driver started the host, which `launched()` leaves out.
+    var launchesBefore = 0
+
     var register: HostRegister { WinUIRealization.register.and(backendRecords) }
 
     func start(
@@ -90,8 +100,10 @@ final class WinUIDriver: HostDriver {
         Self.emptyStore()
         Self.emptyFiles()
         stateui_winui_hold_launches(true)
+        launchesBefore = Self.launches().count
         closeFileDialogs()
         let renderer = WinUIRenderer.running(clock: clock, reducesMotion: reducesMotion, page)
+        renderer.actToolkit.holdsShareForTesting = true
         self.renderer = renderer
         return renderer.runtime.tree
     }
@@ -162,6 +174,8 @@ final class WinUIDriver: HostDriver {
             stateui_winui_date_pick_as_user(picker.handle, Int32(day.year), Int32(day.month), Int32(day.day))
         case (.pickTime(let time), let picker as WinUITimePickerView):
             stateui_winui_time_pick_as_user(picker.handle, Int32(time.hour), Int32(time.minute))
+        case (.pickColor(let color), let picker as WinUIColorPickerView):
+            stateui_winui_color_pick_as_user(picker.handle, color.propValue.argb ?? 0xFF00_0000)
         // A press over a layout reaches the host's entry as the relay would hand it: the finger down where it went,
         // each move, its lift - ✓.
         case (.pressDown(let point), let view?) where view.hearing.contains(.hand):
@@ -176,15 +190,27 @@ final class WinUIDriver: HostDriver {
         case (.pressDown(let point), let view?): try press(view, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, down: false, at: point, element)
         case (.drag(let point), let canvas as WinUICanvasView): canvas.pressed(.moved, at: point)
-        case (.drag(let point), let view?) where view.hearing.contains(.pointer):
-            view.heard(.pointer(.pointerMoved, point))
+        case (.drag(let point), let view?) where view.hearing.contains(.taps) || view.hearing.contains(.pointer):
+            if view.hearing.contains(.taps) { view.heardButtonPress(.changed, at: point, byFinger: false) }
+            if view.hearing.contains(.pointer) { view.heard(.pointer(.pointerMoved, point)) }
         case (.hover(let point), let view?) where view.hearing.contains(.pointer):
             view.heard(.pointer(.pointerEntered, point))
             view.heard(.pointer(.pointerMoved, point))
         case (.leave, let view?) where view.hearing.contains(.pointer):
             view.heard(.pointer(.pointerExited, Point(x: 0, y: 0)))
+        // A tap is the press the relay tells, as a button takes it; a run is counted as the relay counts it.
         case (.tap(let count), let view?) where view.hearing.contains(.taps):
-            for run in 1...max(count, 1) { view.heard(.tap(run: run)) }
+            let middle = Point(x: (view.placed?.width ?? 0) / 2, y: (view.placed?.height ?? 0) / 2)
+            for run in 1...max(count, 1) {
+                if view.countsRuns {
+                    view.heard(.tap(run: run))
+                } else {
+                    view.heardButtonPress(.began, at: middle, byFinger: false)
+                    view.heardButtonPress(.ended, at: middle, byFinger: false)
+                }
+            }
+        case (.hold, let view?) where view.hearing.contains(.holds):
+            view.heardHold()
         case (.pan(let offset), let view?) where view.hearing.contains(.drags):
             // The press the relay tells, which the host layer's rule makes a drag.
             view.heardPress(.down, at: Point(x: 100, y: 100))
@@ -196,6 +222,10 @@ final class WinUIDriver: HostDriver {
             _ = view.heardHand(phase: GesturePhase.began.rawValue, moved: Point(x: 0, y: 0))
             _ = view.heardHand(phase: GesturePhase.changed.rawValue, moved: offset)
             _ = view.heardHand(phase: GesturePhase.ended.rawValue, moved: Point(x: 0, y: 0), speed: speed)
+        // A view that hears no hand - an axis of keyframes alone - is told none: the relay reports a hand only where
+        // the host listens for one, so a user's sweep reaches nothing there.
+        case (.sweep, let view?) where !view.hearing.contains(.hand):
+            break
         case (.pinch(let scale, let point), let view?) where view.hearing.contains(.pinches):
             view.heard(.pinch(.began, scale: 1, at: point))
             view.heard(.pinch(.changed, scale: scale, at: point))
@@ -205,12 +235,25 @@ final class WinUIDriver: HostDriver {
             view.heard(.rotation(.changed, degrees: degrees))
             view.heard(.rotation(.ended, degrees: 0))
         case (.scroll(let offset), let scroll as WinUIScrollView): scroll.scroller.move(to: offset)
+        case (.pullToRefresh, let scroll as WinUIScrollView):
+            // The container's own request, as a pull far enough makes it.
+            guard let refresh = scroll.refresh, stateui_winui_refresh_holds(refresh.handle) else {
+                throw DriverCannot(act, on: element)
+            }
+            stateui_winui_refresh_request(refresh.handle)
         case (.focus, let view?): _ = stateui_winui_focus(view.handle, true)
         case (.goBack, _) where element.type == .navigationStack: try window().titleBar.chose(-1)
         case (.goBack, _) where element.type == .window: try window().titleBar.chose(-3)
+        case (.close, let popover as WinUIPopoverView):
+            // As a click beside it: the flyout hidden while it is wanted, which tells its closing.
+            guard let flyout = popover.flyout else { throw DriverCannot(act, on: element) }
+            stateui_winui_popover_hide(flyout)
         case (.close, _) where element.type == .window: stateui_winui_window_close(try window(of: element).handle)
+        case (.close, _) where element.type == .page: try sheet(of: element).chose(-2)
         case (.minimize, _) where element.type == .window: try state(of: element, minimized: true, activated: false)
         case (.restore, _) where element.type == .window: try state(of: element, minimized: false, activated: true)
+        case (.openLink(let address), _):
+            address.withCString { WinUICallbacks.table.linkOpened($0) }
         case (.switchAway, _) where element.type == .window:
             for window in renderer?.windows ?? [] {
                 WinUICallbacks.table.windowStateChanged(window.window.number, false, false)
@@ -222,8 +265,11 @@ final class WinUIDriver: HostDriver {
                 WinUICallbacks.table.windowStateChanged(window.window.number, false, false)
             }
             try state(of: element, minimized: false, activated: true)
-        case (.answer(let caption, let words), _): try answer(caption, typing: words)
+        case (.answer(let button, let words), _): try answer(button, typing: words)
         case (.answerFiles(let names), _): try answerFiles(names)
+        case (.answerShare(let shared), _):
+            guard renderer?.actToolkit.sharing != nil else { throw DriverCannot("answer a share sheet: none shows") }
+            renderer?.actToolkit.answerShareForTesting(shared: shared)
         case (.dragAndDrop(let target, let across), _): try dragAndDrop(element, onto: target, across: across)
         case (.dropFiles(let names), let view?):
             guard view.offered.takesFiles else { throw DriverCannot(act, on: element) }
@@ -248,6 +294,14 @@ final class WinUIDriver: HostDriver {
         return window
     }
 
+    /// The sheet `element` stands in, on its window.
+    func sheet(of element: MountedElement) throws -> WinUISheetView {
+        guard let presented = element.enclosing(type: .sheet)?.children.first,
+              let sheet = renderer?.controller(of: element)?.sheetForTesting(presenting: presented)
+        else { throw DriverCannot("find the sheet") }
+        return sheet
+    }
+
     /// The window `element` stands in.
     func window(of element: MountedElement) throws -> WinUIWindow {
         guard let window = renderer?.controller(of: element)?.window else { throw DriverCannot("find the window") }
@@ -259,23 +313,35 @@ final class WinUIDriver: HostDriver {
         WinUICallbacks.table.windowStateChanged(try window(of: element).number, minimized, activated)
     }
 
-    /// A click on a button, a menu's item chosen, a toolbar's action chosen, a view that hears taps pressed as
+    /// A click on a button or a link, a menu's item chosen, a toolbar's action chosen, a view that hears taps pressed as
     /// assistive technology presses it.
     private func activate(_ element: MountedElement, _ view: WinUIView?) throws {
         switch view {
         case let button as WinUIButtonView:
             stateui_winui_button_invoke(button.handle)
             return
+        case let link as WinUILinkView:
+            stateui_winui_button_invoke(link.handle)
+            return
         case let view? where view.hearing.contains(.taps):
             guard stateui_winui_press(view.handle) else { throw DriverCannot(.activate, on: element) }
             return
         default: break
         }
-        if element.type == .menuItem, let (owner, index) = menuPlace(of: element) {
+        if Self.menuEntries.contains(element.type), let (button, index) = barMenuPlace(of: element),
+           let place = try actionPlace(of: button) {
+            stateui_winui_title_bar_action_menu_choose(try window(of: button).titleBar.handle, Int32(place), Int32(index))
+            return
+        }
+        if Self.menuEntries.contains(element.type), let (owner, index) = menuPlace(of: element) {
             stateui_winui_menus_choose(owner.handle, Int32(index))
             return
         }
-        if element.type == .toolbarItem, let index = try actionPlace(of: element) {
+        if [.toolbarButton, .toolbarToggle].contains(element.type), let (foot, index) = footPlace(of: element) {
+            foot.chose(index)
+            return
+        }
+        if [.toolbarButton, .toolbarToggle].contains(element.type), let index = try actionPlace(of: element) {
             try window().titleBar.chose(index)
             return
         }
@@ -286,6 +352,10 @@ final class WinUIDriver: HostDriver {
     /// the pointer told.
     private func press(_ view: WinUIView, down: Bool, at point: Point, _ element: MountedElement) throws {
         var done = false
+        if view.hearing.contains(.taps) {
+            view.heardButtonPress(down ? .began : .ended, at: point, byFinger: false)
+            done = true
+        }
         if view.hearing.contains(.pointer) {
             view.heard(.pointer(down ? .pointerPressed : .pointerReleased, point))
             done = true
@@ -318,28 +388,33 @@ final class WinUIDriver: HostDriver {
     /// Scrolls the list to `target` as the user does, as far as it reaches: WinUI's compositor moves the view a moment
     /// later, so the act is done once the view stands there.
     private func scroll(_ items: WinUIItemsView, to target: Point) {
-        let reach = items.standingForTesting.reach
+        let reach = items.standing.reach
         let landing = Point(x: min(max(target.x, 0), reach.x), y: min(max(target.y, 0), reach.y))
         items.scrollForTesting(to: target)
         renderer?.settle {
-            let offset = items.standingForTesting.offset
+            let offset = items.standing.offset
             return abs(offset.x - landing.x) < 0.5 && abs(offset.y - landing.y) < 0.5
         }
     }
 
-    /// Answers the question showing as the user does, by its button of `caption`, its field first holding `words`:
-    /// a dialog takes a press once WinUI has shown it whole, so the press is tried until it lands.
-    private func answer(_ caption: String, typing words: String?) throws {
+    /// Answers the question showing as the user does, by its button doing `button`, its field first holding
+    /// `words`: a dialog takes a press once WinUI has shown it whole, so the press is tried until it lands.
+    private func answer(_ button: QuestionButton, typing words: String?) throws {
         guard let content = try window().content else { throw DriverCannot("answer a question with no window") }
+        // The relay's buttons: 0 the accepting one, 1 the cancel, 2 and on a choice's actions.
+        let pressed: Int32 = switch button {
+        case .accept: 0
+        case .cancel: 1
+        case .action(let place): Int32(place + 2)
+        }
         for _ in 0..<150 {
-            if let asked = asked(over: content.handle), let button = Self.button(of: caption, in: asked),
-               stateui_winui_answer(content.handle, button, words) {
+            if asked(over: content.handle) != nil, stateui_winui_answer(content.handle, pressed, words) {
                 WinUITestHost.pump(0.05)
                 return
             }
             step()
         }
-        throw DriverCannot("answer by \(caption)")
+        throw DriverCannot("answer by \(button)")
     }
 
     /// Answers the file dialog showing as the user does, by the files of `names` in the driver's folder - none
@@ -368,13 +443,6 @@ final class WinUIDriver: HostDriver {
             _ = stateui_winui_answer_file_dialog(0, nil, 0)
             WinUITestHost.pump(0.05)
         }
-    }
-
-    /// The place of the dialog's button of `caption`: its accept 0, its cancel 1, its choices from 2; nil for none.
-    private static func button(of caption: String, in asked: WinUIAsked) -> Int32? {
-        if caption == asked.accept { return 0 }
-        if caption == asked.cancel { return 1 }
-        return asked.choices.firstIndex(of: caption).map { Int32($0 + 2) }
     }
 
     /// Types `words` as the whole of a field's words: written outside a program's write, which WinUI reports through

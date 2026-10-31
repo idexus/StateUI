@@ -45,9 +45,9 @@ extension MountedElement {
 
     /// Crosses a change of visibility on `view`, already shown, under the element's own motion or the application's:
     /// hidden, it fades out and then hides, and the layout placing it closes over it - `places`, its parent's
-    /// travelling places, told the change arrived; shown again as it fades, it comes back from where it stands;
+    /// traveling places, told the change arrived; shown again as it fades, it comes back from where it stands;
     /// shown from nothing, it fades in. Where nothing moves, nothing crosses.
-    public func crossVisibility<View: FadingView>(_ view: View, closingIn places: TravellingPlaces?) {
+    public func crossVisibility<View: FadingView>(_ view: View, closingIn places: TravelingPlaces?) {
         guard let tree else { return }
 
         let law = tree.layoutMotion.law(of: motion)
@@ -73,14 +73,19 @@ extension MountedElement {
     }
 
     /// The fade out ended, landed or cut short: the view goes, and its layout closes over it.
-    private func crossed(_ view: some FadingView, closingIn places: TravellingPlaces?) {
+    private func crossed(_ view: some FadingView, closingIn places: TravelingPlaces?) {
         guard isLeaving else { return }
 
         isLeaving = false
         view.setShown(standsShown)
         view.setOpacity(value(.opacity)?.number ?? 1)
         places?.patchArrived()
-        layoutParent?.native.arrangeChildren()
+        // Closing over it is the change hiding it at once would be: every layout around it travels to its new
+        // places and measures again. Design: docs/design/host/motion.md#showing-and-hiding
+        guard let parent = layoutParent else { return }
+        for layout in parent.measuredUpward().layouts { layout.native.configureLayoutMotion() }
+        parent.native.invalidateMeasurements()
+        parent.native.arrangeChildren()
     }
 
     /// The element whose layout places this one: the nearest above it with a view.

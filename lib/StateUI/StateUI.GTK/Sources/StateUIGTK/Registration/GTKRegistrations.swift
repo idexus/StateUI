@@ -14,11 +14,13 @@ enum GTKRegistrations {
 
         text(registry)
         buttons(registry)
+        links(registry)
         toggles(registry)
         values(registry)
         indicators(registry)
         pickers(registry)
         dates(registry)
+        colors(registry)
         fields(registry)
         layouts(registry)
         pictures(registry)
@@ -39,7 +41,7 @@ enum GTKRegistrations {
         registry.everyElementRealizes(VisualElementContract.ignoresInput)
         registry.everyElementRealizes(VisualElementContract.background)
         // GTK 4 identifies no accessible made in code: it is met by its role, its label and its place.
-        registry.everyElementMeetsAssistiveTechnology(identifying: false)
+        registry.everyElementMeetsAssistiveTechnology(identifying: false, sayingKinds: false)
         registry.everyElementShowsItsTooltip()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()
@@ -50,9 +52,9 @@ enum GTKRegistrations {
         registry.everyElementRaises(FocusElementContract.isFocusedChanged)
     }
 
-    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`) and a list
-    /// scrolled to an item.
+    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), the requests
+    /// (`HostActs.network`) and a list scrolled to an item.
     static let acts: [any ContractMember] =
-        HostActs.performed + HostActs.files + [ItemsViewContract.scrollTo]
+        HostActs.performed + HostActs.files + HostActs.network + [ItemsViewContract.scrollTo]
 
 }

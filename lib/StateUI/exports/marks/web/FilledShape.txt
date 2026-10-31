@@ -1,7 +1,7 @@
-# revision 2.1
-Capsule.fill: ✅
-Ellipse.fill: ✅
-Path.fill: ✅
-Polygon.fill: ✅
-Polyline.fill: ✅
-Rectangle.fill: ✅
+# revision 3.1
+Capsule.fill: ☑️ A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color.
+Ellipse.fill: ☑️ A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color.
+Path.fill: ☑️ A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color.
+Polygon.fill: ☑️ A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color.
+Polyline.fill: ☑️ A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color.
+Rectangle.fill: ☑️ A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color.

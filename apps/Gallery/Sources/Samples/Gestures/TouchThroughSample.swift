@@ -24,7 +24,8 @@ struct TouchThroughSample: SampleContent, ExampleContent {
 
             Grid {
                 // Underneath, and still reachable.
-                Rectangle(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .height(120)
                     .onTapped { below += 1 }
 
@@ -33,7 +34,7 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                 // the whole of it ignores input, the label included; disabled,
                 // the label still takes a tap and answers none.
                 VStack {
-                    // The child wears its own colour and its own padding, so
+                    // The child wears its own color and its own padding, so
                     // what is the child and what is the empty area around it
                     // can be told apart by eye - and aimed at separately.
                     Text("tap the child")
@@ -58,12 +59,13 @@ struct TouchThroughSample: SampleContent, ExampleContent {
                 SwitchRow("Children too", $childrenToo)
 
                 SwitchRow("Disabled", $disabled)
-
-                Button("Reset")
-                    .onClicked { below = 0; child = 0 }
             }
-            .spacing(7)
+            .spacing(16)
             .horizontalAlignment(.center)
+
+            Button("Reset")
+                .onClicked { below = 0; child = 0 }
+                .horizontalAlignment(.center)
         }
         .spacing(12)
     }

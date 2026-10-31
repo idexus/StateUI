@@ -16,9 +16,18 @@ struct LayeredBoxes: View {
     var body: some View {
         VStack {
             ZStack {
-                Rectangle().fill(.red).width(10).zIndex(blueInFront ? 0 : 1)
-                Rectangle().fill(.blue).width(20).zIndex(blueInFront ? 1 : 0)
-                Rectangle().fill(.green).width(30).zIndex($green)
+                Rectangle()
+                    .fill(.red)
+                    .width(10)
+                    .zIndex(blueInFront ? 0 : 1)
+                Rectangle()
+                    .fill(.blue)
+                    .width(20)
+                    .zIndex(blueInFront ? 1 : 0)
+                Rectangle()
+                    .fill(.green)
+                    .width(30)
+                    .zIndex($green)
             }
             .height(40)
 
@@ -36,7 +45,7 @@ final class AndroidZStackViewTests: XCTestCase {
             ("testAZStackHoldsItsChildrenInTheDrawingOrder", testAZStackHoldsItsChildrenInTheDrawingOrder),
             ("testAZStacksPaddingNarrowsItsRoom", testAZStacksPaddingNarrowsItsRoom),
             ("testALayoutPaintsItsBoxAndCutsWhatItHoldsWhereItClips", testALayoutPaintsItsBoxAndCutsWhatItHoldsWhereItClips),
-            ("testALayoutWithAPlainColourKeepsAPlainBackground", testALayoutWithAPlainColourKeepsAPlainBackground),
+            ("testALayoutWithAPlainColorKeepsAPlainBackground", testALayoutWithAPlainColorKeepsAPlainBackground),
         ]
     }
 
@@ -45,8 +54,12 @@ final class AndroidZStackViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 ZStack {
-                    Rectangle().fill(.red).area(.absolute(10, 20, 30, 40))
-                    Rectangle().fill(.blue).area(.proportional(0.5, 0.5, 0.5, 0.5))
+                    Rectangle()
+                        .fill(.red)
+                        .area(.absolute(10, 20, 30, 40))
+                    Rectangle()
+                        .fill(.blue)
+                        .area(.proportional(0.5, 0.5, 0.5, 0.5))
                 }
             }
 
@@ -59,7 +72,7 @@ final class AndroidZStackViewTests: XCTestCase {
         }
     }
 
-    /// An engine's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
+    /// A motion layout's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
     /// it says, the higher rank drawn over the lower.
     func testAPlacementRunStandsAndDrawsEachChildAsItSays() throws {
         try onMainActor {
@@ -67,14 +80,14 @@ final class AndroidZStackViewTests: XCTestCase {
             let placed = State(wrappedValue: 0.0)
             let host = AndroidRenderer.running(clock: clock) {
                 VStack {
-                    LayoutEngine(["back", "front"]) { name in
-                        Rectangle(name == "back" ? .red : .blue)
+                    MotionLayout(["back", "front"], parameters: placed.projectedValue) { name in
+                        Rectangle()
+                            .fill(name == "back" ? .red : .blue)
                     } placements: { room, phase in
                         phase < 1
                             ? [Placement(room), Placement(room)]
                             : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
-                    .phase(placed.projectedValue)
                     .motion(.none)
                     .height(200)
 
@@ -139,10 +152,13 @@ final class AndroidZStackViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 ZStack {
-                    Rectangle().fill(.red)
-                    Rectangle().fill(.blue).area(.absolute(10, 20, 30, 40))
+                    Rectangle()
+                        .fill(.red)
+                    Rectangle()
+                        .fill(.blue)
+                        .area(.absolute(10, 20, 30, 40))
                 }
-                .padding(left: 10, top: 5, right: 20, bottom: 15)
+                .padding(start: 10, top: 5, end: 20, bottom: 15)
             }
 
             host.layOut(width: 1080, height: 1920)
@@ -160,17 +176,23 @@ final class AndroidZStackViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    ZStack { Rectangle().fill(.red) }
+                    ZStack {
+                        Rectangle()
+                            .fill(.red)
+                    }
                         .padding(10)
-                        .background(Color("#00FF00"))
-                        .stroke(Color("#0000FF"))
+                        .background(Color(hex: 0x00FF00))
+                        .stroke(Color(hex: 0x0000FF))
                         .lineWidth(2)
                         .shape(.roundedRectangle(20))
                         .clipsContent(true)
                         .width(100)
                         .height(80)
                         .horizontalAlignment(.start)
-                    ZStack { Rectangle().fill(.red) }
+                    ZStack {
+                        Rectangle()
+                            .fill(.red)
+                    }
                         .shape(.roundedRectangle(20))
                         .width(100)
                         .height(80)
@@ -196,12 +218,17 @@ final class AndroidZStackViewTests: XCTestCase {
         }
     }
 
-    /// A layout with a plain colour and no outline, shape or cut keeps a plain background, and clips nothing.
-    func testALayoutWithAPlainColourKeepsAPlainBackground() throws {
+    /// A layout with a plain color and no outline, shape or cut keeps a plain background, and clips nothing.
+    func testALayoutWithAPlainColorKeepsAPlainBackground() throws {
         try onMainActor {
             let host = AndroidRenderer.running {
-                ZStack { Rectangle().fill(.red).width(10).height(10) }
-                    .background(Color("#00FF00"))
+                ZStack {
+                    Rectangle()
+                        .fill(.red)
+                        .width(10)
+                        .height(10)
+                }
+                    .background(Color(hex: 0x00FF00))
                     .width(100)
                     .height(80)
                     .horizontalAlignment(.start)

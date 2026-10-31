@@ -6,21 +6,21 @@ child an engine places, and the application's pictures.
 
 ## A shape and its brush
 
-A layout's own box and any background that is not one plain colour are
+A layout's own box and any background that is not one plain color are
 drawn by one drawable of the host's, `StateUIShapeDrawable`: a rectangle, a
 rectangle with rounded corners - a capsule's half its shorter side - or an
 ellipse, filled with a brush and
-outlined in one colour. The Swift host tells it every part as the host layer
+outlined in one color. The Swift host tells it every part as the host layer
 reads a box ([a box](../../host/layout.md#a-box)) - the shape's kind, each
-corner's width and height in pixels, the brush's kind, its stops' colours and
-offsets and its whole geometry, the outline's colour and width - and it
+corner's width and height in pixels, the brush's kind, its stops' colors and
+offsets and its whole geometry, the outline's color and width - and it
 builds the gradient for the bounds it is drawn at, so a gradient's points stay
 in fractions of the thing painted, as
 [brushes](../../types/brushes.md#geometry-in-fractions) says. A radial
 gradient's reach is the host layer's circle, worked out in Swift for the size
 the drawable is drawn at, and told again as that size changes: wherever Swift
 places the view, and for a layout's own box where Android places it too. A
-plain colour stays the view's own colour background; a background cleared
+plain color stays the view's own color background; a background cleared
 gives back the one the view was made with.
 
 A corner is round and no more than half the shorter side within the
@@ -32,7 +32,7 @@ outline takes it.
 ## A layout's own box
 
 A stack, a grid, a ZStack or a scroll view paints its own box. A plain
-colour with no outline, shape or cut is the view's plain background, as on
+color with no outline, shape or cut is the view's plain background, as on
 any view. An outline, a shape or a cut gives the layout a shape drawable
 instead, made the first time one is said: the background fills the shape,
 the outline is drawn inside the bounds, half its width either side of the
@@ -43,9 +43,9 @@ rounded corners; without it nothing is cut, the shape drawn all the same.
 
 ## A placed child
 
-An engine's placement run stands each child of a ZStack at a
+A motion layout's placement run stands each child of a ZStack at a
 rectangle of its own and draws it moved, turned, scaled and faded about its
-centre, over whatever the child's own properties say. Android keeps one
+center, over whatever the child's own properties say. Android keeps one
 translation, rotation and scale per view, so the host layer composes the two
 (`HostDrawingTransform.under`): rotations add, scales multiply, and the view's
 own translation is turned and scaled by the placement's before the
@@ -94,7 +94,7 @@ that decides; a size given whole by a parent of Android's decides as well.
 The bitmap says the density a whole one would have, so Android draws it at
 the picture's own size. It is read again only for more pixels, never for
 fewer, so a size in motion does not read it every frame, and a picture
-shown centred, at its own size, is read whole. Views showing the same
+shown centered, at its own size, is read whole. Views showing the same
 picture at the same thinning share one bitmap, and the last to leave lets it
 go; only a bar's and a tab's icons are kept for as long as the host runs.
 
@@ -106,10 +106,10 @@ application's resources (`Resources/drawable/stateui_icon_*.xml`, copied into
 the APK's as it is built; THIRD-PARTY-NOTICES), drawn into a square of
 Android's icon size, 24 points, and kept as a mask of how opaque each pixel is
 (`ALPHA_8`) - drawn without the drawable's own tint, which a theme often
-makes partly opaque, so the mask holds the shape whole. What shows it colours it: an image in the theme's primary words
-colour (`textColorPrimary`), as a label beside it; a bar, a tab and a menu
-in the theme's colour for controls' icons (`colorControlNormal`); a button in
-its words' colour, again whenever they change. The bitmap kept holds no colour, so a
+makes partly opaque, so the mask holds the shape whole. What shows it colors it: an image in the theme's primary words
+color (`textColorPrimary`), as a label beside it; a bar, a tab and a menu
+in the theme's color for controls' icons (`colorControlNormal`); a button in
+its words' color, again whenever they change. The bitmap kept holds no color, so a
 change of theme leaves none behind.
 
 A picture's bytes are read as a file is, at one pixel a point, their size
@@ -128,7 +128,7 @@ A path's arcs come as the shared parser's cubic curves. The geometry crosses
 as one array of commands in pixels, and the brush, the outline, a
 rectangle's corners - fitted as a box's are - and the six numbers one call
 each. The fill is the brush
-every shape of the host's paints with; the outline is a colour - a gradient's
+every shape of the host's paints with; the outline is a color - a gradient's
 first - and its dashes count in the outline's width, as StateUI's do. A
 shape asks for no room of its own.
 
@@ -137,7 +137,7 @@ shape asks for no room of its own.
 A canvas is one view of the host's that replays the drawing's instructions on
 its own canvas, in the order they were written, inside its bounds, in points:
 the canvas is scaled once by the display's density. The whole drawing
-crosses in one call - each instruction's kind, colours, a text's alignments
+crosses in one call - each instruction's kind, colors, a text's alignments
 and index and a path's count of curves as ints, its numbers as floats, its
 text as strings - so a drawing of a thousand instructions is one crossing,
 not a thousand. The three lists are the host layer's

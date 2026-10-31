@@ -1,6 +1,6 @@
 import StateUI
 
-/// EVERY PROPERTY CAN BE HANDED A BINDING: a font size, a colour, a flag, a
+/// EVERY PROPERTY CAN BE HANDED A BINDING: a font size, a color, a flag, a
 /// placeholder, a slider's value, a toggle - each a plain `@State` handed on as `$x`,
 /// each carried by the host, and each row wearing its own build count so the
 /// cost is on the screen: a write renders nobody, unless somebody reads.
@@ -10,8 +10,8 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
     /// there under the label's law.
     @State private var size = 18.0   // a number: the host walks it
 
-    /// A colour the host walks the same way.
-    @State private var tint = Palette.accent   // a colour: the same
+    /// A color the host walks the same way.
+    @State private var tint = Palette.accent   // a color: the same
 
     /// Which of the two tints is worn - read by handlers alone.
     @State private var warm = true   // which tint: read by a handler alone
@@ -37,7 +37,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
     static let id = "boundProperties"
     static let title = "Every property by binding"
-    static let summary = "A size, a colour, a flag and more, each handed on as `$x` and carried by the host."
+    static let summary = "A size, a color, a flag and more, each handed on as `$x` and carried by the host."
 
     // listing: BoundPropertiesSample
     var body: some View {
@@ -57,7 +57,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
             .spacing(8)
             .horizontalAlignment(.center)
 
-            row("2 · a colour the host walks - textColor($tint)") {
+            row("2 · a color the host walks - textColor($tint)") {
                 Text("Tinted words")
                     .fontSize(17)
                     .textColor($tint)
@@ -125,7 +125,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("Every property here is handed a plain `@State` as `$x`, and the host "
-                + "carries it: a number and a colour are WALKED there under the "
+                + "carries it: a number and a color are WALKED there under the "
                 + "element's law, a flag is SET as it stands, words are WRITTEN, and a "
                 + "slider's value or a toggle is set from the state and landed on it when the "
                 + "user moves it. A MEMBER - an alignment, a keyboard, a line break - "
@@ -137,7 +137,7 @@ struct BoundPropertiesSample: SampleContent, ExampleContent {
 
             Text("The rule is the same one everywhere: a get makes the closure it sits "
                 + "in a reader, a binding makes none. Properties like these have a twin "
-                + "taking `Binding<T>` beside the value form - a number, a colour, "
+                + "taking `Binding<T>` beside the value form - a number, a color, "
                 + "insets, a flag, a count, a string - so a value that moves is no "
                 + "reason to build the view again.")
                 .fontSize(12)

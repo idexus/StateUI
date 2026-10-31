@@ -91,9 +91,9 @@ final class GTKPagesTests: XCTestCase {
             let host = GTKRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     TitledPage(title: "Notes", actions: [
-                        ToolbarItem("Delete").placement(.overflow).onClicked { heard.values.append("delete") },
-                        ToolbarItem("Add").isEnabled(false).onClicked { heard.values.append("add") },
-                        ToolbarItem("Save").onClicked { heard.values.append("save") },
+                        ToolbarButton("Delete").placement(at: .overflow).onClicked { heard.values.append("delete") },
+                        ToolbarButton("Add").isEnabled(false).onClicked { heard.values.append("add") },
+                        ToolbarButton("Save").onClicked { heard.values.append("save") },
                     ])
                 } destination: { _ in
                     TitledPage(title: "Note")
@@ -112,6 +112,56 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// GNOME keeps no Edit menu of its own: one a page joins holds the field's undoing, clipboard and selection, and
+    /// they act on the words the user typed into, though the menu takes the focus as it opens.
+    func testTheEditMenuActsOnTheWordsTypedInto() throws {
+        try onUIThread {
+            let words = State(wrappedValue: "hello")
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    VStack {
+                        TextField(words.projectedValue)
+                        Button("Other")
+                    }
+                    .menuBar { Menu("Edit") { MenuItem("Find") }.id(StandardMenu.edit) }
+                    .title("Notes")
+                } destination: { _ in
+                    Text("Note")
+                }
+            }
+            let field = try XCTUnwrap(host.views(GTKTextFieldView.self).first)
+            gtk_widget_grab_focus(field.widget)
+            host.settle { false }
+            gtk_widget_grab_focus(host.views(GTKButtonView.self)[0].widget)
+            host.settle { false }
+            XCTAssertNotNil(host.window?.typed, "the window keeps the words typed into")
+            let main = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last?.mainMenu)
+            @MainActor func choose(_ command: EditCommand) throws {
+                let named = main.menu.edits[command]
+                let name = try XCTUnwrap(named, "the Edit menu holds \(command)")
+                XCTAssertNotEqual(
+                    gtk_widget_activate_action_variant(main.button, main.menu.group + "." + name, nil), 0,
+                    "the menu's action \(name) runs")
+            }
+
+            XCTAssertEqual(Set(main.menu.edits.values).count, EditCommand.allCases.count, "each entry its own action")
+            XCTAssertEqual(main.menu.items.count, 1, "the application's Find, apart from them")
+            XCTAssertNil(main.menu.items.keys.first { main.menu.edits.values.contains($0) })
+
+            gtk_editable_select_region(field.widget.opaque, 0, 0)
+            try choose(.selectAll)
+            try choose(.cut)
+            host.settle { words.wrappedValue.isEmpty }
+            XCTAssertEqual(words.wrappedValue, "", "the words cut")
+            try choose(.paste)
+            host.settle { words.wrappedValue == "hello" }
+            XCTAssertEqual(words.wrappedValue, "hello", "the clipboard's words pasted back")
+            try choose(.undo)
+            host.settle { words.wrappedValue.isEmpty }
+            XCTAssertEqual(words.wrappedValue, "", "the paste undone")
+        }
+    }
+
     /// The overflow's menu stands before the main menu at the bar's end, whichever of them changed last.
     func testTheOverflowStandsBeforeTheMainMenu() throws {
         try onUIThread {
@@ -120,8 +170,8 @@ final class GTKPagesTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Text("Notes")
                         .toolbar {
-                            ToolbarItem("Later").placement(.overflow)
-                            if more.wrappedValue { ToolbarItem("Sooner").placement(.overflow) }
+                            ToolbarButton("Later").placement(at: .overflow)
+                            if more.wrappedValue { ToolbarButton("Sooner").placement(at: .overflow) }
                         }
                         .menuBar { Menu("File") { MenuItem("Open") } }
                         .title("Notes")
@@ -138,15 +188,28 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// The overflow's button, a picture alone, is named More - its tip, which a screen reader says - as the main
+    /// menu's is named.
+    func testTheOverflowIsNamedMore() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                TitledPage(title: "Notes", actions: [ToolbarButton("Later").placement(at: .overflow)])
+            }
+            let frame = try XCTUnwrap(host.window?.pageFrame)
+            let more = try XCTUnwrap(gtk_widget_get_last_child(frame.endBox))
+            XCTAssertEqual(gtk_widget_get_tooltip_text(more).map { String(cString: $0) }, CoreLink().chromeWords.more)
+        }
+    }
+
     /// An action with a picture stands on the header bar as an icon named by its title; one whose picture the
     /// application does not hold shows its title, and the overflow's menu shows titles.
     func testAnActionWithAPictureStandsAsAnIcon() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 TitledPage(title: "Notes", actions: [
-                    ToolbarItem("Wide").icon("test_wide.png"),
-                    ToolbarItem("Lost").icon("missing.png"),
-                    ToolbarItem("Later").icon("test_wide.png").placement(.overflow),
+                    ToolbarButton("Wide").icon("test_wide.png"),
+                    ToolbarButton("Lost").icon("missing.png"),
+                    ToolbarButton("Later").icon("test_wide.png").placement(at: .overflow),
                 ])
             }
             let frame = try XCTUnwrap(host.window?.pageFrame)
@@ -163,14 +226,14 @@ final class GTKPagesTests: XCTestCase {
     }
 
     /// A destructive action is libadwaita's destructive button on the header bar; in the overflow's flat menu its
-    /// words take the theme's destructive colour, not the white that button writes on its red fill.
-    func testADestructiveActionWearsTheThemesDestructiveColour() throws {
+    /// words take the theme's destructive color, not the white that button writes on its red fill.
+    func testADestructiveActionWearsTheThemesDestructiveColor() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 TitledPage(title: "Notes", actions: [
-                    ToolbarItem("Remove").isDestructive(true),
-                    ToolbarItem("Clear").isDestructive(true).placement(.overflow),
-                    ToolbarItem("Later").placement(.overflow),
+                    ToolbarButton("Remove").role(.destructive),
+                    ToolbarButton("Clear").role(.destructive).placement(at: .overflow),
+                    ToolbarButton("Later").placement(at: .overflow),
                 ])
             }
             let frame = try XCTUnwrap(host.window?.pageFrame)
@@ -188,8 +251,8 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// A stack's bar colours paint the header bar of every page on it, and what stands on the bar.
-    func testAStacksBarColoursPaintItsPagesHeaderBars() throws {
+    /// A stack's bar colors paint the header bar of every page on it, and what stands on the bar.
+    func testAStacksBarColorsPaintItsPagesHeaderBars() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
@@ -197,14 +260,53 @@ final class GTKPagesTests: XCTestCase {
                 } destination: { _ in
                     TitledPage(title: "Next")
                 }
-                .barBackgroundColor(Color("#FF0000"))
-                .barForegroundColor(Color("#FFFFFF"))
+                .barBackground(Color(hex: 0xFF0000))
+                .barForegroundColor(Color(hex: 0xFFFFFF))
             }
             let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
             host.layOut()
 
             XCTAssertNotEqual(gtk_widget_has_css_class(frame.header, "stateui-bar-bFF0000FF-fFFFFFFFF"), 0)
             XCTAssertEqual(GTKTestHost.pixels(of: frame.header, at: [(4, 4)]), [0xFFFF_0000])
+        }
+    }
+
+    /// A page's own background is drawn in the page's box.
+    func testAPagesOwnGroundDrawsInItsBox() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Grounded").pageBackground(Color(hex: 0xFF0000))
+                } destination: { _ in
+                    TitledPage(title: "Next")
+                }
+            }
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
+            host.layOut()
+
+            // Past the words, where the page's box shows alone.
+            let (width, height) = (gtk_widget_get_width(frame.page.widget), gtk_widget_get_height(frame.page.widget))
+            XCTAssertEqual(GTKTestHost.pixels(of: frame.page.widget, at: [(Double(width) - 4, Double(height) - 4)]), [0xFFFF_0000])
+        }
+    }
+
+    /// A page that says no background stands on the one its stack declares for its pages, drawn in the page's box.
+    func testAPageStandsOnItsStacksGround() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Grounded")
+                } destination: { _ in
+                    TitledPage(title: "Next")
+                }
+                .pageBackground(Color(hex: 0xFF0000))
+            }
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
+            host.layOut()
+
+            // Past the words, where the page's box shows alone.
+            let (width, height) = (gtk_widget_get_width(frame.page.widget), gtk_widget_get_height(frame.page.widget))
+            XCTAssertEqual(GTKTestHost.pixels(of: frame.page.widget, at: [(Double(width) - 4, Double(height) - 4)]), [0xFFFF_0000])
         }
     }
 
@@ -322,21 +424,125 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// A sheet is libadwaita's dialog over the window, its page in a frame of its own; the user closing it - Escape,
-    /// its close button - takes it off the modal stack, and the program's close tells nothing.
-    func testASheetTheUserClosesLeavesTheModalStack() throws {
+    /// A tab that is a stack shows its tabs again after another tab - the tabs the detail of a split view, as the
+    /// Gallery's: the tabs stood on the detail's frame meanwhile, and the stack's page, which held them before, takes
+    /// them back.
+    func testATabThatIsAStackTakesItsTabsBack() throws {
         try onUIThread {
-            let sheets = State(wrappedValue: [1, 2])
+            let tab = State(wrappedValue: 0)
             let host = GTKRenderer.running {
-                ModalStack(sheets.projectedValue) {
-                    TitledPage(title: "Beneath")
-                } destination: { number in
-                    TitledPage(title: "Sheet \(number)")
+                SplitView {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    TabView([0, 1]) { which in
+                        if which == 0 {
+                            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                                TitledPage(title: "Inbox")
+                            } destination: { _ in TitledPage(title: "Message") }
+                            .title("Mail")
+                        } else {
+                            TitledPage(title: "Settings")
+                        }
+                    }
+                    .selection(tab.projectedValue)
                 }
+            }
+            host.layOut()
+            let tabs = try XCTUnwrap(host.views(GTKTabView.self).first)
+            let shown = { gtk_widget_get_mapped(tabs.switcher.widget) != 0 }
+            host.settle { shown() }
+
+            tabs.selectByUser(1)
+            host.layOut()
+            host.settle { tab.wrappedValue == 1 && shown() }
+            XCTAssertTrue(shown(), "the tabs over the other tab")
+
+            tabs.selectByUser(0)
+            host.layOut()
+            host.settle { tab.wrappedValue == 0 && shown() }
+            XCTAssertTrue(shown(), "the tabs back over the stack's page")
+        }
+    }
+
+    /// A tabbed view's bar goes to the stack's page at once as a tab that is a stack is chosen: hidden with the tab's
+    /// page, never slid away by libadwaita's reveal, which jumped the page by the bar's height.
+    func testATabbedViewsBarGoesToTheStacksPageAtOnce() throws {
+        try onUIThread {
+            let tab = State(wrappedValue: 1)
+            let host = GTKRenderer.running {
+                SplitView {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    TabView([0, 1]) { which in
+                        if which == 0 {
+                            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                                TitledPage(title: "Inbox")
+                            } destination: { _ in TitledPage(title: "Message") }
+                            .title("Mail")
+                        } else {
+                            TitledPage(title: "Settings")
+                        }
+                    }
+                    .selection(tab.projectedValue)
+                }
+            }
+            host.layOut()
+            let window = try XCTUnwrap(host.window).widget
+            let slidAway = { GTKTestHost.descendants(of: window).filter {
+                GTKTestHost.holds($0, adw_toolbar_view_get_type()) && adw_toolbar_view_get_reveal_top_bars($0.opaque) == 0
+            }.count }
+            let tabs = try XCTUnwrap(host.views(GTKTabView.self).first)
+
+            tabs.selectByUser(0)
+            host.settle { tab.wrappedValue == 0 }
+            GTKTestHost.pump(0.2)
+
+            XCTAssertEqual(slidAway(), 0, "a bar slid away over the stack")
+        }
+    }
+
+    /// A sheet asks libadwaita's dialog for its page's size - here the least, its words few - and one holding a
+    /// stack, whose pages come and go, the standard size, held within the window.
+    func testASheetAsksTheSizeOfItsPageAndAStackTheStandard() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) { Text("A note") }
+            }
+            let controller = try XCTUnwrap(host.windows.first)
+            host.settle { controller.sheets.count == 1 }
+            let dialog = try XCTUnwrap(controller.sheets.first?.sheet.dialog)
+            XCTAssertEqual([adw_dialog_get_content_width(dialog), adw_dialog_get_content_height(dialog)], [320, 180])
+
+            let stacked = GTKRenderer.running {
+                Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Root") } destination: { _ in Text("Next") }
+                }
+            }
+            let stackController = try XCTUnwrap(stacked.windows.first)
+            stacked.settle { stackController.sheets.count == 1 }
+            let stackDialog = try XCTUnwrap(stackController.sheets.first?.sheet.dialog)
+            let window = stackController.window.widget
+            XCTAssertEqual(
+                [adw_dialog_get_content_width(stackDialog), adw_dialog_get_content_height(stackDialog)],
+                [min(560, gtk_widget_get_width(window) - 48), min(480, gtk_widget_get_height(window) - 48)])
+        }
+    }
+
+    /// A sheet is libadwaita's dialog over the window, its page in a frame of its own; the user closing it - Escape,
+    /// its close button - writes false onto its state, and the program's close tells nothing.
+    func testASheetTheUserClosesWritesItsState() throws {
+        try onUIThread {
+            let (first, second) = (State(wrappedValue: true), State(wrappedValue: true))
+            let host = GTKRenderer.running {
+                TitledPage(title: "Beneath")
+                    .sheet(isPresented: first.projectedValue) {
+                        TitledPage(title: "Sheet 1")
+                            .sheet(isPresented: second.projectedValue) { TitledPage(title: "Sheet 2") }
+                    }
             }
             let controller = try XCTUnwrap(host.windows.first)
             host.settle { controller.sheets.count == 2 }
-            XCTAssertEqual(controller.sheets.map { $0.sheet.frame?.chrome.title }, ["Sheet 1", "Sheet 2"])
+            XCTAssertEqual(controller.sheets.map { String(cString: adw_dialog_get_title($0.sheet.dialog)) }, ["Sheet 1", "Sheet 2"])
             let window = controller.window.widget.of(AdwApplicationWindow.self)
             XCTAssertTrue(adw_application_window_get_visible_dialog(window) == controller.sheets[1].sheet.dialog,
                           "the top sheet shows")
@@ -344,12 +550,12 @@ final class GTKPagesTests: XCTestCase {
             // libadwaita says a dialog closed once its sheet has gone, which a window behind another, drawn no
             // frames, never gets to by itself: the close is told as libadwaita tells it.
             GTKTestHost.emit(OpaquePointer(controller.sheets[1].sheet.dialog), "closed")
-            host.settle { sheets.wrappedValue == [1] }
-            XCTAssertEqual(sheets.wrappedValue, [1], "the user's close")
+            host.settle { !second.wrappedValue }
+            XCTAssertEqual([first.wrappedValue, second.wrappedValue], [true, false], "the user's close")
 
-            sheets.wrappedValue = []
+            first.wrappedValue = false
             host.settle { controller.sheets.isEmpty }
-            XCTAssertEqual(sheets.wrappedValue, [], "the program's close heard by nobody")
+            XCTAssertEqual([first.wrappedValue, second.wrappedValue], [false, false], "the program's close heard by nobody")
         }
     }
 
@@ -387,40 +593,42 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
-    /// A sheet swapped beneath one that stays stands beneath it: the sheets from the change up leave and come again,
-    /// so the modal stack's last is the one on top.
-    func testASheetSwappedBeneathAnotherStandsBeneathIt() throws {
+    /// A sheet beneath another given another page comes over it, as a page presented anew: the sheets from the
+    /// change up leave and come again, so the last shown is the one on top.
+    func testASheetGivenAnotherPageComesOverTheOthers() throws {
         try onUIThread {
-            let sheets = State(wrappedValue: [1, 2])
+            let (note, shows) = (State<Int?>(wrappedValue: 1), State(wrappedValue: false))
             let host = GTKRenderer.running {
-                ModalStack(sheets.projectedValue) {
-                    TitledPage(title: "Beneath")
-                } destination: { number in
-                    TitledPage(title: "Sheet \(number)")
+                VStack {
+                    Text("Notes").sheet(item: note.projectedValue) { number in TitledPage(title: "Sheet \(number)") }
+                    Text("More").sheet(isPresented: shows.projectedValue) { TitledPage(title: "Sheet 2") }
                 }
             }
             let controller = try XCTUnwrap(host.windows.first)
+            host.settle { controller.sheets.count == 1 }
+            shows.wrappedValue = true
             host.settle { controller.sheets.count == 2 }
 
-            sheets.wrappedValue = [3, 2]
-            host.settle { controller.sheets.map { $0.sheet.frame?.chrome.title } == ["Sheet 3", "Sheet 2"] }
+            note.wrappedValue = 3
+            host.settle { controller.sheets.map { String(cString: adw_dialog_get_title($0.sheet.dialog)) } == ["Sheet 2", "Sheet 3"] }
 
-            XCTAssertEqual(controller.sheets.map { $0.sheet.frame?.chrome.title }, ["Sheet 3", "Sheet 2"])
+            XCTAssertEqual(controller.sheets.map { String(cString: adw_dialog_get_title($0.sheet.dialog)) }, ["Sheet 2", "Sheet 3"])
             let window = controller.window.widget.of(AdwApplicationWindow.self)
             XCTAssertTrue(adw_application_window_get_visible_dialog(window) == controller.sheets[1].sheet.dialog,
-                          "the modal stack's last on top")
+                          "the last shown on top")
         }
     }
 
-    /// A bar painted with no colour written for its words stands them light on a dark band and dark on a light one.
+    /// A bar painted with no color written for its words stands them light on a dark band and dark on a light one.
     func testABarsWordsFollowHowDarkItIs() throws {
         try onUIThread {
-            for (band, words) in [("#000080", Color(red: 255, green: 255, blue: 255)), ("#FFFF00", Color(red: 0, green: 0, blue: 0))] {
+            let bands: [(band: UInt32, words: Color)] = [(0x000080, .white), (0xFFFF00, .black)]
+            for (band, words) in bands {
                 let host = GTKRenderer.running {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(title: "Painted")
                     } destination: { _ in TitledPage(title: "Next") }
-                    .barBackgroundColor(Color(band))
+                    .barBackground(Color(hex: band))
                 }
                 let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
                 host.layOut()
@@ -429,22 +637,23 @@ final class GTKPagesTests: XCTestCase {
                 gtk_widget_get_color(frame.header, &color)
                 let shade = { (value: Float) in Int((value * 255).rounded()) }
                 XCTAssertEqual(
-                    Color(red: shade(color.red), green: shade(color.green), blue: shade(color.blue)), words, band)
+                    Color(red: shade(color.red), green: shade(color.green), blue: shade(color.blue)), words,
+                    "0x\(String(band, radix: 16))")
             }
         }
     }
 
-    /// A header bar takes the colours the window's page declares around the page it shows.
-    func testAHeaderBarTakesTheColoursItsPathDeclares() throws {
+    /// A header bar takes the colors the stack around the page it shows declares.
+    func testAHeaderBarTakesTheColorsItsPathDeclares() throws {
         try onUIThread {
             let host = GTKRenderer.running {
-                ModalStack(State(wrappedValue: [Int]()).projectedValue) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Text("under a painted bar")
-                } destination: { _ in Text("Sheet") }
-                .barBackgroundColor(Color("#00FF00"))
-                .barForegroundColor(Color("#FFFFFF"))
+                } destination: { _ in Text("Next") }
+                .barBackground(Color(hex: 0x00FF00))
+                .barForegroundColor(Color(hex: 0xFFFFFF))
             }
-            let frame = try XCTUnwrap(host.window?.pageFrame)
+            let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
             host.settle { gtk_widget_has_css_class(frame.header, "stateui-bar-b00FF00FF-fFFFFFFFF") != 0 }
 
             XCTAssertNotEqual(gtk_widget_has_css_class(frame.header, "stateui-bar-b00FF00FF-fFFFFFFFF"), 0)
@@ -476,6 +685,61 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A BAR WITH NO ROOM KEEPS ITS FIRST GROUPS: a window the user narrowed below what its bar's groups ask - a
+    /// split view's, which libadwaita lets stand narrower than what it holds - has its header bar stand the first
+    /// in reading order and the rest behind More, every button within the bar, the window's own among them; given
+    /// its room back, they all come back.
+    func testABarWithNoRoomKeepsItsFirstGroups() throws {
+        try onUIThread {
+            let host = GTKRenderer.running {
+                SplitView {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    CrowdedBarPage()
+                }
+                .showsSidebar(State(wrappedValue: false).projectedValue)
+            }
+            let window = try XCTUnwrap(host.window).widget
+            let frame = try XCTUnwrap(host.views(GTKSplitView.self).first?.detailFrame)
+            let least = { () -> Int32 in
+                var least: Int32 = 0
+                gtk_widget_measure(frame.header, GTK_ORIENTATION_HORIZONTAL, -1, &least, nil, nil, nil)
+                return least
+            }
+            for _ in 0..<3 { GTKTestHost.layOut(window, width: 1600, height: 600) }
+            XCTAssertTrue(frame.overflowButtons.isEmpty, "a wide window: every group on the bar")
+            let wide = least()
+
+            for _ in 0..<3 { GTKTestHost.layOut(window, width: 700, height: 600) }
+            XCTAssertGreaterThan(wide, gtk_widget_get_width(window) - gtk_widget_get_width(frame.header),
+                                 "the groups ask more than the narrowed window leaves the bar")
+            // Past which widget around it the bar runs, unseen there - but for the pixel of its own edge a header
+            // bar stands past its toolbar on each side.
+            let overrun = { () -> [String] in
+                var past: [String] = []
+                var around = gtk_widget_get_parent(frame.header)
+                while let each = around {
+                    var from = graphene_point_t(x: 0, y: 0)
+                    var to = graphene_point_t(x: 0, y: 0)
+                    _ = gtk_widget_compute_point(frame.header, each, &from, &to)
+                    if Int32(to.x.rounded(.down)) + gtk_widget_get_width(frame.header) > gtk_widget_get_width(each) + 1 {
+                        past.append(String(cString: g_type_name_from_instance(each.of(GTypeInstance.self))))
+                    }
+                    around = gtk_widget_get_parent(each)
+                }
+                return past
+            }
+            XCTAssertEqual(overrun(), [], "the bar within everything around it, the window too")
+            XCTAssertLessThanOrEqual(least(), gtk_widget_get_width(frame.header), "every button within the bar")
+            let behind = frame.overflowButtons.map(\.text)
+            XCTAssertEqual(behind.last, "Duplicate", "the last group leaves first: \(behind)")
+            XCTAssertFalse(behind.contains("Save"), "the first group stays on the bar")
+
+            for _ in 0..<3 { GTKTestHost.layOut(window, width: 1600, height: 600) }
+            XCTAssertTrue(frame.overflowButtons.isEmpty, "given room, every group back on the bar")
+        }
+    }
+
     /// A page that hides its navigation bar shows no header bar.
     func testAPageWithoutANavigationBarShowsNoHeaderBar() throws {
         try onUIThread {
@@ -483,7 +747,7 @@ final class GTKPagesTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [1]).projectedValue) {
                     TitledPage(title: "Root")
                 } destination: { _ in
-                    TitledPage(title: "Bare", actions: [ToolbarItem("Save")], hidesBar: true)
+                    TitledPage(title: "Bare", actions: [ToolbarButton("Save")], hidesBar: true)
                 }
             }
             let frame = try XCTUnwrap(host.views(GTKNavigationView.self).first?.frames.last)
@@ -498,7 +762,7 @@ final class GTKPagesTests: XCTestCase {
 struct TitledPage: View {
     let title: String
     var log: Received<String>? = nil
-    var actions: [ToolbarItem] = []
+    var actions: [ToolbarButton] = []
     var hidesBar = false
     var hidesBack = false
 
@@ -538,11 +802,21 @@ private struct SheetedScene: Scene {
         WindowGroup { SheetedOpeningPage() }
         Window(WindowType("pages.sheeted")) {
             if asks {
-                Text("Asking").onCreated { _ = try await Dialogs.confirm("Keep?", message: "", accept: "Keep", cancel: "Drop") }
+                AskingSheetedPage()
             } else {
                 SheetedPage()
             }
         }
+    }
+}
+
+/// The sheeted window's page asking the user over its own window as it is made.
+private struct AskingSheetedPage: View {
+    @Environment(\.window) private var window
+
+    var body: some View {
+        let window = self.window
+        return Text("Asking").onCreated { _ = try await window.confirm("Keep?", message: "", accept: "Keep", cancel: "Drop") }
     }
 }
 
@@ -552,10 +826,10 @@ private struct SheetedOpeningPage: View {
     var body: some View {
         let application = self.application
         return VStack {
-            Button("Open").onClicked(gate: .ignoreWhileRunning) {
+            Button("Open").onClicked(.ignoreWhileRunning) {
                 try await application.openWindow(WindowType("pages.sheeted"))
             }
-            Button("Close").onClicked(gate: .ignoreWhileRunning) {
+            Button("Close").onClicked(.ignoreWhileRunning) {
                 try await application.closeWindow(WindowType("pages.sheeted"))
             }
         }
@@ -563,9 +837,31 @@ private struct SheetedOpeningPage: View {
 }
 
 private struct SheetedPage: View {
-    @State private var sheets = [1]
+    @State private var shows = true
 
     var body: some View {
-        ModalStack($sheets) { TitledPage(title: "Beneath") } destination: { number in TitledPage(title: "Sheet \(number)") }
+        TitledPage(title: "Beneath").sheet(isPresented: $shows) { TitledPage(title: "Sheet 1") }
+    }
+}
+
+/// A page whose bar holds more groups of words than a narrow window has room for.
+private struct CrowdedBarPage: View {
+    var body: some View {
+        Text("Crowded")
+            .title("Crowded")
+            .toolbar {
+                ToolbarGroup {
+                    ToolbarButton("Save")
+                    ToolbarButton("Add")
+                }
+                ToolbarButton("Sort")
+                ToolbarButton("Favorite")
+                ToolbarGroup {
+                    ToolbarButton("Inspector")
+                    ToolbarButton("Home")
+                }
+                ToolbarButton("Share")
+                ToolbarButton("Duplicate")
+            }
     }
 }

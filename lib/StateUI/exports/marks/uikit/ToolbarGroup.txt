@@ -1,0 +1,10 @@
+# revision 9.1
+ToolbarGroup: ✅
+ToolbarGroup.barEdge: ✅
+ToolbarGroup.hidesWithSidebar: ✅
+ToolbarGroup.isEnabled: ✅
+ToolbarGroup.order: ✅
+ToolbarGroup.part: ✅
+ToolbarGroup.position: ✅
+ToolbarGroup.spacing: – A bar's items stand in the system's own look.
+ToolbarGroup.standsAlone: – UIKit's bar draws every group on a glass of its own, a lone item's too.

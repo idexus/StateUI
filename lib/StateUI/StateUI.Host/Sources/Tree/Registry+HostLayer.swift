@@ -8,11 +8,11 @@
 /// Design: docs/design/host/tree.md#what-every-element-realizes
 extension Registry {
     /// Whether a host shows an element of `type` as unsupported: no registration of this registry makes it, and it
-    /// is no page nor an arrangement of pages, no overlay, and nothing presented with no view of its own.
+    /// is no page nor an arrangement of pages, no overlay nor popover, and nothing presented with no view of its own.
     /// Design: docs/design/host/tree.md#what-every-element-realizes
     public func showsUnsupported(_ type: NodeType) -> Bool {
         !realizes(type) && !NodeType.viewlessTypes.contains(type) && !NodeType.pageTypes.contains(type)
-            && type != .overlay
+            && type != .overlay && type != .popover
     }
 
     /// A view's place in its layout, by the layout arithmetic: its stated sizes and bounds, its margin, its
@@ -50,15 +50,28 @@ extension Registry {
     }
 
     /// What assistive technology meets of a view, put together by one rule (`MountedElement.accessibilityWords`):
-    /// its identifier where the toolkit gives an accessible one - `identifying` - its label, hint and heading level,
-    /// and whether it is met at all.
-    public func everyElementMeetsAssistiveTechnology(identifying: Bool = true) {
+    /// its identifier where the toolkit gives an accessible one - `identifying` - its label and hint, its kind and
+    /// value where a view may say a kind not its own - `sayingKinds` - its heading level, and whether it is met at all.
+    public func everyElementMeetsAssistiveTechnology(identifying: Bool = true, sayingKinds: Bool = true) {
         if identifying { everyElementRealizes(AutomationElementContract.accessibilityIdentifier) }
         everyElementRealizes(VisualElementContract.accessibilityLabel)
         everyElementRealizes(VisualElementContract.accessibilityHint)
+        if sayingKinds {
+            everyElementRealizes(VisualElementContract.accessibilityRole)
+            everyElementRealizes(VisualElementContract.accessibilityValue)
+        }
         everyElementRealizes(VisualElementContract.accessibilityHeading)
         everyElementRealizes(VisualElementContract.isAccessibilityHidden)
-        everyElementRealizes(VisualElementContract.automationExcludedWithChildren)
+        everyElementRealizes(VisualElementContract.hidesChildrenFromAccessibility)
+    }
+
+    /// The actions a screen reader offers on a view, and its steps of one that is adjustable, told to the element by
+    /// the host layer's rule (`MountedElement.hear`).
+    /// Design: docs/design/views/modifiers.md#a-readers-actions
+    public func everyElementTakesAccessibilityActions() {
+        everyElementRealizes(VisualElementContract.accessibilityActions)
+        everyElementRaises(VisualElementContract.accessibilityActionPerformed)
+        everyElementRaises(VisualElementContract.accessibilityAdjusted)
     }
 
     /// The words a view shows while the pointer rests on it, which a toolkit showing tooltips holds on any view.
@@ -74,6 +87,8 @@ extension Registry {
         everyElementRaises(ViewContract.frameChanged)
         everyElementRaises(ViewContract.tapped)
         everyElementRealizes(ViewContract.tapCount)
+        everyElementRaises(ViewContract.held)
+        everyElementRealizes(ViewContract.holdDuration)
         everyElementRealizes(ViewContract.panXChannel)
         everyElementRealizes(ViewContract.panYChannel)
         everyElementRealizes(ViewContract.panTouchCount)
@@ -81,6 +96,7 @@ extension Registry {
         everyElementRealizes(ViewContract.swipeThreshold)
         everyElementRaises(ViewContract.panUpdated)
         everyElementRaises(ViewContract.pinchUpdated)
+        everyElementRaises(ViewContract.rotationUpdated)
         everyElementRaises(ViewContract.swiped)
         everyElementRaises(ViewContract.pointerEntered)
         everyElementRaises(ViewContract.pointerExited)

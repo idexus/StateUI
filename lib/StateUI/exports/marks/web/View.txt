@@ -1,38 +1,4 @@
-# revision 7.1
-ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.area: ✅
-ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragEnded: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragStarting: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.dragText: ✓ dragAndDrop on ActivityIndicator: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumn: ✅
-ActivityIndicator.gridColumnSpan: ✅
-ActivityIndicator.gridRow: ✅
-ActivityIndicator.gridRowSpan: ✅
-ActivityIndicator.horizontalAlignment: ✅
-ActivityIndicator.margin: ✅
-ActivityIndicator.panTouchCount: ✅
-ActivityIndicator.panUpdated: ✅
-ActivityIndicator.panXChannel: ✅
-ActivityIndicator.panYChannel: ✅
-ActivityIndicator.pinchUpdated: ✅
-ActivityIndicator.pointerEntered: ✅
-ActivityIndicator.pointerExited: ✅
-ActivityIndicator.pointerMoved: ✅
-ActivityIndicator.pointerPressed: ✅
-ActivityIndicator.pointerReleased: ✅
-ActivityIndicator.swipeDirection: ✅
-ActivityIndicator.swipeThreshold: ✅
-ActivityIndicator.swiped: ✅
-ActivityIndicator.tapCount: ✅
-ActivityIndicator.tapped: ✅
-ActivityIndicator.verticalAlignment: ✅
+# revision 19.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -49,7 +15,10 @@ Button.gridColumn: ✅
 Button.gridColumnSpan: ✅
 Button.gridRow: ✅
 Button.gridRowSpan: ✅
+Button.held: ✅
+Button.holdDuration: ✓ read holdDuration of Button: the relay's own wait: a page holds no hold of the browser's
 Button.horizontalAlignment: ✅
+Button.layoutBody: ✅
 Button.margin: ✅
 Button.panTouchCount: ✅
 Button.panUpdated: ✅
@@ -61,6 +30,7 @@ Button.pointerExited: ✅
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
+Button.rotationUpdated: ✅
 Button.swipeDirection: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
@@ -83,7 +53,10 @@ Canvas.gridColumn: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRow: ✅
 Canvas.gridRowSpan: ✅
+Canvas.held: ✅
+Canvas.holdDuration: ✓ read holdDuration of Canvas: the relay's own wait: a page holds no hold of the browser's
 Canvas.horizontalAlignment: ✅
+Canvas.layoutBody: ✅
 Canvas.margin: ✅
 Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
@@ -95,6 +68,7 @@ Canvas.pointerExited: ✅
 Canvas.pointerMoved: ✅
 Canvas.pointerPressed: ✅
 Canvas.pointerReleased: ✅
+Canvas.rotationUpdated: ✅
 Canvas.swipeDirection: ✅
 Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
@@ -117,7 +91,10 @@ Capsule.gridColumn: ✅
 Capsule.gridColumnSpan: ✅
 Capsule.gridRow: ✅
 Capsule.gridRowSpan: ✅
+Capsule.held: ✅
+Capsule.holdDuration: ✓ read holdDuration of Capsule: the relay's own wait: a page holds no hold of the browser's
 Capsule.horizontalAlignment: ✅
+Capsule.layoutBody: ✅
 Capsule.margin: ✅
 Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
@@ -129,6 +106,7 @@ Capsule.pointerExited: ✅
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
+Capsule.rotationUpdated: ✅
 Capsule.swipeDirection: ✅
 Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
@@ -151,7 +129,10 @@ CheckBox.gridColumn: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRow: ✅
 CheckBox.gridRowSpan: ✅
+CheckBox.held: ✅
+CheckBox.holdDuration: ✓ read holdDuration of CheckBox: the relay's own wait: a page holds no hold of the browser's
 CheckBox.horizontalAlignment: ✅
+CheckBox.layoutBody: ✅
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
@@ -163,12 +144,51 @@ CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
+CheckBox.rotationUpdated: ✅
 CheckBox.swipeDirection: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
+ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.area: ✅
+ColorPicker.canDrag: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+ColorPicker.frameChanged: ✅
+ColorPicker.gridColumn: ✅
+ColorPicker.gridColumnSpan: ✅
+ColorPicker.gridRow: ✅
+ColorPicker.gridRowSpan: ✅
+ColorPicker.held: ✅
+ColorPicker.holdDuration: ✓ read holdDuration of ColorPicker: the relay's own wait: a page holds no hold of the browser's
+ColorPicker.horizontalAlignment: ✅
+ColorPicker.layoutBody: ✅
+ColorPicker.margin: ✅
+ColorPicker.panTouchCount: ✅
+ColorPicker.panUpdated: ✅
+ColorPicker.panXChannel: ✅
+ColorPicker.panYChannel: ✅
+ColorPicker.pinchUpdated: ✅
+ColorPicker.pointerEntered: ✅
+ColorPicker.pointerExited: ✅
+ColorPicker.pointerMoved: ✅
+ColorPicker.pointerPressed: ✅
+ColorPicker.pointerReleased: ✅
+ColorPicker.rotationUpdated: ✅
+ColorPicker.swipeDirection: ✅
+ColorPicker.swipeThreshold: ✅
+ColorPicker.swiped: ✅
+ColorPicker.tapCount: ✅
+ColorPicker.tapped: ✅
+ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 DatePicker.area: ✅
 DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -185,7 +205,10 @@ DatePicker.gridColumn: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRow: ✅
 DatePicker.gridRowSpan: ✅
+DatePicker.held: ✅
+DatePicker.holdDuration: ✓ read holdDuration of DatePicker: the relay's own wait: a page holds no hold of the browser's
 DatePicker.horizontalAlignment: ✅
+DatePicker.layoutBody: ✅
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
@@ -197,46 +220,13 @@ DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
+DatePicker.rotationUpdated: ✅
 DatePicker.swipeDirection: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
-Divider.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.area: ✅
-Divider.canDrag: ✓ dragAndDrop on Divider: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragEnded: ✓ dragAndDrop on Divider: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragStarting: ✓ dragAndDrop on Divider: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.dragText: ✓ dragAndDrop on Divider: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Divider.droppedFileTypes: ✓ dropFiles on Divider: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-Divider.filesDropped: ✓ dropFiles on Divider: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-Divider.frameChanged: ✅
-Divider.gridColumn: ✅
-Divider.gridColumnSpan: ✅
-Divider.gridRow: ✅
-Divider.gridRowSpan: ✅
-Divider.horizontalAlignment: ✅
-Divider.margin: ✅
-Divider.panTouchCount: ✅
-Divider.panUpdated: ✅
-Divider.panXChannel: ✅
-Divider.panYChannel: ✅
-Divider.pinchUpdated: ✅
-Divider.pointerEntered: ✅
-Divider.pointerExited: ✅
-Divider.pointerMoved: ✅
-Divider.pointerPressed: ✅
-Divider.pointerReleased: ✅
-Divider.swipeDirection: ✅
-Divider.swipeThreshold: ✅
-Divider.swiped: ✅
-Divider.tapCount: ✅
-Divider.tapped: ✅
-Divider.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Ellipse.area: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -253,7 +243,10 @@ Ellipse.gridColumn: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRow: ✅
 Ellipse.gridRowSpan: ✅
+Ellipse.held: ✅
+Ellipse.holdDuration: ✓ read holdDuration of Ellipse: the relay's own wait: a page holds no hold of the browser's
 Ellipse.horizontalAlignment: ✅
+Ellipse.layoutBody: ✅
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
@@ -265,12 +258,51 @@ Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
+Ellipse.rotationUpdated: ✅
 Ellipse.swipeDirection: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
+Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.area: ✅
+Fill.canDrag: ✓ dragAndDrop on Fill: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.dragEnded: ✓ dragAndDrop on Fill: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.dragStarting: ✓ dragAndDrop on Fill: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.dragText: ✓ dragAndDrop on Fill: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Fill.droppedFileTypes: ✓ dropFiles on Fill: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Fill.filesDropped: ✓ dropFiles on Fill: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Fill.frameChanged: ✅
+Fill.gridColumn: ✅
+Fill.gridColumnSpan: ✅
+Fill.gridRow: ✅
+Fill.gridRowSpan: ✅
+Fill.held: ✅
+Fill.holdDuration: ✓ read holdDuration of Fill: the relay's own wait: a page holds no hold of the browser's
+Fill.horizontalAlignment: ✅
+Fill.layoutBody: ✅
+Fill.margin: ✅
+Fill.panTouchCount: ✅
+Fill.panUpdated: ✅
+Fill.panXChannel: ✅
+Fill.panYChannel: ✅
+Fill.pinchUpdated: ✅
+Fill.pointerEntered: ✅
+Fill.pointerExited: ✅
+Fill.pointerMoved: ✅
+Fill.pointerPressed: ✅
+Fill.pointerReleased: ✅
+Fill.rotationUpdated: ✅
+Fill.swipeDirection: ✅
+Fill.swipeThreshold: ✅
+Fill.swiped: ✅
+Fill.tapCount: ✅
+Fill.tapped: ✅
+Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Grid.area: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -287,7 +319,10 @@ Grid.gridColumn: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRow: ✅
 Grid.gridRowSpan: ✅
+Grid.held: ✅
+Grid.holdDuration: ✓ read holdDuration of Grid: the relay's own wait: a page holds no hold of the browser's
 Grid.horizontalAlignment: ✅
+Grid.layoutBody: ✅
 Grid.margin: ✅
 Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
@@ -299,6 +334,7 @@ Grid.pointerExited: ✅
 Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
+Grid.rotationUpdated: ✅
 Grid.swipeDirection: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
@@ -321,7 +357,10 @@ HStack.gridColumn: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRow: ✅
 HStack.gridRowSpan: ✅
+HStack.held: ✅
+HStack.holdDuration: ✓ read holdDuration of HStack: the relay's own wait: a page holds no hold of the browser's
 HStack.horizontalAlignment: ✅
+HStack.layoutBody: ✅
 HStack.margin: ✅
 HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
@@ -333,6 +372,7 @@ HStack.pointerExited: ✅
 HStack.pointerMoved: ✅
 HStack.pointerPressed: ✅
 HStack.pointerReleased: ✅
+HStack.rotationUpdated: ✅
 HStack.swipeDirection: ✅
 HStack.swipeThreshold: ✅
 HStack.swiped: ✅
@@ -355,7 +395,10 @@ Image.gridColumn: ✅
 Image.gridColumnSpan: ✅
 Image.gridRow: ✅
 Image.gridRowSpan: ✅
+Image.held: ✅
+Image.holdDuration: ✓ read holdDuration of Image: the relay's own wait: a page holds no hold of the browser's
 Image.horizontalAlignment: ✅
+Image.layoutBody: ✅
 Image.margin: ✅
 Image.panTouchCount: ✅
 Image.panUpdated: ✅
@@ -367,6 +410,7 @@ Image.pointerExited: ✅
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
+Image.rotationUpdated: ✅
 Image.swipeDirection: ✅
 Image.swipeThreshold: ✅
 Image.swiped: ✅
@@ -389,7 +433,10 @@ ItemsView.gridColumn: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRow: ✅
 ItemsView.gridRowSpan: ✅
+ItemsView.held: ✅
+ItemsView.holdDuration: ✓ read holdDuration of ItemsView: the relay's own wait: a page holds no hold of the browser's
 ItemsView.horizontalAlignment: ✅
+ItemsView.layoutBody: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
@@ -401,46 +448,13 @@ ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
+ItemsView.rotationUpdated: ✅
 ItemsView.swipeDirection: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
-LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.area: ✅
-LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumn: ✅
-LayoutEngine.gridColumnSpan: ✅
-LayoutEngine.gridRow: ✅
-LayoutEngine.gridRowSpan: ✅
-LayoutEngine.horizontalAlignment: ✅
-LayoutEngine.margin: ✅
-LayoutEngine.panTouchCount: ✅
-LayoutEngine.panUpdated: ✅
-LayoutEngine.panXChannel: ✅
-LayoutEngine.panYChannel: ✅
-LayoutEngine.pinchUpdated: ✅
-LayoutEngine.pointerEntered: ✅
-LayoutEngine.pointerExited: ✅
-LayoutEngine.pointerMoved: ✅
-LayoutEngine.pointerPressed: ✅
-LayoutEngine.pointerReleased: ✅
-LayoutEngine.swipeDirection: ✅
-LayoutEngine.swipeThreshold: ✅
-LayoutEngine.swiped: ✅
-LayoutEngine.tapCount: ✅
-LayoutEngine.tapped: ✅
-LayoutEngine.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Line.area: ✅
 Line.canDrag: ✓ dragAndDrop on Line: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -457,7 +471,10 @@ Line.gridColumn: ✅
 Line.gridColumnSpan: ✅
 Line.gridRow: ✅
 Line.gridRowSpan: ✅
+Line.held: ✅
+Line.holdDuration: ✓ read holdDuration of Line: the relay's own wait: a page holds no hold of the browser's
 Line.horizontalAlignment: ✅
+Line.layoutBody: ✅
 Line.margin: ✅
 Line.panTouchCount: ✅
 Line.panUpdated: ✅
@@ -469,12 +486,51 @@ Line.pointerExited: ✅
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
+Line.rotationUpdated: ✅
 Line.swipeDirection: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
 Line.verticalAlignment: ✅
+Link.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.area: ✅
+Link.canDrag: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragEnded: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragStarting: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.dragText: ✓ dragAndDrop on Link: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Link.droppedFileTypes: ✓ dropFiles on Link: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Link.filesDropped: ✓ dropFiles on Link: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Link.frameChanged: ✅
+Link.gridColumn: ✅
+Link.gridColumnSpan: ✅
+Link.gridRow: ✅
+Link.gridRowSpan: ✅
+Link.held: ✅
+Link.holdDuration: ✓ read holdDuration of Link: the relay's own wait: a page holds no hold of the browser's
+Link.horizontalAlignment: ✅
+Link.layoutBody: ✅
+Link.margin: ✅
+Link.panTouchCount: ✅
+Link.panUpdated: ✅
+Link.panXChannel: ✅
+Link.panYChannel: ✅
+Link.pinchUpdated: ✅
+Link.pointerEntered: ✅
+Link.pointerExited: ✅
+Link.pointerMoved: ✅
+Link.pointerPressed: ✅
+Link.pointerReleased: ✅
+Link.rotationUpdated: ✅
+Link.swipeDirection: ✅
+Link.swipeThreshold: ✅
+Link.swiped: ✅
+Link.tapCount: ✅
+Link.tapped: ✅
+Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.canDrag: 🧩
@@ -491,7 +547,10 @@ Map.gridColumn: 🧩
 Map.gridColumnSpan: 🧩
 Map.gridRow: 🧩
 Map.gridRowSpan: 🧩
+Map.held: 🧩
+Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
+Map.layoutBody: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
@@ -503,12 +562,51 @@ Map.pointerExited: 🧩
 Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
+Map.rotationUpdated: 🧩
 Map.swipeDirection: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 Map.verticalAlignment: 🧩
+MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.area: ✅
+MotionLayout.canDrag: ✓ dragAndDrop on MotionLayout: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+MotionLayout.frameChanged: ✅
+MotionLayout.gridColumn: ✅
+MotionLayout.gridColumnSpan: ✅
+MotionLayout.gridRow: ✅
+MotionLayout.gridRowSpan: ✅
+MotionLayout.held: ✅
+MotionLayout.holdDuration: ✓ read holdDuration of MotionLayout: the relay's own wait: a page holds no hold of the browser's
+MotionLayout.horizontalAlignment: ✅
+MotionLayout.layoutBody: ✅
+MotionLayout.margin: ✅
+MotionLayout.panTouchCount: ✅
+MotionLayout.panUpdated: ✅
+MotionLayout.panXChannel: ✅
+MotionLayout.panYChannel: ✅
+MotionLayout.pinchUpdated: ✅
+MotionLayout.pointerEntered: ✅
+MotionLayout.pointerExited: ✅
+MotionLayout.pointerMoved: ✅
+MotionLayout.pointerPressed: ✅
+MotionLayout.pointerReleased: ✅
+MotionLayout.rotationUpdated: ✅
+MotionLayout.swipeDirection: ✅
+MotionLayout.swipeThreshold: ✅
+MotionLayout.swiped: ✅
+MotionLayout.tapCount: ✅
+MotionLayout.tapped: ✅
+MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Path.area: ✅
 Path.canDrag: ✓ dragAndDrop on Path: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -525,7 +623,10 @@ Path.gridColumn: ✅
 Path.gridColumnSpan: ✅
 Path.gridRow: ✅
 Path.gridRowSpan: ✅
+Path.held: ✅
+Path.holdDuration: ✓ read holdDuration of Path: the relay's own wait: a page holds no hold of the browser's
 Path.horizontalAlignment: ✅
+Path.layoutBody: ✅
 Path.margin: ✅
 Path.panTouchCount: ✅
 Path.panUpdated: ✅
@@ -537,6 +638,7 @@ Path.pointerExited: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
+Path.rotationUpdated: ✅
 Path.swipeDirection: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
@@ -559,7 +661,10 @@ Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
 Picker.gridRowSpan: ✅
+Picker.held: ✅
+Picker.holdDuration: ✓ read holdDuration of Picker: the relay's own wait: a page holds no hold of the browser's
 Picker.horizontalAlignment: ✅
+Picker.layoutBody: ✅
 Picker.margin: ✅
 Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
@@ -571,6 +676,7 @@ Picker.pointerExited: ✅
 Picker.pointerMoved: ✅
 Picker.pointerPressed: ✅
 Picker.pointerReleased: ✅
+Picker.rotationUpdated: ✅
 Picker.swipeDirection: ✅
 Picker.swipeThreshold: ✅
 Picker.swiped: ✅
@@ -593,7 +699,10 @@ Polygon.gridColumn: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRow: ✅
 Polygon.gridRowSpan: ✅
+Polygon.held: ✅
+Polygon.holdDuration: ✓ read holdDuration of Polygon: the relay's own wait: a page holds no hold of the browser's
 Polygon.horizontalAlignment: ✅
+Polygon.layoutBody: ✅
 Polygon.margin: ✅
 Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
@@ -605,6 +714,7 @@ Polygon.pointerExited: ✅
 Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
+Polygon.rotationUpdated: ✅
 Polygon.swipeDirection: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
@@ -627,7 +737,10 @@ Polyline.gridColumn: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRow: ✅
 Polyline.gridRowSpan: ✅
+Polyline.held: ✅
+Polyline.holdDuration: ✓ read holdDuration of Polyline: the relay's own wait: a page holds no hold of the browser's
 Polyline.horizontalAlignment: ✅
+Polyline.layoutBody: ✅
 Polyline.margin: ✅
 Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
@@ -639,6 +752,7 @@ Polyline.pointerExited: ✅
 Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
+Polyline.rotationUpdated: ✅
 Polyline.swipeDirection: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
@@ -661,7 +775,10 @@ ProgressBar.gridColumn: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRow: ✅
 ProgressBar.gridRowSpan: ✅
+ProgressBar.held: ✅
+ProgressBar.holdDuration: ✓ read holdDuration of ProgressBar: the relay's own wait: a page holds no hold of the browser's
 ProgressBar.horizontalAlignment: ✅
+ProgressBar.layoutBody: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
@@ -673,46 +790,13 @@ ProgressBar.pointerExited: ✅
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
+ProgressBar.rotationUpdated: ✅
 ProgressBar.swipeDirection: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.area: ✅
-RadioButton.canDrag: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragEnded: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragStarting: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.dragText: ✓ dragAndDrop on RadioButton: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-RadioButton.droppedFileTypes: ✓ dropFiles on RadioButton: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-RadioButton.filesDropped: ✓ dropFiles on RadioButton: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-RadioButton.frameChanged: ✅
-RadioButton.gridColumn: ✅
-RadioButton.gridColumnSpan: ✅
-RadioButton.gridRow: ✅
-RadioButton.gridRowSpan: ✅
-RadioButton.horizontalAlignment: ✅
-RadioButton.margin: ✅
-RadioButton.panTouchCount: ✅
-RadioButton.panUpdated: ✅
-RadioButton.panXChannel: ✅
-RadioButton.panYChannel: ✅
-RadioButton.pinchUpdated: ✅
-RadioButton.pointerEntered: ✅
-RadioButton.pointerExited: ✅
-RadioButton.pointerMoved: ✅
-RadioButton.pointerPressed: ✅
-RadioButton.pointerReleased: ✅
-RadioButton.swipeDirection: ✅
-RadioButton.swipeThreshold: ✅
-RadioButton.swiped: ✅
-RadioButton.tapCount: ✅
-RadioButton.tapped: ✅
-RadioButton.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Rectangle.area: ✅
 Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -729,7 +813,10 @@ Rectangle.gridColumn: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRow: ✅
 Rectangle.gridRowSpan: ✅
+Rectangle.held: ✅
+Rectangle.holdDuration: ✓ read holdDuration of Rectangle: the relay's own wait: a page holds no hold of the browser's
 Rectangle.horizontalAlignment: ✅
+Rectangle.layoutBody: ✅
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
@@ -741,6 +828,7 @@ Rectangle.pointerExited: ✅
 Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
+Rectangle.rotationUpdated: ✅
 Rectangle.swipeDirection: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
@@ -763,7 +851,10 @@ ScrollView.gridColumn: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRow: ✅
 ScrollView.gridRowSpan: ✅
+ScrollView.held: ✅
+ScrollView.holdDuration: ✓ read holdDuration of ScrollView: the relay's own wait: a page holds no hold of the browser's
 ScrollView.horizontalAlignment: ✅
+ScrollView.layoutBody: ✅
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
@@ -775,6 +866,7 @@ ScrollView.pointerExited: ✅
 ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
+ScrollView.rotationUpdated: ✅
 ScrollView.swipeDirection: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
@@ -797,7 +889,10 @@ SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRow: ✅
 SearchField.gridRowSpan: ✅
+SearchField.held: ✅
+SearchField.holdDuration: ✓ read holdDuration of SearchField: the relay's own wait: a page holds no hold of the browser's
 SearchField.horizontalAlignment: ✅
+SearchField.layoutBody: ✅
 SearchField.margin: ✅
 SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
@@ -809,12 +904,51 @@ SearchField.pointerExited: ✅
 SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
+SearchField.rotationUpdated: ✅
 SearchField.swipeDirection: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
+Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.area: ✅
+Separator.canDrag: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragEnded: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragStarting: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.dragText: ✓ dragAndDrop on Separator: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Separator.droppedFileTypes: ✓ dropFiles on Separator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Separator.filesDropped: ✓ dropFiles on Separator: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Separator.frameChanged: ✅
+Separator.gridColumn: ✅
+Separator.gridColumnSpan: ✅
+Separator.gridRow: ✅
+Separator.gridRowSpan: ✅
+Separator.held: ✅
+Separator.holdDuration: ✓ read holdDuration of Separator: the relay's own wait: a page holds no hold of the browser's
+Separator.horizontalAlignment: ✅
+Separator.layoutBody: ✅
+Separator.margin: ✅
+Separator.panTouchCount: ✅
+Separator.panUpdated: ✅
+Separator.panXChannel: ✅
+Separator.panYChannel: ✅
+Separator.pinchUpdated: ✅
+Separator.pointerEntered: ✅
+Separator.pointerExited: ✅
+Separator.pointerMoved: ✅
+Separator.pointerPressed: ✅
+Separator.pointerReleased: ✅
+Separator.rotationUpdated: ✅
+Separator.swipeDirection: ✅
+Separator.swipeThreshold: ✅
+Separator.swiped: ✅
+Separator.tapCount: ✅
+Separator.tapped: ✅
+Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Slider.area: ✅
 Slider.canDrag: ✓ dragAndDrop on Slider: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -831,7 +965,10 @@ Slider.gridColumn: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRow: ✅
 Slider.gridRowSpan: ✅
+Slider.held: ✅
+Slider.holdDuration: ✓ read holdDuration of Slider: the relay's own wait: a page holds no hold of the browser's
 Slider.horizontalAlignment: ✅
+Slider.layoutBody: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
@@ -843,46 +980,89 @@ Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
+Slider.rotationUpdated: ✅
 Slider.swipeDirection: ✅
 Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Slider.verticalAlignment: ✅
-Spacer.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Spacer.area: ✅
-Spacer.canDrag: ✓ dragAndDrop on Spacer: the DOM's drag events dispatched by the driver, no drag the browser began
-Spacer.dragEnded: ✓ dragAndDrop on Spacer: the DOM's drag events dispatched by the driver, no drag the browser began
-Spacer.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Spacer.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Spacer.dragStarting: ✓ dragAndDrop on Spacer: the DOM's drag events dispatched by the driver, no drag the browser began
-Spacer.dragText: ✓ dragAndDrop on Spacer: the DOM's drag events dispatched by the driver, no drag the browser began
-Spacer.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
-Spacer.droppedFileTypes: ✓ dropFiles on Spacer: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-Spacer.filesDropped: ✓ dropFiles on Spacer: the DOM's drag events dispatched by the driver with its files, no drag the browser began
-Spacer.frameChanged: ✅
-Spacer.gridColumn: ✅
-Spacer.gridColumnSpan: ✅
-Spacer.gridRow: ✅
-Spacer.gridRowSpan: ✅
-Spacer.horizontalAlignment: ✅
-Spacer.margin: ✅
-Spacer.panTouchCount: ✅
-Spacer.panUpdated: ✅
-Spacer.panXChannel: ✅
-Spacer.panYChannel: ✅
-Spacer.pinchUpdated: ✅
-Spacer.pointerEntered: ✅
-Spacer.pointerExited: ✅
-Spacer.pointerMoved: ✅
-Spacer.pointerPressed: ✅
-Spacer.pointerReleased: ✅
-Spacer.swipeDirection: ✅
-Spacer.swipeThreshold: ✅
-Spacer.swiped: ✅
-Spacer.tapCount: ✅
-Spacer.tapped: ✅
-Spacer.verticalAlignment: ✅
+Space.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.area: ✅
+Space.canDrag: ✓ dragAndDrop on Space: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.dragEnded: ✓ dragAndDrop on Space: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.dragStarting: ✓ dragAndDrop on Space: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.dragText: ✓ dragAndDrop on Space: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Space.droppedFileTypes: ✓ dropFiles on Space: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Space.filesDropped: ✓ dropFiles on Space: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Space.frameChanged: ✅
+Space.gridColumn: ✅
+Space.gridColumnSpan: ✅
+Space.gridRow: ✅
+Space.gridRowSpan: ✅
+Space.held: ✅
+Space.holdDuration: ✓ read holdDuration of Space: the relay's own wait: a page holds no hold of the browser's
+Space.horizontalAlignment: ✅
+Space.layoutBody: ✅
+Space.margin: ✅
+Space.panTouchCount: ✅
+Space.panUpdated: ✅
+Space.panXChannel: ✅
+Space.panYChannel: ✅
+Space.pinchUpdated: ✅
+Space.pointerEntered: ✅
+Space.pointerExited: ✅
+Space.pointerMoved: ✅
+Space.pointerPressed: ✅
+Space.pointerReleased: ✅
+Space.rotationUpdated: ✅
+Space.swipeDirection: ✅
+Space.swipeThreshold: ✅
+Space.swiped: ✅
+Space.tapCount: ✅
+Space.tapped: ✅
+Space.verticalAlignment: ✅
+Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.area: ✅
+Spinner.canDrag: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragEnded: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragOver: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragStarting: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.dragText: ✓ dragAndDrop on Spinner: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.drop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
+Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Spinner.filesDropped: ✓ dropFiles on Spinner: the DOM's drag events dispatched by the driver with its files, no drag the browser began
+Spinner.frameChanged: ✅
+Spinner.gridColumn: ✅
+Spinner.gridColumnSpan: ✅
+Spinner.gridRow: ✅
+Spinner.gridRowSpan: ✅
+Spinner.held: ✅
+Spinner.holdDuration: ✓ read holdDuration of Spinner: the relay's own wait: a page holds no hold of the browser's
+Spinner.horizontalAlignment: ✅
+Spinner.layoutBody: ✅
+Spinner.margin: ✅
+Spinner.panTouchCount: ✅
+Spinner.panUpdated: ✅
+Spinner.panXChannel: ✅
+Spinner.panYChannel: ✅
+Spinner.pinchUpdated: ✅
+Spinner.pointerEntered: ✅
+Spinner.pointerExited: ✅
+Spinner.pointerMoved: ✅
+Spinner.pointerPressed: ✅
+Spinner.pointerReleased: ✅
+Spinner.rotationUpdated: ✅
+Spinner.swipeDirection: ✅
+Spinner.swipeThreshold: ✅
+Spinner.swiped: ✅
+Spinner.tapCount: ✅
+Spinner.tapped: ✅
+Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the DOM's drag events dispatched by the driver, no drag the browser began
 Stepper.area: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the DOM's drag events dispatched by the driver, no drag the browser began
@@ -899,7 +1079,10 @@ Stepper.gridColumn: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRow: ✅
 Stepper.gridRowSpan: ✅
+Stepper.held: ✅
+Stepper.holdDuration: ✓ read holdDuration of Stepper: the relay's own wait: a page holds no hold of the browser's
 Stepper.horizontalAlignment: ✅
+Stepper.layoutBody: ✅
 Stepper.margin: ✅
 Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
@@ -911,6 +1094,7 @@ Stepper.pointerExited: ✅
 Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
+Stepper.rotationUpdated: ✅
 Stepper.swipeDirection: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
@@ -933,7 +1117,10 @@ Switch.gridColumn: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRow: ✅
 Switch.gridRowSpan: ✅
+Switch.held: ✅
+Switch.holdDuration: ✓ read holdDuration of Switch: the relay's own wait: a page holds no hold of the browser's
 Switch.horizontalAlignment: ✅
+Switch.layoutBody: ✅
 Switch.margin: ✅
 Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
@@ -945,6 +1132,7 @@ Switch.pointerExited: ✅
 Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
+Switch.rotationUpdated: ✅
 Switch.swipeDirection: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
@@ -967,7 +1155,10 @@ Text.gridColumn: ✅
 Text.gridColumnSpan: ✅
 Text.gridRow: ✅
 Text.gridRowSpan: ✅
+Text.held: ✅
+Text.holdDuration: ✓ read holdDuration of Text: the relay's own wait: a page holds no hold of the browser's
 Text.horizontalAlignment: ✅
+Text.layoutBody: ✅
 Text.margin: ✅
 Text.panTouchCount: ✅
 Text.panUpdated: ✅
@@ -979,6 +1170,7 @@ Text.pointerExited: ✅
 Text.pointerMoved: ✅
 Text.pointerPressed: ✅
 Text.pointerReleased: ✅
+Text.rotationUpdated: ✅
 Text.swipeDirection: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
@@ -1001,7 +1193,10 @@ TextEditor.gridColumn: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRow: ✅
 TextEditor.gridRowSpan: ✅
+TextEditor.held: ✅
+TextEditor.holdDuration: ✓ read holdDuration of TextEditor: the relay's own wait: a page holds no hold of the browser's
 TextEditor.horizontalAlignment: ✅
+TextEditor.layoutBody: ✅
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
@@ -1013,6 +1208,7 @@ TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
+TextEditor.rotationUpdated: ✅
 TextEditor.swipeDirection: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
@@ -1035,7 +1231,10 @@ TextField.gridColumn: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRow: ✅
 TextField.gridRowSpan: ✅
+TextField.held: ✅
+TextField.holdDuration: ✓ read holdDuration of TextField: the relay's own wait: a page holds no hold of the browser's
 TextField.horizontalAlignment: ✅
+TextField.layoutBody: ✅
 TextField.margin: ✅
 TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
@@ -1047,6 +1246,7 @@ TextField.pointerExited: ✅
 TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅
+TextField.rotationUpdated: ✅
 TextField.swipeDirection: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
@@ -1069,7 +1269,10 @@ TimePicker.gridColumn: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRow: ✅
 TimePicker.gridRowSpan: ✅
+TimePicker.held: ✅
+TimePicker.holdDuration: ✓ read holdDuration of TimePicker: the relay's own wait: a page holds no hold of the browser's
 TimePicker.horizontalAlignment: ✅
+TimePicker.layoutBody: ✅
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
@@ -1081,6 +1284,7 @@ TimePicker.pointerExited: ✅
 TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
+TimePicker.rotationUpdated: ✅
 TimePicker.swipeDirection: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
@@ -1103,7 +1307,10 @@ VStack.gridColumn: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRow: ✅
 VStack.gridRowSpan: ✅
+VStack.held: ✅
+VStack.holdDuration: ✓ read holdDuration of VStack: the relay's own wait: a page holds no hold of the browser's
 VStack.horizontalAlignment: ✅
+VStack.layoutBody: ✅
 VStack.margin: ✅
 VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
@@ -1115,6 +1322,7 @@ VStack.pointerExited: ✅
 VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
+VStack.rotationUpdated: ✅
 VStack.swipeDirection: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
@@ -1137,7 +1345,10 @@ WebView.gridColumn: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRow: ✅
 WebView.gridRowSpan: ✅
+WebView.held: ✅
+WebView.holdDuration: ✓ read holdDuration of WebView: the relay's own wait: a page holds no hold of the browser's
 WebView.horizontalAlignment: ✅
+WebView.layoutBody: ✅
 WebView.margin: ✅
 WebView.panTouchCount: ✅
 WebView.panUpdated: ✅
@@ -1149,6 +1360,7 @@ WebView.pointerExited: ✅
 WebView.pointerMoved: ✅
 WebView.pointerPressed: ✅
 WebView.pointerReleased: ✅
+WebView.rotationUpdated: ✅
 WebView.swipeDirection: ✅
 WebView.swipeThreshold: ✅
 WebView.swiped: ✅
@@ -1171,7 +1383,10 @@ ZStack.gridColumn: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRow: ✅
 ZStack.gridRowSpan: ✅
+ZStack.held: ✅
+ZStack.holdDuration: ✓ read holdDuration of ZStack: the relay's own wait: a page holds no hold of the browser's
 ZStack.horizontalAlignment: ✅
+ZStack.layoutBody: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅
@@ -1183,6 +1398,7 @@ ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅
+ZStack.rotationUpdated: ✅
 ZStack.swipeDirection: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅

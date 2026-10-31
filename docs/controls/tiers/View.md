@@ -15,7 +15,7 @@ Text("Tapped \(taps) times")
 
 Wears: [VisualElement](VisualElement.md)
 
-Worn by: [ActivityIndicator](../ActivityIndicator.md) · [Button](../Button.md) · [Canvas](../Canvas.md) · [Capsule](../Capsule.md) · [CheckBox](../CheckBox.md) · [DatePicker](../DatePicker.md) · [Divider](../Divider.md) · [Ellipse](../Ellipse.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [LayoutEngine](../LayoutEngine.md) · [Line](../Line.md) · [Map](../Map.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [ProgressBar](../ProgressBar.md) · [RadioButton](../RadioButton.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Slider](../Slider.md) · [Spacer](../Spacer.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [VStack](../VStack.md) · [WebView](../WebView.md) · [ZStack](../ZStack.md)
+Worn by: [Button](../Button.md) · [Canvas](../Canvas.md) · [Capsule](../Capsule.md) · [CheckBox](../CheckBox.md) · [ColorPicker](../ColorPicker.md) · [DatePicker](../DatePicker.md) · [Ellipse](../Ellipse.md) · [Fill](../Fill.md) · [Grid](../Grid.md) · [HStack](../HStack.md) · [Image](../Image.md) · [ItemsView](../ItemsView.md) · [Line](../Line.md) · [Link](../Link.md) · [Map](../Map.md) · [MotionLayout](../MotionLayout.md) · [Path](../Path.md) · [Picker](../Picker.md) · [Polygon](../Polygon.md) · [Polyline](../Polyline.md) · [ProgressBar](../ProgressBar.md) · [Rectangle](../Rectangle.md) · [ScrollView](../ScrollView.md) · [SearchField](../SearchField.md) · [Separator](../Separator.md) · [Slider](../Slider.md) · [Space](../Space.md) · [Spinner](../Spinner.md) · [Stepper](../Stepper.md) · [Switch](../Switch.md) · [Text](../Text.md) · [TextEditor](../TextEditor.md) · [TextField](../TextField.md) · [TimePicker](../TimePicker.md) · [VStack](../VStack.md) · [WebView](../WebView.md) · [ZStack](../ZStack.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Tiers/ViewContract.swift`.
 
@@ -39,18 +39,22 @@ How each of them realizes these members is on its own page.
 | `gridColumnSpan` | property | `Int` | stateUI |
 | `gridRow` | property | `Int` | stateUI |
 | `gridRowSpan` | property | `Int` | stateUI |
+| `onHeld` (`held`) | event |  | native |
+| `holdDuration` | property | `Double` | structure |
 | `horizontalAlignment` | property | `Alignment` | native |
 | `margin` | property | `Insets` | native |
 | `panTouchCount` | property | `Int` | structure |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Double, Double)` | native |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Point, Point)` | native |
 | `panXChannel` | property | `Int` | structure |
 | `panYChannel` | property | `Int` | structure |
-| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point)` | native |
+| `layoutBody` | property | `LayoutBody` | stateUI |
+| `onPinchUpdated` (`pinchUpdated`) | event | `(GesturePhase, Double, Point, Double)` | native |
 | `onPointerEntered` (`pointerEntered`) | event |  | native |
 | `onPointerExited` (`pointerExited`) | event |  | native |
 | `onPointerMoved` (`pointerMoved`) | event | `Point?` | native |
 | `onPointerPressed` (`pointerPressed`) | event | `Point?` | native |
 | `onPointerReleased` (`pointerReleased`) | event | `Point?` | native |
+| `onRotationUpdated` (`rotationUpdated`) | event | `(GesturePhase, Double, Double)` | native |
 | `swipeDirection` | property | `SwipeDirection` | structure |
 | `swipeThreshold` | property | `Double` | structure |
 | `onSwiped` (`swiped`) | event | `SwipeDirection` | native |

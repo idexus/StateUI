@@ -13,7 +13,7 @@
     /// The element's place in its parent changed, so the parent arranges again.
     public var arrangement: Bool
 
-    /// The window's chrome shows what moved: a window's frame, a bar's colours, a page's words on its bar
+    /// The window's chrome shows what moved: a window's frame, a bar's colors, a page's words on its bar
     /// (`WindowChrome.follows`).
     public var windowChrome: Bool
 
@@ -56,6 +56,14 @@
 
     /// Places the element's children again.
     func arrangeChildren()
+
+    /// The element's size may change outside a patch - a child faded out and its layout closes over it: this
+    /// layout and every one around it forget what they measured and lay out again.
+    func invalidateMeasurements()
+
+    /// Hands the element's layout what its children travel under, and tells it a change reached it: its next
+    /// arrangement moves them as a patch's does.
+    func configureLayoutMotion()
 
     /// The direction the element lays out in, `MountedElement.layoutDirection`, was given or turned: the toolkit's
     /// view takes it.
@@ -139,6 +147,12 @@
     private struct Held {
         weak var element: MountedElement?
     }
+
+    /// The popovers their hosts could not show for want of their window, by mount.
+    private var waitingPopovers: [UInt64: Held] = [:]
+
+    /// The sheets the views declare, by mount: a window's presentation looks among them.
+    private var sheets: [UInt64: Held] = [:]
     private var patchTime: Double?
     private(set) var languageDirection: LayoutDirection?
     private var patchReducesMotion: Bool?
@@ -205,6 +219,21 @@
         if let root { KeyboardShortcuts.complainOfRepeats(in: root, after: patch) }
     }
 
+    /// `popover` waits for its window, which its host makes once the render stands.
+    func wait(_ popover: MountedElement) {
+        waitingPopovers[popover.mount] = Held(element: popover)
+    }
+
+    /// The popovers waiting for their window, in the order they were made, forgotten as they are taken: a host
+    /// tries each again once its windows stand after a render.
+    /// Design: docs/design/host/pages.md#a-popover
+    public func takeWaitingPopovers() -> [MountedElement] {
+        defer { waitingPopovers = [:] }
+        let taken = waitingPopovers.sorted { $0.key < $1.key }.compactMap(\.value.element)
+        for popover in taken { popover.isMoving = false }
+        return taken
+    }
+
     /// Whether the patches applied since the last take changed what the windows' chrome is made of; forgotten as
     /// it is taken.
     public func takeChromeTouched() -> Bool {
@@ -237,6 +266,15 @@
     /// `element` is mounted: a frame finds it by its mount.
     func mounted(_ element: MountedElement) {
         byMount[element.mount] = Held(element: element)
+        if element.type == .sheet { sheets[element.mount] = Held(element: element) }
+    }
+
+    /// The pages `window`'s sheets present, in the order they showed: a sheet's page is made as it shows.
+    /// Design: docs/design/host/tree.md#a-window-shown
+    public func presentedSheets(in window: MountedElement) -> [MountedElement] {
+        sheets.values.compactMap(\.element)
+            .compactMap { $0.enclosing(type: .window) === window ? $0.children.first : nil }
+            .sorted { $0.mount < $1.mount }
     }
 
     /// `element` presents `states` now rather than `before`, the states its bound properties take a frame's values
@@ -252,6 +290,8 @@
     /// `element` leaves, with the states it presented: no frame finds it again.
     func unmounted(_ element: MountedElement, presenting states: [Int32]) {
         byMount[element.mount] = nil
+        waitingPopovers[element.mount] = nil
+        sheets[element.mount] = nil
         presents(element, [], before: states)
         left(element.mount)
     }

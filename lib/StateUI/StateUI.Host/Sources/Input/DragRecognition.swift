@@ -5,8 +5,9 @@
 
 /// A press on its way to a drag, the same on every host whose toolkit tells a press and its moves and no drag of its
 /// own: a drag once it has moved more than the platform's distance from where it went down, then each move the
-/// drag's, measured from there, until the press lets go or the platform takes it away.
+/// drag's, measured from there, until the press lets go or the platform takes it away - unless it is held first.
 /// Design: docs/design/host/runtime.md#a-press-dragged
+/// Design: docs/design/host/runtime.md#a-press-held
 @_spi(Host) public struct DragRecognition: Sendable {
     /// How far a press moves before it is a drag, as the platform measures it.
     public enum Distance: Equatable, Sendable {
@@ -31,6 +32,9 @@
     /// Whether the press is a drag now.
     public private(set) var isDragging = false
 
+    /// Whether the press was held before it became a drag - until the next press: its release is no tap.
+    public private(set) var isHeld = false
+
     private var start: Point?
     private var moved = Point(x: 0, y: 0)
 
@@ -44,6 +48,15 @@
         start = point
         moved = Point(x: 0, y: 0)
         isDragging = false
+        isHeld = false
+    }
+
+    /// The platform's hold came: a press not yet a drag is the hold's, and drags nothing after. Whether the hold
+    /// stands - none once the press is a drag.
+    public mutating func held() -> Bool {
+        guard !isDragging else { return false }
+        if start != nil { isHeld = true }
+        return true
     }
 
     /// The press moved to `point`: what the view hears - nothing before it passed the distance, the drag's start and
@@ -54,7 +67,7 @@
         moved = Point(x: point.x - start.x, y: point.y - start.y)
         let running = HeardInput.drag(.changed, x: moved.x, y: moved.y)
         if isDragging { return [running] }
-        guard distance.isPassed(by: moved) else { return [] }
+        guard !isHeld, distance.isPassed(by: moved) else { return [] }
 
         isDragging = true
         return [.drag(.began, x: 0, y: 0), running]

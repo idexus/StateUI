@@ -10,10 +10,9 @@ extension GTKRegistrations {
     /// end; and the cells it holds.
     static func items(_ registry: Registry<GTKView>) {
         registry.add(ItemsViewContract.self, madeByHost: GTKItemsView.self) { list in
-            list.applies([
+            list.applies(
                 ItemsViewContract.items, ItemsViewContract.itemsLayout, ItemsViewContract.selectionMode,
-                ItemsViewContract.selectedItems, ItemsViewContract.endReachedWithin,
-            ]) { view, values in
+                ItemsViewContract.selectedItems, ItemsViewContract.endReachedWithin) { view, values in
                 view.apply(
                     layout: values[ItemsViewContract.itemsLayout] ?? .list(),
                     mode: values[ItemsViewContract.selectionMode] ?? .none)

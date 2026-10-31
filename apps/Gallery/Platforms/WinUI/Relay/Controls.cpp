@@ -23,7 +23,7 @@ namespace shapes = winrt::Microsoft::UI::Xaml::Shapes;
 GalleryWinUICallbacks gallery::callbacks{};
 
 namespace {
-    /// The lamps' colours, top to bottom: red, amber, green.
+    /// The lamps' colors, top to bottom: red, amber, green.
     constexpr uint8_t lampColors[3][3] = {{229, 72, 77}, {245, 181, 70}, {70, 180, 95}};
     constexpr wchar_t const *lampNames[3] = {L"Red lamp", L"Amber lamp", L"Green lamp"};
 

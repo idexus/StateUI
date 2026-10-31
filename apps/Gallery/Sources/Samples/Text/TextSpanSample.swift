@@ -5,13 +5,13 @@ struct TextSpanSample: SampleContent, ExampleContent {
     // listing: TextSpanSample
     @State private var highlighted = 1
 
-    /// The line one word of which is coloured - the word the button moves.
+    /// The line one word of which is colored - the word the button moves.
     private let words = ["A", "Text", "has", "one", "TextColor"]
     // listing: end
 
     static let id = "textSpan"
     static let title = "TextSpan"
-    static let summary = "Text in more than one colour: a Text's runs, each with a look of its own."
+    static let summary = "Text in more than one color: a Text's runs, each with a look of its own."
 
     // listing: TextSpanSample keep
     var body: some View {
@@ -20,7 +20,7 @@ struct TextSpanSample: SampleContent, ExampleContent {
             // closure.
             DebugInfoLabel()
 
-            // Three colours in one line, which is what runs are FOR: a label
+            // Three colors in one line, which is what runs are FOR: a label
             // has one `textColor`, so this is the only way.
             Text()
                 .spans {
@@ -73,8 +73,8 @@ struct TextSpanSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Two colours in one line is what runs are for: a label has one `textColor`, "
-                + "so text in two colours is two runs. A run carries font and text properties "
+            Text("Two colors in one line is what runs are for: a label has one `textColor`, "
+                + "so text in two colors is two runs. A run carries font and text properties "
                 + "of its own - size, family, weight, a background behind those words alone. "
                 + "It is not a view, so it has no margin, width or height.")
                 .fontSize(12)

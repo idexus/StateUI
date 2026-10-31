@@ -36,12 +36,13 @@ final class WebActToolkit: ActToolkit {
 
     /// Design: docs/design/platforms/web/pages.md#questions-for-the-user
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = renderer.shownWindow else { return nil }
-        let shown = WebQuestion(question) { [weak self] accepted, words in
+        guard let window = renderer.window(asked: window) else { return nil }
+        let shown = WebQuestion(question) { [weak self] given in
             self?.asking = nil
-            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
+            answered(.success(given))
         }
         asking = shown
         shown.show()
@@ -59,12 +60,48 @@ final class WebActToolkit: ActToolkit {
         WebRelay.announce(words)
     }
 
+    /// The browser's share sheet where it has one: shared where the user sends it on, cancelled where they take it
+    /// away; a browser with none fails the act with that reason.
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.window(asked: window) else { return nil }
+        let listener = WebRelay.once {
+            let words = WebRelay.fileWords
+            answered(WebRelay.fileKept ? .success(words == "1") : .failure(ActFailure(words)))
+        }
+        WebRelay.share(text: shared.text, link: shared.link, listener)
+        return window
+    }
+
+    func writeClipboard(_ words: String) {
+        WebRelay.writeClipboard(words)
+    }
+
+    /// The browser asks the user before a page reads the clipboard; refused, the read fails with its reason.
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        let listener = WebRelay.once {
+            let words = WebRelay.fileWords
+            answered(WebRelay.fileKept ? .success(words.isEmpty ? nil : words) : .failure(ActFailure(words)))
+        }
+        WebRelay.readClipboard(listener)
+    }
+
     func useColorScheme(_ theme: ColorScheme) {
         WebRelay.useColorScheme(theme)
     }
 
-    func hideOnScreenKeyboard() -> Bool {
-        WebRelay.blurField()
+    /// Draws the page's controls in `accent`, the host's own again where nil: a browser lets the user choose no
+    /// accent for a page, so the application's stands. The accent the page draws in is reported again.
+    func useAccentColor(_ accent: Color?) -> Bool {
+        WebRelay.useAccentColor(accent?.propValue.argb)
+        CoreLink().setAccentColor(Color(argb: WebRelay.accentColor))
+        return true
+    }
+
+    /// Takes the focus off the field holding it in the window the browser shows, the one asked.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        renderer.window(asked: window) != nil && WebRelay.blurField()
     }
 
     func focus(_ element: MountedElement) -> Bool? {
@@ -81,7 +118,7 @@ final class WebActToolkit: ActToolkit {
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
         case .persistValue:
-            WebKeptValues.keep(call, core: renderer.runtime.core, application: renderer.applicationName)
+            WebKeptValues.keep(call, application: renderer.applicationName)
         case .persistSceneValue:
             let scenes = renderer.scenes
             if scenes.keep(call.arguments), let text = scenes.changed(root: renderer.runtime.tree.root) {

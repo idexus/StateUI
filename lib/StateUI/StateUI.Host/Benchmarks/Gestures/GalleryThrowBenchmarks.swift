@@ -13,7 +13,7 @@ final class GalleryThrowBenchmarks: XCTestCase {
     /// the middle changing.
     func testACardRunThrownUntilItRests() throws {
         let bench = Bench(GalleryApplication())
-        let run = try bench.element(.layoutEngine)
+        let run = try bench.element(.motionLayout)
 
         bench.hand(.began, on: run, at: Point(195, 350))
         for _ in 0..<5 {
@@ -26,7 +26,7 @@ final class GalleryThrowBenchmarks: XCTestCase {
         }
 
         XCTAssertEqual(work, Work(
-            renders: 1, built: 1, walks: 0, texts: 0, made: 0, applied: 0, arranged: 1, presented: 26, placed: 300,
+            renders: 1, built: 1, walks: 0, texts: 0, made: 0, applied: 0, arranged: 0, presented: 28, placed: 300,
             left: 0))
     }
 }
@@ -44,7 +44,8 @@ private struct CardsPage: View {
     var body: some View {
         GalleryView((0..<12).map { "Card \($0)" }, id: \.self) { name in
             ZStack {
-                Rectangle(Color("#0D9488"))
+                Rectangle()
+                    .fill(Color(hex: 0x0D9488))
                     .cornerRadius(16)
                 Text(name)
                     .fontSize(18)

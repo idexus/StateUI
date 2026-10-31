@@ -77,7 +77,7 @@ and a view that has left answers nothing.
 
 The relay's general reader for tests, `stateui_winui_read(element, name)`,
 answers what WinUI holds of the element's property of that name, as words - a
-colour as #AARRGGBB, a number, 0 or 1, sides and corners as four numbers - or
+color as #AARRGGBB, a number, 0 or 1, sides and corners as four numbers - or
 -1 for a property the element has none of. Beside it, `stateui_winui_question`
 reads the dialog showing over a window and `stateui_winui_announced` what the
 relay told the screen reader, which WinUI keeps nowhere a test can ask; and a

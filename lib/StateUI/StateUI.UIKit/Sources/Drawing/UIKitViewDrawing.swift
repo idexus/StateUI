@@ -24,11 +24,11 @@ final class UIKitViewDrawing {
 
     /// The element's own opacity, and the one a placing layout draws it with.
     var ownOpacity = 1.0 {
-        didSet { if ownOpacity != oldValue { compose() } }
+        didSet { if ownOpacity != oldValue { compose(); standOpacity(placed: false) } }
     }
 
     var placedOpacity = 1.0 {
-        didSet { if placedOpacity != oldValue { compose() } }
+        didSet { if placedOpacity != oldValue { standOpacity(placed: true) } }
     }
 
     /// How opaque the view stands, as the element says.
@@ -46,9 +46,16 @@ final class UIKitViewDrawing {
         guard let view else { return }
         let transform = composed(for: view.bounds.size)
         if !CATransform3DEqualToTransform(view.layer.transform, transform) { view.layer.transform = transform }
+    }
 
+    /// Puts the opacity on the view: the element's own through the view, a placing layout's - moving every frame -
+    /// on its layer, which UIKit's focus system does not watch.
+    /// Design: docs/design/platforms/uikit/drawing.md#a-placed-opacity
+    private func standOpacity(placed: Bool) {
+        guard let view else { return }
         let alpha = CGFloat(ownOpacity * placedOpacity)
-        if view.alpha != alpha { view.alpha = alpha }
+        guard view.alpha != alpha else { return }
+        if placed { view.layer.opacity = Float(alpha) } else { view.alpha = alpha }
     }
 
     /// The layer's transform for a view of `size`.

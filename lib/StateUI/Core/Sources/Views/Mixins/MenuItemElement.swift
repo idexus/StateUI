@@ -1,15 +1,14 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What a toolbar item and a menu entry share: `text`,
-/// `icon`, `isDestructive`, `isEnabled` - and `onClicked`, what
-/// choosing one does.
+/// What every toolbar item and menu entry says - an action's or a
+/// setting's: `text`, `icon`, `isEnabled` and `keyboardShortcut`.
 ///
 /// Written on the item, in any order, before or after its own modifiers:
 ///
-///     ToolbarItem("Delete")
+///     ToolbarButton("Delete")
 ///         .icon("trash.png")
-///         .isDestructive(true)
+///         .keyboardShortcut(.delete)
 ///         .onClicked { delete() }
 public protocol MenuItemElement: AutomationElement {}
 
@@ -22,12 +21,6 @@ extension MenuItemElement {
     /// The picture on it, resolved from the application's image resources.
     public func icon(_ value: ImageSource) -> Modified {
         setValue(MenuItemElementContract.icon, value)
-    }
-
-    /// Whether the platform draws it as a destructive action. The look only: a
-    /// confirmation is still the handler's to put up.
-    public func isDestructive(_ value: Bool) -> Modified {
-        setValue(MenuItemElementContract.isDestructive, value)
     }
 
     /// Whether it responds to selection. A disabled item stays visible, so the
@@ -43,22 +36,8 @@ extension MenuItemElement {
     /// context menu's entry shows them beside its words.
     ///
     ///     MenuItem("Save").keyboardShortcut("s")
-    ///     ToolbarItem("Share").keyboardShortcut("s", modifiers: [.primary, .shift])
+    ///     ToolbarButton("Share").keyboardShortcut("s", modifiers: [.primary, .shift])
     public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
         setValue(MenuItemElementContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
-    }
-}
-
-extension MenuItemElement where Modified == Self {
-    /// What it does - run when the item is chosen, clicked or tapped. A second
-    /// `.onClicked` runs beside the first, like every typed event modifier.
-    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
-        modified { $0.addHandler(MenuItemElementContract.clicked.token, handler) }
-    }
-
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
-    /// again while a run is under way.
-    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
-        modified { $0.addHandler(MenuItemElementContract.clicked.token, gate: gate, handler) }
     }
 }

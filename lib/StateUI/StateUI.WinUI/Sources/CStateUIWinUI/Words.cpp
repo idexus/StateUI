@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // How words look, on a text block or on any control showing them: their font,
-// their colour and the room around them; and a label's lines, alignment,
+// their color and the room around them; and a label's lines, alignment,
 // spacing and decorations.
 // Design: docs/design/platforms/winui/controls.md#words
 
@@ -18,12 +18,7 @@ using namespace stateui;
 namespace media = winrt::Microsoft::UI::Xaml::Media;
 
 namespace {
-    winrt::Windows::UI::Color color(uint32_t argb) {
-        return {static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16), static_cast<uint8_t>(argb >> 8),
-                static_cast<uint8_t>(argb)};
-    }
-
-    /// A solid brush's colour as 0xAARRGGBB; 0 for any other.
+    /// A solid brush's color as 0xAARRGGBB; 0 for any other.
     double argb(media::Brush const &brush) {
         auto solid = brush.try_as<media::SolidColorBrush>();
         if (!solid) return 0;
@@ -41,8 +36,14 @@ namespace {
     }
 }
 
-extern "C" void stateui_winui_set_font(StateUIObjectRef handle, double size, int32_t weight, bool italic, char const *family) {
+extern "C" void stateui_winui_set_font(
+    StateUIObjectRef handle, double size, int32_t weight, bool italic, bool tabularDigits, char const *family) {
     try {
+        namespace documents = winrt::Microsoft::UI::Xaml::Documents;
+        auto digits = [&](xaml::DependencyObject const &element) {
+            if (tabularDigits) documents::Typography::SetNumeralAlignment(element, xaml::FontNumeralAlignment::Tabular);
+            else element.ClearValue(documents::Typography::NumeralAlignmentProperty());
+        };
         auto style = italic ? winrt::Windows::UI::Text::FontStyle::Italic : winrt::Windows::UI::Text::FontStyle::Normal;
         auto named = family && *family ? media::FontFamily(text(family)) : media::FontFamily{nullptr};
         auto apply = [&](auto const &element, auto sizeProperty, auto weightProperty, auto familyProperty) {
@@ -53,6 +54,7 @@ extern "C" void stateui_winui_set_font(StateUIObjectRef handle, double size, int
             element.FontStyle(style);
             if (named) element.FontFamily(named);
             else element.ClearValue(familyProperty);
+            digits(element);
         };
         either(handle,
             [&](controls::TextBlock const &block) {
@@ -62,6 +64,8 @@ extern "C" void stateui_winui_set_font(StateUIObjectRef handle, double size, int
             [&](controls::Control const &control) {
                 apply(control, controls::Control::FontSizeProperty(), controls::Control::FontWeightProperty(),
                       controls::Control::FontFamilyProperty());
+                // A button's words are a caption of the host's, which sets its own digits.
+                if (auto caption = captionOf(control)) digits(caption);
             });
     } catch (...) {
         report("setting a font");
@@ -123,7 +127,7 @@ extern "C" void stateui_winui_set_foreground(StateUIObjectRef handle, bool has, 
             [&](controls::Control const &control) {
                 if (has) control.Foreground(brush);
                 else control.ClearValue(controls::Control::ForegroundProperty());
-                // A button's template draws its words in its own colour under the pointer and pressed; a split
+                // A button's template draws its words in its own color under the pointer and pressed; a split
                 // button's reads keys of its own.
                 auto split = control.try_as<controls::SplitButton>() != nullptr;
                 if (!control.try_as<controls::Button>() && !split) return;
@@ -134,7 +138,7 @@ extern "C" void stateui_winui_set_foreground(StateUIObjectRef handle, bool has, 
                 writeResources(control, brushes);
             });
     } catch (...) {
-        report("colouring words");
+        report("coloring words");
     }
 }
 
@@ -213,6 +217,7 @@ extern "C" void stateui_winui_text_set_runs(StateUIObjectRef handle, StateUIWord
             if (run.size > 0) piece.FontSize(run.size);
             if (run.weight > 0) piece.FontWeight(winrt::Windows::UI::Text::FontWeight{static_cast<uint16_t>(run.weight)});
             if (run.italic) piece.FontStyle(winrt::Windows::UI::Text::FontStyle::Italic);
+            if (run.tabularDigits) documents::Typography::SetNumeralAlignment(piece, xaml::FontNumeralAlignment::Tabular);
             auto lines = TextDecorations::None;
             if (run.underline) lines = lines | TextDecorations::Underline;
             if (run.strikethrough) lines = lines | TextDecorations::Strikethrough;
@@ -221,7 +226,7 @@ extern "C" void stateui_winui_text_set_runs(StateUIObjectRef handle, StateUIWord
             piece.CharacterSpacing(run.spacing);
             inlines.Append(piece);
 
-            // A run's background is a highlighter over its part of the words; its own colour stays on them.
+            // A run's background is a highlighter over its part of the words; its own color stays on them.
             auto length = static_cast<int32_t>(words.size());
             if (run.hasBackground && length > 0) {
                 documents::TextHighlighter highlighter;
@@ -258,7 +263,8 @@ extern "C" int32_t stateui_winui_text_runs(StateUIObjectRef handle, double *valu
                 slot[1] = run.ReadLocalValue(documents::TextElement::FontSizeProperty()) == xaml::DependencyProperty::UnsetValue()
                     ? 0 : run.FontSize();
                 slot[2] = run.FontWeight().Weight;
-                slot[3] = run.FontStyle() == winrt::Windows::UI::Text::FontStyle::Italic ? 1 : 0;
+                slot[3] = (run.FontStyle() == winrt::Windows::UI::Text::FontStyle::Italic ? 1 : 0)
+                    + (documents::Typography::GetNumeralAlignment(run) == xaml::FontNumeralAlignment::Tabular ? 2 : 0);
                 auto lines = run.TextDecorations();
                 slot[4] = ((lines & TextDecorations::Underline) == TextDecorations::Underline ? 1 : 0)
                     + ((lines & TextDecorations::Strikethrough) == TextDecorations::Strikethrough ? 2 : 0);

@@ -7,11 +7,11 @@ A marker on the map.
 ```swift
 @State var chosen = ""
 
-Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
+Map(region: MapRegion(center: Location(latitude: 52.2479, longitude: 21.0155), radiusMeters: 1500))
     .markers {
-        Marker("Royal Castle")
+        Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
+            .label("Royal Castle")
             .subtitle("Plac Zamkowy 4")
-            .location(latitude: 52.2479, longitude: 21.0155)
             .onSelected { chosen = "castle" }
     }
 ```

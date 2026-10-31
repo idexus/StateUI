@@ -20,17 +20,19 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     private weak var page: NSView?
     private var pageSpansTitleBar = false
     private let overlaySurface = AppKitOverlaySurfaceView()
+    private let bottomBar = AppKitBottomBarView()
+
+    /// The band under the toolbar showing its edge while the page's rows pass under it.
+    private let topEdge = AppKitTopEdgeView()
 
     /// The window's own material, under the page, while the window lets the
     /// desktop show through it.
     private var material: AppKitMaterialView?
 
-    /// The band the title bar and toolbar cover, painted in `barColor` - over
+    /// The band the title bar and toolbar cover, painted in `barBrush` - over
     /// the material, where the window has one.
-    private lazy var band: NSView = {
-        let band = NSView()
-        band.wantsLayer = true
-        band.isHidden = true
+    private lazy var band: AppKitBandView = {
+        let band = AppKitBandView()
         addSubview(band, positioned: .below, relativeTo: nil)
         return band
     }()
@@ -65,7 +67,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     }
 
     /// The material the desktop shows through the window in: it lies under the page and the bars' band,
-    /// wherever they leave it uncovered or paint a colour it shows through; nil for an opaque window.
+    /// wherever they leave it uncovered or paint a color it shows through; nil for an opaque window.
     var backdrop: Blur.Thickness? {
         didSet {
             guard backdrop != oldValue else { return }
@@ -88,7 +90,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     var materialForTesting: NSVisualEffectView? { material }
 
     /// The window's background over its material, where the desktop shows
-    /// through the window: a colour with an alpha tints the material and lets
+    /// through the window: a color with an alpha tints the material and lets
     /// it show. Nil leaves the material the system's.
     var materialTint: NSColor? {
         didSet { if materialTint != oldValue { needsLayout = true } }
@@ -96,10 +98,10 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
 
     var materialTintForTesting: NSView? { material?.wash }
 
-    /// The colour the window's bars are written in, painted over `barBand`.
-    /// Nil leaves the title bar and toolbar the system's material.
-    var barColor: NSColor? {
-        didSet { if barColor != oldValue { needsLayout = true } }
+    /// What the window's bars are painted with - a color or a gradient - over `barBand`.
+    /// Nothing leaves the title bar and toolbar the system's material.
+    var barBrush = AppKitBrush() {
+        didSet { if barBrush != oldValue { needsLayout = true } }
     }
 
     /// The part of the window the title bar and toolbar cover.
@@ -108,6 +110,12 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
     }
 
     override var isFlipped: Bool { true }
+
+    /// The page the user sees on the arrangement this view shows - the room its content stands in against the safe
+    /// area, and its scroller, are its own.
+    weak var visiblePage: MountedElement? {
+        didSet { needsLayout = true }
+    }
 
     func set(page: NSView?, overlays: [AppKitLayoutItem], spansTitleBar: Bool = false) {
         if pageSpansTitleBar != spansTitleBar {
@@ -123,6 +131,7 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
             }
         }
 
+        if bottomBar.superview === self, let page { addSubview(bottomBar, positioned: .above, relativeTo: page) }
         overlaySurface.setItems(overlays)
         if overlays.isEmpty {
             overlaySurface.removeFromSuperview()
@@ -150,12 +159,50 @@ final class AppKitWindowContentView: NSView, AppKitRoom {
             material.wash.isHidden = materialTint == nil
         }
         band.frame = barBand
-        band.layer?.backgroundColor = barColor?.cgColor
-        band.isHidden = barColor == nil
-        page?.frame = pageSpansTitleBar ? bounds : safeAreaRect
+        band.brush = barBrush
+        if pageSpansTitleBar {
+            page?.frame = bounds
+        } else {
+            layPage()
+        }
         overlaySurface.frame = safeAreaRect
         overlaySurface.layoutSubtreeIfNeeded()
         layOutReporting(page)
+    }
+}
+
+extension AppKitWindowContentView {
+    /// Shows `page`'s bottom bar and its bar at its foot over the page's foot; nothing for no page.
+    func showBottomBar(of page: MountedElement?) {
+        bottomBar.show(page)
+        if !bottomBar.showsAnything {
+            bottomBar.removeFromSuperview()
+        } else if bottomBar.superview !== self {
+            addSubview(bottomBar, positioned: .below, relativeTo: overlaySurface.superview === self ? overlaySurface : nil)
+        }
+        needsLayout = true
+    }
+
+    /// Lays the page in the room its content stands in - clear of the toolbar and the bottom bar, or under them where
+    /// it says so - and has its scroller keep clear what it reaches under (`SafeAreaArithmetic`).
+    /// Design: docs/design/host/layout.md#the-safe-area
+    private func layPage() {
+        let whole = Rect(x: 0, y: 0, width: bounds.width, height: bounds.height)
+        let place = bottomBar.superview === self ? bottomBar.place(safe: safeAreaRect.placed, whole: whole) : nil
+        let safe = place?.safe ?? safeAreaRect.placed
+        let room = SafeAreaArithmetic.room(
+            safe: safe, whole: whole,
+            edges: visiblePage?.contentIgnoresSafeArea ?? .none, direction: visiblePage?.layoutDirection ?? .leftToRight)
+        page?.frame = NSRect(x: room.x, y: room.y, width: room.width, height: room.height)
+        let scroller = visiblePage?.pageScroller?.appKit.view as? AppKitPageScroller
+        scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: safe))
+        bottomBar.stand(at: place, over: visiblePage, scroller: scroller)
+        if topEdge.superview !== self, let page { addSubview(topEdge, positioned: .above, relativeTo: page) }
+        topEdge.stand(in: Rect(x: 0, y: 0, width: whole.width, height: max(0, safe.y)), over: visiblePage, scroller: scroller)
+        scroller?.standingChanged = { [weak self] in
+            self?.bottomBar.follow()
+            self?.topEdge.follow()
+        }
     }
 }
 

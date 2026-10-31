@@ -19,7 +19,7 @@ extension GTKRegistrations {
             }
             return picker
         }, members: { (picker: Registration<PickerContract, GTKView>) in
-            picker.applies([PickerContract.options, PickerContract.selectedIndex]) { view, values in
+            picker.applies(PickerContract.options, PickerContract.selectedIndex) { view, values in
                 (view as! any GTKChoosing).setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex))

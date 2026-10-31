@@ -16,25 +16,38 @@ enum UIKitRealization {
     /// The entries an iPhone and an iPad will not have; none.
     static let notPlanned: [(any ElementContract.Type, reason: String)] = []
 
+    /// Why a reader's steps reach no element UIKit shows through a view of its own.
+    static let ownSteps = "VoiceOver meets UIKit's own view here - a control, a list, a map, a page - which steps "
+        + "as its own kind does, or not at all; a view StateUI draws takes a reader's steps."
+
+    /// What UIKit's glass cannot be, as it is shaped by its corners alone.
+    private static let ovalGlass = "UIKit's glass is shaped by its corners alone: an oval of two lengths stands on "
+        + "the blur as clear as the glass is."
+
     /// Every record, beside what the registry's export says.
     static let records: [HostRecord] = [
+        .complete(BottomBarContract.edge),
         // MARK: Tiers - a member every wearer realizes alike
-        .complete(BarElementContract.barBackgroundColor),
+        .complete(BarElementContract.barBackground),
+        .complete(BarElementContract.barScrollEdge),
+        .notPlanned(BarElementContract.toolbarStyle, reason: "The bar's buttons keep iOS's own look."),
         .complete(BarElementContract.barForegroundColor),
-        .notPlanned(BarElementContract.barIcon,
-            reason: "A UIKit bar is each page's own: it shows that page's title, and no application's mark."),
-        .complete(BarElementContract.barSubtitle),
-        .notPlanned(BarElementContract.barTitle,
-            reason: "A UIKit bar is each page's own and names that page; an application names itself in none."),
         .complete(ButtonContract.keyboardShortcut),
-        .complete(ButtonContract.menuKind),
-        .complete(ButtonContract.showsMenuArrow),
+        .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),
+        .partial(ButtonMenuElementContract.menuKind, on: ToolbarButtonContract.self,
+            missing: "UIKit's bar offers no arrow part: a split bar button opens its menu held."),
+        .complete(ButtonMenuElementContract.showsMenuArrow, on: ButtonContract.self),
+        .complete(TextAndIconElementContract.showsText, on: ButtonContract.self),
+        .notPlanned(ButtonMenuElementContract.showsMenuArrow, on: ToolbarButtonContract.self,
+            reason: "A UIKit bar button shows no arrow: its menu opens from its tap or its hold."),
         .complete(ButtonContract.role),
-        .complete(MenuItemContract.isOn),
+        .complete(MenuToggleContract.isOn),
         .partial(MenuItemElementContract.keyboardShortcut, on: MenuItemContract.self,
             missing: "UIKit shows a shortcut in the main menu alone, none in a context menu."),
-        .complete(MenuItemContract.toggled),
-        .complete(MenuItemElementContract.clicked),
+        .partial(MenuItemElementContract.keyboardShortcut, on: MenuToggleContract.self,
+            missing: "UIKit shows a shortcut in the main menu alone, none in a context menu."),
+        .complete(MenuToggleContract.toggled),
+        .complete(ActionElementContract.clicked),
         .complete(MenuItemElementContract.icon),
         .complete(MenuItemElementContract.isEnabled),
         .complete(MenuItemElementContract.text),
@@ -42,54 +55,83 @@ enum UIKitRealization {
         .complete(PageElementContract.title),
         .partial(VisualElementContract.accessibilityHeading,
             missing: "UIKit marks a heading, not its level: every level is a heading."),
+        .partial(FilledShapeContract.fill, missing: "UIKit's glass is shaped by its corners alone: an oval of two "
+            + "lengths, a figure of its own and a turned one are made of the blur as clear as the glass is."),
         .partial(VisualElementContract.background,
-            missing: "UIKit paints a colour on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's colour stands in."),
+            missing: "UIKit paints a color on this view; a brush, a blur and glass are drawn only by a layout, and elsewhere a blur's color stands in."),
         .complete(VisualElementContract.ignoresInput),
         .complete(VisualElementContract.layoutDirection),
         .complete(VisualElementContract.style),
 
         // MARK: Entries - a control's or a part's own
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SpinnerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ButtonContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: LinkContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: CheckBoxContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ColorPickerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: DatePickerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SeparatorContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ItemsViewContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: MapContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: PickerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: ProgressBarContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SearchFieldContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SliderContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: StepperContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: SwitchContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: TextEditorContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: TextFieldContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: TimePickerContract.self, reason: Self.ownSteps),
+        .notPlanned(VisualElementContract.accessibilityAdjusted, on: WebViewContract.self, reason: Self.ownSteps),
+        .complete(PopoverContract.isPresented),
+        .complete(PopoverContract.isPresentedChanged),
         .complete(VisualElementContract.background, on: ButtonContract.self),
         .notPlanned(VisualElementContract.background, on: DatePickerContract.self,
-            reason: "UIKit's date picker keeps no background colour: one written reads back as none."),
-        .complete(VisualElementContract.background, on: GridContract.self),
-        .complete(VisualElementContract.background, on: HStackContract.self),
-        .complete(VisualElementContract.background, on: ScrollViewContract.self),
+            reason: "UIKit's date picker keeps no background color: one written reads back as none."),
+        .partial(VisualElementContract.background, on: GridContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: HStackContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: ScrollViewContract.self, missing: Self.ovalGlass),
         .complete(VisualElementContract.background, on: TextContract.self),
         .notPlanned(VisualElementContract.background, on: TimePickerContract.self,
-            reason: "UIKit's time picker keeps no background colour: one written reads back as none."),
-        .complete(VisualElementContract.background, on: VStackContract.self),
-        .complete(VisualElementContract.background, on: ZStackContract.self),
-        .complete(VisualElementContract.background, on: LayoutEngineContract.self),
-        .complete(LayoutEngineContract.handAxis),
-        .complete(LayoutEngineContract.handMoved),
-        .complete(LayoutEngineContract.handStepped),
-        .complete(LayoutEngineContract.itemDrag),
-        .complete(LayoutEngineContract.itemMoved),
-        .complete(LayoutEngineContract.magnifies),
-        .complete(LayoutEngineContract.pans),
-        .complete(LayoutEngineContract.rotates),
-        .complete(LayoutEngineContract.pinchMoved),
+            reason: "UIKit's time picker keeps no background color: one written reads back as none."),
+        .partial(VisualElementContract.background, on: VStackContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: ZStackContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: FillContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: SpaceContract.self, missing: Self.ovalGlass),
+        .partial(VisualElementContract.background, on: MotionLayoutContract.self, missing: Self.ovalGlass),
+        .complete(MotionLayoutContract.translationOrientation),
+        .complete(MotionLayoutContract.translationUpdated),
+        .complete(MotionLayoutContract.wheelStepped),
+        .complete(MotionLayoutContract.itemDrag),
+        .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.magnifies),
+        .complete(MotionLayoutContract.pans),
+        .complete(MotionLayoutContract.rotates),
+        .complete(MotionLayoutContract.pinchRotationUpdated),
         .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
             why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
         .partial(MenuContract.isEnabled, missing: "UIKit holds no menu out of reach itself: each of its entries is."),
-        .partial(LayoutContract.avoidsSafeArea, missing: "UIKit lets a page's own layout under the bars and the notch; "
-            + "a layout deeper in stands where its page puts it, and none stands clear of the keyboard."),
+        .partial(LayoutContract.ignoresSafeArea, missing: "The safe area holds no keyboard: a page stands under it "
+            + "whatever edges it ignores."),
         .partial(ViewContract.panTouchCount,
             missing: "The host layer hears a one-finger pan only; any other `panTouchCount` turns the pan off."),
         .complete(MenuContract.text),
         .complete(MenuBarContract.order),
-        .complete(ModalStackContract.popped),
-        .complete(MenuItemElementContract.isDestructive, on: MenuItemContract.self),
+        .complete(SheetContract.isPresented),
+        .complete(SheetContract.isPresentedChanged),
+        .complete(ActionElementContract.role, on: MenuItemContract.self),
         .complete(NavigationStackContract.popped),
         .complete(PageContract.appearing),
         .complete(PageContract.backButtonTitle),
-        .complete(PageContract.background),
+        .complete(PageElementContract.background),
+        .complete(PageElementContract.linkOpened),
         .complete(PageContract.disappearing),
         .complete(PageContract.showsBackButton),
+        .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
+        .complete(PageContract.subtitle),
         .complete(PageElementContract.icon, on: PageContract.self),
         .complete(PageContract.navigatedFrom),
         .complete(PageContract.navigatedTo),
@@ -98,7 +140,6 @@ enum UIKitRealization {
         .partial(PickerContract.presentation,
             missing: "UIKit has no radio buttons: `.radio` is a column of its buttons, "
             + "each marked by a filled or an empty circle."),
-        .complete(RadioButtonContract.groupName),
         .complete(SceneContract.activated),
         .complete(SceneContract.deactivated),
         .complete(SceneContract.stopped),
@@ -113,23 +154,38 @@ enum UIKitRealization {
         .complete(FontElementContract.isFontAutoScalingEnabled, on: TextSpanContract.self),
         .complete(TextualElementContract.text, on: TextSpanContract.self),
         .complete(TextualElementContract.textCase, on: TextSpanContract.self),
-        .complete(TextStyleElementContract.textColor, on: TextSpanContract.self),
+        .complete(TextColorElementContract.textColor, on: TextSpanContract.self),
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
         .complete(TrackingElementContract.tracking, on: TextSpanContract.self),
         .complete(SplitViewContract.showsSidebar),
         .complete(SplitViewContract.showsSidebarChanged),
+        .complete(SplitViewContract.showsSidebarToggle),
         .complete(SplitViewContract.sidebarBackground),
-        .complete(SplitViewContract.flyoutBackground),
+        .complete(SplitViewContract.sidebarOverlayBackground),
         .complete(SplitViewContract.sidebarOverlays),
         .complete(TabViewContract.selectedTab),
         .complete(TabViewContract.selectedTabChanged),
-        .complete(MenuItemElementContract.isDestructive, on: ToolbarItemContract.self),
-        .complete(MenuItemElementContract.keyboardShortcut, on: ToolbarItemContract.self),
-        .complete(ToolbarItemContract.placement),
-        .notPlanned(ToolbarItemContract.showsText,
+        .complete(ActionElementContract.role, on: ToolbarButtonContract.self),
+        .complete(MenuItemElementContract.keyboardShortcut, on: ToolbarButtonContract.self),
+        .notPlanned(TextAndIconElementContract.showsText, on: ToolbarButtonContract.self,
             reason: "A UIKit bar button shows its picture or its words, never both."),
-        .complete(ToolbarItemGroupContract.order),
-        .complete(ToolbarItemGroupContract.side),
+        .complete(MenuItemElementContract.keyboardShortcut, on: ToolbarToggleContract.self),
+        .complete(ToolbarToggleContract.isOn),
+        .complete(ToolbarToggleContract.onIcon),
+        .notPlanned(TextAndIconElementContract.showsText, on: ToolbarToggleContract.self,
+            reason: "A UIKit bar button shows its picture or its words, never both."),
+        .complete(ToolbarToggleContract.toggled),
+        .complete(ViewContract.layoutBody),
+        .complete(ToolbarLabelContract.icon),
+        .complete(ToolbarLabelContract.text),
+        .complete(ToolbarGroupContract.barEdge),
+        .complete(ToolbarGroupContract.order),
+        .complete(ToolbarGroupContract.part),
+        .complete(ToolbarGroupContract.hidesWithSidebar),
+        .complete(ToolbarGroupContract.isEnabled),
+        .complete(ToolbarGroupContract.position),
+        .notPlanned(ToolbarGroupContract.standsAlone,
+            reason: "UIKit's bar draws every group on a glass of its own, a lone item's too."),
         .notPlanned(VisualElementContract.tooltip,
             reason: "UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none."),
         .complete(WindowContract.activated),
@@ -146,14 +202,15 @@ enum UIKitRealization {
         .notPlanned(WindowContract.isMinimizable,
             reason: "Any iPadOS window may be put away: UIKit keeps none from it."),
         .partial(WindowContract.background,
-            missing: "iPadOS draws an application's window opaque: a blur or glass shows its colour."),
+            missing: "iPadOS draws an application's window opaque: a blur or glass shows its color."),
         .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),
         .notPlanned(WindowContract.width, reason: Self.sizedBySystem),
         .notPlanned(WindowContract.x, reason: Self.placedBySystem),
         .notPlanned(WindowContract.y, reason: Self.placedBySystem),
-    ] + pickerWords + HostRecord.layoutEngine
+    ] + pickerWords + HostRecord.motionLayout
+        + BarItemLook.notPlanned(reason: "A bar's items stand in the system's own look.")
 
     /// Why a window takes no size: the user's hand gives it, and a scene asks only for orientations.
     private static let sizedBySystem =
@@ -167,12 +224,12 @@ enum UIKitRealization {
         let pickers: [any ElementContract.Type] = [DatePickerContract.self, TimePickerContract.self]
         let words: [any ContractMember] = [
             FontElementContract.fontAttributes, FontElementContract.fontFamily, FontElementContract.fontSize,
-            FontElementContract.fontWeight, TextStyleElementContract.textColor, FontElementContract.textStyle,
+            FontElementContract.fontWeight, TextColorElementContract.textColor, FontElementContract.textStyle,
         ]
         return pickers.flatMap { picker -> [HostRecord] in
             words.map { member -> HostRecord in
                 .notPlanned(member, on: picker,
-                    reason: "UIKit's date picker draws its words in its own font and colour: it takes neither.")
+                    reason: "UIKit's date picker draws its words in its own font and color: it takes neither.")
             } + [
                 .notPlanned(FontElementContract.isFontAutoScalingEnabled, on: picker,
                     reason: "UIKit's date picker draws its words in its own font, which follows the user's text size always."),
@@ -185,8 +242,8 @@ enum UIKitRealization {
         let registry = UIKitRegistrations.registry
         return HostDeclaration(
             realization: registry.realization, shared: registry.sharedNames,
-            acts: (HostActs.performed + HostActs.files + WebKitView.acts + UIKitRegistrations.itemsActs
-                + [MapContract.moveToRegion]).map(\.name))
+            acts: (HostActs.performed + HostActs.files + HostActs.network + WebKitView.acts
+                + UIKitRegistrations.itemsActs + [MapContract.moveToRegion]).map(\.name))
     }
 
     /// What UIKit realizes, member by member: these records before what its registry says.

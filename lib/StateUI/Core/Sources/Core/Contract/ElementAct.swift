@@ -20,8 +20,12 @@ public struct ElementAct<Owner: Contract, Arguments, Answer>: ContractMember {
     public init(_ name: String) {
         self.name = name
         token = Act(name)
+        owner = KeyName(Owner.name)
     }
 
     /// The key the act crosses the boundary under, made once.
     @_spi(Host) public let token: Act
+
+    /// The key of the contract declaring it, made once.
+    @_spi(Host) public let owner: KeyName
 }

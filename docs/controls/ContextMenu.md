@@ -11,7 +11,7 @@ Text(title)
     .contextMenu {
         MenuItem("Rename").onClicked { title = "Shopping" }
         MenuItem("Clear")
-            .isDestructive(true)
+            .role(.destructive)
             .onClicked { title = "" }
     }
 ```

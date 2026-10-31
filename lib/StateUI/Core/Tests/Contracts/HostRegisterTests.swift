@@ -15,20 +15,20 @@ final class HostRegisterTests: XCTestCase {
     func testWhatTheRuntimeRealizesRuns() {
         let register = HostRegister(records: []).and([.complete(SwitchContract.isOn)])
 
-        XCTAssertEqual(register.judgement(of: "isOn", on: "Switch", from: nil), .complete)
+        XCTAssertEqual(register.judgment(of: "isOn", on: "Switch", from: nil), .complete)
         XCTAssertTrue(register.realizes("isOn", on: "Switch", from: nil), "a test of it runs")
-        XCTAssertNil(register.judgement(of: "value", on: "Stepper", from: nil))
+        XCTAssertNil(register.judgment(of: "value", on: "Stepper", from: nil))
         XCTAssertFalse(register.realizes("value", on: "Stepper", from: nil), "nothing realized, nothing runs")
     }
 
     /// A written note about a tier's member judges it on every wearer: the runtime naming the member on one element
     /// does not replace the note.
     func testAWrittenNoteOnATierStaysOnAnElementTheRuntimeNames() {
-        let register = HostRegister(records: [.partial(VisualElementContract.background, missing: "A colour alone.")])
+        let register = HostRegister(records: [.partial(VisualElementContract.background, missing: "A color alone.")])
             .and([.complete(VisualElementContract.background, on: ButtonContract.self)])
 
         XCTAssertEqual(
-            register.judgement(of: "background", on: "Button", from: "VisualElement"), .partial(missing: "A colour alone."))
+            register.judgment(of: "background", on: "Button", from: "VisualElement"), .partial(missing: "A color alone."))
     }
 
     /// Never is the register's: a member never had says why, an element never had is never on every member with
@@ -38,12 +38,12 @@ final class HostRegisterTests: XCTestCase {
             records: [.complete(TextualElementContract.text, on: ButtonContract.self), .notPlanned(ImageElementContract.contentMode, on: ButtonContract.self, reason: "No such screen.")],
             unrealized: [MapContract.self], notPlanned: [(MenuBarContract.self, "No bar on a phone.")])
 
-        XCTAssertEqual(register.judgement(of: "contentMode", on: "Button", from: nil), .notPlanned(reason: "No such screen."))
-        XCTAssertEqual(register.judgement(of: "text", on: "MenuBar", from: nil), .notPlanned(reason: "No bar on a phone."))
-        XCTAssertEqual(register.judgement(ofElement: "MenuBar"), .notPlanned(reason: "No bar on a phone."))
-        XCTAssertNil(register.judgement(of: "text", on: "Map", from: nil))
-        XCTAssertNil(register.judgement(ofElement: "Map"))
-        XCTAssertEqual(register.judgement(ofElement: "Button"), .complete)
+        XCTAssertEqual(register.judgment(of: "contentMode", on: "Button", from: nil), .notPlanned(reason: "No such screen."))
+        XCTAssertEqual(register.judgment(of: "text", on: "MenuBar", from: nil), .notPlanned(reason: "No bar on a phone."))
+        XCTAssertEqual(register.judgment(ofElement: "MenuBar"), .notPlanned(reason: "No bar on a phone."))
+        XCTAssertNil(register.judgment(of: "text", on: "Map", from: nil))
+        XCTAssertNil(register.judgment(ofElement: "Map"))
+        XCTAssertEqual(register.judgment(ofElement: "Button"), .complete)
         XCTAssertFalse(register.realizes("text", on: "Map", from: nil))
     }
 
@@ -53,9 +53,9 @@ final class HostRegisterTests: XCTestCase {
         let register = HostRegister(
             records: [.complete(VisualElementContract.opacity)], byApplication: [MapContract.self])
 
-        XCTAssertEqual(register.judgement(ofElement: "Map"), .byApplication)
-        XCTAssertEqual(register.judgement(of: "region", on: "Map", from: nil), .byApplication)
-        XCTAssertEqual(register.judgement(of: "opacity", on: "Map", from: "VisualElement"), .byApplication)
+        XCTAssertEqual(register.judgment(ofElement: "Map"), .byApplication)
+        XCTAssertEqual(register.judgment(of: "region", on: "Map", from: nil), .byApplication)
+        XCTAssertEqual(register.judgment(of: "opacity", on: "Map", from: "VisualElement"), .byApplication)
         XCTAssertFalse(register.realizes("region", on: "Map", from: nil))
         XCTAssertEqual(register.and([.complete(TextualElementContract.text, on: ButtonContract.self)]).byApplication, [MapContract.nodeType], "kept with the runtime's")
     }
@@ -81,14 +81,14 @@ final class HostRegisterTests: XCTestCase {
     func testAnElementsUnrealizedRecordStandsOverItsTiers() {
         let register = HostRegister(records: [
             .complete(AutomationElementContract.accessibilityIdentifier),
-            .unrealized(AutomationElementContract.accessibilityIdentifier, on: ToolbarItemContract.self,
+            .unrealized(AutomationElementContract.accessibilityIdentifier, on: ToolbarButtonContract.self,
                 why: "The toolbar item holds none."),
         ])
 
         XCTAssertEqual(
-            register.judgement(of: "accessibilityIdentifier", on: "ToolbarItem", from: "AutomationElement"),
+            register.judgment(of: "accessibilityIdentifier", on: "ToolbarButton", from: "AutomationElement"),
             .unrealized(why: "The toolbar item holds none."))
-        XCTAssertFalse(register.realizes("accessibilityIdentifier", on: "ToolbarItem", from: "AutomationElement"))
+        XCTAssertFalse(register.realizes("accessibilityIdentifier", on: "ToolbarButton", from: "AutomationElement"))
         XCTAssertTrue(register.realizes("accessibilityIdentifier", on: "Button", from: "AutomationElement"))
     }
 
@@ -174,7 +174,7 @@ final class HostRegisterTests: XCTestCase {
         }
         let realization = HostRealization(elements: Set(LibraryContracts.elements.map { $0.nodeType }), members: members)
         let notes = members.prefix(300).map {
-            HostRecord(owner: $0.element.name, member: $0.member.name, judgement: .partial(missing: "a note"))
+            HostRecord(owner: $0.element.name, member: $0.member.name, judgment: .partial(missing: "a note"))
         }
 
         let started = ContinuousClock.now

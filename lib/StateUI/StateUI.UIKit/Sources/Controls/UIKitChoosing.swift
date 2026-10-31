@@ -31,7 +31,7 @@ protocol UIKitChoosing: UIView {
     /// The words' look - the control's own where it says nothing - and where they stand across it.
     func setLook(_ look: TextLook, alignment: TextAlignment)
 
-    /// The colour the control marks with; nil for its own.
+    /// The color the control marks with; nil for its own.
     func setTint(_ tint: UIColor?)
 }
 

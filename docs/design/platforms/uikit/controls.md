@@ -6,29 +6,37 @@ them.
 ## Toggles, values and indicators
 
 A Switch is UIKit's switch; a Slider, a Stepper, a ProgressBar and an
-ActivityIndicator are UIKit's own too, an indicator standing still - shown -
-while its work does not run. UIKit has no check box and no radio button, so
-each is a button of its own showing the system's symbol for a box or a
-circle, ticked or not, before a radio button's caption: a tap turns a box
-either way and a radio button only on, and the host layer takes the tick from
-the rest of its set. A switch's colour is its colour when on, a box's the
-colour of its symbol. What the program writes is only shown - UIKit's controls
-send no event for a value set in code - and what the user does is reported.
+Spinner are UIKit's own too, an indicator standing still - shown -
+while its work does not run. UIKit has no check box, so a CheckBox is a
+button of its own showing the system's symbol for a box, ticked or not,
+before its words: a tap turns it either way. A switch's color is its color
+when on, a box's the color of its symbol. What the program writes is only
+shown - UIKit's controls send no event for a value set in code - and what the
+user does is reported.
+
+## A switch's words
+
+`UISwitch` has no words, so a switch with words is a view of two: the words
+from its start and the switch at its end, mirrored right to left, the way
+Settings sets a switch in a row. The switch is measured at its own size, the
+words take the rest. The words belong to the switch: a tap on them turns it,
+and VoiceOver meets the switch alone, named by the element's label or else by
+its words, the label beside it left out (`UIKitAccessibilityPresenting`).
 
 ## Pickers
 
 A Picker is UIKit's pop-up button: its menu holds the choices, the chosen one
 ticked and its caption on the button, and the picker's title stands there
 while nothing is chosen, which UIKit's own selection-changing button cannot
-say, so the host keeps the tick itself. Its caption takes the font and colour
-the tree gives it, as a button's title does, and its tint colours the arrow
+say, so the host keeps the tick itself. Its caption takes the font and color
+the tree gives it, as a button's title does, and its tint colors the arrow
 beside it alone. A menu cannot be opened from code, so a picker's `isOpen` is
 left unrealized; its opening and closing are heard.
 
 A DatePicker and a TimePicker are UIKit's date picker, compact. A day of the
 calendar and a time of the clock belong to no zone, so the picker counts and
 shows them in the Gregorian calendar at UTC: the day the user picks is the day
-the tree reads. It draws its words in its own font and colour.
+the tree reads. It draws its words in its own font and color.
 
 ## A field and its words
 
@@ -46,12 +54,12 @@ scrolling them.
 ## A label's words
 
 A Text is UIKit's label showing its words - or its spans' runs, each its
-own look over the label's - as attributed text: the font, the colour, what
+own look over the label's - as attributed text: the font, the color, what
 stands behind the words, the space between the letters, a line's height and
 the lines under or through them. Its padding is room it keeps around the
 words, as it measures them and as it draws them, standing them down its room
 as the tree says, which UIKit's label does not do of itself. Its background -
-a colour or a brush - fills its whole box, that room included, painted
+a color or a brush - fills its whole box, that room included, painted
 before the words: they are the label's own drawing, which a layer laid over
 it would cover.
 
@@ -67,7 +75,7 @@ Words follow the user's text size (`isFontAutoScalingEnabled`, on unless
 said) through `UIFontMetrics`: a size the tree gives, or the body's at the
 platform's own text size, is scaled for the view's traits, and a field and
 an editor carry `adjustsFontForContentSizeCategory`. A label builds its words
-again, and a button, a picker and a radio button update their configuration,
+again, and a button, a picker and a check box update their configuration,
 as the user's text size changes. Words that do not scale stand at their size
 whatever the user chooses. A day's and a time's picker draws its words in
 UIKit's own font, which follows the user always - `–` in the matrix.
@@ -75,7 +83,7 @@ UIKit's own font, which follows the user always - `–` in the matrix.
 ## A button
 
 A Button is UIKit's button, its configuration what the tree says: its words
-and their look, an icon beside them, the box behind them - its colour, its
+and their look, an icon beside them, the box behind them - its color, its
 outline and its shape - an oval a face of the button's own, the
 configuration's background view, which its corners cannot draw - and the room
 inside it. Its corners are rounded as it is laid out, by the host layer's
@@ -84,6 +92,13 @@ capsule makes a button showing a picture alone a circle as wide as it is high,
 whatever room the tree gives it beside the picture. What the tree leaves
 unsaid is a plain configuration's own: an empty fill there is the tint's, so a
 button whose style leaves takes the plain box again, never an empty one.
+
+The box reaches UIKit whole, its radius with it, in one configuration given
+only when it differs. UIKit rounds its box from the last configuration it was
+given, and takes a highlight off in an animation of its own: a box given
+first with a fresh background's own corners - 17 points on a phone - and its
+radius after, frame by frame as its color travels, has the highlight's end
+move its corners from 17 back to the capsule's.
 
 A role draws where the tree draws nothing of its own ([a button's
 role](../../host/layout.md#a-buttons-role)): the main action wears UIKit's
@@ -101,14 +116,37 @@ down, which says a choice of values, as a picker's. UIKit draws no split button,
 so a split button keeps its tap and holds an arrow of its own: a `UIButton`
 with a chevron at its trailing edge, the whole height, set off by a line,
 opening the menu with a tap; the button keeps room for it inside its padding,
-so its words never run under the arrow, which takes the words' colour.
+so its words never run under the arrow, which takes the words' color.
+
+## A link
+
+UIKit has no link control of its own. A link is a plain `UIButton`, its title
+underlined in the configuration's foreground - the link color, or the tree's -
+with the link trait, which VoiceOver names by its words. The color stays the
+configuration's, not the title's own, so the button grays it while the link
+cannot be chosen. Its tap is the button's; the host layer opens the address
+(`host/runtime.md#a-link-chosen`).
+
+## A color picker
+
+A color picker is UIKit's `UIColorWell`: a tap presents the system's color
+picker - a sheet on a phone, a popover on an iPad - and each color the user
+chooses there changes `selectedColor` and says `valueChanged`, which the host
+reports as the host layer reports a color (`host/runtime.md#a-color-chosen`).
+The well's `supportsAlpha` is `choosesOpacity`. A color the program writes
+sets `selectedColor` and says nothing.
 
 ## Accessibility
 
-What VoiceOver meets of a view is what the tree says of it - its label, hint
-and heading, whether it is met by the host layer's rule - over what the view
-says of itself, read before the tree says anything, to which it returns where
-the tree stops saying. A view
+What VoiceOver meets of a view is what the tree says of it - its label, hint,
+kind, value and heading, whether it is met by the host layer's rule - over
+what the view says of itself, read before the tree says anything, to which it
+returns where the tree stops saying. A kind is a trait, and one said takes
+the place of the traits of a kind the view has of itself, keeping the rest -
+selected, not enabled. Its actions are custom actions, and a view StateUI draws
+that says it is adjustable takes VoiceOver's swipes up and down as its
+increment and decrement; UIKit's own control steps as its own kind does, or
+not at all. A view
 holding no children of the tree's - a date or time picker, a spinner - is one
 thing to the user, though UIKit offers VoiceOver the parts inside it: hidden,
 it hides them too. A layout hidden from VoiceOver keeps its children met; only
@@ -130,6 +168,8 @@ system's at the size and weight that stand, or the named family with that
 weight in its descriptor. Where the words scale, the style's own metrics grow
 them with the user's text size (`UIFontMetrics(forTextStyle:)`), so a title
 grows as UIKit grows its titles; words with no style grow as the body does.
+Digits of one width are the number-spacing feature in the font's descriptor
+(`kMonospacedNumbersSelector`), which the grown font keeps.
 A day's and a time's picker draw their words in UIKit's own font and take no
 style.
 
@@ -143,3 +183,16 @@ measured as the label is, wherever down its room the words stand. The
 registration makes one or the other by the value the text is made with,
 and another value makes the text anew. A disabled one selects nothing.
 
+## A field's outline
+
+A field the tree outlines or shapes (`stroke`, `lineWidth`, `shape`) draws
+it on its own layer - the border in the stroke's color and width, the
+corners as `BoxArithmetic.cornerRadius` rounds the shape at the field's size,
+again as the size changes, so a capsule's ends stay whole - and a field on
+one line lays its own frame aside (`borderStyle`), taking it back where the
+tree outlines it no more (`UIKitFieldOutline`). Laid aside, that frame takes
+its measures with it - UIKit sets the words of a frameless field against its
+edge and measures it a line tall - so an outlined field keeps them, read off a
+field in its own frame in the same font: as tall, its words set in as far, and
+no less than half a round end. An editor keeps its corners of 8 where the
+tree says no shape.

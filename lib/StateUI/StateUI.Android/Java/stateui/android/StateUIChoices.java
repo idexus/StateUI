@@ -49,12 +49,13 @@ final class StateUIChoices extends RadioGroup implements StateUIChoosing, RadioG
     }
 
     @Override
-    public void setLook(float size, int unit, int color, Typeface face, int alignment) {
+    public void setLook(float size, int unit, int color, Typeface face, String features, int alignment) {
         for (int index = 0; index < getChildCount(); index++) {
             RadioButton button = (RadioButton) getChildAt(index);
             if (size > 0) button.setTextSize(unit, size);
             if (color != 0) button.setTextColor(color);
             button.setTypeface(face);
+            button.setFontFeatureSettings(features);
         }
         setGravity(alignment);
     }

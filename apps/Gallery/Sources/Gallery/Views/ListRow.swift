@@ -5,7 +5,7 @@ import StateUI
 /// A row of a grouped list: what it leads to, the line under it, and a
 /// chevron saying it goes somewhere.
 ///
-/// A ROW IS A ZSTACK WITH A TAP ON IT, standing with its neighbours in one
+/// A ROW IS A ZSTACK WITH A TAP ON IT, standing with its neighbors in one
 /// rounded group - the "RowGroup" style - with a hairline between each row and
 /// the one before it.
 ///
@@ -28,11 +28,6 @@ struct ListRow: View {
 
     /// Whether a hairline divides the row from the one before it.
     private var isSeparated = false
-
-    /// How lit the row is - the press, said back. DRIVEN: the host carries it
-    /// on its own frames and no render describes it, so a press costs the
-    /// arithmetic and nothing else.
-    @State private var lit = 0.0
 
     /// - Parameters:
     ///   - title: What the row is called.
@@ -61,22 +56,17 @@ struct ListRow: View {
         return copy
     }
 
-    /// `View`, not `Element`: the press is a piece of `@State`, and state on a
-    /// view needs the placeholder a composed view puts in the tree.
     var body: some View {
-        // Copies for the handler to capture: the locals keep `self` out of
+        // A copy for the handler to capture: the local keeps `self` out of
         // the closure. ConcurrencyTests pins this shape on the library's
         // executor.
-        let lit = $lit
         let action = self.action
 
         return ZStack {
-            Rectangle(Palette.selected)
-                .opacity(lit)
-
-            Rectangle(Palette.outline)
+            Rectangle()
+                .fill(Palette.outline)
                 .height(1)
-                .margin(left: 16, top: 0, right: 0, bottom: 0)
+                .margin(start: 16, top: 0, end: 0, bottom: 0)
                 .verticalAlignment(.start)
                 .isVisible(isSeparated)
 
@@ -89,7 +79,7 @@ struct ListRow: View {
 
                 VStack {
                     // The name in the platform's body and the words' own
-                    // colour, the line under it a caption: each platform's
+                    // color, the line under it a caption: each platform's
                     // own steps, so the name stands as large as the page's
                     // words and clear of the line under it.
                     Text(title)
@@ -125,15 +115,8 @@ struct ListRow: View {
         .accessibilityIdentifier(handle("row", title))
         .accessibilityLabel(title)
         .accessibilityHint(summary)
-        // The press, said back as a platform's list says it: the row lights
-        // up and goes out again. It lights before the action starts - a
-        // page's build holds the UI thread, which eats the frames beside it -
-        // and goes out while the navigation runs.
-        .onTapped(gate: .ignoreWhileRunning) {
-            try await lit.journey.move(to: 1, .eased(.milliseconds(60), .cubicOut)).arrived()
-            let dark = lit.journey.move(to: 0, .eased(.milliseconds(250), .cubicOut))
-            try await action()
-            try await dark.arrived()
-        }
+        // Pressed as a button: lit by its style while the press stands over
+        // it, tapped where it lets go over it.
+        .onTapped(.ignoreWhileRunning) { try await action() }
     }
 }

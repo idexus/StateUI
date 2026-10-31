@@ -66,7 +66,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
         XCTAssertEqual(view.textField.placeholderAttributedString?.string, "Name")
         XCTAssertTrue(view.textField.textColor?.isEqual(NSColor.systemBlue) == true)
         XCTAssertTrue(view.fill?.isEqual(NSColor.systemYellow) == true)
-        XCTAssertFalse(view.textField.isBezeled, "a colour stands in the bezel's shape, filled with it")
+        XCTAssertFalse(view.textField.isBezeled, "a color stands in the bezel's shape, filled with it")
         XCTAssertEqual(view.textField.font, font)
         XCTAssertEqual(view.textField.alignment, .center)
         XCTAssertFalse(view.textField.isEnabled)
@@ -75,9 +75,9 @@ final class AppKitTextFieldViewTests: XCTestCase {
         XCTAssertEqual(view.maximumLength, 12)
     }
 
-    /// A coloured placeholder stands and is set as the field's words would be: centred where they are, at their size.
+    /// A colored placeholder stands and is set as the field's words would be: centered where they are, at their size.
     @MainActor
-    func testAColouredPlaceholderStandsAsTheWordsWould() throws {
+    func testAColoredPlaceholderStandsAsTheWordsWould() throws {
         let view = AppKitTextFieldView()
         view.frame = NSRect(x: 0, y: 0, width: 300, height: 44)
         apply(
@@ -86,7 +86,7 @@ final class AppKitTextFieldViewTests: XCTestCase {
         view.layoutSubtreeIfNeeded()
 
         let ink = try XCTUnwrap(try inkBounds(of: view, where: isRed), "the placeholder is drawn")
-        XCTAssertGreaterThan(ink.minX, 90, "centred, not at the leading edge")
+        XCTAssertGreaterThan(ink.minX, 90, "centered, not at the leading edge")
         XCTAssertGreaterThan(ink.height, 14, "at the field's 22 points")
     }
 

@@ -1,4 +1,4 @@
-# revision 8.2
+# revision 9.2
 Button: ✅
 Button.clicked: ✅
 Button.icon: ✅
@@ -6,8 +6,6 @@ Button.iconPosition: ✅
 Button.iconSpacing: – AppKit's button stands its picture at its own gap from the words: it takes no other.
 Button.keyboardShortcut: ✅
 Button.lineBreak: ✅
-Button.menuKind: ✅
 Button.pressed: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.released: ✓ pressDown on Button: handed to the host's recognizer or handler, no NSEvent sent
 Button.role: ✅
-Button.showsMenuArrow: ✅

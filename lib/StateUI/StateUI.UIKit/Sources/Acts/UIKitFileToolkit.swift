@@ -28,9 +28,10 @@ final class UIKitFileToolkit: FileToolkit {
     }
 
     func show(
-        _ dialog: HostFileDialog, answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
+        _ dialog: HostFileDialog, over window: MountedElement?,
+        answered: @escaping (Result<[ChosenFile], ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let root = renderer.userRoot, let window = root.view.window.flatMap(renderer.element(of:))
+        guard let root = renderer.root(asked: window), let window = root.view.window.flatMap(renderer.element(of:))
         else { return nil }
         let asked = UIKitFileDialog(dialog)
         showing = asked

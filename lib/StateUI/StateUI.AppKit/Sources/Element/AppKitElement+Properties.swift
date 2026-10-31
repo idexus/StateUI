@@ -32,13 +32,13 @@ extension AppKitElement {
         case .application, .scene, .window:
             return nil
 
-        case .page:
+        case .page, .popover:
             let page = AppKitSingleChildView()
             page.translatesAutoresizingMaskIntoConstraints = true
             return page
 
-        case .modalStack, .overlay, .titleView, .toolbarItemGroup, .menuBar, .contextMenu,
-             .menu, .menuItem,
+        case .sheet, .overlay, .titleView, .bottomBar, .toolbarGroup, .menuBar, .contextMenu,
+             .menu, .menuItem, .menuToggle,
              .textSpans, .textSpan:
             return nil
 
@@ -57,9 +57,9 @@ extension AppKitElement {
                 host?.runtime.reducesMotion() ?? false
             })
 
-        case .zStack, .layoutEngine:
+        case .zStack, .motionLayout:
             let layers = AppKitZStackView()
-            layers.engine = type == .layoutEngine
+            layers.motionLayout = type == .motionLayout
             return layers
 
 
@@ -78,7 +78,7 @@ extension AppKitElement {
         case .text:
             return AppKitTextView()
 
-        case .toolbarItem:
+        case .toolbarButton, .toolbarToggle:
             // The window's toolbar makes the native item; see refreshVisiblePageChrome.
             return nil
 
@@ -95,10 +95,14 @@ extension AppKitElement {
         }
 
         applyVisibility()
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) {
+            (page.native as? AppKitElement)?.applyProperties(changed: [.background])
+        }
         if let scroll = view as? AppKitScrollView {
             scroll.boxBackground = paintedColor(value(.background))
-        } else if !(view is AppKitTravellingLayout), !AppKitRegistrations.drawOwnBackground.contains(type) {
-            let background = paintedColor(value(.background))
+        } else if !(view is AppKitTravelingLayout), !AppKitRegistrations.drawOwnBackground.contains(type) {
+            let background = paintedColor(element.drawnBackground)
             view.wantsLayer = true
             view.layer?.backgroundColor = background?.cgColor
         }
@@ -120,13 +124,13 @@ extension AppKitElement {
         }
 
         if let layers = view as? AppKitZStackView {
-            layers.placement = placement(.area)
-            layers.padding = insets(.padding)
+            layers.placement = element.placement
+            layers.padding = element.insets(.padding)
         }
 
-        if let layout = view as? AppKitTravellingLayout {
+        if let layout = view as? AppKitTravelingLayout {
             layout.decoration.apply(
-                background: value(.background), stroke: value(.stroke),
+                background: element.drawnBackground, stroke: value(.stroke),
                 lineWidth: value(.lineWidth)?.number, shape: value(.shape),
                 clips: value(.clipsContent)?.bool ?? false, to: layout)
         }
@@ -164,14 +168,13 @@ extension AppKitElement {
             value: maximumHeight,
             make: { view.heightAnchor.constraint(lessThanOrEqualToConstant: $0).stated })
 
-        if let button = view as? NSButton,
-           let padding = value(.padding)?.numbers, padding.count >= 4 {
-            (button.cell as? AppKitButtonCell)?.padding = NSEdgeInsets(
-                top: padding[1], left: padding[0], bottom: padding[3], right: padding[2])
+        if let button = view as? NSButton, value(.padding) != nil {
+            let padding = nativeInsets(.padding)
+            (button.cell as? AppKitButtonCell)?.padding = padding
             let intrinsic = button.intrinsicContentSize
             buttonWidthConstraint = reconciledConstraint(
                 buttonWidthConstraint,
-                value: intrinsic.width + padding[0] + padding[2],
+                value: intrinsic.width + padding.left + padding.right,
                 make: {
                     let constraint = button.widthAnchor.constraint(
                         greaterThanOrEqualToConstant: $0)
@@ -180,7 +183,7 @@ extension AppKitElement {
                 })
             buttonHeightConstraint = reconciledConstraint(
                 buttonHeightConstraint,
-                value: intrinsic.height + padding[1] + padding[3],
+                value: intrinsic.height + padding.top + padding.bottom,
                 make: {
                     let constraint = button.heightAnchor.constraint(
                         greaterThanOrEqualToConstant: $0)
@@ -279,8 +282,10 @@ extension AppKitElement {
         return numbers.count == components.count ? numbers : nil
     }
 
-    func insets(_ property: Prop) -> NSEdgeInsets {
-        let sides = element.insets(property)
+    /// `property`'s insets as a native control is padded by them: left and right by the element's direction.
+    /// Design: docs/design/host/layout.md#right-to-left
+    func nativeInsets(_ property: Prop) -> NSEdgeInsets {
+        let sides = element.insets(property).sides(in: element.layoutDirection)
         return NSEdgeInsets(top: sides.top, left: sides.left, bottom: sides.bottom, right: sides.right)
     }
 
@@ -290,12 +295,6 @@ extension AppKitElement {
     func requested(_ property: Prop) -> CGFloat? {
         guard let value = number(property), value.isFinite, value >= 0 else { return nil }
         return CGFloat(value)
-    }
-
-    func placement(_ property: Prop) -> HostPlacementRun? {
-        guard driven[property]?.kind == .placement, let carried = element.carriedValue(property) else { return nil }
-
-        return HostBoundary.placements(from: carried)
     }
 
     /// How the element's words break, as the tree says; word wrapping where it says nothing.

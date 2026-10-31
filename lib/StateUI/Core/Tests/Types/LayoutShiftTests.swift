@@ -7,8 +7,8 @@ import XCTest
 /// How far a view stands from where its arithmetic puts it: measured from where it was shown, laid back over a pose,
 /// and decaying to nothing under a motion.
 final class LayoutShiftTests: XCTestCase {
-    /// A SHIFT LAID OVER THE NEW POSE SHOWS THE VIEW WHERE IT STOOD: place, size, opacity, shade and a transform -
-    /// moved, turned, slanted and sized - all of it.
+    /// A SHIFT LAID OVER THE NEW POSE SHOWS THE VIEW WHERE IT STOOD: place, size, opacity, shade and a transform as
+    /// a view draws it - moved, turned and sized, a slant dropped, as no view shows one.
     func testAShiftShowsTheViewWhereItStood() {
         let shown = Placement(
             Rect(10, 20, 100, 60), transform: .scale(1.5).rotate(30).skew(10, 0).translate(4, -6), opacity: 0.4,
@@ -18,7 +18,7 @@ final class LayoutShiftTests: XCTestCase {
         let laid = LayoutShift(from: shown, to: pose).applied(to: pose)
 
         XCTAssertEqual(laid.bounds, shown.bounds)
-        assertTransform(laid.transform, shown.transform)
+        assertTransform(laid.transform, shown.transform.drawn)
         XCTAssertEqual(laid.opacity, 0.4, accuracy: 0.000_001)
         XCTAssertEqual(laid.shade, 0.2, accuracy: 0.000_001)
         XCTAssertEqual(laid.zIndex, 7, "the order is the pose's at once")
@@ -57,22 +57,9 @@ final class LayoutShiftTests: XCTestCase {
     /// A SHADE THE LAYOUT DRAWS NONE OF IS NOT BLENDED: a pose without one keeps it, whatever was shown.
     func testAnUnshadedPoseKeepsItsShade() {
         let shown = Placement(Rect(0, 0, 10, 10), shade: 0.6)
-        let pose = Placement(Rect(0, 0, 10, 10), shade: PackedPlacement.unshaded)
+        let pose = Placement(Rect(0, 0, 10, 10), shade: Placement.unshaded)
 
-        XCTAssertEqual(LayoutShift(from: shown, to: pose).applied(to: pose).shade, PackedPlacement.unshaded)
-    }
-
-    /// A SHIFT TRAVELS TO NOTHING under the motion, and one sent on its way again sets out at the speed it had.
-    func testAShiftTravelsToNothing() {
-        let law = Motion.eased(.milliseconds(200), .linear)
-        let travel = LayoutTravel(from: [40], velocity: [0], began: 1_000)
-
-        XCTAssertEqual(travel.at(1_100, under: law).value[0], 20, accuracy: 0.000_001, "halfway")
-        XCTAssertTrue(travel.at(1_200, under: law).rested, "nothing left")
-
-        let going = travel.at(1_100, under: law)
-        let again = LayoutTravel(from: going.value, velocity: going.velocity, began: 1_100)
-        XCTAssertEqual(again.at(1_100, under: law).velocity[0], going.velocity[0], accuracy: 0.000_001)
+        XCTAssertEqual(LayoutShift(from: shown, to: pose).applied(to: pose).shade, Placement.unshaded)
     }
 
     private func assertTransform(

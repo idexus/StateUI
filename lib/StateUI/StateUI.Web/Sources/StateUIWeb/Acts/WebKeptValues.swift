@@ -4,22 +4,20 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// The application's kept values in the browser's storage for the page's site, under the application's name: read
-/// before the first render, written whole as each changes.
+/// The application's kept values in the browser's storage for the page's site, under the application's name: a value
+/// read as a state under its key is first made, written whole as each changes.
 /// Design: docs/design/platforms/web/runtime.md#acts
 @MainActor
 enum WebKeptValues {
-    /// Hands the core every kept value there is, before the first render reads one.
-    static func restore(into core: CoreLink, application: String) {
-        let keys = core.persistentKeys
-        guard !keys.isEmpty else { return }
-        core.restorePersistent(read(application).restored(for: keys))
+    /// Gives the core the reader of the browser's storage.
+    static func readKept(into core: CoreLink, application: String) {
+        core.readsKept { name, kind in read(application).value(named: name, as: kind) }
     }
 
     /// Keeps a key's new value, as the act `persistValue` carries it.
-    static func keep(_ call: HostActCall, core: CoreLink, application: String) {
+    static func keep(_ call: HostActCall, application: String) {
         var kept = read(application)
-        guard kept.keep(call.arguments, keys: core.persistentKeys) else { return }
+        guard kept.keep(call.arguments) else { return }
         if !WebRelay.store(kept.text, under: key(application)) {
             WebRenderer.log.error("the kept values could not be written")
         }

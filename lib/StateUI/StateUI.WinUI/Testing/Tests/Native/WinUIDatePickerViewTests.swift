@@ -29,15 +29,15 @@ final class WinUIDatePickerViewTests: XCTestCase {
         }
     }
 
-    /// A picker the tree colours stands on its colour in every state: under the pointer and pressed, its ground is
+    /// A picker the tree colors stands on its color in every state: under the pointer and pressed, its ground is
     /// the tree's, not the theme's.
-    func testAColouredPickerKeepsItsGroundInEveryState() throws {
+    func testAColoredPickerKeepsItsGroundInEveryState() throws {
         try onUIThread {
             let due = State(wrappedValue: CalendarDate(year: 2026, month: 2, day: 10))
             let host = WinUIRenderer.running {
                 VStack {
                     DatePicker(due.projectedValue)
-                        .background(Color("#FF0000"))
+                        .background(Color(hex: 0xFF0000))
                         .width(200)
                         .height(32)
                         .horizontalAlignment(.start)

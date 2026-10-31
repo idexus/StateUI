@@ -42,7 +42,7 @@ public final class TestPictures {
         return Math.round(points * context.getResources().getDisplayMetrics().density);
     }
 
-    /** A square `side` pixels across, one colour, as a PNG's bytes. */
+    /** A square `side` pixels across, one color, as a PNG's bytes. */
     public static byte[] square(int side) {
         Bitmap drawn = Bitmap.createBitmap(side, side, Bitmap.Config.ARGB_8888);
         drawn.eraseColor(Color.BLUE);

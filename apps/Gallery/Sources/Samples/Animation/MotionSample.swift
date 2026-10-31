@@ -22,6 +22,7 @@ struct MotionSample: SampleContent, ExampleContent {
     @State private var law = 2
     @State private var wide = false
     @State private var warm = false
+    @State(motion: .spring(response: .milliseconds(320))) private var reach = 120.0
 
     var body: some View {
         // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the
@@ -55,18 +56,41 @@ struct MotionSample: SampleContent, ExampleContent {
 
             HStack {
                 Button("Size").onClicked { wide.toggle() }
-                Button("Colour").onClicked { warm.toggle() }
+                Button("Color").onClicked { warm.toggle() }
                 Button(Self.laws[law]).onClicked { law = (law + 1) % Self.laws.count }
+            }
+            .spacing(8)
+
+            Text("A move's own law, then the value's")
+                .fontSize(11)
+                .tracking(1)
+                .textColor(Palette.subtle)
+
+            Rectangle()
+                .fill(Palette.brand)
+                .width($reach)
+                .height(24)
+                .cornerRadius(6)
+                .horizontalAlignment(.start)
+
+            HStack {
+                // The law given here is this move's alone...
+                Button("Slow move").onClicked {
+                    $reach.journey.move(to: 300, .eased(.milliseconds(2000), .sineInOut))
+                }
+                // ...and a plain write travels on the value's own spring.
+                Button("Back").onClicked { reach = 120 }
             }
             .spacing(8)
         }
         .spacing(10)
     }
 
-    /// One panel, either travelling at the chosen law or arriving at once.
+    /// One panel, either traveling at the chosen law or arriving at once.
     private func panel(travels: Bool) -> some View {
         // `.motion` is per view: the chosen law, or `.none` to arrive at once.
-        Rectangle(warm ? Palette.accent : Palette.brand)
+        Rectangle()
+            .fill(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
             .height(wide ? 110 : 56)
             .cornerRadius(wide ? 28 : 8)
@@ -78,7 +102,8 @@ struct MotionSample: SampleContent, ExampleContent {
     /// `.size` takes to be its width and its height - its corners are its
     /// shape, and travel with the rest.
     private func sized() -> some View {
-        Rectangle(warm ? Palette.accent : Palette.brand)
+        Rectangle()
+            .fill(warm ? Palette.accent : Palette.brand)
             .width(wide ? 300 : 120)
             .height(wide ? 110 : 56)
             .cornerRadius(wide ? 28 : 8)
@@ -90,13 +115,18 @@ struct MotionSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Press Size or Colour. The first panel travels, the second "
+            Text("Press Size or Color. The first panel travels, the second "
                 + "arrives immediately, and the third holds only its size still.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("Change the law to compare eased, spring, slow and immediate "
                 + "motion. StateUI sends destinations; the host supplies the frames.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Press Slow move, then Back: the move takes two seconds, and Back "
+                + "springs, because a law given to a move is that move's alone.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

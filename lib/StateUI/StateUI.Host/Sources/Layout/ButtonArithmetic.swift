@@ -13,7 +13,7 @@
     public static func sideRoom(
         _ room: Double, picture: Double, gap: Double, words: Double, position: IconPosition
     ) -> Double {
-        guard position == .leading || position == .trailing else { return 0 }
+        guard position == .start || position == .end else { return 0 }
         return max(0, (room - picture - gap - words) / 2)
     }
 }

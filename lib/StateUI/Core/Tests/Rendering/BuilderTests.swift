@@ -220,7 +220,9 @@ final class BuilderTests: XCTestCase {
 
                 if showing {
                     ZStack {
-                        Rectangle().fill(Color("#512BD4")).cornerRadius(10)
+                        Rectangle()
+                            .fill(Color(hex: 0x512BD4))
+                            .cornerRadius(10)
                     }
                     .gridRow(1)
                 } else {
@@ -244,7 +246,7 @@ final class BuilderTests: XCTestCase {
                      "a view beside the conditional was re-sent")
 
         let box = try? XCTUnwrap(patch(third, forType: "Rectangle"))
-        XCTAssertNotNil(box?.props["fill"], "the branch came back without its colour")
+        XCTAssertNotNil(box?.props["fill"], "the branch came back without its color")
         XCTAssertNotNil(box?.props["cornerRadius"], "the branch came back without its shape")
     }
 
@@ -316,7 +318,8 @@ final class BuilderTests: XCTestCase {
                     if turn == chosen {
                         Text("turn \(turn)")
                     } else {
-                        Rectangle().fill(Color("#C8C8C8"))
+                        Rectangle()
+                            .fill(Color(hex: 0xC8C8C8))
                     }
                 }
             }

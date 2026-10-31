@@ -20,7 +20,7 @@ final class GTKWindowController {
     /// What the window shows, by the host layer's rule.
     let presentation = WindowPresentation()
 
-    /// A sheet for each page the window's modal stack presents, the last on top.
+    /// A sheet for each page the window's views present, the last shown on top.
     private(set) var sheets: [(element: MountedElement, sheet: GTKSheet)] = []
 
     /// The shortcuts of the window's bar items and menu bar entries.
@@ -46,7 +46,12 @@ final class GTKWindowController {
         self.element = element
         self.runtime = runtime
         let changes = presentation.show(element, in: runtime.lifecycle)
-        if let traits = changes.traits { window.setBackground(traits.background.painted) }
+        if let traits = changes.traits {
+            window.setBackground(traits.background.painted)
+            // The surfaces over the page stand on it too: the sheets, and the sidebars over the detail.
+            for (page, sheet) in sheets { sheet.stand(on: page.overlaidGround) }
+            for split in element.splitViews { (split.native as? GTKElement)?.groundSidebar() }
+        }
         if let frame = changes.frame { window.request(frame) }
         if let bounds = changes.bounds { window.bound(bounds) }
         if let hidden = changes.hidden { window.setHidden(hidden) }
@@ -58,7 +63,19 @@ final class GTKWindowController {
             }
         }
         if let pages = changes.sheets { showSheets(pages, in: runtime) }
+        fitSheets()
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.gtk.view)) }
+    }
+
+    /// Asks each sheet for its page's size in the room the window gives now: after a render, and as the window is
+    /// laid out at a size of its own - one it was not asked for.
+    /// Design: docs/design/platforms/gtk/pages.md#sheets
+    func fitSheets() {
+        for (page, sheet) in sheets {
+            sheet.stand(at: SheetSize.size(of: page, in: GTKSheet.room(in: window)) { width in
+                page.gtk.layoutItem?.size(offered: width) ?? LayoutSize(width: 0, height: 0)
+            })
+        }
     }
 
     /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
@@ -70,17 +87,20 @@ final class GTKWindowController {
         sheets.removeLast(sheets.count - change.kept)
         for page in change.coming {
             guard let view = page.gtk.view else { continue }
-            let sheet = GTKSheet(page: view, framed: GTKElement.framedTypes.contains(page.type))
+            // A page stands on the dialog alone - a sheet has no bar of its own; a tabbed view in the frame its
+            // switcher stands in.
+            let sheet = GTKSheet(page: view, framed: page.type == .tabView)
             sheet.onClosedByUser = { [weak self] in self?.dismissTopSheet(in: runtime) }
+            sheet.stand(on: page.overlaidGround)
             sheet.present(over: window)
             sheets.append((page, sheet))
         }
     }
 
-    /// The user took the top sheet away - Escape, its close button: the modal stack is told how many remain.
+    /// The user took the top sheet away - Escape, its close button: false is written onto its state.
     private func dismissTopSheet(in runtime: HostRuntime) {
         guard let element, !presentation.sheets.isEmpty else { return }
-        runtime.goBack(.dismissSheet(remaining: presentation.sheets.count - 1), in: element)
+        runtime.goBack(.dismissSheets(Array(presentation.sheets.suffix(1))), in: element)
     }
 
     /// Writes every shown page's chrome on its header bar, and names the window after the page the user sees.
@@ -136,7 +156,7 @@ final class GTKWindowController {
         switch way {
         case .pop(let stack):
             return (stack.gtk.view as? GTKNavigationView)?.popByUser() ?? false
-        case .dismissSheet:
+        case .dismissSheets:
             runtime.goBack(way, in: element)
             return true
         }

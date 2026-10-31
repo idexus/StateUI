@@ -52,6 +52,7 @@ extension RatingBarView {
     /// Adds the bar for `RatingBarContract`, and the act aimed at it. Said once, as the library loads.
     @MainActor
     static func register() {
+        // listing: android.md.applies
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
             let bar = RatingBarView()
             bar.onRatingChanged = { rating in
@@ -60,19 +61,22 @@ extension RatingBarView {
             return bar
         }) { bar in
             // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
-            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
             bar.raises(RatingBarContract.ratingChanged)
         }
+        // listing: end
 
+        // listing: android.md.acts
         // An act aimed at a control is its control's: the identity the aim sent is turned back into the control
         // this host made, and the performer is handed that control.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
             // The Java view fades itself, with its own animate().
             bar.flash()
         }
+        // listing: end
     }
 }
 // listing: end

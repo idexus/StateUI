@@ -1,7 +1,7 @@
-# revision 2.1
-Capsule.fill: ✅
-Ellipse.fill: ✅
-Path.fill: ✅
-Polygon.fill: ✅
-Polyline.fill: ✅
-Rectangle.fill: ✅
+# revision 3.1
+Capsule.fill: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths, a figure of its own and a turned one are made of the blur as clear as the glass is.
+Ellipse.fill: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths, a figure of its own and a turned one are made of the blur as clear as the glass is.
+Path.fill: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths, a figure of its own and a turned one are made of the blur as clear as the glass is.
+Polygon.fill: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths, a figure of its own and a turned one are made of the blur as clear as the glass is.
+Polyline.fill: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths, a figure of its own and a turned one are made of the blur as clear as the glass is.
+Rectangle.fill: ☑️ UIKit's glass is shaped by its corners alone: an oval of two lengths, a figure of its own and a turned one are made of the blur as clear as the glass is.

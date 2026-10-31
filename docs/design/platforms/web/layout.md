@@ -8,24 +8,39 @@ browser places a child where the host layer's arithmetic would.
 
 ## A layout is the browser's
 
-A stack is a flexbox along its axis, its spacing the flexbox's gap and its
-padding the element's own. A page, and the window's room, is a grid of one
+A stack is a flexbox along its axis, its spacing the flexbox's gap along that
+axis and its padding the element's own. A page, and the window's room, is a grid of one
 cell that its one child stands in. A child of a stack takes its natural size
 along the stack and never shrinks: a stack offers its children no less than
 they need, as the host layer's stack does.
+
+## A row that wraps
+
+A row that wraps is a flexbox that wraps (`flex-wrap: wrap`): the browser
+breaks it into lines at its children's natural widths, as the host layer's
+arithmetic does ([a row that wraps](../../host/layout.md#a-row-that-wraps)),
+its lines the row's line spacing apart (`row-gap`) - the spacing along a row
+being `column-gap`, so the two never overwrite each other - and standing from
+its top (`align-content: flex-start`) rather than stretched over a taller
+room. A label wider than its line stands alone on it and shrinks to it, and a
+space grows into what its line leaves, as elsewhere.
 
 ## A child's place
 
 A layout writes each child's place as the child's own CSS: its margin - below
 nothing too, which shifts the child as it does on every host - its
 width and height, their least and most, and its alignment across its slot -
-in a grid's cell along both axes. Start, centre and end are CSS's start,
+in a grid's cell along both axes. Start, center and end are CSS's start,
 center and end; a filling child stretches, unless a stated or a most size
 stops it short of its slot, when it stands in the middle, as the host layer
 places it. The least size a control's look gives it - a button's, a
 field's, a slider's - is its own size, and yields where the tree states a
 size or a most, where the child fills its slot and in an area: CSS's least
-wins over a stated size, so a button stated 30 high stood 36. A hidden child
+wins over a stated size, so a button stated 30 high stood 36. A label in a
+row shrinks by its natural width down to nothing (`flex: 0 1 auto`,
+`min-width: 0`), so a row short of room takes it from its words as the host
+layer's arithmetic does elsewhere (host/layout.md, a row short of room); every
+other child of a stack keeps its own (`flex: none`). A hidden child
 is `hidden`, which takes it out of the layout: it takes no room and no
 spacing.
 
@@ -48,10 +63,15 @@ child stood at an index before a move is the trap: the moves before it in the
 same pass shift the elements, and three children turned about - `[a, b, c]`
 to `[c, b, a]` - stand `[c, a, b]`.
 
+The element holding the keyboard is never the one moved: a browser takes the
+keyboard from an element as it leaves its place, and the field would lose it
+to a reorder. What stands between its index and it moves past it instead, in
+order, which leaves the same order.
+
 ## Places that travel
 
 A stack's, a grid's and a ZStack's children travel to their places by the
-host layer's layout motion (`TravellingPlaces`, `LayoutMotion`): what the
+host layer's layout motion (`TravelingPlaces`, `LayoutMotion`): what the
 layout says - travel, arrive, fade in as it joins - is the host layer's; the
 browser only lays out. So the places are read around each call from the page.
 Before a change - a patch reaching an element, an element leaving, a view
@@ -65,15 +85,20 @@ icons most of its patch. Once the call's changes are all in, each layout the
 call arranged is read again, and the host layer's motion takes each child
 from where it stood to where it now stands. Each read is one call to the
 page, of the children's places in their layout from its own layout -
-`offsetLeft`, `offsetTop` and their size, which no transform moves.
+`offsetLeft`, `offsetTop` and their size, which no transform moves. The size
+is the computed one, a fraction of a pixel included: `offsetWidth` rounds to
+a whole pixel, and words a place bound for 82 when they need 82.1 break onto
+a second line for the last frames of its travel.
 
 A child is drawn where its place stands on the way: moved from where the
 browser lays it out by a translation before its own transform, and sized as
 the place passes through, its end margins making up the rest of its slot -
 so the room it takes in its layout is its slot's from the first frame, and
-everything around it stands where it is going. A view laying out words keeps
-the size it is bound for and only moves. At rest the view's own CSS stands
-again.
+everything around it stands where it is going. A view laying out words
+stands no narrower than they need, as the page reads them - their lines'
+extent within its padding and border
+([words on the way](../../host/motion.md#words-on-the-way)). At rest the
+view's own CSS stands again.
 
 The trap: the place a child sets out from must be read before anything
 moves it. Read after the call's changes, every child already stands at its
@@ -97,7 +122,10 @@ place by a `translate` before its matrix, its own layer (`will-change:
 transform`) - a run moves its views every frame, and a move the browser
 composes is drawn without laying the page out again, where a `left` and a
 `top` written each frame laid out and painted every card, which a tablet's
-browser could not keep up with. In its rectangle, unbounded by its slot - a
+browser could not keep up with. A run standing right to left stands each
+view at the layout's right corner and moves it left as far as the run wrote
+it right - the mirror of its place, with no read of the room (host/layout.md,
+right to left). In its rectangle, unbounded by its slot - a
 room lower than a card makes the run scale the card, and a slot's
 `max-height` would squash it instead - drawn with the child's own
 transform under the run's (`HostDrawingTransform.under`) and the run's
@@ -107,7 +135,10 @@ not only its turn: a run worked out before its room was measured - a card half
 a point wide - leaves nothing of itself behind once the next one sizes it. A ZStack draws its children back to front in the run's order
 (`ZStackArithmetic.drawingOrder`) - each child, placed or not, takes its
 z-index from it - so a child the run places never rises over a later one it
-places none of. A child placed in its area again, with no run, takes back
+places none of. A grid, whose children share a cell, draws them back to front
+in their order by the same z-index: the browser draws what stands out of the
+page's flow after what stands in it, so a shape - positioned to hold its
+drawing - would else stand over every later child in its cell. A child placed in its area again, with no run, takes back
 its own opacity: the run's drawn opacity gives way to it, and a placing never
 clears it - a ZStack child at opacity nought, a row's hidden press light,
 would otherwise stand lit each time its row's look changes under the pointer.
@@ -122,7 +153,7 @@ A ScrollView is the browser's own scrolling over one document, as tall as its
 content and at least as tall as the view along the ways it scrolls, as wide
 as the view across them: a track of `minmax(max-content, 1fr)`. A track of
 `minmax(100%, max-content)` is the trap - a grid track grows to its maximum
-only into room left over, so content wider than the view stands centred over
+only into room left over, so content wider than the view stands centered over
 both its edges. The view's defaults - down, with its bars - stand from its
 making, as an applier runs only for a member the tree states.
 
@@ -149,6 +180,12 @@ scroller around it - a listing scrolling across lets a wheel or a finger
 moving down scroll the page it stands in. Kept both ways, a listing across a
 page stopped the page under every swipe over it. A list of items keeps the
 same rule.
+
+The page itself never bounces (`overscroll-behavior: none` on the document).
+The window stands over the browser's, so a finger pulling past a view that
+does not scroll - a short list - would pull the browser's page after it, in
+Safari and in an application added to the home screen alike; let go, the page
+springs back, and the next tap only stops it.
 
 ## Where a view stands
 
@@ -184,6 +221,6 @@ long arithmetic a browser running WebAssembly with no compiler pays for every
 number of every view a run moves each frame; a millionth of a pixel, or of a
 matrix's turn over a thousand pixels, draws nothing apart. An inset's sides are CSS's logical sides: its leading side is the inline
 start, so an element laid out right to left - `dir="rtl"` - turns its margin
-and padding by itself. A colour is `rgb()` in sRGB with its alpha. A box and a
+and padding by itself. A color is `rgb()` in sRGB with its alpha. A box and a
 shape draw a brush's gradient; a view's plain background, a run's and a bar's
-take its first colour.
+take its first color.

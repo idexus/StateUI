@@ -61,7 +61,7 @@ final class IdentityTests: XCTestCase {
                 VStack {
                     if shown { Text("then") } else { Text("else") }
                     ForEach([Ticket(1), Ticket(2)], id: \.self) { ticket in Text("\(ticket.number)") }
-                    LayoutEngine(["a", "b"]) { Text($0) } placements: { _, _ in [] }
+                    MotionLayout(["a", "b"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in [] }
                     Converting()
                     Text("marked").id(Restless(number: 1))
                 }
@@ -128,7 +128,7 @@ final class IdentityTests: XCTestCase {
     func testAMarkerKeepsItsElementByItsId() {
         let renders = Renders()
         func map(_ names: [String]) -> Node {
-            Map().markers { names.map { Marker($0).id($0) } }.node
+            Map().markers { names.map { Marker(at: Location(latitude: 52, longitude: 21)).label($0).id($0) } }.node
         }
 
         let first = renders.render(map(["A", "B"])).children.map(\.id)

@@ -26,7 +26,7 @@
     /// The font's family.
     public var family: String?
 
-    /// The words' colour, as the tree gives it.
+    /// The words' color, as the tree gives it.
     public var color: HostValue?
 
     /// What stands behind the words: the run's background as a host that blurs nothing paints it.
@@ -53,7 +53,7 @@
         size > 0 && size.isFinite ? letterSpacing / size : 0
     }
 
-    /// Takes `other`'s font, its scaling and its colour - what `TextMembers.look` reads - keeping this look's own
+    /// Takes `other`'s font, its scaling and its color - what `TextMembers.look` reads - keeping this look's own
     /// spacing, lines and decorations.
     public mutating func adopt(fontAndColorOf other: TextLook) {
         (style, size, weight, attributes, attributesGiven, family, color, scales) = (
@@ -97,7 +97,7 @@
 }
 
 extension MountedElement {
-    /// The look this element's own values give its words: its font, its colour, the space between its letters, its
+    /// The look this element's own values give its words: its font, its color, the space between its letters, its
     /// lines' height and its decorations - each nil or empty where it says nothing.
     public var textLook: TextLook {
         var look = TextLook()

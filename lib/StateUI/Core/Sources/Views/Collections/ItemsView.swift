@@ -31,9 +31,13 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     private var footerView: (any View)?
     private var empty: (any View)?
     private var choice: Choice?
+    private var selected: ValueHandler<Set<ID>>?
     private var activated: ValueHandler<ID>?
     private var endReached: (within: Int, handler: Handler)?
     private var aimed: Aim<Self>?
+
+    /// What the list wears of the pull to refresh, in the order written.
+    private var pull: [RefreshWorn] = []
 
     /// A list of `items`, each its own identity, each looking as `content` says.
     public init<Items: RandomAccessCollection, Content: View>(
@@ -59,8 +63,12 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     /// view in its place.
     public var body: some View {
         source.finish(header: headerView, footer: footerView)
-        // The empty view is held as `any View`, so both answers go as nodes.
-        if source.entries.isEmpty, let empty { return ModifiedContent(node: empty.node) }
+        // The empty view is held as `any View`, so both answers go as nodes; it stands in a scroller keeping the pull.
+        if source.entries.isEmpty, let empty {
+            guard !pull.isEmpty else { return AnyView(empty) }
+            let scroller = ScrollView { AnyView(empty) }
+            return AnyView(RefreshWorn.wear(pull, on: scroller))
+        }
 
         let source = self.source
         let reach = self.reach
@@ -84,7 +92,8 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
 
         if let choice {
             element.node.write(ItemsViewContract.selectionMode, choice.mode)
-            element.node.write(ItemsViewContract.selectedItems, source.identities(of: choice.chosen))
+            // Read as the list is described: the list is the reader, never the body that wrote it.
+            element.node.readsWhenDescribed { $0.write(ItemsViewContract.selectedItems, source.identities(of: choice.chosen())) }
             element.node.addHandler(ItemsViewContract.selectedItemsChanged.token) {
                 guard let identities = MemberValues.carried(
                     EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
@@ -95,6 +104,16 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
                     ids.append(id)
                 }
                 choice.write(ids)
+            }
+
+            if let selected {
+                element.node.addHandler(ItemsViewContract.selectedItemsChanged.token, gate: selected.gate) {
+                    guard let identities = MemberValues.carried(
+                        EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
+                    else { return }
+
+                    try await selected.run(Set(identities.compactMap { source.id(for: $0) }))
+                }
             }
         }
 
@@ -114,7 +133,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
             element.node.addHandlers(ItemsViewContract.endReached.token, [endReached.handler])
         }
 
-        return ModifiedContent(node: element.node)
+        return AnyView(RefreshWorn.wear(pull, on: element))
     }
 }
 
@@ -123,7 +142,7 @@ extension ItemsView {
     /// holds now, and how the user's choice is written back.
     struct Choice {
         let mode: SelectionMode
-        let chosen: [ID]
+        let chosen: @MainActor () -> [ID]
         let write: ([ID]) -> Void
     }
 
@@ -139,22 +158,47 @@ extension ItemsView {
 
     /// One item chosen at a time, borrowed two-way: the user's choice is
     /// written here, nil where they let it go, and assigning it chooses.
-    public func selection(_ binding: Binding<ID?>) -> Self {
+    public func selection(_ state: Binding<ID?>) -> Self {
         var copy = self
         copy.choice = Choice(
             mode: .single,
-            chosen: binding.wrappedValue.map { [$0] } ?? [],
-            write: { ids in if ids.first != binding.wrappedValue { binding.wrappedValue = ids.first } })
+            chosen: { state.wrappedValue.map { [$0] } ?? [] },
+            write: { ids in if ids.first != state.wrappedValue { state.wrappedValue = ids.first } })
         return copy
     }
 
     /// As many items chosen as the user likes, borrowed two-way.
-    public func selection(_ binding: Binding<Set<ID>>) -> Self {
+    public func selection(_ state: Binding<Set<ID>>) -> Self {
         var copy = self
         copy.choice = Choice(
             mode: .multiple,
-            chosen: Array(binding.wrappedValue),
-            write: { ids in if Set(ids) != binding.wrappedValue { binding.wrappedValue = Set(ids) } })
+            chosen: { Array(state.wrappedValue) },
+            write: { ids in if Set(ids) != state.wrappedValue { state.wrappedValue = Set(ids) } })
+        return copy
+    }
+
+    /// Hears the user change what is chosen, handed the ids chosen now - at
+    /// most one where one is chosen at a time, none where they let it go -
+    /// after the selection's write. A list with no selection chooses nothing,
+    /// so reports nothing.
+    public func onSelectionChanged(_ handler: @escaping @MainActor (Set<ID>) throws -> Void) -> Self {
+        var copy = self
+        copy.selected = ValueHandler(step: handler)
+        return copy
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what another
+    /// choice does while a run is under way.
+    public func onSelectionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Set<ID>>) -> Self {
+        var copy = self
+        copy.selected = ValueHandler(run: handler, gate: .own(policy))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSelectionChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Set<ID>>) -> Self {
+        var copy = self
+        copy.selected = ValueHandler(run: handler, gate: .shared(gate))
         return copy
     }
 
@@ -166,11 +210,18 @@ extension ItemsView {
         return copy
     }
 
-    /// The same, with a handler that awaits - opening a page does: its `gate`
+    /// The same, with a handler that awaits - opening a page does: its `policy`
     /// says what opening another item does while a run is under way.
-    public func onItemActivated(gate: some Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+    public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.activated = ValueHandler(run: handler, gate: gate)
+        copy.activated = ValueHandler(run: handler, gate: .own(policy))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+        var copy = self
+        copy.activated = ValueHandler(run: handler, gate: .shared(gate))
         return copy
     }
 
@@ -187,12 +238,27 @@ extension ItemsView {
     /// load under way at a time.
     ///
     ///     ItemsView(rows) { … }
-    ///         .onEndReached(within: 5, gate: .ignoreWhileRunning) { rows += try await nextPage() }
-    public func onEndReached(
-        within: Int = 0, gate: some Gate, _ handler: @escaping EventHandler
-    ) -> Self {
+    ///         .onEndReached(.ignoreWhileRunning) { rows += try await nextPage() }
+    public func onEndReached(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
         var copy = self
-        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: gate))
+        copy.endReached = (within: 0, handler: Handler(run: handler, gate: .own(policy)))
+        return copy
+    }
+
+    /// The same, heard within `within` items of the end.
+    ///
+    ///     ItemsView(rows) { … }
+    ///         .onEndReached(within: 5, policy: .ignoreWhileRunning) { rows += try await nextPage() }
+    public func onEndReached(within: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+        var copy = self
+        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: .own(policy)))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onEndReached(within: Int = 0, gate: Gate, _ handler: @escaping EventHandler) -> Self {
+        var copy = self
+        copy.endReached = (within: max(within, 0), handler: Handler(run: handler, gate: .shared(gate)))
         return copy
     }
 
@@ -223,7 +289,7 @@ extension ItemsView {
     ///     @Aim(ItemsView<Int>.self) private var list
     ///
     ///     ItemsView(0..<500) { Text("Row \($0)") }.aim(list)
-    ///     Button("Top").onClicked(gate: .cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+    ///     Button("Top").onClicked(.cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
     public func aim(_ aim: Aim<Self>) -> Self {
         var copy = self
         copy.aimed = aim
@@ -231,7 +297,62 @@ extension ItemsView {
     }
 }
 
+extension ItemsView {
+    /// Runs when the user pulls the list to refresh it; the list offers the pull once it hears it - an empty one
+    /// too, through the scroller its empty view stands in.
+    ///
+    ///     ItemsView(mail) { MailRow($0) }.onRefreshRequested { reload() }
+    public func onRefreshRequested(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+        wearing(.requested(handler))
+    }
+
+    /// The same, with a handler that awaits - a reload does: its `policy` says what a pull does while a run is under
+    /// way. The spinner shows while `isRefreshing` says so.
+    ///
+    ///     @State private var refreshing = false
+    ///
+    ///     ItemsView(mail) { MailRow($0) }
+    ///         .isRefreshing($refreshing)
+    ///         .onRefreshRequested(.ignoreWhileRunning) {
+    ///             defer { refreshing = false }
+    ///             try await inbox.reload()
+    ///         }
+    public func onRefreshRequested(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self {
+        wearing(.awaited(.own(policy), handler))
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onRefreshRequested(gate: Gate, _ handler: @escaping EventHandler) -> Self {
+        wearing(.awaited(.shared(gate), handler))
+    }
+
+    /// Whether the refresh is under way, both ways: the user's pull writes true into the state, and the
+    /// application writes false once the items are fresh - or true, to show a refresh it began itself, which runs
+    /// no `onRefreshRequested`. Without it, the spinner a pull shows goes at once.
+    public func isRefreshing(_ state: Binding<Bool>) -> Self {
+        wearing(.refreshing(state))
+    }
+
+    /// Whether the user can pull to refresh - by default wherever the list hears the pull; `false` withholds it
+    /// while the items cannot be refreshed.
+    public func isRefreshEnabled(_ value: Bool) -> Self {
+        wearing(.enabled(value))
+    }
+
+    /// `isRefreshEnabled` from a state, `$x`: the host sets each new value as it stands, and no view is rebuilt
+    /// for it.
+    public func isRefreshEnabled(_ state: Binding<Bool>) -> Self {
+        wearing(.enabledBy(state))
+    }
+
+    private func wearing(_ worn: RefreshWorn) -> Self {
+        var copy = self
+        copy.pull.append(worn)
+        return copy
+    }
+}
+
 /// The platform's collection an ItemsView stands on.
-struct ItemsViewElement: ElementView {
+struct ItemsViewElement: ElementView, RefreshElement {
     var node = Node(contract: ItemsViewContract.self)
 }

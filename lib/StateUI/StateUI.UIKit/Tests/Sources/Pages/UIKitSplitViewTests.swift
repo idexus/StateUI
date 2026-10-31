@@ -17,7 +17,7 @@ final class UIKitSplitViewTests: XCTestCase {
     func testTheSidebarSlidesOverTheDetailInANarrowRoom() throws {
         let menuOpen = State(wrappedValue: false)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            SplitView { Text("Sidebar") } detail: { Text("Detail") }.showsSidebar(menuOpen.projectedValue)
         }
         defer { host.finish() }
         let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
@@ -39,6 +39,33 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertTrue(menuOpen.wrappedValue, "the program's move is not told back as another")
     }
 
+    /// A sidebar beside the detail is a column beside its page, no part of what the page runs under: content ignoring
+    /// the safe area on every edge stands from the sidebar's edge, and runs under the bars and out to the window's
+    /// other edges.
+    @MainActor
+    func testADetailRunningUnderItsBarsStandsBesideTheSidebar() throws {
+        let host = UIKitRenderer.running(reducesMotion: true) {
+            SplitView { Text("Sidebar") } detail: {
+                ZStack {}.ignoresSafeArea(.all).id("content")
+            }
+            .showsSidebar(State(wrappedValue: true).projectedValue)
+        }
+        defer { host.finish() }
+        let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
+        host.settle { split.view.window != nil && split.displayMode != .secondaryOnly }
+        guard split.displayMode == .oneBesideSecondary else { throw XCTSkip("a phone's sidebar slides over the detail") }
+        let content = { (host.runtime.tree.root?.first(id: .manual("content"))?.native as? UIKitElement)?.view }
+        let sidebar = try XCTUnwrap(split.viewController(for: .primary)?.view)
+        host.settle { content()?.window != nil }
+        let view = try XCTUnwrap(content())
+        let frame = view.convert(view.bounds, to: nil)
+        let window = try XCTUnwrap(view.window).bounds
+
+        XCTAssertGreaterThanOrEqual(frame.minX, sidebar.convert(sidebar.bounds, to: nil).maxX - 0.5, "beside the sidebar")
+        XCTAssertEqual(frame.minY, window.minY, accuracy: 0.5, "under the bar")
+        XCTAssertEqual(frame.maxX, window.maxX, accuracy: 0.5, "out to the trailing edge")
+    }
+
     /// A sidebar whose page says no title names its column's bar by the application's name; the detail stays
     /// untitled.
     @MainActor
@@ -46,7 +73,7 @@ final class UIKitSplitViewTests: XCTestCase {
         // The tests' host reports no application; one does as it starts.
         HostBoundary.setApplicationInfo(HostApplicationInfo(name: "Notes", packageName: "", versionString: "", buildString: ""))
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            SplitView { Text("Sidebar") } detail: { Text("Detail") }.showsSidebar(State(wrappedValue: true).projectedValue)
         }
         defer { host.finish() }
         let split = try XCTUnwrap(host.runtime.tree.root?.first(type: .splitView))
@@ -58,7 +85,7 @@ final class UIKitSplitViewTests: XCTestCase {
         XCTAssertEqual(chrome(split.children.dropFirst().first), "")
     }
 
-    /// A sidebar the application paints stands apart from the detail by a line of UIKit's separator colour down its
+    /// A sidebar the application paints stands apart from the detail by a line of UIKit's separator color down its
     /// edge, and on UIKit's sidebar material all the same - under which the detail's column slides with the sidebar
     /// as it shows and hides; UIKit's plain column parts them by its own line, and its detail jumps to its width.
     @MainActor
@@ -66,10 +93,11 @@ final class UIKitSplitViewTests: XCTestCase {
         let painted = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
             if painted.wrappedValue {
-                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
-                    .sidebarBackground(.color(Color("#251E4C")))
+                SplitView { Text("Sidebar") } detail: { Text("Detail") }
+                    .showsSidebar(State(wrappedValue: true).projectedValue)
+                    .sidebarBackground(.color(Color(hex: 0x251E4C)))
             } else {
-                SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+                SplitView { Text("Sidebar") } detail: { Text("Detail") }.showsSidebar(State(wrappedValue: true).projectedValue)
             }
         }
         defer { host.finish() }
@@ -87,13 +115,14 @@ final class UIKitSplitViewTests: XCTestCase {
     }
 
     /// A blur or glass under the sidebar is UIKit's own effect under what the sidebar page shows - beside the
-    /// detail and over it alike - never a colour standing in for it.
+    /// detail and over it alike - never a color standing in for it.
     @MainActor
     func testASidebarOnGlassStandsOnUIKitsEffect() throws {
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(State(wrappedValue: true).projectedValue) { Text("Sidebar") } detail: { Text("Detail") }
+            SplitView { Text("Sidebar") } detail: { Text("Detail") }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
                 .sidebarBackground(.glass(.regular))
-                .flyoutBackground(.glass(.regular))
+                .sidebarOverlayBackground(.glass(.regular))
         }
         defer { host.finish() }
         let split = { Self.controller(of: .splitView, in: host) as? UISplitViewController }
@@ -128,9 +157,10 @@ final class UIKitSplitViewTests: XCTestCase {
         let path = State(wrappedValue: before)
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running {
-            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
+            SplitView { Text("Sidebar") } detail: {
                 NavigationStack(path.projectedValue) { Text("Home") } destination: { number in Text("Group \(number)") }
             }
+            .showsSidebar(menuOpen.projectedValue)
         }
         defer { host.finish() }
         let split = try XCTUnwrap(Self.controller(of: .splitView, in: host) as? UISplitViewController)
@@ -179,7 +209,7 @@ final class UIKitSplitViewTests: XCTestCase {
         let path = State(wrappedValue: [1, 2])
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
+            SplitView { Text("Sidebar") } detail: {
                 if tabbed.wrappedValue {
                     TabView([0, 1]) { tab in Text("Tab \(tab)") }
                 } else {
@@ -187,6 +217,7 @@ final class UIKitSplitViewTests: XCTestCase {
                         destination: { number in Text("Pushed \(number)") }
                 }
             }
+            .showsSidebar(menuOpen.projectedValue)
         }
         defer { host.finish() }
         let stack = try XCTUnwrap(Self.controller(of: .navigationStack, in: host))
@@ -213,12 +244,13 @@ final class UIKitSplitViewTests: XCTestCase {
     func testTabsOfStacksStandUnderOneBar() throws {
         let menuOpen = State(wrappedValue: true)
         let host = UIKitRenderer.running(reducesMotion: true) {
-            SplitView(menuOpen.projectedValue) { Text("Sidebar") } detail: {
+            SplitView { Text("Sidebar") } detail: {
                 TabView([0, 1]) { tab in
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Tab \(tab)") }
                         destination: { number in Text("Pushed \(number)") }
                 }
             }
+            .showsSidebar(menuOpen.projectedValue)
         }
         defer { host.finish() }
         host.settle { false }

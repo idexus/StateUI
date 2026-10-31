@@ -45,6 +45,7 @@ final class AndroidShapeView: AndroidView {
 
     /// What fills the shape, as the tree gave it.
     private var fill: HostValue?
+    var fillForTesting: HostValue? { fill }
 
     /// Everything the shape draws, from what the tree says.
     func draw(

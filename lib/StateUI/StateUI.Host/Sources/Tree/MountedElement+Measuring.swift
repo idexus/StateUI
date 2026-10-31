@@ -22,8 +22,8 @@ extension MountedElement {
         .opacity, .background, .textColor, .placeholderColor, .tint, .isEnabled,
         .isOn, .value, .minimum, .maximum, .progress, .cursorPosition, .selectionLength,
         .stroke, .fill, .lineWidth, .dash, .dashPhase, .lineCap, .lineJoin,
-        .miterLimit, .shape, .cornerRadius, .geometryTransform, .barBackgroundColor, .barForegroundColor,
-        .drawing, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough, .phase,
+        .miterLimit, .shape, .cornerRadius, .geometryTransform, .barBackground, .barForegroundColor,
+        .drawing, .scrollOffset, .clipsContent, .ignoresInput, .letsInputThrough, .parameters,
     ]).union(transformProperties).union(accessibilityProperties)
 
     /// Where this element's size may change, the elements whose layouts forget what they measured - this one and

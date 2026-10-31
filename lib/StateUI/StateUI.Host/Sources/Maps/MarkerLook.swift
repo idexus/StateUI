@@ -6,7 +6,7 @@
 /// How a map's marker of a kind is drawn, the same on every host drawing one: its hue and the symbol it wears.
 /// Design: docs/design/host/maps.md#a-markers-look
 @_spi(Host) public struct MarkerLook: Equatable, Sendable {
-    /// A marker's hue, drawn as the platform's own colour of that name.
+    /// A marker's hue, drawn as the platform's own color of that name.
     public enum Hue: Sendable {
         /// A plain marker's.
         case red

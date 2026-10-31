@@ -38,7 +38,8 @@ final class GTKRenderer {
 
     /// What performs the acts the application calls, and answers them, by the host layer's rules.
     private(set) lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, answers: runtime.core, tree: { [unowned self] in runtime.tree })
+        toolkit: actToolkit, files: fileToolkit, network: GTKNetwork(), answers: runtime.core,
+        tree: { [unowned self] in runtime.tree })
 
     /// The application's ID, which the desktop knows it by.
     var applicationID: String {
@@ -62,6 +63,13 @@ final class GTKRenderer {
     var userWindow: GTKWindow? {
         let front = runtime.lifecycle.activatedLast(among: roster.windows.map(\.element))
         return front.flatMap { roster.controller(of: $0)?.window } ?? window
+    }
+
+    /// The window a window's act asks in: the one `element` stands in, or, where nil, the one the user is in; nil
+    /// where `element` stands in no window shown.
+    func window(asked element: MountedElement?) -> GTKWindow? {
+        guard let element else { return userWindow }
+        return roster.controller(of: element)?.window
     }
 
     /// The window element whose window is `window`.
@@ -99,6 +107,13 @@ final class GTKRenderer {
         }
     }
 
+    /// The desktop asked the application to open `addresses` - links of a scheme its head's entry takes: each reaches
+    /// a window by the host layer's rule.
+    /// Design: docs/design/platforms/gtk/runtime.md#a-link-opened
+    func openLinks(_ addresses: [String]) {
+        for address in addresses { runtime.openLink(address) }
+    }
+
     /// The application was activated on GLib's thread: the first time, the host claims it as the UI thread and
     /// starts; after that, a second launch brings the window forward.
     /// Design: docs/design/platforms/gtk/runtime.md#starting
@@ -124,6 +139,7 @@ final class GTKRenderer {
         let renderer = GTKRenderer(application: application)
         shared = renderer
         renderer.start(turns: GTKDoorbell.install)
+        GTKMainQueue.watch()
         return renderer
     }
 
@@ -139,7 +155,7 @@ final class GTKRenderer {
                 GTKEnvironment.report(to: runtime.core, applicationID: applicationID)
                 GTKEnvironment.watch { [weak self] in self?.environmentChanged() }
             },
-            kept: { GTKKeptValues.restore(into: runtime.core, applicationID: applicationID) },
+            kept: { GTKKeptValues.readKept(into: runtime.core, applicationID: applicationID) },
             windows: { scenes.restore(GTKKeptValues.readScenes(applicationID: applicationID), in: runtime) },
             turns: turns)
     }
@@ -221,18 +237,23 @@ final class GTKRenderer {
 extension GTKRenderer: HostPresenter {
     func presentRendered(touchedChrome: Bool) {
         if touchedChrome { showWindows() } else { reportDisplayOnceRealized() }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.gtk.configurePopover() }
         if let text = scenes.changed(root: runtime.tree.root) {
             GTKKeptValues.writeScenes(text, applicationID: applicationID)
         }
     }
 
-    /// A frame that moves what the chrome shows - a bar's colour, the window's frame - shows the window again.
+    /// A frame that moves what the chrome shows - a bar's color, the window's frame - shows the window again.
     func presentFrame(movedChrome: Bool) {
         if movedChrome { showWindows() }
     }
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+
+    func open(link address: String) {
+        acts.open(link: address)
     }
 
     func focus(_ element: MountedElement) {

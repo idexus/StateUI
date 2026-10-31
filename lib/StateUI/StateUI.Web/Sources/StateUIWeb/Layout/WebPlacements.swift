@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// Where the children of the page's travelling layouts stand, for the host layer's layout motion: read once before
+/// Where the children of the page's traveling layouts stand, for the host layer's layout motion: read once before
 /// the first change a call from the page makes, and again, for each layout arranged, once the call's changes are
 /// all in - then each view drawn where its place stands on the way.
 /// Design: docs/design/platforms/web/layout.md#places-that-travel
@@ -42,7 +42,7 @@ final class WebPlacements {
         guard !reading.isEmpty else { return }
 
         let standing = reading.flatMap { layout in
-            layout.children.filter { $0.travelling == nil && !$0.isReleased }.map { (layout, $0) }
+            layout.children.filter { $0.traveling == nil && !$0.isReleased }.map { (layout, $0) }
         }
         let places = WebRelay.places(standing.map { ($0.0.node, $0.1.node) })
         for ((_, child), place) in zip(standing, places) { child.slot = child.frame(laidOut: place) }
@@ -58,7 +58,7 @@ final class WebPlacements {
         moved[ObjectIdentifier(view)] = view
     }
 
-    /// The call is over: each layout arranged places its children where the browser laid them out, travelling there
+    /// The call is over: each layout arranged places its children where the browser laid them out, traveling there
     /// from where they stood, and every view whose place moved is drawn where it stands.
     func settle() {
         defer { read = [] }
@@ -77,7 +77,7 @@ final class WebPlacements {
             pairs.append((layout.node, layout.node))
             for child in layout.children {
                 // Where a standing child stood is where its place sets out from.
-                if child.travelling == nil { child.travelling = child.slot }
+                if child.traveling == nil { child.traveling = child.slot }
                 child.clearSizeOverride()
                 pairs.append((layout.node, child.node))
             }
@@ -90,7 +90,7 @@ final class WebPlacements {
                 child.slot = child.frame(laidOut: read.removeFirst())
                 moved[ObjectIdentifier(child)] = child
                 guard let slot = child.slot else {
-                    child.travelling = nil
+                    child.traveling = nil
                     continue
                 }
                 layout.place(child, at: index, slot: slot)

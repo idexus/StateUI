@@ -16,26 +16,16 @@ public struct MultiBinding<Out: StateValue, Sources> {
     /// nothing that reads it at build becomes the sources' reader.
     let values: () -> Sources
 
-    /// The sources' storages in the order named; nothing for a part of a state or a
-    /// binding made from closures.
-    let parts: [(any AnyStateStorage)?]
+    /// The sources' storages in the order named.
+    let parts: [any AnyStateStorage]
 
     /// The derived state: one object per line that wrote a conversion, kept on the
     /// first source, with the engine that keeps it up to date.
     func made(at key: PathNumber, _ read: @escaping () -> Out) -> Binding<Out> {
-        let storages = parts.compactMap { $0 }
-
-        guard storages.count == parts.count, let first = storages.first else {
-            complain("`multi` was handed a part of a state, or a binding made from "
-                + "closures, which the host cannot carry. The value is worked out at "
-                + "build instead, and nothing reports back through it.")
-            return Binding<Out>(get: read, set: { _ in })
-        }
-
-        let derived = first.derived(Out.self, at: key, make: read)
+        let derived = parts[0].derived(Out.self, at: key, make: read)
         let conversion = derived.conversion ?? Conversion()
 
-        conversion.sources = storages
+        conversion.sources = parts
         conversion.forward = { [weak derived] asking in
             guard let derived else { return }
 
@@ -62,8 +52,28 @@ extension Binding where Value: StateValue {
         _ a: Binding<A>, _ b: Binding<B>
     ) -> MultiBinding<Value, (A, B)> {
         MultiBinding(
-            values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue) },
-            parts: [a.described, b.described])
+            values: { (a.standing, b.standing) },
+            parts: [a.storage, b.storage])
+    }
+
+    /// 2 journeys read as one on their way to a control - the words for a
+    /// point, the distance between two animated values - settled on every
+    /// frame either moves. This library's own.
+    ///
+    ///     Text(.multi($liveX.journey, $liveY.journey).convert { x, y in
+    ///         "at \(Int(x.value)), \(Int(y.value))"
+    ///     })
+    ///
+    /// - Parameters:
+    ///   - a: journey 1.
+    ///   - b: journey 2.
+    /// - Returns: the journeys, waiting for the arithmetic that makes them one.
+    public static func multi<A: Walked, B: Walked>(
+        _ a: Journey<A>, _ b: Journey<B>
+    ) -> MultiBinding<Value, (Journey<A>, Journey<B>)> {
+        _ = a.storage.walkedImage()
+        _ = b.storage.walkedImage()
+        return MultiBinding(values: { (a, b) }, parts: [a.storage, b.storage])
     }
 
     /// 3 states read as one on their way to a control, in the order they
@@ -80,8 +90,8 @@ extension Binding where Value: StateValue {
         _ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>
     ) -> MultiBinding<Value, (A, B, C)> {
         MultiBinding(
-            values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue) },
-            parts: [a.described, b.described, c.described])
+            values: { (a.standing, b.standing, c.standing) },
+            parts: [a.storage, b.storage, c.storage])
     }
 
     /// 4 states read as one on their way to a control, in the order they
@@ -99,8 +109,8 @@ extension Binding where Value: StateValue {
         _ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>
     ) -> MultiBinding<Value, (A, B, C, D)> {
         MultiBinding(
-            values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described])
+            values: { (a.standing, b.standing, c.standing, d.standing) },
+            parts: [a.storage, b.storage, c.storage, d.storage])
     }
 
     /// 5 states read as one on their way to a control, in the order they
@@ -119,8 +129,8 @@ extension Binding where Value: StateValue {
         _ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>
     ) -> MultiBinding<Value, (A, B, C, D, E)> {
         MultiBinding(
-            values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described])
+            values: { (a.standing, b.standing, c.standing, d.standing, e.standing) },
+            parts: [a.storage, b.storage, c.storage, d.storage, e.storage])
     }
 
     /// 6 states read as one on their way to a control, in the order they
@@ -140,8 +150,8 @@ extension Binding where Value: StateValue {
         _ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>
     ) -> MultiBinding<Value, (A, B, C, D, E, F)> {
         MultiBinding(
-            values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described])
+            values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing) },
+            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage])
     }
 
     /// 7 states read as one on their way to a control, in the order they
@@ -162,8 +172,8 @@ extension Binding where Value: StateValue {
         _ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G)> {
         MultiBinding(
-            values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue, g.described?.value ?? g.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described])
+            values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing, g.standing) },
+            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage, g.storage])
     }
 
     /// 8 states read as one on their way to a control, in the order they
@@ -185,8 +195,8 @@ extension Binding where Value: StateValue {
         _ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>, _ h: Binding<H>
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G, H)> {
         MultiBinding(
-            values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue, g.described?.value ?? g.wrappedValue, h.described?.value ?? h.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described, h.described])
+            values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing, g.standing, h.standing) },
+            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage, g.storage, h.storage])
     }
 
     /// 9 states read as one on their way to a control, in the order they
@@ -209,8 +219,8 @@ extension Binding where Value: StateValue {
         _ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>, _ h: Binding<H>, _ i: Binding<I>
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I)> {
         MultiBinding(
-            values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue, g.described?.value ?? g.wrappedValue, h.described?.value ?? h.wrappedValue, i.described?.value ?? i.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described, h.described, i.described])
+            values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing, g.standing, h.standing, i.standing) },
+            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage, g.storage, h.storage, i.storage])
     }
 
     /// 10 states read as one on their way to a control, in the order they
@@ -234,8 +244,8 @@ extension Binding where Value: StateValue {
         _ a: Binding<A>, _ b: Binding<B>, _ c: Binding<C>, _ d: Binding<D>, _ e: Binding<E>, _ f: Binding<F>, _ g: Binding<G>, _ h: Binding<H>, _ i: Binding<I>, _ j: Binding<J>
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I, J)> {
         MultiBinding(
-            values: { (a.described?.value ?? a.wrappedValue, b.described?.value ?? b.wrappedValue, c.described?.value ?? c.wrappedValue, d.described?.value ?? d.wrappedValue, e.described?.value ?? e.wrappedValue, f.described?.value ?? f.wrappedValue, g.described?.value ?? g.wrappedValue, h.described?.value ?? h.wrappedValue, i.described?.value ?? i.wrappedValue, j.described?.value ?? j.wrappedValue) },
-            parts: [a.described, b.described, c.described, d.described, e.described, f.described, g.described, h.described, i.described, j.described])
+            values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing, g.standing, h.standing, i.standing, j.standing) },
+            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage, g.storage, h.storage, i.storage, j.storage])
     }
 }
 

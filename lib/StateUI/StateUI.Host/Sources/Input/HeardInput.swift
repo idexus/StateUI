@@ -9,8 +9,16 @@
     /// A tap: its place in a quick run of taps, from 1; 0 for a press assistive technology made.
     case tap(run: Int)
 
-    /// The pointer over the view: the View tier's event, and where it is, in points of the view.
-    case pointer(Event, Point)
+    /// A press held as long as the view's hold waits, before it moved as far as a drag.
+    case hold
+
+    /// A press on a view that hears taps, as a button takes one (`ButtonPress`): its phase, where it stands in points
+    /// of the view, the view's size, and whether a finger presses - which stands over the view a little beyond it.
+    case press(GesturePhase, at: Point, size: LayoutSize, byFinger: Bool)
+
+    /// The pointer over the view: the View tier's event, where it is, in points of the view, and whether a finger
+    /// is the pointer - which presses and lets go, and hovers over nothing.
+    case pointer(Event, Point, byFinger: Bool = false)
 
     /// A press dragged: its phase, and how far it has moved since it began.
     case drag(GesturePhase, x: Double, y: Double)
@@ -59,6 +67,12 @@
 
     /// Files the user dragged from the system were let go over the view - every one of them, of whatever kind.
     case filesDropped([ChosenFile])
+
+    /// A screen reader performed one of the view's actions, named by its words.
+    case accessibilityAction(String)
+
+    /// A screen reader stepped the view up or down.
+    case accessibilityAdjustment(AccessibilityAdjustment)
 }
 
 /// What a view listens for of the user's input.
@@ -89,8 +103,11 @@
     /// Two fingers turning: over a layout that `rotates`.
     public static let rotations = Hearing(rawValue: 1 << 5)
 
+    /// A press held.
+    public static let holds = Hearing(rawValue: 1 << 6)
+
     /// Each kind of input on its own.
-    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches, .hand, .rotations]
+    public static let kinds: [Hearing] = [.taps, .pointer, .drags, .pinches, .hand, .rotations, .holds]
 }
 
 /// A pinch's steps: each step's scale since the last, of a pinch a toolkit tells as its whole scale.

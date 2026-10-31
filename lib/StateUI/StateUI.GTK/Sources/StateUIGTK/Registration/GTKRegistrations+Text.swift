@@ -10,7 +10,7 @@ extension GTKRegistrations {
     static func text(_ registry: Registry<GTKView>) {
         registry.add(TextContract.self, create: { _ in GTKTextView() }) { label in
             label.applies(TextMembers.members) { view, values in applyText(view, values) }
-            label.applies([TextContract.lineBreak, TextContract.maximumLines]) { view, values in
+            label.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
                 view.setLines(
                     breaking: values[TextContract.lineBreak] ?? .wordWrap,
                     maximum: values[TextContract.maximumLines])
@@ -34,8 +34,8 @@ extension GTKRegistrations {
         }
     }
 
-    /// Puts the text tiers' members (`TextMembers`) on a label, a button or a radio button: the words in their case,
-    /// the font and the colour, and the room around them.
+    /// Puts the text tiers' members (`TextMembers`) on a label or a button: the words in their case,
+    /// the font and the color, and the room around them.
     static func applyText<Realized: ElementContract>(_ view: any GTKWordsView, _ values: ElementValues<Realized>) {
         if let words = TextMembers.words(values) { view.setText(words) }
         if let look = TextMembers.look(values) {

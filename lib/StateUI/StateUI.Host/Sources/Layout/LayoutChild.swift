@@ -21,16 +21,27 @@
     public static let zero = LayoutSize(width: 0, height: 0)
 }
 
+/// How a child lays out words, which its place travels no narrower than they need.
+/// Design: docs/design/host/motion.md#words-on-the-way
+@_spi(Host) public enum LaidOutWords: Equatable, Sendable {
+    /// No words.
+    case none
+    /// Words that are all the child draws - a label.
+    case bare
+    /// Words in a box of their own - a button, which keeps the words it shows until its box holds new ones.
+    case boxed
+}
+
 /// What a layout reads of one child: its margin, alignments, stated sizes and place in a grid or a ZStack.
 /// Design: docs/design/host/layout.md#the-layout-arithmetic
 @_spi(Host) public struct LayoutValues: Equatable, Sendable {
     /// The space kept around the child, outside it.
     public var margin = Insets(0)
 
-    /// Across its slot: 0 start, 1 centre, 2 end, 3 fill.
+    /// Across its slot: 0 start, 1 center, 2 end, 3 fill.
     public var horizontal: Int32 = 3
 
-    /// Down its slot: 0 start, 1 centre, 2 end, 3 fill.
+    /// Down its slot: 0 start, 1 center, 2 end, 3 fill.
     public var vertical: Int32 = 3
 
     /// The width the child states for itself.
@@ -66,8 +77,11 @@
     /// The part of a ZStack's room the child stands in; the whole room where it names none.
     public var area: Area?
 
-    /// Whether the child grows along its stack into the room the others leave - a spacer.
+    /// Whether the child grows along its stack into the room the others leave - a space.
     public var grows = false
+
+    /// How the child lays out words (`NodeType.laidOutWords`): its place travels no narrower than they need.
+    public var words = LaidOutWords.none
 
     /// Values with every part at its default.
     public init() {}
@@ -108,6 +122,11 @@
     /// The child's own size for the width offered to it, its margin already taken out - the layout owns the
     /// margin, both ways; its stated sizes and bounds applied.
     func size(offered width: Double?) -> LayoutSize
+
+    /// How far below its top the child's first line of words rests, laid out `width` wide; nil for a child with no
+    /// words, which rests its foot on a baseline.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(offered width: Double?) -> Double?
 }
 
 /// The arithmetic of one child's extent and place along one axis of its slot.

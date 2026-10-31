@@ -14,11 +14,13 @@ enum WinUIRegistrations {
 
         text(registry)
         buttons(registry)
+        links(registry)
         toggles(registry)
         values(registry)
         indicators(registry)
         pickers(registry)
         dates(registry)
+        colors(registry)
         fields(registry)
         pictures(registry)
         shapes(registry)

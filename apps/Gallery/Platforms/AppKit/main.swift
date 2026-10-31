@@ -2,12 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Foundation
+// listing: appkit.md.head
 import GalleryUI
 import StateUIAppKit
 
-stateui_app_register()
+registerApplication()
+// listing: end
 
-// listing: InteropActsSample.AppKit.swift, InteropEventsSample.AppKit.swift
+// listing: InteropActsSample.AppKit.swift, InteropEventsSample.AppKit.swift, appkit.md.head
 // What this host answers for the application, said before it runs: the
 // controls it realizes, the acts it performs, and the pushes it reports. Each
 // lives in Host/ beside this file.
@@ -29,4 +31,6 @@ let resources = bundledResources.flatMap {
 let bundledIcon = Bundle.main.url(forResource: "StateUI", withExtension: "icns")
 let icon = bundledIcon ?? sourceApplication.appendingPathComponent("Resources/AppIcon/appicon_macos.svg")
 
+// listing: appkit.md.head
 StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+// listing: end

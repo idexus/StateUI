@@ -39,7 +39,7 @@ final class AppKitRenderer {
     /// AppKit's part of the files the user opens and saves, and of what macOS launches.
     lazy var fileToolkit = AppKitFileToolkit(renderer: self)
     lazy var acts = HostActPerformer(
-        toolkit: actToolkit, files: fileToolkit, tree: { [unowned self] in runtime.tree })
+        toolkit: actToolkit, files: fileToolkit, network: URLSessionNetwork(), tree: { [unowned self] in runtime.tree })
     var focusReportQueued = false
 
     /// The windows the tree holds, each with its controller, in the tree's order.
@@ -95,7 +95,7 @@ final class AppKitRenderer {
                 configureEnvironment()
                 watching()
             },
-            kept: hydratePersistentState,
+            kept: readKeptFromPreferences,
             windows: {
                 if !connectedFirstWindow {
                     runtime.connectWindow()
@@ -116,7 +116,7 @@ final class AppKitRenderer {
             manufacturer: "Apple",
             name: Host.current().localizedName ?? "",
             versionString: process.operatingSystemVersionString,
-            deviceType: .physical))
+            isVirtual: false))
 
         if let screen = NSScreen.main {
             let scale = screen.backingScaleFactor
@@ -155,6 +155,15 @@ final class AppKitRenderer {
         NSApp.keyWindow ?? windowControllers.first?.window
     }
 
+    /// The window a window's act asks in: the one `element` stands in - the top of the sheets over it - or, where
+    /// nil, the one the user is looking at; nil where `element` stands in no window shown.
+    func window(asked element: MountedElement?) -> NSWindow? {
+        guard let element else { return userWindow }
+        var window = roster.controller(of: element)?.window
+        while let sheet = window?.attachedSheet { window = sheet }
+        return window
+    }
+
     /// The window element `window` shows, or the one it stands over as a sheet; else the tree's first.
     func element(of window: NSWindow) -> MountedElement? {
         var native: NSWindow? = window
@@ -187,7 +196,7 @@ final class AppKitRenderer {
     }
 
     /// The native image for a picture, made once for this renderer: a file of the application's, the SF Symbol for
-    /// an icon, or the bytes decoded at a point a pixel. A symbol is a template, drawn in the colour of what holds it.
+    /// an icon, or the bytes decoded at a point a pixel. A symbol is a template, drawn in the color of what holds it.
     /// Reapplying an unchanged picture hands a native view the image it already shows, so nothing reads the file
     /// again, no measurement is forgotten and a bar or a tab row finds nothing changed.
     func image(_ picture: HostPicture) -> NSImage? {
@@ -219,20 +228,24 @@ final class AppKitRenderer {
     }
 }
 
-/// An element's view, placed by the layout motion of the layout it stands in - a label at the size its place
-/// travels to, its words standing there meanwhile.
+/// An element's view, placed by the layout motion of the layout it stands in - a layout's children at the size its
+/// place travels to.
 extension AppKitElement: PlacedView {
     var placedFrame: Rect {
         get { view?.frame.placed ?? Rect(0, 0, 0, 0) }
         set {
-            let size = wordsRoom ?? newValue
-            view?.frame = NSRect(x: newValue.x, y: newValue.y, width: size.width, height: size.height)
+            view?.frame = NSRect(placed: newValue)
             isPlaced = true
         }
     }
 
     func travels(to destination: Rect?) {
-        if type == .text { wordsRoom = destination }
+        (view as? AppKitTravelingLayout)?.arrangementRoom = destination.map { NSSize(width: $0.width, height: $0.height) }
+    }
+
+    var heldWords: LayoutSize? {
+        get { (view as? AppKitButtonView)?.heldWords }
+        set { (view as? AppKitButtonView)?.heldWords = newValue }
     }
 }
 
@@ -254,6 +267,7 @@ final class AppKitPictureKey: NSObject {
 extension AppKitRenderer: HostPresenter {
     func presentRendered(touchedChrome: Bool) {
         if touchedChrome { synchronizeWindows() }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.appKit.configurePopover() }
     }
 
     func presentFrame(movedChrome: Bool) {
@@ -263,6 +277,10 @@ extension AppKitRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+
+    func open(link address: String) {
+        acts.open(link: address)
     }
 
     func focus(_ element: MountedElement) {

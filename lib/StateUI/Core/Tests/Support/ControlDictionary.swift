@@ -367,11 +367,11 @@ struct ControlDictionary {
         example(of: contract).map { ["```swift", $0, "```", ""] } ?? []
     }
 
-    /// What an application registers where a host does not realize the element, under its example: the words, and
-    /// the registration quoted, never compiled.
+    /// What an application registers where a host does not realize the element, under its example: the words,
+    /// pointing to the hosts' pages.
     static func registrationBlock(of contract: any Contract.Type) -> [String] {
         registrations.first { ObjectIdentifier($0.contract) == ObjectIdentifier(contract) }
-            .map { [$0.words, "", "```swift quote", $0.code, "```", ""] } ?? []
+            .map { [$0.words, ""] } ?? []
     }
 
     /// A contract's doc.
@@ -566,7 +566,7 @@ struct ControlDictionary {
         row(leading + platforms)
     }
 
-    /// The rule under a header: its own columns left, the hosts' centred.
+    /// The rule under a header: its own columns left, the hosts' centered.
     static func rule(leading count: Int) -> String {
         row(Array(repeating: "---", count: count) + platforms.map { _ in ":---:" })
     }

@@ -130,7 +130,7 @@ class Cube3D extends HTMLElement {
     }
   }
 
-  // Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+  // Clears to the housing's color and draws the cube: turned, scaled and seen in perspective.
   draw() {
     const gl = this.gl;
     if (!gl) return;

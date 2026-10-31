@@ -8,13 +8,13 @@ import CStateUIGTK
 @testable import StateUIGTKDriver
 import XCTest
 
-/// A word whose colour a button changes.
+/// A word whose color a button changes.
 private struct ChangingRunPage: View {
     @State private var red = true
 
     var body: some View {
         VStack {
-            Text().spans { TextSpan("word").textColor(red ? Color("#FF0000") : Color("#0000FF")) }
+            Text().spans { TextSpan("word").textColor(red ? Color(hex: 0xFF0000) : Color(hex: 0x0000FF)) }
             Button("Blue").onClicked { red = false }
         }
     }
@@ -38,9 +38,9 @@ private struct SpannedPage: View {
 
 @MainActor
 final class GTKTextViewTests: XCTestCase {
-    /// A label's words take the font, the colour, the spacing, the lines and the alignment the tree gives them - its
+    /// A label's words take the font, the color, the spacing, the lines and the alignment the tree gives them - its
     /// size in typographic points the desktop's text scale applies to, in pixels where the words do not scale.
-    func testATextTakesItsFontColourLinesAndAlignment() throws {
+    func testATextTakesItsFontColorLinesAndAlignment() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack {
@@ -48,7 +48,7 @@ final class GTKTextViewTests: XCTestCase {
                         .fontSize(20)
                         .fontWeight(.bold).fontAttributes(.italic)
                         .fontFamily("monospace")
-                        .textColor(Color("#FF0000"))
+                        .textColor(Color(hex: 0xFF0000))
                         .tracking(2)
                         .lineHeight(1.5)
                         .textDecorations(.underline)
@@ -82,7 +82,7 @@ final class GTKTextViewTests: XCTestCase {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    Text("7").background(Color("#FF0000")).verticalTextAlignment(.end).width(60).height(72)
+                    Text("7").background(Color(hex: 0xFF0000)).verticalTextAlignment(.end).width(60).height(72)
                     Text("at the top").height(72)
                 }
                 .horizontalAlignment(.start)
@@ -103,15 +103,34 @@ final class GTKTextViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     Text("words")
-                    Text("words").padding(left: 24, top: 8, right: 12, bottom: 4)
+                    Text("words").padding(start: 24, top: 8, end: 12, bottom: 4)
                 }
             }
             let labels = host.views(GTKTextView.self)
             let plain = try XCTUnwrap(labels.first).measure(width: nil, height: nil)
             let padded = try XCTUnwrap(labels.last).measure(width: nil, height: nil)
 
-            XCTAssertEqual(padded.width - plain.width, 36, "24 on the left, 12 on the right")
+            XCTAssertEqual(padded.width - plain.width, 36, "24 at the start, 12 at the end")
             XCTAssertEqual(padded.height - plain.height, 12, "8 above, 4 below")
+        }
+    }
+
+    /// A padding's start and end follow the direction: a text's start stands at the left left to right and at the
+    /// right right to left - again as the direction turns.
+    func testAPaddingsStartStandsWhereTheDirectionStarts() throws {
+        try onUIThread {
+            let rightToLeft = State(wrappedValue: false)
+            let host = GTKRenderer.running {
+                VStack { Text("words").padding(start: 24, top: 8, end: 12, bottom: 4) }
+                    .layoutDirection(rightToLeft.wrappedValue ? .rightToLeft : .leftToRight)
+            }
+            let label = try XCTUnwrap(host.views(GTKTextView.self).first)
+            // The class names its sides top, right, bottom, left.
+            XCTAssertNotEqual(gtk_widget_has_css_class(label.widget, "stateui-padding-8-12-4-24"), 0, "the start left")
+
+            rightToLeft.wrappedValue = true
+            host.step()
+            XCTAssertNotEqual(gtk_widget_has_css_class(label.widget, "stateui-padding-8-24-4-12"), 0, "the start right")
         }
     }
 
@@ -139,16 +158,17 @@ final class GTKTextViewTests: XCTestCase {
         }
     }
 
-    /// A label's spans are its words, run by run, each in its own colour, size, weight, slant, lines and background.
+    /// A label's spans are its words, run by run, each in its own color, size, weight, slant, digits, lines and
+    /// background.
     func testATextsSpansAreItsWordsRunByRun() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack {
                     Text()
                         .spans {
-                            TextSpan("let ").textColor(Color("#FF0000"))
-                            TextSpan("x").fontSize(20).fontWeight(.bold).fontAttributes(.italic)
-                            TextSpan(" = 1").textDecorations(.underline).background(Color("#FFFF00"))
+                            TextSpan("let ").textColor(Color(hex: 0xFF0000))
+                            TextSpan("x").fontSize(20).fontWeight(.bold).fontAttributes([.italic, .monospacedDigits])
+                            TextSpan(" = 1").textDecorations(.underline).background(Color(hex: 0xFFFF00))
                         }
                 }
             }
@@ -157,7 +177,7 @@ final class GTKTextViewTests: XCTestCase {
             XCTAssertEqual(label.text, "let x = 1")
             XCTAssertEqual(label.ranged, [
                 "0-4 foreground 65535 0 0", "0-4 foreground-alpha 65535",
-                "4-5 points \(15 * PANGO_SCALE)", "4-5 style \(PANGO_STYLE_ITALIC.rawValue)",
+                "4-5 features tnum 1", "4-5 points \(15 * PANGO_SCALE)", "4-5 style \(PANGO_STYLE_ITALIC.rawValue)",
                 "4-5 weight \(PANGO_WEIGHT_BOLD.rawValue)",
                 "5-9 background 65535 65535 0", "5-9 background-alpha 65535",
                 "5-9 underline \(PANGO_UNDERLINE_SINGLE.rawValue)",
@@ -165,7 +185,7 @@ final class GTKTextViewTests: XCTestCase {
         }
     }
 
-    /// A span that changes changes its run, its colour travelling there.
+    /// A span that changes changes its run, its color traveling there.
     func testASpanThatChangesChangesItsRun() throws {
         try onUIThread {
             let host = GTKRenderer.running { ChangingRunPage() }
@@ -213,7 +233,7 @@ private extension GTKTextView {
         return said.sorted()
     }
 
-    /// What each of the label's Pango attributes says, by its type: a number, a family, a colour's channels.
+    /// What each of the label's Pango attributes says, by its type: a number, a family, a color's channels.
     var attributes: [UInt32: String] {
         guard let list = gtk_label_get_attributes(widget.opaque) else { return [:] }
         var said: [UInt32: String] = [:]
@@ -234,6 +254,7 @@ private extension GTKTextView {
         PANGO_ATTR_SIZE.rawValue: "points", PANGO_ATTR_ABSOLUTE_SIZE.rawValue: "pixels",
         PANGO_ATTR_WEIGHT.rawValue: "weight",
         PANGO_ATTR_STYLE.rawValue: "style", PANGO_ATTR_UNDERLINE.rawValue: "underline",
+        PANGO_ATTR_FONT_FEATURES.rawValue: "features",
     ]
 
     private static func describe(_ attribute: UnsafeMutablePointer<PangoAttribute>) -> String {
@@ -246,6 +267,8 @@ private extension GTKTextView {
         case PANGO_ATTR_FOREGROUND, PANGO_ATTR_BACKGROUND:
             let color = raw.assumingMemoryBound(to: PangoAttrColor.self).pointee.color
             return "\(color.red) \(color.green) \(color.blue)"
+        case PANGO_ATTR_FONT_FEATURES:
+            return String(cString: raw.assumingMemoryBound(to: PangoAttrFontFeatures.self).pointee.features)
         case PANGO_ATTR_LINE_HEIGHT:
             return "\(raw.assumingMemoryBound(to: PangoAttrFloat.self).pointee.value)"
         default:

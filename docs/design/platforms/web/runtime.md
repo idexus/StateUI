@@ -79,7 +79,7 @@ relay reads for the host out of one event or more - Return that commits no
 input method's words, the keyboard coming into an element or leaving it, a
 popover taken down, a key for a shortcut - crosses as a number of a Swift
 enum (`WebHearing`), as every closed vocabulary the two share does: a
-canvas's operations, a pointer's kind, a frame's step, a colour scheme. The
+canvas's operations, a pointer's kind, a frame's step, a color scheme. The
 relay holds each as an object whose names and numbers mirror its enum's
 cases, marked `// Swift: <Enum>`, and switches over those names, never over a
 bare number; `RelayVocabularyTests` holds both. What only Swift knows, it
@@ -124,6 +124,11 @@ over the browser's words; Swift decides (`WebEnvironment.locale`), and tells
 the locale again as the user's languages change. So the library's words - a
 chrome's own buttons, a dialog's answers - stand in the user's language.
 
+What the user asked of motion and contrast is the browser's media queries,
+`prefers-reduced-motion` and `prefers-contrast: more`, told again as either
+turns. A page is told of no screen reader and no scale of the system's words:
+it reports none, and a scale of 1, as a platform that cannot tell does.
+
 ## One frame
 
 `WebFrameClock` asks for the browser's display frames with
@@ -155,8 +160,8 @@ again. The on-screen keyboard goes down with the focus of the field holding
 it. The focus goes to an element's view, or the first in it that takes it.
 
 A kept value stands in the browser's storage for the page's site, under the
-application's name, in the host layer's text (`KeptValuesText`): read before
-the first render, written whole as one changes. Where the browser keeps
+application's name, in the host layer's text (`KeptValuesText`): a key read
+as its first state is made, the text written whole as one changes. Where the browser keeps
 nothing - a private window, storage turned off - the value lives as long as
 the page. A scene's kept values stand beside them in the host layer's text of
 the scenes (`SceneKeeper`, `KeptScenes`), written as they change and as the
@@ -167,6 +172,29 @@ A question for the user is the browser's modal dialog
 ([pages](pages.md#questions-for-the-user)), held by the acts' part of the
 page until the user answers it: the host layer shows one at a time. An ItemsView's scroll to an item is
 its own ([items](items.md#scrolling-to-an-item)).
+
+## A link opened
+
+A link into a page is its address with a fragment: told as the page starts,
+where it carries one, and each time the fragment changes (`hashchange`). The
+query stays the environment's (`?STATEUI_TALLY=1`), and the page's own address
+with no fragment is a start with no link. A fragment's move is never the way
+back: the browser moves its history for it too, and the host takes a move of
+its history for its way back only where the fragment stayed.
+
+## The clipboard
+
+The clipboard is the browser's: words are written as the page's text, and
+read through the browser's own permission, the act answered once the browser
+answers - its words, nothing where it holds none, or why it refused. A page
+served over plain http has no clipboard, and its read fails with that reason.
+
+## Sharing
+
+What the user shares is the browser's share sheet, where it has one: the words
+as the shared text and the link as its address. Sent on, it answers shared; a
+user's cancel answers not shared; a browser with none fails the act with that
+reason.
 
 ## Files
 

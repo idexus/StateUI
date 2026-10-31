@@ -6,7 +6,7 @@ target, one test for each family of cases in `AppKitConformanceTests`.
 ## What the driver does
 
 A user's act goes through the path AppKit's own input takes into the host: a
-button's, a check box's and a radio button's `performClick`, a switch's
+button's and a check box's `performClick`, a switch's
 accessibility press, a slider's value and then its action, a stepper's value
 one increment on within its range and then its action - what a click on
 either arrow does - a picker's item chosen, and a field's or an editor's
@@ -38,6 +38,14 @@ they stood, as the system puts them. The driver's hosts
 keep their values in preferences of their own, which a case's first launch
 finds empty.
 
+## A popover
+
+A popover shows only by a window on the screen, so where the host presents
+no window it holds the popover's view unshown, in a panel of its own no one
+sees, as it holds the test's windows: the driver reads the host's own
+`isShown`, and closes it as AppKit's transient popover closes on a click
+beside it, through the host's own entry.
+
 ## Parts
 
 A family runs as one test, and the longest - a visual element's, a view's, a
@@ -57,14 +65,14 @@ in `Tests/Resources/Images`; the driver's host reads its resources there.
 
 A member's value is read from the control AppKit holds - a switch's state, a
 slider's range, a field's words, a view's alpha, a control's font and its
-words' colour, the tint a checkbox, a picker or a slider shows, what its
-accessibility object tells assistive technology, the colour its layer paints
+words' color, the tint a checkbox, a picker or a slider shows, what its
+accessibility object tells assistive technology, the color its layer paints
 behind it, a menu entry's NSMenuItem and a toolbar item's NSToolbarItem -
 never from what the host last wrote. A run of a text's words is the label's
 attributes over the letters the host layer's runs place it at (`RunPlace`). A
 view's transform is the drawing's where the view's layer holds that drawing
-now, and unread, with why, where AppKit holds another. A colour is read from
-the view displayed into a context of sRGB, which StateUI's colours are: a
+now, and unread, with why, where AppKit holds another. A color is read from
+the view displayed into a context of sRGB, which StateUI's colors are: a
 bitmap in the screen's own space holds the screen's numbers. A heading's level
 stays unread, with why: AppKit marks a heading, not its level. What the driver
 cannot read or do yet it says with why, and the case stays empty in AppKit's

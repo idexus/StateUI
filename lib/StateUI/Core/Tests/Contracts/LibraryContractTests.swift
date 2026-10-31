@@ -35,10 +35,12 @@ final class LibraryContractTests: XCTestCase {
 
     // MARK: - The facts
 
-    /// The members of one name say the same of their layer, travel, clearing
-    /// and motion: the differ and the hosts hold a token, which is a name, and
-    /// read what it says by the name - two members of one name that disagreed
-    /// would each be half wrong.
+    /// The members of one name say the same of their travel, clearing and
+    /// motion: the differ and the hosts hold a token, which is a name, and read
+    /// what it says by the name - two members of one name that disagreed would
+    /// each be half wrong. A member's layer is its own and its element's: no
+    /// token carries it, so a page's line under its title and a provider's
+    /// marker's are one name.
     func testTheMembersOfOneNameShareTheirFacts() {
         var first: [String: Declared] = [:]
         var wrong: [String] = []
@@ -50,8 +52,8 @@ final class LibraryContractTests: XCTestCase {
                 continue
             }
 
-            if (earlier.facts.layer, earlier.facts.travels, earlier.facts.cleared, earlier.facts.moves)
-                != (member.facts.layer, member.facts.travels, member.facts.cleared, member.facts.moves) {
+            if (earlier.facts.travels, earlier.facts.cleared, earlier.facts.moves)
+                != (member.facts.travels, member.facts.cleared, member.facts.moves) {
                 wrong.append("\(member.contract).\(member.name) differs from \(earlier.contract)'s")
             }
         }
@@ -111,6 +113,24 @@ final class LibraryContractTests: XCTestCase {
 
         XCTAssertGreaterThan(read, 210, "the scan read almost nothing")
         XCTAssertEqual(wrong, [])
+    }
+
+    /// Every tier the sources declare stands on the library's list: a host's register, the dictionary and the
+    /// conformance families find a tier there, and one missing from it is a member no register can name.
+    func testEveryTierTheSourcesDeclareIsOnTheLibrarysList() throws {
+        let listed = Set(LibraryContracts.tiers.map { "\($0)" })
+        let pattern = try NSRegularExpression(pattern: #"public enum (\w+Contract): Contract \{"#)
+        var missing: [String] = []
+
+        for source in try SourceTree.allSources() where source.path.hasPrefix("Contracts/") {
+            let range = NSRange(source.text.startIndex..., in: source.text)
+            for match in pattern.matches(in: source.text, range: range) {
+                let name = String(source.text[Range(match.range(at: 1), in: source.text)!])
+                if !listed.contains(name) { missing.append(name) }
+            }
+        }
+
+        XCTAssertEqual(missing, [])
     }
 
     /// An element contract's node type is its own name - `TextContract`

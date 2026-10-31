@@ -25,31 +25,18 @@ final class PlacedRunTests: XCTestCase {
 
     // MARK: - The lanes
 
-    /// The twelve a placement carries are the twelve the host reads by stride,
-    /// in that order - so the two spellings of one fact cannot drift while
-    /// both exist.
-    func testAPlacementCarriesTheSameTwelveThePackerWrites() {
+    /// A placement carries its twelve numbers in the order a host reads them by stride: the rectangle, the
+    /// transform's move, turn and sizes, the opacity, the z-index and the shade.
+    func testAPlacementCarriesItsTwelveInTheOrderAHostReadsThem() {
         let placement = Placement(
             Rect(11, 22, 120, 170),
-            transform: .translate(3, 4).scaleX(0.5),
+            transform: .scaleX(0.5).translate(3, 4),
             opacity: 0.75,
             shade: 0.25,
             zIndex: 3)
 
-        let packed = UnsafeMutablePointer<Double>.allocate(capacity: PackedPlacement.fields)
-        defer { packed.deallocate() }
-
-        PackedPlacement.write(placement, into: packed, at: 0)
-
-        guard case .lanes(let lanes) = placement.carried else {
-            return XCTFail("a placement carries lanes")
-        }
-
-        XCTAssertEqual(lanes.count, PackedPlacement.fields)
-
-        for lane in 0..<PackedPlacement.fields {
-            XCTAssertEqual(lanes[lane], packed[lane], "lane \(lane)")
-        }
+        XCTAssertEqual(placement.carried, .lanes([11, 22, 120, 170, 3, 4, 0, 0.5, 1, 0.75, 3, 0.25]))
+        XCTAssertEqual(Placement.lanes, 12)
     }
 
     /// And back: the picture those numbers draw is the picture that made them.
@@ -162,14 +149,14 @@ final class PlacedRunTests: XCTestCase {
 
     // MARK: - The tree
 
-    /// A LAYOUT ENGINE DESCRIBES NO PLACEMENT AT ALL: its own `area` says
+    /// A MOTION LAYOUT DESCRIBES NO PLACEMENT AT ALL: its own `area` says
     /// which number carries the run, and not one of the twelve properties is
     /// on any child - every view wrapped.
-    func testALayoutEngineDescribesNothingAboutWhereItsViewsGo() {
+    func testAMotionLayoutDescribesNothingAboutWhereItsViewsGo() {
         let renders = Renders()
 
         let patch = renders.render(
-            LayoutEngine([1, 2]) { Text("\($0)") } placements: { _, _ in [] }
+            MotionLayout([1, 2], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
                 .id("run")
                 .node)
 
@@ -194,8 +181,10 @@ final class PlacedRunTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            LayoutEngine([1]) { Text("\($0)") } placements: { _, _ in [] }
-                .shade(Rectangle(.black))
+            MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
+                .shade(
+                    Rectangle()
+                        .fill(.black))
                 .id("run")
                 .node)
 
@@ -208,9 +197,9 @@ final class PlacedRunTests: XCTestCase {
         XCTAssertNil(wrapper.children[1].props[.opacity], "the shade's own fade is the number's")
     }
 
-    /// The layout engine's element in a message.
+    /// The motion layout's element in a message.
     private static func layout(_ patch: HostPatch) -> HostPatch? {
-        if patch.type == .layoutEngine { return patch }
+        if patch.type == .motionLayout { return patch }
 
         for child in patch.children {
             if let found = layout(child) { return found }

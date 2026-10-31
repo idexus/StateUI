@@ -53,9 +53,24 @@ private final class Cart {
 /// A model of the kind another package ships: Swift's own `@Observable`,
 /// which reports its writes to an observation scope rather than to this
 /// library. Held here so the tests can measure that difference.
-@Observable
+@MainActor @Observable
 private final class ForeignCart {
     var note = ""
+}
+
+/// The handbook's bridge to it: what the interface reads, copied into a state
+/// inside an observation scope and again on each change.
+@MainActor
+private final class ForeignCartAdapter {
+    @State var note = ""
+
+    func follow(_ cart: ForeignCart) {
+        withObservationTracking {
+            note = cart.note
+        } onChange: { [weak self] in
+            Task { @MainActor in self?.follow(cart) }
+        }
+    }
 }
 
 /// A view that keeps a model rather than a value.
@@ -72,9 +87,9 @@ private struct CartPage: View {
 private struct CartOwner {
     @State var cart = Cart()
 
-    /// What `TextField($cart.note)` would be given - a binding INTO the model,
+    /// What `TextField($cart.note)` would be given - a proxy INTO the model,
     /// through a key path.
-    var note: Binding<String> { $cart.note }
+    var note: StatePart<String> { $cart.note }
 }
 
 /// A view that was LENT the model. There is no second wrapper for a class: a
@@ -83,7 +98,7 @@ private struct CartOwner {
 private struct NoteRow {
     @Binding var basket: Cart
 
-    var note: Binding<String> { $basket.note }
+    var note: StatePart<String> { $basket.note }
 }
 
 /// How many times a closure was built, and what `debugInfo()` said there - a
@@ -256,12 +271,14 @@ final class ModelStateTests: XCTestCase {
     }
 
     /// `$cart.note` - the model's property reached THROUGH the holding state
-    /// by a key path - is a PART of that state, with no storage of its own:
-    /// it takes the described road, as `$room.width` does.
-    func testAKeyPathBindingIntoAModelIsDescribed() {
+    /// by a key path - is a PART of that state, which nothing in the library
+    /// takes; the model's own `cart.$note` is the whole state the host carries.
+    func testAKeyPathIntoAModelIsAPartAndItsOwnStateTheWhole() {
         let owner = CartOwner()
 
-        XCTAssertNil(owner.note.image, "a key-path binding has no storage of its own")
+        let part: StatePart<String> = owner.note
+        part.wrappedValue = "milk"
+        XCTAssertEqual(owner.cart.note, "milk", "a part writes through the holding state")
         XCTAssertNotNil(owner.cart.$note.image, "the model's own `$note` is the whole state")
     }
 
@@ -450,7 +467,7 @@ final class ModelStateTests: XCTestCase {
                       "the handler wrote a property of the model, which is a render")
 
         // A fresh view, as every render makes one - and a fresh `Cart()` with
-        // it, which the box throws away in favour of the one it is holding.
+        // it, which the box throws away in favor of the one it is holding.
         let second = renders.render(CartPage().node, changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(second.props["text"], .string("Items: 1"),
@@ -503,8 +520,8 @@ final class ModelStateTests: XCTestCase {
 
         XCTAssertTrue(owner.cart === replacement, """
             `$` says: I lend you this, do with it what you want - which includes \
-            replacing it. A parent meaning to lend less hands the object itself \
-            and the child builds its own Binding(get:set:).
+            replacing it. A parent meaning to lend less hands the object itself, \
+            whose `@State` properties are states of their own.
             """)
         XCTAssertTrue(Renderer.shared.needsRender)
     }
@@ -523,6 +540,29 @@ final class ModelStateTests: XCTestCase {
             deprecation in Observable.swift names at the declaration, \
             and this is the measurement it stands on.
             """)
+    }
+
+    /// A model another package owns reaches the interface through an adapter of states: each change of the model is
+    /// copied as a state's write, which its readers hear - the next one too, the scope armed anew by the copy.
+    func testAnAdapterTellsEachChangeOfAnObservableModelAsAState() async throws {
+        let cart = ForeignCart()
+        let adapter = ForeignCartAdapter()
+        adapter.follow(cart)
+        let reader = reading { _ = adapter.note }
+        defer { _ = reader }
+        settled()
+
+        for note in ["for later", "for now"] {
+            cart.note = note
+            for _ in 0..<200 {
+                guard adapter.note != note else { break }
+                try await Task.sleep(for: .milliseconds(1))
+            }
+
+            XCTAssertEqual(adapter.note, note, "copied by the change handler")
+            XCTAssertTrue(Renderer.shared.needsRender, "a state's write, heard by the view reading it")
+            settled()
+        }
     }
 
     func testHoldingAnObservableModelIsSaidAtTheDeclaration() throws {

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// A run of cards the user swipes through, in a shape one word chooses: a layout engine with the arithmetic of a
+// A run of cards the user swipes through, in a shape one word chooses: a motion layout with the arithmetic of a
 // wheel, a fan, a row and a deck, its phase the card in front.
 // Design: docs/design/views/measured-layouts.md#gallery-view
 
@@ -14,7 +14,7 @@
 ///     }
 ///     .arrangement(.default)
 ///     .position($shown)
-///     .onItemTapped { album in open(album) }
+///     .onItemActivated { title in open(title) }
 ///
 /// The initializer is the card's face, one card per item; where a card goes
 /// and which way it faces is the arrangement's. Give the gallery a bounded
@@ -22,7 +22,8 @@
 /// and the cards are fitted to it.
 ///
 /// A swipe settles on a card, and `.position(_:)` says which; assigning it
-/// moves the run. A tap opens the middle card, handed to `.onItemTapped`. No
+/// moves the run. A tap on the card in front activates it, and
+/// `.onItemActivated` hears its identity. No
 /// view is rebuilt while the run moves: the one render is the card changing.
 public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     // State first: boxes are adopted by path, and the card faces stored below
@@ -36,7 +37,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// the card's face, beneath the placement the run writes every frame.
     @State private var dipping: ID?
 
-    /// Where the run stands, a card a unit: the engine's phase, which the host
+    /// Where the run stands, a card a unit: the layout's phase, which the host
     /// walks - a position written travels there through it.
     @State private var turn = 0.0
 
@@ -52,8 +53,8 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// What runs when the middle card changes, beside any binding, through its gate.
     private var moved: ValueHandler<Int>?
 
-    /// What runs when the user taps the run, through its gate.
-    private var tapped: ValueHandler<Items.Element>?
+    /// What runs when the user activates the card in front, with its identity, through its gate.
+    private var activated: ValueHandler<ID>?
 
     /// Which shape the cards stand in.
     private var look = GalleryArrangement.default
@@ -81,6 +82,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
     /// How far the fade goes, where the author said. See `fade`.
     private var fades: Double?
+
+    /// How each card moves as a body of the gallery's world, where the author said. See `itemBody`.
+    private var cardBody: LayoutBody?
 
     /// One card per item, the item its identity.
     ///
@@ -141,11 +145,11 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// Assigning it moves the run. A gallery nobody lends a binding to keeps
     /// the card itself and still settles on one.
     ///
-    /// - Parameter binding: where the middle card is written and read.
+    /// - Parameter state: where the middle card is written and read.
     /// - Returns: the gallery, keeping its card there.
-    public func position(_ binding: Binding<Int>) -> Self {
+    public func position(_ state: Binding<Int>) -> Self {
         var copy = self
-        copy.pin = binding
+        copy.pin = state
         return copy
     }
 
@@ -160,38 +164,50 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         return copy
     }
 
-    /// The same, with a handler that awaits: its `gate` says what another card coming to the middle does while
+    /// The same, with a handler that awaits: its `policy` says what another card coming to the middle does while
     /// a run is under way.
-    public func onPositionChanged(gate: some Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
+    public func onPositionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Self {
         var copy = self
-        copy.moved = ValueHandler(run: handler, gate: gate)
+        copy.moved = ValueHandler(run: handler, gate: .own(policy))
         return copy
     }
 
-    /// Runs when the user taps the card in front, with its item.
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPositionChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Self {
+        var copy = self
+        copy.moved = ValueHandler(run: handler, gate: .shared(gate))
+        return copy
+    }
+
+    /// Hears the user open the card in front, handed its identity.
     ///
     ///     GalleryView(groups, id: \.route) { … }
     ///         .position($shown)
-    ///         .onItemTapped { group in open(group) }
+    ///         .onItemActivated { route in open(route) }
     ///
-    /// The tap lands on the card in front as its shape draws it, whether the
+    /// A tap lands on the card in front as its shape draws it, whether the
     /// user may swipe the run or not.
     ///
-    /// - Parameter handler: what to run, given the middle item.
-    /// - Returns: the gallery, answering a tap.
-    public func onItemTapped(_ handler: @escaping @MainActor (Items.Element) throws -> Void) -> Self {
+    /// - Parameter handler: what to run, given the card's identity.
+    /// - Returns: the gallery, answering its card's activation.
+    public func onItemActivated(_ handler: @escaping @MainActor (ID) throws -> Void) -> Self {
         var copy = self
-        copy.tapped = ValueHandler(step: handler)
+        copy.activated = ValueHandler(step: handler)
         return copy
     }
 
-    /// The same, with a handler that awaits - opening a page does: its `gate` says what a tap does while a run
-    /// is under way.
-    public func onItemTapped(
-        gate: some Gate, _ handler: @escaping ValueEventHandler<Items.Element>
-    ) -> Self {
+    /// The same, with a handler that awaits - opening a page does: its `policy` says what opening the card again
+    /// does while a run is under way.
+    public func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> Self {
         var copy = self
-        copy.tapped = ValueHandler(run: handler, gate: gate)
+        copy.activated = ValueHandler(run: handler, gate: .own(policy))
+        return copy
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> Self {
+        var copy = self
+        copy.activated = ValueHandler(run: handler, gate: .shared(gate))
         return copy
     }
 
@@ -216,15 +232,28 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// How the run goes on when the user lets go of it with speed - how far a
     /// throw carries, and how it slows - as any motion says it.
     ///
-    ///     .throwing(.spring(response: .milliseconds(500), damping: 0.8))
+    ///     .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
     ///
     /// - Parameter motion: eased, its length says how far a throw carries and
     ///   its curve how it slows; a spring settles as springs do. Either sets
     ///   out at the hand's speed.
     /// - Returns: the gallery, thrown that way.
-    public func throwing(_ motion: Motion) -> Self {
+    public func throwMotion(_ motion: Motion) -> Self {
         var copy = self
         copy.thrown = motion
+        return copy
+    }
+
+    /// How each card moves as a body of the gallery's world: a body following its place lags behind it as the
+    /// gallery turns, and settles back onto it.
+    ///
+    ///     .itemBody(.followsLayout(.spring(response: .milliseconds(300), damping: 0.8)))
+    ///
+    /// - Parameter body: the body every card is, as `layoutBody(_:)` gives one view of a motion layout.
+    /// - Returns: the gallery, its cards moving so.
+    public func itemBody(_ body: LayoutBody) -> Self {
+        var copy = self
+        copy.cardBody = body
         return copy
     }
 
@@ -252,7 +281,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// What to draw over a card to send it into the background, and how far.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(Rectangle(Color("#000000")).cornerRadius(14))
+    ///         .shade(
+    ///             Rectangle()
+    ///                 .fill(Color(hex: 0x000000))
+    ///                 .cornerRadius(14))
     ///
     /// A shade darkens a far card without showing the card behind it, as
     /// fading would; the card in front wears none of it. Give the view the
@@ -276,7 +308,10 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// given, and then a quarter.
     ///
     ///     GalleryView(covers, id: \.name) { face($0) }
-    ///         .shade(Rectangle(Color("#000000")).cornerRadius(14))
+    ///         .shade(
+    ///             Rectangle()
+    ///                 .fill(Color(hex: 0x000000))
+    ///                 .cornerRadius(14))
     ///         .fade(0)
     ///
     /// - Parameter amount: how far a far card fades.
@@ -314,7 +349,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         // The empty view is held as `any View`, so every answer goes as a node.
         if count == 0, let empty {
-            return ModifiedContent(node: empty.node)
+            return AnyView(empty)
         }
 
         // Locals rather than `self`, which holds a class.
@@ -329,28 +364,31 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         let make = source.card
         let shape = look
         let (width, height) = (cardWidth, cardHeight)
+        let body = cardBody
 
         // The position, read in a closure: read here, it would make this body a reader, and every card crossed
         // would rebuild the deck.
         // Design: docs/design/views/composition.md#a-watcher-is-a-view-of-its-own
         let asked = { min(max(pin?.wrappedValue ?? showns.wrappedValue, 0), count - 1) }
 
-        var engine = LayoutEngine(items, id: path) { item in
+        var layout = MotionLayout(items, id: path, parameters: turns.projectedValue) { item in
             // The face in a holder of its own, so the press on it is not overwritten by the placement written on
             // the holder every frame. The holder is the card's size: a card the run has not placed yet would fill
             // the room.
-            Grid {
-                ModifiedContent(node: make(item))
+            let card = Grid {
+                AnyView(node: make(item))
                     // Which card is pressed, never which is in front.
                     .scale(dips.wrappedValue == item[keyPath: path] ? Self.dip : 1)
                     .motion(Self.pressing)
             }
             .width(width)
             .height(height)
-        } placements: { room, phase, from in
-            (0..<count).map { place(Double($0) - phase, setOut: Double($0) == from, count, room, shape) }
+            if let body { card.layoutBody(body) } else { card }
+        } placements: { room, parameters, segmentStart in
+            (0..<count).map { place(Double($0) - parameters, setOut: Double($0) == segmentStart, count, room, shape) }
         }
-        .phase(turns.projectedValue)
+        // The cards stand in reading order, as a stack's views do.
+        .mirrorsRightToLeft(true)
         // A card the hand names is the position at once, in the frame that names it.
         .onNamed { turned in
             let card = min(max(Int(turned.rounded()), 0), count - 1)
@@ -364,19 +402,18 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
         // The hand carries the card in front, however big the room draws it; a deck is swiped a card at a time.
         if swipes {
-            let throwing = thrown ?? LayoutInput.scroll(.horizontal).throwing
-            let input = shape == .deck
-                ? LayoutInput.swipe(.horizontal, throwing: throwing) : .scroll(.horizontal, throwing: throwing)
-            engine = engine.axis(\.self, input: input, range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+            let input = shape == .deck ? LayoutInput.swipe(.horizontal) : .scroll(.horizontal)
+            layout = layout.axis(\.self, input: input, range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+            if let thrown { layout = layout.throwMotion(thrown) }
         }
 
         // The shade sits beside the press: the card that dips wears none.
-        if let mask { engine = engine.shade(mask) }
+        if let mask { layout = layout.shade(mask) }
 
         // The tap, answered on the card in front: the press shows, and the card is back at its size, before the
-        // tap's own work, which usually builds a page.
-        if let tapped {
-            engine = engine.onItemTapped(gate: tapped.gate) { item in
+        // activation's own work, which usually builds a page.
+        if let activated {
+            let tapped: ValueEventHandler<Items.Element> = { item in
                 let front = items[items.index(items.startIndex, offsetBy: asked())]
 
                 guard item[keyPath: path] == front[keyPath: path] else { return }
@@ -387,12 +424,16 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
                 dips.wrappedValue = nil
 
-                try await tapped.run(item)
+                try await activated.run(item[keyPath: path])
+            }
+            switch activated.gate {
+            case .own(let policy): layout = layout.onItemTapped(policy, tapped)
+            case .shared(let gate): layout = layout.onItemTapped(gate: gate, tapped)
             }
         }
 
         let deck = Grid {
-            engine
+            layout
 
             // The watcher of the position, a view of its own beside the deck, so reading it rebuilds none of the
             // cards: a position written sends the run there.
@@ -410,7 +451,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // What the position asked for ends with the gallery.
         .onDestroying { positionRuns.orphan() }
 
-        return ModifiedContent(node: deck.node)
+        return AnyView(deck)
     }
 
     /// How small the card in front is drawn while it is held down.
@@ -447,7 +488,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private static var largest: Double { 1.375 }
 
     /// Where one card goes and how it is turned, `step` cards from the one in front - the one the run's motion set
-    /// out from where `setOut`. With no shade view the shade is `PackedPlacement.unshaded`, the host seeing none of
+    /// out from where `setOut`. With no shade view the shade is `Placement.unshaded`, the host seeing none of
     /// this side's views.
     private func place(
         _ step: Double,
@@ -459,7 +500,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         var placement = placed(step, setOut: setOut, count, room, shape)
 
         placement.shade = mask == nil
-            ? PackedPlacement.unshaded
+            ? Placement.unshaded
             : min(max(placement.shade, 0), 1)
 
         return placement
@@ -610,7 +651,8 @@ private struct Watcher<Value: Equatable>: View {
     var body: some View {
         let value = at()
 
-        return Rectangle(.transparent)
+        return Rectangle()
+            .fill(.transparent)
             .width(0)
             .height(0)
             .ignoresInput(true)

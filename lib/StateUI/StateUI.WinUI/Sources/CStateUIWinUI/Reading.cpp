@@ -51,8 +51,8 @@ namespace {
         return winrt::to_string(words);
     }
 
-    /// A solid brush's colour as #AARRGGBB, its own opacity taken into it; empty for none or another brush.
-    std::string colour(media::Brush const &brush) {
+    /// A solid brush's color as #AARRGGBB, its own opacity taken into it; empty for none or another brush.
+    std::string color(media::Brush const &brush) {
         auto solid = brush ? brush.try_as<media::SolidColorBrush>() : media::SolidColorBrush{nullptr};
         if (!solid) return "";
         auto made = solid.Color();
@@ -60,6 +60,25 @@ namespace {
         char words[10];
         std::snprintf(words, sizeof words, "#%02X%02X%02X%02X", alpha, made.R, made.G, made.B);
         return words;
+    }
+
+    /// A ground as a test reads it: a color, "acrylic" with its color and luminosity, "linear" with its two points
+    /// and each stop's color at its offset, or nothing for WinUI's own.
+    std::string groundText(media::Brush const &own) {
+        if (auto linear = own ? own.try_as<media::LinearGradientBrush>() : nullptr) {
+            auto from = linear.StartPoint();
+            auto to = linear.EndPoint();
+            auto words = "linear " + number(from.X) + " " + number(from.Y) + " " + number(to.X) + " " + number(to.Y);
+            for (auto const &stop : linear.GradientStops())
+                words += " " + color(media::SolidColorBrush(stop.Color())) + "@" + number(stop.Offset());
+            return words;
+        }
+        if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
+            auto luminosity = acrylic.TintLuminosityOpacity();
+            return "acrylic " + color(media::SolidColorBrush(acrylic.TintColor())) + " " +
+                   number(luminosity ? luminosity.Value() : 0);
+        }
+        return own ? color(own) : std::string();
     }
 
     std::string sides(xaml::Thickness const &thickness) {
@@ -91,12 +110,22 @@ namespace {
         if (what == "italic") {
             return flag((text ? text.FontStyle() : control.FontStyle()) == winrt::Windows::UI::Text::FontStyle::Italic);
         }
+        if (what == "tabularDigits") {
+            auto alignment = text ? winrt::Microsoft::UI::Xaml::Documents::Typography::GetNumeralAlignment(text)
+                                  : winrt::Microsoft::UI::Xaml::Documents::Typography::GetNumeralAlignment(control);
+            return flag(alignment == xaml::FontNumeralAlignment::Tabular);
+        }
         if (what == "fontFamily") return narrow((text ? text.FontFamily() : control.FontFamily()).Source());
         if (what == "tracking") return number(text ? text.CharacterSpacing() : control.CharacterSpacing());
         if (what == "textScales") {
             return flag(text ? text.IsTextScaleFactorEnabled() : control.IsTextScaleFactorEnabled());
         }
-        if (what == "foreground") return colour(text ? text.Foreground() : control.Foreground());
+        // A toggle's words take the color its style reads from the resources the host writes.
+        if (what == "foreground" && object.try_as<controls::ToggleSwitch>())
+            return color(ownBrush(control.Resources(), L"ToggleSwitchHeaderForeground"));
+        if (what == "foreground" && object.try_as<controls::CheckBox>())
+            return color(ownBrush(control.Resources(), L"CheckBoxForegroundUnchecked"));
+        if (what == "foreground") return color(text ? text.Foreground() : control.Foreground());
         if (what == "padding") return sides(text ? text.Padding() : control.Padding());
         return std::nullopt;
     }
@@ -186,11 +215,11 @@ namespace {
         auto box = object.try_as<controls::TextBox>();
         if (auto search = object.try_as<controls::AutoSuggestBox>()) {
             if (what == "placeholder") return narrow(search.PlaceholderText());
-            // Its placeholder's colour stands in its resources, under the name its text box's template reads.
+            // Its placeholder's color stands in its resources, under the name its text box's template reads.
             if (what == "placeholderForeground") {
                 auto key = winrt::box_value(L"TextControlPlaceholderForeground");
                 auto resources = search.Resources();
-                return resources.HasKey(key) ? colour(resources.Lookup(key).as<media::Brush>()) : "";
+                return resources.HasKey(key) ? color(resources.Lookup(key).as<media::Brush>()) : "";
             }
             box = first<controls::TextBox>(search);
         }
@@ -203,7 +232,7 @@ namespace {
         if (!box) return std::nullopt;
         if (what == "password") return "0";
         if (what == "placeholder") return narrow(box.PlaceholderText());
-        if (what == "placeholderForeground") return colour(box.PlaceholderForeground());
+        if (what == "placeholderForeground") return color(box.PlaceholderForeground());
         if (what == "maxLength") return number(box.MaxLength());
         if (what == "textAlignment") return number(static_cast<int32_t>(box.TextAlignment()));
         return std::nullopt;
@@ -211,8 +240,8 @@ namespace {
 
     /// What a shape - a WinUI Path, or the box a layout paints behind its children - is painted with.
     std::optional<std::string> painted(shapes::Shape const &shape, std::string_view what) {
-        if (what == "fill") return colour(shape.Fill());
-        if (what == "stroke") return colour(shape.Stroke());
+        if (what == "fill") return color(shape.Fill());
+        if (what == "stroke") return color(shape.Stroke());
         if (what == "strokeThickness") return number(shape.StrokeThickness());
         if (what == "dashes") {
             std::string words;
@@ -232,44 +261,154 @@ namespace {
         return std::nullopt;
     }
 
+    /// Each action a bar's commands hold, in order - those on a capsule in turn - each told whether a group's room
+    /// stands before it: its button behind "more", its container standing alone, or its control on a capsule.
+    template <typename Commands, typename Each>
+    void eachAction(Commands const &commands, Each each) {
+        bool parted = false;
+        for (auto const &command : commands) {
+            if (command.template try_as<controls::AppBarSeparator>()) {
+                parted = true;
+                continue;
+            }
+            auto contained = command.template try_as<controls::AppBarElementContainer>();
+            if (contained && capsuleRow(contained)) {
+                for (auto const &control : composedActions(contained)) {
+                    each(IInspectable(control), parted);
+                    parted = false;
+                }
+                continue;
+            }
+            each(IInspectable(command), parted);
+            parted = false;
+        }
+    }
+
     /// The page's action at `place` in the list the chrome was given, at either edge or behind "more".
-    controls::AppBarButton action(controls::TitleBar const &bar, int32_t place) {
+    IInspectable action(controls::TitleBar const &bar, int32_t place) {
+        IInspectable found{nullptr};
         for (auto const &commands :
              {leadingActions(bar).PrimaryCommands(), trailingActions(bar).PrimaryCommands(),
               trailingActions(bar).SecondaryCommands()})
-            for (auto const &command : commands)
-                if (auto button = command.try_as<controls::AppBarButton>();
-                    button && winrt::unbox_value_or<int32_t>(button.Tag(), -1) == place)
-                    return button;
-        return nullptr;
+            eachAction(commands, [&](IInspectable const &element, bool) {
+                auto framework = element.try_as<xaml::FrameworkElement>();
+                if (!found && framework && winrt::unbox_value_or<int32_t>(framework.Tag(), -1) == place) found = element;
+            });
+        return found;
+    }
+
+    /// An action's control on the bar - in its container standing alone (`holder`), or on a capsule, its own
+    /// holder - read as a bar's button is: its words, picture, whether its words show, whether it can be chosen, its
+    /// place, its colors and its shortcut.
+    struct ActionControl {
+        controls::Control holder;
+        controls::Control own;
+
+        controls::Control control() const { return own; }
+        winrt::hstring Label() const { return xaml::Automation::AutomationProperties::GetName(own); }
+        bool IsEnabled() const { return holder.IsEnabled(); }
+        IInspectable Tag() const { return holder.Tag(); }
+        xaml::Media::Brush Foreground() const { return own.Foreground(); }
+        auto KeyboardAccelerators() const { return own.KeyboardAccelerators(); }
+        operator xaml::DependencyObject() const { return own; }
+
+        /// The picture before its words; null for none.
+        controls::IconElement Icon() const {
+            for (auto const &child : shown().Children())
+                if (auto icon = child.try_as<controls::IconElement>()) return icon;
+            return nullptr;
+        }
+
+        /// Whether its words stand beside its picture, as a bar's button says it.
+        controls::CommandBarLabelPosition LabelPosition() const {
+            for (auto const &child : shown().Children())
+                if (child.try_as<controls::TextBlock>()) return controls::CommandBarLabelPosition::Default;
+            return controls::CommandBarLabelPosition::Collapsed;
+        }
+
+        controls::StackPanel shown() const {
+            return own.as<controls::ContentControl>().Content().as<controls::StackPanel>();
+        }
+    };
+
+    /// Whether choosing the action destroys something: its words in the critical color its control's style reads.
+    bool destroys(xaml::FrameworkElement const &button) { return isDestructive(button, L"AppBarButtonForeground"); }
+    bool destroys(ActionControl const &action) {
+        return isDestructive(action.control(), composedForeground(action.control()).c_str());
+    }
+
+    /// What `said` answers of the action `element` - an action's or a setting's button behind "more", or its
+    /// control on the bar; nothing for anything else.
+    template <typename Said>
+    auto ofAction(IInspectable const &element, Said said)
+        -> std::optional<decltype(said(controls::AppBarButton{nullptr}))> {
+        if (auto button = element.try_as<controls::AppBarButton>()) return said(button);
+        if (auto toggle = element.try_as<controls::AppBarToggleButton>()) return said(toggle);
+        if (auto contained = element.try_as<controls::AppBarElementContainer>()) {
+            if (capsuleRow(contained)) return std::nullopt;
+            return said(ActionControl{contained, contained.Content().as<controls::Control>()});
+        }
+        if (auto control = element.try_as<controls::Control>();
+            control && winrt::unbox_value_or<int32_t>(control.Tag(), -1) >= 0)
+            return said(ActionControl{control, control});
+        return std::nullopt;
+    }
+
+    /// The control of the action `element` on the bar - in its container or on a capsule - and how its holder
+    /// stands on the bar; null for a button behind "more".
+    std::pair<controls::ContentControl, xaml::VerticalAlignment> composed(IInspectable const &element) {
+        if (auto contained = element.try_as<controls::AppBarElementContainer>())
+            return {contained.Content().try_as<controls::ContentControl>(), contained.VerticalContentAlignment()};
+        if (element.try_as<controls::AppBarButton>() || element.try_as<controls::AppBarToggleButton>()) return {nullptr, {}};
+        auto control = element.try_as<controls::ContentControl>();
+        auto row = control ? control.Parent().try_as<controls::StackPanel>() : nullptr;
+        auto ground = row ? row.Parent().try_as<controls::Border>() : nullptr;
+        if (!ground) return {nullptr, {}};
+        return {control, ground.VerticalAlignment()};
+    }
+
+    /// The control standing for the action `element`: what a container holds, else the element itself.
+    IInspectable own(IInspectable const &element) {
+        if (auto contained = element.try_as<controls::AppBarElementContainer>()) return contained.Content();
+        return element;
+    }
+
+    /// How the menu of the action's control `element` opens: by a split button's arrow ("split"), a drop-down
+    /// button's click showing its chevron ("arrow"), a button's click ("click") or held ("held"); empty for none.
+    std::string menuOpens(IInspectable const &element) {
+        if (element.try_as<controls::SplitButton>()) return "split";
+        if (element.try_as<controls::DropDownButton>()) return "arrow";
+        auto button = element.try_as<controls::Button>();
+        if (!button) return "";
+        if (button.Flyout()) return "click";
+        return button.ContextFlyout() ? "held" : "";
     }
 
     /// The actions at the leading edge, "|", those at the trailing edge, "|", those behind "more" - each by `said`,
     /// "!" before one that cannot be chosen, `apart` between two groups and `among` between two of one group.
     template <typename Said>
-    std::string actions(controls::TitleBar const &bar, Said said, char const *apart, char const *among) {
+    std::string actions(ActionEdges const &edges, Said said, char const *apart, char const *among) {
         auto listed = [&](auto const &commands) {
             std::string words;
             bool parted = false;
-            for (auto const &command : commands) {
-                if (command.template try_as<controls::AppBarSeparator>()) {
-                    parted = true;
-                    continue;
-                }
-                auto button = command.template try_as<controls::AppBarButton>();
-                if (!button) continue;
+            eachAction(commands, [&](IInspectable const &element, bool partedBefore) {
+                parted = parted || partedBefore;
+                auto shown = ofAction(element, [&](auto const &button) {
+                    return std::string(button.IsEnabled() ? "" : "!") + said(button);
+                });
+                if (!shown) return;
                 if (!words.empty()) words += parted ? apart : among;
                 parted = false;
-                words += std::string(button.IsEnabled() ? "" : "!") + said(button);
-            }
+                words += *shown;
+            });
             return words;
         };
-        return listed(leadingActions(bar).PrimaryCommands()) + "|" + listed(trailingActions(bar).PrimaryCommands()) +
-               "|" + listed(trailingActions(bar).SecondaryCommands());
+        return listed(edges.leading.PrimaryCommands()) + "|" + listed(edges.trailing.PrimaryCommands()) + "|"
+               + listed(edges.trailing.SecondaryCommands());
     }
 
-    /// What a window's chrome holds: its title, its way back, its toggle, its colours, its actions by their labels
-    /// ("actions") or by their places, a group apart from the next by a space ("bar"), the colours of the words of
+    /// What a window's chrome holds: its title, its way back, its toggle, its colors, its actions by their labels
+    /// ("actions") or by their places, a group apart from the next by a space ("bar"), the colors of the words of
     /// those on it ("actionWords"), and one action's own ("action <place> <what>").
     std::optional<std::string> chrome(controls::TitleBar const &bar, std::string_view what) {
         if (what == "title") return narrow(bar.Title());
@@ -277,49 +416,101 @@ namespace {
         if (what == "paneToggle") return flag(bar.IsPaneToggleButtonVisible());
         if (what == "subtitle") return narrow(bar.Subtitle());
         if (what == "icon") return winrt::to_string(sourceFile(bar.IconSource()));
-        if (what == "background") return colour(bar.Background());
-        if (what == "foreground") return colour(bar.Foreground());
-        if (what == "actions") return actions(bar, [](auto const &button) { return narrow(button.Label()); }, ";", ";");
+        if (what == "background") return groundText(bar.Background());
+        if (what == "foreground") return color(bar.Foreground());
+        if (what == "actions") return actions(actionEdges(bar), [](auto const &button) { return narrow(button.Label()); }, ";", ";");
         if (what == "bar") {
-            return actions(bar, [](auto const &button) {
+            return actions(actionEdges(bar), [](auto const &button) {
                 return std::to_string(winrt::unbox_value<int32_t>(button.Tag()));
             }, " ", ",");
         }
-        if (what == "actionWords") {
-            std::string colours;
+        // How many lines between groups the bar shows: a separator drawing its line.
+        if (what == "barLines") {
+            int32_t shown = 0;
             for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
                 for (auto const &command : actions.PrimaryCommands())
-                    if (auto button = command.try_as<controls::AppBarButton>())
-                        colours += (colours.empty() ? "" : ";") + colour(button.Foreground());
-            return colours;
+                    if (auto line = command.try_as<controls::AppBarSeparator>()) {
+                        auto solid = line.Foreground().try_as<media::SolidColorBrush>();
+                        if (!solid || (solid.Color().A > 0 && solid.Opacity() > 0)) ++shown;
+                    }
+            return number(shown);
+        }
+        if (what == "actionWords") {
+            std::string colors;
+            for (auto const &actions : {leadingActions(bar), trailingActions(bar)})
+                eachAction(actions.PrimaryCommands(), [&](IInspectable const &element, bool) {
+                    if (auto foreground = ofAction(element, [](auto const &button) { return color(button.Foreground()); }))
+                        colors += (colors.empty() ? "" : ";") + *foreground;
+                });
+            return colors;
         }
         if (what.starts_with("action ")) {
             auto rest = what.substr(7);
             auto space = rest.find(' ');
             if (space == std::string_view::npos) return std::nullopt;
-            auto button = action(bar, std::stoi(std::string(rest.substr(0, space))));
-            if (!button) return std::nullopt;
+            auto command = action(bar, std::stoi(std::string(rest.substr(0, space))));
+            if (!command) return std::nullopt;
             auto held = rest.substr(space + 1);
-            if (held == "icon") return winrt::to_string(iconFile(button.Icon()));
-            if (held == "wordsShown") return flag(button.LabelPosition() != controls::CommandBarLabelPosition::Collapsed);
-            if (held == "destructive") return flag(isDestructive(button, L"AppBarButtonForeground"));
-            if (held == "identifier") return narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
-            if (held == "shortcut") {
-                if (button.KeyboardAccelerators().Size() == 0) return std::string();
-                auto first = button.KeyboardAccelerators().GetAt(0);
-                return std::to_string(static_cast<int32_t>(first.Key())) + ","
-                    + std::to_string(static_cast<int32_t>(first.Modifiers()));
+            // A setting's state: whether its two-state button stands checked; an action has none.
+            if (held == "checked") {
+                auto toggle = own(command).try_as<controls::Primitives::ToggleButton>();
+                if (!toggle) return std::nullopt;
+                return flag(toggle.IsChecked() && toggle.IsChecked().Value());
             }
-            return std::nullopt;
+            if (held == "menuOpens") return menuOpens(own(command));
+            if (held == "width") return number(own(command).as<xaml::FrameworkElement>().Width());
+            // A control standing for the action on the bar: on a capsule of how many ("on <count>") or alone
+            // ("bare"); the height and the corners of the fill the pointer brings ("hover"); whether it rests with
+            // no fill - its own themes name its rest ground -; how it stands on the bar (its own and its holder's
+            // vertical alignment); its words' size; and how tall its picture is drawn.
+            if (held == "capsule" || held == "hover" || held == "subtle" || held == "standing" || held == "wordsSize"
+                || held == "pictureHeight") {
+                auto [control, holding] = composed(command);
+                if (!control) return std::nullopt;
+                if (held == "capsule") {
+                    auto row = control.Parent().try_as<controls::StackPanel>();
+                    return row ? "on " + number(static_cast<int32_t>(row.Children().Size())) : std::string("bare");
+                }
+                if (held == "hover") return number(control.Height()) + "," + number(control.CornerRadius().TopLeft);
+                if (held == "standing")
+                    return number(static_cast<int32_t>(control.VerticalAlignment())) + ","
+                        + number(static_cast<int32_t>(holding));
+                if (held == "wordsSize" || held == "pictureHeight") {
+                    for (auto const &child : control.Content().as<controls::StackPanel>().Children()) {
+                        auto words = child.try_as<controls::TextBlock>();
+                        if (words && held == "wordsSize") return number(words.FontSize());
+                        auto picture = child.try_as<controls::IconElement>();
+                        if (picture && held == "pictureHeight") return number(picture.ActualHeight());
+                    }
+                    return std::string();
+                }
+                auto name = composedForeground(control);
+                name.replace(name.size() - 10, 10, L"Background");
+                return flag(namesThemedBrush(control, name.c_str()));
+            }
+            return ofAction(command, [&](auto const &button) -> std::optional<std::string> {
+                if (held == "icon") return winrt::to_string(iconFile(button.Icon()));
+                if (held == "iconOpacity") return button.Icon() ? std::to_string(button.Icon().Opacity()) : std::string();
+                if (held == "wordsShown") return flag(button.LabelPosition() != controls::CommandBarLabelPosition::Collapsed);
+                if (held == "destructive") return flag(destroys(button));
+                if (held == "identifier") return narrow(xaml::Automation::AutomationProperties::GetAutomationId(button));
+                if (held == "shortcut") {
+                    if (button.KeyboardAccelerators().Size() == 0) return std::string();
+                    auto first = button.KeyboardAccelerators().GetAt(0);
+                    return std::to_string(static_cast<int32_t>(first.Key())) + ","
+                        + std::to_string(static_cast<int32_t>(first.Modifiers()));
+                }
+                return std::nullopt;
+            }).value_or(std::nullopt);
         }
         return std::nullopt;
     }
 
-    /// The accent a control wears where the host tinted it: a bar's or a spinner's colour, or the resource its
+    /// The accent a control wears where the host tinted it: a bar's or a spinner's color, or the resource its
     /// template takes the accent from.
     std::optional<std::string> tint(IInspectable const &object) {
-        if (auto bar = object.try_as<controls::ProgressBar>()) return colour(bar.Foreground());
-        if (auto ring = object.try_as<controls::ProgressRing>()) return colour(ring.Foreground());
+        if (auto bar = object.try_as<controls::ProgressBar>()) return color(bar.Foreground());
+        if (auto ring = object.try_as<controls::ProgressRing>()) return color(ring.Foreground());
         wchar_t const *key = object.try_as<controls::CheckBox>()      ? L"CheckBoxCheckBackgroundFillChecked"
                              : object.try_as<controls::ToggleSwitch>() ? L"ToggleSwitchFillOn"
                              : object.try_as<controls::Slider>()       ? L"SliderThumbBackground"
@@ -328,7 +519,7 @@ namespace {
         auto element = object.try_as<xaml::FrameworkElement>();
         if (!key || !element) return std::nullopt;
         auto own = ownBrush(element.Resources(), key);
-        return own ? colour(own) : std::string();
+        return own ? color(own) : std::string();
     }
 
     /// A text box's input scope - a search box's, its template's - as the relay numbers them (`WinUIInputScope`):
@@ -346,10 +537,48 @@ namespace {
         return "0";
     }
 
+    /// What a sheet's head shows: its title, and whether it offers the way back and the close button; what its card
+    /// stands on.
+    std::optional<std::string> sheetHead(controls::Grid const &sheet, std::string_view what) {
+        auto card = sheet.Children().GetAt(1).as<controls::Border>();
+        auto head = card.Child().as<controls::Grid>().Children().GetAt(0).as<controls::Grid>();
+        auto shows = [&](uint32_t part) { return flag(head.Children().GetAt(part).Visibility() == xaml::Visibility::Visible); };
+        if (what == "title") return narrow(head.Children().GetAt(1).as<controls::TextBlock>().Text());
+        if (what == "back") return shows(0);
+        if (what == "close") return shows(2);
+        if (what == "actions")
+            return actions(sheetActionEdges(sheet), [](auto const &button) { return narrow(button.Label()); }, ";", ";");
+        if (what == "card") return number(card.ActualWidth()) + "," + number(card.ActualHeight());
+        if (what == "background") return groundText(head.Background());
+        if (what == "foreground") return color(head.Children().GetAt(1).as<controls::TextBlock>().Foreground());
+        if (what == "ground") {
+            auto own = card.Background().try_as<media::AcrylicBrush>() ? card.Background()
+                                                                       : card.Child().as<controls::Grid>().Background();
+            return groundText(own);
+        }
+        return std::nullopt;
+    }
+
     std::optional<std::string> read(IInspectable const &object, std::string_view what) {
         if (what == "tint") return tint(object);
         if (what == "scope") return scope(object);
         if (auto bar = object.try_as<controls::TitleBar>()) return chrome(bar, what);
+        if (auto sheet = object.try_as<controls::Grid>();
+            sheet && winrt::unbox_value_or<winrt::hstring>(sheet.Tag(), L"") == L"sheet") {
+            return sheetHead(sheet, what);
+        }
+        // A page's bar at its foot, read as a title bar's "bar".
+        if (auto foot = object.try_as<controls::Grid>(); foot && what == "footBar") {
+            return actions(footActionEdges(foot), [](auto const &button) {
+                return std::to_string(winrt::unbox_value<int32_t>(button.Tag()));
+            }, " ", ",");
+        }
+        // The sidebar's part of the bar on the pane's head, read as a title bar's "bar".
+        if (auto split = object.try_as<controls::SplitView>(); split && what == "bar") {
+            return actions(paneActionEdges(split), [](auto const &button) {
+                return std::to_string(winrt::unbox_value<int32_t>(button.Tag()));
+            }, " ", ",");
+        }
         if (auto split = object.try_as<controls::SplitView>(); split && what == "paneLength") {
             return number(split.OpenPaneLength());
         }
@@ -404,13 +633,10 @@ namespace {
             if (what == "stretch") return number(static_cast<int32_t>(image.Stretch()));
             if (what == "source") return narrow(winrt::unbox_value_or<winrt::hstring>(image.Tag(), L""));
         }
-        if (auto radio = object.try_as<controls::RadioButton>(); radio && what == "groupName") {
-            return narrow(radio.GroupName());
-        }
         // The brushes the host wrote into a control's own resources, by their names.
         if (auto bar = object.try_as<controls::MenuBar>(); bar && what == "itemForeground") {
             auto own = ownBrush(bar.Resources(), L"MenuBarItemForeground");
-            return own ? colour(own) : std::string();
+            return own ? color(own) : std::string();
         }
         // The card over a split view's detail - its fill, its edge - as the window's root writes it in the theme
         // the root shows; empty for WinUI's own. The theme's divider, as the application's theme gives it.
@@ -422,25 +648,20 @@ namespace {
             for (auto const &merged : root.Resources().MergedDictionaries()) {
                 auto themed = merged.ThemeDictionaries().TryLookup(winrt::box_value(theme));
                 auto dictionary = themed ? themed.try_as<xaml::ResourceDictionary>() : nullptr;
-                if (auto own = dictionary ? ownBrush(dictionary, name) : nullptr) return colour(own);
+                if (auto own = dictionary ? ownBrush(dictionary, name) : nullptr) return color(own);
             }
             return std::string();
         }
         if (auto window = object.try_as<xaml::Window>(); window && what == "divider") {
             auto divider = xaml::Application::Current().Resources().Lookup(
                 winrt::box_value(L"DividerStrokeColorDefaultBrush"));
-            return colour(divider.as<media::Brush>());
+            return color(divider.as<media::Brush>());
         }
-        // A pane's ground beside the detail and over it: a colour, or "acrylic" with its colour and luminosity.
+        // A pane's ground beside the detail and over it: a color, or "acrylic" with its color and luminosity.
         if (auto split = object.try_as<controls::SplitView>();
             split && (what == "paneBackground" || what == "overlayPaneBackground")) {
-            auto own = ownBrush(split.Resources(), what == "paneBackground" ? L"StateUIPaneBeside" : L"StateUIPaneOver");
-            if (auto acrylic = own ? own.try_as<media::AcrylicBrush>() : nullptr) {
-                auto luminosity = acrylic.TintLuminosityOpacity();
-                return "acrylic " + colour(media::SolidColorBrush(acrylic.TintColor())) + " " +
-                       number(luminosity ? luminosity.Value() : 0);
-            }
-            return own ? colour(own) : std::string();
+            auto place = what == "paneBackground" ? L"StateUIPaneBeside" : L"StateUIPaneOver";
+            return groundText(ownBrush(split.Resources(), place));
         }
         if (auto element = object.try_as<xaml::FrameworkElement>(); element && what == "theme") {
             return number(static_cast<int32_t>(element.RequestedTheme()));
@@ -473,21 +694,21 @@ namespace {
             if (what == "horizontalMode") return number(static_cast<int32_t>(scroller.HorizontalScrollMode()));
         }
         if (auto control = object.try_as<controls::Control>()) {
-            if (what == "background") return colour(control.Background());
-            if (what == "borderBrush") return colour(control.BorderBrush());
+            if (what == "background") return color(control.Background());
+            if (what == "borderBrush") return color(control.BorderBrush());
             if (what == "borderThickness") return sides(control.BorderThickness());
             if (what == "cornerRadius") return corners(control.CornerRadius());
         }
         if (auto border = object.try_as<controls::Border>()) {
-            if (what == "background") return colour(border.Background());
+            if (what == "background") return color(border.Background());
             if (what == "cornerRadius") return corners(border.CornerRadius());
         }
         if (auto held = object.try_as<controls::Grid>(); held && what.rfind("box.", 0) != 0) {
-            if (what == "background") return colour(held.Background());
+            if (what == "background") return color(held.Background());
             if (what == "cornerRadius") return corners(held.CornerRadius());
         }
         if (auto panel = object.try_as<controls::Panel>(); panel && what == "background") {
-            return colour(panel.Background());
+            return color(panel.Background());
         }
         if (auto element = object.try_as<xaml::FrameworkElement>()) {
             if (what == "automationName") return narrow(xaml::Automation::AutomationProperties::GetName(metOf(object)));

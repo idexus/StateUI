@@ -28,5 +28,5 @@ public protocol LocalizedResources {
     associatedtype Catalog: LocalizationCatalog
 
     /// The whole part in one language.
-    static func resources(for language: Catalog.Language) -> Self
+    static func resources(for language: Catalog.CatalogLanguage) -> Self
 }

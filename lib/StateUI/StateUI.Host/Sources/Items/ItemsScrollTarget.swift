@@ -3,7 +3,7 @@
 
 @_spi(Host) import StateUI
 
-/// The item the program scrolled a list to, and where it stands: the start, the centre, the end or nearest.
+/// The item the program scrolled a list to, and where it stands: the start, the center, the end or nearest.
 /// Design: docs/design/host/items.md#scrolling-to-an-item
 @_spi(Host) public struct ItemsScrollTarget: Equatable, Sendable {
     /// The item's identity.

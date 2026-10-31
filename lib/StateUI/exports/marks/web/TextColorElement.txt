@@ -1,0 +1,15 @@
+# revision 4.1
+Button.textColor: ✅
+CheckBox.textColor: ✅
+DatePicker.textColor: ✅
+Link.textColor: ✅
+Picker.textColor: ✅
+SearchField.textColor: ✅
+Switch.textColor: ✅
+Text.textColor: ✅
+TextEditor.textColor: ✅
+TextField.textColor: ✅
+TextSpan.textColor: ✅
+TimePicker.textColor: ✅
+ToolbarButton.textColor: ✅
+ToolbarToggle.textColor: ✅

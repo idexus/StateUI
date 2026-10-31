@@ -43,7 +43,7 @@ own least and most size and by the slot. Without one, a filling child takes
 the slot and any other takes its natural size, never more than the slot.
 Where the least size is larger than the most, the least wins, so
 contradictory bounds cannot leave a child with no answer. A child placed at
-its start sits at the slot's start; at its end, at the end; centred, or
+its start sits at the slot's start; at its end, at the end; centered, or
 filling but stopped short by a stated or a most size, in the middle.
 
 The layout owns the margin both ways: it takes the margin out of the width it
@@ -65,7 +65,7 @@ ItemsView's entry stops at its cell, which measures it again
 the change is measured again. Which change is which is one list on every
 native host (`MountedElement.arrangedProperties`,
 `unmeasuredProperties`): a property a parent reads into its child's place
-arranges the parent again, and one that is only drawn - an opacity, a colour,
+arranges the parent again, and one that is only drawn - an opacity, a color,
 a toggle's state, a transform, what assistive technology meets - measures
 nothing.
 
@@ -115,29 +115,99 @@ wrapped text is measured at the width it will have; a horizontal stack offers
 none, because the width is what the children decide. A hidden child takes no
 room and no spacing.
 
-## A spacer
+## A row short of room
 
-A child that grows - a `Spacer` - takes the room the stack's shown children
+A row with less room than its shown children, their margins and the spacing
+need takes it from its words: a label (`LaidOutWords.bare`) that states no
+width of its own (`LayoutValues.yieldsInARow`) shares what the others leave
+with the other labels, in proportion to their natural widths and within
+their bounds; every other child keeps its natural width, and a space has
+none left (`StackArithmetic.rowWidths`). A label narrowed is measured again
+at its width, so its words wrap to it, and a row measured for a width works
+its labels out at the widths it would place them at: it is as tall as they
+stand there, and its natural width is still its words on one line, as a
+grid's is - no label is measured at one width and placed at another, which
+WinUI would measure until it gave up. Every host runs the arithmetic but the
+Web, which hands its rows to the browser: a label there is a flex item that
+shrinks by its natural width down to nothing (`flex: 0 1 auto`, `min-width:
+0`), the same share.
+
+## A row that wraps
+
+A row that `wraps` goes on onto a further line where its room ends
+(`StackArithmetic.Lines.wrapped`). Its shown children are taken in order,
+each line as many as its content's width takes at their natural widths with
+their margins and the spacing between them, and at least one, so a child wider
+than the room stands alone on its line; a growing child counts as none of it
+(`StackArithmetic.broken`). Each line is then one row in a room of its own
+across the content, as tall as its children stand there: everything a row
+does - words giving up width where a lone child is wider than its line, a
+space taking what its line leaves, children resting on a first baseline -
+it does line by line, with the same arithmetic. The lines stand from the
+top, `rowSpacing` apart, and the row is as wide as its widest line; offered
+no width, it stands on one line. A line shorter than the row stands where
+`lineAlignment` says - its start, its middle or its end, the room it leaves
+on the other side or split - unless a growing child fills it. Right to left,
+each line fills from the right, and its start is the right. Only a row wraps: a column is measured as tall as its children for a
+width it is offered, and no height is offered to break it at. The Web hands
+the row to the browser's flexbox, which breaks its lines the same way
+([web layout](../platforms/web/layout.md#a-row-that-wraps)).
+
+## A first baseline
+
+A child aligned `.firstBaseline` down a row rests its first line of words on
+one line with the row's other children aligned so: each answers how far below
+its top that line rests at the width the row places it
+(`LayoutChild.firstBaseline(offered:)`, a requirement, so every host's item
+answers), a child with no words its foot; the line stands as low as the
+lowest of them, margins included, and the row is as tall as what stands above
+the line and below it beside its other children (`StackArithmetic`). A stack
+answers its own as its first shown child with one does, where that child
+stands (`StackArithmetic.firstBaseline`), so a column holding a label rests on
+a row's line by that label. In a column, and in a grid, a ZStack or one child's
+room, it reads as the near edge. Each host reads a child's own from its
+toolkit: AppKit a control's `firstBaselineOffsetFromTop` (a label below its
+padding), UIKit a label's font's rise below its padding, Android `getBaseline`
+once measured, WinUI a text block's `BaselineOffset` below its border, GTK a
+widget's natural baseline as `gtk_widget_measure` answers it; the Web lays a
+row out as the browser's flexbox, `align-self: first baseline`.
+
+## A space
+
+A child that grows - a `Space` - takes the room the stack's shown children
 leave along its axis: the stack's length less their natural lengths, their
-margins and the spacing, shared alike among the spacers, none where nothing is
+margins and the spacing, shared alike among the spaces, none where nothing is
 left. It measures as no room of its own, so a stack sized by its children
-leaves it none, and its least and most lengths still bound it. A spacer that
+leaves it none, and its least and most lengths still bound it. A space that
 states its length along the axis grows no more: it is a child of that length
-like any other (`LayoutValues.grows(along:)`). Every host stands an empty view
-there; the arithmetic is the host layer's, so the room a spacer takes is the
-same on every host. The Web hands its stacks to the browser, so there the same
-rule is written as CSS: a spacer is a flex item growing from nothing
-(`flex: 1 1 0`), which the browser shares alike.
+like any other (`LayoutValues.grows(along:)`). The arithmetic is the host
+layer's, so the room a space takes is the same on every host. The Web hands
+its stacks to the browser, so there the same rule is written as CSS: a space
+is a flex item growing from nothing (`flex: 1 1 0`), which the browser shares
+alike. Each host stands a space in the view its `ZStack` stands in, so what it
+is made of, its outline and its shape are drawn as a fill's are.
 
-## A divider in a stack
+## A fill
 
-A `Divider` is a view: the toolkit's own line, across its stack and as thick
+A fill is a region that holds nothing and takes the room it is offered: in a
+ZStack, a grid's cell or a page the whole room, and across a stack its
+breadth, as every child whose alignment fills. Along a stack it measures as no
+room of its own and grows no more than any other child does, so it is as long
+as it states, and none where it states nothing. Each host stands it in the
+view its `ZStack` stands in and draws its background, its outline and its
+shape there as a layout's box (`LayoutMembers.regionMembers`, a layout's box
+without the cut, as nothing stands inside to cut), so a blur or glass is drawn
+where the platform draws one; it takes no padding.
+
+## A separator in a stack
+
+A `Separator` is a view: the toolkit's own line, across its stack and as thick
 as the toolkit draws one. A line between a menu's entries is a
 `MenuSeparator`, one of the entries a menu draws itself
 (`NodeType.viewlessTypes`), so it never gets a view.
 
 Each host draws the line its toolkit offers: AppKit's separator box, a hairline
-in UIKit's separator colour, the Android theme's list divider, WinUI's divider
+in UIKit's separator color, the Android theme's list divider, WinUI's divider
 stroke, GTK's separator - turned to run down a row - and the document's rule
 on the Web. A hairline is one pixel, a third of a point on a dense screen, so
 a test reads its thickness unrounded.
@@ -151,19 +221,26 @@ spans.
 
 ## Tracks
 
-A fixed track is its length. An automatic track is as large as its largest
-child that spans that track alone. A proportional track divides what the
-fixed and automatic tracks and the spacing leave, by its share; measured with
-no room given, the proportional tracks share the least remainder whose shares
-hold each one's largest one-track child, so the grid placed at its natural
-size, or wider, holds every child at the width it was measured for. A share of
-nothing still counts as a sliver, so no division is by zero, and asks for no
-room.
+A fixed track is its length. A child asks of the tracks it spans what they
+lack: its size less theirs and the spacing between them. Taken from the
+children spanning the fewest tracks, a child spanning no proportional track
+shares its lack alike among its automatic tracks, so an automatic track
+spanned alone is as large as its largest child. A proportional track divides
+what the fixed and automatic tracks and the spacing leave, by its share;
+measured with no room given, the proportional tracks share the least
+remainder whose shares hold every child spanning one - its lack over the
+shares it spans - so the grid placed at its natural size, or wider, holds
+every child at the width it was measured for. A share of nothing still counts
+as a sliver, so no division is by zero, and asks for no room.
 
 The trap is a natural size taken track by track: two shares of 95 beside three
 of 300 make a remainder of 395, which placement shares as 158 and 237, and the
 words measured on one line at 300 stand wrapped at 237 - on WinUI a layout
-cycle that ends the application.
+cycle that ends the application. A child left out because it spans two tracks
+is the same trap: two proportional columns holding only a button across both
+measure as the spacing between them, the button's row is measured at that
+width, its words a column of letters, and the row stands that tall however
+wide the grid is placed.
 
 The columns are settled first, and a row measures each of its children at
 the width of the columns it stands in, so words that wrap in a column make
@@ -182,9 +259,9 @@ natural size is the room its neediest child needs at its natural size: a
 rectangle in points to its far corner, a fraction as much as leaves the child
 its natural size in its share, and anything else its size and margins.
 
-## A layout engine
+## A motion layout
 
-A layout engine has no size of its own: it takes the room its layout gives
+A motion layout has no size of its own: it takes the room its layout gives
 it, whatever its views need, as a shape does - its padding and nothing more.
 Its views stand where arithmetic of that room puts them, so a size taken
 from them, as a ZStack takes its children's, would feed the very room the
@@ -208,12 +285,12 @@ its own properties say, and a toolkit keeping one translation, rotation and
 scale for a view takes the two composed, the same on every host
 (`HostDrawingTransform.under`): the turns add, the scales multiply, and the
 child's own move is turned and scaled by the run's before the run's is
-added, all about the child's centre. That is exact while a run's scales are
+added, all about the child's center. That is exact while a run's scales are
 the same on both axes, which is what a run draws.
 
 ## Drawing order
 
-A grid's, a ZStack's and a layout engine's children can overlap, so their
+A grid's, a ZStack's and a motion layout's children can overlap, so their
 order is the order they are drawn in: by `zIndex`, lower first, and children of the same
 `zIndex` in the order the view wrote them. The mounted element keeps
 `children` in that order and remembers the order written, so a sparse change
@@ -265,14 +342,17 @@ host, never a capsule, though a toolkit's control rounds only corners; a
 `Capsule` shape is a rectangle drawn with `BoxArithmetic.capsule`, a radius
 past any room - in a display's pixels too - which the rectangle's own drawing
 fits to half its shorter side, so its ends round whole at every size without
-a host asking its size; and the
-outline is drawn one wide where the tree gives it a colour and no width, and
-not at all without a colour. A fill is read as the tree
-sends it (`HostBrush`): a bare colour is one colour, a gradient's stops stand
+a host asking its size; an outline is a rounded rectangle, its corners
+clockwise (`BoxArithmetic.roundedCorners`), but for an oval of two lengths -
+a circle is one, half its side round - which a toolkit shaping a view by its
+corners alone, as glass is, cannot draw; and the
+outline is drawn one wide where the tree gives it a color and no width, and
+not at all without a color. A fill is read as the tree
+sends it (`HostBrush`): a bare color is one color, a gradient's stops stand
 between 0 and 1, a gradient given no geometry runs top to bottom, or from
-the middle to the edge, and a gradient of one stop is its colour, of none
+the middle to the edge, and a gradient of one stop is its color, of none
 nothing - whatever a toolkit makes of one that short. A line drawn in one
-colour takes the brush's first.
+color takes the brush's first.
 A fill a host draws for a control itself - a button's background, an accent -
 keeps nine tenths of its opacity under the pointer and eight tenths pressed
 (`PressedFill`), as the platforms' own controls fade theirs.
@@ -282,35 +362,118 @@ keeps nine tenths of its opacity under the pointer and eight tenths pressed
 A button's role draws as each platform draws it where the tree draws nothing
 of its own (`ButtonRoleLook`): the main action filled in the platform's
 accent, an action that destroys something with its words in the platform's
-colour for one - the red its alerts and menus give such an action - and the
+color for one - the red its alerts and menus give such an action - and the
 way out, like a button of no role, as the platform's plain one. A fill or a
-colour of words the tree states, by a style or on the button, wins: a role's
+color of words the tree states, by a style or on the button, wins: a role's
 look is the platform's, and an application drawing its own buttons draws
 their roles too (`Style<Button>(role:)`).
 
 ## The safe area
 
-On UIKit a window with bars and a notch over its screen - a phone's, a
-tablet's - stands a page's content clear of them, in the safe area. Where the
-content's own layout lets itself under them on an edge - `.none`, edge to
-edge, or `.keyboard`, clear of the keyboard alone - its page reaches out to the
-screen's edge there (`SafeAreaArithmetic.room`), so a background or a
-gradient runs behind the status bar. A scroller let under the strip at its
-bottom or its right - a list running under a phone's home indicator - keeps
-that strip clear at its end (`SafeAreaArithmetic.endClearance`): its rows
-scroll under the strip and the last stops clear of it, as the platform's own
-lists do; its start and its offsets stay as they are. A bar of the page's own - a stack's, the
-tabs - is no part of the safe area to give: content never runs under one. The
-page's background stands behind the bars either way. A desktop window has no safe area: its content stands in its
-whole room.
+Every room a page stands in - a window, a sheet, a popover - has a safe area:
+the part of it clear of what stands over the page. That is the platform's - a
+phone's status bar, notch and home indicator, the keyboard - the room's - a
+popover's arrow, a sheet's grabber - and the arrangement's own bars over the
+page: a stack's, the tabs', a split view column's part of the bar. A page's
+content stands in it (`SafeAreaArithmetic.room`); on each edge the content's
+own layout ignores the safe area on (`ignoresSafeArea`, the start and the end
+as it lays out) its room reaches out to the room's edge, so a background or a
+gradient runs behind a bar or the status bar. What stands over an edge is one
+answer whatever it is: no platform keeps a page clear of one thing over an
+edge and under another. A column beside a page - a split view's sidebar
+standing beside its detail - is no part of what the page runs under: where a
+toolkit lays the page under that column, the page's room starts at its edge. A scroller let under keeps clear, on each edge it reaches under,
+the depth of what stands over it there (`SafeAreaArithmetic.clearance`): its
+content scrolls under the bars and its first and last rows stop clear of
+them, as the platform's own lists do, and its offset counts from its first
+row clear (`offset`, `native`) - the tree's nothing is that row in place. A
+host gives each room's insets as its toolkit has them; a bar its platform
+stands beside the page rather than over it insets nothing, and a desktop
+window with nothing over its content has its whole room safe. The page's
+background stands behind everything over it either way.
+
+## A bar at the foot
+
+A page's bottom bar (`.bottomBar`) is a view the page stands at its foot, in a
+layer of its own the core wraps it in - no layout arranges what a slot holds,
+so the layer places it as its values say. It stands across the safe area as
+tall as it lays out at that width, measured again on every layout, its foot on
+the safe area's foot (`BottomBarPlace`): above a phone's home indicator, its
+ground running down to the room's edge, and on the keyboard while one shows.
+What stands over a room's foot is the keyboard while it is the higher, else
+the system's bar - never both (`SafeAreaArithmetic.bottom`). The innermost
+declaration on a page's path wins, as a title view's does, and a bar declared
+on a stack or tabs stands on the one page they show (`chromeBottomBar`): one
+view stands in one place, so a host hands it from the page losing it to the
+page taking it in that order.
+
+The page's safe area ends above the bar: its content stands clear of it, and
+a scroller let under scrolls under it, its last row stopping clear. A host
+stands the bar as its platform's bars stand: over the page where they stand
+over it - the page keeping clear what the bar and what stands under it take
+(`safe`) - else beside it, the page's whole room the one above the bar
+(`above`). What the bar holds is laid out as a page's own view, so a change
+inside it - a word typed into its field - shows no chrome again; the bar's
+coming and going does.
+
+A bar stands on the page while nothing stands under it, and shows its edge
+(`ScrollEdge`, the bar's `edge`) while its page's rows go on past it - under it
+where they run under the room's foot (`BottomBarPlace.covers`), beyond its top
+where it stands beside the page (`continues`), its scroller short of its end.
+`.automatic` is the platform's: UIKit's own scroll edge effect under the bar
+(`UIScrollEdgeElementContainerInteraction`, soft on iOS 26, hard on iOS 27),
+GNOME's flat bottom bar, which shows its shadow while the content scrolls; on
+AppKit and the Web, which draw none, a blur in the page's hue under the bar
+(`BottomBarPlace.blur`, `tint`), and where the bar stands beside the page -
+Android, WinUI - the hard one. `.hard` cuts the rows off at the bar: UIKit's
+hard edge, the same blur with a line along its top on AppKit and the Web, the
+theme's line along the bar where it stands beside the page, GNOME's bar with
+its border. On iOS 27 the automatic edge takes its shape from the glass the
+bar holds; a view StateUI draws shapes nothing.
+`.none` shows the rows as they are - all but GNOME's flat bar, whose shadow
+stays. A soft edge drawn by StateUI itself is no road yet: a masked blur
+crossfades sharp rows into blurred ones rather than blurring them more, and
+iOS 27 draws no soft edge at all.
+
+A scroller standing at its end stays at its end as what it reaches moves with
+its content the same - its room shrinking beside a growing bar, what it keeps
+clear growing under one, the keyboard rising (`ScrollArithmetic.keptAtEnd`); one
+elsewhere stays where it is, and one that reached nothing stays at its start,
+so a field at the top of a short form stays in sight. The keeping is the
+scroller's own move, told to the tree as the user's is, so the state says
+where it stands. Content growing at the end moves nothing: a list that loads
+more as it is reached must not follow what it loaded.
+
+## A bar at the top
+
+A page's top bar - the window's, a sheet's - shows its edge as the bottom bar
+does: it stands on what is under it while nothing of the page is, and shows
+its edge while the page's rows pass under it (`TopBarEdge.covers`): where its
+content runs under the room's top, its scroller's rows once they scroll past
+their start - at their start the first row stands clear below the bar - and
+anything else it holds always. Beside a sidebar each part of the bar follows
+its own page. The arrangement says which edge (`barScrollEdge`), as a bottom
+bar says its own: `.automatic`, the platform's own where its bars draw one -
+UIKit's top edge effect, macOS's over a sidebar, GNOME's flat header bar -
+else the bottom bar's blur in the page's hue (`BottomBarPlace.blur`, `tint`),
+which hides while nothing passes under the bar - on the Web, and on AppKit
+under the toolbar over a detail, a page or a sheet, where macOS draws none for
+StateUI's content - and the hard one where the bar stands beside the page
+(Android, WinUI); `.hard`, UIKit's hard
+edge, the blur with a line along the bar's foot on the Web and - drawn by the
+host, as AppKit's toolbar takes no style - on AppKit, the theme's line under a
+bar beside the page while the rows go on past its foot
+(`TopBarEdge.continues`), GNOME's raised border; `.none`, the rows as they
+are, but macOS and GNOME keep their own edge.
 
 ## Words on a painted band
 
-Words on a band the tree paints - a bar, a row of tabs - take the colour the
+Words on a band the tree paints - a bar, a row of tabs - take the color the
 tree writes for them; where it writes none, a band is dark where its relative
-luminance, by Rec. 709's weights, is below a half, and its words are white on
-a dark band, black on a light one (`BandWords.color`). Every host decides it alike, whatever
-its toolkit's own idea of a dark colour.
+luminance, by Rec. 709's weights, is below a half - a gradient's band the
+mean of its stops' - and its words are white on a dark band, black on a light
+one (`BandWords.color`). Every host decides it alike, whatever
+its toolkit's own idea of a dark color.
 
 ## A picture
 
@@ -339,8 +502,8 @@ drawn as its platform draws its own: an SF Symbol on AppKit and UIKit
 (`Icon.sfSymbol`, which both share), Material Symbols on Android - its own
 applications' icons, which the host brings, as Android ships none - a glyph
 of Segoe Fluent Icons on WinUI, the theme's symbolic icon on GTK, and on the
-Web a drawing of StateUI's own. An icon takes the colour of what it stands in:
-standing alone, the platform's primary words colour, as a label beside it;
+Web a drawing of StateUI's own. An icon takes the color of what it stands in:
+standing alone, the platform's primary words color, as a label beside it;
 in a button, its words' - the platform's, its role's, the tree's own; in a
 bar, the bar's. Where nothing gives it room, it stands at the platform's
 own icon size. Bytes are a picture encoded whole - a
@@ -351,7 +514,7 @@ PNG, a JPEG - read where they are given, at one pixel a point.
 A line, a path, a polygon and a polyline draw a geometry of their own
 numbers, which every host places in the room the shape's layout gives it by
 one rule (`ShapeArithmetic`): scaled by the shape's aspect - to fit keeping
-its proportions, to cover, each axis on its own, or not at all - and centred;
+its proportions, to cover, each axis on its own, or not at all - and centered;
 then moved by the shape's own transform, as a transform moves a view after
 its layout, so a translation shows under every aspect. A geometry flat along
 one axis, a straight line, fits by the axis it has.
@@ -371,6 +534,29 @@ column's start stands at the right, a grid's column 0 is the rightmost, a
 ZStack's area counts from the right edge, a scroller's content stands from
 the right of its document, and padding and margins swap sides.
 Nothing vertical changes, and no transform or drawing is turned.
+
+An inset says its sides as `start` and `end`, never left and right, so the
+same words are true both ways. A toolkit's own control that pads its content
+by left and right - a text, a button - is given its padding's start and end
+by its element's direction (`Insets.sides(in:)`), and given them again
+whenever that direction turns; where a toolkit names its sides logically
+(the Web's CSS) or mirrors a control whole (WinUI's `FlowDirection`), the
+start goes as its leading side. The safe area's edges a layout lets its
+content under take their start and end by the content's direction too
+(`SafeAreaArithmetic.room`).
+
+A motion layout's run is written left to right and stands as written, unless
+the layout mirrors (`MotionLayoutContract.mirrorsRightToLeft`): then, laid out
+right to left, its run stands turned by the same rule - each place about the
+room's middle, its move along and its turn the other way
+(`HostPlacementRun.place(of:in:)`, `drawing(of:)`, the run carrying its
+direction) - and the hand over it is told as the arithmetic reads it: its
+moves and speeds the other way along, a view's point about the room's width,
+two fingers' turn the other way round (`MountedElement.runDirection`).
+A direction that turns presents the run again. A toolkit that stands a view
+from the room's right edge itself - the Web, by CSS - takes the place as
+written (`writtenPlace(of:)`) and moves the view left from the right corner,
+reading no room.
 
 The direction is the element's own `layoutDirection`, or - left at
 `.inherited` - its parent's, and at the root the language's, as the host

@@ -131,11 +131,12 @@ final class GTKButtonView: GTKView {
     /// The picture beside the caption or in its place, where it stands, how far from the words, and how it fills its
     /// room; nil for none.
     private(set) var picture: GTKImageView?
-    private var position = IconPosition.leading
+    private var position = IconPosition.start
     private var spacing: Double?
 
-    /// What the button shows: its caption's label, its picture, or the two in a box.
-    private var child: GTKWidget? {
+    /// What the button shows: its caption's label, its picture, or the two in a box - asked of the widget its
+    /// opening made.
+    var child: GTKWidget? {
         switch opening {
         case .none, .hold: gtk_button_get_child(widget.of(GtkButton.self))
         case .click: gtk_menu_button_get_child(widget.opaque)
@@ -149,6 +150,10 @@ final class GTKButtonView: GTKView {
         case .click: gtk_menu_button_set_child(widget.opaque, child)
         case .arrow: adw_split_button_set_child(widget.opaque, child)
         }
+        // GTK names a button by the label it makes for words alone, and keeps naming it by that label once it goes:
+        // a child of the host's names it by its words, or by the element's.
+        // Design: docs/design/platforms/gtk/controls.md#a-buttons-picture
+        gtk_accessible_reset_relation(widget.opaque, GTK_ACCESSIBLE_RELATION_LABELLED_BY)
     }
 
     /// Words alone: GTK's own label for a button, a label of the host's on one holding a menu.
@@ -180,6 +185,12 @@ final class GTKButtonView: GTKView {
         didSet { if held !== oldValue { oldValue?.remove() } }
     }
 
+    /// Takes the held menu off before the widget goes, as the view takes its context menu off: a bar's button
+    /// leaves with no element's farewell.
+    isolated deinit {
+        held?.remove()
+    }
+
     /// Whether a menu button shows the arrow saying its click opens the menu.
     var showsArrow: Bool {
         get { opening == .click && gtk_menu_button_get_always_show_arrow(widget.opaque) != 0 }
@@ -197,20 +208,54 @@ final class GTKButtonView: GTKView {
 
     /// The box holding the picture and the caption; nil where the button shows one alone.
     var pictureAndCaption: GTKWidget? {
-        guard picture != nil, !caption.isEmpty else { return nil }
+        guard picture != nil, wordsInSight else { return nil }
         return child
     }
 
-    /// The caption.
+    /// Whether the caption stands beside the picture: out of sight, it names the button to assistive technology
+    /// through the host layer's words (`AccessibilityWords`).
+    private var showsWords = true
+
+    /// Whether the button shows its caption beside its picture.
+    private var wordsInSight: Bool { !caption.isEmpty && showsWords }
+
+    /// The caption shown before the tree's last one.
+    private var formerCaption: String?
+
+    /// The caption; a new one while one is held back shows at once.
     func setText(_ text: String) {
-        let hadWords = !caption.isEmpty
+        let former = caption
+        if text != former, heldWords != nil {
+            heldWords = nil
+        } else if text != former {
+            formerCaption = former
+        }
+        writeCaption(text)
+        showCaption()
+    }
+
+    private func writeCaption(_ text: String) {
+        let hadWords = wordsInSight
         caption = text
         guard picture != nil else {
             setLabel(text)
             return writeWords()
         }
-        if hadWords == text.isEmpty { return compose() }
+        if hadWords != wordsInSight { return compose() }
         if let label = captionLabel { gtk_label_set_text(label, text) }
+    }
+
+    override func holdWords(_ holding: Bool) {
+        if !holding { formerCaption = nil }
+        showCaption()
+    }
+
+    /// The caption held back's former one while the box grows, else the tree's.
+    /// Design: docs/design/host/motion.md#words-on-the-way
+    private func showCaption() {
+        let shown = heldWords == nil ? caption : formerCaption ?? caption
+        guard let label = captionLabel, String(cString: gtk_label_get_text(label)) != shown else { return }
+        gtk_label_set_text(label, shown)
     }
 
     /// Changes how the caption's words look.
@@ -228,7 +273,10 @@ final class GTKButtonView: GTKView {
     /// The picture `source` names beside the caption - before it, after it, above or below it, `spacing` apart,
     /// libadwaita's 6 where it is nil - or in its place where there are no words, filling the room as `aspect`
     /// says; none shows the caption alone.
-    func setPicture(_ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
+    func setPicture(
+        _ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode, showsText: Bool = true
+    ) {
+        showsWords = showsText
         guard let source else {
             guard picture != nil else { return }
             picture = nil
@@ -248,7 +296,7 @@ final class GTKButtonView: GTKView {
     private func compose() {
         guard let picture else { return }
         setChild(nil)
-        let alone = caption.isEmpty
+        let alone = !wordsInSight
         gtk_widget_remove_css_class(widget, alone ? "image-text-button" : "image-button")
         gtk_widget_add_css_class(widget, alone ? "image-button" : "image-text-button")
         guard !alone else {
@@ -256,12 +304,12 @@ final class GTKButtonView: GTKView {
             return writeWords()
         }
 
-        let across = position == .leading || position == .trailing
+        let across = position == .start || position == .end
         let box = gtk_box_new(across ? GTK_ORIENTATION_HORIZONTAL : GTK_ORIENTATION_VERTICAL, Int32((spacing ?? 6).rounded()))!
         gtk_widget_set_direction(box, gtk_widget_get_direction(widget))
         gtk_widget_set_halign(box, GTK_ALIGN_CENTER)
         let label = gtk_label_new(caption)!
-        let first = position == .leading || position == .top
+        let first = position == .start || position == .top
         for part in first ? [picture.widget, label] : [label, picture.widget] {
             gtk_box_append(box.of(GtkBox.self), part)
         }
@@ -269,7 +317,7 @@ final class GTKButtonView: GTKView {
         writeWords()
     }
 
-    /// Writes the look and the break on the label the button shows its caption in, and its colour on the icon.
+    /// Writes the look and the break on the label the button shows its caption in, and its color on the icon.
     private func writeWords() {
         picture?.wordsColor = look.color.flatMap(GTKBrush.rgba)
         guard let label = captionLabel else { return }
@@ -284,7 +332,7 @@ final class GTKButtonView: GTKView {
         g_type_check_instance_is_a(widget.of(GTypeInstance.self), gtk_label_get_type()) != 0
     }
 
-    /// The button's box - its fill, its outline's colour and width, and its shape - as a class of the host's style
+    /// The button's box - its fill, its outline's color and width, and its shape - as a class of the host's style
     /// sheet; what is nil stays the platform's.
     /// Design: docs/design/platforms/gtk/controls.md#a-buttons-box
     func setBox(fill: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
@@ -341,8 +389,10 @@ final class GTKButtonView: GTKView {
     }
 
     override func detach() {
-        super.detach()
+        // The held menu first, as the view's context menu is: the view lets go of every popover it still holds, the
+        // held menu's among them, and a popover let go of twice is a widget gone.
         held = nil
+        super.detach()
         (onClicked, onPressed, onReleased) = (nil, nil, nil)
     }
 }

@@ -11,12 +11,13 @@ import XCTest
 /// A page that asks the host the time of day, its zone, and zones' distances from UTC on a winter's and a summer's
 /// day; then a zone nobody knows; then a word to a screen reader.
 private struct AskingPage: View {
+    @Environment(\.application) private var application
     @State private var said = ""
 
     var body: some View {
         VStack {
             Text(said)
-            Button("Time").onClicked(gate: .ignoreWhileRunning) {
+            Button("Time").onClicked(.ignoreWhileRunning) {
                 let time = try await ClockTime.now()
                 let zone = try await TimeZoneInfo.local()
                 let tokyo = try await TimeZoneInfo.utcOffset(of: "Asia/Tokyo")
@@ -27,7 +28,7 @@ private struct AskingPage: View {
                 said = "\((0..<24).contains(time.hour)) \(zone.contains("/")) \(tokyo.components.seconds / 60) "
                     + "\(winter.components.seconds / 60) \(summer.components.seconds / 60)"
             }
-            Button("Nowhere").onClicked(gate: .ignoreWhileRunning) {
+            Button("Nowhere").onClicked(.ignoreWhileRunning) {
                 do {
                     _ = try await TimeZoneInfo.utcOffset(of: "Nowhere/Else")
                     said = "answered"
@@ -35,8 +36,8 @@ private struct AskingPage: View {
                     said = "refused"
                 }
             }
-            Button("Say").onClicked(gate: .ignoreWhileRunning) {
-                try await ScreenReader.announce("done")
+            Button("Say").onClicked(.ignoreWhileRunning) {
+                try await application.announce("done")
                 said = "announced"
             }
         }
@@ -53,8 +54,8 @@ private struct FocusPage: View {
         VStack {
             Text(said)
             TextField($words).aim(field)
-            Button("Focus").onClicked(gate: .ignoreWhileRunning) { said = "took \(try await field.focus())" }
-            Button("Unfocus").onClicked(gate: .ignoreWhileRunning) {
+            Button("Focus").onClicked(.ignoreWhileRunning) { said = "took \(try await field.focus())" }
+            Button("Unfocus").onClicked(.ignoreWhileRunning) {
                 try await field.unfocus()
                 said = "let go"
             }
@@ -64,27 +65,28 @@ private struct FocusPage: View {
 
 /// A page whose buttons ask the user each kind of question, saying every answer after the last.
 private struct QuestionsPage: View {
+    @Environment(\.window) private var window
     @State private var said = ""
 
     var body: some View {
         VStack {
             Text(said)
-            Button("Alert").onClicked(gate: .ignoreWhileRunning) {
-                try await Dialogs.alert("Saved", message: "The draft is kept")
+            Button("Alert").onClicked(.ignoreWhileRunning) {
+                try await window.alert("Saved", message: "The draft is kept")
                 said += "alerted; "
             }
-            Button("Confirm").onClicked(gate: .ignoreWhileRunning) {
-                let accepted = try await Dialogs.confirm(
+            Button("Confirm").onClicked(.ignoreWhileRunning) {
+                let accepted = try await window.confirm(
                     "Delete draft?", message: "It goes for good", accept: "Delete", cancel: "Keep")
                 said += "confirmed \(accepted); "
             }
-            Button("Choose").onClicked(gate: .ignoreWhileRunning) {
-                let chosen = try await Dialogs.chooseAction(
-                    "Share via", cancel: "Cancel", destruction: "Delete", buttons: ["Mail", "Message"])
+            Button("Choose").onClicked(.ignoreWhileRunning) {
+                let chosen = try await window.chooseAction(
+                    "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete")
                 said += "chose \(chosen ?? "nothing"); "
             }
-            Button("Prompt").onClicked(gate: .ignoreWhileRunning) {
-                let typed = try await Dialogs.prompt("Rename", placeholder: "Name", initialValue: "Draft")
+            Button("Prompt").onClicked(.ignoreWhileRunning) {
+                let typed = try await window.prompt("Rename", placeholder: "Name", initialValue: "Draft")
                 said += "typed \(typed ?? "nothing"); "
             }
         }
@@ -147,21 +149,21 @@ final class GTKActsTests: XCTestCase {
         }
     }
 
-    /// A question cancelled answers so: a confirmation not accepted, a choice the cancelling caption, a prompt
-    /// nothing; a choice dismissed by Escape, nothing chosen.
+    /// A question cancelled answers so: a confirmation not accepted, a choice and a prompt nothing; a choice dismissed
+    /// by Escape, nothing chosen.
     func testACancelledQuestionAnswersSo() throws {
         try onUIThread {
             let host = GTKRenderer.running { QuestionsPage() }
 
             try host.press("Confirm")
-            try host.answer("Keep")
+            try host.answer(.cancel)
             try host.press("Choose")
-            try host.answer("Cancel")
+            try host.answer(.cancel)
             try host.press("Prompt")
-            try host.answer("Cancel")
+            try host.answer(.cancel)
             try host.press("Choose")
             try host.dismiss()
-            let expected = "confirmed false; chose Cancel; typed nothing; chose nothing; "
+            let expected = "confirmed false; chose nothing; typed nothing; chose nothing; "
             host.settle { host.said == expected }
 
             XCTAssertEqual(host.said, expected)
@@ -178,7 +180,7 @@ final class GTKActsTests: XCTestCase {
             let focus = try XCTUnwrap(adw_dialog_get_focus(dialog.of(AdwDialog.self)))
 
             XCTAssertNotNil(gtk_widget_get_ancestor(focus, gtk_entry_get_type()), "the focus is the field, or its text")
-            try host.answer("Cancel")
+            try host.answer(.cancel)
         }
     }
 

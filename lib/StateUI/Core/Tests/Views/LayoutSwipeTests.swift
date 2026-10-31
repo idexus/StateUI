@@ -23,11 +23,10 @@ final class LayoutSwipeTests: XCTestCase {
 
     /// Five views a hundred points apart, swiped a hundred points a unit.
     private func row(_ phase: State<Double>, _ handed: Handed) -> Node {
-        LayoutEngine([0, 1, 2, 3, 4]) { Text("\($0)") } placements: { _, at in
+        MotionLayout([0, 1, 2, 3, 4], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
             handed.phases.append(at)
             return (0..<5).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
         }
-        .phase(phase.projectedValue)
         .axis(\.self, input: .swipe(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
         .node
     }
@@ -54,6 +53,7 @@ final class LayoutSwipeTests: XCTestCase {
     /// THROWN, A SWIPE GOES ON TO THE NEXT TARGET THAT WAY, however hard - and back to where it took the run when
     /// thrown back from beyond it.
     func testAThrownSwipeGoesOnToTheNextTargetThatWay() {
+        bench.walks = true
         let phase = State(wrappedValue: 1.0)
         let renders = Renders()
         func built() -> Node { row(phase, Handed()) }
@@ -91,7 +91,7 @@ final class LayoutSwipeTests: XCTestCase {
         let phase = State(wrappedValue: 1.0)
         let renders = Renders()
         func built() -> Node { row(phase, Handed()) }
-        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.layoutEngine)?.driven?[.phase]?.state)
+        let worn = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout)?.driven?[.parameters]?.state)
 
         bench.step(renders, built, Point(-1, 0))
         bench.step(renders, built, Point(-1, 0))
@@ -112,18 +112,17 @@ final class LayoutSwipeTests: XCTestCase {
         XCTAssertEqual(phase.wrappedValue, 1, "at rest, the next burst swipes on, one target")
     }
 
-    /// A PAGE IS THE ROOM'S LENGTH: pages are swiped a page a hand, the hand travelling the room's width for one -
+    /// A PAGE IS THE ROOM'S LENGTH: pages are swiped a page a hand, the hand traveling the room's width for one -
     /// a board is a screen however the room turns.
     func testAPageIsTheRoomsLength() {
         let phase = State(wrappedValue: 0.0)
         let handed = Handed()
         let renders = Renders()
         func built() -> Node {
-            LayoutEngine([0, 1, 2]) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0, 1, 2], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 handed.phases.append(at)
                 return (0..<3).map { _ in Placement(Rect(0, 0, 10, 10)) }
             }
-            .phase(phase.projectedValue)
             .axis(\.self, input: .pages(.horizontal), range: 0...2, snaps: .every(1))
             .node
         }
@@ -144,14 +143,13 @@ final class LayoutSwipeTests: XCTestCase {
         let handed = Handed()
         let renders = Renders()
         func built() -> Node {
-            LayoutEngine([0]) { Text("\($0)") } placements: { _, at in
+            MotionLayout([0], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
                 handed.phases.append(at)
                 // Two hundred points a unit for half a unit either side of 1, fifty beyond.
                 let away = abs(at - 1)
                 let x = away <= 0.5 ? away * 200 : 100 + (away - 0.5) * 50
                 return [Placement(Rect(at > 1 ? -x : x, 0, 10, 10))]
             }
-            .phase(phase.projectedValue)
             .axis(\.self, input: .swipe(.horizontal), range: 0...3, snaps: .every(1))
             .node
         }

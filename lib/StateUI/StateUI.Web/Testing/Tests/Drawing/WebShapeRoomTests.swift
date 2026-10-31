@@ -50,13 +50,73 @@ final class WebShapeRoomTests: XCTestCase {
         XCTAssertGreaterThan(right[2], right[0], "blue at the right edge: \(right)")
     }
 
+    /// A figure made of a blur is cut to the figure, the filter's blur with it: over a page of one color, the corner of
+    /// an oval's box - outside the oval - shows that color unchanged.
+    func testAFigureMadeOfABlurIsCutToItsFigure() throws {
+        let host = WebRenderer.running {
+            ZStack {
+                Fill(.steelBlue)
+                Ellipse()
+                    .fill(.blur(.thin))
+                    .width(80)
+                    .height(80)
+                    .horizontalAlignment(.start)
+                    .verticalAlignment(.start)
+            }
+            .width(200)
+            .height(120)
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        host.step()
+        let shape = try XCTUnwrap(host.views(WebShapeView.self).first)
+        let box = (try WebBrowser.evaluate("stateui.box(e).join(',')", on: shape.node) ?? "")
+            .split(separator: ",").compactMap { Double($0) }
+        XCTAssertEqual(box.count, 4)
+
+        let page = pixel(x: box[0] + 150, y: box[1] + 60)
+        XCTAssertEqual(pixel(x: box[0] + 3, y: box[1] + 3), page, "the corner outside the oval: the page's own color")
+        XCTAssertNotEqual(pixel(x: box[0] + 40, y: box[1] + 40), page, "the oval's middle: the blur's color over it")
+    }
+
     /// The window picture's channels at a point of the page.
     private func pixel(x: Double, y: Double) -> [Int] {
         (WebBrowser.ask([("pixel", .points([Point(x: x, y: y)]))]) ?? "").split(separator: ",").compactMap { Int($0) }
     }
 
+    /// A LATER CHILD DRAWS OVER A SHAPE BEFORE IT: in a grid's one cell the view after the shape stands over it, as a
+    /// layout draws its children in their order - the shape's own drawing standing over its box notwithstanding.
+    func testALaterChildDrawsOverAShapeBeforeIt() throws {
+        let host = WebRenderer.running {
+            Grid {
+                Rectangle()
+                    .fill(.red)
+                    .width(100)
+                    .height(100)
+                Text("Over")
+                    .background(.blue)
+                    .width(100)
+                    .height(100)
+            }
+            .horizontalAlignment(.start)
+            .verticalAlignment(.start)
+        }
+        host.step()
+        let shape = try XCTUnwrap(host.views(WebShapeView.self).first)
+        let box = (try WebBrowser.evaluate("stateui.box(e).join(',')", on: shape.node) ?? "")
+            .split(separator: ",").compactMap { Double($0) }
+        XCTAssertEqual(box.count, 4)
+
+        let middle = pixel(x: box[0] + 80, y: box[1] + 80)
+        XCTAssertGreaterThan(middle[2], middle[0], "the later child's blue over the shape's red: \(middle)")
+    }
+
     func testAShapeFillsTheRoomItsLayoutGivesIt() throws {
-        let host = WebRenderer.running { VStack { Rectangle().fill(.red).height(40) } }
+        let host = WebRenderer.running { VStack {
+            Rectangle()
+                .fill(.red)
+                .height(40)
+        } }
         host.step()
         let shape = try XCTUnwrap(host.views(WebShapeView.self).first)
 

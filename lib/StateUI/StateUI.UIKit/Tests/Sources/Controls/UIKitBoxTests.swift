@@ -14,7 +14,11 @@ final class UIKitBoxTests: XCTestCase {
     func testATouchOutsideAnOvalCutReachesNothingOfIt() throws {
         let host = UIKitRenderer.running {
             VStack {
-                ZStack { Rectangle().fill(.red).onTapped {} }
+                ZStack {
+                    Rectangle()
+                        .fill(.red)
+                        .onTapped {}
+                }
                     .width(100)
                     .height(100)
                     .shape(.ellipse)

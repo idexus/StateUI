@@ -1,15 +1,15 @@
 # Measured layouts
 
 Some views place their children by arithmetic over a measurement rather than
-by a layout the host knows: a frame report, a layout engine, and the gallery
+by a layout the host knows: a frame report, a motion layout, and the gallery
 built on one. The arithmetic runs in engines on the host's frames, so a run of
 views can follow a finger with no view built.
 
 ```text
   GalleryView
-   ├── LayoutEngine: the cards, the wheel's, fan's, row's or deck's
+   ├── MotionLayout: the cards, the wheel's, fan's, row's or deck's
    │     arithmetic, the phase the card in front, a scroll the hand
-   │     (layout-engine.md)
+   │     (motion-layout.md)
    └── Watcher: an empty view watching the asked position
 ```
 
@@ -86,11 +86,11 @@ several passes, and a place left to animate to its answer sets off from
 whatever the first pass made of it - and where nothing else on the page moves
 there are no frames to carry it the rest of the way.
 
-## Layout engine
+## Motion layout
 
 A run of views placed by an application's arithmetic, worked out from a phase
-the hand or the program moves, is a `LayoutEngine`: its element, its run, its
-phase and its hand are layout-engine.md.
+the hand or the program moves, is a `MotionLayout`: its element, its run, its
+phase and its hand are motion-layout.md.
 
 ## Bounded arithmetic
 
@@ -105,23 +105,25 @@ stated size for this reason.
 
 ## Gallery view
 
-`GalleryView` is a `LayoutEngine` with the arithmetic of four shapes written,
+`GalleryView` is a `MotionLayout` with the arithmetic of four shapes written,
 its phase the card in front and its snaps one a card. The run follows a
 finger, a trackpad and a wheel with no view built, nothing compared and no
 message sent; the one render is the card crossing, which tells the rest of the
 page which card the user is on. What the hand does - naming a card as the run
 passes it, coming to rest on the nearest, a pointer's drag, a change of room -
-is the layout engine's (layout-engine.md, the hand).
+is the motion layout's (motion-layout.md, the hand).
 
 The four shapes are four functions of the same numbers - which card, how
 many, and the room - each answering where the card goes, how far it is turned,
 how big it looks and how opaque it is. The deck reads one more: where the
-run's motion set out (layout-engine.md, where a motion set out), the card that
+run's motion set out (motion-layout.md, where a motion set out), the card that
 goes out the way the hand goes and tucks under the next, and it is swiped a
-card at a time (layout-engine.md, a swipe); its cards behind are shaded, never
+card at a time (motion-layout.md, a swipe); its cards behind are shaded, never
 faded, as a faded one would show the card under it. A change of shape is read in the
 gallery's body, so it is a change of the description: the cards land where the
-new shape says.
+new shape says. A body the gallery gives its items (`itemBody`) is each card
+holder's `layoutBody`, so every card is a body of the gallery's world as a
+motion layout's view is (motion-layout.md, bodies).
 
 - The asked position is a closure, not a read: read in the gallery's body it
   would make that body a reader, and every card crossed would describe the
@@ -129,16 +131,19 @@ new shape says.
   own beside the deck (composition.md, a watcher is a view of its own).
 - A press is drawn on the view inside the card's holder, since the holder is
   written by the placement on every frame and a press there would be snapped
-  away. Only the card in front answers a tap; the press shows and the card is
-  back at its size before the tap's own work begins: opening a card usually
-  builds a page, and a page built on the UI thread takes every frame beside
-  it.
+  away. Only the card in front answers a tap, which activates it - handed to
+  `onItemActivated` by its identity, as a list's item is; the press shows and
+  the card is back at its size before the activation's own work begins:
+  opening a card usually builds a page, and a page built on the UI thread
+  takes every frame beside it. A tap is what activates a card: a composed
+  view states no role a keyboard or a screen reader acts on
+  ([accessibility and automation](modifiers.md#accessibility-and-automation)).
 - A gallery nobody may swipe has no scroll: an assigned position places the
   cards there, and the card in front answers a tap itself.
 
 The hand carries the card in front: it turns the run by one card as it travels
 as far as that card moves for one, whatever size the room draws the run - the
-layout engine's own unit ([the hand](layout-engine.md#the-hand)), with no
+motion layout's own unit ([the hand](motion-layout.md#the-hand)), with no
 number of the gallery's.
 
 The run is fitted to its room by a scale, not a rectangle. A card takes at most
@@ -164,9 +169,14 @@ complaint rather than refused, so a gallery still being written keeps working.
 The wheel's turn is drawn flat, `ViewTransform.turn`, the same picture on every
 platform (modifiers.md, turning out of the screen plane).
 
-## Position indicator
 
-`PositionIndicator` is StateUI's composition of rectangles in a row, which
+The gallery's cards stand in reading order, as a stack's views do: its
+layout mirrors right to left (`mirrorsRightToLeft(true)`, motion-layout.md,
+right to left), the next card on the left and a swipe to the right moving the
+run on.
+## Position dots
+
+`PositionDots` is StateUI's composition of rectangles in a row, which
 no host receives as a control of its own: UIKit and WinUI have a page
 indicator, AppKit and Android's framework none, and GTK has none outside
 libadwaita's carousel, so one composition serves all of them alike. Its count,
@@ -174,7 +184,7 @@ its position and its look are values of the composed view, and a value given
 from a state is read in its content, so the row is built again when it
 changes - a row of a few boxes, where a host-carried value would buy nothing.
 The dots past `maximumVisible` are a run of that many holding the position as
-near its middle as the ends allow (`PositionIndicator.shown`), so the current
+near its middle as the ends allow (`PositionDots.shown`), so the current
 dot is always drawn, and the run stands still only near the ends of the
 sequence. A dot is a box as wide as it is tall, its corners half its size for
 a circle, the gap between two dots the size of one. Being a composition, it

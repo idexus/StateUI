@@ -2,7 +2,7 @@
 
 # BarElement
 
-What an arrangement declares of the bar while it stands on the visible path: its colours, and the application's name, line and mark in the bar.
+What an arrangement declares of the bar while it stands on the visible path: its look.
 
 ```swift
 struct MainPage: View {
@@ -14,14 +14,13 @@ struct MainPage: View {
         } destination: { message in
             Text("Message \(message)")
         }
-        .barTitle("Mail")
-        .barBackgroundColor(.cornflowerBlue)
+        .barBackground(.cornflowerBlue)
         .barForegroundColor(.white)
     }
 }
 ```
 
-Worn by: [ModalStack](../ModalStack.md) · [NavigationStack](../NavigationStack.md) · [SplitView](../SplitView.md) · [TabView](../TabView.md)
+Worn by: [NavigationStack](../NavigationStack.md) · [SplitView](../SplitView.md) · [TabView](../TabView.md)
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Mixins/BarElementContract.swift`.
 
@@ -29,8 +28,8 @@ How each of them realizes these members is on its own page.
 
 | Member | Kind | Value | Layer |
 | --- | --- | --- | --- |
-| `barBackgroundColor` | property | `Color` | adaptive |
+| `barBackground` | property | `Material` | adaptive |
 | `barForegroundColor` | property | `Color` | adaptive |
-| `barIcon` | property | `ImageSource` | adaptive |
-| `barSubtitle` | property | `String` | adaptive |
-| `barTitle` | property | `String` | adaptive |
+| `barScrollEdge` | property | `ScrollEdge` | adaptive |
+| `toolbarStyle` | property | `ToolbarStyle` | adaptive |
+| `toolbarSpacing` | property | `Double` | adaptive |

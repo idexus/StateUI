@@ -7,8 +7,8 @@ import AppKit
 @_spi(Host) import StateUIHost
 
 /// The native font words are drawn in, as they look (`TextLook`): their style's font from AppKit's type ramp, else
-/// `fallback`; the size and weight the tree gives over the style's; the family where one is named, and italic where
-/// the slant says so. The host composes it from an element's values and a registration from the members it reads -
+/// `fallback`; the size and weight the tree gives over the style's; the family where one is named, italic where the
+/// slant says so, and digits of one width where the attributes say so. The host composes it from an element's values and a registration from the members it reads -
 /// one composition, either way.
 /// Design: docs/design/platforms/appkit/views.md#a-text-style
 @MainActor
@@ -24,7 +24,18 @@ func appKitFont(_ look: TextLook, fallback: NSFont) -> NSFont {
         ]), size: points)
     } ?? NSFont.systemFont(ofSize: points, weight: thickness)
     if look.attributes.contains(.italic) { font = NSFontManager.shared.convert(font, toHaveTrait: .italicFontMask) }
+    if look.attributes.contains(.monospacedDigits) { font = font.withMonospacedDigits }
     return font
+}
+
+extension NSFont {
+    /// This font with every digit as wide as the others.
+    var withMonospacedDigits: NSFont {
+        NSFont(descriptor: fontDescriptor.addingAttributes([.featureSettings: [[
+            NSFontDescriptor.FeatureKey.typeIdentifier: kNumberSpacingType,
+            .selectorIdentifier: kMonospacedNumbersSelector,
+        ]]]), size: pointSize) ?? self
+    }
 }
 
 extension TextStyle {
@@ -67,7 +78,7 @@ extension NSFont {
     }
 }
 
-/// Words' attributes from how the host layer says they look (`TextLook`), drawn in `font`: their colour, else
+/// Words' attributes from how the host layer says they look (`TextLook`), drawn in `font`: their color, else
 /// `fallbackColor`, what stands behind them, the space between the letters, the lines' height and decorations.
 /// Design: docs/design/host/tree.md#runs-of-words
 @MainActor

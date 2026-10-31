@@ -74,21 +74,21 @@ final class AppsTests: XCTestCase {
                     "\(name): Package.swift names \(path), and \(wanted.path) does not exist.")
             }
 
-            // Nothing in the module runs until the host calls this export by
-            // name, and the manifest compiles Sources/ whole, so the file
-            // declaring it may sit anywhere under it.
+            // Every head names the application to its host by this one function, in Swift, before the host runs;
+            // the manifest compiles Sources/ whole, so the file declaring it may sit anywhere under it.
             let sources = app.appendingPathComponent("Sources")
-            let registers = try SourceTree.files(under: sources)
+            let registering = try SourceTree.files(under: sources)
                 .filter { $0.hasSuffix(".swift") }
-                .contains { relative in
-                    try String(contentsOf: sources.appendingPathComponent(relative), encoding: .utf8)
-                        .contains("@_cdecl(\"stateui_app_register\")")
-                }
+                .map { try String(contentsOf: sources.appendingPathComponent($0), encoding: .utf8) }
+                .filter { $0.contains("public func registerApplication()") }
 
-            XCTAssertTrue(
-                registers,
-                "\(name): nothing under Sources/ declares stateui_app_register - the Android head "
-                    + "can never start the application.")
+            XCTAssertEqual(
+                registering.count, 1,
+                "\(name): Sources/ declares registerApplication() \(registering.count) times - its heads name "
+                    + "the application to their host by it")
+            XCTAssertFalse(
+                registering.contains { $0.contains("@_cdecl(") },
+                "\(name): the file naming the application exports a C function - a head calls it in Swift")
         }
     }
 

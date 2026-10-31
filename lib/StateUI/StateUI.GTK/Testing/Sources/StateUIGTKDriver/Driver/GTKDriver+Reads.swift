@@ -39,6 +39,8 @@ extension GTKDriver {
         case let label as GTKTextualView: return labelHolds(property, label.widget.opaque, label.widget)
         case let button as GTKButtonView: return button.captionLabel.flatMap { labelHolds(property, $0, button.widget) }
         case let check as GTKCheckView: return Self.label(in: check.widget).flatMap { labelHolds(property, $0.opaque, $0) }
+        case let link as GTKLinkView: return link.label.flatMap { labelHolds(property, $0.opaque, $0) }
+        case let toggle as GTKSwitchView: return labelHolds(property, toggle.caption.opaque, toggle.caption)
         case let picker as GTKPickerView: return Self.label(in: picker.widget).flatMap { wordsHolds(property, $0) }
         case let picker as GTKPopoverPickerView: return wordsHolds(property, picker.label)
         case let stepper as GTKStepperView: return stepperHolds(property, stepper)
@@ -48,6 +50,10 @@ extension GTKDriver {
             return (try? frame(of: element)).map { (adw_toolbar_view_get_reveal_top_bars($0.widget.opaque) != 0).propValue }
         case _ where property == .showsTitle && element.type == .page:
             return (try? frame(of: element)).map { (gtk_widget_get_visible($0.titleWidget) != 0).propValue }
+        case _ where property == .showsCloseButton && element.type == .page:
+            return (try? frame(of: element)).map {
+                (adw_header_bar_get_show_end_title_buttons($0.header.opaque) != 0).propValue
+            }
         case _ where property == .showsBackButton && element.type == .page:
             return (try? frame(of: element)).map { (adw_header_bar_get_show_back_button($0.header.opaque) != 0).propValue }
         case let layout as GTKLayoutView: return layoutHolds(property, layout)
@@ -191,7 +197,7 @@ extension GTKDriver {
 
     // MARK: - Words
 
-    /// The words' colour and font GTK's style gives `widget`.
+    /// The words' color and font GTK's style gives `widget`.
     private func wordsHolds(_ property: Prop, _ widget: GTKWidget) -> HostValue?? {
         guard let description = pango_context_get_font_description(gtk_widget_get_pango_context(widget)) else {
             return nil
@@ -203,10 +209,41 @@ extension GTKDriver {
         case .fontWeight:
             return FontWeight(nearest: Double(pango_font_description_get_weight(description).rawValue)).propValue
         case .fontAttributes:
-            let italic = pango_font_description_get_style(description) == PANGO_STYLE_ITALIC
-            return (italic ? FontAttributes.italic : .none).propValue
+            var attributes = FontAttributes.none
+            if pango_font_description_get_style(description) == PANGO_STYLE_ITALIC { attributes.insert(.italic) }
+            if Self.tabularDigits(widget) { attributes.insert(.monospacedDigits) }
+            return attributes.propValue
         default: return nil
         }
+    }
+
+    /// Whether `widget` draws every digit as wide as the others, where GTK lets it be read: a label's layout, which
+    /// takes its style's features; a field's words' own attributes; the tags over an editor's first words.
+    private static func tabularDigits(_ widget: GTKWidget) -> Bool {
+        if GTKTestHost.holds(widget, gtk_label_get_type()) {
+            return PangoRun(pango_layout_get_attributes(gtk_label_get_layout(widget.opaque)), at: 0).tabularDigits == true
+        }
+        if GTKTestHost.holds(widget, gtk_editable_get_type()) {
+            let words = UnsafeMutablePointer<GtkText>(gtk_editable_get_delegate(widget.opaque))
+            return PangoRun(gtk_text_get_attributes(words), at: 0).tabularDigits == true
+        }
+        guard GTKTestHost.holds(widget, gtk_text_view_get_type()),
+              let buffer = gtk_text_view_get_buffer(widget.of(GtkTextView.self))
+        else { return false }
+        var start = GtkTextIter()
+        gtk_text_buffer_get_start_iter(buffer, &start)
+        let tags = gtk_text_iter_get_tags(&start)
+        defer { g_slist_free(tags) }
+        var (each, tabular) = (tags, false)
+        while let node = each {
+            var features = GValue()
+            g_value_init(&features, g_type_from_name("gchararray"))
+            g_object_get_property(node.pointee.data.assumingMemoryBound(to: GObject.self), "font-features", &features)
+            if let said = g_value_get_string(&features), PangoRun.tabular(String(cString: said)) { tabular = true }
+            g_value_unset(&features)
+            each = node.pointee.next
+        }
+        return tabular
     }
 
     /// What a label holds: its runs' look over all its words, its lines and where they stand.
@@ -353,7 +390,7 @@ extension GTKDriver {
     /// whether it holds what the tree gave; another value, or none, reads as such.
     private func accessibilityHolds(_ property: Prop, _ element: MountedElement, _ view: GTKView?) -> HostValue?? {
         guard let view else { return nil }
-        let accessible = view.widget.opaque
+        let accessible = view.presentedControl.opaque
         let differs = { (message: UnsafeMutablePointer<CChar>?) -> Bool in
             defer { g_free(message) }
             return message != nil
@@ -362,8 +399,9 @@ extension GTKDriver {
         case .accessibilityLabel, .accessibilityHint:
             let property = property == .accessibilityLabel ? GTK_ACCESSIBLE_PROPERTY_LABEL : GTK_ACCESSIBLE_PROPERTY_DESCRIPTION
             guard gtk_test_accessible_has_property(accessible, property) != 0 else { return .some(nil) }
-            let given = element.value(property == GTK_ACCESSIBLE_PROPERTY_LABEL ? .accessibilityLabel : .accessibilityHint)?
-                .string ?? ""
+            // The words the host layer gives: the author's, or a button's words out of sight.
+            let words = element.accessibilityWords
+            let given = (property == GTK_ACCESSIBLE_PROPERTY_LABEL ? words.label : words.hint) ?? ""
             return differs(stateui_test_accessible_property_is_words(UnsafeMutableRawPointer(accessible), Int32(property.rawValue), given))
                 ? "(GTK holds other words)".propValue : given.propValue
         case .accessibilityHeading:
@@ -377,7 +415,7 @@ extension GTKDriver {
                 }
             }
             return nil
-        case .isAccessibilityHidden, .automationExcludedWithChildren:
+        case .isAccessibilityHidden, .hidesChildrenFromAccessibility:
             return (!differs(stateui_test_accessible_state_is(
                 UnsafeMutableRawPointer(accessible), Int32(GTK_ACCESSIBLE_STATE_HIDDEN.rawValue), 1))).propValue
         default: return nil
@@ -425,8 +463,11 @@ private struct PangoRun {
         case .fontWeight:
             return first(PANGO_ATTR_WEIGHT).map { FontWeight(nearest: Double(Self.number($0))).propValue }
         case .fontAttributes:
-            let italic = first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue)
-            return first(PANGO_ATTR_STYLE) == nil ? nil : (italic ? FontAttributes.italic : .none).propValue
+            guard first(PANGO_ATTR_STYLE) != nil || tabularDigits != nil else { return nil }
+            var attributes = FontAttributes.none
+            if first(PANGO_ATTR_STYLE).map(Self.number) == Int32(PANGO_STYLE_ITALIC.rawValue) { attributes.insert(.italic) }
+            if tabularDigits == true { attributes.insert(.monospacedDigits) }
+            return attributes.propValue
         case .textColor: return color(PANGO_ATTR_FOREGROUND, PANGO_ATTR_FOREGROUND_ALPHA)?.propValue
         case .background: return color(PANGO_ATTR_BACKGROUND, PANGO_ATTR_BACKGROUND_ALPHA).map { Material.color($0).propValue }
         case .tracking:
@@ -446,11 +487,32 @@ private struct PangoRun {
         }
     }
 
+    /// Whether the run's font features draw every digit as wide as the others; nil where none says.
+    var tabularDigits: Bool? {
+        first(PANGO_ATTR_FONT_FEATURES).map {
+            Self.tabular(String(cString: $0.withMemoryRebound(to: PangoAttrFontFeatures.self, capacity: 1) {
+                $0.pointee.features
+            }))
+        }
+    }
+
+    /// Whether `features` - as a run writes them, `tnum 1`, or as GTK's style does, `"tnum" 1` - leave `tnum` on:
+    /// its last mention, with no value or one other than 0 or off.
+    static func tabular(_ features: String) -> Bool {
+        var on = false
+        for feature in features.split(separator: ",") {
+            let words = feature.split(separator: " ").map { $0.filter { $0 != "\"" && $0 != "'" } }
+            guard words.first == "tnum" else { continue }
+            on = words.count < 2 || !["0", "off"].contains(words[1])
+        }
+        return on
+    }
+
     private static func number(_ attribute: UnsafeMutablePointer<PangoAttribute>) -> Int32 {
         attribute.withMemoryRebound(to: PangoAttrInt.self, capacity: 1) { $0.pointee.value }
     }
 
-    /// A colour and its alpha, each 0 to 65535 in Pango, as the tree writes a colour.
+    /// A color and its alpha, each 0 to 65535 in Pango, as the tree writes a color.
     private func color(_ type: PangoAttrType, _ alphaType: PangoAttrType) -> Color? {
         guard let attribute = first(type) else { return nil }
         let color = attribute.withMemoryRebound(to: PangoAttrColor.self, capacity: 1) { $0.pointee.color }

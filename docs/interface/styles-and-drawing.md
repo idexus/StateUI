@@ -41,7 +41,18 @@ enum HandbookStyles {
 
 Install the sheet on `ApplicationSession` when the application is made:
 
-```swift quote
+```swift
+@MainActor
+enum HandbookStyles {
+    static var sheet: StyleSheet {
+        StyleSheet {
+            Style<Text>().fontSize(15)
+        }
+    }
+}
+
+struct MainPage: View { var body: some View { Text("Notes") } }
+
 struct NotesApp: Application {
     @Environment(\.application) private var application
 
@@ -115,6 +126,25 @@ struct DeleteOrKeep: View {
 A button asking for a keyed style, or for the platform's own look, wears none
 of its role's style.
 
+A picker's presentation chooses one the same way: `Style<Picker>(presentation:)`
+is the style every picker of that presentation wears - a picker saying none is
+a menu - over the implicit picker style.
+
+```swift
+@MainActor
+enum PickerStyles {
+    static var sheet: StyleSheet {
+        StyleSheet {
+            Style<Picker>()
+                .fontSize(15)
+
+            Style<Picker>(presentation: .segmented)
+                .tint(.cornflowerBlue)
+        }
+    }
+}
+```
+
 Every control also has the key `.platform`: the platform's own look, wearing
 no style of the sheet - neither the implicit one nor any other. A control
 chooses its style as it is built, and `nil` wears the implicit one, so
@@ -138,20 +168,29 @@ driven bindings are not style values.
 `Color` stores exact sRGB channels and optionally a light and dark variant:
 
 ```swift
-let surface = Color(light: .white, dark: Color("#18181B"))
-let accent = Color("#5B5BD6")
-let translucent = Color("#805B5BD6")
+let surface = Color(light: .white, dark: Color(hex: 0x18181B))
+let accent = Color(hex: 0x5B5BD6)
+let translucent = Color(hex: 0x5B5BD6, opacity: 0.5)
 let sameTranslucent = Color(red: 91, green: 91, blue: 214, alpha: 128)
 ```
 
-Hex input accepts `#RGB`, `#ARGB`, `#RRGGBB`, or `#AARRGGBB`, the alpha first
-when it is written. Named colors are static members checked by the compiler.
+A hex number has six digits, `0xRRGGBB`, and `opacity:` says how opaque the
+color is, from 0 to 1. A color that data holds as text - a theme file, a
+server's answer - is read with `Color(parsing:)`, which takes `#RGB`, `#ARGB`,
+`#RRGGBB` or `#AARRGGBB`, the alpha first when it is written, and answers nil
+for anything else:
+
+```swift
+let brand = Color(parsing: "#5B5BD6") ?? .accent
+```
+
+Named colors are static members checked by the compiler.
 `Color(red:green:blue:alpha:)` takes whole-number channels from 0 through 255;
-the alpha is 255, opaque, unless it is given. `opacity(_:)` lets a colour
+the alpha is 255, opaque, unless it is given. `opacity(_:)` lets a color
 through - its alpha scaled, in both halves of a pair:
 
 ```swift
-let wash = Color("#5B5BD6").opacity(0.15)
+let wash = Color(hex: 0x5B5BD6).opacity(0.15)
 ```
 
 `ImageSource` follows the same theme rule:
@@ -178,10 +217,28 @@ settings builds again exactly the views wearing it, in a style too:
 let marked = Color.accent.opacity(0.7)
 ```
 
+An application gives an accent of its own with `application.accentColor`. It
+stands where the user chooses none for the system - the Web, iOS and iPadOS,
+GNOME before 47 - and draws the platform's controls there; on macOS, Windows,
+Android and GNOME 47 on, the user's stands. `nil` gives the platform's back,
+and a pair follows the theme:
+
+```swift
+struct BrandAccent: View {
+    @Environment(\.application) private var application
+
+    var body: some View {
+        Button("Brand accent").onClicked {
+            application.accentColor = Color(hex: 0x4CC2FF)
+        }
+    }
+}
+```
+
 ## Materials
 
 A background is a material: what the surface behind the view's content is
-made of. A colour and a gradient are materials; so is a blur of what lies
+made of. A color and a gradient are materials; so is a blur of what lies
 behind the view, in the platform's own look - from `.ultraThin`, which lets
 the most through, to `.ultraThick` - and so is the platform's glass, regular
 or clear, tinted, answering the user's touch where it is interactive. Every
@@ -197,7 +254,7 @@ let glass = VStack { Text("Saved") }
     .shape(.roundedRectangle(16))
 ```
 
-A blur's tint lies over it, so a colour with an alpha tints the blur. A
+A blur's tint lies over it, so a color with an alpha tints the blur. A
 material may differ by theme - `Material(light:dark:)`, a nil half for no
 background - and one with no pair is the same choice in both themes, the blur
 and glass following the theme as the platform draws them:
@@ -208,14 +265,16 @@ let panel = VStack { Text("Saved") }
 ```
 
 A platform with no glass draws the blur as clear as the glass; one that blurs
-nothing, a colour of the theme let through as the blur is, the tint over it.
+nothing, a color of the theme let through as the blur is, the tint over it.
 A state holding a material is a channel: `.background($material)` -
 `.pageBackground($material)`, a split view's `.sidebarBackground($material)`
-and `.flyoutBackground($material)` alike - shows each material written into
+and `.sidebarOverlayBackground($material)` alike - shows each material written into
 the state as it stands, and no body is built again for it; a pair in it
-follows the theme. A colour's channel walks the colour instead:
+follows the theme. A color's channel walks the color instead:
 `.background($color)` animates it as the state moves. A window's background
-is a material too (`window.background`, in *Application and sessions*).
+is a material too (`window.background`, in *Application and sessions*). A
+region that is only its material, holding nothing, is a `Fill` -
+`Fill(.blur(.regular))` - which takes the room it is offered (*Layout*).
 
 ## Visual states
 
@@ -239,14 +298,14 @@ Style<Button>()
 ```
 
 The states offered after the dot are the ones that control enters. Every
-view has normal, disabled and pointer-over; a control taking the focus adds
-focused, a button pressed, a switch on and off, a check box on, a radio
-button checked and unchecked. A
-state the control never enters does not compile.
+view has normal, disabled, pointer-over and pressed - a button pressed, and
+any view that hears taps while the press stands over it; a control taking the
+focus adds focused, a switch on and off, a check box on. A state the control
+never enters does not compile.
 
 StateUI decides which state a control is in, the same way on every platform:
-the first that holds of disabled, pressed, pointer-over, focused, on or
-checked, off or unchecked - and normal when none does. What the control shows
+the first that holds of disabled, pressed, pointer-over, focused, on, off -
+and normal when none does. What the control shows
 is every state that holds at once, the earlier in that order winning a value
 two of them set. A disabled switch that is on is dimmed, and green where its
 host paints a switch's background - GTK paints none, its switch's box being its
@@ -283,7 +342,7 @@ state it starts in - and receives the typed state. Naming states declares
 them without changing how the control looks and hears only them; naming none
 hears every state the control declares, normal included:
 
-```swift quote
+```swift
 @State private var scale = 1.0
 
 Button("Hold")
@@ -300,7 +359,7 @@ style carries no handlers.
 
 ## Flat colors and brushes
 
-`background` takes one colour or a brush, and it is one property whichever
+`background` takes one color or a brush, and it is one property whichever
 it carries. A brush can be solid, linear, or radial:
 
 ```swift
@@ -346,14 +405,16 @@ shape but `Line` - takes `fill`, and a shape whose outline turns corners -
 `fill` does not compile. Geometry-specific modifiers such as a rectangle's
 corner radius or line endpoints remain on the matching shape. A `Rectangle`,
 a `Capsule` and an `Ellipse` are drawn for their fill, so they take it first,
-`Rectangle(.cornflowerBlue)` - a colour, a brush or a colour's state;
+`Rectangle().fill(.cornflowerBlue)` - a color, a brush, a material - a blur
+or glass cut to the figure, `Capsule().fill(.blur(.thin))` - or a state;
 `.fill` says the same where a style or a later change does.
 
 ```swift
-Rectangle(.linearGradient(
-    [GradientStop(.cornflowerBlue, 0), GradientStop(.indigo, 1)],
-    startPoint: Point(0, 0),
-    endPoint: Point(1, 0)))
+Rectangle()
+    .fill(.linearGradient(
+        [GradientStop(.cornflowerBlue, 0), GradientStop(.indigo, 1)],
+        startPoint: Point(0, 0),
+        endPoint: Point(1, 0)))
     .cornerRadius(14)
     .stroke(.solidColor(.white))
     .lineWidth(2)
@@ -369,14 +430,15 @@ its shorter side at every size, so it stays a pill however wide or tall its
 room - and a circle in a square one.
 
 ```swift
-Capsule(.teal)
+Capsule()
+    .fill(.teal)
     .width(120)
     .height(32)
 ```
 
-A rectangle is also the plain block of colour - a bar of a chart, a swatch, a
-placeholder. Its fill and outline take a colour's state, `$x`, as other colour
-properties do: the host moves the colour to each new value and no view is
+A rectangle is also the plain block of color - a bar of a chart, a swatch, a
+placeholder. Its fill and outline take a color's state, `$x`, as other color
+properties do: the host moves the color to each new value and no view is
 rebuilt for it.
 
 ```swift
@@ -385,7 +447,10 @@ struct Level: View {
 
     var body: some View {
         VStack {
-            Rectangle($tint).cornerRadius(6).height(12)
+            Rectangle()
+                .fill($tint)
+                .cornerRadius(6)
+                .height(12)
             Button("Warn").onClicked { tint = .orange }
         }
     }

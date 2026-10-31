@@ -16,13 +16,14 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: false)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(open.projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     ScrollView {
                         VStack { HStack { Text("row") } }
                     }
                 }
+                .showsSidebar(open.projectedValue)
             }
             let window = try XCTUnwrap(host.window)
             host.settle { open.wrappedValue }
@@ -46,11 +47,12 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: true)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(open.projectedValue) {
+                SplitView {
                     Text("Menu words").title("Menu")
                 } detail: {
                     ScrollView { VStack { HStack { Text("row") } } }
                 }
+                .showsSidebar(open.projectedValue)
             }
             let scroller = try XCTUnwrap(host.views(WinUIScrollView.self).first)
             host.settle { scroller.laidOutFrame.width > 0 }
@@ -78,11 +80,12 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: true)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(open.projectedValue) {
+                SplitView {
                     Text("Menu words").title("Menu")
                 } detail: {
                     Text("Detail words")
                 }
+                .showsSidebar(open.projectedValue)
             }
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             host.settle { Self.words(split.sidebar, "paneOpen") == "1" }
@@ -102,11 +105,12 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: false)
             let host = WinUIRenderer.running {
-                SplitView(open.projectedValue) {
+                SplitView {
                     Text("Menu words").title("Menu")
                 } detail: {
                     Text("Detail words")
                 }
+                .showsSidebar(open.projectedValue)
             }
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             host.settle { Self.words(split.sidebar, "paneBeside") == "0" }
@@ -135,7 +139,7 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let open = State(wrappedValue: true)
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(open.projectedValue) {
+                SplitView {
                     Grid {
                         ScrollView {
                             VStack { ForEach(0..<60, id: \.self) { Text("row \($0)") } }
@@ -146,6 +150,7 @@ final class WinUIPagesTests: XCTestCase {
                 } detail: {
                     Text("detail")
                 }
+                .showsSidebar(open.projectedValue)
             }
             for _ in 0..<20 { host.step() }
             host.layOut()
@@ -153,6 +158,40 @@ final class WinUIPagesTests: XCTestCase {
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             let footer = try XCTUnwrap(host.views(WinUITextView.self).first { $0.text == "footer" })
             XCTAssertGreaterThan(footer.frame.height, 0)
+            XCTAssertLessThanOrEqual(
+                footer.origin.y + footer.frame.height, split.origin.y + split.frame.height + 1,
+                "the footer stands below the window")
+        }
+    }
+
+    /// The sidebar's page follows the window's height: a window made shorter keeps the footer under a scroller of many
+    /// rows inside it.
+    func testTheSidebarsFooterStaysInAWindowMadeShorter() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
+                SplitView {
+                    Grid {
+                        ScrollView {
+                            VStack { ForEach(0..<60, id: \.self) { Text("row \($0)") } }
+                        }
+                        Text("footer").gridRow(1)
+                    }
+                    .rows(.fill, .auto)
+                } detail: {
+                    Text("detail")
+                }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
+            }
+            for _ in 0..<20 { host.step() }
+            host.layOut()
+            let window = try XCTUnwrap(host.window)
+            window.request(WindowFrame(width: WinUITestHost.wideRoom.width, height: 400))
+            for _ in 0..<20 { host.step() }
+            host.layOut()
+
+            let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
+            let footer = try XCTUnwrap(host.views(WinUITextView.self).first { $0.text == "footer" })
+            XCTAssertLessThan(split.frame.height, 450, "the window made shorter")
             XCTAssertLessThanOrEqual(
                 footer.origin.y + footer.frame.height, split.origin.y + split.frame.height + 1,
                 "the footer stands below the window")
@@ -253,7 +292,7 @@ final class WinUIPagesTests: XCTestCase {
     }
 
     /// Words on a bar the tree paints stand light on a dark bar and dark on a light one, where the tree writes no
-    /// colour for them (`BandWords`) - the title, the way back and the actions alike: the bar stands in the dark theme
+    /// color for them (`BandWords`) - the title, the way back and the actions alike: the bar stands in the dark theme
     /// or the light one, said as a window's theme is (`ColorScheme`).
     func testWordsOnAPaintedBarFollowHowDarkItIs() throws {
         try onUIThread {
@@ -263,7 +302,7 @@ final class WinUIPagesTests: XCTestCase {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     Text("Root")
                 } destination: { _ in Text("Pushed") }
-                    .barBackgroundColor(dark.wrappedValue ? navy : yellow)
+                    .barBackground(dark.wrappedValue ? navy : yellow)
             }
             let bar = try XCTUnwrap(host.window).titleBar
             XCTAssertEqual(ColorScheme(rawValue: stateui_winui_title_bar_theme(bar.handle)), .dark, "light on navy")
@@ -272,13 +311,13 @@ final class WinUIPagesTests: XCTestCase {
             host.settle { ColorScheme(rawValue: stateui_winui_title_bar_theme(bar.handle)) == .light }
             XCTAssertEqual(
                 ColorScheme(rawValue: stateui_winui_title_bar_theme(bar.handle)), .light,
-                "dark on yellow, once the colour travelled")
+                "dark on yellow, once the color traveled")
         }
     }
 
-    /// The menu bar is one of the window's bars: it wears their colour, its menus' words the bars' words - the colour
+    /// The menu bar is one of the window's bars: it wears their color, its menus' words the bars' words - the color
     /// written, else light on a dark bar - and the platform's own again where nothing is declared.
-    func testTheMenuBarWearsTheBarsColours() throws {
+    func testTheMenuBarWearsTheBarsColors() throws {
         try onUIThread {
             let painted = State(wrappedValue: true)
             let (navy, yellow) = (Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 230, blue: 0))
@@ -287,11 +326,11 @@ final class WinUIPagesTests: XCTestCase {
                     Text("Root")
                         .menuBar { Menu("File") { MenuItem("Save") } }
                 } destination: { _ in Text("Pushed") }
-                return painted.wrappedValue ? stack.barBackgroundColor(navy).barForegroundColor(yellow) : stack
+                return painted.wrappedValue ? stack.barBackground(navy).barForegroundColor(yellow) : stack
             }
             let window = try XCTUnwrap(host.window)
             host.settle { window.menuBarStands }
-            XCTAssertEqual(Self.words(window.menuBar, "background"), "#FF000080", "the bars' colour")
+            XCTAssertEqual(Self.words(window.menuBar, "background"), "#FF000080", "the bars' color")
             XCTAssertEqual(Self.words(window.menuBar, "itemForeground"), "#FFFFE600", "the bars' words")
             XCTAssertEqual(Self.words(window.menuBar, "theme"), "2", "the dark theme of a dark bar")
 
@@ -302,17 +341,55 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
+    /// WinUI keeps no Edit menu of its own: one a page joins holds the field's undoing, clipboard and selection
+    /// before the page's own entries, and they act on the words the user typed into though the menu took the focus.
+    func testTheEditMenuActsOnTheWordsTypedInto() throws {
+        try onUIThread {
+            let words = State(wrappedValue: "hello")
+            let host = WinUIRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    VStack {
+                        TextField(words.projectedValue)
+                        Button("Other")
+                    }
+                    .menuBar { Menu("Edit") { MenuItem("Find") }.id(StandardMenu.edit) }
+                } destination: { _ in Text("Pushed") }
+            }
+            let window = try XCTUnwrap(host.window)
+            host.settle { window.menuBarStands }
+            let field = try XCTUnwrap(host.views(WinUITextFieldView.self).first)
+            XCTAssertTrue(stateui_winui_focus(field.handle, true), "the field holds the focus")
+            host.settle { WinUIEditing.typed === field }
+            XCTAssertTrue(WinUIEditing.typed === field, "the field typed into is kept")
+            let other = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            XCTAssertTrue(stateui_winui_focus(other.handle, true), "the focus leaves it, as a menu takes it")
+
+            // The Edit menu's entries in their order, the page's Find after them: Undo is 0, Cut 2, Paste 4, All 6.
+            window.menuBar.menuChosen(6)
+            window.menuBar.menuChosen(2)
+            host.settle { words.wrappedValue.isEmpty }
+            XCTAssertEqual(words.wrappedValue, "", "the words cut")
+            window.menuBar.menuChosen(4)
+            host.settle { words.wrappedValue == "hello" }
+            XCTAssertEqual(words.wrappedValue, "hello", "the clipboard's words pasted back")
+            window.menuBar.menuChosen(0)
+            host.settle { words.wrappedValue.isEmpty }
+            XCTAssertEqual(words.wrappedValue, "", "the paste undone")
+        }
+    }
+
     /// The pane holding a sidebar wears the sidebar page's background, so no room WinUI keeps around the page in it
     /// shows the window's backdrop.
     func testTheSidebarsPaneWearsItsPagesBackground() throws {
         try onUIThread {
             let tone = State(wrappedValue: Color(red: 0, green: 0, blue: 128))
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TonedSidebar(tone: tone.wrappedValue)
                 } detail: {
                     Text("detail")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             host.settle { Self.words(split.sidebar, "paneBackground") == "#FF000080" }
@@ -331,13 +408,14 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let written = State(wrappedValue: Material?.some(.blur(.ultraThick)))
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     Text("sidebar")
                 } detail: {
                     WindowSessionPage(key: "\(String(describing: written.wrappedValue))") {
                         $0.background = written.wrappedValue
                     }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let window = try XCTUnwrap(host.window)
             host.settle { Self.words(window.handle, "detailCard") == "#00000000" }
@@ -357,11 +435,12 @@ final class WinUIPagesTests: XCTestCase {
     func testTheSidebarPageStandsAtTheSplitViewsTop() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TonedSidebar(tone: Color(red: 0, green: 0, blue: 128))
                 } detail: {
                     Text("detail")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
             host.settle { host.views(WinUITextView.self).contains { $0.text == "sidebar" && $0.frame.height > 0 } }
@@ -371,17 +450,50 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
-    /// The actions on a painted bar stand in its words' colour - the one written, else light on a dark bar and dark
+    /// The actions on a painted bar stand in its words' color - the one written, else light on a dark bar and dark
     /// on a light one - not in the theme's.
-    func testTheBarsActionsStandInItsWordsColour() throws {
+    /// A stack in a sheet brings its page's actions to the card's head as it brings them to a window's bar - at the
+    /// head's edges, each group apart, the rest behind "more" - and a press on one runs it.
+    func testASheetsHeadShowsItsPagesActions() throws {
+        try onUIThread {
+            let undone = State(wrappedValue: 0)
+            let host = WinUIRenderer.running {
+                Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                    NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                        Text("Draft").title("Draft").id("draft").toolbar {
+                            ToolbarButton("Undo").placement(at: .start).onClicked { undone.wrappedValue += 1 }
+                            ToolbarGroup {
+                                ToolbarButton("Save")
+                                ToolbarButton("Add")
+                            }
+                            ToolbarButton("Pin")
+                            ToolbarButton("Delete").placement(at: .overflow)
+                        }
+                    } destination: { _ in Text("Pushed") }
+                }
+            }
+            let page = try XCTUnwrap(host.runtime.tree.root?.first(id: .manual("draft")))
+            let sheet = try XCTUnwrap(host.controller(of: page)?.sheetForTesting(presenting: try XCTUnwrap(
+                page.enclosing(type: .sheet)?.children.first)))
+            host.settle { Self.words(sheet, "actions") == "Undo|Save;Add;Pin|Delete" }
+
+            XCTAssertEqual(Self.words(sheet, "actions"), "Undo|Save;Add;Pin|Delete")
+            XCTAssertEqual(Self.words(sheet, "close"), "1", "the close button beside them")
+            sheet.chose(0)
+            host.runtime.pump.turn()
+            XCTAssertEqual(undone.wrappedValue, 1, "Undo pressed")
+        }
+    }
+
+    func testTheBarsActionsStandInItsWordsColor() throws {
         try onUIThread {
             let navy = Color(red: 0, green: 0, blue: 128)
             for (written, words) in [(Color(red: 255, green: 230, blue: 0) as Color?, "#FFFFE600"), (nil, "#FFFFFFFF")] {
                 let host = WinUIRenderer.running {
                     let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                        TitledPage(title: "Notes", actions: [ToolbarItem("Scan")])
+                        TitledPage(title: "Notes", actions: [ToolbarButton("Scan")])
                     } destination: { _ in Text("Pushed") }
-                        .barBackgroundColor(navy)
+                        .barBackground(navy)
                     return written.map { stack.barForegroundColor($0) } ?? stack
                 }
                 let bar = try XCTUnwrap(host.window).titleBar
@@ -391,31 +503,136 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
-    /// A destructive action stands in the critical colour of its bar's own theme - lighter on a dark bar - whatever
-    /// colour the bar's words take: its words' brush follows the theme, which a brush looked up once would not.
-    func testADestructiveActionStandsInTheCriticalColourOfItsBarsTheme() throws {
+    /// A destructive action stands in the critical color of its bar's own theme - lighter on a dark bar - whatever
+    /// color the bar's words take: its words' brush follows the theme, which a brush looked up once would not.
+    func testADestructiveActionStandsInTheCriticalColorOfItsBarsTheme() throws {
         try onUIThread {
             var reds: [(red: UInt32, green: UInt32, blue: UInt32)] = []
             for background in [Color(red: 0, green: 0, blue: 128), Color(red: 255, green: 255, blue: 224)] {
                 let host = WinUIRenderer.running {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(
-                            title: "Notes", actions: [ToolbarItem("Scan"), ToolbarItem("Delete").isDestructive(true)])
+                            title: "Notes", actions: [ToolbarButton("Scan"), ToolbarButton("Delete").role(.destructive)])
                     } destination: { _ in Text("Pushed") }
-                        .barBackgroundColor(background)
+                        .barBackground(background)
                         .barForegroundColor(Color(red: 255, green: 230, blue: 0))
                 }
                 let bar = try XCTUnwrap(host.window).titleBar
                 host.settle { Self.words(bar, "actions") == "|Scan;Delete|" }
                 let words = Self.words(bar, "actionWords").split(separator: ";").map(String.init)
-                XCTAssertEqual(words.first, "#FFFFE600", "an action stands in the bar's words' colour")
+                XCTAssertEqual(words.first, "#FFFFE600", "an action stands in the bar's words' color")
                 let argb = try XCTUnwrap(words.count == 2 ? UInt32(words[1].dropFirst(), radix: 16) : nil)
                 let red = (red: argb >> 16 & 0xFF, green: argb >> 8 & 0xFF, blue: argb & 0xFF)
-                XCTAssertNotEqual(words[1], "#FFFFE600", "the destructive one keeps its own colour")
+                XCTAssertNotEqual(words[1], "#FFFFE600", "the destructive one keeps its own color")
                 XCTAssertTrue(red.red > red.green && red.red > red.blue, "the destructive one is red: \(words[1])")
                 reds.append(red)
             }
             XCTAssertGreaterThan(reds[0].green, reds[1].green, "lighter on the dark bar than on the light one")
+        }
+    }
+
+    /// An action that cannot be chosen fades its picture as its words fade: WinUI fades a glyph with the words, and
+    /// leaves a picture of the application's own as drawn.
+    func testADisabledActionsPictureFadesAsItsWords() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    TitledPage(title: "Notes", actions: [
+                        ToolbarButton("Add").icon("test_wide.png").isEnabled(false),
+                        ToolbarButton("Scan").icon("test_wide.png"),
+                    ])
+                } destination: { _ in Text("Pushed") }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "actions") == "|!Add;Scan|" }
+            let faded = try XCTUnwrap(Double(Self.words(bar, "action 0 iconOpacity")))
+            XCTAssertEqual(Double(Self.words(bar, "action 1 iconOpacity")), 1, "one that can be chosen as drawn")
+            XCTAssertLessThan(faded, 0.6, "faded")
+            XCTAssertGreaterThan(faded, 0.2, "still seen")
+        }
+    }
+
+    /// An action showing its picture alone stands in the width of WinUI's compact commands, as a Windows
+    /// application's toolbar keeps its pictures - 2 of it clear on each side of its fill -; one showing its words
+    /// stands as wide as they are.
+    func testAPictureAloneStandsAsNarrowAsACompactCommand() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").title("Notes").toolbar {
+                    ToolbarButton("Add").icon("test_wide.png")
+                    ToolbarButton("Scan").icon("test_wide.png").showsText(true)
+                }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "actions") == "|Add;Scan|" }
+            XCTAssertEqual(Self.words(bar, "action 0 width"), "36", "the picture alone")
+            XCTAssertNotEqual(Self.words(bar, "action 1 width"), "36", "the picture with its words")
+        }
+    }
+
+    /// Groups stand apart by room alone: the bar draws no line between them, as a Windows application's toolbar.
+    func testGroupsStandApartByRoomAlone() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").title("Notes").toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Save")
+                        ToolbarButton("Add")
+                    }
+                    ToolbarButton("Sort")
+                }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "bar") == "|0,1 2|" }
+            XCTAssertEqual(Self.words(bar, "barLines"), "0")
+        }
+    }
+
+    /// The buttons of a group its author declared stand on one capsule, a group of one too, each filled under the
+    /// pointer as a capsule of its own; a button declared alone stands bare, filled under the pointer as a rounded
+    /// rectangle as high as a capsule - its words beside its picture or not. Each draws its picture as tall as a
+    /// bar button's, 16.
+    func testADeclaredGroupStandsOnACapsule() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").title("Notes").toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Save").icon("test_wide.png")
+                        ToolbarButton("Add").icon("test_wide.png")
+                    }
+                    ToolbarGroup {
+                        ToolbarButton("Share").icon("test_wide.png")
+                    }
+                    ToolbarButton("Sort").icon("test_wide.png")
+                    ToolbarButton("Scan").icon("test_wide.png").showsText(true)
+                }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "actions") == "|Save;Add;Share;Sort;Scan|" }
+            XCTAssertEqual((0..<5).map { Self.words(bar, "action \($0) capsule") }, ["on 2", "on 2", "on 1", "bare", "bare"])
+            XCTAssertEqual((0..<5).map { Self.words(bar, "action \($0) hover") }, ["32,16", "32,16", "32,16", "32,8", "32,8"])
+            host.settle { Self.words(bar, "action 0 pictureHeight") != "0" }
+            XCTAssertEqual((0..<5).map { Self.words(bar, "action \($0) pictureHeight") }, Array(repeating: "16", count: 5))
+        }
+    }
+
+    /// A bar's button opening a menu apart - a split one - or by its click with its arrow rests with no fill and no
+    /// border, as the bar's other buttons, its fill coming under the pointer.
+    func testAMenusButtonOnTheBarRestsAsTheBarsOthers() throws {
+        try onUIThread {
+            let host = WinUIRenderer.running {
+                Text("Notes").title("Notes").toolbar {
+                    ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save a copy") }
+                    ToolbarButton("Sort").menu { MenuItem("A to Z") }
+                }
+            }
+            let bar = try XCTUnwrap(host.window).titleBar
+            host.settle { Self.words(bar, "actions") == "|Save;Sort|" }
+            XCTAssertEqual(Self.words(bar, "action 0 subtle"), "1", "the split one")
+            XCTAssertEqual(Self.words(bar, "action 1 subtle"), "1", "the one with its arrow")
+            // Centered on the bar, its words the size of a bar button's label.
+            XCTAssertEqual(["action 0 standing", "action 1 standing"].map { Self.words(bar, $0) }, ["1,1", "1,1"])
+            XCTAssertEqual(["action 0 wordsSize", "action 1 wordsSize"].map { Self.words(bar, $0) }, ["12", "12"])
         }
     }
 
@@ -436,7 +653,7 @@ final class WinUIPagesTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
-                    TitledPage(title: "Home", actions: [ToolbarItem("Inspector")])
+                    TitledPage(title: "Home", actions: [ToolbarButton("Inspector")])
                 } destination: { _ in Text("Pushed") }
             }
             let bar = try XCTUnwrap(host.window).titleBar
@@ -456,13 +673,14 @@ final class WinUIPagesTests: XCTestCase {
     func testASidebarTallerThanTheWindowScrolls() throws {
         try onUIThread {
             let host = WinUIRenderer.running(room: WinUITestHost.wideRoom) {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     ScrollView {
                         VStack { ForEach(Array(0..<100), id: \.self) { number in Text("Row \(number)") } }
                     }
                 } detail: {
                     Text("Detail")
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             host.layOut()
             let scroller = try XCTUnwrap(host.views(WinUIScrollView.self).first)
@@ -478,11 +696,12 @@ final class WinUIPagesTests: XCTestCase {
     func testATabbedDetailStandsItsTabsAcrossTheDetail() throws {
         try onUIThread {
             let host = WinUIRenderer.running {
-                SplitView(State(wrappedValue: true).projectedValue) {
+                SplitView {
                     TitledPage(title: "Menu")
                 } detail: {
                     TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
                 }
+                .showsSidebar(State(wrappedValue: true).projectedValue)
             }
             let window = try XCTUnwrap(host.window)
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
@@ -491,18 +710,27 @@ final class WinUIPagesTests: XCTestCase {
         }
     }
 
-    /// A tabbed detail under a modal stack - the window's page, its sheets over it - stands its tabs across the
-    /// detail as it does with no modal stack.
-    func testATabbedDetailUnderAModalStackStandsItsTabsAcrossTheDetail() throws {
+    /// A tabbed detail of a split view the window's anchor holds - a sheet written on the view choosing the
+    /// window's arrangement - stands its tabs across the detail as it does with no anchor.
+    func testATabbedDetailInTheWindowsAnchorStandsItsTabsAcrossTheDetail() throws {
         try onUIThread {
+            let signedIn = State(wrappedValue: true)
             let host = WinUIRenderer.running {
-                ModalStack(State(wrappedValue: [Int]()).projectedValue) {
-                    SplitView(State(wrappedValue: true).projectedValue) {
-                        TitledPage(title: "Menu")
-                    } detail: {
-                        TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
+                Group {
+                    if signedIn.wrappedValue {
+                        SplitView {
+                            TitledPage(title: "Menu")
+                        } detail: {
+                            TabView([0, 1]) { number in TitledPage(title: "Tab \(number)") }
+                        }
+                        .showsSidebar(State(wrappedValue: true).projectedValue)
+                    } else {
+                        NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                            TitledPage(title: "Sign in")
+                        } destination: { _ in TitledPage(title: "Next") }
                     }
-                } destination: { number in TitledPage(title: "Sheet \(number)") }
+                }
+                .sheet(isPresented: State(wrappedValue: false).projectedValue) { TitledPage(title: "Sheet") }
             }
             let window = try XCTUnwrap(host.window)
             let split = try XCTUnwrap(host.views(WinUISplitView.self).first)
@@ -535,11 +763,12 @@ final class WinUIPagesTests: XCTestCase {
             for room in [WinUITestHost.room, WinUITestHost.wideRoom] {
                 let open = State(wrappedValue: false)
                 let host = WinUIRenderer.running(room: room) {
-                    SplitView(open.projectedValue) {
+                    SplitView {
                         Button("Sign out")
                     } detail: {
                         Text("Detail")
                     }
+                    .showsSidebar(open.projectedValue)
                 }
                 let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
                 let takes = { stateui_winui_focus(button.handle, true) }
@@ -585,13 +814,14 @@ final class WinUIPagesTests: XCTestCase {
     @MainActor
     private static func signIn(_ signedIn: State<Bool>) -> some View {
         if signedIn.wrappedValue {
-            SplitView(State(wrappedValue: false).projectedValue) {
+            SplitView {
                 Text("Menu")
             } detail: {
                 NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                     AimedFieldPage()
                 } destination: { _ in Text("Pushed") }
             }
+            .showsSidebar(State(wrappedValue: false).projectedValue)
         } else {
             NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 TextField(State(wrappedValue: "").projectedValue)
@@ -610,7 +840,7 @@ private struct AimedFieldPage: View {
             TextField(State(wrappedValue: "").projectedValue).aim(field)
             Button("Below")
         }
-        .onAppearing(gate: .ignoreWhileRunning) { try await field.focus() }
+        .onAppearing(.ignoreWhileRunning) { try await field.focus() }
     }
 }
 
@@ -619,7 +849,7 @@ private struct AimedFieldPage: View {
 private struct TitledPage: View {
     let title: String
     var log: Received<String>? = nil
-    var actions: [ToolbarItem] = []
+    var actions: [ToolbarButton] = []
     var hidesBar = false
 
     var body: some View {

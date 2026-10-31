@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// The space a control keeps inside itself, around its content: worn by
-/// every layout, and by the controls that pad their content - Text, Button
-/// and ScrollView among them.
-public protocol PaddingElement: VisualElementProperties {}
+/// every layout, by the controls that pad their content - Text, Button
+/// and ScrollView among them - and by the items on a bar.
+public protocol PaddingElement: PropertyContainer {}
 
 extension PaddingElement {
     /// The space kept inside the view, between its edge and its content.
@@ -13,14 +13,14 @@ extension PaddingElement {
     ///     VStack { … }.padding(24)
     public func padding(_ value: Insets) -> Modified { setValue(PaddingElementContract.padding, value) }
 
-    /// The same on the left and the right, and the same above and below.
+    /// The same at the start and the end, and the same above and below.
     public func padding(horizontal: Double, vertical: Double) -> Modified {
         padding(Insets(horizontal: horizontal, vertical: vertical))
     }
 
     /// Each side by name.
-    public func padding(left: Double, top: Double, right: Double, bottom: Double) -> Modified {
-        padding(Insets(left: left, top: top, right: right, bottom: bottom))
+    public func padding(start: Double, top: Double, end: Double, bottom: Double) -> Modified {
+        padding(Insets(start: start, top: top, end: end, bottom: bottom))
     }
 }
 

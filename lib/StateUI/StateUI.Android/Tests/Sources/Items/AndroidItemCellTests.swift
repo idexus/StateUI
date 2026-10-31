@@ -29,7 +29,7 @@ final class AndroidItemCellTests: XCTestCase {
         }
     }
 
-    /// The colour the cell's background draws as it stands now; nil for none.
+    /// The color the cell's background draws as it stands now; nil for none.
     @MainActor
     private static func band(of cell: AndroidItemCell) -> UInt32? {
         Java.frame {

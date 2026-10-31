@@ -35,8 +35,8 @@ extension StateBox {
 @MainActor
 protocol BorrowedState {
     /// What the wrapper borrows from: the storage behind a whole `@State` and which
-    /// part of it, or nothing for a binding made from closures.
-    var lends: (lender: AnyObject?, lent: AnyHashable?) { get }
+    /// part of it.
+    var lends: (lender: AnyObject, lent: AnyHashable?) { get }
 }
 
 /// One stored property of a composed view, as the differ can compare it - what
@@ -173,41 +173,12 @@ extension Node {
             }
         }
 
-        /// Builds the subtree and lands what the author wrote on the view onto its root.
+        /// Builds the subtree and lands what the author wrote on the view onto its root - through the anchor its body
+        /// stands on, where it stands on one.
         func expand(over written: Node) -> Node {
             var node = build()
             node.branch = node.branch ?? (node.identity == nil ? node.key : nil)
-            node.props.merge(written.props) { _, wrote in wrote }
-
-            // The states driven to it, for the same reason: a registration left on the
-            // placeholder names a control nothing holds.
-            node.driven.merge(written.driven) { _, wrote in wrote }
-
-            // And how it animates: `.motion(_:)` on a composed view is about the view.
-            node.motion = MotionPlan.merged(node.motion, under: written.motion)
-
-            for (name, handlers) in written.events.sorted(by: { $0.key < $1.key }) {
-                node.addHandlers(name, handlers)
-            }
-
-            // Its own watches first, then what was written on it - one order every render.
-            node.watches += written.watches
-
-            // And its lifetime handlers, in the same order (Lifetime.swift).
-            node.created += written.created
-            node.destroying += written.destroying
-
-            // And its engines, registered against the element its body ends on.
-            node.engines += written.engines
-
-            // And slot children written on it - a `.contextMenu` - after its own.
-            node.children += written.children
-
-            // And what is written on it of its page, over what its body says.
-            if let wrote = written.pageValues {
-                node.pageValues = node.pageValues.map { $0.merged(under: wrote) } ?? wrote
-            }
-
+            node.land(written)
             node.identity = written.identity ?? node.identity
             node.key = written.key ?? node.key
             return node
@@ -237,6 +208,10 @@ extension Node {
         }
 
         node.materialize()
+
+        // What the element reads of a state it was handed, as the differ reads it.
+        node.readAsDescribed()
+
         node.children = node.children.map { $0.built(within: scope) }
         return node
     }

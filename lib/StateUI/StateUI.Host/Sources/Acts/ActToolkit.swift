@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 
 /// What a host's toolkit does for the acts every host performs (`HostActPerformer`): the time and the zones, a
-/// question shown, a word to a screen reader, the focus and the on-screen keyboard, a value kept.
+/// question shown, a word to a screen reader, the clipboard, the focus and the on-screen keyboard, a value kept.
 /// Design: docs/design/host/runtime.md#acts
 @_spi(Host) @MainActor public protocol ActToolkit: AnyObject {
     /// The host's name, as a failure names it.
@@ -20,21 +20,41 @@
     /// zone the platform does not know.
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int?
 
-    /// Shows `question` to the user in the window they are looking at, and calls `answered` with what they gave
-    /// when they answer, or why the toolkit could not ask: the window element it asks in, which takes the question
-    /// away when it goes; nil where there is no window to ask in.
+    /// Shows `question` to the user over `window` - the window they are in where nil - and calls `answered` with
+    /// what they gave when they answer, or why the toolkit could not ask: the window element it asks in, which
+    /// takes the question away when it goes; nil where there is no window to ask in.
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement?
 
     /// Tells the screen reader `words`, now.
     func announce(_ words: String)
 
+    /// Offers `shared` to the platform's share sheet over `window` - the window the user is in where nil - and
+    /// calls `answered` with whether the user shared it, or why it could not be offered: the window element it shows
+    /// over, which takes it away when it goes; nil where there is no window to show it over.
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement?
+
+    /// Puts `words` on the system's clipboard, in place of whatever it held.
+    func writeClipboard(_ words: String)
+
+    /// Reads the words on the system's clipboard and calls `answered` with them - nil where it holds none - or with
+    /// why it could not read them.
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void)
+
     /// Shows the whole application in `theme`: light, dark, or the system's again.
     func useColorScheme(_ theme: ColorScheme)
 
-    /// Takes the on-screen keyboard down; whether one was up.
-    func hideOnScreenKeyboard() -> Bool
+    /// Draws the application's controls in `accent` - the platform's again where nil - where the user chooses no
+    /// accent on the platform: whether it took it.
+    func useAccentColor(_ accent: Color?) -> Bool
+
+    /// Takes the on-screen keyboard down from whatever in `window` - the window the user is in where nil - holds
+    /// the focus; whether one was up.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool
 
     /// Puts the focus on `element`'s view, or the first view in it that takes it: whether it took it; nil where the
     /// element shows no view.

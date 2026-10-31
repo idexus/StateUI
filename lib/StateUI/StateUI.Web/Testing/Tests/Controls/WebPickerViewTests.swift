@@ -6,10 +6,10 @@
 @testable import StateUIWeb
 import XCTest
 
-/// A picker's background colours its field and leaves the picture the page's look draws in it.
+/// A picker's background colors its field and leaves the picture the page's look draws in it.
 @MainActor
 final class WebPickerViewTests: XCTestCase {
-    /// A colour behind a picker is its background colour alone: the shorthand would clear the chevron the page's
+    /// A color behind a picker is its background color alone: the shorthand would clear the chevron the page's
     /// look draws as the field's background picture - a search field's glass too.
     func testABackgroundLeavesThePickersChevron() {
         let picker = WebPickerView()

@@ -18,7 +18,11 @@
                 let tall = State(wrappedValue: false)
                 s.start {
                     VStack {
-                        Capsule(.red).width(tall.wrappedValue ? 40 : 100).height(tall.wrappedValue ? 100 : 40).id("shape")
+                        Capsule()
+                            .fill(.red)
+                            .width(tall.wrappedValue ? 40 : 100)
+                            .height(tall.wrappedValue ? 100 : 40)
+                            .id("shape")
                         Button("Stand").onClicked { tall.wrappedValue = true }.id("change")
                     }
                     .horizontalAlignment(.start)

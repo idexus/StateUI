@@ -20,9 +20,14 @@ only moved there.
 ## Points and pixels
 
 The arithmetic works in points; the views in pixels. The host converts at the
-display's density, rounding each edge of a rectangle rather than its size, so
-neighbours meet without a gap. A text's size is in scaled pixels, so the
-user's font scale applies to it as it does to every application's text.
+display's density, each edge of a rectangle outward to a whole pixel - its
+start and top down, its end and bottom up - rather than its size, so
+neighbors meet without a gap, and a view is never a pixel narrower than it
+measured: rounded to the nearest, an edge pair at a density that splits a
+point - 420 dpi, 2.625 pixels a point - could take a pixel off, and a label a
+pixel short breaks its last word onto a line its height never shows ("Layout"
+stood as "Layou"). A text's size is in scaled pixels, so the user's font
+scale applies to it as it does to every application's text.
 
 ## Measured once
 
@@ -73,6 +78,20 @@ when the scroller has none yet, by the host layer's rule
 `ScrollerOffset`); each scroller keeps it within what it can reach, says it
 inside the program's write, and is read once it is asked
 ([where a scroller stands](../../host/layout.md#where-a-scroller-stands)).
+
+## The pull to refresh
+
+A scroller and a list pull through AndroidX's swipe to refresh, in the relay's
+`StateUIRefresh` (`AndroidRefresh`). A scroller stands its outermost Android
+scroller in one from the first time it offers the pull, inside its own view
+group; a list stands its recycler in one from the start - the swipe to refresh
+is then the view its parent holds, places, shows and moves (`AndroidView.outermost`),
+and the recycler stays the view that takes the list's own calls and tells
+TalkBack. The swipe to refresh is enabled while the pull is offered. Its
+`OnRefreshListener` is the user's pull, which the host layer reports and
+answers whether the spinner stays; where it does not, the relay ends it at once.
+`setRefreshing` the application's value writes calls no listener. Never empty
+the swipe to refresh whole: it holds its own spinner beside the scroller.
 
 ## Where a view stands
 

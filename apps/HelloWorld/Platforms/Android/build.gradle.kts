@@ -24,7 +24,7 @@ android {
         minSdk = 28
         targetSdk = 36
         versionCode = 1
-        versionName = "0.7.1"
+        versionName = "0.8.0"
     }
 
     sourceSets {
@@ -55,7 +55,8 @@ android {
     }
 }
 
-// The recycler an ItemsView stands on.
+// The recycler an ItemsView stands on, and the swipe to refresh a scroller or a list stands in.
 dependencies {
     implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 }

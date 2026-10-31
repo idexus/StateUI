@@ -57,9 +57,9 @@ animation of a property starts from where the running one stands, with its
 speed.
 
 A value moves as numeric lanes and only within one shape: a number, a list of
-numbers of one length, a colour, or a structure whose kind and parts stay the
-same - a gradient moves its geometry, stops and colours, never its kind or
-stop count. A brush property moves only between two colours or two well-formed
+numbers of one length, a color, or a structure whose kind and parts stay the
+same - a gradient moves its geometry, stops and colors, never its kind or
+stop count. A brush property moves only between two colors or two well-formed
 brushes of one shape; anything else snaps. A themed value never moves.
 
 ## What travels
@@ -67,7 +67,7 @@ brushes of one shape; anything else snaps. A themed value never moves.
 A host moves frame by frame only what its views present and whose values
 travel: `TransitionSurface` names them, element type by element type - a
 view's opacity, background, size and transform; a rectangle's corners; a
-label's size and colour of type; a layout's padding and spacing;
+label's size and color of type; a layout's padding and spacing;
 a shape's fill and stroke; a window's place. A host's element answers
 `animates(_:)` from it, and the host layer then walks the value and hands
 it each frame's. Every other pair arrives at once, rather than
@@ -75,7 +75,7 @@ keeping a motion alive that nothing shows: a host that answers no pair
 animates nothing, however the tree asks.
 
 What a moved value asks of the elements around it is the host layer's too
-([one frame](runtime.md#one-frame)): a window's frame and the bar colours
+([one frame](runtime.md#one-frame)): a window's frame and the bar colors
 its visible path declares are the window's chrome, which the host composes
 again on the frames that move them (`WindowChrome.follows`).
 
@@ -94,7 +94,7 @@ child stands on the way. Why an arrangement happens decides everything:
   this case even with a patch: its width is its parent's to say.
 - The first arrangement arrives: the first thing anyone sees is the thing itself.
 
-`TravellingPlaces` decides it once for every child as an arrangement begins;
+`TravelingPlaces` decides it once for every child as an arrangement begins;
 a width that moved by more than half a point is a new width.
 
 A size a child states for itself arrives while its place animates: a stated
@@ -132,15 +132,39 @@ the toolkit last stood. A split leaving the tree takes its slide with it:
 the tree tells the runtime the element left, and the slide stops where it
 stands, telling nothing more, whatever host showed it.
 
-## Words at their destination
+## Words on the way
+
+A child that lays out words - a label, a button (`NodeType.wordsTypes`,
+`LayoutValues.laysOutWords`) - travels its size as any child does, but never
+stands narrower than its words need where it is bound: their natural size,
+measured with no width offered as its place sets out, or the destination's
+size where they wrap there (`LayoutMotion.room`). A button a wider cell takes
+grows the whole way; a caption made bold stands at its new width from the
+start, so its words never break onto a second line; words that wrap where
+they are bound stand at the destination's width and height until the place
+is wider. The host stands the view at the frame the host layer gives it.
+
+A button's words stand in a box of its own (`LaidOutWords.boxed`), and the
+box is what the eye follows: where its new words need more than the box has
+as its place sets out, it keeps showing the words it showed before while the
+box grows, and shows the new ones once the box holds them - on the way where
+it is bound wider, else as it lands (`PlacedView.heldWords`). Meanwhile it is
+measured at its new words' size, so a layout asked again places it where the
+new words take it; new words given while some are held back show at once.
+Words that shrink show at once, and a place that merely arrives forgets the
+former words.
+
+The trap is a view laying out words held at its whole destination while its
+place travels: a label shows nothing of it, but a button's box is what the
+eye follows, and it jumps to its end while only its corner travels.
+
+## A layout bound for a size
 
 A child whose place travels is told where it is bound as it sets out
 (`PlacedView.travels(to:)`), and that it is bound nowhere once it lands or
-arrives. A view that lays out words lays them out at the size it is bound
-for, its place travelling around them: at the widths the place passes
-through, words that fit the destination on one line would break onto two
-for as long as the place travels. Every other view stands at each size it
-passes through.
+arrives. A layout bound for a size lays its children out at that size, its
+own box traveling around them: a label filling it would otherwise break at
+the widths the layout passes through.
 
 ## Showing and hiding
 
@@ -156,3 +180,10 @@ short, does it hide and its layout close over it; shown again mid-fade, it
 comes back from the opacity it stands at; shown from nothing, it fades in.
 Where nothing moves - no motion, or the user asked for less - nothing
 crosses, and the view simply shows or hides.
+
+Its layout closing over it is the change hiding it at once would be, though
+no patch carries it: every layout from its own up to the page travels to its
+new places (`configureLayoutMotion`) and measures again
+(`invalidateMeasurements`). A layout that closed alone, its own size cached
+by the layouts around it, left what stands below it where it stood - a gap
+that stayed until another change, and then a jump.

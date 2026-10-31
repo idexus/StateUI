@@ -14,6 +14,22 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/conformance.md#what-the-driver-reads
 extension AndroidDriver {
     static func controlHolds(_ property: Prop, _ view: AndroidView) -> HostValue? {
+        // A field's outline as the box it draws in place of the theme's underline holds it: none while it draws none.
+        if let field = view as? AndroidTextFieldView, [.stroke, .lineWidth, .shape].contains(property) {
+            let drawn = field.drawnOutline
+            switch property {
+            case .stroke: return drawn?.stroke.flatMap { HostBrush($0).firstColor }.flatMap(Color.init(propValue:))
+                .map { Brush.solidColor($0).propValue }
+            case .lineWidth: return (drawn?.width ?? 0).propValue
+            default:
+                switch drawn?.shape {
+                case .rounded(let radii)?: return ContainerShape.roundedRectangle(radii.first ?? 0).propValue
+                case .capsule?: return ContainerShape.capsule.propValue
+                case .ellipse?: return ContainerShape.ellipse.propValue
+                default: return ContainerShape.rectangle.propValue
+                }
+            }
+        }
         let reference = view.reference
         let read = { (what: String) in Self.read(reference, what) }
         let number = { (what: String) in read(what).flatMap(Double.init) }
@@ -28,11 +44,11 @@ extension AndroidDriver {
             default: return (read("scrollsAcross") == "1" ? LineBreak.noWrap : .wordWrap).propValue
             }
         case .horizontalTextAlignment:
-            // Gravity's horizontal bits: centre 1, start or left 3, end or right 5.
+            // Gravity's horizontal bits: center 1, start or left 3, end or right 5.
             guard let gravity = number("gravity").map(Int.init) else { return nil }
             return (gravity & 7 == 1 ? TextAlignment.center : gravity & 7 == 5 ? .end : .start).propValue
         case .verticalTextAlignment:
-            // Gravity's vertical bits: centre 0x10, top 0x30, bottom 0x50.
+            // Gravity's vertical bits: center 0x10, top 0x30, bottom 0x50.
             guard let gravity = number("gravity").map(Int.init) else { return nil }
             return (gravity & 0x70 == 0x10 ? TextAlignment.center : gravity & 0x70 == 0x50 ? .end : .start).propValue
         case .tracking:
@@ -55,6 +71,12 @@ extension AndroidDriver {
         case .isPassword where view is AndroidTextFieldView:
             return number("inputType").map { (Int($0) & 0x80 != 0).propValue }
         case .inputPurpose where view is AndroidTextFieldView:
+            let filled: [String: InputPurpose] = [
+                "username": .username, "newPassword": .newPassword, "smsOTPCode": .oneTimeCode,
+            ]
+            if let hint = read("autofillHints")?.split(separator: ",").lazy.compactMap({ filled[String($0)] }).first {
+                return hint.propValue
+            }
             return number("inputType").map { purpose(of: Int($0)).propValue }
         case .isTextPredictionEnabled where view is AndroidTextFieldView:
             return number("inputType").map { (Int($0) & 0x80000 == 0).propValue }
@@ -63,8 +85,16 @@ extension AndroidDriver {
             let sides = read("padding")?.split(separator: ",").compactMap { Double($0) } ?? []
             guard sides.count == 4 else { return nil }
             let points = sides.map { ($0 / view.density).rounded() }
-            return Insets(left: points[0], top: points[1], right: points[2], bottom: points[3]).propValue
+            let rightToLeft = (view as? AndroidTextualView)?.direction == .rightToLeft
+            return Insets(
+                start: points[rightToLeft ? 2 : 0], top: points[1], end: points[rightToLeft ? 0 : 2], bottom: points[3]
+            ).propValue
         case .clipsContent where view is AndroidLayoutView: return (read("clipToOutline") == "1").propValue
+        case .letsInputThrough where view is AndroidLayoutView:
+            // Whether a press in the middle of the layout, where it holds nothing, goes through it.
+            let (width, height) = (Java.callInt(view.reference, JavaAPI.getWidth), Java.callInt(view.reference, JavaAPI.getHeight))
+            return (!Java.callBool(view.reference, Self.landsAt, .float(Float(width) / 2), .float(Float(height) / 2)))
+                .propValue
         case .verticalScrollIndicator, .horizontalScrollIndicator:
             guard let scroller = (view as? AndroidScrollView)?.scrollers.first else { return nil }
             let bar = Self.read(scroller.reference, property == .verticalScrollIndicator ? "verticalBar" : "horizontalBar")
@@ -100,6 +130,9 @@ extension AndroidDriver {
     }
 
     static let testRead = Java.findClass("stateui/android/test/TestRead")
+
+    /// Whether a touch at a point of a layout lands on it - the layout's own hit test.
+    static let landsAt = Java.method(JavaAPI.viewGroupHost, "landsAt", "(FF)Z")
     static let reading = Java.staticMethod(
         testRead, "read", "(Landroid/view/View;Ljava/lang/String;)Ljava/lang/String;")
 }

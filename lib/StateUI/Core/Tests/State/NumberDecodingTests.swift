@@ -68,15 +68,15 @@ final class NumberDecodingTests: XCTestCase {
         XCTAssertEqual(Placement(carried: .lanes(lanes))?.zIndex, 0)
     }
 
-    func testAColourChannelThatIsNoNumberIsNought() {
-        let colour = Color(carried: .lanes([.nan, 0.5, 1, 1]))
-        XCTAssertEqual(colour?.light.red, 0)
-        XCTAssertEqual(colour?.light.blue, 255)
+    func testAColorChannelThatIsNoNumberIsNought() {
+        let color = Color(carried: .lanes([.nan, 0.5, 1, 1]))
+        XCTAssertEqual(color?.light.red, 0)
+        XCTAssertEqual(color?.light.blue, 255)
     }
 
     func testAnOpacityThatIsNoNumberLetsNothingThrough() {
-        XCTAssertEqual(Color("#FF0000").opacity(.nan).light.alpha, 0)
-        XCTAssertEqual(Color("#FF0000").opacity(0.5).light.alpha, 128)
+        XCTAssertEqual(Color(hex: 0xFF0000).opacity(.nan).light.alpha, 0)
+        XCTAssertEqual(Color(hex: 0xFF0000).opacity(0.5).light.alpha, 128)
     }
 
     /// One whole number has one rounding, whichever road it came by: a payload's, a value back from the host and a

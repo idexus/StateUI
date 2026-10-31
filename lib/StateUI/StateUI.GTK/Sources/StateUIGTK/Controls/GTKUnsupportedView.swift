@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// The view for a control this host does not present yet: its name in libadwaita's error colour, where it belongs.
+/// The view for a control this host does not present yet: its name in libadwaita's error color, where it belongs.
 @MainActor
 final class GTKUnsupportedView: GTKTextualView {
     init(_ type: NodeType) {

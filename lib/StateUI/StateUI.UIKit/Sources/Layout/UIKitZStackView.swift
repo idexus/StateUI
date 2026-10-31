@@ -6,7 +6,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A ZStack: its children one over another, each in its area (`ZStackArithmetic`), or where an engine's placement
+/// A ZStack: its children one over another, each in its area (`ZStackArithmetic`), or where a motion layout's placement
 /// run puts it.
 /// Design: docs/design/platforms/uikit/drawing.md#a-placed-child
 @MainActor
@@ -16,15 +16,19 @@ final class UIKitZStackView: UIKitLayoutView {
         didSet {
             guard placement != oldValue else { return }
             orderChildren()
-            // A run moving on asks only for places: they need no room, so nothing around is measured.
-            if let placements = placement?.placements, !placements.isEmpty, oldValue?.placements.isEmpty == false {
-                apply(placements)
+            // A run moving on stands its children at once in the room it last stood them in: nothing around is measured.
+            if let run = placement, !run.placements.isEmpty, oldValue?.placements.isEmpty == false,
+               let room = runRoom {
+                apply(run, in: room)
             } else {
                 forgetMeasurements()
                 setNeedsLayout()
             }
         }
     }
+
+    /// The room the run last stood its children in, where a run moving on stands them again.
+    private var runRoom: Rect?
 
     /// The room inside the ZStack's own edge.
     var padding = Insets(0) {
@@ -35,21 +39,17 @@ final class UIKitZStackView: UIKitLayoutView {
         }
     }
 
-    /// Whether the ZStack stands a layout engine, which has no size of its own.
-    var engine = false
-
-    override func setItems(_ items: [UIKitLayoutItem]) {
-        super.setItems(items)
-        orderChildren()
-    }
+    /// Whether the ZStack stands a motion layout, which has no size of its own.
+    var motionLayout = false
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ZStackArithmetic.size(of: items, padding: padding, width: width, engine: engine)
+        ZStackArithmetic.size(of: items, padding: padding, width: width, motionLayout: motionLayout)
     }
 
     override func arrange(in bounds: Rect) {
-        if let placements = placement?.placements, !placements.isEmpty {
-            return apply(placements)
+        if let run = placement, !run.placements.isEmpty {
+            runRoom = bounds
+            return apply(run, in: bounds)
         }
         for item in items {
             item.drawing?.placement = nil
@@ -63,22 +63,24 @@ final class UIKitZStackView: UIKitLayoutView {
 
     /// The children back to front as the run ranks them, or in their order without one: a touch reaches the front
     /// one first.
-    private func orderChildren() {
+    override func orderChildren() {
         let order = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placement?.placements ?? [])
+        let host = childrenHost
         for index in order where index < items.count {
-            bringSubviewToFront(items[index].view)
+            host.bringSubviewToFront(items[index].view)
         }
     }
 
     /// Stands each child where the run says, drawn as it says.
-    private func apply(_ placements: [HostPlacement]) {
+    private func apply(_ run: HostPlacementRun, in room: Rect) {
+        let placements = run.placements
         let count = min(items.count, placements.count)
         for index in 0..<count {
             let placement = placements[index]
             let item = items[index]
-            item.drawing?.placement = placement.drawing
+            item.drawing?.placement = run.drawing(of: index)
             item.drawing?.placedOpacity = placement.drawnOpacity
-            item.placed?.placedFrame = placement.place
+            item.placed?.placedFrame = run.place(of: index, in: room)
             (item.view as? UIKitGridView)?.setShadeOpacity(placement.drawnShade)
         }
         for item in items[count...] {

@@ -53,7 +53,7 @@
         _ key: Key, modifiers: KeyModifiers, focused: MountedElement?, front: MountedElement?, in runtime: HostRuntime
     ) -> Bool {
         guard let target = target(of: key, modifiers: modifiers, focused: focused, front: front) else { return false }
-        target.send(.keyPressed, [key.propValue], in: runtime)
+        target.send(.keyPressed, [key.propValue, modifiers.propValue], in: runtime)
         return true
     }
 }

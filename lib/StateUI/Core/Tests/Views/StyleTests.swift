@@ -43,7 +43,7 @@ private struct StyledApp: Application {
 }
 
 private struct Home: View {
-    var body: some View { ModifiedContent(node: label("home")) }
+    var body: some View { AnyView(node: label("home")) }
 }
 
 @MainActor
@@ -59,7 +59,7 @@ final class StyleTests: XCTestCase {
             .erased
 
         XCTAssertEqual(style.target, "Text")
-        XCTAssertEqual(style.props["textColor"], Color("#000000").propValue)
+        XCTAssertEqual(style.props["textColor"], Color(hex: 0x000000).propValue)
         XCTAssertEqual(style.props["fontSize"], .number(14))
         XCTAssertNil(style.props["text"], "nothing set is nothing set")
     }
@@ -83,7 +83,7 @@ final class StyleTests: XCTestCase {
 
         XCTAssertEqual(style.props["lineWidth"], .number(2))
         XCTAssertEqual(style.states, [
-            DeclaredState(key: KeyName("Disabled"), setters: ["textColor": Color("#808080").propValue]),
+            DeclaredState(key: KeyName("Disabled"), setters: ["textColor": Color(hex: 0x808080).propValue]),
         ])
     }
 
@@ -135,7 +135,7 @@ final class StyleTests: XCTestCase {
         let headline = try XCTUnwrap(sheet.style(for: Text("x").style(.headline).node))
 
         XCTAssertEqual(headline.props["fontSize"], .number(32), "its own wins")
-        XCTAssertEqual(headline.props["textColor"], Color("#000000").propValue, "the rest comes from Body")
+        XCTAssertEqual(headline.props["textColor"], Color(hex: 0x000000).propValue, "the rest comes from Body")
     }
 
     /// It may name one written BELOW it - the whole sheet is filed before any of
@@ -148,7 +148,7 @@ final class StyleTests: XCTestCase {
 
         XCTAssertEqual(
             sheet.style(for: Text("x").style(.headline).node)?.props["textColor"],
-            Color("#000000").propValue)
+            Color(hex: 0x000000).propValue)
     }
 
     /// A chain that comes back round to itself stops where it began. There is
@@ -200,7 +200,7 @@ final class StyleTests: XCTestCase {
             Text("Hi").fontSize(20).node, styles: sheet)
 
         XCTAssertEqual(patch.props["fontSize"], .number(20), "the control's own")
-        XCTAssertEqual(patch.props["textColor"], Color("#000000").propValue, "and the style's rest")
+        XCTAssertEqual(patch.props["textColor"], Color(hex: 0x000000).propValue, "and the style's rest")
     }
 
     /// A keyed style REPLACES the implicit one for the type - it is asked for,
@@ -268,37 +268,37 @@ final class StyleTests: XCTestCase {
         XCTAssertTrue(renders.render(tree, styles: sheet()).isEmpty)
     }
 
-    // MARK: - Colours that follow the theme
+    // MARK: - Colors that follow the theme
 
-    /// A colour with a dark half is written as BOTH - the style holds the
+    /// A color with a dark half is written as BOTH - the style holds the
     /// pair - and the element wearing it is built with the half the theme
     /// says. One sheet, made once, serves both themes.
-    func testAColourWithADarkHalfIsWrittenAsBothAndBuiltAsOne() {
-        let themed = Color(light: .white, dark: Color("#1f1f1f"))
+    func testAColorWithADarkHalfIsWrittenAsBothAndBuiltAsOne() {
+        let themed = Color(light: .white, dark: Color(hex: 0x1F1F1F))
         let sheet = StyleSheet { Style<Text>().textColor(themed) }
 
         XCTAssertEqual(
             Style<Text>().textColor(themed).erased.props["textColor"],
-            .themed(light: Color("#FFFFFF").propValue, dark: Color("#1f1f1f").propValue),
+            .themed(light: Color(hex: 0xFFFFFF).propValue, dark: Color(hex: 0x1F1F1F).propValue),
             "written, it is both halves")
 
         XCTAssertEqual(
             Renders().render(Text("Hi").node, styles: sheet).props["textColor"],
-            Color("#FFFFFF").propValue,
+            Color(hex: 0xFFFFFF).propValue,
             "built while the system is light")
 
         withTheme(.dark) {
             XCTAssertEqual(
                 Renders().render(Text("Hi").node, styles: sheet).props["textColor"],
-                Color("#1f1f1f").propValue,
+                Color(hex: 0x1F1F1F).propValue,
                 "and the other half while it is dark, from the same sheet")
         }
     }
 
     /// It is a Color, so it goes wherever a Color goes - and the half in force
-    /// is picked as the element wearing it is built, which is why one colour
+    /// is picked as the element wearing it is built, which is why one color
     /// arrives.
-    func testAThemedColourCanBeWrittenOnAControlToo() {
+    func testAThemedColorCanBeWrittenOnAControlToo() {
         let themed = Color(light: .black, dark: .white)
 
         XCTAssertEqual(
@@ -320,7 +320,7 @@ final class StyleTests: XCTestCase {
     /// A pair written OUTSIDE every build - here in the test itself, the way a
     /// handler writes one into a session - follows the theme all the same:
     /// the element wearing it is the theme's reader, whoever wrote it.
-    func testAThemedColourWrittenOutsideEveryBuildFollowsTheTheme() {
+    func testAThemedColorWrittenOutsideEveryBuildFollowsTheTheme() {
         let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
@@ -364,9 +364,9 @@ final class StyleTests: XCTestCase {
             "and the label was built again from what it wrote")
     }
 
-    /// A colour PAIR in a state the host carries crosses as the half in force,
+    /// A color PAIR in a state the host carries crosses as the half in force,
     /// and reading the state answers the pair that was written.
-    func testAColourPairTheHostCarriesCrossesAsTheHalfInForce() {
+    func testAColorPairTheHostCarriesCrossesAsTheHalfInForce() {
         withTheme(.dark) {
             let tint = State(Color(light: .black, dark: .white))
             _ = tint.projectedValue.journeyImage
@@ -379,7 +379,7 @@ final class StyleTests: XCTestCase {
     /// And it follows the theme: the element handing the state on is the
     /// theme's reader, so a theme change builds it again and the host is sent
     /// to the other half - the way a pair written on a node crosses.
-    func testAColourPairTheHostCarriesFollowsTheTheme() {
+    func testAColorPairTheHostCarriesFollowsTheTheme() {
         let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
@@ -400,7 +400,7 @@ final class StyleTests: XCTestCase {
             "the element handing the state on read the theme, and laid the other half")
     }
 
-    /// A box whose colour the host carries from a state it is handed.
+    /// A box whose color the host carries from a state it is handed.
     private struct Tinted: View {
         let tint: Binding<Color>
 
@@ -428,9 +428,9 @@ final class StyleTests: XCTestCase {
         }
     }
 
-    /// And a style's colour becomes the CONTROL's, resolved on the way - so
+    /// And a style's color becomes the CONTROL's, resolved on the way - so
     /// no host binds or resolves a theme.
-    func testAStylesThemedColourArrivesOnTheControlResolved() {
+    func testAStylesThemedColorArrivesOnTheControlResolved() {
         let sheet = StyleSheet {
             Style<Text>().textColor(Color(light: .black, dark: .white))
         }
@@ -440,12 +440,12 @@ final class StyleTests: XCTestCase {
             Color.black.propValue)
     }
 
-    /// The read is what makes the next theme change find this view: a colour
-    /// with two halves asks `AppInfo` which one to use, and that read is
+    /// The read is what makes the next theme change find this view: a color
+    /// with two halves asks `ApplicationInfo` which one to use, and that read is
     /// recorded against whichever view is being built - against the THEME
     /// property, so the change that finds it is a write to `colorScheme`
     /// and nothing else the app object says.
-    func testWritingAThemedColourRecordsAReadOfTheTheme() {
+    func testWritingAThemedColorRecordsAReadOfTheTheme() {
         let app = StandardEnvironment.application.info
         let was = app.colorScheme
         defer { app.colorScheme = was }
@@ -454,7 +454,7 @@ final class StyleTests: XCTestCase {
         // Built by the differ, inside the view's own read scope - a node the
         // test builds eagerly as an argument is read by nobody. In a block of
         // its own, so this reader is gone before the second half asks whether
-        // a plain colour left any.
+        // a plain color left any.
         do {
             let renders = Renders()
             let first = renders.render(stack([Themed().node], id: "root"))
@@ -465,21 +465,21 @@ final class StyleTests: XCTestCase {
             let flipped = renders.revisit(changed: Renderer.shared.pendingChanges)
 
             XCTAssertEqual(flipped.child(.auto(1))?.props["textColor"], Color.white.propValue,
-                           "a themed colour depends on the theme, and the theme found it")
+                           "a themed color depends on the theme, and the theme found it")
         }
 
-        // A colour with one half asks nothing: with only that label live, the
+        // A color with one half asks nothing: with only that label live, the
         // theme's write has no reader and the renderer refuses it.
         let plain = Renders()
         plain.render(stack([Plain().node], id: "root"))
         Renderer.shared.clearInvalidation()
         app.colorScheme = .light
 
-        XCTAssertFalse(Renderer.shared.needsRender, "a colour with one half asks nothing")
+        XCTAssertFalse(Renderer.shared.needsRender, "a color with one half asks nothing")
         _ = plain
     }
 
-    /// A label whose colour has two halves, built where the differ can see
+    /// A label whose color has two halves, built where the differ can see
     /// the read.
     private struct Themed: View {
         var body: some View {
@@ -496,11 +496,11 @@ final class StyleTests: XCTestCase {
 
     // MARK: - Pictures that follow the theme
 
-    /// The same story a themed colour tells: the picture is written as both
+    /// The same story a themed color tells: the picture is written as both
     /// names, and the element showing it is built with the one in force - so
     /// one name crosses.
     func testAPictureCanBeDrawnOncePerTheme() {
-        func both() -> Node { Image(light: "nav_home.png", dark: "nav_home_dark.png").node }
+        func both() -> Node { Image(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png")).node }
 
         XCTAssertEqual(
             both().props["source"],
@@ -529,7 +529,7 @@ final class StyleTests: XCTestCase {
     /// pair on the node - written into a page's session from a handler, it is
     /// still the differ that picks which one is shown.
     func testAPagesPictureIsWrittenAsBothAndShownAsOne() {
-        let item = ToolbarItem("Save")
+        let item = ToolbarButton("Save")
             .icon(ImageSource(light: "tab_list.png", dark: "tab_list_dark.png"))
 
         XCTAssertEqual(
@@ -608,6 +608,26 @@ final class StyleTests: XCTestCase {
         XCTAssertEqual(plain.props["textColor"], Color.black.propValue)
     }
 
+    /// A style for a picker's presentation stands over the one every picker wears, worn by every picker of that
+    /// presentation - a picker saying none is a menu - and by no other.
+    func testAStyleForAPresentationStandsOverTheOneEveryPickerWears() {
+        let sheet = StyleSheet {
+            Style<Picker>(presentation: .segmented).tint(.red)
+            Style<Picker>(presentation: .menu).textColor(.blue)
+            Style<Picker>().fontSize(14).tint(.black)
+        }
+        let picker = { Picker(["A", "B"], selection: State(wrappedValue: "A").projectedValue) { $0 } }
+
+        let segments = Renders().render(picker().presentation(.segmented).node, styles: sheet)
+        let radio = Renders().render(picker().presentation(.radio).node, styles: sheet)
+        let unsaid = Renders().render(picker().node, styles: sheet)
+
+        XCTAssertEqual(segments.props["tint"], Color.red.propValue, "the presentation's own")
+        XCTAssertEqual(segments.props["fontSize"], .number(14), "and the implicit style's rest, written after it")
+        XCTAssertEqual(radio.props["tint"], Color.black.propValue, "another presentation wears the implicit style")
+        XCTAssertEqual(unsaid.props["textColor"], Color.blue.propValue, "a picker saying none is a menu")
+    }
+
     /// A style asked for by its key replaces the role's too, and the platform's look wears neither.
     func testAKeyedStyleOrThePlatformsLookTakesNoRoleStyle() {
         let sheet = StyleSheet {
@@ -675,8 +695,8 @@ final class StyleTests: XCTestCase {
 
         // A style names its control by an initializer that sets nothing, which a
         // generic composed view has not: an ItemsView is a list OF something, a
-        // LayoutEngine a layout of something.
-        let unnamed: Set<String> = ["ItemsView", "LayoutEngine"]
+        // MotionLayout a layout of something.
+        let unnamed: Set<String> = ["ItemsView", "MotionLayout"]
 
         for source in try SourceTree.controlSources() {
             for type in try SourceTree.nodeTypes(in: source).sorted()
@@ -742,7 +762,7 @@ final class StyleTests: XCTestCase {
                 let name = block.prefix { $0 != " " && $0 != ":" && $0 != "{" }
 
                 guard name.hasSuffix("Properties") || name == "PropertyContainer"
-                        || name == "PaddingElement" || name == "TextStyleElement" || name == "TrackingElement"
+                        || name == "PaddingElement" || name == "TextColorElement" || name == "TrackingElement"
                         || name == "TextualElement" || name == "FontElement"
                         || name == "TextAlignmentElement" || name == "BarElement"
                 else { continue }
@@ -768,7 +788,7 @@ final class StyleTests: XCTestCase {
 
         let sheet = StyleSheet {
             Style<Text>()
-                .textColor(Color(light: Color("#212121"), dark: .white))
+                .textColor(Color(light: Color(hex: 0x212121), dark: .white))
                 .fontSize(14)
 
             Style<Text>(.body).fontSize(16)
@@ -781,18 +801,18 @@ final class StyleTests: XCTestCase {
 
             Style<Button>()
                 .textColor(.white)
-                .background(Color("#512BD4"))
+                .background(Color(hex: 0x512BD4))
                 .shape(.roundedRectangle(8))
                 .padding(horizontal: 14, vertical: 10)
                 .minimumHeight(44)
                 .visualState(.disabled) { $0
-                    .textColor(Color(light: Color("#141414"),
-                                     dark: Color("#C8C8C8")))
-                    .background(Color("#C8C8C8"))
+                    .textColor(Color(light: Color(hex: 0x141414),
+                                     dark: Color(hex: 0xC8C8C8)))
+                    .background(Color(hex: 0xC8C8C8))
                 }
 
             Style<ZStack>()
-                .stroke(Color("#C8C8C8"))
+                .stroke(Color(hex: 0xC8C8C8))
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))
         }
@@ -817,10 +837,10 @@ final class StyleTests: XCTestCase {
 
         let stack = try XCTUnwrap(differ.reconcile(nil, with: tree, styles: sheet).patch
             .at(.manual("1"), .manual("window 1"), .auto(2), .auto(3)))
-        let ink = Color("#212121").propValue
+        let ink = Color(hex: 0x212121).propValue
 
         // The headline's style, based on the body's - and standing in place of
-        // the default label's, whose colour it does not take.
+        // the default label's, whose color it does not take.
         XCTAssertEqual(stack.at(.auto(4))?.props, [
             "text": .string("Welcome"), "fontSize": .number(32),
             "fontWeight": FontWeight.bold.propValue,
@@ -833,8 +853,8 @@ final class StyleTests: XCTestCase {
         // The button in the state its style declared for a disabled one, that
         // state's values the half of the theme in force; no state crosses.
         let button = try XCTUnwrap(stack.at(.auto(6)))
-        XCTAssertEqual(button.props["background"], Color("#C8C8C8").propValue)
-        XCTAssertEqual(button.props["textColor"], Color("#141414").propValue)
+        XCTAssertEqual(button.props["background"], Color(hex: 0xC8C8C8).propValue)
+        XCTAssertEqual(button.props["textColor"], Color(hex: 0x141414).propValue)
         XCTAssertEqual(button.props["isEnabled"], .bool(false))
         XCTAssertTrue(button.children.isEmpty)
 

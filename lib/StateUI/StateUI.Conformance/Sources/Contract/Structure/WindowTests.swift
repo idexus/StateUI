@@ -74,10 +74,14 @@
             holds(WindowContract.maximumHeight, 900, then: 800) { $0.maximumHeight = $1 },
             holds(WindowContract.isMaximizable, false, then: true) { $0.isMaximizable = $1 },
             holds(WindowContract.isMinimizable, false, then: true) { $0.isMinimizable = $1 },
-            holds(WindowContract.background, .color(Color("#26512BD4")), then: .color(Color("#0F766E"))) {
+            holds(
+                WindowContract.background, .color(Color(hex: 0x512BD4, opacity: 0.15)),
+                then: .color(Color(hex: 0x0F766E))
+            ) {
                 $0.background = $1
             },
             blurred,
+            groundsItsSheets,
             ConformanceCase("aWindowAScenesGroupOpensIsOfItsKindForItsValue", proves: [
                 Covered(WindowContract.windowType), Covered(WindowContract.windowValue),
             ]) { s in
@@ -87,7 +91,7 @@
                 guard let note = s.elements(ofType: WindowContract.nodeType).last else { return s.fail("no second window") }
 
                 try s.settle { try s.held(WindowContract.windowValue, on: note) == "7" }
-                s.expect(try s.held(WindowContract.windowType, on: note), NotesApplication.note)
+                s.expect(try s.held(WindowContract.windowType, on: note), Name(NotesApplication.note.name))
                 s.expect(try s.held(WindowContract.windowValue, on: note), "7")
             },
             ConformanceCase("aWindowThePlatformKeepsComesBackForItsValue", proves: [
@@ -149,7 +153,7 @@
     }
 
     /// The window is made of the blur its session writes and then of the one the tree changes it to - or of the
-    /// colour a host whose windows show nothing behind them paints for each.
+    /// color a host whose windows show nothing behind them paints for each.
     @MainActor
     static var blurred: ConformanceCase {
         ConformanceCase("Window.background.showsABlurOrWhatStandsInForIt", proves: [
@@ -168,6 +172,33 @@
             try s.perform(.activate, on: s.element("change"))
             try s.settle { try s.held(WindowContract.background, on: window) == changed }
             s.expect(try s.held(WindowContract.background, on: window), changed, "the blur the tree changed it to")
+        }
+    }
+
+    /// A sheet over the window's page stands on the window's background - its color laid over the platform's own
+    /// sheet - and follows it as the tree changes it.
+    @MainActor
+    static var groundsItsSheets: ConformanceCase {
+        ConformanceCase("Window.background.groundsTheSheetsOverItsPage", proves: [
+            Covered(WindowContract.background),
+        ], needs: [Covered(ButtonContract.clicked), Covered(SheetContract.isPresented)]) { s in
+            let (first, changed) = (Material.color(Color(hex: 0x2A2154)), Material.color(Color(hex: 0x0F766E)))
+            let value = State(wrappedValue: first)
+            s.start {
+                // The change is pressed on the sheet: what stands beneath a sheet takes no press.
+                WindowSessionPage(beside: [
+                    Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                        VStack { Button("Change").onClicked { value.wrappedValue = changed }.id("change") }
+                    },
+                ], key: "\(value.wrappedValue)") { window in window.background = value.wrappedValue }
+            }
+            let sheet = try s.element(ofType: SheetContract.nodeType)
+            try s.settle { try s.ground(of: sheet) == first }
+            s.expect(try s.ground(of: sheet), first, "the window's background under the sheet")
+
+            try s.perform(.activate, on: s.element("change"))
+            try s.settle { try s.ground(of: sheet) == changed }
+            s.expect(try s.ground(of: sheet), changed, "the background the tree changed it to")
         }
     }
 
@@ -215,10 +246,10 @@ struct WindowPhasePage: View {
 /// alone.
 struct NotesApplication: Application {
     /// The kind of a note's window.
-    static let note = WindowType("conformance.note")
+    static let note = WindowType<Int>("conformance.note")
 
     /// The kind of the other scene's window.
-    static let other = WindowType("conformance.other")
+    static let other = WindowType<Void>("conformance.other")
 
     var body: some Scene {
         NotesScene()
@@ -230,7 +261,7 @@ struct NotesApplication: Application {
 struct NotesScene: Scene {
     var body: some Scene {
         WindowGroup { NotesPage() }
-        WindowGroup(NotesApplication.note, for: Int.self) { number in Text("Note \(number.wrappedValue)") }
+        WindowGroup(NotesApplication.note) { number in Text("Note \(number.wrappedValue)") }
             .floatsOnTop(true)
             .hidesWhenInactive(true)
     }
@@ -243,8 +274,8 @@ struct NotesPage: View {
     var body: some View {
         let application = self.application
         return VStack {
-            Button("Open").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
-            Button("Another").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(NotesApplication.other) }.id("another")
+            Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(NotesApplication.note, value: 7) }.id("open")
+            Button("Another").onClicked(.ignoreWhileRunning) { try await application.openWindow(NotesApplication.other) }.id("another")
         }
     }
 }

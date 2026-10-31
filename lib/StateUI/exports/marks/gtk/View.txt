@@ -1,38 +1,4 @@
-# revision 7.1
-ActivityIndicator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ActivityIndicator.area: ✅
-ActivityIndicator.canDrag: ✓ dragAndDrop on ActivityIndicator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ActivityIndicator.dragEnded: ✓ dragAndDrop on ActivityIndicator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ActivityIndicator.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ActivityIndicator.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ActivityIndicator.dragStarting: ✓ dragAndDrop on ActivityIndicator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ActivityIndicator.dragText: ✓ dragAndDrop on ActivityIndicator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ActivityIndicator.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-ActivityIndicator.droppedFileTypes: ✓ dropFiles on ActivityIndicator: the drop target's signal told the driver's files, no drag GTK began
-ActivityIndicator.filesDropped: ✓ dropFiles on ActivityIndicator: the drop target's signal told the driver's files, no drag GTK began
-ActivityIndicator.frameChanged: ✅
-ActivityIndicator.gridColumn: ✅
-ActivityIndicator.gridColumnSpan: ✅
-ActivityIndicator.gridRow: ✅
-ActivityIndicator.gridRowSpan: ✅
-ActivityIndicator.horizontalAlignment: ✅
-ActivityIndicator.margin: ✅
-ActivityIndicator.panTouchCount: ✅
-ActivityIndicator.panUpdated: ✅
-ActivityIndicator.panXChannel: ✅
-ActivityIndicator.panYChannel: ✅
-ActivityIndicator.pinchUpdated: ✓ pinch on ActivityIndicator: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-ActivityIndicator.pointerEntered: ✅
-ActivityIndicator.pointerExited: ✅
-ActivityIndicator.pointerMoved: ✅
-ActivityIndicator.pointerPressed: ✅
-ActivityIndicator.pointerReleased: ✅
-ActivityIndicator.swipeDirection: ✅
-ActivityIndicator.swipeThreshold: ✅
-ActivityIndicator.swiped: ✅
-ActivityIndicator.tapCount: ✅
-ActivityIndicator.tapped: ✅
-ActivityIndicator.verticalAlignment: ✅
+# revision 19.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
 Button.canDrag: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -49,7 +15,10 @@ Button.gridColumn: ✅
 Button.gridColumnSpan: ✅
 Button.gridRow: ✅
 Button.gridRowSpan: ✅
+Button.held: ✅
+Button.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Button.horizontalAlignment: ✅
+Button.layoutBody: ✅
 Button.margin: ✅
 Button.panTouchCount: ✅
 Button.panUpdated: ✅
@@ -61,6 +30,7 @@ Button.pointerExited: ✅
 Button.pointerMoved: ✅
 Button.pointerPressed: ✅
 Button.pointerReleased: ✅
+Button.rotationUpdated: ✓ rotate on Button: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Button.swipeDirection: ✅
 Button.swipeThreshold: ✅
 Button.swiped: ✅
@@ -83,7 +53,10 @@ Canvas.gridColumn: ✅
 Canvas.gridColumnSpan: ✅
 Canvas.gridRow: ✅
 Canvas.gridRowSpan: ✅
+Canvas.held: ✅
+Canvas.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Canvas.horizontalAlignment: ✅
+Canvas.layoutBody: ✅
 Canvas.margin: ✅
 Canvas.panTouchCount: ✅
 Canvas.panUpdated: ✅
@@ -95,6 +68,7 @@ Canvas.pointerExited: ✅
 Canvas.pointerMoved: ✅
 Canvas.pointerPressed: ✅
 Canvas.pointerReleased: ✅
+Canvas.rotationUpdated: ✓ rotate on Canvas: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Canvas.swipeDirection: ✅
 Canvas.swipeThreshold: ✅
 Canvas.swiped: ✅
@@ -117,7 +91,10 @@ Capsule.gridColumn: ✅
 Capsule.gridColumnSpan: ✅
 Capsule.gridRow: ✅
 Capsule.gridRowSpan: ✅
+Capsule.held: ✅
+Capsule.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Capsule.horizontalAlignment: ✅
+Capsule.layoutBody: ✅
 Capsule.margin: ✅
 Capsule.panTouchCount: ✅
 Capsule.panUpdated: ✅
@@ -129,6 +106,7 @@ Capsule.pointerExited: ✅
 Capsule.pointerMoved: ✅
 Capsule.pointerPressed: ✅
 Capsule.pointerReleased: ✅
+Capsule.rotationUpdated: ✓ rotate on Capsule: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Capsule.swipeDirection: ✅
 Capsule.swipeThreshold: ✅
 Capsule.swiped: ✅
@@ -151,7 +129,10 @@ CheckBox.gridColumn: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRow: ✅
 CheckBox.gridRowSpan: ✅
+CheckBox.held: ✅
+CheckBox.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 CheckBox.horizontalAlignment: ✅
+CheckBox.layoutBody: ✅
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ✅
 CheckBox.panUpdated: ✅
@@ -163,12 +144,51 @@ CheckBox.pointerExited: ✅
 CheckBox.pointerMoved: ✅
 CheckBox.pointerPressed: ✅
 CheckBox.pointerReleased: ✅
+CheckBox.rotationUpdated: ✓ rotate on CheckBox: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 CheckBox.swipeDirection: ✅
 CheckBox.swipeThreshold: ✅
 CheckBox.swiped: ✅
 CheckBox.tapCount: ✅
 CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
+ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.area: ✅
+ColorPicker.canDrag: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+ColorPicker.droppedFileTypes: ✓ dropFiles on ColorPicker: the drop target's signal told the driver's files, no drag GTK began
+ColorPicker.filesDropped: ✓ dropFiles on ColorPicker: the drop target's signal told the driver's files, no drag GTK began
+ColorPicker.frameChanged: ✅
+ColorPicker.gridColumn: ✅
+ColorPicker.gridColumnSpan: ✅
+ColorPicker.gridRow: ✅
+ColorPicker.gridRowSpan: ✅
+ColorPicker.held: ✅
+ColorPicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+ColorPicker.horizontalAlignment: ✅
+ColorPicker.layoutBody: ✅
+ColorPicker.margin: ✅
+ColorPicker.panTouchCount: ✅
+ColorPicker.panUpdated: ✅
+ColorPicker.panXChannel: ✅
+ColorPicker.panYChannel: ✅
+ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+ColorPicker.pointerEntered: ✅
+ColorPicker.pointerExited: ✅
+ColorPicker.pointerMoved: ✅
+ColorPicker.pointerPressed: ✅
+ColorPicker.pointerReleased: ✅
+ColorPicker.rotationUpdated: ✓ rotate on ColorPicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
+ColorPicker.swipeDirection: ✅
+ColorPicker.swipeThreshold: ✅
+ColorPicker.swiped: ✅
+ColorPicker.tapCount: ✅
+ColorPicker.tapped: ✅
+ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.area: ✅
 DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -185,7 +205,10 @@ DatePicker.gridColumn: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRow: ✅
 DatePicker.gridRowSpan: ✅
+DatePicker.held: ✅
+DatePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 DatePicker.horizontalAlignment: ✅
+DatePicker.layoutBody: ✅
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ✅
 DatePicker.panUpdated: ✅
@@ -197,46 +220,13 @@ DatePicker.pointerExited: ✅
 DatePicker.pointerMoved: ✅
 DatePicker.pointerPressed: ✅
 DatePicker.pointerReleased: ✅
+DatePicker.rotationUpdated: ✓ rotate on DatePicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 DatePicker.swipeDirection: ✅
 DatePicker.swipeThreshold: ✅
 DatePicker.swiped: ✅
 DatePicker.tapCount: ✅
 DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
-Divider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Divider.area: ✅
-Divider.canDrag: ✓ dragAndDrop on Divider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Divider.dragEnded: ✓ dragAndDrop on Divider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Divider.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Divider.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Divider.dragStarting: ✓ dragAndDrop on Divider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Divider.dragText: ✓ dragAndDrop on Divider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Divider.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Divider.droppedFileTypes: ✓ dropFiles on Divider: the drop target's signal told the driver's files, no drag GTK began
-Divider.filesDropped: ✓ dropFiles on Divider: the drop target's signal told the driver's files, no drag GTK began
-Divider.frameChanged: ✅
-Divider.gridColumn: ✅
-Divider.gridColumnSpan: ✅
-Divider.gridRow: ✅
-Divider.gridRowSpan: ✅
-Divider.horizontalAlignment: ✅
-Divider.margin: ✅
-Divider.panTouchCount: ✅
-Divider.panUpdated: ✅
-Divider.panXChannel: ✅
-Divider.panYChannel: ✅
-Divider.pinchUpdated: ✓ pinch on Divider: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Divider.pointerEntered: ✅
-Divider.pointerExited: ✅
-Divider.pointerMoved: ✅
-Divider.pointerPressed: ✅
-Divider.pointerReleased: ✅
-Divider.swipeDirection: ✅
-Divider.swipeThreshold: ✅
-Divider.swiped: ✅
-Divider.tapCount: ✅
-Divider.tapped: ✅
-Divider.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.area: ✅
 Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -253,7 +243,10 @@ Ellipse.gridColumn: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRow: ✅
 Ellipse.gridRowSpan: ✅
+Ellipse.held: ✅
+Ellipse.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Ellipse.horizontalAlignment: ✅
+Ellipse.layoutBody: ✅
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ✅
 Ellipse.panUpdated: ✅
@@ -265,12 +258,51 @@ Ellipse.pointerExited: ✅
 Ellipse.pointerMoved: ✅
 Ellipse.pointerPressed: ✅
 Ellipse.pointerReleased: ✅
+Ellipse.rotationUpdated: ✓ rotate on Ellipse: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Ellipse.swipeDirection: ✅
 Ellipse.swipeThreshold: ✅
 Ellipse.swiped: ✅
 Ellipse.tapCount: ✅
 Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
+Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.area: ✅
+Fill.canDrag: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.dragEnded: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.dragStarting: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.dragText: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Fill.droppedFileTypes: ✓ dropFiles on Fill: the drop target's signal told the driver's files, no drag GTK began
+Fill.filesDropped: ✓ dropFiles on Fill: the drop target's signal told the driver's files, no drag GTK began
+Fill.frameChanged: ✅
+Fill.gridColumn: ✅
+Fill.gridColumnSpan: ✅
+Fill.gridRow: ✅
+Fill.gridRowSpan: ✅
+Fill.held: ✅
+Fill.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Fill.horizontalAlignment: ✅
+Fill.layoutBody: ✅
+Fill.margin: ✅
+Fill.panTouchCount: ✅
+Fill.panUpdated: ✅
+Fill.panXChannel: ✅
+Fill.panYChannel: ✅
+Fill.pinchUpdated: ✓ pinch on Fill: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Fill.pointerEntered: ✅
+Fill.pointerExited: ✅
+Fill.pointerMoved: ✅
+Fill.pointerPressed: ✅
+Fill.pointerReleased: ✅
+Fill.rotationUpdated: ✓ rotate on Fill: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
+Fill.swipeDirection: ✅
+Fill.swipeThreshold: ✅
+Fill.swiped: ✅
+Fill.tapCount: ✅
+Fill.tapped: ✅
+Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.area: ✅
 Grid.canDrag: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -287,7 +319,10 @@ Grid.gridColumn: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRow: ✅
 Grid.gridRowSpan: ✅
+Grid.held: ✅
+Grid.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Grid.horizontalAlignment: ✅
+Grid.layoutBody: ✅
 Grid.margin: ✅
 Grid.panTouchCount: ✅
 Grid.panUpdated: ✅
@@ -299,6 +334,7 @@ Grid.pointerExited: ✅
 Grid.pointerMoved: ✅
 Grid.pointerPressed: ✅
 Grid.pointerReleased: ✅
+Grid.rotationUpdated: ✓ rotate on Grid: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Grid.swipeDirection: ✅
 Grid.swipeThreshold: ✅
 Grid.swiped: ✅
@@ -321,7 +357,10 @@ HStack.gridColumn: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRow: ✅
 HStack.gridRowSpan: ✅
+HStack.held: ✅
+HStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 HStack.horizontalAlignment: ✅
+HStack.layoutBody: ✅
 HStack.margin: ✅
 HStack.panTouchCount: ✅
 HStack.panUpdated: ✅
@@ -333,6 +372,7 @@ HStack.pointerExited: ✅
 HStack.pointerMoved: ✅
 HStack.pointerPressed: ✅
 HStack.pointerReleased: ✅
+HStack.rotationUpdated: ✓ rotate on HStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 HStack.swipeDirection: ✅
 HStack.swipeThreshold: ✅
 HStack.swiped: ✅
@@ -355,7 +395,10 @@ Image.gridColumn: ✅
 Image.gridColumnSpan: ✅
 Image.gridRow: ✅
 Image.gridRowSpan: ✅
+Image.held: ✅
+Image.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Image.horizontalAlignment: ✅
+Image.layoutBody: ✅
 Image.margin: ✅
 Image.panTouchCount: ✅
 Image.panUpdated: ✅
@@ -367,6 +410,7 @@ Image.pointerExited: ✅
 Image.pointerMoved: ✅
 Image.pointerPressed: ✅
 Image.pointerReleased: ✅
+Image.rotationUpdated: ✓ rotate on Image: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Image.swipeDirection: ✅
 Image.swipeThreshold: ✅
 Image.swiped: ✅
@@ -389,7 +433,10 @@ ItemsView.gridColumn: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRow: ✅
 ItemsView.gridRowSpan: ✅
+ItemsView.held: ✅
+ItemsView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ItemsView.horizontalAlignment: ✅
+ItemsView.layoutBody: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
 ItemsView.panUpdated: ✅
@@ -401,46 +448,13 @@ ItemsView.pointerExited: ✅
 ItemsView.pointerMoved: ✅
 ItemsView.pointerPressed: ✅
 ItemsView.pointerReleased: ✅
+ItemsView.rotationUpdated: ✓ rotate on ItemsView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 ItemsView.swipeDirection: ✅
 ItemsView.swipeThreshold: ✅
 ItemsView.swiped: ✅
 ItemsView.tapCount: ✅
 ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
-LayoutEngine.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.area: ✅
-LayoutEngine.canDrag: ✓ dragAndDrop on LayoutEngine: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragEnded: ✓ dragAndDrop on LayoutEngine: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragStarting: ✓ dragAndDrop on LayoutEngine: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.dragText: ✓ dragAndDrop on LayoutEngine: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-LayoutEngine.droppedFileTypes: ✓ dropFiles on LayoutEngine: the drop target's signal told the driver's files, no drag GTK began
-LayoutEngine.filesDropped: ✓ dropFiles on LayoutEngine: the drop target's signal told the driver's files, no drag GTK began
-LayoutEngine.frameChanged: ✅
-LayoutEngine.gridColumn: ✅
-LayoutEngine.gridColumnSpan: ✅
-LayoutEngine.gridRow: ✅
-LayoutEngine.gridRowSpan: ✅
-LayoutEngine.horizontalAlignment: ✅
-LayoutEngine.margin: ✅
-LayoutEngine.panTouchCount: ✅
-LayoutEngine.panUpdated: ✅
-LayoutEngine.panXChannel: ✅
-LayoutEngine.panYChannel: ✅
-LayoutEngine.pinchUpdated: ✓ pinch on LayoutEngine: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-LayoutEngine.pointerEntered: ✅
-LayoutEngine.pointerExited: ✅
-LayoutEngine.pointerMoved: ✅
-LayoutEngine.pointerPressed: ✅
-LayoutEngine.pointerReleased: ✅
-LayoutEngine.swipeDirection: ✅
-LayoutEngine.swipeThreshold: ✅
-LayoutEngine.swiped: ✅
-LayoutEngine.tapCount: ✅
-LayoutEngine.tapped: ✅
-LayoutEngine.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.area: ✅
 Line.canDrag: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -457,7 +471,10 @@ Line.gridColumn: ✅
 Line.gridColumnSpan: ✅
 Line.gridRow: ✅
 Line.gridRowSpan: ✅
+Line.held: ✅
+Line.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Line.horizontalAlignment: ✅
+Line.layoutBody: ✅
 Line.margin: ✅
 Line.panTouchCount: ✅
 Line.panUpdated: ✅
@@ -469,12 +486,51 @@ Line.pointerExited: ✅
 Line.pointerMoved: ✅
 Line.pointerPressed: ✅
 Line.pointerReleased: ✅
+Line.rotationUpdated: ✓ rotate on Line: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Line.swipeDirection: ✅
 Line.swipeThreshold: ✅
 Line.swiped: ✅
 Line.tapCount: ✅
 Line.tapped: ✅
 Line.verticalAlignment: ✅
+Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.area: ✅
+Link.canDrag: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragEnded: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragStarting: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.dragText: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Link.droppedFileTypes: ✓ dropFiles on Link: the drop target's signal told the driver's files, no drag GTK began
+Link.filesDropped: ✓ dropFiles on Link: the drop target's signal told the driver's files, no drag GTK began
+Link.frameChanged: ✅
+Link.gridColumn: ✅
+Link.gridColumnSpan: ✅
+Link.gridRow: ✅
+Link.gridRowSpan: ✅
+Link.held: ✅
+Link.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Link.horizontalAlignment: ✅
+Link.layoutBody: ✅
+Link.margin: ✅
+Link.panTouchCount: ✅
+Link.panUpdated: ✅
+Link.panXChannel: ✅
+Link.panYChannel: ✅
+Link.pinchUpdated: ✓ pinch on Link: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Link.pointerEntered: ✅
+Link.pointerExited: ✅
+Link.pointerMoved: ✅
+Link.pointerPressed: ✅
+Link.pointerReleased: ✅
+Link.rotationUpdated: ✓ rotate on Link: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
+Link.swipeDirection: ✅
+Link.swipeThreshold: ✅
+Link.swiped: ✅
+Link.tapCount: ✅
+Link.tapped: ✅
+Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
 Map.canDrag: 🧩
@@ -491,7 +547,10 @@ Map.gridColumn: 🧩
 Map.gridColumnSpan: 🧩
 Map.gridRow: 🧩
 Map.gridRowSpan: 🧩
+Map.held: 🧩
+Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
+Map.layoutBody: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
 Map.panUpdated: 🧩
@@ -503,12 +562,51 @@ Map.pointerExited: 🧩
 Map.pointerMoved: 🧩
 Map.pointerPressed: 🧩
 Map.pointerReleased: 🧩
+Map.rotationUpdated: 🧩
 Map.swipeDirection: 🧩
 Map.swipeThreshold: 🧩
 Map.swiped: 🧩
 Map.tapCount: 🧩
 Map.tapped: 🧩
 Map.verticalAlignment: 🧩
+MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.area: ✅
+MotionLayout.canDrag: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.dragStarting: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.dragText: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the drop target's signal told the driver's files, no drag GTK began
+MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the drop target's signal told the driver's files, no drag GTK began
+MotionLayout.frameChanged: ✅
+MotionLayout.gridColumn: ✅
+MotionLayout.gridColumnSpan: ✅
+MotionLayout.gridRow: ✅
+MotionLayout.gridRowSpan: ✅
+MotionLayout.held: ✅
+MotionLayout.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+MotionLayout.horizontalAlignment: ✅
+MotionLayout.layoutBody: ✅
+MotionLayout.margin: ✅
+MotionLayout.panTouchCount: ✅
+MotionLayout.panUpdated: ✅
+MotionLayout.panXChannel: ✅
+MotionLayout.panYChannel: ✅
+MotionLayout.pinchUpdated: ✓ pinch on MotionLayout: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+MotionLayout.pointerEntered: ✅
+MotionLayout.pointerExited: ✅
+MotionLayout.pointerMoved: ✅
+MotionLayout.pointerPressed: ✅
+MotionLayout.pointerReleased: ✅
+MotionLayout.rotationUpdated: ✓ rotate on MotionLayout: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
+MotionLayout.swipeDirection: ✅
+MotionLayout.swipeThreshold: ✅
+MotionLayout.swiped: ✅
+MotionLayout.tapCount: ✅
+MotionLayout.tapped: ✅
+MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.area: ✅
 Path.canDrag: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -525,7 +623,10 @@ Path.gridColumn: ✅
 Path.gridColumnSpan: ✅
 Path.gridRow: ✅
 Path.gridRowSpan: ✅
+Path.held: ✅
+Path.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Path.horizontalAlignment: ✅
+Path.layoutBody: ✅
 Path.margin: ✅
 Path.panTouchCount: ✅
 Path.panUpdated: ✅
@@ -537,6 +638,7 @@ Path.pointerExited: ✅
 Path.pointerMoved: ✅
 Path.pointerPressed: ✅
 Path.pointerReleased: ✅
+Path.rotationUpdated: ✓ rotate on Path: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Path.swipeDirection: ✅
 Path.swipeThreshold: ✅
 Path.swiped: ✅
@@ -559,7 +661,10 @@ Picker.gridColumn: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRow: ✅
 Picker.gridRowSpan: ✅
+Picker.held: ✅
+Picker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Picker.horizontalAlignment: ✅
+Picker.layoutBody: ✅
 Picker.margin: ✅
 Picker.panTouchCount: ✅
 Picker.panUpdated: ✅
@@ -571,6 +676,7 @@ Picker.pointerExited: ✅
 Picker.pointerMoved: ✅
 Picker.pointerPressed: ✅
 Picker.pointerReleased: ✅
+Picker.rotationUpdated: ✓ rotate on Picker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Picker.swipeDirection: ✅
 Picker.swipeThreshold: ✅
 Picker.swiped: ✅
@@ -593,7 +699,10 @@ Polygon.gridColumn: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRow: ✅
 Polygon.gridRowSpan: ✅
+Polygon.held: ✅
+Polygon.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polygon.horizontalAlignment: ✅
+Polygon.layoutBody: ✅
 Polygon.margin: ✅
 Polygon.panTouchCount: ✅
 Polygon.panUpdated: ✅
@@ -605,6 +714,7 @@ Polygon.pointerExited: ✅
 Polygon.pointerMoved: ✅
 Polygon.pointerPressed: ✅
 Polygon.pointerReleased: ✅
+Polygon.rotationUpdated: ✓ rotate on Polygon: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Polygon.swipeDirection: ✅
 Polygon.swipeThreshold: ✅
 Polygon.swiped: ✅
@@ -627,7 +737,10 @@ Polyline.gridColumn: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRow: ✅
 Polyline.gridRowSpan: ✅
+Polyline.held: ✅
+Polyline.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polyline.horizontalAlignment: ✅
+Polyline.layoutBody: ✅
 Polyline.margin: ✅
 Polyline.panTouchCount: ✅
 Polyline.panUpdated: ✅
@@ -639,6 +752,7 @@ Polyline.pointerExited: ✅
 Polyline.pointerMoved: ✅
 Polyline.pointerPressed: ✅
 Polyline.pointerReleased: ✅
+Polyline.rotationUpdated: ✓ rotate on Polyline: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Polyline.swipeDirection: ✅
 Polyline.swipeThreshold: ✅
 Polyline.swiped: ✅
@@ -661,7 +775,10 @@ ProgressBar.gridColumn: ✅
 ProgressBar.gridColumnSpan: ✅
 ProgressBar.gridRow: ✅
 ProgressBar.gridRowSpan: ✅
+ProgressBar.held: ✅
+ProgressBar.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ProgressBar.horizontalAlignment: ✅
+ProgressBar.layoutBody: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
 ProgressBar.panUpdated: ✅
@@ -673,46 +790,13 @@ ProgressBar.pointerExited: ✅
 ProgressBar.pointerMoved: ✅
 ProgressBar.pointerPressed: ✅
 ProgressBar.pointerReleased: ✅
+ProgressBar.rotationUpdated: ✓ rotate on ProgressBar: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 ProgressBar.swipeDirection: ✅
 ProgressBar.swipeThreshold: ✅
 ProgressBar.swiped: ✅
 ProgressBar.tapCount: ✅
 ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
-RadioButton.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.area: ✅
-RadioButton.canDrag: ✓ dragAndDrop on RadioButton: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragEnded: ✓ dragAndDrop on RadioButton: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragStarting: ✓ dragAndDrop on RadioButton: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.dragText: ✓ dragAndDrop on RadioButton: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-RadioButton.droppedFileTypes: ✓ dropFiles on RadioButton: the drop target's signal told the driver's files, no drag GTK began
-RadioButton.filesDropped: ✓ dropFiles on RadioButton: the drop target's signal told the driver's files, no drag GTK began
-RadioButton.frameChanged: ✅
-RadioButton.gridColumn: ✅
-RadioButton.gridColumnSpan: ✅
-RadioButton.gridRow: ✅
-RadioButton.gridRowSpan: ✅
-RadioButton.horizontalAlignment: ✅
-RadioButton.margin: ✅
-RadioButton.panTouchCount: ✅
-RadioButton.panUpdated: ✅
-RadioButton.panXChannel: ✅
-RadioButton.panYChannel: ✅
-RadioButton.pinchUpdated: ✓ pinch on RadioButton: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-RadioButton.pointerEntered: ✅
-RadioButton.pointerExited: ✅
-RadioButton.pointerMoved: ✅
-RadioButton.pointerPressed: ✅
-RadioButton.pointerReleased: ✅
-RadioButton.swipeDirection: ✅
-RadioButton.swipeThreshold: ✅
-RadioButton.swiped: ✅
-RadioButton.tapCount: ✅
-RadioButton.tapped: ✅
-RadioButton.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.area: ✅
 Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -729,7 +813,10 @@ Rectangle.gridColumn: ✅
 Rectangle.gridColumnSpan: ✅
 Rectangle.gridRow: ✅
 Rectangle.gridRowSpan: ✅
+Rectangle.held: ✅
+Rectangle.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Rectangle.horizontalAlignment: ✅
+Rectangle.layoutBody: ✅
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ✅
 Rectangle.panUpdated: ✅
@@ -741,6 +828,7 @@ Rectangle.pointerExited: ✅
 Rectangle.pointerMoved: ✅
 Rectangle.pointerPressed: ✅
 Rectangle.pointerReleased: ✅
+Rectangle.rotationUpdated: ✓ rotate on Rectangle: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Rectangle.swipeDirection: ✅
 Rectangle.swipeThreshold: ✅
 Rectangle.swiped: ✅
@@ -763,7 +851,10 @@ ScrollView.gridColumn: ✅
 ScrollView.gridColumnSpan: ✅
 ScrollView.gridRow: ✅
 ScrollView.gridRowSpan: ✅
+ScrollView.held: ✅
+ScrollView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ScrollView.horizontalAlignment: ✅
+ScrollView.layoutBody: ✅
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ✅
 ScrollView.panUpdated: ✅
@@ -775,6 +866,7 @@ ScrollView.pointerExited: ✅
 ScrollView.pointerMoved: ✅
 ScrollView.pointerPressed: ✅
 ScrollView.pointerReleased: ✅
+ScrollView.rotationUpdated: ✓ rotate on ScrollView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 ScrollView.swipeDirection: ✅
 ScrollView.swipeThreshold: ✅
 ScrollView.swiped: ✅
@@ -797,7 +889,10 @@ SearchField.gridColumn: ✅
 SearchField.gridColumnSpan: ✅
 SearchField.gridRow: ✅
 SearchField.gridRowSpan: ✅
+SearchField.held: ✅
+SearchField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 SearchField.horizontalAlignment: ✅
+SearchField.layoutBody: ✅
 SearchField.margin: ✅
 SearchField.panTouchCount: ✅
 SearchField.panUpdated: ✅
@@ -809,12 +904,51 @@ SearchField.pointerExited: ✅
 SearchField.pointerMoved: ✅
 SearchField.pointerPressed: ✅
 SearchField.pointerReleased: ✅
+SearchField.rotationUpdated: ✓ rotate on SearchField: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 SearchField.swipeDirection: ✅
 SearchField.swipeThreshold: ✅
 SearchField.swiped: ✅
 SearchField.tapCount: ✅
 SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
+Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.area: ✅
+Separator.canDrag: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.dragEnded: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.dragStarting: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.dragText: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Separator.droppedFileTypes: ✓ dropFiles on Separator: the drop target's signal told the driver's files, no drag GTK began
+Separator.filesDropped: ✓ dropFiles on Separator: the drop target's signal told the driver's files, no drag GTK began
+Separator.frameChanged: ✅
+Separator.gridColumn: ✅
+Separator.gridColumnSpan: ✅
+Separator.gridRow: ✅
+Separator.gridRowSpan: ✅
+Separator.held: ✅
+Separator.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Separator.horizontalAlignment: ✅
+Separator.layoutBody: ✅
+Separator.margin: ✅
+Separator.panTouchCount: ✅
+Separator.panUpdated: ✅
+Separator.panXChannel: ✅
+Separator.panYChannel: ✅
+Separator.pinchUpdated: ✓ pinch on Separator: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Separator.pointerEntered: ✅
+Separator.pointerExited: ✅
+Separator.pointerMoved: ✅
+Separator.pointerPressed: ✅
+Separator.pointerReleased: ✅
+Separator.rotationUpdated: ✓ rotate on Separator: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
+Separator.swipeDirection: ✅
+Separator.swipeThreshold: ✅
+Separator.swiped: ✅
+Separator.tapCount: ✅
+Separator.tapped: ✅
+Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.area: ✅
 Slider.canDrag: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -831,7 +965,10 @@ Slider.gridColumn: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRow: ✅
 Slider.gridRowSpan: ✅
+Slider.held: ✅
+Slider.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Slider.horizontalAlignment: ✅
+Slider.layoutBody: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ✅
 Slider.panUpdated: ✅
@@ -843,46 +980,89 @@ Slider.pointerExited: ✅
 Slider.pointerMoved: ✅
 Slider.pointerPressed: ✅
 Slider.pointerReleased: ✅
+Slider.rotationUpdated: ✓ rotate on Slider: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Slider.swipeDirection: ✅
 Slider.swipeThreshold: ✅
 Slider.swiped: ✅
 Slider.tapCount: ✅
 Slider.tapped: ✅
 Slider.verticalAlignment: ✅
-Spacer.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spacer.area: ✅
-Spacer.canDrag: ✓ dragAndDrop on Spacer: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spacer.dragEnded: ✓ dragAndDrop on Spacer: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spacer.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spacer.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spacer.dragStarting: ✓ dragAndDrop on Spacer: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spacer.dragText: ✓ dragAndDrop on Spacer: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spacer.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
-Spacer.droppedFileTypes: ✓ dropFiles on Spacer: the drop target's signal told the driver's files, no drag GTK began
-Spacer.filesDropped: ✓ dropFiles on Spacer: the drop target's signal told the driver's files, no drag GTK began
-Spacer.frameChanged: ✅
-Spacer.gridColumn: ✅
-Spacer.gridColumnSpan: ✅
-Spacer.gridRow: ✅
-Spacer.gridRowSpan: ✅
-Spacer.horizontalAlignment: ✅
-Spacer.margin: ✅
-Spacer.panTouchCount: ✅
-Spacer.panUpdated: ✅
-Spacer.panXChannel: ✅
-Spacer.panYChannel: ✅
-Spacer.pinchUpdated: ✓ pinch on Spacer: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
-Spacer.pointerEntered: ✅
-Spacer.pointerExited: ✅
-Spacer.pointerMoved: ✅
-Spacer.pointerPressed: ✅
-Spacer.pointerReleased: ✅
-Spacer.swipeDirection: ✅
-Spacer.swipeThreshold: ✅
-Spacer.swiped: ✅
-Spacer.tapCount: ✅
-Spacer.tapped: ✅
-Spacer.verticalAlignment: ✅
+Space.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.area: ✅
+Space.canDrag: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.dragEnded: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.dragStarting: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.dragText: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Space.droppedFileTypes: ✓ dropFiles on Space: the drop target's signal told the driver's files, no drag GTK began
+Space.filesDropped: ✓ dropFiles on Space: the drop target's signal told the driver's files, no drag GTK began
+Space.frameChanged: ✅
+Space.gridColumn: ✅
+Space.gridColumnSpan: ✅
+Space.gridRow: ✅
+Space.gridRowSpan: ✅
+Space.held: ✅
+Space.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Space.horizontalAlignment: ✅
+Space.layoutBody: ✅
+Space.margin: ✅
+Space.panTouchCount: ✅
+Space.panUpdated: ✅
+Space.panXChannel: ✅
+Space.panYChannel: ✅
+Space.pinchUpdated: ✓ pinch on Space: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Space.pointerEntered: ✅
+Space.pointerExited: ✅
+Space.pointerMoved: ✅
+Space.pointerPressed: ✅
+Space.pointerReleased: ✅
+Space.rotationUpdated: ✓ rotate on Space: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
+Space.swipeDirection: ✅
+Space.swipeThreshold: ✅
+Space.swiped: ✅
+Space.tapCount: ✅
+Space.tapped: ✅
+Space.verticalAlignment: ✅
+Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.area: ✅
+Spinner.canDrag: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.dragEnded: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.dragStarting: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.dragText: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.drop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
+Spinner.droppedFileTypes: ✓ dropFiles on Spinner: the drop target's signal told the driver's files, no drag GTK began
+Spinner.filesDropped: ✓ dropFiles on Spinner: the drop target's signal told the driver's files, no drag GTK began
+Spinner.frameChanged: ✅
+Spinner.gridColumn: ✅
+Spinner.gridColumnSpan: ✅
+Spinner.gridRow: ✅
+Spinner.gridRowSpan: ✅
+Spinner.held: ✅
+Spinner.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
+Spinner.horizontalAlignment: ✅
+Spinner.layoutBody: ✅
+Spinner.margin: ✅
+Spinner.panTouchCount: ✅
+Spinner.panUpdated: ✅
+Spinner.panXChannel: ✅
+Spinner.panYChannel: ✅
+Spinner.pinchUpdated: ✓ pinch on Spinner: the fingers' place handed to the host's recognizer as GTK's zoom would: GTK takes no touch a driver puts down
+Spinner.pointerEntered: ✅
+Spinner.pointerExited: ✅
+Spinner.pointerMoved: ✅
+Spinner.pointerPressed: ✅
+Spinner.pointerReleased: ✅
+Spinner.rotationUpdated: ✓ rotate on Spinner: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
+Spinner.swipeDirection: ✅
+Spinner.swipeThreshold: ✅
+Spinner.swiped: ✅
+Spinner.tapCount: ✅
+Spinner.tapped: ✅
+Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.area: ✅
 Stepper.canDrag: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -899,7 +1079,10 @@ Stepper.gridColumn: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRow: ✅
 Stepper.gridRowSpan: ✅
+Stepper.held: ✅
+Stepper.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Stepper.horizontalAlignment: ✅
+Stepper.layoutBody: ✅
 Stepper.margin: ✅
 Stepper.panTouchCount: ✅
 Stepper.panUpdated: ✅
@@ -911,6 +1094,7 @@ Stepper.pointerExited: ✅
 Stepper.pointerMoved: ✅
 Stepper.pointerPressed: ✅
 Stepper.pointerReleased: ✅
+Stepper.rotationUpdated: ✓ rotate on Stepper: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Stepper.swipeDirection: ✅
 Stepper.swipeThreshold: ✅
 Stepper.swiped: ✅
@@ -933,7 +1117,10 @@ Switch.gridColumn: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRow: ✅
 Switch.gridRowSpan: ✅
+Switch.held: ✅
+Switch.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Switch.horizontalAlignment: ✅
+Switch.layoutBody: ✅
 Switch.margin: ✅
 Switch.panTouchCount: ✅
 Switch.panUpdated: ✅
@@ -945,6 +1132,7 @@ Switch.pointerExited: ✅
 Switch.pointerMoved: ✅
 Switch.pointerPressed: ✅
 Switch.pointerReleased: ✅
+Switch.rotationUpdated: ✓ rotate on Switch: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Switch.swipeDirection: ✅
 Switch.swipeThreshold: ✅
 Switch.swiped: ✅
@@ -967,7 +1155,10 @@ Text.gridColumn: ✅
 Text.gridColumnSpan: ✅
 Text.gridRow: ✅
 Text.gridRowSpan: ✅
+Text.held: ✅
+Text.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Text.horizontalAlignment: ✅
+Text.layoutBody: ✅
 Text.margin: ✅
 Text.panTouchCount: ✅
 Text.panUpdated: ✅
@@ -979,6 +1170,7 @@ Text.pointerExited: ✅
 Text.pointerMoved: ✅
 Text.pointerPressed: ✅
 Text.pointerReleased: ✅
+Text.rotationUpdated: ✓ rotate on Text: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 Text.swipeDirection: ✅
 Text.swipeThreshold: ✅
 Text.swiped: ✅
@@ -1001,7 +1193,10 @@ TextEditor.gridColumn: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRow: ✅
 TextEditor.gridRowSpan: ✅
+TextEditor.held: ✅
+TextEditor.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextEditor.horizontalAlignment: ✅
+TextEditor.layoutBody: ✅
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
 TextEditor.panUpdated: ✅
@@ -1013,6 +1208,7 @@ TextEditor.pointerExited: ✅
 TextEditor.pointerMoved: ✅
 TextEditor.pointerPressed: ✅
 TextEditor.pointerReleased: ✅
+TextEditor.rotationUpdated: ✓ rotate on TextEditor: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 TextEditor.swipeDirection: ✅
 TextEditor.swipeThreshold: ✅
 TextEditor.swiped: ✅
@@ -1035,7 +1231,10 @@ TextField.gridColumn: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRow: ✅
 TextField.gridRowSpan: ✅
+TextField.held: ✅
+TextField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextField.horizontalAlignment: ✅
+TextField.layoutBody: ✅
 TextField.margin: ✅
 TextField.panTouchCount: ✅
 TextField.panUpdated: ✅
@@ -1047,6 +1246,7 @@ TextField.pointerExited: ✅
 TextField.pointerMoved: ✅
 TextField.pointerPressed: ✅
 TextField.pointerReleased: ✅
+TextField.rotationUpdated: ✓ rotate on TextField: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 TextField.swipeDirection: ✅
 TextField.swipeThreshold: ✅
 TextField.swiped: ✅
@@ -1069,7 +1269,10 @@ TimePicker.gridColumn: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRow: ✅
 TimePicker.gridRowSpan: ✅
+TimePicker.held: ✅
+TimePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TimePicker.horizontalAlignment: ✅
+TimePicker.layoutBody: ✅
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ✅
 TimePicker.panUpdated: ✅
@@ -1081,6 +1284,7 @@ TimePicker.pointerExited: ✅
 TimePicker.pointerMoved: ✅
 TimePicker.pointerPressed: ✅
 TimePicker.pointerReleased: ✅
+TimePicker.rotationUpdated: ✓ rotate on TimePicker: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 TimePicker.swipeDirection: ✅
 TimePicker.swipeThreshold: ✅
 TimePicker.swiped: ✅
@@ -1103,7 +1307,10 @@ VStack.gridColumn: ✅
 VStack.gridColumnSpan: ✅
 VStack.gridRow: ✅
 VStack.gridRowSpan: ✅
+VStack.held: ✅
+VStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 VStack.horizontalAlignment: ✅
+VStack.layoutBody: ✅
 VStack.margin: ✅
 VStack.panTouchCount: ✅
 VStack.panUpdated: ✅
@@ -1115,6 +1322,7 @@ VStack.pointerExited: ✅
 VStack.pointerMoved: ✅
 VStack.pointerPressed: ✅
 VStack.pointerReleased: ✅
+VStack.rotationUpdated: ✓ rotate on VStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 VStack.swipeDirection: ✅
 VStack.swipeThreshold: ✅
 VStack.swiped: ✅
@@ -1137,7 +1345,10 @@ WebView.gridColumn: ✅
 WebView.gridColumnSpan: ✅
 WebView.gridRow: ✅
 WebView.gridRowSpan: ✅
+WebView.held: ✅
+WebView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 WebView.horizontalAlignment: ✅
+WebView.layoutBody: ✅
 WebView.margin: ✅
 WebView.panTouchCount: ✅
 WebView.panUpdated: ✅
@@ -1149,6 +1360,7 @@ WebView.pointerExited: ✅
 WebView.pointerMoved: ✅
 WebView.pointerPressed: ✅
 WebView.pointerReleased: ✅
+WebView.rotationUpdated: ✓ rotate on WebView: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 WebView.swipeDirection: ✅
 WebView.swipeThreshold: ✅
 WebView.swiped: ✅
@@ -1171,7 +1383,10 @@ ZStack.gridColumn: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRow: ✅
 ZStack.gridRowSpan: ✅
+ZStack.held: ✅
+ZStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ZStack.horizontalAlignment: ✅
+ZStack.layoutBody: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ✅
 ZStack.panUpdated: ✅
@@ -1183,6 +1398,7 @@ ZStack.pointerExited: ✅
 ZStack.pointerMoved: ✅
 ZStack.pointerPressed: ✅
 ZStack.pointerReleased: ✅
+ZStack.rotationUpdated: ✓ rotate on ZStack: the fingers' turn handed to the host's recognizer as GTK's rotate would: GTK takes no touch a driver puts down
 ZStack.swipeDirection: ✅
 ZStack.swipeThreshold: ✅
 ZStack.swiped: ✅

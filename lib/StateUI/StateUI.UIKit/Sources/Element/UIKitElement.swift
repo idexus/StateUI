@@ -29,18 +29,31 @@ final class UIKitElement: NativeElement {
     /// What UIKit asks for the view's context menu, while it has one.
     var contextMenu: UIKitContextMenu?
 
+    /// The popover this element is, while it has been shown.
+    var shownPopover: UIKitPopover?
+
     /// Whether VoiceOver meets the view of itself, read before the tree says anything of it.
     var accessibilityStanding: Bool?
+    /// The view's own kind among its traits, read before the element first says one.
+    var accessibilityOwnKind: UIAccessibilityTraits?
+    /// Whether the element said a kind, which then stands in place of its view's own.
+    var accessibilityKindSaid = false
+    /// Whether the element said a value for assistive technology, which then stands over its view's own.
+    var accessibilityValueSaid = false
+    /// Whether the element offered a screen reader actions, which then stand in place of its view's own.
+    var accessibilityActionsSaid = false
 
     /// What the buttons on a page's bar say, which the bar keeps them for.
     var barButtonsSaid: [[UIKitBarAction.Said]]?
 
+    /// What the items on the bar at a page's foot say, which the bar keeps them for.
+    var toolbarItemsSaid: [[UIKitBarAction.Said]]?
+
+    /// A bar's words as UIKit was last handed them (`ToolbarLabel`).
+    weak var barLabel: UIKitBarLabel?
+
     /// Whether a layout of StateUI's has placed the view.
     var isPlaced = false
-
-    /// Where a label's place travels: its words stand at that size meanwhile.
-    /// Design: docs/design/host/motion.md#words-at-their-destination
-    var wordsRoom: Rect?
 
     /// A menu item's or a toolbar item's action, as UIKit was last handed it.
     var menuAction: UIAction?
@@ -51,6 +64,9 @@ final class UIKitElement: NativeElement {
 
     /// What every action made for this element is identified by: UIKit keeps it in the copies it makes of an action.
     var actionIdentifier: UIAction.Identifier { UIAction.Identifier("stateui.action.\(element.mount)") }
+
+    /// What the menu a bar's button made for this element opens is identified by.
+    var menuIdentifier: UIMenu.Identifier { UIMenu.Identifier("stateui.menu.\(element.mount)") }
 
     init(_ element: MountedElement, host: UIKitRenderer) {
         self.element = element
@@ -76,6 +92,8 @@ final class UIKitElement: NativeElement {
     var type: NodeType { element.type }
     var parent: UIKitElement? { element.parent?.uiKit }
     var children: [UIKitElement] { element.children.map(\.uiKit) }
+    /// The children it places, an anchor's in the anchor's place.
+    var arranged: [UIKitElement] { element.arrangedChildren.map(\.uiKit) }
     func value(_ property: Prop) -> HostValue? { element.value(property) }
 
     // MARK: - The native half's part in a patch
@@ -104,11 +122,14 @@ final class UIKitElement: NativeElement {
         configureLayoutMotion()
         arrangeChildren()
         arrangePages(changed: changed)
+        configurePopover()
         host?.runtime.frames.follow(self, of: element, reads: readsFrame)
     }
 
     func presentFrame(_ changed: Set<Prop>) {
         applyProperties(changed: changed)
+        if changed.contains(.isPresented) { configurePopover() }
+        if changed.contains(.showsSidebarToggle) { offerSidebarToggle() }
         if !changed.isDisjoint(with: MountedElement.sidebarMaterials), let split = controller as? UIKitSplitViewController {
             split.paintsSidebar = element.paintsSidebar
             split.showPageBackgrounds()
@@ -120,15 +141,16 @@ final class UIKitElement: NativeElement {
         listening = nil
         dragAndDrop?.detach()
         dragAndDrop = nil
+        shownPopover?.close()
+        shownPopover = nil
         releasePages()
     }
 
 }
 
 extension UIKitElement: PlacedView {
-    /// Where the view stands in its parent, in points; set, it stands there by its bounds and its centre, which
-    /// hold under any transform, and its drawing is composed for its size again - a label at the size its place
-    /// travels to, its words standing there meanwhile.
+    /// Where the view stands in its parent, in points; set, it stands there by its bounds and its center, which
+    /// hold under any transform, and its drawing is composed for its size again.
     var placedFrame: Rect {
         get {
             guard let view else { return Rect(x: 0, y: 0, width: 0, height: 0) }
@@ -139,8 +161,7 @@ extension UIKitElement: PlacedView {
         }
         set {
             guard let view else { return }
-            let room = wordsRoom ?? newValue
-            let size = CGSize(width: max(0, room.width), height: max(0, room.height))
+            let size = CGSize(width: max(0, newValue.width), height: max(0, newValue.height))
             if view.bounds.size != size { view.bounds.size = size }
             view.center = CGPoint(x: newValue.x + size.width / 2, y: newValue.y + size.height / 2)
             isPlaced = true
@@ -148,8 +169,13 @@ extension UIKitElement: PlacedView {
         }
     }
 
+    var heldWords: LayoutSize? {
+        get { (view as? UIKitButtonView)?.heldWords }
+        set { (view as? UIKitButtonView)?.heldWords = newValue }
+    }
+
     func travels(to destination: Rect?) {
-        if type == .text { wordsRoom = destination }
+        (view as? UIKitLayoutView)?.arrangementRoom = destination.map { CGSize(width: $0.width, height: $0.height) }
     }
 }
 

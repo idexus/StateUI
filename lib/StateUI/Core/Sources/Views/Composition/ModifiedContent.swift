@@ -1,16 +1,22 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A composed view with a modifier written on it. It offers what every view
-/// has - margin, opacity, where it sits in a grid - and nothing that only
-/// some views do.
-public struct ModifiedContent: ElementView {
+/// A modifier written on a view that keeps no node of its own - a composed
+/// view, or an `if`/`else` of views. It offers what every view has - margin,
+/// opacity, where it sits in a grid - and nothing that only some views do;
+/// `Content` is the view it was written on.
+public struct ModifiedContent<Content: View>: ElementView {
     /// The content's node, with the change written into it.
     public var node: Node
 
-    /// Wraps a node that a modifier has already been applied to. Made by
-    /// a composed view's modifier; there is rarely a reason to call this directly.
-    public init(node: Node) {
+    /// Wraps a node a modifier has been written into.
+    init(node: Node) {
         self.node = node
+    }
+
+    /// The same view with one more modifier written on it: what outlives its branches on its anchor, where it may
+    /// build one or another.
+    public func modified(_ change: (inout Node) -> Void) -> Self {
+        ModifiedContent(node: node.writing(change, flips: Node.flips(Content.self)))
     }
 }

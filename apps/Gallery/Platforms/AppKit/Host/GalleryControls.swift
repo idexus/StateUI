@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// listing: InteropControlSample.AppKit.list.swift
+// listing: InteropControlSample.AppKit.list.swift, appkit.md.controls
 /// The gallery's own controls, as this host realizes them.
 ///
 /// The contracts and the Swift halves are shared by every host - see

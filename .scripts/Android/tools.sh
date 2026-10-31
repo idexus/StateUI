@@ -1,8 +1,11 @@
 # SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 # SPDX-License-Identifier: Apache-2.0
 #
-# The Android tools the scripts beside this one share: the SDK, adb, aapt2,
-# JDK 21, Gradle, and the device a run goes to. Sourced, never run.
+# The Android tools the scripts beside this one share: the checkout they stand
+# in, the SDK, adb, aapt2, JDK 21, Gradle, and the device a run goes to.
+# Sourced, never run.
+
+repository_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 
 ANDROID_HOME="${ANDROID_HOME:-${ANDROID_SDK_ROOT:-$HOME/Library/Android/sdk}}"
 [[ -d "$ANDROID_HOME/platform-tools" ]] || { echo "ERROR: no Android SDK at $ANDROID_HOME - set ANDROID_HOME"; exit 1; }

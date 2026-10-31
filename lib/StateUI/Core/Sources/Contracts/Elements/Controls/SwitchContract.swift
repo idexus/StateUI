@@ -9,9 +9,9 @@ public enum SwitchContract: ElementContract {
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native
 
-    /// A switch is a view, tinted.
+    /// A switch is a view, tinted, with the words it says beside it.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, TintElementContract.self, FocusElementContract.self,
+        ViewContract.self, TextualElementContract.self, TintElementContract.self, FocusElementContract.self,
     ]
 
     /// Which way it is thrown - true for on.

@@ -34,6 +34,18 @@ for it.
 The scopes are a stack, although builds do not nest across elements in a
 render, because a structural expansion in a test builds everything eagerly.
 
+## An element reads what it was handed
+
+A member handed a whole state whose value the library translates to the
+host's shape - a picker's place in its list, a tab's index, a list's chosen
+identities, a stack's pages, a sheet's page - does not read it while the body
+writing the member builds. It leaves a closure on the element's node
+(`readsWhenDescribed`), and the differ runs it as it describes that element,
+in the element's own scope, as it picks a themed value. The element is the
+state's reader: a write describes the element alone again, from its
+placeholder, and the body that handed the state over is not built. Handing a
+state over never makes a body its reader; reading it does.
+
 ## Reads outside a build
 
 `ReadScope.note` runs on every read of every state, almost all of them from

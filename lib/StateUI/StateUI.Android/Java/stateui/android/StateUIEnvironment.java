@@ -3,6 +3,7 @@
 
 package stateui.android;
 
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.UiModeManager;
@@ -10,9 +11,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.icu.util.LocaleData;
@@ -32,6 +36,7 @@ import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
+import android.view.accessibility.AccessibilityManager;
 import android.view.inputmethod.InputMethodManager;
 import java.util.Calendar;
 import java.util.Locale;
@@ -129,6 +134,25 @@ final class StateUIEnvironment {
     }
 
     /**
+     * The user's accessibility settings: 1 where the system's animations are off, 1 where the user asked for more
+     * contrast - which Android says from 14 - 1 while TalkBack explores by touch, and the scale of the system's
+     * words.
+     */
+    static float[] accessibility(Context context) {
+        float contrast = 0;
+        if (Build.VERSION.SDK_INT >= 34) {
+            UiModeManager mode = context.getSystemService(UiModeManager.class);
+            contrast = mode != null && mode.getContrast() > 0 ? 1 : 0;
+        }
+        AccessibilityManager manager = context.getSystemService(AccessibilityManager.class);
+        return new float[] {
+            ValueAnimator.areAnimatorsEnabled() ? 0 : 1, contrast,
+            manager != null && manager.isTouchExplorationEnabled() ? 1 : 0,
+            context.getResources().getConfiguration().fontScale,
+        };
+    }
+
+    /**
      * Whether the internet is reachable - 4, 3 behind a portal or not yet proved, 2 on a local network alone, 1
      * with no network, 0 where the application may not ask - and the connections in use as bits: 1 Bluetooth, 2
      * cellular, 4 ethernet, 8 Wi-Fi.
@@ -153,14 +177,14 @@ final class StateUIEnvironment {
     }
 
     /**
-     * Tells the Swift host whenever the zone, the clock, the battery, its saver or the network changes, until
-     * {@link #unwatch} is handed what this answers.
+     * Tells the Swift host whenever the zone, the clock, the battery, its saver, the network, TalkBack, the
+     * animations or the contrast changes, until {@link #unwatch} is handed what this answers.
      */
     static Object[] watch(Context context) {
         BroadcastReceiver receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context sender, Intent intent) {
-                StateUIHost.environmentChanged();
+                changed();
             }
         };
         IntentFilter filter = new IntentFilter();
@@ -177,12 +201,12 @@ final class StateUIEnvironment {
         ConnectivityManager.NetworkCallback network = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onCapabilitiesChanged(Network changed, NetworkCapabilities capabilities) {
-                StateUIHost.environmentChanged();
+                changed();
             }
 
             @Override
             public void onLost(Network lost) {
-                StateUIHost.environmentChanged();
+                changed();
             }
         };
         ConnectivityManager manager = context.getSystemService(ConnectivityManager.class);
@@ -191,7 +215,35 @@ final class StateUIEnvironment {
         } catch (SecurityException notAllowed) {
             network = null;
         }
-        return new Object[] { receiver, network };
+
+        AccessibilityManager.TouchExplorationStateChangeListener reader = on -> changed();
+        AccessibilityManager accessibility = context.getSystemService(AccessibilityManager.class);
+        if (accessibility != null) accessibility.addTouchExplorationStateChangeListener(reader);
+        Object animations = null;
+        if (Build.VERSION.SDK_INT >= 33) {
+            ValueAnimator.DurationScaleChangeListener scale = changed -> changed();
+            ValueAnimator.registerDurationScaleChangeListener(scale);
+            animations = scale;
+        }
+        Object contrast = null;
+        if (Build.VERSION.SDK_INT >= 34) {
+            UiModeManager.ContrastChangeListener changed = level -> changed();
+            context.getSystemService(UiModeManager.class).addContrastChangeListener(context.getMainExecutor(), changed);
+            contrast = changed;
+        }
+        return new Object[] { receiver, network, reader, animations, contrast };
+    }
+
+    /** The UI thread's queue, which a change told on another thread is handed to. */
+    private static final Handler uiThread = new Handler(Looper.getMainLooper());
+
+    /** Tells the Swift host the environment changed, on the UI thread whichever thread Android told it on. */
+    private static void changed() {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
+            StateUIHost.environmentChanged();
+        } else {
+            uiThread.post(StateUIHost::environmentChanged);
+        }
     }
 
     /** Stops what {@link #watch} started. */
@@ -201,12 +253,27 @@ final class StateUIEnvironment {
             context.getSystemService(ConnectivityManager.class)
                     .unregisterNetworkCallback((ConnectivityManager.NetworkCallback) watch[1]);
         }
+        AccessibilityManager accessibility = context.getSystemService(AccessibilityManager.class);
+        if (accessibility != null) {
+            accessibility.removeTouchExplorationStateChangeListener(
+                    (AccessibilityManager.TouchExplorationStateChangeListener) watch[2]);
+        }
+        if (Build.VERSION.SDK_INT >= 33 && watch[3] != null) {
+            ValueAnimator.unregisterDurationScaleChangeListener((ValueAnimator.DurationScaleChangeListener) watch[3]);
+        }
+        if (Build.VERSION.SDK_INT >= 34 && watch[4] != null) {
+            context.getSystemService(UiModeManager.class)
+                    .removeContrastChangeListener((UiModeManager.ContrastChangeListener) watch[4]);
+        }
     }
 
     /** Whether the system's theme is dark. */
     static boolean night(Context context) {
-        int mode = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
-        return mode == Configuration.UI_MODE_NIGHT_YES;
+        return night(context.getResources().getConfiguration());
+    }
+
+    private static boolean night(Configuration configuration) {
+        return (configuration.uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 
     /** The local time of day: hour, minute, second and millisecond. */
@@ -235,36 +302,97 @@ final class StateUIEnvironment {
         return timeZone.getOffset(noon.getTimeInMillis()) / 60000;
     }
 
-    /** The theme's accent, as ARGB: from Android 12 the colour the system draws from the wallpaper. */
+    /** The theme's accent, as ARGB: from Android 12 the color the system draws from the wallpaper. */
     static int accent(Context context) {
         TypedValue value = new TypedValue();
         if (!context.getTheme().resolveAttribute(android.R.attr.colorAccent, value, true)) return 0xFF0A84FF;
         return value.resourceId != 0 ? context.getColor(value.resourceId) : value.data;
     }
 
-    /** Whether the application's night mode was given back to the system as this process began. */
-    private static boolean followsSystem;
+    /** The application's own night mode before Android 12 - 1 light, 2 dark, 0 the system's - which the host keeps. */
+    private static int heldNightMode;
+    /** Whether this process read the night mode kept from the last, and whether its application said one since. */
+    private static boolean keptNightModeRead, nightModeSaid, nightModeSettled;
 
     /**
-     * Gives the application's night mode back to the system once a process, as it begins: the system keeps the
-     * mode an application set, and an application holds a theme only while it says so.
-     */
-    static void followSystemOnce(Context context) {
-        if (followsSystem) return;
-        followsSystem = true;
-        useNightMode(context, 0);
-    }
-
-    /**
-     * Shows the application in a theme - 1 light, 2 dark, 0 the system's - as its own night mode, which every
-     * activity of it takes; from Android 12, before which an application shows the system's.
+     * Shows the application in the theme it says - 1 light, 2 dark, 0 the system's - as its own night mode, which
+     * every activity of it takes and its next start begins in: from Android 12 the system keeps it, before it the
+     * host.
      */
     static void useNightMode(Context context, int scheme) {
-        if (Build.VERSION.SDK_INT < 31) return;
+        nightModeSaid = true;
+        applyNightMode(context, scheme);
+    }
+
+    private static void applyNightMode(Context context, int scheme) {
+        if (Build.VERSION.SDK_INT < 31) {
+            heldNightMode = scheme;
+            SharedPreferences kept = context.getSharedPreferences("stateui.host", Context.MODE_PRIVATE);
+            kept.edit().putInt("nightMode", scheme).apply();
+            if (context instanceof Activity) showNightMode((Activity) context);
+            return;
+        }
         UiModeManager modes = context.getSystemService(UiModeManager.class);
         if (modes == null) return;
         modes.setApplicationNightMode(scheme == 2 ? UiModeManager.MODE_NIGHT_YES
             : scheme == 1 ? UiModeManager.MODE_NIGHT_NO : UiModeManager.MODE_NIGHT_AUTO);
+    }
+
+    /**
+     * Once the application's first render is over: where it said no theme, the night mode its last run held is given
+     * back to the system - an application holds a theme while it says so, and its first activity was made in it.
+     */
+    static void settleNightMode(Context context) {
+        if (nightModeSettled) return;
+        nightModeSettled = true;
+        if (!nightModeSaid) applyNightMode(context, 0);
+    }
+
+    /**
+     * Before Android 12, an activity being made takes the night mode the application holds - at the process's first,
+     * the one its last run held - before any resource.
+     */
+    static void holdNightMode(Activity activity) {
+        if (Build.VERSION.SDK_INT >= 31) return;
+        if (!keptNightModeRead) {
+            keptNightModeRead = true;
+            heldNightMode = activity.getSharedPreferences("stateui.host", Context.MODE_PRIVATE).getInt("nightMode", 0);
+        }
+        if (heldNightMode == 0) return;
+        Configuration held = new Configuration();
+        held.uiMode = heldNightMode == 2 ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO;
+        activity.applyOverrideConfiguration(held);
+    }
+
+    /**
+     * Before Android 12, shows an activity in the night mode the application holds: made anew - a StateUI activity
+     * always, its native controls drawn in the new theme - or told the new configuration where its manifest takes a
+     * change of the night mode itself, as the system does from 12.
+     */
+    @SuppressWarnings("deprecation")
+    private static void showNightMode(Activity activity) {
+        boolean dark = heldNightMode == 0 ? night(Resources.getSystem().getConfiguration()) : heldNightMode == 2;
+        if (night(activity) == dark) return;
+        if (activity instanceof StateUIActivity || !takesNightModeItself(activity)) {
+            activity.recreate();
+            return;
+        }
+        Resources resources = activity.getResources();
+        Configuration shown = new Configuration(resources.getConfiguration());
+        shown.uiMode = (shown.uiMode & ~Configuration.UI_MODE_NIGHT_MASK)
+            | (dark ? Configuration.UI_MODE_NIGHT_YES : Configuration.UI_MODE_NIGHT_NO);
+        resources.updateConfiguration(shown, resources.getDisplayMetrics());
+        activity.onConfigurationChanged(shown);
+    }
+
+    /** Whether the activity's manifest says it takes a change of the night mode itself. */
+    private static boolean takesNightModeItself(Activity activity) {
+        try {
+            ActivityInfo info = activity.getPackageManager().getActivityInfo(activity.getComponentName(), 0);
+            return (info.configChanges & ActivityInfo.CONFIG_UI_MODE) != 0;
+        } catch (PackageManager.NameNotFoundException missing) {
+            return false;
+        }
     }
 
     /**
@@ -284,7 +412,7 @@ final class StateUIEnvironment {
         else activity.getWindow().setBackgroundDrawable(null);
     }
 
-    /** The plain colour the activity's window shows behind its pages, as ARGB; Long.MIN_VALUE where it shows none. */
+    /** The plain color the activity's window shows behind its pages, as ARGB; Long.MIN_VALUE where it shows none. */
     static long windowBackground(Activity activity) {
         Drawable drawable = activity.getWindow().getDecorView().getBackground();
         return drawable instanceof ColorDrawable ? ((ColorDrawable) drawable).getColor() & 0xFFFFFFFFL : Long.MIN_VALUE;

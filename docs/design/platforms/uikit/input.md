@@ -42,10 +42,35 @@ swipe back from anywhere in its page, and that swipe would take a drag meant
 for the view. A view listening for drags comes first: the stack's swipe waits
 for its drag to fail, and the two never recognize together.
 
+## A press as a button takes it
+
+A view that hears taps follows its press with a recognizer of its own
+(`UIKitPressRecognizer`), which recognizes nothing - so it keeps no other
+gesture from the touch - and tells each phase where the touch stands; the host
+layer lights the view and taps it by its rule
+([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)).
+A scroller's pan is not let recognize with it: as the scroll begins UIKit fails
+the press, which is told taken away; so is a stack's swipe back. A touch
+catching a scroller that still moves - slowing down from a throw, or springing
+back from its edge a fraction of a point away, its pan already under way as
+the touch falls - is the scroller's, as on every list of iOS: it stops it, and
+the press never begins, the row neither lit nor tapped. A touch begun
+on a control inside - a button, a field - or on a view hearing its own taps is
+that one's, as UIKit keeps a control's touch from the gestures around it; one
+on the parts of a view that is a control is its own. UIKit's tap recognizer
+stays for a run of taps alone, which it counts by the touch's `tapCount`.
+
+## A press held
+
+A hold is UIKit's long-press recognizer, waiting the view's time or UIKit's
+own. It is the one recognizer of a view that is not heard with others: with
+the view's tap and pan it is not recognized together, so a press held is no
+tap and drags nothing, and a press dragged first is no hold.
+
 ## The hand over a layout
 
 A layout an engine moves hears the hand by one pan (`UIKitListening`,
-`handMoved`): a finger, and with `allowedScrollTypesMask` `.continuous` a
+`translationUpdated`): a finger, and with `allowedScrollTypesMask` `.continuous` a
 trackpad's two fingers, each step what moved under the hand since the last
 and, at the lift, the speed UIKit reads. A wheel turned notch by notch is a
 second pan, `.discrete` and touching nothing (`handNotched`): each of its
@@ -68,3 +93,14 @@ and hands them over. The host layer's rule makes over once and no leave
 after a drop. A view taking files takes a session of items that are no plain
 words; each item's file, which UIKit lends only while it hands it over, is
 copied to a folder of the application's own under the name the user knows.
+
+## The pull to refresh
+
+A scroller and a list pull through UIKit's own `UIRefreshControl` on their scroll
+view (`UIKitRefresh`) - a scroller's `UIScrollView`, a list's collection view.
+The control stands on the scroll view while the element offers the pull, and goes
+with it: a scroll view without one shows no pull. Its `valueChanged` is the
+user's pull, which the host layer reports and answers whether the spinner stays;
+where it does not, the control ends at once. A value of `isRefreshing` the
+application writes begins or ends the control, which says nothing back:
+`beginRefreshing` raises no `valueChanged`.

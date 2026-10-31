@@ -99,13 +99,13 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
-    /// A field's placeholder, coloured or not, stands across the field where its words do.
+    /// A field's placeholder, colored or not, stands across the field where its words do.
     func testAPlaceholderStandsWhereTheWordsDo() {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
                     TextField(State(wrappedValue: "").projectedValue).placeholder("Scan")
-                        .placeholderColor(Color("#FF0000")).horizontalTextAlignment(.center).width(300)
+                        .placeholderColor(Color(hex: 0xFF0000)).horizontalTextAlignment(.center).width(300)
                     TextField(State(wrappedValue: "").projectedValue).placeholder("Name").horizontalTextAlignment(.end)
                         .width(300)
                 }
@@ -117,7 +117,7 @@ final class GTKTextInputViewTests: XCTestCase {
                     GTKTestHost.holds($0, gtk_label_get_type()) && gtk_widget_get_mapped($0) != 0
                 }.map { gtk_label_get_xalign($0.opaque) }
             }
-            XCTAssertEqual(placed, [0.5, 1], "the centred field's, the end-aligned field's")
+            XCTAssertEqual(placed, [0.5, 1], "the centered field's, the end-aligned field's")
         }
     }
 
@@ -137,7 +137,7 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
-    /// A field takes words as the tree says: read only, unchecked, unpredicted, for an address, centred, hidden,
+    /// A field takes words as the tree says: read only, unchecked, unpredicted, for an address, centered, hidden,
     /// and its caret and selection where they were put; GTK's own where the tree says nothing.
     func testAFieldTakesWordsAsTheTreeSays() {
         onUIThread {
@@ -168,14 +168,14 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
-    /// Typed words take their font and colour, and the placeholder its own colour in full, where GTK dims it.
-    func testTypedWordsTakeTheirFontAndColour() {
+    /// Typed words take their font and color, and the placeholder its own color in full, where GTK dims it.
+    func testTypedWordsTakeTheirFontAndColor() {
         onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    TextField("").placeholder("MMM").placeholderColor(Color("#FF0000")).fontSize(40)
+                    TextField("").placeholder("MMM").placeholderColor(Color(hex: 0xFF0000)).fontSize(40)
                         .fontWeight(.bold).width(200)
-                    TextField("MMM").textColor(Color("#0000FF")).fontSize(40).fontWeight(.bold).width(200)
+                    TextField("MMM").textColor(Color(hex: 0x0000FF)).fontSize(40).fontWeight(.bold).width(200)
                     TextField("MMM").width(200)
                 }
                 .horizontalAlignment(.start)
@@ -204,8 +204,26 @@ final class GTKTextInputViewTests: XCTestCase {
         }
     }
 
-    /// An editor growing with its words takes their height; one that does not keeps a line's - no less than its
-    /// scrollbar's length - however many it holds.
+    /// An editor given a ground of its own stands in it with no box of the theme's - no fill, corners or ring; one
+    /// given none keeps an entry's.
+    func testAnEditorGivenItsOwnGroundStandsWithNoBox() {
+        onUIThread {
+            let host = GTKRenderer.running {
+                VStack {
+                    TextEditor(State(wrappedValue: "").projectedValue)
+                    TextEditor(State(wrappedValue: "").projectedValue).background(Color.transparent)
+                }
+            }
+            let editors = host.views(GTKTextEditorView.self)
+            XCTAssertTrue(GTKTestHost.classes(of: editors[0].widget).contains(GTKStyleSheet.editor), "an entry's box")
+            XCTAssertFalse(GTKTestHost.classes(of: editors[1].widget).contains(GTKStyleSheet.editor), "no box")
+            XCTAssertTrue(GTKTestHost.classes(of: editors[1].widget).contains(GTKStyleSheet.bareEditor))
+        }
+    }
+
+    /// An editor growing with its words takes their height from one line - no scrollbar's length holding it taller,
+    /// as it shows none; one that does not keeps a line's - no less than its scrollbar's length - however many it
+    /// holds.
     func testAnEditorGrowsWithItsWordsOnlyWhereItIsToldTo() throws {
         try onUIThread {
             let words = State(wrappedValue: "one")
@@ -220,7 +238,8 @@ final class GTKTextInputViewTests: XCTestCase {
             }
             let editors = host.views(GTKTextEditorView.self)
             let before = editors.map(\.frame.height)
-            XCTAssertEqual(before[0], before[1], "one line in both")
+            XCTAssertEqual(before[0], Double(editors[0].lineHeight), accuracy: 1, "one line, held taller by nothing")
+            XCTAssertLessThanOrEqual(before[0], before[1], "the other no shorter than a line")
 
             try XCTUnwrap(host.views(GTKButtonView.self).first).click()
             host.settle { editors[0].frame.height > before[0] + 40 }
@@ -252,7 +271,7 @@ private extension GTKTextFieldView {
 }
 
 private extension GTKView {
-    /// Whether GTK draws the colour `argb` anywhere on the widget, looked for every two pixels.
+    /// Whether GTK draws the color `argb` anywhere on the widget, looked for every two pixels.
     func shows(_ argb: UInt32) -> Bool {
         let size = frame
         let points = stride(from: 0.0, to: size.width, by: 2).flatMap { x in

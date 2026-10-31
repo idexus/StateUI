@@ -41,6 +41,7 @@ final class RatingBarElement: WebControl {
 extension RatingBarElement {
     /// Adds the bar for `RatingBarContract`, and the act aimed at one bar. Said once, before the application runs.
     static func register() {
+        // listing: web.md.applies
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarElement in
             let bar = RatingBarElement()
             // A tapped star is the USER's change: it lands on the state the value is carried in, and raises the event
@@ -51,12 +52,13 @@ extension RatingBarElement {
             return bar
         }) { bar in
             // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
-            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
             bar.raises(RatingBarContract.ratingChanged)
         }
+        // listing: end
 
         // listing: InteropActsSample.Web.swift
         // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.

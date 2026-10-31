@@ -1,19 +1,43 @@
-# revision 10.1
+# revision 14.1
 Button.lineWidth: ✅
 Button.shape: ✅
 Button.stroke: ✅
+Fill.lineWidth: ✅
+Fill.shape: ✅
+Fill.stroke: ✅
 Grid.lineWidth: ✅
 Grid.shape: ✅
 Grid.stroke: ✅
 HStack.lineWidth: ✅
 HStack.shape: ✅
 HStack.stroke: ✅
-LayoutEngine.lineWidth: ✅
-LayoutEngine.shape: ✅
-LayoutEngine.stroke: ✅
+MotionLayout.lineWidth: ✅
+MotionLayout.shape: ✅
+MotionLayout.stroke: ✅
 ScrollView.lineWidth: ✅
 ScrollView.shape: ✅
 ScrollView.stroke: ✅
+SearchField.lineWidth: ✅
+SearchField.shape: ✅
+SearchField.stroke: ✅
+Space.lineWidth: ✅
+Space.shape: ✅
+Space.stroke: ✅
+TextEditor.lineWidth: ✅
+TextEditor.shape: ✅
+TextEditor.stroke: ✅
+TextField.lineWidth: ✅
+TextField.shape: ✅
+TextField.stroke: ✅
+ToolbarButton.lineWidth: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.shape: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.stroke: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.lineWidth: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.shape: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.stroke: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.lineWidth: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.shape: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.stroke: – The title bar's commands stand in WinUI's own look.
 VStack.lineWidth: ✅
 VStack.shape: ✅
 VStack.stroke: ✅

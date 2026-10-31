@@ -22,6 +22,21 @@ among them - do the same thing by hand.
     .contextMenu { … }     copy, children += ContextMenu(...)
 ```
 
+## One shape
+
+A modifier reads alike wherever it is written, in the editor's hint as much
+as in code. A state it borrows is named `state` - `isOn(_ state:)`,
+`Text(_ state:)` - whatever the property it carries, since the binding is
+the thing handed over. A modifier of what carries properties - a control, a
+tier, a style, a run of text - gives back `Modified`, which for a control is
+the control itself and for a composed view a `ModifiedContent`, so a chain
+offers the same modifiers after it as before. What configures itself gives
+back `Self`: a composed view's own settings (a gallery's position, a list's
+selection), a list's `Section`, a scene's declaration, and an entry of a menu
+or a map that wears no tier (`Menu`, `MenuSeparator`, `Marker`).
+`ModifierShapeTests` holds both rules, its list of what configures itself
+saying why for each.
+
 ## Setting a property
 
 A value modifier writes one property through its contract member:
@@ -43,8 +58,8 @@ event modifier comes through here with its member's token. The typed event
 modifiers live on `ModifiableElement`, so a style is offered none after the
 dot, and a style keeps only its values and states (`AnyStyle`), so nothing
 else written into its node reaches a control (tiers.md). Each handler passes through its own gate - a policy
-given as the gate is the handler's alone - so the second never waits for the first unless both are written with
-one `Gatekeeper` (core/runs.md).
+given alone is the handler's own - so the second never waits for the first unless both are written with one
+shared `Gate` (core/runs.md).
 
 ## An event payload that does not read
 
@@ -59,8 +74,11 @@ test of the direction could tell from a real one.
 
 Some modifiers write a child rather than a property: `.contextMenu` appends a
 context menu, `.toolbar` a group of actions, `.titleView` the view in a page's
-title place, `.overlays` the views laid over the window, `.menuBar` the
-window's menus while the page shows, and `Map.markers` writes markers. On an
+title place, `.bottomBar` the view at a page's foot, `.overlays` the views laid
+over the window, `.menuBar` the window's menus while the page shows, and
+`Map.markers` writes markers. A slot whose view stands in a room of the host's -
+the overlays, a bottom bar - holds it in a layer, which places it as its values
+say: no layout arranges what a slot holds. On an
 arrangement the child follows its pages, and the host keeps it apart from
 them.
 They sit after whatever the view lays out, so the view's own children keep the
@@ -119,10 +137,10 @@ other hosts keep it touchable until it has faded. A view described for the
 first time is simply shown or not, since nothing anybody saw is changing, and
 `.motion(.none)` makes the property a plain flag again.
 
-## One transform about the centre
+## One transform about the center
 
 `.transform(_:)` writes `translationX`, `translationY`, `rotation`, `scaleX` and
-`scaleY` from one `ViewTransform`, about the view's own centre, so those five
+`scaleY` from one `ViewTransform`, about the view's own center, so those five
 are its to say. The parts apply in the order written, each to what the parts
 before it made: a move written before a turn is swung round by it, one written
 after is not. `geometryTransform` on a shape is the other transform: it
@@ -140,11 +158,11 @@ draws a turn about the vertical axis that way.
 
 ## Accessibility and automation
 
-Six modifiers say what a view is to somebody not looking at it, and they are
-two jobs that do not stand in for one another: an identifier for automation;
-and a label, a hint, a heading level, and whether a screen reader skips the
-view (`isAccessibilityHidden`) or the view and everything in it
-(`automationExcludedWithChildren`).
+Eight modifiers say what a view is to somebody not looking at it, and they
+are two jobs that do not stand in for one another: an identifier for
+automation; and a label, a hint, a kind, a value, a heading level, and whether
+a screen reader skips the view (`isAccessibilityHidden`) or the view and
+everything in it (`hidesChildrenFromAccessibility`).
 
 `accessibilityIdentifier` is a handle nothing reads out: a UI test, a script or
 an agent driving the application asks the platform's automation for it, where
@@ -165,6 +183,33 @@ Left unsaid, whether a screen reader skips a view is the platform's decision,
 which is nearly always right: a view with words is reachable and a plain
 container is not.
 
+A kind (`accessibilityRole`) and a value (`accessibilityValue`) are for a
+view composed of parts, which no control's own kind and value speak for: a
+rating of five pictures is one adjustable thing holding "3 of 5", not five
+images. A control is its kind already - a button is one, a switch a toggle -
+and says its own value, so the pair is worth writing on a layout. The kinds
+are the few every platform's screen reader names alike: a button, a toggle,
+something adjustable, a link, an image and words. A platform whose control is
+fixed to its own kind says a kind only on a layout StateUI draws, and the
+matrix marks the rest `–`.
+
+## A reader's actions
+
+What a user who sees the screen does by a gesture, a swipe or a menu, a
+screen-reader user reaches as the view's actions: `accessibilityAction("Delete")`
+offers one by its words, and the reader runs its handler. A view made of parts
+that says it is adjustable is stepped up and down by the reader - a swipe on a
+phone, the reader's keys on a desktop - and `onAccessibilityAdjusted` hears
+which way; the kind is what offers the steps, so the pair go together.
+
+An action is words and a handler, the same as a context menu's entry: the
+application offers the same thing in both places, never a second meaning in
+one. A name stands once on a view, since the reader shows the user the names
+and nothing else. The actions and the steps stand where a platform's screen
+reader offers its own - VoiceOver and TalkBack; a platform whose reader offers
+no action of an application's words is `–` in the matrix, and a view there
+offers the same through a control or a menu the user reaches.
+
 ## A tooltip
 
 `tooltip` is words for a sighted user with a pointer: what a view does, shown
@@ -180,8 +225,8 @@ tooltip is not what a screen reader is sure to read.
 
 Gestures belong to every view, so a stack holding a whole row, an Image or a
 Text can answer one; a list row can be a view with a tap recognizer rather
-than a button disguised as a container. Tap, swipe, pan, pinch, pointer, drag
-and drop are described.
+than a button disguised as a container. Tap, hold, swipe, pan, pinch,
+pointer, drag and drop are described.
 
 A recognizer is added to the native view when the tree first carries a handler
 for it and kept for as long as it does, as a control's own events are
@@ -196,8 +241,8 @@ asked, each handler hearing its own: swipe directions add up and each handler
 hears the directions it named; file types add up (none is any file) and each
 handler is handed the files of its own types. What one recognizer cannot hear
 at once - two counts of taps, two touch counts of a pan, two thresholds of a
-swipe - is said, the last asked standing; a pan saying no touch count keeps the
-one said.
+swipe, two times of a hold - is said, the last asked standing; a pan saying no
+touch count keeps the one said, and a hold saying no time the one said.
 
 A drag carries text, the portable payload. A native drag session needs its
 payload at once, so the handler that runs as the drag starts cannot decide it.
@@ -219,13 +264,13 @@ and in the whole of a ZStack's room.
 
 ## Safe area edges
 
-`avoidsSafeArea` takes one value for all four edges, two for the horizontal
-and the vertical edges, or four. The two-value form is written out to four
-edges before it travels, so the patch carries one shape of the property and the
-host reads one thing rather than three spellings of it. The four regions
-travel as members, in order, each a value of its own rather than a run of
-numbers - a member and a quantity are different things to a host - and the
-one-value form sends a single `.enumeration`.
+`ignoresSafeArea` takes the set of edges a layout runs under what stands over
+its page on - `.all`, `.top`, `[.start, .top]` - and stands clear on the rest;
+`.none` is what saying nothing does. What stands over an edge is one answer
+whatever it is - the bars, a notch, the keyboard - since no platform keeps a
+page clear of one and under another, so the set says only where. It crosses as
+one `.enumeration` holding its bits, the start and the end as the layout lays
+out, and the host reads them against its layout's direction.
 
 ## Environment
 

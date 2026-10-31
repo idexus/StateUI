@@ -15,17 +15,30 @@ extension GTKDriver {
     func input(_ act: UserAct, on view: GTKView) -> Bool {
         if let button = view as? GTKButtonView, case .pressDown = act { pressButton(button, act) }
         if let button = view as? GTKButtonView, case .lift = act { pressButton(button, act) }
+        // A view that hears no hand - an axis of keyframes alone - holds no drag of the host's: a sweep reaches nothing.
+        if case .sweep = act, !view.hearing.contains(.hand) { return true }
         guard let listening = view.listening else { return view is GTKButtonView && ["pressDown", "lift"].contains(act.description) }
         let controllers = { (kind: Hearing) in listening.controllers[kind] ?? [] }
         renderer?.layOut()
         switch act {
+        // Each tap a press - the press's drag gesture from its fall to its lift - and the click counting its run.
         case .tap, .activate:
-            guard let click = controllers(.taps).first else { return false }
+            guard let click = controllers(.taps).first, let press = controllers(.taps).last else { return false }
             let (x, y) = Self.middle(of: view)
             for run in 1...Self.taps(in: act) {
+                GTKTestHost.emit(press, "drag-begin", [x, y])
                 GTKTestHost.emit(click, "pressed", [Double(run), x, y])
+                GTKTestHost.emit(press, "drag-end", [0, 0])
                 GTKTestHost.emit(click, "released", [Double(run), x, y])
             }
+        // A press held: the click's press, the long press GTK recognizes, and the click's release.
+        case .hold:
+            guard let hold = controllers(.holds).first else { return false }
+            let (x, y) = Self.middle(of: view)
+            let click = controllers(.taps).first
+            if let click { GTKTestHost.emit(click, "pressed", [1, x, y]) }
+            GTKTestHost.emit(hold, "pressed", [x, y])
+            if let click { GTKTestHost.emit(click, "released", [1, x, y]) }
         case .pan(let offset):
             guard let drag = controllers(.drags).first else { return false }
             GTKTestHost.emit(drag, "drag-begin", [0, 0])
@@ -35,7 +48,6 @@ extension GTKDriver {
         // A throw's speed is the events' times, which a signal emitted here carries none of: the hand reaches the
         // host's entry as the drag would hand it, with the speed - ✓.
         case .sweep(let offset, let speed):
-            guard view.hearing.contains(.hand) else { return false }
             listening.hand(.began, moved: .zero)
             listening.hand(.changed, moved: offset)
             listening.hand(.ended, moved: .zero, speed: speed)
@@ -73,16 +85,22 @@ extension GTKDriver {
         case .lift(let point) where view.hearing.contains(.hand):
             guard let drag = controllers(.hand).first else { return false }
             GTKTestHost.emit(drag, "drag-end", [point.x - pressed.at.x, point.y - pressed.at.y])
+        // A press goes down, moves and lifts through the pointer's own press and the press a tap is made of, as GTK
+        // emits them.
         case .pressDown(let point):
-            guard let press = controllers(.pointer).last else { return view is GTKButtonView }
+            let presses = [controllers(.pointer).last, controllers(.taps).last].compactMap { $0 }
+            guard !presses.isEmpty else { return view is GTKButtonView }
             pressed.at = point
-            GTKTestHost.emit(press, "drag-begin", [point.x, point.y])
+            for press in presses { GTKTestHost.emit(press, "drag-begin", [point.x, point.y]) }
         case .drag(let point):
-            guard let motion = controllers(.pointer).first else { return false }
-            GTKTestHost.emit(motion, "motion", [point.x, point.y])
+            let motion = controllers(.pointer).first, press = controllers(.taps).last
+            guard motion != nil || press != nil else { return false }
+            if let motion { GTKTestHost.emit(motion, "motion", [point.x, point.y]) }
+            if let press { GTKTestHost.emit(press, "drag-update", [point.x - pressed.at.x, point.y - pressed.at.y]) }
         case .lift(let point):
-            guard let press = controllers(.pointer).last else { return view is GTKButtonView }
-            GTKTestHost.emit(press, "drag-end", [point.x - pressed.at.x, point.y - pressed.at.y])
+            let presses = [controllers(.pointer).last, controllers(.taps).last].compactMap { $0 }
+            guard !presses.isEmpty else { return view is GTKButtonView }
+            for press in presses { GTKTestHost.emit(press, "drag-end", [point.x - pressed.at.x, point.y - pressed.at.y]) }
         default: return false
         }
         return true

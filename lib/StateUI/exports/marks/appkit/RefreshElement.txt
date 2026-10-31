@@ -1,0 +1,7 @@
+# revision 1.1
+ItemsView.isRefreshEnabled: – AppKit offers no pull to refresh: a Mac application refreshes by a command - a menu item, a toolbar button, ⌘R.
+ItemsView.isRefreshing: – AppKit offers no pull to refresh: a Mac application refreshes by a command - a menu item, a toolbar button, ⌘R.
+ItemsView.refreshRequested: – AppKit offers no pull to refresh: a Mac application refreshes by a command - a menu item, a toolbar button, ⌘R.
+ScrollView.isRefreshEnabled: – AppKit offers no pull to refresh: a Mac application refreshes by a command - a menu item, a toolbar button, ⌘R.
+ScrollView.isRefreshing: – AppKit offers no pull to refresh: a Mac application refreshes by a command - a menu item, a toolbar button, ⌘R.
+ScrollView.refreshRequested: – AppKit offers no pull to refresh: a Mac application refreshes by a command - a menu item, a toolbar button, ⌘R.

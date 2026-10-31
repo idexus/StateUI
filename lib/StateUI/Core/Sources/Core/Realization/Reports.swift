@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// What one element tells the application: an event of its own, and a value the
-/// user changed. Handed to the view where the view is made, so the view names
+/// What one element tells the application: an event, and a value the user
+/// changed - each a member of its contract or of a tier it wears. Handed to the view where the view is made, so the view names
 /// members of its contract and never a handler.
 ///
 ///     registry.add(TrafficLightContract.self, create: { reports in
@@ -43,16 +43,23 @@
         self.made = made
     }
 
-    /// Raises one of the element's own events with the values its contract
-    /// declares - an event that carries no value of the element's own.
+    /// Raises an event with the values its contract declares - one of the
+    /// element's own, or one a tier it wears declares, as a key a control
+    /// hears is `KeyboardElementContract.keyPressed`. An event of a contract
+    /// the element does not wear is refused, and said once.
     ///
     /// - Parameters:
     ///   - event: the member, written with its contract.
     ///   - value: what it carries, in the order its contract declares.
-    public func raise<each Value: HostRepresentable>(
-        _ event: ElementEvent<Realized, (repeat each Value)>,
+    public func raise<Owner: Contract, each Value: HostRepresentable>(
+        _ event: ElementEvent<Owner, (repeat each Value)>,
         _ value: repeat each Value
     ) {
+        guard Realized.wears(Owner.self) else {
+            return complain("\(Realized.name) raised `\(Owner.name).\(event.name)`, and "
+                + "\(Realized.name) wears no \(Owner.name): nothing was raised.")
+        }
+
         send(event.token, MemberValues.encode(repeat each value))
     }
 

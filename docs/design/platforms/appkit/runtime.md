@@ -23,10 +23,23 @@ by a window controller in the tree's order (`WindowRoster`); a window the
 tree no longer holds closes, the last first, telling nothing. What a window
 shows comes from the host layer (`WindowPresentation`): its arrangement of
 pages is the window's content under one unified toolbar ([the window's
-chrome](../../host/pages.md#the-windows-chrome)), the pages its modal stack
-presents are sheets, and the page the user sees and the window made are told
-before the window first comes to the front. A new window with no place asked
-stands centred, each after the first a step down and to the right.
+chrome](../../host/pages.md#the-windows-chrome)), the pages its views
+present are sheets, and the page the user sees and the window made are told
+before the window first comes to the front. The content view runs under the
+toolbar (a full-size content view), so the toolbar is the top of the page's
+safe area ([the safe area](../../host/layout.md#the-safe-area)): the page's
+content stands clear of it, or under its glass where it says so, and a
+scroller let under keeps the toolbar's depth as its content inset, its offset
+counted from its first row clear. A sheet's window lays its page alike. A new window with no place asked
+stands centered, each after the first a step down and to the right.
+
+The window's title is the visible page's, and the line under it the page says
+(`WindowChrome.subtitle`) is the window's own `subtitle`. A Mac window names
+no application of itself: what a split view's sidebar page says - its title,
+its line, its picture ([a page's title
+area](../../host/pages.md#a-pages-title-area)), and nothing where it says
+none - stands as text at the trailing edge of the title bar, a title bar
+accessory rather than a toolbar control's glass.
 
 ## A window's frame
 
@@ -47,9 +60,9 @@ stands in the Windows menu.
 
 A window with a maximum takes no full screen: AppKit would stand it at its
 maximum in the middle of the screen, the toolbar alone across the top in the
-system's colour. Its zoom button grows it to the maximum instead, the way a
+system's color. Its zoom button grows it to the maximum instead, the way a
 bounded window maximizes on every desktop; with the maximum cleared, the
-window's own full-screen behaviour is back.
+window's own full-screen behavior is back.
 
 ## The application's phase
 
@@ -102,12 +115,34 @@ the page's item in a menu that enables its items by asking, so the element
 it tells answers whether it can be chosen (`validateMenuItem`), as the tree
 says.
 
+## The bars' band
+
+The bars' material paints the band the title bar and the toolbar cover - a
+color or a gradient over the window's whole width, a blur as its color, under
+the toolbar's own glass - and the toolbar's items keep the system's look; the
+band stands hidden where the bars say nothing. Over a split view the detail's
+pane paints its part of the same band, its gradient laid across the window's
+width, so the band under a floating sidebar's glass and the detail's run on
+into one another.
+
 ## The toolbar
 
-A window's toolbar holds the chrome its arrangement composes: each group of
-actions a run of items with a space between it and the next, so each keeps a
-background of its own, the leading groups before the flexible space and the
-trailing ones after it. A layout the
+A window's toolbar holds the chrome its arrangement composes - over a split
+view the system's sidebar button where the split view offers it, the
+sidebar's part's groups - its start's, then past a flexible space its end's
+and their own More - then the sidebar's tracking separator either way, so the
+detail's items start past the sidebar. AppKit hides what the sidebar's part
+has no room for and offers no overflow there, so the part fits itself by the
+host layer's rule (`BarFit`): the first groups in reading order stay, the
+others stand behind its More, and it fits again as the sidebar takes another
+width - a setting's item showing its on picture, prominent while on
+where it gives none, its state held by the menu item AppKit shows for it as
+words alone or in the overflow (`menuFormRepresentation`) - each group of
+actions a run of items with a space between it and the next, and the
+overflow's button apart after the last, so each keeps a background of its
+own, the leading groups before the flexible space and the trailing ones
+after it. macOS shares a background only among items with a picture: an
+item of words alone stands in one of its own. A layout the
 tree stands in it - a page's title view - is held in a slot at the size
 StateUI measures it at: AppKit
 measures a toolbar item's view by its constraints and warns of any it
@@ -117,6 +152,59 @@ title's place is the toolbar's own search item's field
 (`NSSearchToolbarItem.searchField`), which AppKit draws as its rounded
 field: held as a plain item's view, a field in a macOS 26 toolbar is drawn
 with no field at all.
+
+A toolbar's button holding a menu is AppKit's menu item: with no action its
+click opens the menu, an indicator saying so as the tree says; with an action
+AppKit splits it, its indicator opening the menu; with an action and no
+indicator, the menu opens as it is held. Each item keeps one menu, and an
+entry is taken out of the menu it stood in before it is added - AppKit refuses
+an item standing in two menus.
+
+## The bar at the foot
+
+A page's actions for the bar at its foot (`.toolbar(.bottom)`) stand in a
+strip of AppKit's accessory bar controls, 28 points tall, at the foot of the
+page's room - a window, a sheet, a split view's pane - under the page's view
+bar (`.bottomBar`) and on the same ground: both stand over the page in its
+safe area, on the page while nothing passes under them and on the bar's
+edge while rows do. The strip's leading groups stand at its start and the
+rest at its end, each group's controls close together and the groups apart;
+an action or a setting is an `NSButton` of the accessory bar's bezel, small,
+a setting a push-on push-off button; a button holding a menu an
+`NSComboButton`, split, or a button popping its menu where its click opens
+it; behind the overflow a More button pops a menu of the rest. Words
+(`ToolbarLabel`) are a small label in the secondary color of words, its
+picture before it - the same view a word item on the window's toolbar
+holds. The strip is made again only where an action draws otherwise, and
+follows the page's actions whenever the window's chrome is composed.
+
+## Sheets
+
+A page a view presents is a sheet on the window - over the top of its sheets
+- in an `NSWindow` of its own, which shows no bar of its own. A stack in it
+brings its bar as the window's toolbar shows a stack's, on the band its bar's
+look paints - the sheet's content runs under its toolbar, and the size a
+page asks is the room under it: the sheet's toolbar
+holds the way back, the page's actions and, unless the page says not, the
+button closing the sheet at the trailing edge, AppKit's `xmark` symbol saying
+the library's word for close; it writes false onto the sheet's state, as the
+user's Escape does ([sheets](../../host/pages.md#sheets)). The close button
+stands last: AppKit's own overflow chevron would stand after it, so a sheet's
+bar fits itself as the Web's does ([a bar with no
+room](../../host/pages.md#a-bar-with-no-room)) - its groups in reading order
+while every item stays in sight, the rest behind its More - tried on every
+composition and as the sheet resizes. The way back and the close button stand
+at the toolbar's high visibility priority, the last to go where even no group
+fits. A sheet whose arrangement brings no bar has no toolbar at all. A sheet stands as large as
+its page asks ([a sheet's size](../../host/pages.md#a-sheets-size)): at least
+320 x 180, 560 x 480 for a page asking none, at most the window it hangs from
+less 24 points a side; the user resizing it keeps that size until the page
+asks another. A sheet stands on its window's background ([a page's
+ground](../../host/pages.md#a-pages-ground)): a blur as the window's own
+material view in its tint, a color laid over the window background AppKit
+gives a sheet, so a clear window still leaves the sheet opaque; AppKit's own
+where the window says none. The window grounds its sheets again as its
+background changes.
 
 ## Acts
 
@@ -128,26 +216,47 @@ focus through the window's first responder. An act of the application's own
 is its registered performer's (`InteropActs`), handed the view an aimed act
 names; a performer may await.
 
+## A link opened
+
+The application's delegate hears the links the system asks it to open
+(`application(_:open:)`), at a start and while it runs. With no window open
+once it has started - every window closed, the application kept - the main
+window opens first, as the Dock's reopen opens it, and the link reaches it.
+
+## The clipboard
+
+The clipboard is the general pasteboard: words are written in place of what
+it held and read back as its string, at once. A conformance run writes to a
+pasteboard of the driver's own name, so it never writes over the user's.
+
+## Sharing
+
+What the user shares is offered in AppKit's sharing picker, shown from the
+middle of the window's content: the words and the link as the picker's items.
+The answer is the service's: shared where the service the user chose says it
+shared them, not where they chose none or it failed.
+
 ## Questions for the user
 
-A question is AppKit's own alert, a sheet on the window the user is looking
-at, one at a time (`QuestionQueue`): a confirmation's and a prompt's accepting
+A question is AppKit's own alert, a sheet on the window that asked - over the
+top of its sheets - or the window the user is looking at where the act names
+none, one at a time (`QuestionQueue`): a confirmation's and a prompt's accepting
 button first, a choice's actions, its dangerous one marked, then its cancel.
-A choice answers the caption pressed, its cancel's included; a prompt its
-field's words, cut to their bound. A host that shows no window holds the
+A choice answers the place of the action pressed, nothing for its cancel; a
+prompt its field's words, cut to their bound. A host that shows no window holds the
 alert unshown, answered as a press answers it.
 
 ## Files
 
-A file dialog is AppKit's own panel, a sheet on the window the user is
-looking at, waiting its turn among the questions
+A file dialog is AppKit's own panel, a sheet on the window that asked, waiting
+its turn among the questions
 ([files](../../host/runtime.md#files)). An open panel enables the files of
 every kind's extensions and chooses several only where asked; a save panel
 offers each kind once, by its first extension, under its caption in the
 panel's menu of kinds where there are two or more, and suggests the act's
 name - an empty name leaves the panel's name field empty. A save's contents
 are written beside the UI thread where the user said, in place, as a sandbox
-lets an application write the file the user chose and not a neighbour swapped
+lets an application write the file the user chose and not a neighbor swapped
 in; the file is answered once they stand written, or the act fails with the
 system's reason. A chosen file's address is its path; the sandbox keeps it
 the application's while it runs. A file is read beside the UI thread too.
@@ -173,3 +282,6 @@ with no battery reports none - full, on mains - and Low Power Mode as the
 battery saver. The network is reachable when its path is satisfied, local when
 interfaces stand but no route leads out; each interface available to the path -
 Wi-Fi, wired, cellular - is a connection profile.
+The accessibility settings are the workspace's - Reduce Motion, Increase
+Contrast and VoiceOver - told again as the display's options or VoiceOver
+change; a Mac keeps no scale of the system's words, so its scale is 1.

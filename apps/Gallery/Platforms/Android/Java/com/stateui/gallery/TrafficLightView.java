@@ -51,7 +51,7 @@ final class TrafficLightView extends View {
         canvas.drawRoundRect(housing, 18 * density, 18 * density, paint);
         for (int lamp = 0; lamp < 3; lamp++) {
             paint.setColor(lamp == signal ? LAMPS[lamp] : (LAMPS[lamp] & 0x00FFFFFF) | 0x2E000000);
-            canvas.drawCircle(getWidth() / 2f, centre(lamp), LAMP / 2 * density, paint);
+            canvas.drawCircle(getWidth() / 2f, center(lamp), LAMP / 2 * density, paint);
         }
     }
 
@@ -60,7 +60,7 @@ final class TrafficLightView extends View {
     public boolean onTouchEvent(MotionEvent event) {
         if (event.getActionMasked() == MotionEvent.ACTION_UP) {
             for (int lamp = 0; lamp < 3; lamp++) {
-                if (Math.abs(event.getY() - centre(lamp)) <= LAMP / 2 * density) {
+                if (Math.abs(event.getY() - center(lamp)) <= LAMP / 2 * density) {
                     GalleryNatives.lampTapped(control, lamp);
                     break;
                 }
@@ -69,7 +69,7 @@ final class TrafficLightView extends View {
         return true;
     }
 
-    private float centre(int lamp) {
+    private float center(int lamp) {
         return (PADDING + LAMP / 2 + lamp * (LAMP + SPACING)) * density;
     }
 }

@@ -10,10 +10,26 @@ bindings.
 `NavigationStack` renders a root page plus one destination for every element of
 a typed path:
 
-```swift quote
+```swift
 enum Route: Hashable {
     case note(Int)
     case settings
+}
+
+struct HomePage: View {
+    @Binding var path: [Route]
+    var body: some View { Button("Open note 42").onClicked { path.append(.note(42)) } }
+}
+
+struct NotePage: View {
+    let id: Int
+    @Binding var path: [Route]
+    var body: some View { Button("Settings").onClicked { path.append(.settings) } }
+}
+
+struct SettingsPage: View {
+    @Binding var path: [Route]
+    var body: some View { Button("Back to the start").onClicked { path = [] } }
 }
 
 struct MainPage: View {
@@ -34,7 +50,14 @@ struct MainPage: View {
 
 Navigation operations are ordinary array operations:
 
-```swift quote
+```swift
+enum Route: Hashable {
+    case note(Int)
+    case settings
+}
+
+var path: [Route] = []
+
 path.append(.note(42))  // push
 path.removeLast()       // pop
 path = []               // return to root
@@ -60,10 +83,14 @@ only its value can read where it is, but cannot navigate on its owner's behalf.
 `TabView` is built from a distinct collection of application values. A
 selection binding says which one is showing:
 
-```swift quote
+```swift
 enum Tab: Hashable, CaseIterable {
     case notes, search, settings
 }
+
+struct NotesPage: View { var body: some View { Text("Notes") } }
+struct SearchPage: View { var body: some View { Text("Search") } }
+struct SettingsPage: View { var body: some View { Text("Settings") } }
 
 @State private var selected = Tab.notes
 
@@ -88,17 +115,26 @@ not to the tab host.
 
 ## Split view
 
-`SplitView` owns two pages - a sidebar and a detail - and a two-way binding
-saying whether the sidebar shows:
+`SplitView` owns two pages - a sidebar and a detail - and `.showsSidebar`
+hands it a state saying whether the sidebar shows, both ways; without it the
+platform shows and hides the sidebar itself:
 
-```swift quote
+```swift
+struct MenuPage: View {
+    @Binding var showsSidebar: Bool
+    var body: some View { Button("Close").onClicked { showsSidebar = false } }
+}
+
+struct MainPage: View { var body: some View { Text("Main") } }
+
 @State private var menuOpen = false
 
-SplitView($menuOpen, sidebar: {
+SplitView(sidebar: {
     MenuPage(showsSidebar: $menuOpen)
 }, detail: {
     MainPage()
 })
+.showsSidebar($menuOpen)
 ```
 
 The sidebar is a page, so its header, rows, and actions are composed from the
@@ -127,99 +163,274 @@ beside the detail, changing as the window is resized or the device turned.
 A sidebar row reads it to close a sidebar lying over the page once the user
 has chosen, and to leave one beside the page open:
 
-```swift quote
+```swift
+enum Section { case inbox, archive }
+
+struct MenuPage: View {
+    @Binding var showsSidebar: Bool
+    @Binding var overlays: Bool
+    @State private var section = Section.inbox
+
+    var body: some View {
+        Button("Archive").onClicked {
+            section = .archive
+            if overlays { showsSidebar = false }
+        }
+    }
+}
+
+struct MainPage: View { var body: some View { Text("Main") } }
+
 @State private var menuOpen = false
 @State private var menuOverlays = false
 
-SplitView($menuOpen, sidebar: {
+SplitView(sidebar: {
     MenuPage(showsSidebar: $menuOpen, overlays: $menuOverlays)
 }, detail: {
     MainPage()
 })
+.showsSidebar($menuOpen)
 .sidebarOverlays($menuOverlays)
-
-// In a row of MenuPage:
-section = .archive
-if overlays { showsSidebar = false }
 ```
 
 Nothing the application writes into the state reaches the host; it is the
 platform's report alone.
 
-What the sidebar stands on is the split view's to say, for each of the two
-places, as a `Material` - a colour, a gradient, a blur, glass:
+The split view's bar offers the platform's toggle for the sidebar - the
+toolbar's sidebar button on a Mac, the navigation button in a Windows title
+bar, ☰ at the start of a phone's bar - unless `.showsSidebarToggle(false)`
+takes it away. A value from a state keeps it to some pages, as to the root
+of the detail's stack, leaving a page pushed over it the way back alone:
 
-```swift quote
-SplitView($menuOpen, sidebar: {
+```swift
+struct MenuPage: View {
+    @Binding var showsSidebar: Bool
+    var body: some View { Text("Mailboxes") }
+}
+
+struct InboxPage: View { var body: some View { Text("Inbox") } }
+
+struct MailPage: View {
+    let id: Int
+    init(_ id: Int) { self.id = id }
+    var body: some View { Text("Mail \(id)") }
+}
+
+@State private var menuOpen = false
+@State private var path: [Int] = []
+
+SplitView(sidebar: {
+    MenuPage(showsSidebar: $menuOpen)
+}, detail: {
+    NavigationStack($path) { InboxPage() } destination: { MailPage($0) }
+})
+.showsSidebar($menuOpen)
+.showsSidebarToggle(path.isEmpty)
+```
+
+With no toggle the sidebar shows and hides by its binding - and by an edge
+swipe where the platform has one, as iOS does; elsewhere the application's
+own button is then the way in.
+
+What the sidebar stands on is the split view's to say, for each of the two
+places, as a `Material` - a color, a gradient, a blur, glass:
+
+```swift
+struct MenuPage: View {
+    @Binding var showsSidebar: Bool
+    var body: some View { Text("Mailboxes") }
+}
+
+struct MainPage: View { var body: some View { Text("Main") } }
+
+@State private var menuOpen = false
+
+SplitView(sidebar: {
     MenuPage(showsSidebar: $menuOpen)
 }, detail: {
     MainPage()
 })
-.sidebarBackground(.blur(.thin))     // beside the detail
-.flyoutBackground(.blur(.thick))     // sliding over it
+.showsSidebar($menuOpen)
+.sidebarBackground(.blur(.thin))          // beside the detail
+.sidebarOverlayBackground(.blur(.thick))  // sliding over it
 ```
 
-Left unsaid, each is the platform's own: beside the detail the window shows
-through, as a desktop sidebar does; over it the sidebar stands on the
-platform's drawer or overlay surface - never on the window, so a clear window
-never leaves a flyout with nothing under its words. The sidebar page's own
+Left unsaid, beside the detail the window shows through, as a desktop sidebar
+does; over it the sidebar stands on the window's background
+(`window.background`) laid over the platform's drawer or overlay surface, so
+the window's color reaches it and a clear window never leaves a sidebar over
+the page with nothing under its words. A window saying no background leaves
+the platform's own surface there. The sidebar page's own
 `.pageBackground` still paints the page on top. A platform that blurs nothing
-inside a window shows a blur as its colour.
+inside a window shows a blur as its color.
 
-## Modal pages
+## Sheets
 
-Modal presentation is an arrangement of an application array, `ModalStack`,
-standing as a window's page: the page it holds first, and a page presented
-over it for each element of the array:
+A view presents a page over the window - a sheet - while a state says so:
 
 ```swift
-enum Sheet: Hashable {
-    case settings
-    case about
-}
-
-struct Home: View {
-    @Binding var sheets: [Sheet]
+struct NotesPage: View {
+    @State private var editing = false
 
     var body: some View {
-        Button("Settings").onClicked { sheets.append(.settings) }
+        Button("New note")
+            .onClicked { editing = true }
+            .sheet(isPresented: $editing) {
+                VStack {
+                    Text("A new note")
+                    Button("Done").onClicked { editing = false }
+                }
+                .padding(24)
+            }
     }
 }
+```
 
-struct Presented: View {
-    let title: String
-    @Binding var sheets: [Sheet]
+Writing false takes it away. The user takes it away too - a swipe down,
+Escape, the system's way back - and that writes false, so the state always
+says whether the sheet shows. The view presenting it leaving the screen takes
+it away and writes false as well.
+
+On a wide screen a sheet stands as large as its page asks, within the
+platform's bounds; a page taller than they allow scrolls inside it. A sheet
+holding a stack, tabs or a split view - whose pages come and go - or a view
+that takes the room it is given, such as a list or a map, stands at the
+platform's standard size. On a phone a sheet rises from the bottom.
+
+A sheet stands on its window's background (`window.background`), laid over
+the platform's own sheet, so the application's color reaches the sheet as it
+reaches its pages, and its words keep an opaque surface however clear the
+window is. A window saying no background leaves the platform's own sheet.
+
+A value presents a page made of it: nil takes it away, the user's dismissal
+writes nil, and another value presents another page in its place:
+
+```swift
+struct Folders: View {
+    @State private var opened: String?
 
     var body: some View {
         VStack {
-            Text(title)
-            Button("Close").onClicked { sheets.removeLast() }
+            Button("Inbox").onClicked { opened = "Inbox" }
+            Button("Sent").onClicked { opened = "Sent" }
         }
-    }
-}
-
-struct MainPage: View {
-    @State private var sheets: [Sheet] = []
-
-    var body: some View {
-        ModalStack($sheets) {
-            Home(sheets: $sheets)
-        } destination: { sheet in
-            switch sheet {
-            case .settings: Presented(title: "Settings", sheets: $sheets)
-            case .about: Presented(title: "About", sheets: $sheets)
-            }
+        .sheet(item: $opened) { name in
+            Text(name).padding(24)
         }
     }
 }
 ```
 
-Appending presents, removing dismisses, and the last element is on top. A
-native dismissal truncates the bound array to the number of pages still
-presented. A modal page therefore carries its own dismissal route by receiving
-the binding. The stack is the window's page, so its sheets stand over
-everything the window shows; closing the window tears down every page it
-presents.
+A sheet has no bar of its own. A `NavigationStack` in it brings one - the
+stack's titles, its way back and its actions, nothing of them from around the
+sheet - in the look of the bar over the view presenting the sheet, unless the
+stack declares its own:
+
+```swift
+struct SettingsButton: View {
+    @State private var showsSettings = false
+    @State private var path: [String] = []
+
+    var body: some View {
+        Button("Settings")
+            .onClicked { showsSettings = true }
+            .sheet(isPresented: $showsSettings) {
+                NavigationStack($path) {
+                    Button("Account")
+                        .onClicked { path.append("Account") }
+                        .title("Settings")
+                } destination: { name in
+                    Text(name).title(name)
+                }
+            }
+    }
+}
+```
+
+The stack's bar offers a button closing the sheet - writing false, as every
+dismissal does. A page the user must finish rather than leave says it offers
+none, as it says whether it offers the way back:
+
+```swift
+struct SignUpSheet: View {
+    @Binding var shown: Bool
+    @State private var path: [Int] = []
+
+    var body: some View {
+        NavigationStack($path) {
+            Button("Finish")
+                .onClicked { shown = false }
+                .title("Sign up")
+                .showsCloseButton(false)
+        } destination: { step in
+            Text("Step \(step)")
+        }
+    }
+}
+```
+
+A sheet presented in a sheet stands over it, and so does one presented from
+beneath while another shows: the last shown is on top. A view holds one
+sheet - written again on the same view, the second stands in place of the
+first - so two sheets stand on two views. One written on a composed view, a
+`Group` or an `if/else` stays as the view's body shows another branch
+([What outlives a branch](composition-and-identity.md#what-outlives-a-branch)).
+Closing a window takes away every sheet in it.
+
+## Popovers
+
+A view shows what `.popover(isPresented:)` describes in the platform's popover,
+by the view, while the state holds true:
+
+```swift
+struct FiltersButton: View {
+    @State private var filtering = false
+    @State private var unreadOnly = false
+
+    var body: some View {
+        Button("Filters")
+            .onClicked { filtering = true }
+            .popover(isPresented: $filtering) {
+                VStack {
+                    Switch($unreadOnly).text("Unread only")
+                    Button("Done").onClicked { filtering = false }
+                }
+                .spacing(12)
+                .padding(16)
+            }
+    }
+}
+```
+
+Writing false takes it away. The user takes it away too - a tap or a click
+beside it, Escape, the way back - and that writes false to the state, so
+the state always says whether the popover shows; the view presenting it
+leaving the screen writes false as well. Its content sizes it, and a phone
+shows it as a popover too, by the view.
+
+A value shows what the content makes of it: nil takes the popover away, the
+user's dismissal writes nil, and another value shows another view in its
+place:
+
+```swift
+struct Explanations: View {
+    @State private var explained: String?
+
+    var body: some View {
+        HStack {
+            Button("Sync").onClicked { explained = "Sync keeps your mail the same everywhere." }
+            Button("Backup").onClicked { explained = "Backup saves a copy every night." }
+        }
+        .popover(item: $explained) { words in
+            Text(words).padding(16)
+        }
+    }
+}
+```
+
+A popover written on a composed view, a `Group` or an `if/else` stays as the
+view's body shows another branch, by the view it shows
+([What outlives a branch](composition-and-identity.md#what-outlives-a-branch)).
 
 ## Over every page
 
@@ -270,7 +481,21 @@ A view shown as a page says what its page is by modifier - `.title("Notes")`
 ([What a view says of its page](application-and-sessions.md#what-a-view-says-of-its-page)).
 An arrangement is a page already, and takes its title and icon the same way:
 
-```swift quote
+```swift
+enum SettingsRoute: Hashable { case account, privacy }
+
+struct SettingsHome: View {
+    @Binding var path: [SettingsRoute]
+    var body: some View { Button("Account").onClicked { path.append(.account) } }
+}
+
+struct SettingsDestination: View {
+    let route: SettingsRoute
+    var body: some View { Text("\(route)") }
+}
+
+@State private var settingsPath: [SettingsRoute] = []
+
 NavigationStack($settingsPath) {
     SettingsHome(path: $settingsPath)
 } destination: { route in
@@ -282,12 +507,34 @@ NavigationStack($settingsPath) {
 
 The container's title and icon describe it when it is an item in another
 container, such as a tab. The title shown for the top page of a navigation
-stack is the one its own view says.
+stack is the one its own view says. Its `.pageBackground` is what each of its
+pages that says none stands on - the nearest arrangement's, as a bar's look
+is - so a stack in a sheet grounds every page it pushes with one modifier:
+
+```swift
+struct DraftPage: View { var body: some View { Text("Draft") } }
+
+struct StepPage: View {
+    let step: Int
+    init(_ step: Int) { self.step = step }
+    var body: some View { Text("Step \(step)") }
+}
+
+let paper = Color(hex: 0xFBF7EE)
+@State private var path: [Int] = []
+
+NavigationStack($path) {
+    DraftPage()
+} destination: { step in
+    StepPage(step)
+}
+.pageBackground(.color(paper))
+```
 
 A view such as `SearchField` can stand in the page's title slot, declared where
 the state it follows lives:
 
-```swift quote
+```swift
 @State private var query = ""
 
 VStack { … }
@@ -305,52 +552,90 @@ there that declares none of its own; the innermost declaration wins.
 A page's actions are declared where the state they follow lives, with
 `.toolbar { }` on the page's view:
 
-```swift quote
+```swift
+@State private var hasChanges = false
+func save() async throws {}
+func delete() async throws {}
+
 VStack { … }
     .toolbar {
-        ToolbarItem("Save")
+        ToolbarButton("Save")
             .id("save")
             .isEnabled(hasChanges)
-            .onClicked(gate: .ignoreWhileRunning) { try await save() }
-        ToolbarItem("Delete")
+            .onClicked(.ignoreWhileRunning) { try await save() }
+        ToolbarButton("Delete")
             .id("delete")
-            .placement(.overflow)
-            .isDestructive(true)
-            .onClicked(gate: .ignoreWhileRunning) { try await delete() }
+            .placement(at: .overflow)
+            .role(.destructive)
+            .onClicked(.ignoreWhileRunning) { try await delete() }
     }
 ```
 
-The group is built with the body declaring it, so an item follows the state it
-reads - Save enables itself as `hasChanges` moves, with nothing written by hand.
-It stands on the bar while its page is shown, and when the page goes, its
-actions go with it.
+The items are built with the body declaring them, so an item follows the state
+it reads - Save enables itself as `hasChanges` moves, with nothing written by
+hand. They stand on the bar while their page is shown, and when the page goes
+its actions go with it: a page pushed onto a stack shows its own and none of
+the page under it. Written on a `NavigationStack` or a `TabView`, `.toolbar`
+declares items for every page it shows, standing further out than each page's
+own.
 
-One declaration is one group: its actions share one background where the
-platform groups a bar's actions, as macOS and iOS draw them on one piece of
-glass. A second group is a second declaration. A group stands at the bar's
-trailing edge unless `.toolbar(.leading)` puts it at the other.
+Each item says where it stands with `.placement` - at the bar's `.start`, its
+`.end`, unsaid, or behind its `.overflow` menu - and an `order` among the
+others there, lower first; at the same order a page's views further out stand
+at the edge and those further in nearer the title. A `ToolbarGroup` stands its
+items together on one background where the platform groups a bar's actions -
+macOS and iOS on one piece of glass, WinUI on one capsule, which a group of
+one keeps - and behind the overflow it is a section of the menu. An item
+declared alone stands in a group of its own, bare on WinUI, and an item in a
+group stands where its group does:
 
-A window's page and an arrangement declare actions for every page shown in
-them. The actions declared further in join them nearer the title, so the
-outer ones keep their place at the edge from page to page:
+```swift
+func bold() {}
+func italic() {}
+func share() {}
 
-```swift quote
-NavigationStack($path) {
-    Library(path: $path)
-} destination: { book in
-    BookPage(book: book)
-}
-.toolbar(id: "library") {
-    ToolbarItem("Account").onClicked { showAccount() }
+VStack { … }
+    .toolbar {
+        ToolbarGroup {
+            ToolbarButton("Bold").onClicked { bold() }
+            ToolbarButton("Italic").onClicked { italic() }
+        }
+        .placement(at: .start)
+        ToolbarButton("Share").onClicked { share() }
+    }
+```
+
+A split view stands under one bar in two parts, over its sidebar and over its
+detail. A page's items stand in its own column's part, and a split view's own
+over every page of the part they name - the detail's, unsaid - beside the
+page's own, at the edge. An item naming the other part stands there, and one
+whose part changes moves to it. While the sidebar is not shown its part's items
+stand at the start of the detail's, or hide with it where they say
+`hidesWithSidebar(true)`:
+
+```swift
+import StateUI
+
+struct Library: View {
+    @State private var showsFolders = true
+
+    var body: some View {
+        SplitView {
+            Text("Folders").title("Library")
+        } detail: {
+            Text("Books").title("All books")
+        }
+        .showsSidebar($showsFolders)
+        .toolbar {
+            ToolbarButton("Add folder").placement(.sidebar).hidesWithSidebar(true).onClicked {}
+            ToolbarButton("Account").onClicked {}
+        }
+    }
 }
 ```
 
-`order` moves a group earlier or later among the others at its edge, lower
-first. `.toolbar(id:)` adds a page's actions to the group of that id instead of
-starting one of its own, and an item with the `.id` of one declared further out
-stands in that item's place while its page is shown. `placement` keeps an
-action on the bar or behind the native overflow. Give stable identities to
-items whose list can change.
+A part said on a page that stands in no split view changes nothing. Give stable
+identities to items whose list can change.
 
 An item given an `icon` shows the picture alone on the bar; its words stay its
 name to assistive technology and its tip. `showsText(true)` asks for the words
@@ -360,57 +645,318 @@ through the toolbar's own display mode, and an iPhone's bar shows a picture or
 words, so there the item keeps its picture alone. An item with no picture
 always shows its words.
 
-```swift quote
+```swift
+func add() {}
+
 VStack { … }
     .toolbar {
-        ToolbarItem("Add")
+        ToolbarButton("Add")
             .icon("add.png")
             .showsText(true)
             .onClicked { add() }
     }
 ```
 
+A setting on the bar is a `ToolbarToggle`: on or off as its `isOn` says, and
+given a binding, choosing it turns the state over. It stands as the
+platform's two-state button - selected on iOS, an `AppBarToggleButton` on
+Windows, a toggle button in GNOME's header bar, a pressed button on the Web -
+and shows its `on:` picture while it is on; behind the overflow it stands
+checked or not, as a `MenuToggle` does in a menu. A Mac's toolbar item holds
+no state of its own: it shows the on picture, and one with none stands out
+while on; Android's bar shows the state by the on picture alone.
+
+```swift
+@State private var showsInspector = false
+
+VStack { … }
+    .toolbar {
+        ToolbarToggle("Inspector", isOn: $showsInspector)
+            .icon("sidebar.png", on: "sidebar_filled.png")
+    }
+```
+
+A `ToolbarButton` holds a menu as a button does
+([A button's menu](interaction-and-actions.md#a-buttons-menu)): with no
+`.onClicked` its click opens it, an arrow saying so unless `showsMenuArrow(false)`;
+with one it splits, its click its own and its menu beside it; `.held` opens the
+menu as the button is held. Behind the overflow it is a submenu under its words,
+its own action first. A Mac draws the arrow on its toolbar's menu item, GTK and
+the Web on theirs; iOS, Android and WinUI draw none on a bar. A bar that has no
+split part - iOS and WinUI - opens a split item's menu held, and Android puts it
+behind the overflow, the item's action on the bar.
+
+```swift
+@State private var order = "A to Z"
+func save() {}
+func saveCopy() {}
+
+VStack { … }
+    .toolbar {
+        ToolbarButton("Sort").menu {
+            MenuItem("A to Z").onClicked { order = "A to Z" }
+            MenuItem("Z to A").onClicked { order = "Z to A" }
+        }
+        ToolbarButton("Save")
+            .onClicked { save() }
+            .menu { MenuItem("Save a copy").onClicked { saveCopy() } }
+    }
+```
+
+`.toolbar(.bottom) { }` stands its items on a bar at the page's foot - a
+phone's bottom toolbar, a desktop's thin status bar - by the same rules:
+groups, positions, order and the overflow. Words nobody chooses are a
+`ToolbarLabel`, on either bar, its picture before them; behind the overflow
+it is an entry nobody can choose. A page's view bar (`.bottomBar`) stands
+above it, both in the safe area. On iOS the bar is its navigation
+controller's toolbar, so a page shows it inside a `NavigationStack`, as it
+shows its top bar.
+
+```swift
+@State private var unread = 3
+func compose() {}
+
+VStack { … }
+    .toolbar(.bottom) {
+        ToolbarLabel("\(unread) unread")
+            .placement(at: .start)
+        ToolbarButton("Compose")
+            .onClicked { compose() }
+    }
+```
+
 On AppKit a page's furniture is its window's toolbar: the top page's title
 names the window, the way back is the system's back item, the actions are
-toolbar items - a space between two groups, a leading group before the
+toolbar items - a space between two groups, a group at the start before the
 flexible space - and those placed in the overflow sit in the toolbar's
-overflow menu. Android's bar has no leading edge beside its navigation button,
-so a leading group stands first among its actions. On AppKit, a tabbed
+overflow menu. Android's bar has no start beside its navigation button, so a
+group at the start stands first among its actions. On AppKit, a tabbed
 view on the window's page path shows its tabs in a row beneath the toolbar,
 beside any sidebar, the tabs sharing its width with each picture beside its
 title; one in a sidebar, a sheet or inside another tab is a tab view with its
 tabs on the top edge of its content.
 
-Every arrangement accepts a flat `barBackgroundColor` and a `barForegroundColor`
-for its title and native action affordances; a page's bar takes each from the
-nearest arrangement around it that declares one, so a stack further in paints
-its own - a sidebar takes only what its own split view declares, and a sheet
-takes nothing from around it. The
-application's name, the line under the title and its mark are declared the same
-way ([The window's bar](application-and-sessions.md#the-windows-bar)). Native tab
-selectors keep their selected and unselected states, legible over a written
-background. Leaving the background unwritten preserves the platform's
-material. A written colour is
-painted where the bars stand and nowhere else - on AppKit the band the title
-bar and toolbar cover, under a floating sidebar's glass too, with the page's
-title in `barForegroundColor` on it - while the toolbar's own items keep the
-system's look. What the window shows around the bars is its own background
-(`window.background`). Gradients
-remain ordinary view composition where the application owns the surface.
+Every arrangement accepts a `barBackground` - a `Material`: a color, a
+gradient, a blur, glass - and a `barForegroundColor` for its title and native
+action affordances; a page's bar takes each from the nearest arrangement
+around it that declares one, so a stack further in paints its own - a sidebar
+takes only what its own split view declares, and a stack in a sheet takes the
+look of the bar over the view presenting the sheet. What the bar says is each
+page's own ([The window's bar](application-and-sessions.md#the-windows-bar)).
+Native tab selectors keep their selected and unselected states, legible over a
+written background. Leaving the background unwritten preserves the platform's
+material. A blur is the platform's own where its bars blur - iOS, iPadOS,
+WinUI's acrylic, the Web's backdrop filter - and its color elsewhere; glass is
+the platform's own bar where it has one. A gradient runs across each bar the
+platform draws, its points fractions of that bar: in a split view one across
+the window where one bar spans it - AppKit's band, beneath a floating
+sidebar's glass and over the detail, and WinUI's title bar - and one in each
+pane where each pane has a bar of its own, on the iPad and GTK. Words
+with no color written stand light on a dark gradient and dark on a light one,
+by its colors on the whole. A written material stands where the
+bars stand and nowhere else - on AppKit the band the title bar and toolbar
+cover, under a floating sidebar's glass too, with the page's title in
+`barForegroundColor` on it - while the toolbar's own items keep the system's
+look. What the window shows around the bars is its own background
+(`window.background`).
+
+Where the host draws the bar's buttons itself - the Web - `toolbarStyle` says
+how they stand: `.glass`, each on a round glass; `.plain`, no background until
+the pointer is over one; `.rounded`, a flat rounded rectangle; or the
+platform's own, `.system`, unless said - plain on the Web. It is found along
+the path as the bar's colors are, and native bars keep their platform's
+buttons:
+
+```swift
+struct NotesPage: View {
+    @State private var path: [Int] = []
+
+    var body: some View {
+        NavigationStack($path) {
+            Text("Notes")
+        } destination: { _ in
+            Text("Note")
+        }
+        .toolbarStyle(.rounded)
+    }
+}
+```
+
+There, too, a bar's items take the look the application gives them, written
+as a control's is: a `ToolbarButton`, a `ToolbarToggle` and a `ToolbarGroup`
+say their `background`, their outline's `shape`, `stroke` and `lineWidth` and
+the room inside them, `padding` - a button its words' `textColor` and font, a
+group the room between its buttons, `spacing` - on the item itself, or in a
+`Style` for every item of its kind or by its key. `toolbarSpacing`, beside
+`toolbarStyle`, is the room between the bar's groups. What an item says stands
+over the `toolbarStyle`, and what it leaves unsaid stays as that look has it.
+Its visual states follow the pointer over it - a group's too - and a button's
+the press; a setting has `.on` and `.off`. A group style dresses every group
+on the bar - an item standing alone stands in a group of its own - and the
+bar's own buttons - the way back, the sidebar's toggle, More - stand as an
+item alone does, in the group style's box under the style every
+`ToolbarButton` wears. Native bars keep their platform's look:
+
+```swift
+@MainActor
+enum BarStyles {
+    static var sheet: StyleSheet {
+        StyleSheet {
+            Style<ToolbarGroup>()
+                .background(.white)
+                .shape(.roundedRectangle(12))
+                .stroke(.gray)
+                .lineWidth(1)
+                .padding(3)
+                .spacing(2)
+                .visualState(.pointerOver) { $0.stroke(.cornflowerBlue) }
+
+            Style<ToolbarButton>()
+                .fontWeight(.semibold)
+                .shape(.roundedRectangle(9))
+                .padding(horizontal: 12, vertical: 0)
+                .visualState(.pointerOver) { $0.background(Color(hex: 0xEEF1F4)) }
+                .visualState(.pressed) { $0.background(Color(hex: 0xDDE3E8)) }
+        }
+    }
+}
+
+struct InboxPage: View {
+    var body: some View {
+        Text("Inbox")
+            .toolbar {
+                ToolbarGroup {
+                    ToolbarButton("Archive")
+                    ToolbarButton("Move")
+                }
+                ToolbarButton("Sign out")
+                    .stroke(.gray)
+                    .visualState(.pointerOver) { $0.stroke(.firebrick) }
+            }
+    }
+}
+```
+
+## A bar at the foot
+
+`.bottomBar { }` stands a view at the foot of the page, declared where the
+state it follows lives - a message's field and its Send button, a line of
+what the page holds:
+
+```swift
+import StateUI
+
+struct Message {
+    let id: Int
+    let words: String
+}
+
+struct Conversation: View {
+    @State private var messages = [Message(id: 0, words: "Hello")]
+    @State private var draft = ""
+
+    var body: some View {
+        Grid {
+            ScrollView {
+                VStack {
+                    ForEach(messages, id: \.id) { message in
+                        Text(message.words)
+                    }
+                }
+                .spacing(8)
+            }
+        }
+        .ignoresSafeArea(.all)
+        .title("Conversation")
+        .bottomBar {
+            HStack {
+                TextEditor($draft)
+                    .growsWithText(true)
+                Button("Send")
+                    .onClicked {
+                        messages.append(Message(id: messages.count, words: draft))
+                        draft = ""
+                    }
+            }
+            .spacing(8)
+            .padding(12)
+        }
+    }
+}
+```
+
+The bar is as tall as it lays out, so it grows with the field's lines, and
+it stands on the keyboard while one shows. The page's safe area ends above it:
+its content stands clear of it, and a scroller let under the bars scrolls under
+it, its last row stopping clear. A scroller at its end stays at its end as the
+bar grows or the keyboard rises, so the last message stays in sight; one
+elsewhere stays where it is.
+
+The bar stands on the page while nothing passes under it. While the rows go on
+past it, its `edge` says how they show there: `.automatic`, what it is unsaid,
+is the platform's own edge, `.hard` cuts them off at the bar on a blur with a
+line along it, and `.none` shows them as they are:
+
+```swift
+struct Composer: View {
+    @Binding var draft: String
+    var body: some View { TextField($draft) }
+}
+
+@State private var draft = ""
+let messages = Text("Messages")
+
+ScrollView { messages }
+    .bottomBar(edge: .hard) {
+        Composer(draft: $draft)
+    }
+```
+
+Where the platform's bars stand over the page the
+bar does too, the rows softening as they pass under it; where they stand
+beside the page, the page ends above it. Declared on a stack or a window's
+page, a bottom bar stands on every page shown there that declares none of its
+own; the innermost declaration wins.
+
+The bar at the top shows its edge the same way. A stack, tabs or a split view
+says it with `.barScrollEdge(_:)`, beside its bar's look: `.automatic` is the
+platform's own, and where it draws none a blur that hides while nothing
+passes under the bar; `.hard` adds a line along its foot on every platform;
+`.none` shows the rows as they are where the platform lets it:
+
+```swift
+@State private var path: [Int] = []
+let messages = Text("Messages")
+
+NavigationStack($path) {
+    ScrollView { messages }
+} destination: { _ in Text("") }
+.barScrollEdge(.hard)
+```
 
 ## Menu bars and context menus
 
 A page's menus are declared like its actions, with `.menuBar { }` on the
 page's view, and stand on the desktop menu bar while the page is shown:
 
-```swift quote
+```swift
+struct RecentFile: Identifiable {
+    let id: String
+    let name: String
+}
+
+@State private var hasChanges = false
+let recent = [RecentFile(id: "notes", name: "Notes.txt")]
+func save() async throws {}
+func open(_ file: RecentFile) {}
+
 VStack { … }
     .menuBar {
         Menu("File") {
             MenuItem("Save")
                 .id("save")
                 .isEnabled(hasChanges)
-                .onClicked(gate: .ignoreWhileRunning) { try await save() }
+                .onClicked(.ignoreWhileRunning) { try await save() }
             Menu("Recent") {
                 recent.map { file in
                     MenuItem(file.name)
@@ -432,12 +978,18 @@ and the window's comes back as the page goes. Other menus follow the ones
 declared further out, before the platform's Window and Help; `order` moves a
 declaration's menus and sections earlier or later, lower first.
 
-```swift quote
-SplitView($sidebar) {
+```swift
+struct Library: View { var body: some View { Text("Library") } }
+struct Welcome: View { var body: some View { Text("Welcome") } }
+
+@State private var sidebar = true
+
+SplitView {
     Library()
 } detail: {
     Welcome()
 }
+.showsSidebar($sidebar)
 .menuBar {
     Menu("File") {
         MenuItem("Save")
@@ -453,7 +1005,11 @@ The platform's own menus are joined by identity, never by caption:
 entries into AppKit's File menu and UIKit's `.file` menu after the platform's
 own, whatever the menu is called, so "Plik" joins it too. On WinUI it is an
 ordinary menu of the application's; on GTK, a submenu of the header bar's main
-menu. Android keeps no menu bar: a page's menus stand behind its stack's
+menu. An Edit menu holds the platform's own entries on every host that shows
+it: AppKit's and iPadOS's Edit menu, and on WinUI, GTK and the Web the same
+entries StateUI keeps - Undo, Redo, Cut, Copy, Paste, Delete and Select All,
+in the system's language, acting on the field the user typed into though the
+menu took the focus - with the page's entries after them. Android keeps no menu bar: a page's menus stand behind its stack's
 bar's overflow, each a submenu after the actions. An iPhone shows no menu
 bar. `Menu` holds only `MenuItem`, `Menu` and `MenuSeparator`, and a menu bar
 only `Menu`: anything else does not compile.
@@ -469,19 +1025,26 @@ can do.
 
 The same item vocabulary can be attached to any view as a context menu:
 
-```swift quote
+```swift
+struct Document {
+    var title: String
+}
+
+let document = Document(title: "Plans")
+func duplicate(_ document: Document) {}
+func delete(_ document: Document) {}
+
 Text(document.title)
     .contextMenu {
         MenuItem("Duplicate").onClicked { duplicate(document) }
         MenuItem("Delete")
-            .isDestructive(true)
+            .role(.destructive)
             .onClicked { delete(document) }
     }
 ```
 
-An item may stand for a setting: given `isOn`, it shows the platform's check,
-and given a binding, choosing it turns the state over before its `onClicked`
-runs:
+A setting's entry is a `MenuToggle`: it shows the platform's check as its
+`isOn` says, and given a binding, choosing it turns the state over:
 
 ```swift
 struct Page: View {
@@ -490,14 +1053,19 @@ struct Page: View {
     var body: some View {
         Text("Draft")
             .contextMenu {
-                MenuItem("Show Ruler").isOn($showsRuler)
+                MenuToggle("Show Ruler", isOn: $showsRuler)
             }
     }
 }
 ```
 
-`.onToggled` hears each turn with the way it turned to. An item that says
-neither way shows no check and is only clicked.
+`.onToggled` hears each turn with the way it turned to. A `MenuItem` acts:
+it shows no check, and choosing it runs its `onClicked`.
+
+On an item of an `ItemsView` the context menu is the item's actions, declared
+once: a platform that swipes a list's items - UIKit - offers its items the
+user can choose as the item's swipe actions too, a destructive one in its
+destructive style; every platform offers the menu itself.
 
 Menu and toolbar structures are reconciled by identity like other ordered
 children. A platform without that surface may omit its presentation; never put

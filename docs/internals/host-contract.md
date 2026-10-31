@@ -234,8 +234,8 @@ tokens. They never enter application source, `HostPatch`, event payloads, or
 state values.
 
 Each host is a sibling package linked to the `StateUI` library, so platform
-dependencies never enter the core. `LayoutEngine` and
-`GalleryView` are StateUI's own layouts: a host stands the layout engine on its
+dependencies never enter the core. `MotionLayout` and
+`GalleryView` are StateUI's own layouts: a host stands the motion layout on its
 ZStack and wears the run of placements it is handed, and neither justifies a
 larger renderer surface.
 

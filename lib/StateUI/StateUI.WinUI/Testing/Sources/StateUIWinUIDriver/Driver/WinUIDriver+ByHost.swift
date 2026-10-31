@@ -13,13 +13,16 @@ extension WinUIDriver {
                 + "to left would mirror its places again and a drawing would be turned"
         }
         switch Ability(ability).act {
+        case "close" where Ability(ability).element == "Popover":
+            return "the flyout hidden as a click beside it hides it, no click sent"
+        case "openLink": return "the relay's report of an activation told the driver's address, no activation"
         case "dragAndDrop": return "the relay's drag reports told by the driver, no drag WinUI began"
         case "dropFiles": return "the relay's drop report told the driver's files, no drag WinUI began"
         case "sweep": return "the relay's report of the hand handed to the host with its speed, no pointer sent"
         case "pinch", "rotate": return "the relay's report of the manipulation handed to the host, no touch sent"
-        case "pressDown" where Ability(ability).element == "LayoutEngine",
-             "drag" where Ability(ability).element == "LayoutEngine",
-             "lift" where Ability(ability).element == "LayoutEngine":
+        case "pressDown" where Ability(ability).element == "MotionLayout",
+             "drag" where Ability(ability).element == "MotionLayout",
+             "lift" where Ability(ability).element == "MotionLayout":
             return "the relay's report of the press over the layout handed to the host, no pointer sent"
         default: break
         }
@@ -27,7 +30,16 @@ extension WinUIDriver {
             return "the accent WinUI holds for the main action, and the host's own record of the roles it draws no look for"
         }
         if ability == "read background of Canvas" {
-            return "the colour the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush"
+            return "the color the host's canvas clears its surface to under its drawing, which WinUI keeps as no brush"
+        }
+        if ability == "read a share sheet" {
+            return "what the host holds of a share sheet a test never shows"
+        }
+        if Ability(ability).act == "answerShare" {
+            return "the host told the driver's answer, no share sheet shown"
+        }
+        if ability == "read what the screen reader said" {
+            return "the relay's own list of what it handed UI Automation to announce"
         }
         if ability == "read what was launched" {
             return "the host's own record of what it handed Windows, which a test holds back from launching"
@@ -41,7 +53,7 @@ extension WinUIDriver {
     /// The elements whose views stand left to right in WinUI whatever their direction (`WinUIView.directionHolder`):
     /// the layouts and a stack's parts, the drawings, and a web view, whose page says its own.
     static let standsLeftToRight: Set<String> = [
-        "ActivityIndicator", "Canvas", "Capsule", "Divider", "Ellipse", "Grid", "HStack", "Image", "LayoutEngine", "Line",
-        "Path", "Polygon", "Polyline", "Rectangle", "ScrollView", "Spacer", "VStack", "WebView", "ZStack",
+        "Spinner", "Canvas", "Capsule", "Separator", "Ellipse", "Fill", "Grid", "HStack", "Image", "MotionLayout",
+        "Line", "Path", "Polygon", "Polyline", "Rectangle", "ScrollView", "Space", "VStack", "WebView", "ZStack",
     ]
 }

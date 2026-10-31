@@ -59,7 +59,7 @@ final class AppKitFocusTests: XCTestCase {
         for (place, renderer) in [
             ("a window's page", AppKitRenderer.running { TwoFields() }),
             ("a sheet", AppKitRenderer.running {
-                ModalStack(State(wrappedValue: [1]).projectedValue) { Text("Under") } destination: { _ in TwoFields() }
+                Text("Under").sheet(isPresented: State(wrappedValue: true).projectedValue) { TwoFields() }
             }),
         ] {
             defer { renderer.closeForTesting() }
@@ -113,8 +113,8 @@ private struct Watching: View {
     var body: some View {
         VStack {
             TextField($name).aim(field).isFocused($editing)
-            Button("Focus").onClicked(gate: .ignoreWhileRunning) { try await field.focus() }
-            Button("Unfocus").onClicked(gate: .ignoreWhileRunning) { try await field.unfocus() }
+            Button("Focus").onClicked(.ignoreWhileRunning) { try await field.focus() }
+            Button("Unfocus").onClicked(.ignoreWhileRunning) { try await field.unfocus() }
             Text(editing ? "editing" : "idle")
         }
     }

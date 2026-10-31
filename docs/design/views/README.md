@@ -26,7 +26,7 @@ hangs off them, `Styles` the styles and `Inspector` the inspector.
 | [pages.md](pages.md) | application, scenes, windows, pages, the arrangements and their keys |
 | [styles.md](styles.md) | styles resolved before the patch, visual states, the sheet |
 | [measured-layouts.md](measured-layouts.md) | frame reports, bounded arithmetic and the gallery |
-| [layout-engine.md](layout-engine.md) | the layout engine: its element, its run of placements, its phase and the hand that moves it |
+| [motion-layout.md](motion-layout.md) | the motion layout: its element, its run of placements, its parameters and the hand that moves them |
 | [items.md](items.md) | the items view: identities in order, entries built when a cell asks, a source a build, the empty view |
 | [inspector.md](inspector.md) | the in-app inspector of renders |
 

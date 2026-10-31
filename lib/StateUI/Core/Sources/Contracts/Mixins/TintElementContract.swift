@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// A control's one accent colour.
+/// A control's one accent color.
 public enum TintElementContract: Contract {
     /// The tier's name.
     public static let name = "TintElement"
 
-    /// The colour the control's own marks are drawn in - a switch's track, a
+    /// The color the control's own marks are drawn in - a switch's track, a
     /// slider's filled part, a spinner.
     public static let tint = ElementProperty<Self, Color>("tint", layer: .adaptive)
 

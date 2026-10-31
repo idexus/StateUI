@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 /**
  * A tabbed view's tabs along the bottom: one button each, its picture over its
- * title, the chosen one in its own colour and selected, as TalkBack tells it. A
+ * title, the chosen one in its own color and selected, as TalkBack tells it. A
  * tap goes to the Swift view by its number.
  */
 final class StateUITabs extends LinearLayout implements View.OnClickListener {
@@ -28,7 +28,7 @@ final class StateUITabs extends LinearLayout implements View.OnClickListener {
     }
 
     /**
-     * The tabs, in order, the one chosen, the bar's colour (0 for Android's own) and the colours of a tab
+     * The tabs, in order, the one chosen, the bar's color (0 for Android's own) and the colors of a tab
      * and of the chosen one (0 for the text's own).
      */
     void setTabs(String[] titles, Bitmap[] pictures, int chosen, int background, int color, int chosenColor) {

@@ -11,6 +11,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-picker
 @MainActor
 final class AndroidPickerView: AndroidView {
+    /// The view's click is its own - its list's opening - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What the picker does when the user chooses an option, by its index.
     var onChosen: ((Int) -> Void)?
 
@@ -20,7 +23,7 @@ final class AndroidPickerView: AndroidView {
     /// What the picker does when its list closes.
     var onClosed: (() -> Void)?
 
-    /// The arrow's colour the picker was made with.
+    /// The arrow's color the picker was made with.
     private var madeTint: JavaObject??
 
     /// Who opened or closed the list - only the user's are heard - and whether it shows.
@@ -68,7 +71,8 @@ final class AndroidPickerView: AndroidView {
             let unit = look.scales ? ViewConstants.scaledPixels : ViewConstants.independentPixels
             Java.call(
                 reference, JavaAPI.setPickerLook, .float(Float(size ?? 0)), .int(unit),
-                .int(color.flatMap(Self.argb) ?? 0), .object(face), .int(ViewConstants.gravity(across: alignment)))
+                .int(color.flatMap(Self.argb) ?? 0), .object(face), .object(AndroidTypeface.features(look.attributes)),
+                .int(ViewConstants.gravity(across: alignment)))
         }
     }
 
@@ -78,7 +82,7 @@ final class AndroidPickerView: AndroidView {
         Java.call(reference, JavaAPI.openList)
     }
 
-    /// The arrow's colour; nil puts back the platform's.
+    /// The arrow's color; nil puts back the platform's.
     func setTint(_ color: HostValue?) {
         guard presentation == .menu else { return }
         if madeTint == nil {
@@ -95,6 +99,10 @@ final class AndroidPickerView: AndroidView {
     override func opened() {
         listShows = true
         if opening.heard(open: true) { onOpened?() }
+    }
+
+    override func chose(_ place: Int) {
+        onChosen?(place)
     }
 
     override func closed() {

@@ -9,18 +9,18 @@ import XCTest
 /// A question for the user answers as its buttons say, a prompt with the words typed, Escape as cancelling.
 @MainActor
 final class WebQuestionTests: XCTestCase {
-    private var told: [(Bool, String?)] = []
+    private var told: [HostQuestion.Given] = []
 
     /// Asks `question`, and answers with the dialog the page then shows, the question held the while - as its owner
     /// holds it until it is answered.
     private func ask(_ question: HostQuestion, _ answer: (Int32) -> Void) {
-        let asked = WebQuestion(question) { [unowned self] in told.append(($0, $1)) }
+        let asked = WebQuestion(question) { [unowned self] in told.append($0) }
         asked.show()
         withExtendedLifetime(asked) { answer(WebPage.children(of: WebRelay.body)[0]) }
     }
 
     private func question(_ act: Act, _ arguments: [HostValue]) -> HostQuestion {
-        HostQuestion(HostActCall(act: act, arguments: arguments, completion: nil))!
+        HostQuestion(HostActCall(act: act, arguments: [.string(""), .string("")] + arguments, completion: nil))!
     }
 
     /// The button named as accepting answers yes; the one cancelling, no.
@@ -32,7 +32,7 @@ final class WebQuestionTests: XCTestCase {
             XCTAssertEqual(buttons.map(WebPage.text), ["Keep", "Delete"])
             WebPage.tap(buttons[1])
         }
-        XCTAssertEqual(told.map(\.0), [true])
+        XCTAssertEqual(told.map(\.accepted), [true])
     }
 
     /// A prompt accepted answers with the words its field holds.
@@ -43,7 +43,7 @@ final class WebQuestionTests: XCTestCase {
             WebPage.enter("Paweł", into: parts[2])
             WebPage.tap(WebPage.children(of: parts[3])[1])
         }
-        XCTAssertEqual(told.map(\.1), ["Paweł"])
+        XCTAssertEqual(told.map(\.words), ["Paweł"])
     }
 
     /// A prompt's field holds its bound in characters, as a field of the tree does - however many units each is to
@@ -58,13 +58,28 @@ final class WebQuestionTests: XCTestCase {
             XCTAssertEqual(WebRelay.value(of: parts[2]), "😀😀😀")
             WebPage.tap(WebPage.children(of: parts[3])[1])
         }
-        XCTAssertEqual(told.map(\.1), ["😀😀😀"])
+        XCTAssertEqual(told.map(\.words), ["😀😀😀"])
     }
 
     /// Escape cancels a question that can be cancelled, and dismisses an alert.
     func testEscapeCancels() {
         ask(question(.confirm, [.string("Sure?")])) { WebPage.dismiss($0) }
         ask(question(.alert, [.string("Saved")])) { WebPage.dismiss($0) }
-        XCTAssertEqual(told.map(\.0), [false, true])
+        XCTAssertEqual(told.map(\.accepted), [false, true])
+    }
+
+    /// A choice's actions stand in order, the dangerous one marked, its cancel last; the action pressed answers its
+    /// place, and Escape nothing.
+    func testAChoiceAnswersThePlaceOfTheActionPressed() {
+        let choose = question(.chooseAction, [.string("Share via"), ["Mail", "Delete"].propValue, .number(1), .string("Back")])
+        ask(choose) { dialog in
+            let buttons = WebPage.children(of: WebPage.children(of: dialog).last!)
+            XCTAssertEqual(buttons.map(WebPage.text), ["Mail", "Delete", "Back"])
+            XCTAssertEqual(WebPage.attribute(of: buttons[1], "data-role"), "destructive")
+            WebPage.tap(buttons[1])
+        }
+        ask(choose) { WebPage.dismiss($0) }
+        XCTAssertEqual(told.map(\.chosen), [1, nil])
+        XCTAssertEqual(told.map(\.accepted), [true, false])
     }
 }

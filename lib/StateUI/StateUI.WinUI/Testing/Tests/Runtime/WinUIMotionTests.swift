@@ -18,7 +18,7 @@ private struct CutPage: View {
             VStack { Text("cut") }
                 .width(40)
                 .height(40)
-                .background(Color("#FF0000"))
+                .background(Color(hex: 0xFF0000))
                 .clipsContent(true)
                 .horizontalAlignment(.start)
                 .translationX(moved ? 50 : 0)
@@ -33,7 +33,7 @@ private struct CutPage: View {
 final class WinUIMotionTests: XCTestCase {
     /// A rectangle whose fill and width change under a motion stands halfway at half its time, and lands - the
     /// Gallery's Motion sample: what travels is the host layer's list.
-    func testAColourAndAWidthTravelHalfwayAndLand() throws {
+    func testAColorAndAWidthTravelHalfwayAndLand() throws {
         try onUIThread {
             let clock = TestClock()
             let wide = State(wrappedValue: false)
@@ -120,7 +120,7 @@ final class WinUIMotionTests: XCTestCase {
             let host = WinUIRenderer.running {
                 VStack {
                     Slider(level.projectedValue)
-                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Go").onClicked(.ignoreWhileRunning) {
                         try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(100), .linear)).arrived()
                         arrived.wrappedValue = true
                     }
@@ -150,7 +150,7 @@ final class WinUIMotionTests: XCTestCase {
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
                     Slider(level.projectedValue)
-                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Go").onClicked(.ignoreWhileRunning) {
                         try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), .linear)).arrived()
                         arrived.wrappedValue = true
                     }
@@ -177,7 +177,7 @@ final class WinUIMotionTests: XCTestCase {
                     Text(arrived.wrappedValue ? "arrived" : "away")
                     Slider(level.projectedValue)
                     Slider(level.projectedValue)
-                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Go").onClicked(.ignoreWhileRunning) {
                         try await level.projectedValue.journey.move(to: 1, .eased(.milliseconds(200), .linear)).arrived()
                         arrived.wrappedValue = true
                     }
@@ -235,7 +235,7 @@ final class WinUIMotionTests: XCTestCase {
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
                     Text("moving").translationX(offset.projectedValue)
-                    Button("Go").onClicked(gate: .ignoreWhileRunning) {
+                    Button("Go").onClicked(.ignoreWhileRunning) {
                         try await offset.projectedValue.journey.move(to: 100, .eased(.milliseconds(200), .linear)).arrived()
                     }
                 }

@@ -180,7 +180,7 @@ newcomer its predecessor's state.
 The walk stops at a `Binding` (the storage is its lender's), at an aim the view
 was handed (its parent's), at a `Node` (built interface), at an `Equatable`
 value that owns no state (compared whole - one that does is read part by
-part, [below](#a-type-learnt-once)) and at any class (a reference keeps
+part, [below](#a-type-learned-once)) and at any class (a reference keeps
 itself alive).
 
 ### A path is a number
@@ -196,7 +196,7 @@ state whose storage has no name yet - its first build, not its rebuilds - and
 an inspector for the reason a view was built. A state's name is the path
 tidied (`BuildScope.readable`): `._count` is `count`.
 
-### A type learnt once
+### A type learned once
 
 What a value is to the walk - a box, a slot, a binding, a node, a value
 compared whole, an object, or parts a mirror opens - is a matter of its type,
@@ -210,13 +210,13 @@ toolchain the library is built with offers: the standard library's walk of a
 struct's fields by key paths is an interface Apple's SDKs do not ship, so a
 library calling it builds for no iPhone. A library view standing once an item
 of a layout and generic over what it holds names its parts itself
-(`WalkedView`: a layout engine's holder): a mirror of a generic type works
+(`WalkedView`: a motion layout's holder): a mirror of a generic type works
 its fields' types out at every reading. A view held in an optional is named
 on the optional's part (`.header.some(StateUI.Text)`), never on the optional
 itself, whose value says what it holds: the paths stand the same whatever
 value of a type the process met first. A type that is `Equatable` is compared
 whole unless a value of it holds a state, a binding, an environment value or
-an aim of its own (`ownsState`, learnt with its kind): its author's equality
+an aim of its own (`ownsState`, learned with its kind): its author's equality
 cannot pair those with a predecessor's, so such a view is read part by part
 however it compares, and an author's `Equatable` only speeds up a view that
 owns none.
@@ -293,6 +293,45 @@ as the parent wrote last time, counted on the kept placeholder, because the
 names are compared and the counts are not. The placeholder is kept fresh for the same
 reason, so a later clean walk that builds the view from it runs the newest
 inputs.
+
+## A view's anchor
+
+A view that keeps no node of its own - a composed view, a `Group`, an
+`if/else` a builder made, an `AnyView` - stands for what it builds, and what
+it builds may be one branch or another: a flip replaces that root. What is
+written on such a view to outlive a branch stands on the view's anchor
+instead - an element of no view of its own, made by the first modifier
+writing any of:
+
+```text
+  .onChanged                  the view watches while it stands
+  .onCreated, .onDestroying   the view comes and goes, not its branch
+  .onHostEvent                heard while the view stands
+  .sheet, .popover            presented by the view: a flip closes nothing
+```
+
+The anchor holds the view - its placeholder, or the branch it chose - as its
+first child, the sheet and the popover beside it, and a flip replaces that
+child alone. It takes the environments provided on the view, so what it
+presents sees them, and the identity written on a composed view; a branch's
+own identity stays the branch's. Every modifier written after it lands
+through it (`Node.writing`): what outlives a branch on the anchor, the rest -
+values, handlers, motion, engines, aims, readings, a context menu, what the
+view says of its page - on what it holds, so a look never waits on an element
+of no view. A composed view folds what is written on it onto its body's root
+the same way, through an anchor its body stands on (`Node.land`).
+
+An anchor is made only where the view's root may change, which its type tells
+(`Node.flips`): an `if/else`, an `AnyView`, a modifier or a composed view over
+one of them. A view whose body is a `VStack`, a control or a `Group` of one
+view keeps one root while it stands, and what is written on it lands on that
+root - no element is added where nothing could be lost. An optional `if` and a
+`ForEach` are content alone: no modifier is written on them.
+
+An anchor standing at a page's root is no view of the page: the view it holds
+is, and says what it says of the page through it. An anchor tells whether it
+builds an arrangement by what it holds. It comes in before what it holds, so
+`.onCreated` written on a view runs before its body's own.
 
 ## What a carry cannot see
 
@@ -385,6 +424,11 @@ first frame anyone sees is always the value itself. Nothing is written for a
 value with no half way (text, a flag, an enumeration member) or when the
 motion resolves to none.
 
+A value taken away - a visual state left, whose scale the control never
+stated - carries the same transition beside its clearing, by the value it was:
+the host knows where the property rests and travels it back there, as it
+traveled out from there ([standing values](../host/tree.md#standing-values)).
+
 A size somebody measures is never animated. Where an element reports its own
 frame, or the layout it stands in is measured, a size comes from a report, and
 animating it would lay the page out at sizes nobody chose, growing from
@@ -423,6 +467,10 @@ render; nothing about it crosses to the host. Its rules:
                                      never answer for each other
   a different count starts over      a watch under an `if` shifts every slot
   a slot of another type starts over it changed hands
+  a composed view's watch stays      written on the view, it stands on the
+                                     view's anchor while the view stands -
+                                     whichever branch its body shows; a
+                                     `Group` is such a view, in place
   handlers run after the walk        a write mid-walk would be cleared
 ```
 
@@ -462,7 +510,7 @@ whenever it changed, an emptied set included: an element that stops tying a
 property has to say so. A registration names the state rather than its number,
 which is issued later; it carries the conversion the state is the derived side
 of, if it is one, which the differ arms engines for on the element wearing it,
-and which of the view's values it is - the property's group, plus a colour's.
+and which of the view's values it is - the property's group, plus a color's.
 
 What `.inherited` means for a driven value can be answered only here: the host
 knows what the application says, while an element's motion plan answers per

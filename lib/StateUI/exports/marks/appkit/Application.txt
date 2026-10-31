@@ -1,7 +1,8 @@
-# revision 5.1
+# revision 12.1
 Application: ✅
 Application.alert: ✓ read a question: the captions the host keeps, not the alert's buttons
 Application.announce: ✓ read what the screen reader said: the host's own list of what it announced
+Application.cancelCall: ✅
 Application.chooseAction: ✓ read a question: the captions the host keeps, not the alert's buttons
 Application.confirm: ✓ read a question: the captions the host keeps, not the alert's buttons
 Application.currentTime: ✅
@@ -14,7 +15,12 @@ Application.openFiles: ✓ read a file dialog: the host's own panel, held unshow
 Application.persistSceneValue: ✅
 Application.persistValue: ✅
 Application.prompt: ✓ read a question: the captions the host keeps, not the alert's buttons
+Application.readClipboard: ✅
 Application.readFile: ✓ read a file dialog: the host's own panel, held unshown
 Application.saveFile: ✓ read a file dialog: the host's own panel, held unshown
+Application.sendRequest: ✅
+Application.share: ✓ read a share sheet: the host's own picker, held unshown
+Application.useAccentColor: – The user's accent stands on the Mac: StateUI does not override it with the application's.
 Application.useColorScheme: ✅
 Application.utcOffset: ✅
+Application.writeClipboard: ✅

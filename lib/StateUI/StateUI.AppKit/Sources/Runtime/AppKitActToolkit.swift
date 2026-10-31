@@ -49,17 +49,20 @@ final class AppKitActToolkit: ActToolkit {
         return zone.secondsFromGMT(for: date) / 60
     }
 
-    /// Asks in AppKit's alert, a sheet on the window the user is looking at.
+    /// Asks in AppKit's alert, a sheet on the window asked over.
     /// Design: docs/design/host/runtime.md#questions-for-the-user
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = renderer.userWindow, let element = renderer.element(of: window) else { return nil }
+        guard let window = renderer.window(asked: window), let element = renderer.element(of: window) else {
+            return nil
+        }
         let asked = AppKitQuestion(question, in: window)
         showing = asked
-        asked.ask(presenting: renderer.presentsWindows) { [weak self] accepted, words in
+        asked.ask(presenting: renderer.presentsWindows) { [weak self] given in
             self?.showing = nil
-            answered(.success(HostQuestion.Given(accepted: accepted, words: words)))
+            answered(.success(given))
         }
         return element
     }
@@ -72,6 +75,37 @@ final class AppKitActToolkit: ActToolkit {
             userInfo: [.announcement: words, .priority: NSAccessibilityPriorityLevel.high.rawValue])
     }
 
+    /// The share sheet showing now, where one does.
+    private(set) var sharing: AppKitShareSheet?
+
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        guard let window = renderer.window(asked: window), let element = renderer.element(of: window),
+              let view = window.contentView
+        else { return nil }
+        let sheet = AppKitShareSheet(shared)
+        sharing = sheet
+        sheet.offer(over: view, presenting: renderer.presentsWindows) { [weak self] done in
+            self?.sharing = nil
+            answered(done)
+        }
+        return element
+    }
+
+    /// The pasteboard the clipboard's acts write and read: the system's general one - a test's own, of its own
+    /// name, where it gives one.
+    var pasteboard = NSPasteboard.general
+
+    func writeClipboard(_ words: String) {
+        pasteboard.clearContents()
+        pasteboard.setString(words, forType: .string)
+    }
+
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        answered(.success(pasteboard.string(forType: .string)))
+    }
+
     /// Shows every window in `theme`: AppKit's application appearance, none for the system's.
     func useColorScheme(_ theme: ColorScheme) {
         NSApplication.shared.appearance = switch theme {
@@ -81,9 +115,12 @@ final class AppKitActToolkit: ActToolkit {
         }
     }
 
-    /// Takes the focus off whatever holds it in the window the user is looking at; whether anything did.
-    func hideOnScreenKeyboard() -> Bool {
-        guard let window = renderer.userWindow,
+    /// Keeps the accent the user chose for the Mac: AppKit draws its controls in it.
+    func useAccentColor(_ accent: Color?) -> Bool { false }
+
+    /// Takes the focus off whatever holds it in the window asked; whether anything did.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        guard let window = renderer.window(asked: window),
               let holder = window.firstResponder as? NSView,
               holder !== window.contentView
         else { return false }
@@ -128,8 +165,11 @@ final class AppKitActToolkit: ActToolkit {
                     to: call.arguments.value(1)?.string ?? "",
                     anchor: call.arguments.value(2).flatMap(ScrollAnchor.init(propValue:)) ?? .nearest)
             case (.moveToRegion, let map as MapKitView):
-                let number = { call.arguments.value($0)?.number ?? 0 }
-                map.show(MapRegion(latitude: number(1), longitude: number(2), radiusMeters: number(3)), sliding: true)
+                guard let region = call.arguments.value(1).flatMap(MapRegion.init(propValue:)) else {
+                    core.fail(call, "moveToRegion was given no region", log: { AppKitRenderer.log.error($0) })
+                    return true
+                }
+                map.show(region, sliding: true)
             case (.goBack, let web as WebKitView), (.goForward, let web as WebKitView), (.reload, let web as WebKitView),
                 (.evaluateJavaScript, let web as WebKitView):
                 web.perform(call, through: core)

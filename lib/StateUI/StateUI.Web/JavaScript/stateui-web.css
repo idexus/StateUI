@@ -34,7 +34,10 @@
 
 /* The words stand at the sizes the page gives them: a phone's browser enlarges none it finds in a wide block. */
 html, body { margin: 0; height: 100%; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-/* The page wears its window's colour under it where the window is one opaque colour (--stateui-page). */
+/* The page itself holds still under a finger: the window stands over the browser's, and a document pulled past its
+   end bounces back - in a browser and as an application on the home screen alike - taking the next tap to stop it. */
+html, body { overscroll-behavior: none; }
+/* The page wears its window's color under it where the window is one opaque color (--stateui-page). */
 body {
   background: var(--stateui-page, var(--stateui-surface));
   color: var(--stateui-text);
@@ -44,6 +47,8 @@ body {
   text-rendering: optimizeLegibility;
 }
 *, *::before, *::after { box-sizing: border-box; }
+/* A button is pressed, never read: a finger held on one selects none of its words, nor offers their callout. */
+button { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
 /* The width the layout gives a view is its own: a child does not take it. */
 @property --stateui-width { syntax: "*"; inherits: false; }
 [hidden] { display: none !important; }
@@ -86,6 +91,70 @@ body {
 .stateui-loading-bar:indeterminate::-moz-progress-bar { background: transparent; }
 @keyframes stateui-sweep { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 
+/* What stands over the window on each edge - a phone's status bar, notch and home indicator: the window's bar reaches
+   under the top, and each page keeps clear of what is left, as its content says (pages.md#the-safe-area). */
+:root {
+  --stateui-over-top: env(safe-area-inset-top, 0px);
+  --stateui-over-left: env(safe-area-inset-left, 0px);
+  --stateui-over-bottom: env(safe-area-inset-bottom, 0px);
+  --stateui-over-right: env(safe-area-inset-right, 0px);
+}
+/* The window's bar is a material over the top of its room, as the platforms' glass bars are: the room runs under it,
+   its depth the top of the room's safe area, so a page's rows scroll under it where the page says so. */
+.stateui-window > .stateui-bar {
+  grid-row: 1;
+  grid-column: 1;
+  height: calc(var(--stateui-bar-height) + var(--stateui-over-top));
+  padding: var(--stateui-over-top) calc(12px + var(--stateui-over-right)) 0 calc(12px + var(--stateui-over-left));
+}
+.stateui-window:has(> .stateui-bar:not([hidden])) > :is(.stateui-room, .stateui-overlays) {
+  --stateui-over-top: calc(var(--stateui-bar-height) + env(safe-area-inset-top, 0px));
+}
+/* What a page stands its content clear of is nothing more to what stands in it - but its bottom bar, over the foot of
+   the page's whole room, which stands on what stands under the room. */
+[data-pads~="top"] > :not(.stateui-bottom-bar) { --stateui-over-top: 0px; }
+[data-pads~="left"] > :not(.stateui-bottom-bar) { --stateui-over-left: 0px; }
+[data-pads~="bottom"] > :not(.stateui-bottom-bar) { --stateui-over-bottom: 0px; }
+[data-pads~="right"] > :not(.stateui-bottom-bar) { --stateui-over-right: 0px; }
+/* A page's bottom bar over the foot of its room, as the window's bar is over its top: the page stands clear of it, its
+   rows scrolling under it where the page says so. It stands on the page while nothing passes under it, and on a blur
+   while the rows do, a line along it where the edge is hard (data-under, data-edge, layout.md#a-bar-at-the-foot). */
+.stateui-bottom-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 5;
+  display: grid;
+  padding: 0 var(--stateui-over-right) var(--stateui-over-bottom) var(--stateui-over-left);
+}
+.stateui-bottom-bar[hidden] { display: none; }
+.stateui-bottom-bar[data-under]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* The page's own hue over the blur in BottomBarPlace.tint's share. */
+  background: color-mix(in srgb, var(--stateui-page, var(--stateui-surface)) 50%, transparent);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+}
+/* A hard edge draws a line along the top. */
+.stateui-bottom-bar[data-under][data-edge="hard"]::before { border-top: 0.5px solid var(--stateui-separator); }
+/* A page's bar at its foot (.toolbar(.bottom)), under its view: its groups at either edge, in the window's bar's
+   buttons. */
+.stateui-bottom-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 12px;
+  color: var(--stateui-text);
+}
+.stateui-bottom-toolbar[hidden] { display: none; }
+
 /* The window: its bar over the room its pages stand in. */
 .stateui-window {
   position: fixed;
@@ -93,10 +162,13 @@ body {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
 }
-.stateui-room { grid-row: 2; grid-column: 1; display: grid; min-height: 0; min-width: 0; position: relative; }
-.stateui-overlays { grid-row: 2; grid-column: 1; z-index: 20; min-height: 0; min-width: 0; }
+.stateui-room { grid-row: 1 / 3; grid-column: 1; display: grid; min-height: 0; min-width: 0; position: relative; }
+.stateui-overlays {
+  grid-row: 1 / 3; grid-column: 1; z-index: 20; min-height: 0; min-width: 0;
+  padding: var(--stateui-over-top) var(--stateui-over-right) var(--stateui-over-bottom) var(--stateui-over-left);
+}
 
-/* The bar: what leads it, the page's title centred, the trailing actions. */
+/* The bar: what leads it, the page's title centered, the trailing actions. */
 .stateui-bar {
   position: relative;
   z-index: 10;
@@ -111,33 +183,69 @@ body {
   backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
   -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
 }
-.stateui-bar-lead, .stateui-bar-side, .stateui-bar-start { display: flex; align-items: center; gap: 10px; min-width: 0; }
+/* A clear bar stands on what is under it while nothing of the page is, and on a blur in the page's hue while the
+   page's rows pass under it - the bottom bar's automatic edge (data-under, layout.md#a-bar-at-the-top); a hard edge
+   adds a line along its foot, and none shows the rows as they are (data-edge). */
+.stateui-bar[data-clear][data-under]:not([data-edge="none"])::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--stateui-page, var(--stateui-surface)) 50%, transparent);
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+}
+.stateui-bar[data-clear][data-under][data-edge="hard"]::before { border-bottom: 0.5px solid var(--stateui-separator); }
+/* The room between the bar's parts, its own buttons and its groups: the application's (toolbarSpacing), else these. */
+.stateui-bar-lead, .stateui-bar-side, .stateui-bar-start {
+  display: flex; align-items: center; gap: var(--stateui-bar-spacing, 10px); min-width: 0;
+}
 .stateui-bar:not([data-sidebar]) .stateui-bar-title[data-repeats] { display: none; }
 /* A view a page declares in place of its title stands where the title would, at its own size. */
 .stateui-bar-title[data-holds-view] { display: grid; justify-items: center; overflow: visible; font-weight: inherit; font-size: inherit; }
 .stateui-bar-brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+/* The application's mark before its name: as tall as the name and the line under it, as wide as its picture is at
+   that height - its own size held for no room. */
+.stateui-bar-brand > [data-part="mark"] { flex: none; height: 32px; width: auto; contain: none; }
 .stateui-bar-name { font-weight: 650; font-size: 17px; letter-spacing: -0.01em; white-space: nowrap; }
 .stateui-bar-subtitle { font-size: 12.5px; opacity: 0.72; white-space: nowrap; }
 .stateui-bar-heading { display: flex; flex-direction: column; min-width: 0; }
 .stateui-bar-title {
   grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
   font-weight: 600;
   font-size: 17px;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
+.stateui-bar-words, .stateui-bar-line { overflow: hidden; text-overflow: ellipsis; }
+.stateui-bar-line { font-weight: 400; font-size: 12.5px; opacity: 0.72; }
 .stateui-bar > .stateui-bar-actions { grid-column: 3; justify-self: end; }
+/* A bar whose actions crowd its title in the middle: the title takes the room they leave, its words in the middle
+   of it - hidden where less is left than a few letters - and the actions that still do not fit stand behind More. */
+.stateui-bar[data-crowded] { grid-template-columns: auto minmax(0, 1fr) auto; }
+.stateui-bar[data-crowded] .stateui-bar-title { text-align: center; }
+.stateui-bar-title[data-squeezed] { visibility: hidden; }
 
-/* With a split view, five columns whose widths move with its sidebar: the part over the sidebar - the toggle alone
-   while the sidebar is hidden - what leads the detail, the title, the trailing actions, and a last part as wide as
-   the first while the sidebar is hidden and none beside it shown, so the title stands centred over the detail
-   beside a sidebar shown and over the whole bar else. */
+/* With a split view, five columns: the part over the sidebar - the toggle alone while the sidebar is hidden - what
+   leads the detail, the title, the trailing actions, and a last part as wide as the first while the sidebar is
+   hidden and none beside it shown, so the title stands centered over the detail beside a sidebar shown and over the
+   whole bar else. The first and last widths move as the sidebar does (`data-moves`); the columns between follow
+   them, and change at once as the actions crowd the title or stop (pages.md#a-bar-with-no-room). */
+@property --stateui-bar-first { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@property --stateui-bar-last { syntax: "<length>"; inherits: false; initial-value: 0px; }
 .stateui-bar[data-sidebar] {
-  grid-template-columns: var(--stateui-bar-side) minmax(0, 1fr) auto minmax(0, 1fr) var(--stateui-bar-side);
+  --stateui-bar-first: var(--stateui-bar-side);
+  --stateui-bar-last: var(--stateui-bar-side);
+  grid-template-columns: var(--stateui-bar-first) minmax(0, 1fr) auto minmax(0, 1fr) var(--stateui-bar-last);
   column-gap: 0;
   padding: 0;
-  transition: grid-template-columns var(--stateui-slide);
+}
+.stateui-bar[data-sidebar][data-moves] {
+  transition: --stateui-bar-first var(--stateui-slide), --stateui-bar-last var(--stateui-slide);
 }
 .stateui-bar[data-sidebar] .stateui-bar-lead { display: contents; }
 .stateui-bar[data-sidebar] .stateui-bar-side {
@@ -155,27 +263,63 @@ body {
   pointer-events: none;
   transition: opacity 0.15s ease, visibility 0s linear 0.15s;
 }
-.stateui-bar[data-sidebar] .stateui-bar-start { transition: padding var(--stateui-slide); }
+/* The sidebar's part's actions: its start's at its leading edge, its end's before its toggle. */
+.stateui-bar-side > .stateui-bar-actions[data-edge="start"] { margin-inline-end: auto; }
+.stateui-bar[data-sidebar][data-moves] .stateui-bar-start { transition: padding var(--stateui-slide); }
 .stateui-bar[data-sidebar] .stateui-bar-title { grid-column: 3; padding-inline: 10px; }
 .stateui-bar[data-sidebar] > .stateui-bar-actions { grid-column: 4 / 6; margin-inline-end: 12px; }
-@media (min-width: 900px) {
-  .stateui-bar[data-sidebar="shown"] {
-    grid-template-columns: var(--stateui-sidebar-width) minmax(0, 1fr) auto minmax(0, 1fr) 0px;
+.stateui-bar[data-sidebar][data-crowded] { grid-template-columns: var(--stateui-bar-first) auto minmax(0, 1fr) auto 0px; }
+/* Over a drawer the part over the sidebar is as wide as what it holds. */
+@media (max-width: 899.98px) {
+  .stateui-bar[data-sidebar="shown"][data-side-acts] {
+    grid-template-columns: minmax(var(--stateui-bar-first), max-content) minmax(0, 1fr) auto minmax(0, 1fr) var(--stateui-bar-last);
   }
+  .stateui-bar[data-sidebar="shown"][data-side-acts][data-crowded] {
+    grid-template-columns: minmax(var(--stateui-bar-first), max-content) auto minmax(0, 1fr) auto 0px;
+  }
+}
+@media (min-width: 900px) {
+  .stateui-bar[data-sidebar="shown"] { --stateui-bar-first: var(--stateui-sidebar-width); --stateui-bar-last: 0px; }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-brand { opacity: 1; visibility: visible; transition: opacity 0.3s ease 0.1s; }
-  /* Over a sidebar beside the page the bar stands on the sidebar's ground: one column, the bar and the sidebar. */
-  .stateui-bar[data-sidebar="shown"] .stateui-bar-side {
+  /* Over a sidebar beside the page the bar stands on the sidebar's ground: one column, the bar and the sidebar - a
+     bar of its own material painting it, a clear one standing on the sidebar under it, its edge over the sidebar's
+     page while that page's rows pass under it, the page's edge beside it. */
+  .stateui-bar[data-sidebar="shown"]:not([data-clear]) .stateui-bar-side {
     background: var(--stateui-sidebar-ground, var(--stateui-sidebar-own));
     border-inline-end: 0.5px solid var(--stateui-separator);
     backdrop-filter: var(--stateui-sidebar-filter, none);
     -webkit-backdrop-filter: var(--stateui-sidebar-filter, none);
   }
+  .stateui-bar[data-sidebar="shown"][data-clear][data-under]::before { inset-inline-start: var(--stateui-sidebar-width); }
+  .stateui-bar[data-sidebar="shown"][data-clear][data-side-under]:not([data-edge="none"]) .stateui-bar-side::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline: 0 0.5px;
+    z-index: -1;
+    pointer-events: none;
+    background: color-mix(in srgb, var(--stateui-page, var(--stateui-surface)) 50%, transparent);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  }
+  .stateui-bar[data-sidebar="shown"][data-clear][data-side-under][data-edge="hard"] .stateui-bar-side::before {
+    border-bottom: 0.5px solid var(--stateui-separator);
+  }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-start { padding-inline-start: 10px; }
+  /* The part over the sidebar stands its name at its start, in line with the icons of the rows under it - 20 from
+     the edge, past the part's own 12 - giving way before its actions and its toggle. */
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-brand {
+    position: static;
+    flex: 1 1 auto;
+    justify-content: flex-start;
+    padding-inline-start: 8px;
+  }
+  .stateui-bar[data-sidebar="shown"] .stateui-bar-name { overflow: hidden; text-overflow: ellipsis; }
   .stateui-bar[data-sidebar="shown"] .stateui-bar-title[data-repeats] { visibility: hidden; }
 }
 
 /* Its buttons: round and glassy, each on its own, an action group's sharing one capsule. */
-.stateui-bar button {
+:is(.stateui-bar, .stateui-bottom-toolbar) button {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -189,18 +333,21 @@ body {
   box-shadow: var(--stateui-glass-edge);
   color: inherit;
   font: inherit;
-  font-size: 15px;
+  /* The user's own text size scales them, as it does every word the page shows. */
+  font-size: 0.9375rem;
   font-weight: 550;
   white-space: nowrap;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
-.stateui-bar {
-  --stateui-glass: color-mix(in srgb, currentColor 13%, transparent);
+:is(.stateui-bar, .stateui-bottom-toolbar) {
+  /* Light, a breath over a grouped list's ground; dark, a step clearer. */
+  --stateui-glass: light-dark(color-mix(in srgb, currentColor 7%, transparent),
+    color-mix(in srgb, currentColor 13%, transparent));
   --stateui-glass-edge: inset 0 0.5px 0 color-mix(in srgb, white 28%, transparent), 0 1px 4px rgb(0 0 0 / 0.08);
 }
 /* The actions at an edge of the bar: each group of them together on a glass of its own, apart from the next. */
-.stateui-bar-actions { display: flex; align-items: center; gap: 8px; min-width: 0; }
+.stateui-bar-actions { display: flex; align-items: center; gap: var(--stateui-bar-spacing, 8px); min-width: 0; }
 .stateui-bar-group, .stateui-bar-actions > button {
   display: flex;
   align-items: center;
@@ -210,12 +357,59 @@ body {
   box-shadow: var(--stateui-glass-edge);
 }
 .stateui-bar-actions:not(:has(> :not([hidden]))) { display: none; }
+/* Words on a bar stand on the bar itself, small and quieter than its actions; a group of words alone draws no glass. */
+.stateui-bar-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  font-size: 0.8125rem;
+  color: color-mix(in srgb, currentColor 62%, transparent);
+  white-space: nowrap;
+}
+.stateui-bar-label img { width: 16px; height: 16px; }
+.stateui-bar-group:not(:has(> :not(.stateui-bar-label))) { background: transparent; box-shadow: none; }
 .stateui-bar-group button { background: transparent; box-shadow: none; }
-.stateui-bar button:hover { background: color-mix(in srgb, currentColor 20%, transparent); }
-.stateui-bar button:active { background: color-mix(in srgb, currentColor 27%, transparent); }
-.stateui-bar button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
-.stateui-bar button:disabled { opacity: 0.4; cursor: default; }
-.stateui-bar button img { width: 22px; height: 22px; }
+/* Lit under a pointer that hovers - a finger hovers nowhere, and a browser keeps the button it tapped hovered - and
+   pressed, where it can be chosen; `:where` keeps a setting standing on its tint under the pointer. */
+@media (hover: hover) {
+  :is(.stateui-bar, .stateui-bottom-toolbar) button:hover:where(:not(:disabled)) {
+    background: light-dark(color-mix(in srgb, currentColor 14%, transparent),
+      color-mix(in srgb, currentColor 20%, transparent));
+  }
+}
+:is(.stateui-bar, .stateui-bottom-toolbar) button:active:where(:not(:disabled)) {
+  background: light-dark(color-mix(in srgb, currentColor 21%, transparent),
+    color-mix(in srgb, currentColor 27%, transparent));
+}
+:is(.stateui-bar, .stateui-bottom-toolbar) button:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
+:is(.stateui-bar, .stateui-bottom-toolbar) button:disabled { opacity: 0.4; cursor: default; }
+/* A setting on the bar standing on: tinted in the accent, as a two-state button pressed. */
+:is(.stateui-bar, .stateui-bottom-toolbar) button[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--stateui-accent) 24%, transparent);
+  color: var(--stateui-accent);
+}
+:is(.stateui-bar, .stateui-bottom-toolbar) button img { width: 22px; height: 22px; }
+/* Plain buttons: no background at rest, one under the pointer - the Web's own look for a bar's buttons. */
+.stateui-bar[data-toolbar-style="plain"] :is(button, .stateui-bar-group, .stateui-bar-actions > button) {
+  background: transparent;
+  box-shadow: none;
+  border-radius: 6px;
+}
+@media (hover: hover) {
+  .stateui-bar[data-toolbar-style="plain"] button:hover:where(:not(:disabled)) {
+    background: color-mix(in srgb, currentColor 10%, transparent);
+  }
+}
+.stateui-bar[data-toolbar-style="plain"] button:active:where(:not(:disabled)) {
+  background: color-mix(in srgb, currentColor 16%, transparent);
+}
+/* Rounded buttons: a flat rounded rectangle behind each, a group of them sharing one. */
+.stateui-bar[data-toolbar-style="rounded"] :is(button, .stateui-bar-group, .stateui-bar-actions > button) {
+  border-radius: 8px;
+  box-shadow: none;
+}
+.stateui-bar[data-toolbar-style] button:focus-visible { box-shadow: var(--stateui-focus); }
 .stateui-glyph {
   display: block;
   width: 22px;
@@ -225,17 +419,17 @@ body {
   mask: var(--stateui-glyph) center / contain no-repeat;
 }
 .stateui-glyph[data-glyph="sidebar"] {
-  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='M9 4v16'/%3E%3C/svg%3E");
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.6' stroke-linecap='round'%3E%3Crect x='3' y='4' width='18' height='16' rx='3'/%3E%3Cpath d='M9 4v16'/%3E%3C/svg%3E");
 }
 .stateui-glyph[data-glyph="back"] {
-  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 5l-7 7 7 7'/%3E%3C/svg%3E");
 }
 [dir="rtl"] .stateui-glyph[data-glyph="back"] { transform: scaleX(-1); }
 .stateui-glyph[data-glyph="more"] {
   --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black'%3E%3Ccircle cx='5' cy='12' r='1.9'/%3E%3Ccircle cx='12' cy='12' r='1.9'/%3E%3Ccircle cx='19' cy='12' r='1.9'/%3E%3C/svg%3E");
 }
 .stateui-glyph[data-glyph="close"] {
-  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
+  --stateui-glyph: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='1.8' stroke-linecap='round'%3E%3Cpath d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
 }
 
 /* A menu: a popover over everything, an entry a row, a submenu its own popover beside it. */
@@ -271,7 +465,10 @@ body {
   text-align: start;
   cursor: pointer;
 }
-.stateui-menu > button:hover:not(:disabled), .stateui-menu > button:focus-visible { background: var(--stateui-raised); outline: none; }
+@media (hover: hover) {
+  .stateui-menu > button:hover:not(:disabled) { background: var(--stateui-raised); outline: none; }
+}
+.stateui-menu > button:focus-visible { background: var(--stateui-raised); outline: none; }
 .stateui-menu > button:disabled { opacity: 0.45; cursor: default; }
 .stateui-menu > button[data-destructive] { color: #d92d20; }
 .stateui-menu > button[aria-haspopup]::after { content: "›"; margin-inline-start: auto; opacity: 0.6; }
@@ -280,6 +477,31 @@ body {
 .stateui-menu > [role="menuitemcheckbox"]::before { content: ""; width: 1em; text-align: center; }
 .stateui-menu > [role="menuitemcheckbox"][aria-checked="true"]::before { content: "✓"; }
 .stateui-menu > [role="separator"] { height: 1px; margin: 5px 6px; background: var(--stateui-line); }
+
+/* A view whose menu a held finger opens: the hold is the menu's, not a choice of the view's words nor the browser's
+   callout. */
+[data-holds-menu], [data-holds] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+
+/* A popover: the document's own, under its anchor over everything, a card on the page's raised surface; its
+   layout's grid shows only while it is open. As tall as what it holds: WebKit stretches the browser's own
+   fit-content height to the max-height. */
+.stateui-popover {
+  position: fixed;
+  inset: auto;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow: auto;
+  border: 1px solid var(--stateui-line);
+  border-radius: 12px;
+  background: var(--stateui-surface);
+  color: var(--stateui-text);
+  box-shadow: var(--stateui-raised-shadow);
+}
+.stateui-popover:not(:popover-open) { display: none !important; }
+.stateui-popover:popover-open { animation: stateui-fade-in 0.12s ease; }
 
 /* A sheet: the browser's modal dialog, a card in the middle over a shade, from the bottom where the page is narrow;
    its bar the page's chrome, the page under it. */
@@ -294,12 +516,38 @@ body {
   color: var(--stateui-text);
   box-shadow: var(--stateui-raised-shadow);
 }
-.stateui-sheet[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); animation: stateui-rise 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
+/* The bar over the room, the room taking what the bar leaves: a column, as WebKit stretches a modal dialog laid out
+   as a grid over the window, whatever height it asks. */
+.stateui-sheet[open] { display: flex; flex-direction: column; animation: stateui-rise 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); }
 .stateui-sheet::backdrop { background: var(--stateui-shade); animation: stateui-fade-in 0.2s ease; }
-.stateui-sheet > .stateui-bar { border-radius: 0; }
-.stateui-sheet-room { display: grid; min-height: 0; min-width: 0; position: relative; }
+/* Its bar over the top of its room, as the window's is: the room runs under it, its depth the top of the room's safe
+   area, so a page's rows scroll under it where the page says so. */
+.stateui-sheet > .stateui-bar { border-radius: 0; position: absolute; top: 0; left: 0; right: 0; }
+.stateui-sheet:has(> .stateui-bar:not([hidden])) > .stateui-sheet-room { --stateui-over-top: var(--stateui-bar-height); }
+.stateui-sheet-room { display: grid; flex: 1 1 auto; min-height: 0; min-width: 0; position: relative; }
+/* A page asking a size of its own stands as large as it is, within the dialog's room: its height the content's, as
+   WebKit stretches a modal dialog of no height of its own over the window. */
+.stateui-sheet[data-fits] {
+  width: fit-content;
+  min-width: min(320px, calc(100vw - 32px));
+  max-width: min(560px, calc(100vw - 32px));
+  height: fit-content;
+  min-height: 180px;
+  max-height: calc(100dvh - 64px);
+}
+/* A card in the middle stands clear of what stands over the window; a phone's sheet from the bottom keeps the bottom
+   and the sides. */
+.stateui-sheet { --stateui-over-top: 0px; --stateui-over-left: 0px; --stateui-over-bottom: 0px; --stateui-over-right: 0px; }
 @media (max-width: 600px) {
-  .stateui-sheet { width: 100vw; max-width: 100vw; height: calc(100dvh - 48px); margin: auto 0 0; border-radius: 16px 16px 0 0; }
+  .stateui-sheet {
+    --stateui-over-left: env(safe-area-inset-left, 0px);
+    --stateui-over-bottom: env(safe-area-inset-bottom, 0px);
+    --stateui-over-right: env(safe-area-inset-right, 0px);
+  }
+  .stateui-sheet, .stateui-sheet[data-fits] {
+    width: 100vw; min-width: 0; max-width: 100vw; height: calc(100dvh - 48px); min-height: 0; max-height: none;
+    margin: auto 0 0; border-radius: 16px 16px 0 0;
+  }
 }
 @keyframes stateui-rise { from { transform: translateY(24px); opacity: 0; } }
 
@@ -379,9 +627,9 @@ body {
     z-index: 30;
     width: min(86vw, var(--stateui-sidebar-width));
     visibility: visible;
-    background: var(--stateui-flyout-ground, var(--stateui-raised));
-    backdrop-filter: var(--stateui-flyout-filter, none);
-    -webkit-backdrop-filter: var(--stateui-flyout-filter, none);
+    background: var(--stateui-sidebar-overlay-layer, var(--stateui-sidebar-overlay-ground, var(--stateui-raised)));
+    backdrop-filter: var(--stateui-sidebar-overlay-filter, none);
+    -webkit-backdrop-filter: var(--stateui-sidebar-overlay-filter, none);
     border-inline-end: 1px solid var(--stateui-separator);
     box-shadow: var(--stateui-raised-shadow);
     transform: translateX(-104%);
@@ -423,8 +671,8 @@ body {
 .stateui-frame > iframe { position: absolute; inset: 0; display: block; width: 100%; height: 100%; border: 0; }
 .stateui-color-box { display: grid; }
 
-/* A divider in a stack: the document's rule, one line thick both ways - the stack stretches it across. */
-.stateui-divider { margin: 0; border: 0; min-width: 1px; min-height: 1px; background: var(--stateui-line-strong); }
+/* A separator in a stack: the document's rule, one line thick both ways - the stack stretches it across. */
+.stateui-separator { margin: 0; border: 0; min-width: 1px; min-height: 1px; background: var(--stateui-line-strong); }
 
 /* A canvas: its drawing on a surface filling the room its layout gives it, the surface taking no room of its own. */
 .stateui-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; touch-action: none; }
@@ -432,6 +680,10 @@ body {
 
 /* A tabbed view: the strip of its tabs' names over the one cell its pages share, the chosen one shown. */
 .stateui-tabs { display: grid; grid-template-rows: auto minmax(0, 1fr); min-height: 0; min-width: 0; }
+/* The row of tabs stands under what stands over the top of the tabs - the window's bar - and the pages under it clear
+   of nothing at their top. */
+.stateui-tabs > .stateui-tab-strip { margin-top: var(--stateui-over-top); }
+.stateui-tabs > :not(.stateui-tab-strip) { --stateui-over-top: 0px; }
 /* The strip scrolls across alone: its line is drawn inside it, so nothing stands below to scroll down to. */
 .stateui-tabs > .stateui-tab-strip {
   display: flex;
@@ -442,13 +694,13 @@ body {
   touch-action: pan-x;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
-  /* The strip wears the bars' colour on its path, the window bar's look where none is said. */
+  /* The strip wears the bars' color on its path, the window bar's look where none is said. */
   background: var(--stateui-bar-background, color-mix(in srgb, var(--stateui-surface) 82%, transparent));
   backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
   -webkit-backdrop-filter: var(--stateui-bar-filter, saturate(180%) blur(18px));
   box-shadow: inset 0 -1px 0 var(--stateui-line);
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button {
   min-height: 44px;
   padding: 0 14px;
   border: 0;
@@ -460,10 +712,12 @@ body {
   white-space: nowrap;
   filter: none;
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button { display: inline-flex; align-items: center; gap: 6px; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button > img { width: 18px; height: 18px; contain: none; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button:hover { color: var(--stateui-text); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button { display: inline-flex; align-items: center; gap: 6px; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button > img { width: 18px; height: 18px; contain: none; }
+@media (hover: hover) {
+  :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button:hover { color: var(--stateui-text); }
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-tab-strip > button[aria-selected="true"] { color: var(--stateui-accent); border-bottom-color: var(--stateui-accent); }
 /* A covered tab is laid out unseen, so a page sized by its own frame knows it before it shows. */
 .stateui-tab-pages > [data-covered] { visibility: hidden !important; overflow: clip; }
 .stateui-stack > [data-arriving] { animation: stateui-arrive 0.22s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -480,7 +734,7 @@ body {
 .stateui-scroller[data-bars="never"]::-webkit-scrollbar { display: none; }
 
 /* Controls, where the application gives them no look of their own. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button {
   font: inherit;
   font-weight: 550;
   min-height: 36px;
@@ -492,19 +746,25 @@ body {
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
-/* A button's role: the main action in the accent, a destructive one in the colour a question's has. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-button[data-role="primary"] {
+/* A button's role: the main action in the accent, a destructive one in the color a question's has. */
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-button[data-role="primary"] {
   background: var(--stateui-accent); border-color: transparent; color: white;
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-button[data-role="destructive"] { color: #d92d20; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-button[data-role="destructive"] { color: #d92d20; }
 /* A button's picture stands beside its words, the two in its middle; alone, it fills the button. */
 .stateui-button { display: inline-flex; align-items: center; justify-content: center; }
 .stateui-button > span { min-width: 0; }
 .stateui-button > img { contain: none; }
 .stateui-button[data-alone] > span { display: none; }
 .stateui-button[data-alone] > img { width: 100%; height: 100%; }
-/* A button opening its menu says so, as a menu button does. */
-.stateui-button[data-menu="opens"]:not([data-bare])::after { content: "▾"; margin-inline-start: 6px; }
+/* A link in the color the page's theme gives links, underlined as a link is. */
+.stateui-link { color: LinkText; text-decoration: underline; cursor: pointer; }
+.stateui-link[aria-disabled="true"] { color: GrayText; cursor: default; }
+/* A button opening its menu says so, as a menu button does - a bar's too. */
+:is(.stateui-button, :is(.stateui-bar, .stateui-bottom-toolbar) button)[data-menu="opens"]:not([data-bare])::after {
+  content: "▾";
+  margin-inline-start: 6px;
+}
 .stateui-split-arrow {
   align-self: stretch;
   display: flex;
@@ -514,10 +774,12 @@ body {
   border-inline-start: 1px solid color-mix(in srgb, currentColor 35%, transparent);
 }
 .stateui-split-arrow::before { content: "▾"; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button:active { filter: brightness(0.92); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) button:disabled { opacity: 0.45; cursor: default; filter: none; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input:not([type="checkbox"], [type="radio"], [type="range"]), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) textarea, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) select {
+@media (hover: hover) {
+  :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:hover { filter: brightness(0.97); border-color: color-mix(in srgb, currentColor 30%, transparent); }
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:active { filter: brightness(0.92); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) button:disabled { opacity: 0.45; cursor: default; filter: none; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input:not([type="checkbox"], [type="radio"], [type="range"]), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) select {
   font: inherit;
   min-height: 38px;
   padding: 8px 12px;
@@ -528,15 +790,21 @@ body {
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 /* A field is as wide as its words or its placeholder, not twenty characters. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-field { field-sizing: content; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input::placeholder, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-field { field-sizing: content; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input::placeholder, :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea::placeholder { color: var(--stateui-placeholder, var(--stateui-muted)); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea { min-height: 88px; line-height: 1.45; resize: vertical; }
+/* An editor given a ground of its own stands in it with no frame, focused or not: the platforms' editors draw none. */
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea[data-ground],
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea[data-ground]:focus-visible {
+  border-color: transparent;
+  box-shadow: none;
+}
 /* An editor growing with its words is as tall as they are, from one line. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) textarea[data-grows] { min-height: 0; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) textarea[data-grows] { min-height: 0; }
 /* A select's and a search field's padding - 12 and 34 points either side - yields to a narrower room the layout gives
    it (--stateui-width), each side in its share, so the field stands as wide as its room. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) :is(select, input[type="search"]) { --stateui-field-room: calc(var(--stateui-width, 100vw) - 2px); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="search"] {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) :is(select, input[type="search"]) { --stateui-field-room: calc(var(--stateui-width, 100vw) - 2px); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="search"] {
   padding-inline-start: min(34px, calc(var(--stateui-field-room) * 0.7391));
   padding-inline-end: min(12px, calc(var(--stateui-field-room) * 0.2609));
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='6.5'/%3E%3Cpath d='M16 16l4 4'/%3E%3C/svg%3E");
@@ -544,16 +812,16 @@ body {
   background-position: 11px center;
   background-size: 16px;
 }
-[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="search"] { background-position: right 11px center; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) :is(button, input, textarea, select):focus-visible {
+[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="search"] { background-position: right 11px center; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) :is(button, input, textarea, select):focus-visible {
   outline: none;
   border-color: var(--stateui-accent);
   box-shadow: var(--stateui-focus);
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) :is(input[type="checkbox"], input[type="radio"], input[type="range"], progress) { accent-color: var(--stateui-accent); }
 /* A bar of work done, a ring while work goes on, a radio button with its caption, a choice from a list. */
 .stateui-progress { display: grid; align-items: center; min-width: 80px; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) progress {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) progress {
   appearance: none;
   -webkit-appearance: none;
   width: 100%;
@@ -564,9 +832,9 @@ body {
   background: var(--stateui-line-strong);
   color: var(--stateui-on, var(--stateui-accent));
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) progress::-webkit-progress-bar { background: var(--stateui-line-strong); border-radius: 999px; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) progress::-webkit-progress-value { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; transition: width 0.2s ease; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) progress::-moz-progress-bar { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) progress::-webkit-progress-bar { background: var(--stateui-line-strong); border-radius: 999px; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) progress::-webkit-progress-value { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; transition: width 0.2s ease; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) progress::-moz-progress-bar { background: var(--stateui-on, var(--stateui-accent)); border-radius: 999px; }
 .stateui-activity {
   width: 22px;
   height: 22px;
@@ -581,31 +849,62 @@ body {
 .stateui-toggle, .stateui-indicator { display: inline-grid; place-items: center; }
 .stateui-toggle { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .stateui-toggle[aria-disabled] { cursor: default; }
-.stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
-.stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
+/* A toggle's words beside it: a switch's at its start and the switch at the end, a box's after the box. */
+.stateui-toggle > span:empty { display: none; }
+.stateui-toggle[data-words] { display: inline-flex; align-items: center; gap: 8px; user-select: none; -webkit-user-select: none; }
+.stateui-toggle[data-words] > span { flex: 1; min-width: 0; }
+.stateui-toggle[aria-disabled] > span { opacity: 0.45; }
 /* A picker's segments: a row of buttons in one rounded frame, the one chosen in the accent; its radio buttons, a
    column. */
-.stateui-segments { display: inline-flex; border: 1px solid var(--stateui-line-strong); border-radius: 8px; overflow: hidden; }
-.stateui-segment { appearance: none; border: 0; margin: 0; padding: 6px 14px; background: transparent; color: inherit; font: inherit; cursor: pointer; }
-.stateui-segment + .stateui-segment { border-inline-start: 1px solid var(--stateui-line-strong); }
-.stateui-segment[aria-checked="true"] { background: var(--stateui-accent); color: #ffffff; }
-.stateui-segment:disabled { opacity: 0.45; cursor: default; }
+/* Segments: one frame, rounded at its ends, split by lines - each segment a part of it, sharing the room it is
+   given, none a button of its own look (the room's rule for a button stands under these). */
+.stateui-segments {
+  display: inline-flex;
+  border: 1px solid var(--stateui-line-strong);
+  border-radius: var(--stateui-radius);
+  overflow: hidden;
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-segment {
+  appearance: none;
+  flex: 1 1 0;
+  min-height: 32px;
+  margin: 0;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-segment + .stateui-segment {
+  border-inline-start: 1px solid var(--stateui-line-strong);
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-segment[aria-checked="true"] {
+  background: var(--stateui-accent);
+  color: #ffffff;
+}
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-segment:disabled { opacity: 0.45; cursor: default; }
 .stateui-radios { display: inline-flex; flex-direction: column; gap: 6px; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) select {
+.stateui-radio { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.stateui-radio[aria-disabled] { opacity: 0.45; cursor: default; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) select {
   appearance: none;
   -webkit-appearance: none;
   padding-inline-start: min(12px, calc(var(--stateui-field-room) * 0.2609));
   padding-inline-end: min(34px, calc(var(--stateui-field-room) * 0.7391));
   cursor: pointer;
+  /* A picker's menu lets what lies behind it through, lit a breath, as the platforms' pickers do. */
+  background-color: light-dark(rgb(0 0 0 / 0.05), rgb(255 255 255 / 0.08));
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
   background-size: 16px;
 }
-[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) select { background-position: left 10px center; }
+[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) select { background-position: left 10px center; }
 
 /* A switch drawn as one, a slider across its room, a stepper's field between its buttons. */
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch {
   appearance: none;
   -webkit-appearance: none;
   position: relative;
@@ -618,7 +917,7 @@ body {
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch::before {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch::before {
   content: "";
   position: absolute;
   top: 3px;
@@ -630,12 +929,16 @@ body {
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.3);
   transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch:checked { background: var(--stateui-on, var(--stateui-accent)); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch:checked::before { transform: translateX(18px); }
-[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch:checked::before { transform: translateX(-18px); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input.stateui-switch:disabled { opacity: 0.45; cursor: default; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="checkbox"]:not(.stateui-switch), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="radio"] { width: 18px; height: 18px; margin: 0; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) input[type="range"] { min-width: 120px; margin: 0; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch:checked { background: var(--stateui-on, var(--stateui-accent)); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch:checked::before { transform: translateX(18px); }
+[dir="rtl"] :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch:checked::before { transform: translateX(-18px); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input.stateui-switch:disabled { opacity: 0.45; cursor: default; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="checkbox"]:not(.stateui-switch), :is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="radio"] { width: 18px; height: 18px; margin: 0; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="range"] { min-width: 120px; margin: 0; }
+/* A color well takes the room its place gives, the browser's own well its least: the browser sizes it fixed. */
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) input[type="color"] {
+  inline-size: auto; block-size: auto; min-inline-size: 50px; min-block-size: 27px; margin: 0;
+}
 .stateui-stepper {
   display: inline-flex;
   align-items: stretch;
@@ -644,7 +947,7 @@ body {
   overflow: hidden;
   background: var(--stateui-surface);
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-stepper button {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-stepper button {
   min-width: 38px;
   padding: 0 10px;
   border: 0;
@@ -652,7 +955,7 @@ body {
   font-size: 18px;
   line-height: 1;
 }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-stepper input {
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-stepper input {
   width: 76px;
   border: 0;
   border-inline: 1px solid var(--stateui-line);
@@ -662,11 +965,11 @@ body {
   -moz-appearance: textfield;
 }
 .stateui-stepper input::-webkit-inner-spin-button, .stateui-stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-stepper:focus-within { border-color: var(--stateui-accent); box-shadow: var(--stateui-focus); }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) .stateui-stepper :focus-visible { box-shadow: none; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-stepper:focus-within { border-color: var(--stateui-accent); box-shadow: var(--stateui-focus); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) .stateui-stepper :focus-visible { box-shadow: none; }
 
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) [data-taps] { cursor: pointer; user-select: none; -webkit-user-select: none; }
-:is(.stateui-room, .stateui-sheet-room, .stateui-overlays) [data-taps]:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) [data-taps] { cursor: pointer; user-select: none; -webkit-user-select: none; }
+:is(.stateui-room, .stateui-sheet-room, .stateui-overlays, .stateui-popover) [data-taps]:focus-visible { outline: none; box-shadow: var(--stateui-focus); }
 [data-lets-through] { pointer-events: none; }
 [data-lets-through] > :not([data-lets-through]) { pointer-events: auto; }
 
@@ -676,6 +979,8 @@ body {
 /* A shape: its drawing on a surface over the room its layout gives it, the surface taking no room of its own. */
 .stateui-shape { position: relative; min-width: 0; min-height: 0; }
 .stateui-shape > svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
+/* A figure made of a blur: the page's blur under its color, cut to the figure by a mask of its path. */
+.stateui-shape > .stateui-shape-backdrop { position: absolute; inset: 0; }
 
 .stateui-unsupported {
   align-self: start;
@@ -696,7 +1001,7 @@ body {
 .stateui-announcer { position: fixed; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
 /* A control answers every tap: a second one soon after the first is its own, never the page's zoom. */
-:is(.stateui-window, .stateui-sheet, .stateui-question, .stateui-menu) :is(button, input, select, textarea, label, [data-taps]) {
+:is(.stateui-window, .stateui-sheet, .stateui-popover, .stateui-question, .stateui-menu) :is(button, input, select, textarea, label, [data-taps]) {
   touch-action: manipulation;
 }
 
@@ -704,7 +1009,8 @@ body {
   .stateui-sidebar, .stateui-split, .stateui-bar, .stateui-bar *, .stateui-stack > [data-arriving],
   .stateui-stack > [data-returning], .stateui-scrim,
   .stateui-loading, .stateui-loading-bar, .stateui-loading-bar::-webkit-progress-value, progress::-webkit-progress-value,
-  .stateui-switch::before, .stateui-sheet, .stateui-sheet::backdrop, .stateui-question, .stateui-menu {
+  .stateui-switch::before, .stateui-sheet, .stateui-sheet::backdrop, .stateui-question, .stateui-menu,
+  .stateui-popover {
     transition: none !important;
     animation: none !important;
   }

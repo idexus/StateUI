@@ -1,0 +1,4 @@
+# revision 2.1
+Button.showsText: ✅
+ToolbarButton.showsText: ✅
+ToolbarToggle.showsText: ✅

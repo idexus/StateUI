@@ -19,7 +19,7 @@ final class Direct3DCube3DControl: WinUIControl {
         didSet { if cubeSize != oldValue { tell() } }
     }
 
-    /// Which colour it is painted.
+    /// Which color it is painted.
     var color = CubeColor.teal {
         didSet { if color != oldValue { tell() } }
     }

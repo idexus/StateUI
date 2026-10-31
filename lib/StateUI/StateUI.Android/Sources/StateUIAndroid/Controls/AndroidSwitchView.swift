@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// A Switch: an `android.widget.Switch`.
+/// A Switch: an `android.widget.Switch`, its words at its start and its thumb at its end.
 @MainActor
 final class AndroidSwitchView: AndroidToggleView {
     init() {

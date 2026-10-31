@@ -72,17 +72,17 @@ final class DescribedMotionTests: XCTestCase {
         XCTAssertFalse(described.isActive)
     }
 
-    /// `background` is one property whichever it carries: two colours on it
-    /// move as colours, and a colour never blends into a brush.
+    /// `background` is one property whichever it carries: two colors on it
+    /// move as colors, and a color never blends into a brush.
     @MainActor
-    func testAColourBackgroundMovesAsAColourAndSnapsToABrush() {
+    func testAColorBackgroundMovesAsAColorAndSnapsToABrush() {
         let animator = Animator()
         let described = DescribedMotion(animator: animator)
-        let colour = DescribedKey(mount: 1, property: .background)
+        let color = DescribedKey(mount: 1, property: .background)
         let black = HostValue.color(red: 0, green: 0, blue: 0, alpha: 255)
 
         described.receive(
-            key: colour,
+            key: color,
             standing: black,
             target: .color(red: 255, green: 255, blue: 255, alpha: 255),
             motion: .eased(.milliseconds(200), .linear),
@@ -126,7 +126,7 @@ final class DescribedMotionTests: XCTestCase {
 
         XCTAssertEqual(described.presentedValue(for: key), .number(0.5), "it bends from where it stands")
         let bent = try XCTUnwrap(animator.animation(for: .described(key)))
-        XCTAssertEqual(bent.velocity[0], 0.005, accuracy: 1e-9, "at the speed it had")
+        XCTAssertEqual(bent.velocity[0], 5, accuracy: 1e-9, "at the speed it had, per second")
         XCTAssertEqual(firstEnded, 1, "the animation cut short ends there")
         XCTAssertEqual(secondEnded, 0)
 

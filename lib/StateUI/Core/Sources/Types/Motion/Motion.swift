@@ -20,35 +20,48 @@
 ///
 /// Design: docs/design/types/motion.md#two-laws
 public struct Motion: Equatable, Sendable {
-    /// Which timing law a motion follows.
-    public enum Law: Int32, Sendable {
-        /// A stated duration on a stated curve.
-        case eased = 0
+    /// What a motion is, each kind with only its own numbers.
+    /// Design: docs/design/types/motion.md#two-laws
+    @_spi(Host) public enum Kind: Equatable, Sendable {
+        /// The element's motion, else the application's, else `standard`.
+        case inherited
 
-        /// A mass on a spring - no duration, only a response.
-        case spring = 1
+        /// No animation.
+        case none
+
+        /// An engine of the application's animates the value.
+        case custom
+
+        /// A stated duration, in milliseconds, on a stated curve.
+        case eased(milliseconds: UInt32, curve: Easing)
+
+        /// A spring's response, in milliseconds, and its damping.
+        case spring(milliseconds: UInt32, damping: Double)
+
+        /// A glide setting out at the value's speed, in milliseconds the longest it takes.
+        case glide(milliseconds: UInt32)
     }
 
-    /// The timing law this motion follows.
-    public let law: Law
+    /// What this motion is.
+    @_spi(Host) public let kind: Kind
 
-    /// Milliseconds: how long an eased motion takes, or a spring's response -
-    /// `length` as a host reads it.
-    @_spi(Host) public let milliseconds: UInt32
+    /// An eased motion's length or a spring's response, in milliseconds; nought for a motion the host does not
+    /// time.
+    @_spi(Host) public var milliseconds: UInt32 {
+        switch kind {
+        case .eased(let milliseconds, _), .spring(let milliseconds, _), .glide(let milliseconds): milliseconds
+        case .inherited, .none, .custom: 0
+        }
+    }
 
-    /// The curve an eased motion follows.
-    public let curve: Easing
-
-    /// A spring's damping; 0 for an eased motion.
-    public let factor: Double
-
-    /// Whether this motion is the one its element resolves to rather than one
-    /// of its own.
-    public let isInherited: Bool
-
-    /// Whether an application engine animates the value instead of the host;
-    /// see `custom`.
-    public let isCustom: Bool
+    /// Whether the host animates a change under this motion: an eased or a spring one - never `none`, an engine's
+    /// own, or the inherited one before it is resolved.
+    @_spi(Host) public var animates: Bool {
+        switch kind {
+        case .eased, .spring, .glide: true
+        case .inherited, .none, .custom: false
+        }
+    }
 
     /// The motion the element resolves to: its own, else the application's,
     /// else `standard`.
@@ -56,12 +69,10 @@ public struct Motion: Equatable, Sendable {
     /// What a write means when it names no motion, so a plain assignment and
     /// `move(to:)` agree about the motion and differ only in `move(to:)`
     /// answering an `Arrival` whose `arrived()` waits.
-    public static let inherited = Motion(
-        law: .eased, milliseconds: 0, curve: .cubicOut, factor: 0, isInherited: true, isCustom: false)
+    public static let inherited = Motion(kind: .inherited)
 
     /// No animation: the change is applied at once.
-    public static let none = Motion(
-        law: .eased, milliseconds: 0, curve: .cubicOut, factor: 0, isInherited: false, isCustom: false)
+    public static let none = Motion(kind: .none)
 
     /// The animation is yours: a write moves only the destination, the host
     /// animates nothing, and an engine of your own writes where the value is
@@ -91,11 +102,7 @@ public struct Motion: Equatable, Sendable {
     /// host.
     ///
     /// Design: docs/design/types/motion.md#custom-animates-in-an-engine
-    public static let custom = Motion(
-        law: .eased, milliseconds: 0, curve: .cubicOut, factor: 0, isInherited: false, isCustom: true)
-
-    /// How long an eased motion takes, or how quickly a spring answers.
-    public var length: Duration { .milliseconds(Int(milliseconds)) }
+    public static let custom = Motion(kind: .custom)
 
     /// An animation of a stated duration on a stated curve.
     ///
@@ -103,7 +110,7 @@ public struct Motion: Equatable, Sendable {
     ///
     /// It takes the stated time whatever the distance: right for something
     /// whose distance is known, such as a fade, a page sliding in, or a card
-    /// turning over.
+    /// turning over. One that takes no time is `none`.
     ///
     /// - Parameters:
     ///   - length: how long it takes, to the millisecond.
@@ -111,13 +118,30 @@ public struct Motion: Equatable, Sendable {
     ///     what almost everything on screen wants.
     /// - Returns: the motion.
     public static func eased(_ length: Duration, _ curve: Easing = .cubicOut) -> Motion {
-        Motion(
-            law: .eased,
-            milliseconds: Motion.milliseconds(of: length),
-            curve: curve,
-            factor: 0,
-            isInherited: false,
-            isCustom: false)
+        let milliseconds = Motion.milliseconds(of: length)
+
+        return milliseconds == 0 ? .none : Motion(kind: .eased(milliseconds: milliseconds, curve: curve))
+    }
+
+    /// A glide: the value sets out at the speed it has and slows onto its
+    /// destination, as long as that speed takes to get there - what a value
+    /// thrown by the hand goes on with.
+    ///
+    ///     $offset.journey.velocity = pan.velocityX
+    ///     $offset.journey.move(to: 0, .glide(longest: .milliseconds(800)))
+    ///
+    /// It always lands where it is sent, never sooner than 80 milliseconds nor
+    /// later than `longest`; a value standing still, or going the other way,
+    /// takes half of `longest`. Where a throw alone would carry the value is
+    /// `journey.reach(.glide(longest:))`.
+    ///
+    /// - Parameter longest: the longest it may take, to the millisecond.
+    /// - Returns: the motion.
+    /// Design: docs/design/types/motion.md#a-glide
+    public static func glide(longest: Duration) -> Motion {
+        let milliseconds = Motion.milliseconds(of: longest)
+
+        return milliseconds == 0 ? .none : Motion(kind: .glide(milliseconds: milliseconds))
     }
 
     /// A mass on a spring, which answers a change rather than timing it.
@@ -133,26 +157,18 @@ public struct Motion: Equatable, Sendable {
     ///   - response: how quickly it answers, to the millisecond. Smaller is
     ///     snappier.
     ///   - damping: 1 comes to rest without overshooting; below 1 overshoots
-    ///     and oscillates, which is rarely what a user expects.
+    ///     and oscillates, which is rarely what a user expects. A damping that
+    ///     is no number is 1.
     /// - Returns: the motion.
     public static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> Motion {
-        Motion(
-            law: .spring,
+        Motion(kind: .spring(
             milliseconds: max(Motion.milliseconds(of: response), 1),
-            curve: .linear,
-            factor: max(damping, 0.05),
-            isInherited: false,
-            isCustom: false)
-    }
-
-    /// Whether this motion animates nothing - the value simply arrives.
-    var isNothing: Bool {
-        !isInherited && !isCustom && law == .eased && milliseconds == 0
+            damping: damping.isFinite ? max(damping, 0.05) : 1))
     }
 
     /// This motion, or `fallback` where this is the inherited one.
     func resolved(against fallback: Motion) -> Motion {
-        isInherited ? fallback : self
+        kind == .inherited ? fallback : self
     }
 
     /// The default motion: 200 milliseconds on `.cubicOut`, for ordinary

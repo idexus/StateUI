@@ -58,6 +58,10 @@ class AndroidView {
 
     var reference: jobject { object.reference }
 
+    /// The view its parent holds, places, shows and moves: the view itself, or the one it stands in - a list in its
+    /// pull to refresh.
+    var outermost: jobject { reference }
+
     /// Hands each of `setters` one listener forwarding what the user does to this view, by its number.
     /// Design: docs/design/platforms/android/jni.md#global-references
     func listen(_ setters: jmethodID...) {
@@ -123,12 +127,12 @@ class AndroidView {
     // MARK: - What every view takes
 
     func setShown(_ shown: Bool) {
-        Java.call(reference, JavaAPI.setVisibility, .int(shown ? ViewConstants.visible : ViewConstants.gone))
+        Java.call(outermost, JavaAPI.setVisibility, .int(shown ? ViewConstants.visible : ViewConstants.gone))
     }
 
     /// Whether the view is shown rather than gone.
     var isShown: Bool {
-        Java.callInt(reference, JavaAPI.getVisibility) == ViewConstants.visible
+        Java.callInt(outermost, JavaAPI.getVisibility) == ViewConstants.visible
     }
 
     /// How opaque the view's own property draws it, with a placing layout's opacity over it; written only where
@@ -139,7 +143,7 @@ class AndroidView {
         guard alpha != written.alpha else { return }
 
         written.alpha = alpha
-        Java.call(reference, JavaAPI.setAlpha, .float(alpha))
+        Java.call(outermost, JavaAPI.setAlpha, .float(alpha))
     }
 
     /// How opaque the view's own property draws it.
@@ -168,19 +172,19 @@ class AndroidView {
         let drawn = own.under(placed)
         pivot = (drawn.pivotX, drawn.pivotY)
 
-        // A pivot off the centre is in pixels of the size the view was last placed at; at the centre, Android's own.
+        // A pivot off the center is in pixels of the size the view was last placed at; at the center, Android's own.
         let size = laidOut.map { (Double($0.right - $0.left), Double($0.bottom - $0.top)) } ?? (0, 0)
-        let centred = pivot == (0.5, 0.5)
+        let centered = pivot == (0.5, 0.5)
         let transform = Written.Transform(
             translationX: Float(drawn.translationX * density), translationY: Float(drawn.translationY * density),
             rotation: Float(drawn.rotation), rotationX: Float(drawn.rotationX), rotationY: Float(drawn.rotationY),
             scaleX: Float(drawn.scaleX), scaleY: Float(drawn.scaleY),
-            pivotX: centred ? nil : Float(pivot.x * size.0), pivotY: centred ? nil : Float(pivot.y * size.1))
+            pivotX: centered ? nil : Float(pivot.x * size.0), pivotY: centered ? nil : Float(pivot.y * size.1))
         guard transform != written.transform else { return }
 
         written.transform = transform
         Java.callStatic(
-            JavaAPI.views, JavaAPI.transformView, .object(reference),
+            JavaAPI.views, JavaAPI.transformView, .object(outermost),
             .float(transform.translationX), .float(transform.translationY), .float(transform.rotation),
             .float(transform.rotationX), .float(transform.rotationY), .float(transform.scaleX), .float(transform.scaleY),
             .float(transform.pivotX ?? .nan), .float(transform.pivotY ?? .nan))
@@ -215,7 +219,7 @@ class AndroidView {
         Java.frame { Java.call(reference, JavaAPI.setTooltipText, .object(text.flatMap(Java.string))) }
     }
 
-    /// The view's background: a colour, or a brush drawn over its bounds; nil puts back the platform's.
+    /// The view's background: a color, or a brush drawn over its bounds; nil puts back the platform's.
     func setBackground(_ value: HostValue?) {
         guard let value else { return showBackground(nil) }
 
@@ -229,7 +233,7 @@ class AndroidView {
         backgroundBrush = brush
     }
 
-    /// The brush the view's background draws, fitted to each size the view is placed at; nil for a colour or none.
+    /// The brush the view's background draws, fitted to each size the view is placed at; nil for a color or none.
     private var backgroundBrush: AndroidShapeDrawable?
 
     /// Shows `drawable` behind the view; nil puts back the background it was made with.
@@ -248,14 +252,16 @@ class AndroidView {
     /// The user opened the view's list, calendar or clock.
     func opened() {}
 
-    /// The view's list, calendar or clock closed.
+    /// The view's list, calendar, clock or popover closed.
     func closed() {}
 
     /// What assistive technology meets of the view: the name a test finds it by, the words read for it and the
-    /// hint after them - none leaves the view's own - whether it is a heading, and whether it, or it and its
+    /// hint after them, its kind and its value - none leaves the view's own - the actions a reader offers on it and
+    /// its steps where it is adjustable, told to `heard`, whether it is a heading, and whether it, or it and its
     /// children, are met at all: none, as the view is of itself.
     /// Design: docs/design/platforms/android/controls.md#what-assistive-technology-meets
-    func setAccessibility(_ words: AccessibilityWords) {
+    func setAccessibility(_ words: AccessibilityWords, heard: @escaping (HeardInput) -> Bool) {
+        readerHeard = heard
         let own = ownPresence ?? Java.callInt(reference, JavaAPI.getImportantForAccessibility)
         ownPresence = own
         // Android numbers a view's presence: met 1, hidden 2, hidden with everything in it 4.
@@ -267,9 +273,28 @@ class AndroidView {
         }
         Java.frame {
             Java.callStatic(
-                JavaAPI.views, JavaAPI.setAccessibility, .object(reference),
+                JavaAPI.views, JavaAPI.setAccessibility, .object(reference), .long(number),
                 .object(words.identifier.flatMap(Java.string)), .object(words.label.flatMap(Java.string)),
-                .object(words.hint.flatMap(Java.string)), .bool(words.headingLevel > 0), .int(presence))
+                .object(words.hint.flatMap(Java.string)),
+                .object(words.role.flatMap(Self.accessibilityClass).flatMap(Java.string)),
+                .object(words.value.flatMap(Java.string)), .object(Java.strings(words.actions)),
+                .bool(words.role == .adjustable), .bool(words.headingLevel > 0), .int(presence))
+        }
+    }
+
+    /// What a screen reader did to the view, told to its element; whether it took it.
+    private(set) var readerHeard: ((HeardInput) -> Bool)?
+
+    /// The class TalkBack says a kind by; nil for a link, which Android names no class for.
+    /// Design: docs/design/platforms/android/controls.md#what-assistive-technology-meets
+    static func accessibilityClass(_ role: AccessibilityRole) -> String? {
+        switch role {
+        case .button: "android.widget.Button"
+        case .toggle: "android.widget.ToggleButton"
+        case .adjustable: "android.widget.SeekBar"
+        case .link: nil
+        case .image: "android.widget.ImageView"
+        case .text: "android.widget.TextView"
         }
     }
 
@@ -277,14 +302,19 @@ class AndroidView {
     /// read before the element first says.
     private var ownPresence: Int32?
 
-    /// What the view does when the user taps it; nil where it takes no tap.
+    /// What the view does when its click comes from no touch - a screen reader's, the keyboard's - while it hears
+    /// taps; nil where it takes none. A touch's tap is its press, taken as a button takes one.
     private(set) var onTapped: (() -> Void)?
 
-    /// Makes the view answer a tap with `action`, or answer none for nil.
+    /// Whether the view's click is its own - a button's, a link's, a switch's turn - which a press on it leaves be; a
+    /// plain view's click is only its tap.
+    var ownsClick: Bool { false }
+
+    /// Makes the view answer a click that came from no touch with `action`, or answer none for nil.
     func setTapped(_ action: (() -> Void)?) {
         let listening = onTapped != nil
         onTapped = action
-        guard (action != nil) != listening, !(self is AndroidButtonView) else { return }
+        guard (action != nil) != listening, !ownsClick else { return }
 
         if action != nil {
             listen(JavaAPI.setOnClickListener)
@@ -299,16 +329,22 @@ class AndroidView {
         onTapped?()
     }
 
+    /// The user chose the entry at `place` among the view's own: a picker's row, a bar's own button.
+    func chose(_ place: Int) {}
+
     /// The user held the view down long - the one place deciding what that does: the view's own (a button's menu),
-    /// else its drag; whether it took it - else Android goes on to its context menu.
+    /// else its hold - a press held before it became a drag, by the host layer's rule - and its drag; whether it
+    /// took it - else Android goes on to its context menu.
     /// Design: docs/design/platforms/android/controls.md#a-long-press
     func longClicked() -> Bool {
-        startDrag()
+        let held = listening.hearing.contains(.holds) && press.held() && onHeard?(.hold) == true
+        return startDrag() || held
     }
 
-    /// Whether a long press is the view's to decide: it can be dragged, or - a button's menu - holds its own.
+    /// Whether a long press is the view's to decide: it is held, it can be dragged, or - a button's menu - holds its
+    /// own.
     var takesLongPress: Bool {
-        offered.words != nil
+        listening.hearing.contains(.holds) || offered.words != nil
     }
 
     /// Hands the view's one long-press listener on, or takes it back, as `takesLongPress` now says - a view that took
@@ -382,20 +418,23 @@ class AndroidView {
 
     /// Measures the view for the specs given; its size in pixels.
     func measure(width: Int32, height: Int32) -> (width: Int32, height: Int32) {
-        let size = Java.callStaticLong(JavaAPI.views, JavaAPI.measureView, .object(reference), .int(width), .int(height))
+        let size = Java.callStaticLong(JavaAPI.views, JavaAPI.measureView, .object(outermost), .int(width), .int(height))
         return (Int32(truncatingIfNeeded: size >> 32), Int32(truncatingIfNeeded: size))
     }
 
     /// Places the view at `place`, in points of its parent: measured there exactly and laid out, in one call.
     func layout(_ place: Rect) {
+        // Each edge outward to a whole pixel: never a pixel short of what the view measured, neighbors meeting.
+        // Design: docs/design/platforms/android/layout.md#points-and-pixels
         let frame = (
-            left: pixels(place.x), top: pixels(place.y),
-            right: pixels(place.x + place.width), bottom: pixels(place.y + place.height))
+            left: Int32((place.x * density).rounded(.down)), top: Int32((place.y * density).rounded(.down)),
+            right: Int32(((place.x + place.width) * density).rounded(.up)),
+            bottom: Int32(((place.y + place.height) * density).rounded(.up)))
         let resized = laidOut.map { $0.right - $0.left != frame.right - frame.left || $0.bottom - $0.top != frame.bottom - frame.top }
             ?? true
         laidOut = frame
         Java.callStatic(
-            JavaAPI.views, JavaAPI.placeView, .object(reference),
+            JavaAPI.views, JavaAPI.placeView, .object(outermost),
             .int(frame.left), .int(frame.top), .int(frame.right), .int(frame.bottom))
         if resized, pivot != (0.5, 0.5) { applyTransform() }
         if resized {
@@ -410,8 +449,14 @@ class AndroidView {
     /// Where the view's place travels (`PlacedView`); nothing of most views' follows it.
     func travels(to destination: Rect?) {}
 
-    /// The room the view's words stand in while its place travels; nil where they stand in its place.
-    var wordsRoom: Rect? { nil }
+    /// The size of new words the view holds back while its box grows to hold them (`PlacedView`), its former ones
+    /// shown; nil shows its own and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet { holdWords(heldWords != nil) }
+    }
+
+    /// Shows the words held back, or the view's own; most views hold none.
+    func holdWords(_ holding: Bool) {}
 
     /// The size the view was last placed at, in pixels; nil before its first place.
     var placedSize: (width: Int32, height: Int32)? {
@@ -429,10 +474,10 @@ class AndroidView {
         laidOut = nil
     }
 
-    /// Where the view's top left corner stands in its window, in points.
+    /// Where the view's top left corner stands in its window, in points - the view its parent holds.
     var cornerInWindow: Point {
         let window = Java.ints([0, 0])
-        Java.call(reference, JavaAPI.getLocationInWindow, .object(window))
+        Java.call(outermost, JavaAPI.getLocationInWindow, .object(window))
         var pixels: [Int32] = [0, 0]
         pixels.withUnsafeMutableBufferPointer { Java.jni.GetIntArrayRegion(Java.env, window, 0, 2, $0.baseAddress) }
         Java.release(local: window)
@@ -440,11 +485,18 @@ class AndroidView {
     }
 
     /// `points` in whole pixels.
+    /// Pads the view's own content clear of `clearance`, in points: a bar reaching under the system's bars.
+    func pad(_ clearance: Clearance) {
+        Java.call(
+            reference, JavaAPI.setPadding, .int(pixels(clearance.left)), .int(pixels(clearance.top)),
+            .int(pixels(clearance.right)), .int(pixels(clearance.bottom)))
+    }
+
     func pixels(_ points: Double) -> Int32 {
         Int32((points * density).rounded())
     }
 
-    /// A colour as Android's packed ARGB, the host layer's number as Java's `int`; nil for a value that is no colour.
+    /// A color as Android's packed ARGB, the host layer's number as Java's `int`; nil for a value that is no color.
     static func argb(_ value: HostValue) -> Int32? {
         value.argb.map { Int32(bitPattern: $0) }
     }
@@ -453,8 +505,8 @@ class AndroidView {
 extension AndroidView {
     /// Where Android has the view in its parent, in points, read from the view itself: what a frame report says.
     var standingFrame: Rect {
-        let (left, top) = (Java.callInt(reference, JavaAPI.getLeft), Java.callInt(reference, JavaAPI.getTop))
-        let (right, bottom) = (Java.callInt(reference, JavaAPI.getRight), Java.callInt(reference, JavaAPI.getBottom))
+        let (left, top) = (Java.callInt(outermost, JavaAPI.getLeft), Java.callInt(outermost, JavaAPI.getTop))
+        let (right, bottom) = (Java.callInt(outermost, JavaAPI.getRight), Java.callInt(outermost, JavaAPI.getBottom))
         return Rect(
             x: Double(left) / density, y: Double(top) / density,
             width: Double(right - left) / density, height: Double(bottom - top) / density)
@@ -463,7 +515,7 @@ extension AndroidView {
 
 extension AndroidView: PlacedView {
     /// Where the view stands in its parent, in points - where the host last laid it out, or else where Android
-    /// has it; set, it is measured and placed there, at its words' room while its place travels.
+    /// has it; set, it is measured and placed there.
     var placedFrame: Rect {
         get {
             let frame = laidOut ?? (
@@ -474,8 +526,7 @@ extension AndroidView: PlacedView {
                 width: Double(frame.right - frame.left) / density, height: Double(frame.bottom - frame.top) / density)
         }
         set {
-            let room = wordsRoom ?? newValue
-            layout(Rect(x: newValue.x, y: newValue.y, width: room.width, height: room.height))
+            layout(newValue)
         }
     }
 }

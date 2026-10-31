@@ -20,6 +20,16 @@ extension ScrollArithmetic {
         Point(x: min(max(target.x, 0), reach.x), y: min(max(target.y, 0), reach.y))
     }
 
+    /// Where a scroller standing at `offset` stands once what it reaches moves from `before` to `after` - its content
+    /// the same, its room or what it keeps clear moved: at its end still on each axis it stood at its end on, within
+    /// half a point, where it reached anything; nil where it stays where it is.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    public static func keptAtEnd(_ offset: Point, reach before: Point, now after: Point) -> Point? {
+        let atEnd = (x: before.x > 0 && offset.x >= before.x - 0.5, y: before.y > 0 && offset.y >= before.y - 0.5)
+        let kept = Point(x: atEnd.x ? after.x : offset.x, y: atEnd.y ? after.y : offset.y)
+        return differs(kept, offset) ? kept : nil
+    }
+
     /// Whether two offsets stand half a point or more apart on either axis.
     public static func differs(_ one: Point, _ other: Point) -> Bool {
         abs(one.x - other.x) >= 0.5 || abs(one.y - other.y) >= 0.5

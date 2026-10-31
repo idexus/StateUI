@@ -36,7 +36,7 @@ its handler starts, so the handler observes the new state. Programmatic writes
 do not dispatch user events.
 
 A handler may throw. One that awaits says what its event does when it comes
-again while it runs - `.onClicked(gate: .ignoreWhileRunning) { … }` - and continues on
+again while it runs - `.onClicked(.ignoreWhileRunning) { … }` - and continues on
 StateUI's UI isolation domain after each suspension. An uncaught error is
 reported through the host rather than being discarded.
 [Concurrency](concurrency.md#when-the-event-comes-again) defines the execution
@@ -50,7 +50,10 @@ half-configured recognizer remains in the tree.
 
 ### Tap and swipe
 
-```swift quote
+```swift
+enum Route: Hashable { case details, next }
+@State private var path: [Route] = []
+
 HStack {
     Text("Open details")
 }
@@ -63,32 +66,114 @@ HStack {
 }
 ```
 
-Use `onTapped(count:_:)` for a double or higher tap. A swipe
-handler receives one dominant `SwipeDirection`; the option set on the modifier
-defines which directions are recognized.
+A single tap is pressed as a button is, on every platform: the view is
+pressed while the finger or the pointer stands over it - out as it leaves, in
+again as it comes back - and taps where it lets go over the view; let go
+away, or taken by a scroll around it or the view's own drag, it taps nothing.
+A style shows the press with `.visualState(.pressed)`:
+
+```swift
+Style<ZStack>()
+    .visualState(.pressed) { $0.background(.lightGray) }
+```
+
+Use `onTapped(count:_:)` for a double or higher tap, which keeps the
+platform's own run of taps. A swipe handler receives one dominant
+`SwipeDirection`; the option set on the modifier defines which directions are
+recognized.
 
 A view that answers a tap is a button to assistive technology. The platform's
 accessibility press runs the same handler a tap runs, so a screen reader or an
 automation script activates the row without a pointer. Give such a view a
 `accessibilityLabel` so the button has a name.
 
-### Pan and pinch
+### Hold
 
-`PanUpdate` reports its phase and total displacement from the gesture's start.
-`PinchUpdate.scale` is relative to the previous report:
+```swift
+import StateUI
 
-```swift quote
+struct PhotoCard: View {
+    @State private var selected = false
+    @State private var showsActions = false
+
+    var body: some View {
+        VStack {
+            Text(selected ? "Selected" : "Hold to select")
+                .onTapped { selected = false }
+                .onHeld { selected = true }
+            Text("Hold a little longer for its actions")
+                .onHeld(minimum: .milliseconds(800)) { showsActions = true }
+        }
+        .padding(12)
+    }
+}
+```
+
+A hold answers once a press has stood still as long as the platform's long
+press, or as long as `onHeld(minimum:_:)` asks. A press held is the hold's:
+its release is no tap, and it drags nothing. A press the view drags first is
+no hold.
+
+Android and Windows keep the system's own time, whatever a view asks, and
+Windows tells a hold of a finger or a pen, not of a mouse button; on Android a
+control that takes its own press - a slider, a scroller, a list - is never
+held. The control dictionary says it member by member.
+
+### Pan, pinch and rotation
+
+A continuous gesture reports where it stands since it began: `PanUpdate` its
+phase and total displacement, `PinchUpdate.scale` how far the fingers have
+spread, and `RotationUpdate.angle` how far they have turned, in degrees
+clockwise. A handler keeps what it held when the gesture began and applies
+the gesture to that:
+
+```swift
 @State private var x = 0.0
 @State private var scale = 1.0
+@State private var scaled = 1.0
+@State private var angle = 0.0
+@State private var turned = 0.0
 
-Rectangle(.cornflowerBlue)
+Rectangle()
+    .fill(.cornflowerBlue)
     .translationX(x)
     .scale(scale)
+    .rotation(angle)
     .onPanUpdated { update in
         if update.phase == .changed { x = update.totalX }
     }
     .onPinchUpdated { update in
-        if update.phase == .changed { scale *= update.scale }
+        if update.phase == .began { scaled = scale }
+        scale = scaled * update.scale
+    }
+    .onRotationUpdated { update in
+        if update.phase == .began { turned = angle }
+        angle = turned + update.angle
+    }
+```
+
+Each report also says how fast the gesture goes, a second - `velocityX` and
+`velocityY` for a pan, `velocity` for a pinch's scale and a rotation's angle -
+nought as it begins and, at its end, as fast as it lifted, beside where it
+reached. Handing that to a state's journey lets the value go on at the hand's
+speed:
+
+```swift
+@State private var x = 0.0
+
+Rectangle()
+    .fill(.cornflowerBlue)
+    .translationX($x)
+    .onPanUpdated { update in
+        switch update.phase {
+        case .changed:
+            $x.journey.snap(to: update.totalX)
+        case .ended:
+            $x.journey.velocity = update.velocityX
+            $x.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+        default:
+            break
+        }
     }
 ```
 
@@ -106,7 +191,17 @@ pointer hover; application behavior must not depend on hover as its sole route.
 
 Text is the portable drag payload:
 
-```swift quote
+```swift
+struct Item {
+    let id: String
+    let title: String
+}
+
+let item = Item(id: "note-1", title: "Shopping")
+@State private var dragging: String? = nil
+@State private var highlighted = false
+func receive(_ text: String) {}
+
 Text(item.title)
     .draggable(text: item.id)
     .onDragEnded { dragging = nil }
@@ -126,9 +221,11 @@ Files dragged from the system - from a file manager, another application, the
 desktop - land on a view through `onDrop(files:)`, as `ChosenFile`s of the
 kinds it lists:
 
-```swift quote
+```swift
+@State private var report = ""
+
 ZStack { Text("Drop a report here") }
-    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], gate: .waitForPrevious) { files in
+    .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
         report = String(decoding: try await files[0].read(), as: UTF8.self)
     }
 ```
@@ -154,8 +251,8 @@ struct FocusForm: View {
     var body: some View {
         VStack {
             TextField($text).aim(field)
-            Button("Edit").onClicked(gate: .ignoreWhileRunning) { try await field.focus() }
-            Button("Done").onClicked(gate: .ignoreWhileRunning) { try await field.unfocus() }
+            Button("Edit").onClicked(.ignoreWhileRunning) { try await field.focus() }
+            Button("Done").onClicked(.ignoreWhileRunning) { try await field.unfocus() }
         }
     }
 }
@@ -172,16 +269,21 @@ add methods such as history navigation or map movement. `.id(...)` and `.aim(...
 together because they answer different questions: identity says which element
 continues, while the aim says where an action goes.
 
-`OnScreenKeyboard.hide()` dismisses whichever text input currently owns the on-screen
-keyboard when the application does not hold that control's aim.
+`window.hideOnScreenKeyboard()` dismisses whichever text input in the window
+owns the on-screen keyboard when the application does not hold that control's
+aim.
 
 ## Dialogs
 
-Dialogs are sequential host actions rather than tree nodes:
+Dialogs are sequential host actions rather than tree nodes, asked of the window
+a view stands in - the session it reads with `@Environment(\.window)`:
 
-```swift quote
-Button("Delete").onClicked(gate: .ignoreWhileRunning) {
-    let confirmed = try await Dialogs.confirm(
+```swift
+@Environment(\.window) private var window
+@State private var drafts = ["Plans"]
+
+Button("Delete").onClicked(.ignoreWhileRunning) {
+    let confirmed = try await window.confirm(
         "Delete draft?",
         message: "This cannot be undone",
         accept: "Delete",
@@ -192,49 +294,77 @@ Button("Delete").onClicked(gate: .ignoreWhileRunning) {
 ```
 
 StateUI also provides a one-button `alert`, a `chooseAction` that returns the
-chosen caption, and a prompt that returns typed text or `nil` on cancellation.
-An accepted empty prompt is `""`, distinct from cancellation.
+action chosen - one of the values it offers, or `nil` for its cancel - and a
+prompt that returns typed text or `nil` on cancellation. An accepted empty
+prompt is `""`, distinct from cancellation. A cancel left unnamed says the
+system's own word, in the user's language:
 
-The host presents a dialog from the page currently visible, including the top
-modal page. Dialogs show one at a time, in the order asked; one asked while
-another is up waits until that one is answered.
+```swift
+enum Share: CaseIterable {
+    case mail, messages, delete
+
+    var title: String {
+        switch self {
+        case .mail: "Mail"
+        case .messages: "Messages"
+        case .delete: "Delete"
+        }
+    }
+}
+
+@Environment(\.window) private var window
+@State private var drafts = ["Plans"]
+
+let choice = try await window.chooseAction(
+    "Share via", among: Share.allCases, caption: \.title, destructive: .delete)
+if choice == .delete { drafts.removeAll() }
+```
+
+The host presents a dialog over the window that asked, on the page it shows,
+including the top modal page; a view outside every window asks in the window
+the user is in. Dialogs show one at a time, in the order asked; one asked while
+another is up waits until that one is answered, and one whose window closed
+meanwhile is answered as if the user dismissed it.
 
 ## Files and links
 
-The dialogs that open and save files are dialogs too, awaited the same way:
+The dialogs that open and save files are dialogs too, a window's and awaited the
+same way; launching an address is the application's:
 
 ```swift
 struct ReportPage: View {
+    @Environment(\.window) private var window
+    @Environment(\.application) private var application
     @State private var report = "<h1>Report</h1>"
     @State private var opened = ""
 
     var body: some View {
         VStack {
-            Button("Save report…").onClicked(gate: .ignoreWhileRunning) {
+            Button("Save report…").onClicked(.ignoreWhileRunning) {
                 let page = FileType("HTML page", extensions: ["html"])
-                let saved = try await Dialogs.saveFile(
+                let saved = try await window.saveFile(
                     Array(report.utf8), name: "Report", types: [page])
                 if let saved { try await saved.launch() }
             }
-            Button("Open…").onClicked(gate: .ignoreWhileRunning) {
-                guard let file = try await Dialogs.openFile() else { return }
+            Button("Open…").onClicked(.ignoreWhileRunning) {
+                guard let file = try await window.openFile() else { return }
                 opened = String(decoding: try await file.read(), as: UTF8.self)
             }
-            Button("Help").onClicked(gate: .ignoreWhileRunning) {
-                try await Links.launch("https://www.swift.org")
+            Button("Help").onClicked(.ignoreWhileRunning) {
+                try await application.launch("https://www.swift.org")
             }
         }
     }
 }
 ```
 
-`Dialogs.openFile` answers the `ChosenFile` the user picked, or `nil` on
-cancellation; `Dialogs.openFiles` answers as many as they pick, none on
+`window.openFile` answers the `ChosenFile` the user picked, or `nil` on
+cancellation; `window.openFiles` answers as many as they pick, none on
 cancellation. A `FileType` gives a kind of file its caption and extensions;
 the dialog that opens shows only those kinds, the one that saves offers them
 with the first chosen. No kind means any file.
 
-`Dialogs.saveFile` takes the contents first and writes them where the user
+`window.saveFile` takes the contents first and writes them where the user
 says, answering the file saved or `nil`. Its name gains the first kind's
 extension where it ends in none of theirs. A browser with no save dialog
 downloads the file instead, and the call answers it at once.
@@ -242,7 +372,7 @@ downloads the file instead, and the call answers it at once.
 A `ChosenFile` shows only its `name`. Where it stands belongs to the platform -
 a path, a document's address, a browser's file - so the application reads it
 with `read()` and hands it to the system with `launch()`, which opens it in
-the application the system gives its kind. `Links.launch` does the same for an
+the application the system gives its kind. `application.launch` does the same for an
 address. Both answer whether an application took it. A chosen file stays good
 while the application runs.
 
@@ -252,11 +382,12 @@ the limit is enough to tell it is too long:
 
 ```swift
 struct NotePage: View {
+    @Environment(\.window) private var window
     @State private var note = ""
 
     var body: some View {
-        Button("Open a note…").onClicked(gate: .ignoreWhileRunning) {
-            guard let file = try await Dialogs.openFile() else { return }
+        Button("Open a note…").onClicked(.ignoreWhileRunning) {
+            guard let file = try await window.openFile() else { return }
             let start = try await file.read(atMost: 1025)
             note = start.count > 1024
                 ? "\(file.name) is longer than 1 KB"
@@ -265,6 +396,96 @@ struct NotePage: View {
     }
 }
 ```
+
+## The clipboard
+
+The system's clipboard is the application's `clipboard`: `write(text:)` puts
+words on it in place of what it held, and `text()` reads the words it holds,
+`nil` where it holds none.
+
+```swift
+struct LinkRow: View {
+    @Environment(\.application) private var application
+    let link: String
+
+    var body: some View {
+        HStack {
+            Text(link)
+            Button("Copy").onClicked(.ignoreWhileRunning) {
+                try await application.clipboard.write(text: link)
+            }
+        }
+    }
+}
+```
+
+A platform may ask the user before the application reads what another
+application put there - iOS and a browser do. A browser's read throws where
+the user refuses, and a page served over plain http has no clipboard.
+
+## Sharing
+
+A window offers what the user shares to the platform's share sheet:
+`share(text:)`, `share(link:)`, or both together with `share(text:link:)`. The
+call answers whether the user shared it, `false` where they cancelled.
+
+```swift
+struct TalkPage: View {
+    @Environment(\.window) private var window
+    let talk = "https://www.swift.org"
+
+    var body: some View {
+        Button("Share the talk").onClicked(.ignoreWhileRunning) {
+            try await window.share(text: "The talk I mentioned", link: talk)
+        }
+    }
+}
+```
+
+GNOME offers an application no share sheet, and a browser may have none:
+there the call throws with that reason.
+
+## Requests to a server
+
+`application.send` sends an `HTTPRequest` through the platform's own
+networking - its certificates, proxy and network rules hold - and answers
+the server's `HTTPResponse`: its `status`, its `headers` by name and its
+`body`, `text` reading the body as UTF-8.
+
+```swift
+struct WeatherPage: View {
+    @Environment(\.application) private var application
+    @State private var said = "Ask for the weather"
+
+    var body: some View {
+        VStack {
+            Button("Weather").onClicked(.cancelPrevious) {
+                let response = try await application.send(HTTPRequest(
+                    "https://api.open-meteo.com/v1/forecast?latitude=50.06&longitude=19.94&current=temperature_2m"))
+                said = response.status == 200 ? response.text : "The server answered \(response.status)"
+            }
+            Text(said)
+        }
+    }
+}
+```
+
+Any status is an answer - a 404 is the server's word; what throws is no
+answer at all: no connection, no server, an address the platform cannot
+read. A request carries a method, headers and a body
+(`HTTPRequest(address, method: .post, headers:, body:)`), and a header's
+name is read in any case (`response.header("Content-Type")`). The platform
+keeps the cookies a server sets, as a browser does, so a session a server
+opens holds for the requests after it. A request ends with the run that sent
+it: under `.cancelPrevious` the next tap stops the one under way, and a page
+left stops its own
+([Concurrency](concurrency.md#when-the-event-comes-again)).
+
+An address names its scheme. On the Web an address with none stands on the
+page's own, and the browser's rules for another site's answers hold. An
+Android application declares
+`<uses-permission android:name="android.permission.INTERNET" />` in its
+manifest, and a plain `http:` address there needs its leave too.
 
 ## Host-extension actions
 
@@ -283,7 +504,7 @@ enum NotesContract: ApplicationTier {
 
 @State var location = ""
 
-Button("Export").onClicked(gate: .ignoreWhileRunning) {
+Button("Export").onClicked(.ignoreWhileRunning) {
     location = try await stateUICall(NotesContract.exportDocument, "draft-7")
 }
 ```
@@ -299,32 +520,22 @@ A batch of actions is not a transaction. Use ordinary Swift control flow and
 Both halves are always needed: a declaration alone reaches nothing, and a host
 refuses by name an act nobody registered.
 
-The AppKit host registers them in Swift, typed by the same contract the call
-is written against:
-
-```swift quote
-StateUIActs.add(NotesContract.exportDocument) { draft in
-    "~/Documents/\(draft).pdf"
-}
-```
-
-An act aimed at a control names that control at argument 0, and the host turns
-the identity back into the view its registration made - so the performer is
-handed the view itself:
-
-```swift quote
-StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
-    bar.flash()
-}
-```
+Each host registers the performer in its head, in Swift, typed by the same
+contract the call is written against. An act aimed at a control names that
+control at argument 0, and the host turns the identity back into the view its
+registration made - so the performer is handed the view itself. The Gallery's
+heads register both kinds: [AppKit](../hosts/appkit.md#an-act),
+[UIKit](../hosts/uikit.md#an-act), [Android](../hosts/android.md#an-act),
+[WinUI](../hosts/winui.md#an-act), [GTK](../hosts/gtk.md#an-act) and
+[the Web](../hosts/web.md#acts-and-events).
 
 ## Host-extension events
 
 `HostEvents` represents a provider notification with no tree element. The
 application declares it in its contract with the types of the values it
-carries. `HostEvents.on` answers the subscription, which is kept - dropping it
-is a compiler warning - and cancelled with `cancel()` when its owner leaves,
-since nothing else ends it; a view keeps it in its own state:
+carries. A view hears it with `.onHostEvent`, which belongs to the view: it
+is subscribed as the view is made and cancelled as it leaves, each raise run
+by the handler the last render wrote:
 
 ```swift
 enum NotesContract: ApplicationTier {
@@ -337,47 +548,43 @@ enum NotesContract: ApplicationTier {
 
 struct ImportStatus: View {
     @State private var imported = ""
-    @State private var heard: [HostEventSubscription] = []
 
     var body: some View {
         Text(imported)
-            .onCreated {
-                heard = [
-                    HostEvents.on(NotesContract.importFinished) { location in
-                        imported = location
-                    },
-                ]
-            }
-            .onDestroying {
-                heard.forEach { $0.cancel() }
-                heard = []
+            .onHostEvent(NotesContract.importFinished) { location in
+                imported = location
             }
     }
 }
 ```
 
 A handler that awaits names what a raise does while it runs, as an element's
-event does: `HostEvents.on(NotesContract.importFinished, gate: .waitForPrevious) {
-location in … }`.
+event does: `.onHostEvent(NotesContract.importFinished, policy: .waitForPrevious) {
+location in … }`. Code that no view stands for - an application's model -
+subscribes with `HostEvents.on`, which answers the subscription: it is kept -
+dropping it is a compiler warning - and cancelled with `cancel()` when its
+owner is done, since nothing else ends it.
 
 A raise carrying values of another shape is reported once and reaches no
 handler. An ordinary control or gesture event always belongs on its element
 instead. Use an application's events only for provider-owned notifications
 that genuinely have no element identity.
 
-The AppKit host raises such an event in Swift, typed by the same contract the
-subscription is written against, from whatever thread the platform reports
-on; the subscriptions hear it on the UI thread soon after, in the order
-raised:
-
-```swift quote
-StateUIEvents.raise(NotesContract.importFinished, location)
-```
-
-A raise nobody hears is an ordinary one rather than a failure, so a host
-wires its sources unconditionally. The head declares what it raises,
-`StateUIEvents.raises(NotesContract.importFinished)`, and a subscription to an
-event no head declared is said once, as a misspelled name would be.
+Each host raises such an event in its head, in Swift -
+`StateUIEvents.raise(NotesContract.importFinished, location)` - typed by the
+same contract the subscription is written against, from whatever thread the
+platform reports on; the subscriptions hear it on the UI thread soon after, in
+the order raised. A raise nobody hears is an ordinary one rather than a
+failure, so a host wires its sources unconditionally. The head declares what
+it raises, `StateUIEvents.raises(NotesContract.importFinished)`, and a
+subscription to an event no head declared is said once, as a misspelled name
+would be. The Gallery's heads raise the battery's changes:
+[AppKit](../hosts/appkit.md#an-event-without-a-control),
+[UIKit](../hosts/uikit.md#an-event-without-a-control),
+[Android](../hosts/android.md#an-event-without-a-control),
+[WinUI](../hosts/winui.md#an-event-without-a-control),
+[GTK](../hosts/gtk.md#an-event-without-a-control) and
+[the Web](../hosts/web.md#acts-and-events).
 
 ## Keyboard shortcuts
 
@@ -437,7 +644,7 @@ struct Document: View {
                 .id(StandardMenu.file)
             }
             .toolbar {
-                ToolbarItem("Mark")
+                ToolbarButton("Mark")
                     .keyboardShortcut("m")
                     .onClicked { exported += 1 }
             }
@@ -478,8 +685,8 @@ struct Rename: View {
 `.primary` is the window's main action: filled in the platform's accent and
 pressed by Return. `.cancel` is the way out, pressed by Escape, and stands as
 the platform's plain button. `.destructive` marks an action that destroys
-something: its words stand in the platform's colour for one - the red its
-alerts and menus give such an action. A fill or a colour of words the button
+something: its words stand in the platform's color for one - the red its
+alerts and menus give such an action. A fill or a color of words the button
 is given, by a style or itself, takes the place of its role's, and
 `Style<Button>(role:)` styles a role in an application's own look. A
 shortcut the button states takes the place of its role's key. Return belongs
@@ -523,7 +730,8 @@ struct Document: View {
   and in a browser, as the user asks for any menu there: a finger held still or
   the mouse's other button. It shows no arrow.
 
-A button holding a menu offers no context menu of its own.
+A button holding a menu offers no context menu of its own. A `ToolbarButton`
+holds one the same way ([Toolbars](navigation-and-presentation.md#toolbars)).
 
 ### A view's keys
 
@@ -540,11 +748,11 @@ struct Search: View {
             TextField($query)
             Text("Row \(row)")
         }
-        .onKeyPressed(.upArrow, .downArrow, .escape) { key in
-            if key == .escape {
-                query = ""
-            } else {
-                row += key == .upArrow ? -1 : 1
+        .onKeyPressed(.upArrow, .downArrow, .tab, .escape) { press in
+            switch press.key {
+            case .escape: query = ""
+            case .tab: row += press.modifiers.contains(.shift) ? -1 : 1
+            default: row += press.key == .upArrow ? -1 : 1
             }
         }
     }
@@ -555,8 +763,12 @@ The nearest view naming a key takes it, out from the one holding the
 keyboard; with nothing holding it, the page's content does. A taken key
 reaches nothing else - the field above keeps its caret where it was - and
 every other key goes on as before. A text, a picture or a shape never holds
-the keyboard, so it offers no `onKeyPressed`. A key held with the platform's
-own key or Alt belongs to shortcuts. `.onKeyPressed(.escape, gate:
+the keyboard, so it offers no `onKeyPressed`. The handler is handed the key
+and the keys held with it (`KeyPress`): Shift, where it was - Tab and
+Shift-Tab are one key told apart by it. A key held with the platform's own key
+or Alt belongs to shortcuts. Besides letters, digits, Return, Escape, Delete,
+the arrows and F1 to F12, a view takes Tab, Space, Home, End, Page Up and Page
+Down. `.onKeyPressed(.escape, policy:
 .ignoreWhileRunning) { _ in try await close() }` takes a handler that awaits.
 
 ## Tooltips
@@ -565,16 +777,16 @@ own key or Alt belongs to shortcuts. `.onKeyPressed(.escape, gate:
 rests on it:
 
 ```swift
-Button(icon: "trash.png")
-    .accessibilityLabel("Delete")
+Button("Delete")
+    .icon("trash.png")
+    .showsText(false)
     .tooltip("Moves the file to the bin")
 ```
 
 The Mac, Windows, Linux and the Web show it after their own delay, and Android
 after a long press too. An iPhone and an iPad show none, so nothing a view
 needs to be used is said only in its tooltip. A tooltip is no
-accessible name: a button that is only a picture still carries an
-`accessibilityLabel`.
+accessible name: a button showing its picture alone is named by its words.
 
 ## Accessibility and automation
 
@@ -591,8 +803,42 @@ Text("Order total")
 `accessibilityLabel` states what the element is, `accessibilityHint` explains the
 result of interacting with it, and heading level describes document structure.
 Use `isAccessibilityHidden` and
-`automationExcludedWithChildren` to control exposure only when the composed
+`hidesChildrenFromAccessibility` to control exposure only when the composed
 semantics require it.
+
+A view composed of parts says what it is and holds with `accessibilityRole`
+and `accessibilityValue`, so a screen reader meets one thing where the screen
+shows several:
+
+```swift
+struct Rating: View {
+    @State private var stars = 3
+
+    var body: some View {
+        HStack {
+            ForEach(1...5) { star in
+                Text(star <= stars ? "★" : "☆").onTapped { stars = star }
+            }
+        }
+        .accessibilityLabel("Rating")
+        .accessibilityRole(.adjustable)
+        .accessibilityValue("\(stars) of 5")
+        .onAccessibilityAdjusted { step in
+            stars = min(5, max(0, stars + (step == .increment ? 1 : -1)))
+        }
+        .accessibilityAction("Clear") { stars = 0 }
+    }
+}
+```
+
+A screen reader steps an adjustable view up and down, which
+`onAccessibilityAdjusted` hears, and offers the view's actions by their words;
+an action is what a user who sees the screen reaches by a gesture or a menu.
+
+A control is its own kind and says its own value already, so the pair belongs
+on a layout. VoiceOver and TalkBack offer the actions and the steps; the
+platform matrix says where the other readers do. The kinds are those every platform's screen reader names alike:
+`.button`, `.toggle`, `.adjustable`, `.link`, `.image` and `.text`.
 
 `accessibilityIdentifier` is an external stable identifier for UI automation. It is not
 the tree's `.id`, and assigning one does not change StateUI identity. A view, a
@@ -601,8 +847,10 @@ style do not, as automation never meets a run and a style dresses many controls.
 
 Announce an important asynchronous change that has no visible focused element:
 
-```swift quote
-try await ScreenReader.announce("Import complete")
+```swift
+@Environment(\.application) private var application
+
+try await application.announce("Import complete")
 ```
 
 Do not announce a tap result the user's focused control already expresses;

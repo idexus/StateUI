@@ -24,10 +24,10 @@ final class GTKProgressBarView: GTKView {
     override var accent: String? { " > trough > progress" }
 }
 
-/// An ActivityIndicator: a `GtkSpinner`, turning while its work runs and drawing nothing while it does not.
+/// An Spinner: a `GtkSpinner`, turning while its work runs and drawing nothing while it does not.
 /// Design: docs/design/platforms/gtk/controls.md#what-shows-work
 @MainActor
-final class GTKActivityIndicatorView: GTKView {
+final class GTKSpinnerView: GTKView {
     init() {
         super.init { _ in gtk_spinner_new() }
     }

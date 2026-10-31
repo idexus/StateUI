@@ -20,11 +20,14 @@
                 headed(element),
                 Aspects.holds(VisualElementContract.accessibilityLabel, on: element, "Confirm", then: "Save"),
                 Aspects.holds(VisualElementContract.accessibilityHint, on: element, "Saves the form", then: "Saves it all"),
+                Aspects.holds(VisualElementContract.accessibilityRole, on: element, .button, then: .adjustable),
+                Aspects.holds(VisualElementContract.accessibilityValue, on: element, "3 of 5", then: "4 of 5"),
+                readerActed(element), readerStepped(element),
                 Aspects.holds(VisualElementContract.tooltip, on: element, "Saves the draft", then: "Saves every draft"),
                 Aspects.holds(VisualElementContract.accessibilityHeading, on: element, .h2, then: .h3),
                 Aspects.holds(VisualElementContract.isAccessibilityHidden, on: element, false, then: true, with: named),
                 Aspects.holds(
-                    VisualElementContract.automationExcludedWithChildren, on: element, false, then: true, with: named),
+                    VisualElementContract.hidesChildrenFromAccessibility, on: element, false, then: true, with: named),
                 Aspects.holds(VisualElementContract.background, on: element, .color(.red), then: .color(.blue)),
                 Aspects.holds(VisualElementContract.layoutDirection, on: element, .leftToRight, then: .rightToLeft),
                 Aspects.holds(VisualElementContract.pivotX, on: element, 0.5, then: 0, with: turned),
@@ -50,15 +53,15 @@
     /// The views whose only answer to the hand is the View tier's gestures: what disabling one stops is what it hears
     /// of them.
     static let answeringByGestures: Set<String> = [
-        "ActivityIndicator", "Capsule", "Ellipse", "Grid", "HStack", "Image", "Line", "Path", "Polygon", "Polyline",
-        "ProgressBar", "Rectangle", "Text", "VStack", "ZStack",
+        "Spinner", "Capsule", "Ellipse", "Fill", "Grid", "HStack", "Image", "Line", "Path", "Polygon",
+        "Polyline", "ProgressBar", "Rectangle", "Space", "Text", "VStack", "ZStack",
     ]
 
-    /// The layouts drawing their own box, whose background may be a blur or glass.
-    static let boxes: Set<String> = ["Grid", "HStack", "LayoutEngine", "VStack", "ZStack"]
+    /// The layouts, a space and a fill drawing their own box, whose background may be a blur or glass.
+    static let boxes: Set<String> = ["Fill", "Grid", "HStack", "MotionLayout", "Space", "VStack", "ZStack"]
 
     /// A box's background is the blur the tree gives it and then the glass it changes it to - or what stands in for
-    /// the glass, the blur as clear as it is, whose colour a host that blurs nothing paints.
+    /// the glass, the blur as clear as it is, whose color a host that blurs nothing paints.
     @MainActor
     static func blurredOrGlass(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).background.showsABlurOrGlassOrWhatStandsInForIt", proves: [
@@ -89,7 +92,7 @@
         ConformanceCase("VStack.background.followsAMaterialState", proves: [
             Covered(VisualElementContract.background, on: "VStack"),
         ], needs: [Covered(ButtonContract.clicked)]) { s in
-            let (first, second) = (Material.color(Color("#0F766E")), Material.color(Color("#512BD4")))
+            let (first, second) = (Material.color(Color(hex: 0x0F766E)), Material.color(Color(hex: 0x512BD4)))
             let value = State(wrappedValue: first)
             s.start {
                 VStack {
@@ -107,8 +110,57 @@
         }
     }
 
+    /// A screen reader performs the element's actions by their words, each reaching the element as the one it is.
+    @MainActor
+    static func readerActed(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).performsAScreenReadersActions", proves: [
+            Covered(VisualElementContract.accessibilityActionPerformed, on: element),
+            Covered(VisualElementContract.accessibilityActions, on: element),
+        ]) { s in
+            let performed = Received<String>()
+            s.start {
+                Specimens.view(element, [
+                    Write(VisualElementContract.accessibilityActions, ["Archive", "Delete"]),
+                    Hear(VisualElementContract.accessibilityActionPerformed) { performed.values.append($0) },
+                ])
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.performAccessibilityAction("Delete"), on: view)
+            s.settle { performed.values == ["Delete"] }
+            s.expect(performed.values, ["Delete"], "the action performed")
+            try s.perform(.performAccessibilityAction("Archive"), on: view)
+            s.settle { performed.values == ["Delete", "Archive"] }
+            s.expect(performed.values, ["Delete", "Archive"], "the other")
+        }
+    }
+
+    /// A screen reader steps the element up and down where it says it is adjustable.
+    @MainActor
+    static func readerStepped(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).isSteppedByAScreenReader", proves: [
+            Covered(VisualElementContract.accessibilityAdjusted, on: element),
+        ], needs: [Covered(VisualElementContract.accessibilityRole, on: element)]) { s in
+            let stepped = Received<AccessibilityAdjustment>()
+            s.start {
+                Specimens.view(element, [
+                    Write(VisualElementContract.accessibilityRole, .adjustable),
+                    Hear(VisualElementContract.accessibilityAdjusted) { stepped.values.append($0) },
+                ])
+            }
+            let view = try s.element("specimen")
+
+            try s.perform(.adjust(.increment), on: view)
+            s.settle { stepped.values == [.increment] }
+            s.expect(stepped.values, [.increment], "a step up")
+            try s.perform(.adjust(.decrement), on: view)
+            s.settle { stepped.values == [.increment, .decrement] }
+            s.expect(stepped.values, [.increment, .decrement], "and a step down")
+        }
+    }
+
     /// The views holding others: their `isEnabled` is their branch's, and they lay their child out in their direction.
-    static let layouts: Set<String> = ["Grid", "HStack", "LayoutEngine", "ScrollView", "VStack", "ZStack"]
+    static let layouts: Set<String> = ["Grid", "HStack", "MotionLayout", "ScrollView", "VStack", "ZStack"]
 
     /// A view is shown or not as the tree says, and hides when the tree says so.
     @MainActor
@@ -143,7 +195,9 @@
                 VStack {
                     ZStack {
                         Specimens.view(element, [Write(VisualElementContract.zIndex, depth.wrappedValue)])
-                        Rectangle().fill(.blue).id("cover")
+                        Rectangle()
+                            .fill(.blue)
+                            .id("cover")
                     }
                     .width(120).height(80).id("layers")
                     Button("Lower").onClicked { depth.wrappedValue = -1 }.id("change")
@@ -267,8 +321,16 @@
             let direction = State(wrappedValue: LayoutDirection.leftToRight)
             s.start {
                 VStack {
-                    Specimens.holding(layout, Rectangle().fill(.red).width(60).height(30).horizontalAlignment(.start)
-                        .verticalAlignment(.start).frame(room.projectedValue), [
+                    Specimens.holding(
+                        layout,
+                        Rectangle()
+                            .fill(.red)
+                            .width(60)
+                            .height(30)
+                            .horizontalAlignment(.start)
+                            .verticalAlignment(.start)
+                            .frame(room.projectedValue),
+                        [
                             Write(VisualElementContract.layoutDirection, direction.wrappedValue),
                             Write(VisualElementContract.width, 200), Write(VisualElementContract.height, 100),
                         ])
@@ -421,17 +483,18 @@
     @MainActor
     static func painted(_ element: String) -> [any Worn] {
         let red = Brush.solidColor(.red)
+        let redFill = Material.color(.red)
         let figure = [Point(20, 5), Point(60, 5), Point(60, 35), Point(20, 35)]
         let atItsSize = Write(ShapeContract.contentMode, ContentMode.center)
         return switch element {
-        case "Rectangle", "Ellipse", "Capsule": [Write(FilledShapeContract.fill, red)]
+        case "Rectangle", "Ellipse", "Capsule": [Write(FilledShapeContract.fill, redFill)]
         case "Line": [
             Write(LineContract.x1, 0), Write(LineContract.y1, 20), Write(LineContract.x2, 80), Write(LineContract.y2, 20),
             Write(ShapeContract.stroke, red), Write(ShapeContract.lineWidth, 8),
         ]
-        case "Polygon": [Write(PolygonContract.points, figure), Write(FilledShapeContract.fill, red), atItsSize]
-        case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(FilledShapeContract.fill, red), atItsSize]
-        case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(FilledShapeContract.fill, red), atItsSize]
+        case "Polygon": [Write(PolygonContract.points, figure), Write(FilledShapeContract.fill, redFill), atItsSize]
+        case "Polyline": [Write(PolylineContract.points, figure + [figure[0]]), Write(FilledShapeContract.fill, redFill), atItsSize]
+        case "Path": [Write(PathContract.data, "M 20 5 L 60 5 L 60 35 L 20 35 Z"), Write(FilledShapeContract.fill, redFill), atItsSize]
         case "Image": [Write(ImageContract.source, ImageSource("test_dot.png"))]
         default: []
         }

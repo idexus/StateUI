@@ -3,23 +3,29 @@
 
 package stateui.android.test;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.os.Build;
 import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inspector.WindowInspector;
 import android.widget.ActionMenuView;
+import android.widget.ListView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +47,78 @@ public final class TestMenus {
         return new PopupMenu(context, new View(context)).getMenu();
     }
 
+    /** A menu popping up below the top corner of `activity`'s window, empty until a test writes it. */
+    public static PopupMenu over(Activity activity) {
+        View corner = new View(activity);
+        ((ViewGroup) activity.getWindow().getDecorView()).addView(corner, new ViewGroup.LayoutParams(1, 1));
+        PopupMenu menu = new PopupMenu(activity, corner);
+        menu.setOnDismissListener(gone -> ((ViewGroup) corner.getParent()).removeView(corner));
+        return menu;
+    }
+
+    /**
+     * The words each row of the menu showing in a window of its own shows within the row, as the user reads them -
+     * ", " between rows, "(none)" for a row showing none, "(no menu)" where none shows a row.
+     */
+    public static String shownRows(PopupMenu shown) throws ReflectiveOperationException {
+        ListView rows = null;
+        for (View window : windows()) {
+            ListView found = listIn(window);
+            if (found != null) rows = found;
+        }
+        if (rows == null || rows.getChildCount() == 0) return "(no menu)";
+        List<String> words = new ArrayList<>();
+        for (int index = 0; index < rows.getChildCount(); index++) {
+            String row = wordsShown(rows.getChildAt(index));
+            words.add(row.isEmpty() ? "(none)" : row);
+        }
+        return String.join(", ", words);
+    }
+
+    /** The root view of every window the process shows: Android's own list from Android 10, its manager's before. */
+    @SuppressWarnings("unchecked")
+    private static List<View> windows() throws ReflectiveOperationException {
+        if (Build.VERSION.SDK_INT >= 29) return WindowInspector.getGlobalWindowViews();
+        Class<?> global = Class.forName("android.view.WindowManagerGlobal");
+        Object manager = global.getMethod("getInstance").invoke(null);
+        Field views = global.getDeclaredField("mViews");
+        views.setAccessible(true);
+        return new ArrayList<>((List<View>) views.get(manager));
+    }
+
+    private static ListView listIn(View view) {
+        if (view instanceof ListView) return (ListView) view;
+        if (!(view instanceof ViewGroup)) return null;
+        ViewGroup group = (ViewGroup) view;
+        for (int index = 0; index < group.getChildCount(); index++) {
+            ListView found = listIn(group.getChildAt(index));
+            if (found != null) return found;
+        }
+        return null;
+    }
+
+    /** The words of the text views `view` shows on screen, some of each standing in its own bounds. */
+    private static String wordsShown(View view) {
+        if (view instanceof TextView) {
+            TextView text = (TextView) view;
+            return text.isShown() && text.getText().length() > 0 && text.getGlobalVisibleRect(new Rect())
+                    ? text.getText().toString() : "";
+        }
+        if (!(view instanceof ViewGroup)) return "";
+        ViewGroup group = (ViewGroup) view;
+        StringBuilder words = new StringBuilder();
+        for (int index = 0; index < group.getChildCount(); index++) {
+            String inner = wordsShown(group.getChildAt(index));
+            if (!inner.isEmpty() && words.length() > 0) words.append(' ');
+            words.append(inner);
+        }
+        return words.toString();
+    }
+
     /**
      * The menu's entries: each item's words, a submenu's entries in brackets after its own, ", " within a
      * group and " | " between groups; " (off)" where it cannot be chosen, " (red)" where its words are in the
-     * theme's error colour, " (picture)" where it has one - " (dimmed picture)" where it is drawn translucent.
+     * theme's error color, " (picture)" where it has one - " (dimmed picture)" where it is drawn translucent.
      */
     public static String describe(Context context, Menu menu) {
         TypedArray attributes = context.obtainStyledAttributes(new int[] { android.R.attr.colorError });
@@ -58,7 +132,7 @@ public final class TestMenus {
             CharSequence title = item.getTitle();
             words.append(title);
             if (!item.isEnabled()) words.append(" (off)");
-            if (colour(title) == error) words.append(" (red)");
+            if (color(title) == error) words.append(" (red)");
             if (item.getIcon() != null) {
                 words.append(item.getIcon().getAlpha() < 255 ? " (dimmed picture)" : " (picture)");
             }
@@ -87,6 +161,23 @@ public final class TestMenus {
         return String.join(";", parts);
     }
 
+    /**
+     * The menu - `menu` or a submenu of it - holding the item of `id` among its own entries, as `said` writes it;
+     * null where none does.
+     */
+    public static String saidHolding(Menu menu, int id) {
+        for (int index = 0; index < menu.size(); index++) {
+            if (menu.getItem(index).getItemId() == id) return said(menu, false);
+        }
+        for (int index = 0; index < menu.size(); index++) {
+            MenuItem item = menu.getItem(index);
+            if (!item.hasSubMenu()) continue;
+            String found = saidHolding(item.getSubMenu(), id);
+            if (found != null) return found;
+        }
+        return null;
+    }
+
     /** Chooses the item of `id`, in `menu` or a submenu of it, as a touch does; whether it ran. */
     public static boolean choose(Menu menu, int id) {
         return menu.performIdentifierAction(id, 0);
@@ -94,7 +185,7 @@ public final class TestMenus {
 
     /**
      * What the item of `id` holds, a line each: its words, then 1 or 0 for whether it can be chosen, whether its
-     * words are in the theme's error colour, whether it has a picture and whether it stands checked, then the
+     * words are in the theme's error color, whether it has a picture and whether it stands checked, then the
      * character of the shortcut it shows - 0 for none - and the modifiers held with it; null where the menu holds
      * no such item.
      */
@@ -108,9 +199,16 @@ public final class TestMenus {
         boolean letter = item.getAlphabeticShortcut() != 0;
         char key = letter ? item.getAlphabeticShortcut() : item.getNumericShortcut();
         int modifiers = letter ? item.getAlphabeticModifiers() : item.getNumericModifiers();
-        return title + "\n" + (item.isEnabled() ? 1 : 0) + "\n" + (colour(title) == error ? 1 : 0)
+        return title + "\n" + (item.isEnabled() ? 1 : 0) + "\n" + (color(title) == error ? 1 : 0)
                 + "\n" + (item.getIcon() != null ? 1 : 0) + "\n" + (item.isChecked() ? 1 : 0)
                 + "\n" + (int) key + "\n" + (key == 0 ? 0 : modifiers);
+    }
+
+    /** Whether the item of `id` shows `picture`: the very pixels of it. */
+    public static boolean shows(Menu menu, int id, Bitmap picture) {
+        MenuItem item = menu.findItem(id);
+        Drawable icon = item == null ? null : item.getIcon();
+        return icon instanceof BitmapDrawable && ((BitmapDrawable) icon).getBitmap().sameAs(picture);
     }
 
     /** Chooses the item whose words are `text`, in `menu` or a submenu of it, as a touch does; whether it ran. */
@@ -128,7 +226,7 @@ public final class TestMenus {
 
     /**
      * The actions standing on `bar`, as it lays them out: each one's words and whether they are drawn "light" or
-     * "dark", or "picture" and the colour at the middle of its picture as drawn - ARGB in hexadecimal - ", "
+     * "dark", or "picture" and the color at the middle of its picture as drawn - ARGB in hexadecimal - ", "
      * between them.
      */
     public static String onBar(ViewGroup bar) {
@@ -142,8 +240,8 @@ public final class TestMenus {
                 Drawable picture = action.getCompoundDrawables()[0];
                 if (words.length() > 0) words.append(", ");
                 if (action.getText().length() > 0) {
-                    int colour = action.getCurrentTextColor();
-                    double luminance = 0.2126 * Color.red(colour) + 0.7152 * Color.green(colour) + 0.0722 * Color.blue(colour);
+                    int color = action.getCurrentTextColor();
+                    double luminance = 0.2126 * Color.red(color) + 0.7152 * Color.green(color) + 0.0722 * Color.blue(color);
                     words.append(action.getText()).append(luminance / 255 < 0.5 ? " dark" : " light");
                 } else if (picture != null) {
                     words.append("picture #").append(Integer.toHexString(middle(picture)));
@@ -184,7 +282,7 @@ public final class TestMenus {
         return lines.toString();
     }
 
-    /** The colour `picture` draws at its middle. */
+    /** The color `picture` draws at its middle. */
     private static int middle(Drawable picture) {
         int width = Math.max(1, picture.getIntrinsicWidth());
         int height = Math.max(1, picture.getIntrinsicHeight());
@@ -196,7 +294,7 @@ public final class TestMenus {
         return drawn.getPixel(width / 2, height / 2);
     }
 
-    private static int colour(CharSequence words) {
+    private static int color(CharSequence words) {
         if (!(words instanceof Spanned)) return 0;
         ForegroundColorSpan[] spans = ((Spanned) words).getSpans(0, words.length(), ForegroundColorSpan.class);
         return spans.length == 0 ? 0 : spans[0].getForegroundColor();

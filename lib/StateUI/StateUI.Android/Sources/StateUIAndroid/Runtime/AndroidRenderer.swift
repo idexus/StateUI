@@ -24,6 +24,13 @@ final class AndroidRenderer {
         shared?.runtime.tree.root.flatMap { $0.first(type: .window) ?? $0 }
     }
 
+    /// The window a window's act asks in: the one the activity shows, where the act names it or none; nil for
+    /// another.
+    static func window(asked element: MountedElement?) -> MountedElement? {
+        guard let window, element == nil || element?.enclosing(type: .window) === window else { return nil }
+        return window
+    }
+
     /// Pixels per point, the display's density.
     static var density: Double { shared?.density ?? 1 }
 
@@ -47,6 +54,23 @@ final class AndroidRenderer {
 
     /// What the first window shows, by the host layer's rule: its arrangement of pages, its sheets, its overlays.
     private let presentation = WindowPresentation()
+
+    /// The words the status bar shows over the window's top: those of the bar the window's visible stack paints
+    /// under it - light on a dark band - else the theme's.
+    /// Design: docs/design/platforms/android/pages.md#the-bar
+    private(set) var statusWords = AndroidBarView.Words.platform
+
+    /// Gives the status bar the words of the bar under it - the window's visible stack's, where it shows one - as
+    /// the window shows and as a bar is shown again.
+    func showStatusWords() {
+        let words = presentation.arrangement?.visibleNavigationStack.map { stack -> AndroidBarView.Words in
+            guard stack.arrangedChildren.last?.showsTheStacksBar ?? true else { return .platform }
+            return AndroidBarView.Words(on: (stack.visiblePage?.barColors ?? stack.barColors).background)
+        } ?? .platform
+        guard words != statusWords else { return }
+        statusWords = words
+        Java.callStatic(JavaAPI.views, JavaAPI.statusWords, .object(context.reference), .int(words.rawValue))
+    }
 
     /// The application's scenes as they stand, kept for its next start - one for the process, handed from each
     /// activity to the next.
@@ -96,6 +120,7 @@ final class AndroidRenderer {
         }
         if let previous { renderer.scenes = previous.scenes }
         renderer.start(restoringKept: previous == nil, restoringScenes: !sceneStands, turns: AndroidDoorbell.install)
+        AndroidMainQueue.watch()
         if previous != nil {
             // The activity before left its dialogs unanswered: the question showing is asked again in this one.
             actToolkit.forgetDialogs()
@@ -126,6 +151,7 @@ final class AndroidRenderer {
 
     /// The pages the window presents over its page.
     private lazy var modals = AndroidModals(root: root, reducesMotion: reducesMotion)
+    var modalsForTesting: AndroidModals { modals }
 
     /// Android's part of the acts every host performs, the files the user opens and saves and what the system
     /// launches, and the host layer's performer of them - the process's: a question, a document chosen or a script
@@ -133,15 +159,22 @@ final class AndroidRenderer {
     /// Design: docs/design/platforms/android/runtime.md#acts
     private static let actToolkit = AndroidActToolkit(core: CoreLink())
     private static let files = AndroidFileToolkit()
+    private static let network = AndroidNetwork()
     private static let acts = HostActPerformer(
-        toolkit: actToolkit, files: files, answers: CoreLink(), tree: { AndroidRenderer.shared?.runtime.tree })
-    private var actToolkit: AndroidActToolkit { Self.actToolkit }
+        toolkit: actToolkit, files: files, network: network, answers: CoreLink(),
+        tree: { AndroidRenderer.shared?.runtime.tree })
+    var actToolkit: AndroidActToolkit { Self.actToolkit }
     var fileToolkit: AndroidFileToolkit { Self.files }
     private var acts: HostActPerformer { Self.acts }
 
     /// An act waiting under a ticket was answered - a dialog, a script: its caller resumes in a job of its own.
     func answered(ticket: Int64, accepted: Bool, words: String?) {
         actToolkit.answered(ticket: ticket, accepted: accepted, words: words)
+    }
+
+    /// The choice of actions waiting under a ticket was answered by the action at `place`.
+    func actionChosen(ticket: Int64, place: Int) {
+        actToolkit.actionChosen(ticket: ticket, place: place)
     }
 
     /// The tickets of the scripts waiting for their answer, oldest first.
@@ -159,6 +192,11 @@ final class AndroidRenderer {
         fileToolkit.read(ticket: ticket, bytes: bytes, failure: failure)
     }
 
+    /// The request under `ticket` was answered, or failed: its caller resumes.
+    func requestAnswered(ticket: Int64, status: Int, headers: [String], body: [UInt8], failure: String?) {
+        Self.network.answered(ticket: ticket, status: status, headers: headers, body: body, failure: failure)
+    }
+
     /// What was launched under `ticket` was taken, or not: its caller resumes.
     func launched(ticket: Int64, taken: Bool) {
         fileToolkit.launched(ticket: ticket, taken: taken)
@@ -174,7 +212,7 @@ final class AndroidRenderer {
             register: AndroidRealization.register,
             complainingTo: AndroidRenderer.log,
             environment: { AndroidEnvironment.report(to: runtime.core, activity: context.reference) },
-            kept: { if restoringKept { AndroidPersistence.restore(into: runtime.core, context: context.reference) } },
+            kept: { if restoringKept { AndroidPersistence.readKept(into: runtime.core, context: context.reference) } },
             windows: {
                 if restoringScenes { scenes.restore(AndroidPersistence.readScenes(context: context.reference), in: runtime) }
                 runtime.pump.turn()
@@ -191,9 +229,12 @@ final class AndroidRenderer {
 
     /// The activity's lifecycle moved: its one window stands activated in front of the user (onResume), off the
     /// screen once stopped (onStop), and neither between; the host layer settles what that means for the
-    /// application, its scene and its window, each rendered before the next.
+    /// application, its scene and its window, each rendered before the next. An activity paused and stopped only
+    /// to be made again for a new configuration moves nothing: the next resumes at once.
     /// Design: docs/design/platforms/android/runtime.md#the-activitys-lifecycle
-    func setPhase(_ phase: ApplicationPhase) {
+    func setPhase(_ phase: ApplicationPhase, beingMadeAgain: Bool = false) {
+        guard !beingMadeAgain else { return }
+        actToolkit.phaseTurned(phase)
         guard let window = runtime.tree.root?.first(type: .window) else {
             runtime.core.setApplicationPhase(phase)
             return runtime.pump.turn()
@@ -202,11 +243,12 @@ final class AndroidRenderer {
     }
 
     /// The activity is finishing - Back, or the application finished it: the user closed its window, which hears it
-    /// is going, and its scene that the window closed.
+    /// is going, and its scene that the window closed; then what waited over it is answered as dismissed, once the
+    /// window went, as every host answers what stood over a window gone.
+    /// Design: docs/design/host/runtime.md#questions-for-the-user
     func destroying() {
+        if let window = runtime.tree.root?.first(type: .window) { runtime.userClosed(window) }
         Self.endActs()
-        guard let window = runtime.tree.root?.first(type: .window) else { return }
-        runtime.userClosed(window)
     }
 
     /// Answers every question and picker still waiting as dismissed: the activity they were asked over finished,
@@ -217,7 +259,7 @@ final class AndroidRenderer {
         files.forgetDialogs()
     }
 
-    /// The zone, the clock, the battery or the network changed.
+    /// The zone, the clock, the battery, the network or an accessibility setting changed.
     func environmentChanged() {
         runtime.environmentChanged { AndroidEnvironment.reportChanging(to: runtime.core, context: context.reference) }
     }
@@ -248,7 +290,7 @@ final class AndroidRenderer {
         return Point(x: Double(pixels[0]) / density, y: Double(pixels[1]) / density)
     }
 
-    /// The colour the activity's window was last painted in behind its pages; nil while it keeps its own.
+    /// The color the activity's window was last painted in behind its pages; nil while it keeps its own.
     private var paintedBackground: Int32?
 
     /// Paints the activity's window behind its pages as the window's element says, and gives it the theme's own back
@@ -285,7 +327,13 @@ final class AndroidRenderer {
         guard let window = runtime.tree.root?.first(type: .window) else { return }
         let changes = presentation.show(window, in: runtime.lifecycle)
         showTitle(of: window)
-        if let traits = changes.traits { showBackground(traits.background.painted) }
+        if let traits = changes.traits {
+            showBackground(traits.background.painted)
+            for page in window.pages { (page.native as? AndroidElement)?.paintBackground() }
+            // The surfaces over the page stand on it too: the sheets, and the sidebars over the detail.
+            modals.ground()
+            for split in window.splitViews { (split.native as? AndroidElement)?.groundSidebar() }
+        }
         if let (_, arrangement) = changes.arrangement {
             Java.call(root.reference, JavaAPI.removeAllViews)
             shownOverlays = []
@@ -295,6 +343,14 @@ final class AndroidRenderer {
             }
         }
         let rose = changes.sheets.map { modals.present($0) } ?? false
+        modals.standAtTheirSizes()
+        standUnderTheWindowsInsets()
+        showStatusWords()
+        // The pages losing their bottom bar let go of it before the one shown takes it: one view stands in one place.
+        for page in window.pages.sorted(by: { $0.chromeBottomBar == nil && $1.chromeBottomBar != nil }) {
+            (page.native as? AndroidElement)?.showBottomBar()
+            (page.native as? AndroidElement)?.showTopEdge()
+        }
 
         // The overlays lie over everything, the first lowest, lifted over a page that rose after them; they take no
         // touch beside what they hold, which goes on to the page under them.
@@ -313,6 +369,30 @@ final class AndroidRenderer {
 
     /// The overlays' views the root holds now, the first lowest, let go of as the window stops showing them.
     private var shownOverlays: [AndroidView] = []
+
+    /// What stands over the activity's root on each edge, in points: the system's bars and a cutout, and the keyboard
+    /// at the bottom - Android draws the root edge to edge.
+    /// Design: docs/design/platforms/android/pages.md#the-safe-area
+    private(set) var windowInsets = Clearance.none
+
+    /// Android told what stands over the root now, in pixels: every arrangement it shows stands under it again.
+    func insetsChanged(left: Int32, top: Int32, right: Int32, bottom: Int32, keyboard: Int32) {
+        let insets = Clearance(
+            top: Double(top) / density, left: Double(left) / density,
+            bottom: SafeAreaArithmetic.bottom(system: Double(bottom), keyboard: Double(keyboard)) / density,
+            right: Double(right) / density)
+        guard insets != windowInsets else { return }
+        windowInsets = insets
+        standUnderTheWindowsInsets()
+    }
+
+    /// Hands what stands over the root to every arrangement standing in it - the window's, a full sheet's page - and
+    /// to the overlays.
+    private func standUnderTheWindowsInsets() {
+        (presentation.arrangement?.android.view as? AndroidLayoutView)?.roomInsets = windowInsets
+        for overlay in presentation.overlays { (overlay.android.view as? AndroidLayoutView)?.roomInsets = windowInsets }
+        modals.standUnder(windowInsets)
+    }
 
     /// Shows the first window's chrome again where a frame moved what it shows (`WindowChrome.follows`): its title,
     /// the bar and tab row of every arrangement it and its sheets show, and whether there is a way back.
@@ -342,7 +422,7 @@ final class AndroidRenderer {
     private var systemWayBack: WayBack? {
         if let way = presentation.wayBack { return way }
         guard let stack = (presentation.sheets.last ?? presentation.arrangement)?.visibleNavigationStack,
-              stack.children.count > 1, stack.children.last?.value(.showsBackButton)?.bool != false
+              stack.children.count > 1, stack.arrangedChildren.last?.value(.showsBackButton)?.bool != false
         else { return nil }
         return .pop(stack)
     }
@@ -403,6 +483,7 @@ extension AndroidRenderer: HostPresenter {
             showWindow()
             refreshBack()
         }
+        for popover in runtime.tree.takeWaitingPopovers() { popover.android.configurePopover() }
         if let text = scenes.changed(root: runtime.tree.root) {
             AndroidPersistence.writeScenes(text, context: context.reference)
         }
@@ -414,6 +495,10 @@ extension AndroidRenderer: HostPresenter {
 
     func perform(_ call: HostActCall) {
         acts.perform(call)
+    }
+
+    func open(link address: String) {
+        acts.open(link: address)
     }
 
     func focus(_ element: MountedElement) {

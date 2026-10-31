@@ -82,7 +82,7 @@ private struct Pulling: View {
                 .aim(lamp)
 
             Button("Flash")
-                .onClicked(gate: .ignoreWhileRunning) {
+                .onClicked(.ignoreWhileRunning) {
                     do {
                         try await lamp.flash()
                         said = "flashed"

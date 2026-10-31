@@ -20,12 +20,20 @@ extension View {
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onTapped(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onTapped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         modified {
             $0.hearsTaps(1)
-            $0.addHandler(ViewContract.tapped.token, gate: gate, handler)
+            $0.addHandler(ViewContract.tapped.token, gate: .own(policy), handler)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsTaps(1)
+            $0.addHandler(ViewContract.tapped.token, gate: .shared(gate), handler)
         }
     }
 
@@ -40,12 +48,80 @@ extension View {
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onTapped(count: Int, gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         modified {
             $0.hearsTaps(count)
-            $0.addHandler(ViewContract.tapped.token, gate: gate, handler)
+            $0.addHandler(ViewContract.tapped.token, gate: .own(policy), handler)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsTaps(count)
+            $0.addHandler(ViewContract.tapped.token, gate: .shared(gate), handler)
+        }
+    }
+
+    // MARK: Hold
+
+    /// Runs when the user holds the view down - a finger, a pen or a button
+    /// pressed and kept still - as long as the platform's long press.
+    ///
+    ///     Photo(item)
+    ///         .onHeld { selection.insert(item.id) }
+    ///
+    /// A press held is the hold's: its release is no tap, and it drags nothing.
+    public func onHeld(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        modified {
+            $0.hearsHolds(nil)
+            $0.addHandler(ViewContract.held.token, handler)
+        }
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way.
+    public func onHeld(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsHolds(nil)
+            $0.addHandler(ViewContract.held.token, gate: .own(policy), handler)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onHeld(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsHolds(nil)
+            $0.addHandler(ViewContract.held.token, gate: .shared(gate), handler)
+        }
+    }
+
+    /// The same, once the press has stood still `minimum`.
+    ///
+    ///     Photo(item).onHeld(minimum: .milliseconds(800)) { showActions(for: item) }
+    public func onHeld(minimum: Duration, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
+        modified {
+            $0.hearsHolds(minimum)
+            $0.addHandler(ViewContract.held.token, handler)
+        }
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way.
+    public func onHeld(minimum: Duration, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsHolds(minimum)
+            $0.addHandler(ViewContract.held.token, gate: .own(policy), handler)
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onHeld(minimum: Duration, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
+        modified {
+            $0.hearsHolds(minimum)
+            $0.addHandler(ViewContract.held.token, gate: .shared(gate), handler)
         }
     }
 
@@ -79,21 +155,48 @@ extension View {
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
+    public func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Modified {
+        modified {
+            $0.hearsSwipes(.all, threshold: nil)
+            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(.all, handler))
+        }
+    }
+
+    /// The same, for the ways `direction` names, traveling `threshold` to count.
     public func onSwiped(
-        direction: SwipeDirection = .all,
+        direction: SwipeDirection,
         threshold: Double? = nil,
-        gate: some Gate,
+        policy: GatePolicy,
         _ handler: @escaping ValueEventHandler<SwipeDirection>
     ) -> Modified {
         modified {
             $0.hearsSwipes(direction, threshold: threshold)
-            $0.addHandler(ViewContract.swiped.token, gate: gate) {
-                if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) {
-                    try await handler(went)
-                }
-            }
+            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(direction, handler))
+        }
+    }
+
+    /// The same, every way, traveling `threshold` to count.
+    public func onSwiped(
+        threshold: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>
+    ) -> Modified {
+        modified {
+            $0.hearsSwipes(.all, threshold: threshold)
+            $0.addHandler(ViewContract.swiped.token, gate: .own(policy), swiped(.all, handler))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSwiped(
+        direction: SwipeDirection = .all,
+        threshold: Double? = nil,
+        gate: Gate,
+        _ handler: @escaping ValueEventHandler<SwipeDirection>
+    ) -> Modified {
+        modified {
+            $0.hearsSwipes(direction, threshold: threshold)
+            $0.addHandler(ViewContract.swiped.token, gate: .shared(gate), swiped(direction, handler))
         }
     }
 
@@ -104,33 +207,36 @@ extension View {
     ///
     ///     @State private var turn = 0.0
     ///
-    ///     Rectangle().fill(.transparent).panX($turn)
+    ///     Fill()
+    ///         .panX($turn)
     ///
     /// The distance `onPanUpdated` reports, for an `.engine(following:)` to
     /// follow frame by frame. A drag moves the value on from where it stood, so
     /// a second drag carries on where the first left off.
     ///
-    /// - Parameter value: the state the distance is written into.
+    /// - Parameter state: the state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panX(_ value: Binding<Double>) -> Modified {
-        driven(ViewContract.panXChannel.token, by: value)
+    public func panX(_ state: Binding<Double>) -> Modified {
+        driven(ViewContract.panXChannel.token, by: state)
     }
 
     /// Writes how far the view has been dragged down into a state, with no view
     /// rebuilt as it moves; see `panX(_:)`.
     ///
-    ///     Rectangle().fill(.transparent).panY($turn)
+    ///     Fill()
+    ///         .panY($turn)
     ///
-    /// - Parameter value: the state the distance is written into.
+    /// - Parameter state: the state the distance is written into.
     /// - Returns: the view, reporting there.
-    public func panY(_ value: Binding<Double>) -> Modified {
-        driven(ViewContract.panYChannel.token, by: value)
+    public func panY(_ state: Binding<Double>) -> Modified {
+        driven(ViewContract.panYChannel.token, by: state)
     }
 
     /// Runs as the view is dragged, from the moment it starts until it is let
     /// go.
     ///
-    ///     Rectangle().fill(.cornflowerBlue)
+    ///     Rectangle()
+    ///         .fill(.cornflowerBlue)
     ///         .translationX(offsetX)
     ///         .onPanUpdated { pan in
     ///             if pan.phase == .changed { offsetX = pan.totalX }
@@ -149,32 +255,40 @@ extension View {
     ) -> Modified {
         modified {
             $0.hearsPans(touchCount)
-            $0.addHandler(ViewContract.panUpdated.token) {
-                if let (phase, totalX, totalY) = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.panUpdated.name,
-                    as: GesturePhase.self, Double.self, Double.self) {
-                    try handler(PanUpdate(phase: phase, totalX: totalX, totalY: totalY))
-                }
+            $0.addHandler(ViewContract.panUpdated) { phase, total, velocity in
+                try handler(PanUpdate(phase: phase, total: total, velocity: velocity))
             }
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
+    public func onPanUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>) -> Modified {
+        modified {
+            $0.hearsPans(nil)
+            $0.addHandler(ViewContract.panUpdated, policy: policy, panned(handler))
+        }
+    }
+
+    /// The same, with `touchCount` pointers.
+    public func onPanUpdated(
+        touchCount: Int, policy: GatePolicy, _ handler: @escaping ValueEventHandler<PanUpdate>
+    ) -> Modified {
+        modified {
+            $0.hearsPans(touchCount)
+            $0.addHandler(ViewContract.panUpdated, policy: policy, panned(handler))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
     public func onPanUpdated(
         touchCount: Int? = nil,
-        gate: some Gate,
+        gate: Gate,
         _ handler: @escaping ValueEventHandler<PanUpdate>
     ) -> Modified {
         modified {
             $0.hearsPans(touchCount)
-            $0.addHandler(ViewContract.panUpdated.token, gate: gate) {
-                if let (phase, totalX, totalY) = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.panUpdated.name,
-                    as: GesturePhase.self, Double.self, Double.self) {
-                    try await handler(PanUpdate(phase: phase, totalX: totalX, totalY: totalY))
-                }
-            }
+            $0.addHandler(ViewContract.panUpdated, gate: gate, panned(handler))
         }
     }
 
@@ -182,19 +296,63 @@ extension View {
 
     /// Runs as two fingers move apart or together.
     ///
-    /// `scale` is relative - the change since the last report, not since the
-    /// pinch began - so a view being pinched multiplies rather than assigns.
+    /// `scale` is how far they have spread since the pinch began, so a
+    /// handler scales what it held when the pinch began; `velocity` is how
+    /// fast the scale changes.
     public func onPinchUpdated(_ handler: @escaping @MainActor (PinchUpdate) throws -> Void) -> Modified {
-        onEvent(ViewContract.pinchUpdated) { phase, scale, origin in
-            try handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin))
+        onEvent(ViewContract.pinchUpdated) { phase, scale, origin, velocity in
+            try handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin, velocity: velocity))
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPinchUpdated(gate: some Gate, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
-        onEvent(ViewContract.pinchUpdated, gate: gate) { phase, scale, origin in
-            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin))
+    public func onPinchUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
+        onEvent(ViewContract.pinchUpdated, policy: policy) { phase, scale, origin, velocity in
+            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin, velocity: velocity))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPinchUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<PinchUpdate>) -> Modified {
+        onEvent(ViewContract.pinchUpdated, gate: gate) { phase, scale, origin, velocity in
+            try await handler(PinchUpdate(phase: phase, scale: scale, scaleOrigin: origin, velocity: velocity))
+        }
+    }
+
+    // MARK: Rotation
+
+    /// Runs as two fingers turn over the view.
+    ///
+    ///     Image("dial.png")
+    ///         .rotation(angle)
+    ///         .onRotationUpdated { turn in
+    ///             if turn.phase == .began { turned = angle }
+    ///             angle = turned + turn.angle
+    ///         }
+    ///
+    /// `angle` is how far they have turned since they began, in degrees
+    /// clockwise, so a handler turns what it held when they began.
+    public func onRotationUpdated(_ handler: @escaping @MainActor (RotationUpdate) throws -> Void) -> Modified {
+        onEvent(ViewContract.rotationUpdated) { phase, angle, velocity in
+            try handler(RotationUpdate(phase: phase, angle: angle, velocity: velocity))
+        }
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way.
+    public func onRotationUpdated(
+        _ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>
+    ) -> Modified {
+        onEvent(ViewContract.rotationUpdated, policy: policy) { phase, angle, velocity in
+            try await handler(RotationUpdate(phase: phase, angle: angle, velocity: velocity))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Modified {
+        onEvent(ViewContract.rotationUpdated, gate: gate) { phase, angle, velocity in
+            try await handler(RotationUpdate(phase: phase, angle: angle, velocity: velocity))
         }
     }
 
@@ -208,9 +366,14 @@ extension View {
         onEvent(ViewContract.pointerEntered, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerEntered(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onPointerEntered(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.pointerEntered, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPointerEntered(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.pointerEntered, gate: gate, handler)
     }
 
@@ -219,9 +382,14 @@ extension View {
         onEvent(ViewContract.pointerExited, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerExited(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onPointerExited(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.pointerExited, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPointerExited(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.pointerExited, gate: gate, handler)
     }
 
@@ -236,9 +404,18 @@ extension View {
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerMoved(gate: some Gate, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
+    public func onPointerMoved(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
+        onEvent(ViewContract.pointerMoved, policy: policy) { point in
+            if let point {
+                try await handler(point)
+            }
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPointerMoved(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
         onEvent(ViewContract.pointerMoved, gate: gate) { point in
             if let point {
                 try await handler(point)
@@ -256,9 +433,18 @@ extension View {
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerPressed(gate: some Gate, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
+    public func onPointerPressed(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
+        onEvent(ViewContract.pointerPressed, policy: policy) { point in
+            if let point {
+                try await handler(point)
+            }
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPointerPressed(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
         onEvent(ViewContract.pointerPressed, gate: gate) { point in
             if let point {
                 try await handler(point)
@@ -275,9 +461,18 @@ extension View {
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPointerReleased(gate: some Gate, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
+    public func onPointerReleased(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
+        onEvent(ViewContract.pointerReleased, policy: policy) { point in
+            if let point {
+                try await handler(point)
+            }
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPointerReleased(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
         onEvent(ViewContract.pointerReleased, gate: gate) { point in
             if let point {
                 try await handler(point)
@@ -315,9 +510,14 @@ extension View {
         onEvent(ViewContract.dragEnded, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragEnded(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onDragEnded(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragEnded, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDragEnded(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragEnded, gate: gate, handler)
     }
 
@@ -337,12 +537,25 @@ extension View {
         }
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDrop(gate: some Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+    public func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Modified {
         modified {
             $0.write(ViewContract.allowsDrop, true)
-            $0.addHandler(ViewContract.drop.token, gate: gate) {
+            $0.addHandler(ViewContract.drop.token, gate: .own(policy)) {
+                if let text = MemberValues.carried(
+                    EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
+                    try await handler(text)
+                }
+            }
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDrop(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Modified {
+        modified {
+            $0.write(ViewContract.allowsDrop, true)
+            $0.addHandler(ViewContract.drop.token, gate: .shared(gate)) {
                 if let text = MemberValues.carried(
                     EventBuffer.current, by: ViewContract.drop.name, as: String.self) {
                     try await handler(text)
@@ -355,7 +568,7 @@ extension View {
     /// `types`, any file where none is given - with those dropped.
     ///
     ///     Text("Drop a report here")
-    ///         .onDrop(files: [FileType("Text", extensions: ["txt"])], gate: .ignoreWhileRunning) { files in
+    ///         .onDrop(files: [FileType("Text", extensions: ["txt"])], policy: .ignoreWhileRunning) { files in
     ///             notes = String(decoding: try await files[0].read(), as: UTF8.self)
     ///         }
     ///
@@ -376,20 +589,32 @@ extension View {
         }
     }
 
-    /// The same, with a handler that awaits - reading a file does: its `gate` says what a drop does while a
+    /// The same, with a handler that awaits - reading a file does: its `policy` says what a drop does while a
     /// run is under way.
+    public func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Modified {
+        modified {
+            $0.takesFiles([])
+            $0.addHandler(ViewContract.filesDropped.token, gate: .own(policy), dropped([], handler))
+        }
+    }
+
+    /// The same, taking files of `types` alone.
     public func onDrop(
-        files types: [FileType] = [], gate: some Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>
+        files types: [FileType], policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>
     ) -> Modified {
         modified {
             $0.takesFiles(types)
-            $0.addHandler(ViewContract.filesDropped.token, gate: gate) {
-                if let files = MemberValues.carried(
-                    EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self)?
-                    .filter({ $0.isOne(of: types) }), !files.isEmpty {
-                    try await handler(files)
-                }
-            }
+            $0.addHandler(ViewContract.filesDropped.token, gate: .own(policy), dropped(types, handler))
+        }
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDrop(
+        files types: [FileType] = [], gate: Gate, _ handler: @escaping ValueEventHandler<[ChosenFile]>
+    ) -> Modified {
+        modified {
+            $0.takesFiles(types)
+            $0.addHandler(ViewContract.filesDropped.token, gate: .shared(gate), dropped(types, handler))
         }
     }
 
@@ -398,9 +623,14 @@ extension View {
         onEvent(ViewContract.dragOver, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragOver(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragOver, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragOver, gate: gate, handler)
     }
 
@@ -410,9 +640,14 @@ extension View {
         onEvent(ViewContract.dragLeave, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onDragLeave(gate: some Gate, _ handler: @escaping EventHandler) -> Modified {
+    public func onDragLeave(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ViewContract.dragLeave, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onDragLeave(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ViewContract.dragLeave, gate: gate, handler)
     }
 }
@@ -445,6 +680,17 @@ extension Node {
         if count != 1 || said != nil { write(ViewContract.tapCount, count) }
     }
 
+    /// Waits `minimum` for a hold, a hold saying none keeping the one said; a view asked for two is said.
+    fileprivate mutating func hearsHolds(_ minimum: Duration?) {
+        guard let minimum else { return }
+        let milliseconds = Double(Motion.milliseconds(of: minimum))
+        if let said = props[ViewContract.holdDuration.token].flatMap(Double.init(propValue:)), said != milliseconds {
+            complain("A view waits one time for a hold: \(said) and \(milliseconds) milliseconds were asked on it, "
+                + "and the last stands.")
+        }
+        write(ViewContract.holdDuration, milliseconds)
+    }
+
     /// Hears pans of `touchCount`, a pan saying none keeping the one said; a view asked for two is said.
     fileprivate mutating func hearsPans(_ touchCount: Int?) {
         guard let touchCount else { return }
@@ -470,5 +716,34 @@ extension ChosenFile {
         guard !types.isEmpty else { return true }
         let ending = name.split(separator: ".").count > 1 ? name.split(separator: ".").last.map { $0.lowercased() } : nil
         return types.contains { type in ending.map(type.extensions.contains) ?? false }
+    }
+}
+
+/// What an awaiting swipe's handler runs: `handler`, given the way the swipe went, where `direction` names it.
+@MainActor
+private func swiped(
+    _ direction: SwipeDirection, _ handler: @escaping ValueEventHandler<SwipeDirection>
+) -> EventHandler {
+    {
+        if let went = SwipeDirection(EventBuffer.current.value()), direction.contains(went) { try await handler(went) }
+    }
+}
+
+/// What an awaiting pan's handler runs: `handler`, given where the pan stands.
+private func panned(
+    _ handler: @escaping ValueEventHandler<PanUpdate>
+) -> ValueEventHandler<GesturePhase, Point, Point> {
+    { phase, total, velocity in try await handler(PanUpdate(phase: phase, total: total, velocity: velocity)) }
+}
+
+/// What an awaiting drop's handler runs: `handler`, given the dropped files of `types`, where there are any.
+@MainActor
+private func dropped(_ types: [FileType], _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> EventHandler {
+    {
+        if let files = MemberValues.carried(
+            EventBuffer.current, by: ViewContract.filesDropped.name, as: [ChosenFile].self)?
+            .filter({ $0.isOne(of: types) }), !files.isEmpty {
+            try await handler(files)
+        }
     }
 }

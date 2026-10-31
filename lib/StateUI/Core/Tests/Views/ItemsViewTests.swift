@@ -182,6 +182,19 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(chosen.wrappedValue, [1, 2, 8])
     }
 
+    /// A list given its selection as a state reports the choice too, after writing it.
+    func testAChoiceGivenAsAStateIsReportedAfterItIsWritten() throws {
+        let chosen = State<Int?>(wrappedValue: nil)
+        let seen = Received<Int?>()
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(0..<10) { Text("\($0)") }
+            .selection(chosen.projectedValue)
+            .onSelectionChanged { _ in seen.values.append(chosen.wrappedValue) }.node))
+
+        renders.fire(try XCTUnwrap(list.events?[.selectedItemsChanged]), with: [.strings(["3"])])
+        XCTAssertEqual(seen.values, [3])
+    }
+
     /// An item the user opens is handed over as its id; the end reached is heard.
     func testAnItemOpenedNamesItsIdAndTheEndIsHeard() throws {
         let opened = Received<Int>()

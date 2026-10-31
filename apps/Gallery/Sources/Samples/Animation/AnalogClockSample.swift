@@ -6,7 +6,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
     // listing: AnalogClockSample
     @State private var ticking = false
 
-    /// Whether the first reading of this visit has SET the clock. Travelling
+    /// Whether the first reading of this visit has SET the clock. Traveling
     /// there from where the hands stand - noon, on the first visit - would
     /// sweep them round in a blur.
     @State private var started = false
@@ -29,9 +29,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
     @State private var hAngle = 0.0
 
     /// Where each mark sits and how it is shaped: a bar on the quarters, a
-    /// dot on the other hours, at radius 94 from the centre. Written out
+    /// dot on the other hours, at radius 94 from the center. Written out
     /// because they are layout, not drawing - each is a small box pushed off
-    /// centre by margins, with no rotation anywhere.
+    /// center by margins, with no rotation anywhere.
     static let marks: [(x: Double, y: Double, wide: Double, tall: Double)] = [
         (0, -94, 4, 14), (47, -81.4, 5, 5), (81.4, -47, 5, 5),
         (94, 0, 14, 4), (81.4, 47, 5, 5), (47, 81.4, 5, 5),
@@ -52,9 +52,9 @@ struct AnalogClockSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             ZStack().style(.card)
-                .background(Palette.raised)
-                .stroke(Palette.outline)
-                .lineWidth(2)
+                .background(Palette.accentWash)
+                .stroke(Palette.accent)
+                .lineWidth(3)
                 .shape(.roundedRectangle(110))
                 .width(220)
                 .height(220)
@@ -62,24 +62,27 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .verticalAlignment(.center)
 
             // The marks are laid out, not rotated: a quarter gets a bar,
-            // the other hours a dot, each pushed off centre by margins -
-            // margin(2x, 2y, 0, 0) shifts a centred view by (x, y).
+            // the other hours a dot, each pushed off center by margins -
+            // margin(2x, 2y, 0, 0) shifts a centered view by (x, y).
             ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                 let (x, y, wide, tall) = pair.element
-                return Rectangle(Palette.outline)
+                return Rectangle()
+                    .fill(Palette.accent)
+                    .cornerRadius(min(wide, tall) / 2)
+                    .opacity(wide == tall ? 0.5 : 1)
                     .width(wide)
                     .height(tall)
-                    .margin(left: 2 * x, top: 2 * y, right: 0, bottom: 0)
+                    .margin(start: 2 * x, top: 2 * y, end: 0, bottom: 0)
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
             }
 
             hand($hAngle, length: 56, width: 6, color: Palette.text)
             hand($mAngle, length: 84, width: 4, color: Palette.text)
-            hand($sAngle, length: 96, width: 2, color: Palette.accent)
+            hand($sAngle, length: 96, width: 2, color: Palette.brand)
 
             ZStack().style(.card)
-                .background(Palette.accent)
+                .background(Palette.brand)
                 .stroke(.transparent)
                 .shape(.roundedRectangle(6))
                 .width(12)
@@ -170,8 +173,8 @@ struct AnalogClockSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Each hand is a box whose bottom sits at the face's centre - "
-                + "the bottom margin equals its length, so centring the margin "
+            Text("Each hand is a box whose bottom sits at the face's center - "
+                + "the bottom margin equals its length, so centering the margin "
                 + "box puts the foot on the middle - and pivotY(1) makes that "
                 + "foot the pivot.")
                 .fontSize(12)
@@ -201,8 +204,8 @@ struct AnalogClockSample: SampleContent, ExampleContent {
     }
 
     // listing: AnalogClockSample
-    /// One hand: bottom at the face's centre, rotating about that bottom.
-    /// The bottom margin equals the length, so centring the margin box puts
+    /// One hand: bottom at the face's center, rotating about that bottom.
+    /// The bottom margin equals the length, so centering the margin box puts
     /// the hand's foot exactly on the middle - plain layout, no transforms.
     /// `.rotation(angle)` DRIVES the rotation from the state handed in, which
     /// is what makes a movement on that state turn this hand - on the host's
@@ -211,11 +214,12 @@ struct AnalogClockSample: SampleContent, ExampleContent {
         _ angle: Binding<Double>,
         length: Double, width: Double, color: Color
     ) -> some View {
-        Rectangle(color)
+        Rectangle()
+            .fill(color)
             .rotation(angle)
             .width(width)
             .height(length)
-            .margin(left: 0, top: 0, right: 0, bottom: length)
+            .margin(start: 0, top: 0, end: 0, bottom: length)
             .pivotY(1)
             .horizontalAlignment(.center)
             .verticalAlignment(.center)

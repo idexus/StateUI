@@ -15,21 +15,24 @@ import QuartzCore
 /// does not present shows as a diagnostic label in its place.
 @MainActor
 public enum StateUIAppKit {
-    /// Starts `NSApplication` and displays the application already registered
-    /// with `stateUIUseApp(_:)`.
+    /// Starts `NSApplication`, displays the application already registered
+    /// with `stateUIUseApp(_:)`, and ends the process as the application ends.
     ///
     /// - Parameters:
-    ///   - resourceDirectory: A directory containing image resources.
-    ///   - applicationIcon: The complete image shown for the running application.
+    ///   - resourceDirectory: where the application's pictures are; nil shows the `Images` the program carries -
+    ///     in its bundle, or in the `Resources` beside it, where `.scripts/AppKit/deploy.sh` lays them.
+    ///   - applicationIcon: the complete image shown for the running application; nil shows the
+    ///     `Resources/AppIcon/appicon_macos.svg` beside the program, and a bundle shows its own.
     public static func run(
         resourceDirectory: URL? = nil,
         applicationIcon: URL? = nil
-    ) {
+    ) -> Never {
+        let carried = CarriedArtwork(program: Bundle.main.executableURL, bundleResources: Bundle.main.resourceURL)
         let application = NSApplication.shared
-        let delegate = AppDelegate(resourceDirectory: resourceDirectory)
+        let delegate = AppDelegate(resourceDirectory: resourceDirectory ?? carried.images)
 
         application.setActivationPolicy(.regular)
-        if let applicationIcon, let icon = NSImage(contentsOf: applicationIcon) {
+        if let iconFile = applicationIcon ?? carried.icon, let icon = NSImage(contentsOf: iconFile) {
             application.applicationIconImage = icon
         }
         application.delegate = delegate
@@ -37,6 +40,7 @@ public enum StateUIAppKit {
         application.run()
 
         withExtendedLifetime(delegate) {}
+        exit(0)
     }
 
     private static func configureMainMenu(
@@ -117,6 +121,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         false
+    }
+
+    func application(_ application: NSApplication, open urls: [URL]) {
+        host.openLinks(urls.map(\.absoluteString))
     }
 
     func applicationShouldHandleReopen(

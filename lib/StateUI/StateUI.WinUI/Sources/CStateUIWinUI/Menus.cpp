@@ -143,6 +143,26 @@ namespace {
         return element.ContextFlyout().try_as<controls::MenuFlyout>();
     }
 
+    /// The control of a bar's action at `place` - its button, or the split or drop-down button its container holds -
+    /// at either edge or behind "more"; null for none.
+    xaml::FrameworkElement actionButton(ActionEdges const &edges, int32_t place) {
+        for (auto const &commands :
+             {edges.leading.PrimaryCommands(), edges.trailing.PrimaryCommands(), edges.trailing.SecondaryCommands()})
+            for (auto const &command : commands) {
+                if (auto contained = command.try_as<controls::AppBarElementContainer>()) {
+                    // An action standing alone by its container's place; one on a capsule by its own.
+                    if (winrt::unbox_value_or<int32_t>(contained.Tag(), -1) == place)
+                        return contained.Content().as<xaml::FrameworkElement>();
+                    for (auto const &control : composedActions(contained))
+                        if (winrt::unbox_value_or<int32_t>(control.Tag(), -1) == place) return control;
+                }
+                if (auto button = command.try_as<controls::AppBarButton>();
+                    button && winrt::unbox_value_or<int32_t>(button.Tag(), -1) == place)
+                    return button;
+            }
+        return nullptr;
+    }
+
     /// The entries of each menu an element offers: its button's or context menu's, or each of a bar's menus.
     std::vector<Entries> menus(xaml::UIElement const &element) {
         std::vector<Entries> found;
@@ -196,6 +216,71 @@ extern "C" void stateui_winui_button_set_menu(
         else if (auto button = element.try_as<controls::Button>()) button.Flyout(flyout);
     } catch (...) {
         report("giving a button its menu");
+    }
+}
+
+extern "C" void stateui_winui_title_bar_set_action_menu(
+    StateUIObjectRef handle, int32_t place, bool held, int32_t first, int32_t const *kinds, char const *const *titles,
+    bool const *enabled, char const *const *identifiers, char const *const *icons, bool const *destructive,
+    int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count
+) {
+    try {
+        auto bar = borrow<controls::TitleBar>(handle);
+        setActionMenu(actionEdges(bar), winrt::unbox_value<int64_t>(bar.Tag()), place, held, first, kinds, titles,
+                      enabled, identifiers, icons, destructive, keys, modifiers, givesWay, count);
+    } catch (...) {
+        report("giving a bar's action its menu");
+    }
+}
+
+void stateui::setActionMenu(
+    ActionEdges const &edges, int64_t view, int32_t place, bool held, int32_t first, int32_t const *kinds,
+    char const *const *titles, bool const *enabled, char const *const *identifiers, char const *const *icons,
+    bool const *destructive, int32_t const *keys, int32_t const *modifiers, bool const *givesWay, int32_t count
+) {
+    auto button = actionButton(edges, place);
+    if (!button) return;
+    controls::MenuFlyout flyout;
+    Writer writer{view, nullptr, {flyout.Items()}, first};
+    for (int32_t index = 0; index < count; ++index) {
+        writer.write(kinds[index], titles[index], enabled[index], identifiers[index], icons[index],
+                     destructive[index], keys[index], modifiers[index], givesWay[index]);
+    }
+    // A split button's arrow opens it; held, it is the button's context menu - press and hold, or the mouse's other
+    // button - as a held button's; else the button's click opens it.
+    if (auto split = button.try_as<controls::SplitButton>()) split.Flyout(flyout);
+    else if (held) button.ContextFlyout(flyout);
+    else button.as<controls::Button>().Flyout(flyout);
+}
+
+extern "C" int32_t stateui_winui_title_bar_action_menu(StateUIObjectRef handle, int32_t place, char *utf8, int32_t capacity) {
+    try {
+        auto button = actionButton(actionEdges(borrow<controls::TitleBar>(handle)), place);
+        auto flyout = button ? offered(button) : nullptr;
+        auto bytes = winrt::to_string(flyout ? described(flyout.Items()) : std::wstring());
+        if (utf8 && capacity > 0) {
+            auto size = std::min<size_t>(bytes.size(), static_cast<size_t>(capacity - 1));
+            std::memcpy(utf8, bytes.data(), size);
+            utf8[size] = 0;
+        }
+        return static_cast<int32_t>(bytes.size());
+    } catch (...) {
+        report("reading a bar's action's menu");
+        return 0;
+    }
+}
+
+extern "C" void stateui_winui_title_bar_action_menu_choose(StateUIObjectRef handle, int32_t place, int32_t index) {
+    try {
+        auto button = actionButton(actionEdges(borrow<controls::TitleBar>(handle)), place);
+        auto flyout = button ? offered(button) : nullptr;
+        if (!flyout) return;
+        if (auto chosen = item(flyout.Items(), index)) {
+            if (auto invoke = pattern<provider::IInvokeProvider>(chosen, PatternInterface::Invoke)) invoke.Invoke();
+            else pattern<provider::IToggleProvider>(chosen, PatternInterface::Toggle).Toggle();
+        }
+    } catch (...) {
+        report("choosing in a bar's action's menu");
     }
 }
 

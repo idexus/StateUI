@@ -2,6 +2,6 @@
 <!-- A house: the page the gallery opens on. -->
 <svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
   <g fill="#000000">
-    <path d="M24 6 6 22h5v18h10V28h6v12h10V22h5z"/>
+    <path fill-rule="evenodd" d="M24 6 6 22h5v18h26V22h5zm0 3.6L13.4 19.2v18.2h7.2v-8.8a1.4 1.4 0 0 1 1.4-1.4h4a1.4 1.4 0 0 1 1.4 1.4v8.8h7.2V19.2z"/>
   </g>
 </svg>

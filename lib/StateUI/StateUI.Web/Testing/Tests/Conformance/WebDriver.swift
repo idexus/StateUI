@@ -49,23 +49,29 @@ final class WebDriver: HostDriver {
         if Ability(ability).readsATransform {
             return "the host's own transform: the page holds one matrix of it, its parts no longer told apart"
         }
+        if ability.hasPrefix("read holdDuration of ") {
+            return "the relay's own wait: a page holds no hold of the browser's"
+        }
         // An act is noted with the element it is done on: its reason is the act's, on any element.
         return Self.byHostReasons[ability] ?? Self.byHostReasons[Ability(ability).act]
     }
 
     private static let byHostReasons = [
         "read step of Stepper": "the step the host takes: the page's field holds none",
+        "openLink": "the host's entry the page's address with a fragment reaches, no address loaded",
         "switchAway": "the notice the browser gives as the user goes elsewhere, told by the driver: a page moves no window",
         "switchBack": "the notice the browser gives as the user comes back, told by the driver: a page moves no window",
         "minimize": "the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab",
         "restore": "the notice the browser gives as the page's tab shows, told by the driver: a page shows no tab",
-        "close": "the notice the browser gives as it leaves the page, told by the driver: a page closes no tab",
+        "close on Window": "the notice the browser gives as it leaves the page, told by the driver: a page closes no tab",
         "read selectedItems of ItemsView": "the identities the host chose: the page marks a cell chosen, not which item it shows",
         "read windowType of Window": "the scenes the host keeps for the next start",
         "read windowValue of Window": "the scenes the host keeps for the next start",
         "read a file dialog": "the dialog the relay holds on a page a test drives, which the browser never shows",
         "read what was launched": "the relay's own record of what it would open, which a test holds back",
         "answerFiles": "the relay's answer handed the driver's files, no dialog shown",
+        "answerShare": "the relay's answer handed the driver's choice, no share sheet shown",
+        "read a share sheet": "the share sheet the relay holds on a page a test drives, which the browser never shows",
         "dragAndDrop": "the DOM's drag events dispatched by the driver, no drag the browser began",
         "dropFiles": "the DOM's drag events dispatched by the driver with its files, no drag the browser began",
         "sweep": "the hand handed to the host's entry with its speed, no pointer sent",
@@ -78,6 +84,7 @@ final class WebDriver: HostDriver {
     let written = WebLogLines()
 
     var liveViews: Int? { WebDOMView.liveCount }
+    var liveViewKinds: [String: Int]? { Dictionary(WebDOMView.liveKinds.values.map { ($0, 1) }, uniquingKeysWith: +) }
 
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
@@ -114,8 +121,18 @@ final class WebDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
-        if [.menuItem, .menu].contains(element.type), let value = try menuItemHolds(property, on: element) { return value }
-        if element.type == .toolbarItem, let value = try toolbarItemHolds(property, on: element) { return value }
+        if [.menuItem, .menuToggle, .menu].contains(element.type), let value = try menuItemHolds(property, on: element) { return value }
+        if NodeType.toolbarItemTypes.contains(element.type), let value = try toolbarItemHolds(property, on: element) {
+            return value
+        }
+        if element.type == .toolbarGroup, let group = try barView(of: element) {
+            switch property {
+            case .background, .stroke, .lineWidth, .shape: if let value = try boxHolds(property, group) { return value }
+            case .padding: if let value = try wordsHolds(property, group.node) { return value }
+            case .spacing: return try WebBrowser.number("parseFloat(getComputedStyle(e).columnGap) || 0", on: group.node)?.propValue
+            default: break
+            }
+        }
         if element.type == .textSpan, let value = try spanHolds(property, on: element) { return value }
         if let value = try structureHolds(property, on: element) { return value }
         let view = try self.view(of: element, reading: property)

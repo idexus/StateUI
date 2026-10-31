@@ -9,11 +9,11 @@ import XCTest
 
 /// Words `depth` grids deep, each grid with words and a stack of its own beside them.
 @MainActor
-private func nest(_ depth: Int, _ words: String) -> Node {
-    guard depth > 0 else { return Text(words).margin(2).node }
+private func nest(_ depth: Int, _ words: String) -> AnyView {
+    guard depth > 0 else { return AnyView(Text(words).margin(2)) }
 
-    return Grid {
-        ModifiedContent(node: nest(depth - 1, words))
+    return AnyView(Grid {
+        nest(depth - 1, words)
         Text("beside \(depth)").gridRow(1)
         VStack {
             Text("a \(depth)")
@@ -23,8 +23,7 @@ private func nest(_ depth: Int, _ words: String) -> Node {
     }
     .rows(.auto, .auto)
     .columns(.auto, .fill)
-    .margin(2)
-    .node
+    .margin(2))
 }
 
 final class WinUIMeasurementTests: XCTestCase {
@@ -34,7 +33,7 @@ final class WinUIMeasurementTests: XCTestCase {
     func testAChangeSizesOnlyTheLayoutsAboveIt() {
         onUIThread {
             let words = State(wrappedValue: "short")
-            let host = WinUIRenderer.running { ModifiedContent(node: nest(6, words.wrappedValue)) }
+            let host = WinUIRenderer.running { nest(6, words.wrappedValue) }
             host.layOut()
 
             let before = WinUILayoutView.sizings

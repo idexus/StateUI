@@ -19,6 +19,12 @@ class WebDOMView {
     /// How many views are alive, for the tally.
     private(set) static var liveCount = 0
 
+    #if DEBUG
+    /// Each view alive: its class, its element's tag and its classes - what a test names a view that
+    /// outlived its element by.
+    private(set) static var liveKinds: [ObjectIdentifier: String] = [:]
+    #endif
+
     /// The listeners hung on the element, let go of with it.
     private var listeners: [Int32] = []
     private var offered = DragAndDrop.none
@@ -48,10 +54,22 @@ class WebDOMView {
     }
 
     /// Where the view is drawn while its place travels; nil at its slot.
-    var travelling: Rect?
+    var traveling: Rect?
+
+    /// The size of new words the view holds back while its box grows to hold them (`PlacedView`), its former ones
+    /// shown; nil shows its own and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet { holdWords(heldWords != nil) }
+    }
+
+    /// Shows the words held back, or the view's own; most views hold none.
+    func holdWords(_ holding: Bool) {}
 
     /// The place a layout's run last stood the view at; nil while no run places it.
     var placedByRun: HostPlacement?
+
+    /// Whether the run last stood the view from its layout's right edge, the run standing right to left.
+    var placedFromRight = false
 
     /// How far the view is drawn from where the browser lays it out while its place travels.
     var travelOffset: (x: Double, y: Double)?
@@ -70,24 +88,39 @@ class WebDOMView {
     private var box = WebBox()
     private var followsSize = false
 
+    /// The CSS variables written as a box's background, by name, and whether the view's size is followed for a
+    /// gradient in one.
+    private var backgrounds: [String: WebBox] = [:]
+    private var backgroundsFollowSize = false
+
     init(tag: String) {
         node = WebRelay.create(tag)
         serial = HostNumbers.next()
-        Self.liveCount += 1
+        made(tag)
     }
 
     /// A view of an element made already - an application's control's - which it lets go of as its own.
     init(adopting node: Int32) {
         self.node = node
         serial = HostNumbers.next()
-        Self.liveCount += 1
+        made("adopted")
     }
 
     /// A view of one of SVG's elements.
     init(vector tag: String) {
         node = WebRelay.createVector(tag)
         serial = HostNumbers.next()
+        made(tag)
+    }
+
+    /// Counts the view made - named, in a debug build, by its class and its element's tag - and marks a control of
+    /// the browser's own, whose presses are its own: a press begun in one is no press of a view around it.
+    private func made(_ tag: String) {
         Self.liveCount += 1
+        if isControl { attribute("data-control", "") }
+        #if DEBUG
+        Self.liveKinds[ObjectIdentifier(self)] = "\(type(of: self)) <\(tag)>"
+        #endif
     }
 
     /// Whether the element has been let go of: its number may be another element's by now.
@@ -101,6 +134,9 @@ class WebDOMView {
         listeners = []
         WebRelay.release(node)
         Self.liveCount -= 1
+        #if DEBUG
+        Self.liveKinds.removeValue(forKey: ObjectIdentifier(self))
+        #endif
     }
 
     /// What the element's drag carries and whether it takes drops, as last told; `action` hears each drag.
@@ -150,11 +186,34 @@ class WebDOMView {
         WebRelay.hear(node, kind, listener)
     }
 
+    /// Follows a press on the element as a button takes it: `action` hears each phase, where the press stands, the
+    /// element's size and whether a finger presses (`WebRelay.eventPress`).
+    /// Design: docs/design/platforms/web/input.md#taps
+    func hearPress(_ action: @escaping @MainActor (GesturePhase, Point, LayoutSize, Bool) -> Void) {
+        hear(.press) {
+            let press = WebRelay.eventPress
+            action(press.phase, press.at, press.size, press.byFinger)
+        }
+    }
+
     /// Runs `action` whenever the user asks for the element's menu: a right click, or a finger held still.
     func listenForMenu(_ action: @escaping @MainActor () -> Void) {
         let listener = WebRelay.listener(action)
         listeners.append(listener)
         WebRelay.listenForMenu(node, listener)
+    }
+
+    /// How long the user holds the element down still before it is held, in milliseconds.
+    var holdTime = HandReading.hold {
+        didSet { if holdTime != oldValue { WebRelay.waitForHold(node, holdTime) } }
+    }
+
+    /// Runs `action` whenever the user holds the element down still for `holdTime`: its release is then no click.
+    /// Design: docs/design/platforms/web/input.md#a-press-held
+    func listenForHold(_ action: @escaping @MainActor () -> Void) {
+        let listener = WebRelay.listener(action)
+        listeners.append(listener)
+        WebRelay.listenForHold(node, holdTime, listener)
     }
 
     /// Says when a pointer takes hold of the element, and once when it lets go - lifted, called off, or gone off it.
@@ -188,7 +247,7 @@ class WebDOMView {
         styles[name]
     }
 
-    /// What the element is drawn over, under its whole box: a colour, or a brush's first colour; nil for the
+    /// What the element is drawn over, under its whole box: a color, or a brush's first color; nil for the
     /// browser's own. A field's box is its field, the picture the page's look draws in it kept.
     /// Design: docs/design/platforms/web/look.md#a-views-background
     func setBackground(_ value: HostValue?) {
@@ -197,6 +256,11 @@ class WebDOMView {
 
     /// Sets an attribute, or takes it away for nil.
     func attribute(_ name: String, _ value: String?) {
+        #if DEBUG
+        if name == "class", let value, let kind = Self.liveKinds[ObjectIdentifier(self)] {
+            Self.liveKinds[ObjectIdentifier(self)] = String(kind.prefix { $0 != "." }) + "." + value
+        }
+        #endif
         WebRelay.setAttribute(node, name, value)
     }
 
@@ -205,7 +269,7 @@ class WebDOMView {
         style("opacity", opacity >= 1 ? nil : WebCSS.number(max(0, opacity)))
     }
 
-    /// Whether the view takes input; a form control greys itself.
+    /// Whether the view takes input; a form control grays itself.
     func setEnabled(_ enabled: Bool) {
         attribute("aria-disabled", enabled ? nil : "true")
     }
@@ -292,8 +356,9 @@ class WebDOMView {
         attribute("data-identifier", words.identifier)
         named.attribute("aria-label", words.label?.isEmpty == false ? words.label : nil)
         named.attribute("aria-description", words.hint?.isEmpty == false ? words.hint : nil)
-        spoken = (words.headingLevel > 0, words.presence == .hidden)
+        spoken = (words.headingLevel > 0, words.presence == .hidden, words.role)
         writeRole()
+        attribute("aria-valuetext", words.value)
         attribute("aria-level", spoken.heading ? String(words.headingLevel) : nil)
         attribute("aria-hidden", words.presence == .hiddenWithChildren ? "true" : nil)
     }
@@ -319,13 +384,26 @@ class WebDOMView {
         }
     }
 
-    /// Whether assistive technology meets the view as a heading, and whether it skips it, as its words last said.
-    private var spoken = (heading: false, skipped: false)
+    /// Whether assistive technology meets the view as a heading, whether it skips it, and the kind it said, as its
+    /// words last said.
+    private var spoken: (heading: Bool, skipped: Bool, kind: AccessibilityRole?) = (false, false, nil)
 
-    /// The one writer of the view's role, from all it is: a heading, else skipped, else its own (`role`) - a
-    /// container the user taps a button.
+    /// The one writer of the view's role, from all it is: a heading, else skipped, else the kind it says, else its
+    /// own (`role`) - a container the user taps a button.
     private func writeRole() {
-        attribute("role", spoken.heading ? "heading" : spoken.skipped ? "none" : role)
+        attribute("role", spoken.heading ? "heading" : spoken.skipped ? "none" : spoken.kind.map(Self.role) ?? role)
+    }
+
+    /// The document's role for a kind the view says it is.
+    static func role(_ kind: AccessibilityRole) -> String {
+        switch kind {
+        case .button: "button"
+        case .toggle: "switch"
+        case .adjustable: "slider"
+        case .link: "link"
+        case .image: "img"
+        case .text: "paragraph"
+        }
     }
 
     /// The direction the view lays out and writes in.
@@ -347,6 +425,27 @@ class WebDOMView {
 
     /// The view's box as it stands.
     var paintedBox: WebBox { box }
+
+    /// Writes the CSS variable `name` as `box`'s background over the view - a gradient's for the view's size, again
+    /// as the size changes; nil takes it away.
+    /// Design: docs/design/platforms/web/drawing.md#a-brush-on-a-box
+    func styleBackground(_ name: String, _ box: WebBox?) {
+        backgrounds[name] = box
+        if box?.followsSize == true, !backgroundsFollowSize {
+            backgroundsFollowSize = true
+            followSize { [weak self] in
+                guard let self else { return }
+                for name in backgrounds.keys.sorted() { writeBackground(name) }
+            }
+        }
+        writeBackground(name)
+    }
+
+    private func writeBackground(_ name: String) {
+        guard let box = backgrounds[name] else { return style(name, nil) }
+        let size = box.followsSize ? WebRelay.size(of: node) : LayoutSize(width: 0, height: 0)
+        style(name, box.styles(size: size).first { $0.0 == "background" }?.1 ?? nil)
+    }
 
     private func writeBox() {
         let size = box.followsSize ? WebRelay.size(of: node) : LayoutSize(width: 0, height: 0)

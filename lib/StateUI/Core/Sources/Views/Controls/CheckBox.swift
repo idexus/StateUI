@@ -12,22 +12,19 @@ extension CheckBoxProperties {
     }
 }
 
-/// A box that is ticked or not.
+/// A box that is ticked or not, and the words it says beside it.
 ///
 ///     @State private var agreed = false
 ///     …
-///     HStack {
-///         CheckBox($agreed).tint(.firebrick)
-///         Text("I agree").verticalAlignment(.center)
-///     }
+///     CheckBox($agreed).text("I agree to the terms")
 ///
 /// Given a binding it shows what the binding holds and writes every tick back.
 /// Given a plain `Bool` it only shows: `.onToggled` is then the one way
 /// a tick reaches anywhere.
 ///
-/// No caption of its own - a CheckBox is the box and nothing else. Put a
-/// Text beside it, as above.
-public struct CheckBox: ElementView, TintElement, CheckBoxProperties, FocusElement {
+/// Its words are its own: a tap on them ticks the box, and a screen reader
+/// names the box by them.
+public struct CheckBox: ElementView, TextualElement, TintElement, CheckBoxProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
 
@@ -44,34 +41,37 @@ public struct CheckBox: ElementView, TintElement, CheckBoxProperties, FocusEleme
     }
 
     /// Two-way: shows what the binding holds, and writes back what is ticked.
-    public init(_ isOn: Binding<Bool>) {
-        self = CheckBox().isOn(isOn)
+    public init(_ state: Binding<Bool>) {
+        self = CheckBox().isOn(state)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
     /// Two-way: shows what the state holds and writes back what is ticked,
     /// with no view rebuilt for it.
     ///
-    /// - Parameter value: the state shown, and written back into as the user
+    /// - Parameter state: the state shown, and written back into as the user
     ///   ticks it.
     /// - Returns: the box, wearing and reporting that value.
-    public func isOn(_ value: Binding<Bool>) -> Modified {
-        value.image == nil
-            ? described(CheckBoxContract.isOn.token, value, on: CheckBoxContract.toggled.token)
-            : plain(CheckBoxContract.isOn.token, by: value, mode: .inOut)
+    public func isOn(_ state: Binding<Bool>) -> Modified {
+        plain(CheckBoxContract.isOn.token, by: state, mode: .inOut)
     }
 
     // MARK: Events
 
     /// Fires when it is ticked or unticked, with the new value. Runs after a
     /// binding's write, if there is one.
-    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Self {
+    public func onToggled(_ handler: @escaping @MainActor (Bool) throws -> Void) -> Modified {
         onEvent(CheckBoxContract.toggled, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onToggled(gate: some Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Self {
+    public func onToggled(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
+        onEvent(CheckBoxContract.toggled, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onToggled(gate: Gate, _ handler: @escaping ValueEventHandler<Bool>) -> Modified {
         onEvent(CheckBoxContract.toggled, gate: gate, handler)
     }
 }

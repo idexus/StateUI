@@ -12,6 +12,7 @@ extension UIKitElement {
     /// The view lays out, and its control writes, in the element's direction.
     func directionChanged() {
         view?.semanticContentAttribute = element.layoutDirection == .rightToLeft ? .forceRightToLeft : .forceLeftToRight
+        (view as? any UIKitLabel)?.directionTurned()
     }
 
     func arrangeChildren() {

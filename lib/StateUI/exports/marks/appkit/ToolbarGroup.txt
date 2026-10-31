@@ -1,0 +1,10 @@
+# revision 9.1
+ToolbarGroup: ✅
+ToolbarGroup.barEdge: ✅
+ToolbarGroup.hidesWithSidebar: ✅
+ToolbarGroup.isEnabled: ✅
+ToolbarGroup.order: ✅
+ToolbarGroup.part: ✅
+ToolbarGroup.position: ✅
+ToolbarGroup.spacing: – The Mac's toolbar draws its items in the Mac's own look.
+ToolbarGroup.standsAlone: – The Mac's toolbar draws every group on a glass of its own, a lone item's too.

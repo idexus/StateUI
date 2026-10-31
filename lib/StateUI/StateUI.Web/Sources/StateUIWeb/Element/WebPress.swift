@@ -30,9 +30,6 @@ struct WebPress {
     private var turning: Double?
     private var rotation = RotationStep()
 
-    /// Whether the press the user lets go of last was dragged, so its click is no tap.
-    private(set) var wasDragged = false
-
     /// What presses: a pointer's kind, as the page tells it.
     enum Pointer: Int32 {
         case mouse = 0
@@ -40,12 +37,18 @@ struct WebPress {
         case touch
     }
 
-    /// How far a finger moves, in points, before its press is a drag.
+    /// How far a finger moves, in points, before its press is a drag; a mouse or a pen.
     static let finger = 10.0
+    static let pointer = 4.0
 
     /// How far a pointer of `kind` moves before its press is a drag.
     static func distance(for kind: Pointer) -> DragRecognition.Distance {
-        .radius(kind == .touch ? finger : 4)
+        .radius(kind == .touch ? finger : pointer)
+    }
+
+    /// The page held the press: the hold's, unless it is a drag already, by the host layer's rule. Whether it is.
+    mutating func held() -> Bool {
+        drag.held()
     }
 
     /// A pointer of `kind` went down at `point` on the page: the first a press that may become a drag; a second
@@ -53,7 +56,6 @@ struct WebPress {
     mutating func down(_ id: Int, at point: Point, kind: Pointer, origin: Point, size: LayoutSize) -> [HeardInput] {
         pressed[id] = point
         guard pressed.count == 1 else { return pinchBegins(at: middle(origin, size)) }
-        wasDragged = false
         drag = DragRecognition(distance: Self.distance(for: kind))
         drag.pressed(at: point)
         dragging = id
@@ -73,9 +75,7 @@ struct WebPress {
             ]
         }
         guard id == dragging else { return [] }
-        let heard = drag.moved(to: point)
-        if drag.isDragging { wasDragged = true }
-        return heard
+        return drag.moved(to: point)
     }
 
     /// A pressed pointer let go, or the page took it away: the drag's end, or the pinch's.

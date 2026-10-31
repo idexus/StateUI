@@ -19,6 +19,10 @@ public enum SplitViewContract: ElementContract {
     /// Whether the sidebar is showing.
     public static let showsSidebar = ElementProperty<Self, Bool>("showsSidebar", layer: .native)
 
+    /// Whether the split view's bar offers the user its toggle, showing and hiding the sidebar; offered where
+    /// unwritten.
+    public static let showsSidebarToggle = ElementProperty<Self, Bool>("showsSidebarToggle", layer: .adaptive)
+
     /// The user showed or hid the sidebar, to the value it carries.
     public static let showsSidebarChanged = ElementEvent<Self, Bool>(
         "showsSidebarChanged", layer: .adaptive)
@@ -28,8 +32,8 @@ public enum SplitViewContract: ElementContract {
     public static let sidebarBackground = ElementProperty<Self, Material>("sidebarBackground", layer: .adaptive)
 
     /// What the sidebar stands on while it slides over the detail; unwritten,
-    /// the platform's own surface there, never the window's.
-    public static let flyoutBackground = ElementProperty<Self, Material>("flyoutBackground", layer: .adaptive)
+    /// the window's background laid over the platform's own surface there.
+    public static let sidebarOverlayBackground = ElementProperty<Self, Material>("sidebarOverlayBackground", layer: .adaptive)
 
     /// Whether the sidebar lies over the detail rather than beside it, as the platform places it for the room: the
     /// host writes it.
@@ -37,6 +41,6 @@ public enum SplitViewContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        showsSidebar, showsSidebarChanged, sidebarBackground, flyoutBackground, sidebarOverlays,
+        showsSidebar, showsSidebarToggle, showsSidebarChanged, sidebarBackground, sidebarOverlayBackground, sidebarOverlays,
     ]
 }

@@ -1,8 +1,10 @@
-# revision 3.1
+# revision 6.1
 Button.keyPressed: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 Button.keysTaken: ✓ pressKeys on Button: the shortcut controller's action run, no key event
 CheckBox.keyPressed: ✓ pressKeys on CheckBox: the shortcut controller's action run, no key event
 CheckBox.keysTaken: ✓ pressKeys on CheckBox: the shortcut controller's action run, no key event
+ColorPicker.keyPressed: ✓ pressKeys on ColorPicker: the shortcut controller's action run, no key event
+ColorPicker.keysTaken: ✓ pressKeys on ColorPicker: the shortcut controller's action run, no key event
 DatePicker.keyPressed: ✓ pressKeys on DatePicker: the shortcut controller's action run, no key event
 DatePicker.keysTaken: ✓ pressKeys on DatePicker: the shortcut controller's action run, no key event
 Grid.keyPressed: ✓ pressKeys on Grid: the shortcut controller's action run, no key event
@@ -11,12 +13,12 @@ HStack.keyPressed: ✓ pressKeys on HStack: the shortcut controller's action run
 HStack.keysTaken: ✓ pressKeys on HStack: the shortcut controller's action run, no key event
 ItemsView.keyPressed: ✓ pressKeys on ItemsView: the shortcut controller's action run, no key event
 ItemsView.keysTaken: ✓ pressKeys on ItemsView: the shortcut controller's action run, no key event
-LayoutEngine.keyPressed: ✓ pressKeys on LayoutEngine: the shortcut controller's action run, no key event
-LayoutEngine.keysTaken: ✓ pressKeys on LayoutEngine: the shortcut controller's action run, no key event
+Link.keyPressed: ✓ pressKeys on Link: the shortcut controller's action run, no key event
+Link.keysTaken: ✓ pressKeys on Link: the shortcut controller's action run, no key event
+MotionLayout.keyPressed: ✓ pressKeys on MotionLayout: the shortcut controller's action run, no key event
+MotionLayout.keysTaken: ✓ pressKeys on MotionLayout: the shortcut controller's action run, no key event
 Picker.keyPressed: ✓ pressKeys on Picker: the shortcut controller's action run, no key event
 Picker.keysTaken: ✓ pressKeys on Picker: the shortcut controller's action run, no key event
-RadioButton.keyPressed: ✓ pressKeys on RadioButton: the shortcut controller's action run, no key event
-RadioButton.keysTaken: ✓ pressKeys on RadioButton: the shortcut controller's action run, no key event
 ScrollView.keyPressed: ✓ pressKeys on ScrollView: the shortcut controller's action run, no key event
 ScrollView.keysTaken: ✓ pressKeys on ScrollView: the shortcut controller's action run, no key event
 SearchField.keyPressed: ✓ pressKeys on SearchField: the shortcut controller's action run, no key event

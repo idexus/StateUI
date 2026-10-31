@@ -75,8 +75,12 @@ final class AppKitWindowController: NSWindowController {
     /// opaque window. See `AppKitWindowContentView.backdrop`.
     var backdrop: Blur.Thickness?
 
+    /// The bars' edge the rooms were last laid out for.
+    var shownBarScrollEdge = ScrollEdge.automatic
+
     var pageMenuItemsForTesting: [NSMenuItem] { AppKitMenus.items(pageMenus) }
     var modalCountForTesting: Int { modals.count }
+    var modalsForTesting: [AppKitModalWindowController] { modals }
     var hiddenBySceneForTesting: Bool { hiddenByScene }
     var toolbarForTesting: AppKitWindowToolbar { toolbar }
     var tabRowForTesting: AppKitTabRow { tabRow }
@@ -136,6 +140,7 @@ final class AppKitWindowController: NSWindowController {
         window.titlebarAppearsTransparent = false
         window.toolbarStyle = .unified
         window.toolbar = toolbar.toolbar
+        toolbar.window = window
         if window.frame != standing { window.setFrame(standing, display: false) }
     }
 
@@ -197,6 +202,9 @@ final class AppKitWindowController: NSWindowController {
         }
 
         let arrangement = presentation.arrangement
+        content.visiblePage = arrangement?.visiblePage
+        content.showBottomBar(of: arrangement?.type == .splitView ? nil : arrangement?.visiblePage)
+        (arrangement?.appKit.view as? AppKitSplitView)?.columnsChanged()
         content.set(
             page: arrangement?.appKit.presentableViews.first,
             overlays: presentation.overlays.compactMap { $0.children.first?.appKit.layoutItem },
@@ -228,7 +236,7 @@ final class AppKitWindowController: NSWindowController {
         if presentsWindow, !hiddenByScene { window.makeKeyAndOrderFront(nil) }
     }
 
-    /// What a frame moved of the window, shown again - its frame, its bounds, its traits, its bars' colours, a page's
+    /// What a frame moved of the window, shown again - its frame, its bounds, its traits, its bars' colors, a page's
     /// words on its bar - and nothing a frame cannot move: no window, sheet, menu or restorable state.
     func followFrame(in runtime: HostRuntime) {
         guard let element, let window else { return }
@@ -305,6 +313,8 @@ final class AppKitWindowController: NSWindowController {
         window.standardWindowButton(.miniaturizeButton)?.isEnabled = allowsMinimizing
         backdrop = traits.background.blur
         content.backdrop = backdrop
+        // Its sheets stand on its background too.
+        for modal in modals { modal.showGround() }
         window.level = traits.floatsOnTop ? .floating : .normal
     }
 
@@ -342,7 +352,8 @@ extension AppKitWindowController {
         guard let element, let runtime = host?.runtime,
               let shortcut = AppKitKeys.shortcut(
                 key: event.charactersIgnoringModifiers ?? "", modifiers: event.modifierFlags),
-              let target = KeyboardShortcuts.target(of: shortcut, under: element), target.type == .toolbarItem
+              let target = KeyboardShortcuts.target(of: shortcut, under: element),
+              [.toolbarButton, .toolbarToggle].contains(target.type)
         else { return false }
         if window?.firstResponder is NSText, KeyboardShortcuts.givesWayToTyping(shortcut) { return false }
         target.chosen(in: runtime)

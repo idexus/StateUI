@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 import CStateUIGTK
 
-/// A fill: nothing, one colour, or a gradient's stops over a geometry in fractions of what it paints.
+/// A fill: nothing, one color, or a gradient's stops over a geometry in fractions of what it paints.
 /// Design: docs/design/types/brushes.md#as-a-host-is-handed-it
 enum GTKBrush: Equatable {
     case none
@@ -13,7 +13,7 @@ enum GTKBrush: Equatable {
     case linear(from: (Double, Double), to: (Double, Double), stops: [GTKColorStop])
     case radial(center: (Double, Double), radius: Double, stops: [GTKColorStop])
 
-    /// The brush the tree's `value` describes, read by the host layer's rule (`HostBrush`), in GDK's colours.
+    /// The brush the tree's `value` describes, read by the host layer's rule (`HostBrush`), in GDK's colors.
     init(_ value: HostValue?) {
         switch HostBrush(value) {
         case .none: self = .none
@@ -25,12 +25,12 @@ enum GTKBrush: Equatable {
         }
     }
 
-    /// A gradient's stops in GDK's colours.
+    /// A gradient's stops in GDK's colors.
     private static func stops(_ stops: [HostBrush.Stop]) -> [GTKColorStop] {
         stops.compactMap { stop in rgba(stop.color).map { GTKColorStop(offset: stop.offset, color: $0) } }
     }
 
-    /// The brush's colour, or its first stop's - what a line of one colour draws with it.
+    /// The brush's color, or its first stop's - what a line of one color draws with it.
     var firstColor: GdkRGBA? {
         switch self {
         case .none: nil
@@ -39,7 +39,7 @@ enum GTKBrush: Equatable {
         }
     }
 
-    /// A colour as GDK's.
+    /// A color as GDK's.
     static func rgba(_ value: HostValue) -> GdkRGBA? {
         guard let color = value.fractions else { return nil }
         return GdkRGBA(red: Float(color.red), green: Float(color.green), blue: Float(color.blue),
@@ -91,7 +91,7 @@ enum GTKBrush: Equatable {
     }
 }
 
-/// A gradient's stop: where it stands, from 0 to 1, and its colour.
+/// A gradient's stop: where it stands, from 0 to 1, and its color.
 struct GTKColorStop: Equatable {
     let offset: Double
     let color: GdkRGBA
@@ -102,7 +102,7 @@ struct GTKColorStop: Equatable {
         lhs.offset == rhs.offset && same(lhs.color, rhs.color)
     }
 
-    /// Whether two colours are the same, channel for channel.
+    /// Whether two colors are the same, channel for channel.
     static func same(_ a: GdkRGBA, _ b: GdkRGBA) -> Bool {
         a.red == b.red && a.green == b.green && a.blue == b.blue && a.alpha == b.alpha
     }

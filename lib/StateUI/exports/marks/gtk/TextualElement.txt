@@ -1,10 +1,14 @@
-# revision 1.1
+# revision 2.1
 Button.text: ✅
 Button.textCase: ✅
-RadioButton.text: ✅
-RadioButton.textCase: ✅
+CheckBox.text: ✅
+CheckBox.textCase: ✅
+Link.text: ✅
+Link.textCase: ✅
 SearchField.text: ✅
 SearchField.textCase: ✅
+Switch.text: ✅
+Switch.textCase: ✅
 Text.text: ✅
 Text.textCase: ✅
 TextEditor.text: ✅

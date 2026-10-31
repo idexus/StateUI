@@ -10,7 +10,7 @@ import UIKit
 /// to it is said on the display's frames, by the host layer's reading of it (`ScrollMovement`).
 /// Design: docs/design/platforms/uikit/layout.md#scrolling
 @MainActor
-final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
+final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefreshing, UIKitPageScroller {
     /// Says, on a display frame, where the user moved the scroller from and to.
     var onOffsetChanged: ((Point, Point) -> Void)?
 
@@ -29,6 +29,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
     private let movement = ScrollMovement()
 
     let scroller = UIScrollView()
+    private(set) lazy var refresh = UIKitRefresh(scroller)
     private let document = UIKitScrollDocument()
 
     /// Holds the content in a stack where the scroller was given more than one child.
@@ -111,15 +112,25 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
         if let target = scrollerOffset.laidOutNow() { move(to: target) }
     }
 
-    /// Keeps `right` and `bottom` points clear at the content's end - the strip of the bars a page's scroller reaches
-    /// under there - so the last content scrolls out from under it; the start, and the offsets, stay as they are.
-    /// Design: docs/design/host/layout.md#the-safe-area
-    func keepEndClear(right: Double, bottom: Double) {
-        let inset = UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: right)
-        guard scroller.contentInset != inset else { return }
-        scroller.contentInset = inset
-        scroller.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: bottom, right: 0)
-        scroller.horizontalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: right)
+    /// What the scroller keeps clear on each edge - the bars a room's scroller reaches under - so its first and last
+    /// content scroll out from under them; its offsets are counted from its first content clear of them.
+    private let kept = UIKitScrollClearance()
+
+    /// Keeps `clearance` clear, the scroller standing where the tree has it - or at its end still where it stood at
+    /// its end, a move of its own told as the user's is (`ScrollArithmetic.keptAtEnd`).
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    func keepClear(_ clearance: Clearance) {
+        kept.keep(clearance, on: scroller) { move in ProgramWrite.perform(move) }
+    }
+
+    /// The toolkit's offset for the scroller to stand at `offset`, counted from its first content kept clear.
+    func native(of offset: Point) -> CGPoint {
+        kept.native(of: offset)
+    }
+
+    /// Where the toolkit shows the scroller standing, counted from its first content clear of what it keeps clear.
+    var toolkitStanding: Point {
+        kept.standing(of: scroller)
     }
 
     // MARK: - The user's movement
@@ -127,8 +138,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
     func scrollViewDidScroll(_ scroller: UIScrollView) {
         // A scroll moves whatever stands in the scroller, whoever moved it: a frame read under it is said again.
         laidOut?()
-        let standing = Point(x: scroller.contentOffset.x, y: scroller.contentOffset.y)
-        guard let moved = scrollerOffset.toolkitMoved(to: standing) else { return }
+        guard let moved = scrollerOffset.toolkitMoved(to: toolkitStanding) else { return }
         movement.userMoved(from: moved.from, to: moved.to)
     }
 
@@ -170,11 +180,12 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate {
     private func move(to target: Point) {
         let inset = scroller.contentInset
         let reach = Point(
-            x: max(0, scroller.contentSize.width + inset.right - scroller.bounds.width),
-            y: max(0, scroller.contentSize.height + inset.bottom - scroller.bounds.height))
+            x: max(0, scroller.contentSize.width + inset.left + inset.right - scroller.bounds.width),
+            y: max(0, scroller.contentSize.height + inset.top + inset.bottom - scroller.bounds.height))
         let kept = ScrollArithmetic.kept(target, reach: reach)
         guard scrollerOffset.programMoves(to: kept) else { return }
-        ProgramWrite.perform { scroller.contentOffset = CGPoint(x: kept.x, y: kept.y) }
+        let native = native(of: kept)
+        ProgramWrite.perform { scroller.contentOffset = native }
     }
 }
 #endif

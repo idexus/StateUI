@@ -11,7 +11,7 @@ extension UIKitDriver {
     func byHost(_ ability: String) -> String? {
         let taken = Ability(ability)
         switch taken.act {
-        case "tap", "pan", "sweep", "notch", "pinch", "rotate", "hover", "leave", "drag", "pressDown", "lift":
+        case "tap", "hold", "pan", "sweep", "notch", "pinch", "rotate", "hover", "leave", "drag", "pressDown", "lift":
             return "the view's listening handed the recognizer's states, no touch sent"
         case "choose" where taken.element == "Picker":
             return "the host's choice called, not the menu's action"
@@ -21,8 +21,14 @@ extension UIKitDriver {
             return "the drag and drop interactions' handlers called, no drag session"
         case "dropFiles":
             return "the drop interaction's handler told the driver's files, no drag session"
+        case "close" where taken.element == "Popover":
+            return "the popover taken away and its delegate told, no tap beside it"
+        case "answerShare":
+            return "the host's completion called with the driver's answer, no activity chosen"
         case "answerFiles":
             return "the host's response called with the driver's files, not the picker's choice"
+        case "openLink":
+            return "the host's entry the scene's delegate calls, as no URL context can be made"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore", "close":
             return "the host told the scene's phase, no scene moved"
         case "endContent":
@@ -36,12 +42,14 @@ extension UIKitDriver {
         default: break
         }
         switch ability {
-        case "read isOn of CheckBox", "read isOn of RadioButton", "read groupName of RadioButton":
+        case "read isOn of CheckBox":
             return "the host's own flag, not the button's state"
         case "read selectedIndex of Picker", "read options of Picker", "read title of Picker":
             return "the host's own choice, not the menu's"
         case "read the menu of Window": return "the host's menu bar entries, not UIKit's main menu"
-        case "read keyboardShortcut of ToolbarItem": return "the host's own record; UIKit holds no shortcut on a bar's item"
+        case "read keyboardShortcut of ToolbarButton": return "the host's own record; UIKit holds no shortcut on a bar's item"
+        case "read showsSidebarToggle of SplitView":
+            return "the visibility the host gave UIKit's own sidebar button, which the split view hands out bare"
         case "read sidebarBackground of SplitView":
             return "the split view's material for a sidebar beside the detail, which an iPhone's room never shows"
         case "read what the screen reader said": return "the host's own list of what it announced"
@@ -52,7 +60,10 @@ extension UIKitDriver {
         default: break
         }
         if taken.readsATransform { return "the host's own transform, checked against the layer it composed itself" }
-        if ability.hasPrefix("read background of "), ["Grid", "HStack", "VStack", "ZStack"].contains(taken.element) {
+        if ability.hasPrefix("read fill of ") {
+            return "a figure's blur or glass as the host gave its effect, which UIKit reads no style of"
+        }
+        if ability.hasPrefix("read background of "), ["Fill", "Grid", "HStack", "Space", "VStack", "ZStack"].contains(taken.element) {
             return "a blur's or glass's effect as the host gave it, which UIKit reads no style of"
         }
         return nil

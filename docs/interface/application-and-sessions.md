@@ -51,12 +51,11 @@ scene ([Scenes](#scenes)).
 | Member | Meaning |
 | --- | --- |
 | `phase` | active, inactive, or background |
-| `info` | what the host says the application is, an `AppInfo`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
+| `info` | what the host says the application is, an `ApplicationInfo`: `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, the theme in force, and `accentColor`, the accent the user chose for the system, both kept current as the user switches them ([What the library offers](../concepts/environment.md#what-the-library-offers)) |
 | `colorScheme` | the theme the application holds: `.system` follows the user, `.light` and `.dark` hold it ([The application's theme](#the-applications-theme)) |
 | `scenes` | the scenes standing, in opening order |
 | `styles` | the application's `StyleSheet` |
 | `motion` | default motion law |
-| `persistentKeys` | state keys hydrated before the first description |
 | `openWindow()` | opens one more window of the `WindowGroup` with no name, as *File ▸ New Window* does |
 | `openWindow(_:)`, `openWindow(_:value:)` | opens a window of a kind, in the scene declaring it |
 | `closeWindow(_:)`, `closeWindow(_:value:)` | closes every window of a kind, or the one for a value |
@@ -66,10 +65,14 @@ scene ([Scenes](#scenes)).
 An application follows the theme the user chose until it holds one of its
 own. `application.colorScheme` is `.system` until it is written; `.light` or
 `.dark` shows every window in that theme with each platform's own call, and
-`.system` gives it back to the user's setting. `info.colorScheme` reports the
-theme in force, which every `Color(light:dark:)` resolves against.
+`.system` gives it back to the user's setting. It is a state, so a control
+takes it whole: `Picker(themes, selection: application.$colorScheme)`.
+`info.colorScheme` reports the theme in force, which every
+`Color(light:dark:)` resolves against.
 
-```swift quote
+```swift
+@Environment(\.application) private var application
+
 Button("Dark").onClicked { application.colorScheme = .dark }
 Button("As the system").onClicked { application.colorScheme = .system }
 ```
@@ -78,21 +81,36 @@ Button("As the system").onClicked { application.colorScheme = .system }
 platform with none, the application's own tint - reported live, so a view
 reading it is built again when the user changes it.
 
-```swift quote
+```swift
+@Environment(\.application) private var app
+@State private var on = false
+
 Switch($on).tint(app.info.accentColor)
 ```
 
 Configuration needed before the first view is built belongs in the
 application's initializer:
 
-```swift quote
+```swift
+@MainActor
+enum AppStyles {
+    static var sheet: StyleSheet {
+        StyleSheet {
+            Style<Text>().fontSize(15)
+        }
+    }
+}
+
+struct NotesScene: Scene {
+    var body: some Scene { WindowGroup { Text("Notes") } }
+}
+
 struct NotesApp: Application {
     @Environment(\.application) private var application
 
     init() {
         application.styles = AppStyles.sheet
         application.motion = .spring(response: .milliseconds(300))
-        application.persistentKeys = [.lastDocument]
     }
 
     var body: some Scene { NotesScene() }
@@ -111,10 +129,25 @@ there does not compile. No window is a main one: the window launch opens is
 one window of the `WindowGroup` with no name, like any other, and closing it
 closes that window alone.
 
-```swift quote
-extension WindowType {
+```swift
+extension WindowType where Value == Void {
     static let inspector = WindowType("notes.inspector")
+}
+
+extension WindowType where Value == Int {
     static let document = WindowType("notes.document")
+}
+
+final class Library {
+    @State var titles: [String] = []
+}
+
+struct NotesPage: View { var body: some View { Text("Notes") } }
+struct InspectorPage: View { var body: some View { Text("Inspector") } }
+
+struct DocumentPage: View {
+    let number: Int
+    var body: some View { Text("Document \(number)") }
 }
 
 struct NotesScene: Scene {
@@ -125,7 +158,7 @@ struct NotesScene: Scene {
             .environment(library)
         Window(.inspector) { InspectorPage() }
             .environment(library)
-        WindowGroup(.document, for: Int.self) { $number in
+        WindowGroup(.document) { $number in
             DocumentPage(number: number)
         }
     }
@@ -138,10 +171,13 @@ A scene declares its windows three ways:
   launch opens, and *File ▸ New Window* makes one more of it;
 - `WindowGroup(.kind) { ... }` makes as many windows of the kind as are
   opened, and `Window(.kind) { ... }` makes one;
-- `WindowGroup(.kind, for: ID.self) { $id in ... }` makes one window per
-  value. The value is `Codable` and `Hashable` so it can identify and restore
-  the window, and the closure receives a `Binding`, so the same window can be
-  retargeted without replacing its session.
+- `WindowGroup(.kind) { $id in ... }` of a kind with a value - a
+  `WindowType<ID>` - makes one window per value. The value is `Codable` and
+  `Hashable` so it can identify and restore the window, and the closure
+  receives a `Binding`, so the same window can be retargeted without replacing
+  its session. A kind with a value opens only with a value of its type,
+  `application.openWindow(.kind, value: id)`, and a kind of no value -
+  `WindowType<Void>` - only without one: the compiler refuses the other.
 
 Every window of a scene shares the scene's `@State`. What belongs to one
 window is the `@State` of the view it shows: two windows of `NotesPage` each
@@ -158,7 +194,7 @@ none of the others - About, the preferences - is a scene of its own:
 ```swift
 import StateUI
 
-extension WindowType {
+extension WindowType where Value == Void {
     static let editor = WindowType("notes.editor")
     static let about = WindowType("notes.about")
 }
@@ -188,8 +224,8 @@ struct NotesPage: View {
 
     var body: some View {
         VStack {
-            Button("New editor").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.editor) }
-            Button("About").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.about) }
+            Button("New editor").onClicked(.ignoreWhileRunning) { try await application.openWindow(.editor) }
+            Button("About").onClicked(.ignoreWhileRunning) { try await application.openWindow(.about) }
         }
     }
 }
@@ -200,8 +236,8 @@ struct EditorPage: View {
 
     var body: some View {
         VStack {
-            Button("Close").onClicked(gate: .ignoreWhileRunning) { try await window.close() }
-            Button("Close every editor").onClicked(gate: .ignoreWhileRunning) { try await scene.close() }
+            Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
+            Button("Close every editor").onClicked(.ignoreWhileRunning) { try await scene.close() }
         }
     }
 }
@@ -230,10 +266,20 @@ updates an existing native window without replacing it.
 `hidesWhenInactive` and `floatsOnTop` describe how a group's windows stand
 beside the application's other scenes:
 
-```swift quote
-Window(.inspector) { InspectorPage() }
-    .hidesWhenInactive(true)
-    .floatsOnTop(true)
+```swift
+extension WindowType where Value == Void {
+    static let inspector = WindowType("notes.inspector")
+}
+
+struct InspectorPage: View { var body: some View { Text("Inspector") } }
+
+struct ToolsScene: Scene {
+    var body: some Scene {
+        Window(.inspector) { InspectorPage() }
+            .hidesWhenInactive(true)
+            .floatsOnTop(true)
+    }
+}
 ```
 
 Both default to `false` and are independent.
@@ -293,11 +339,9 @@ standing: every window of the scene reads the one value. The host keeps it
 with the scene's windows and hands it back before the restored scene is
 described.
 
-```swift quote
-extension SceneKey {
-    static let selectedDocument = SceneKey(
-        "com.example.notes.selected-document",
-        of: Int.self)
+```swift
+extension SceneKey where Value == Int {
+    static let selectedDocument = SceneKey("com.example.notes.selected-document")
 }
 
 final class SelectionModel {
@@ -305,7 +349,8 @@ final class SelectionModel {
 }
 ```
 
-A scene stands once, so its key holds one value, which ends with the scene.
+A scene key keeps any `Codable` value. A scene stands once, so its key holds
+one value, which ends with the scene.
 Process-wide preferences use `@State(persistentKey:)` instead; see
 [State and reactivity](../concepts/state-and-reactivity.md).
 
@@ -314,17 +359,31 @@ Process-wide preferences use `@State(persistentKey:)` instead; see
 The application opens a window by its kind; a session closes the exact
 window or scene it is:
 
-```swift quote
-@Environment(\.application) private var application
-@Environment(\.scene) private var scene
-@Environment(\.window) private var window
+```swift
+extension WindowType where Value == Void {
+    static let inspector = WindowType("notes.inspector")
+}
 
-try await application.openWindow()
-try await application.openWindow(.inspector)
-try await application.openWindow(.document, value: 7)
-try await application.closeWindow(.document, value: 7)
-try await window.close()
-try await scene.close()
+extension WindowType where Value == Int {
+    static let document = WindowType("notes.document")
+}
+
+struct WindowsPage: View {
+    @Environment(\.application) private var application
+    @Environment(\.scene) private var scene
+    @Environment(\.window) private var window
+
+    var body: some View { Text("Windows") }
+
+    func rearrange() async throws {
+        try await application.openWindow()
+        try await application.openWindow(.inspector)
+        try await application.openWindow(.document, value: 7)
+        try await application.closeWindow(.document, value: 7)
+        try await window.close()
+        try await scene.close()
+    }
+}
 ```
 
 A window opens in the scene declaring its kind, which opens with it where it
@@ -337,6 +396,66 @@ A body that reads either is rebuilt when the collection changes.
 Operations fail explicitly with `WindowError`: `.alreadyOpen`, `.notOpen`,
 `.noScene`, `.undeclared`, `.wrongValue`, or `.unsupported`. A retained session
 does not silently start referring to a newer scene after its own scene ends.
+
+## Links into the application
+
+A link of the application's own scheme - chosen in a mail, a browser, a
+notification - opens the application, or comes to it where it runs, and one of
+its windows is given it. The page it stands in hears it - said, as its title is,
+on any view the page shows, or on the arrangement where the page stands - and
+the handler writes that view's own state:
+
+```swift
+import StateUI
+
+enum Route: Hashable {
+    case note(Int)
+
+    /// The route a link names: `notes://note/7`.
+    static func route(for address: String) -> Route? {
+        guard let number = address.split(separator: "/").last.flatMap({ Int($0) }) else { return nil }
+        return .note(number)
+    }
+}
+
+struct NotesPage: View {
+    @State private var path: [Route] = []
+
+    var body: some View {
+        NavigationStack($path) {
+            Text("Notes")
+        } destination: { route in
+            Text("\(route)")
+        }
+        .onLinkOpened { address in
+            if let route = Route.route(for: address) { path = [route] }
+        }
+    }
+}
+```
+
+The link reaches one window: the one the platform gives it to, where a page of
+it hears links, else the one the user was in last, else the first open; every
+page and arrangement of it that hears links hears it, the outermost first. A
+link that comes before any such window waits for the first. A view reaches its
+scene's state by a binding the scene hands it, as it reaches any. A handler that awaits - a sign-in
+finished in the browser exchanging its code - takes a policy,
+`.onLinkOpened(.waitForPrevious) { address in … }`. A window of a kind for a
+value is how a link opens a window of its own:
+`try await application.openWindow(.document, value: id)`.
+
+The scheme is the head's to register, in its platform's own file: the Mac's and
+iOS's `CFBundleURLTypes`, an Android activity's `ACTION_VIEW` intent filter -
+the activity `singleTask`, so a link reaches the running one - a GTK head's
+`Platforms/GTK/link-schemes`, which its desktop entry takes, and on Windows
+`StateUIWinUI.run(linkSchemes:)`, which registers them as the application
+starts and keeps it one instance. On the Web a link is the page's address
+with a fragment, `#note/7`, as the page opens and as its fragment changes.
+
+An application whose SDK asks for its own iOS delegate subclasses
+`StateUIApplicationDelegate` and starts with
+`StateUIUIKit.run(delegate: AppDelegate.self)`; on Android its activity
+subclasses `StateUIActivity`, calling `super` where it overrides.
 
 ## Restoration
 
@@ -372,12 +491,12 @@ sheets, its bar - is the view its `WindowGroup` or `Window` shows.
 | `minimumWidth`, `minimumHeight` | optional lower content-size bounds |
 | `maximumWidth`, `maximumHeight` | optional upper content-size bounds |
 | `isMaximizable`, `isMinimizable` | whether the corresponding native operation is permitted |
-| `background` | what the window is made of behind its pages: a colour, or a blur or glass the desktop shows through, where the platform can show it |
+| `background` | what the window is made of behind its pages: a color, or a blur or glass the desktop shows through, where the platform can show it |
 | `close()` | closes this exact window; its scene ends with its last |
 
 Position and size are four independent optional requests:
 
-```swift quote
+```swift
 @Environment(\.window) private var window
 
 window.x = 120
@@ -424,26 +543,37 @@ capability.
 
 `background` is what the window is made of behind its pages - around a
 floating sidebar, under a page that paints no background of its own: a
-colour, or a blur the desktop shows through, from `.ultraThin`, which lets the
+color, or a blur the desktop shows through, from `.ultraThin`, which lets the
 most through, to `.ultraThick`, its tint lying over it. On AppKit the window's
 own blur lies under the page, and the margin around a floating sidebar shows
 it; on WinUI the desktop acrylic. It is a desktop semantic: a host whose
-windows cannot show what is behind them paints the blur's colour instead.
+windows cannot show what is behind them paints the blur's color instead.
 Text belongs on a surface of its own rather than straight over the desktop.
 `nil` keeps the platform's own window, and so does a nil half of a pair:
 
-```swift quote
-.onCreated {
-    window.background = .blur(.thick.tint(Color("#26512BD4")))
-}
+```swift
+@Environment(\.window) private var window
+
+VStack { … }
+    .onCreated {
+        window.background = .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15)))
+    }
 ```
 
-```swift quote
-.onCreated {
-    // The platform's own window in the light theme, a tinted blur in the dark.
-    window.background = Material(light: nil, dark: .blur(.thick.tint(Color("#26512BD4"))))
-}
+```swift
+@Environment(\.window) private var window
+
+VStack { … }
+    .onCreated {
+        // The platform's own window in the light theme, a tinted blur in the dark.
+        window.background = Material(light: nil, dark: .blur(.thick.tint(Color(hex: 0x512BD4, opacity: 0.15))))
+    }
 ```
+
+The surfaces laid over the window's pages stand on its background too - a
+sheet, and a sidebar sliding over the detail where its split view says no
+`sidebarOverlayBackground` - each laid over the platform's own sheet or drawer, so
+their words keep an opaque surface under them.
 
 The host reports `WindowPhase` through the same session:
 
@@ -462,12 +592,16 @@ report, so `.onChanged(window.phase)` sees every one. A host reports a phase
 only when it differs from the last it reported, so a repeated native callback
 triggers no extra reaction.
 
-```swift quote
-.onChanged(window.phase, gate: .waitForPrevious) { oldPhase, newPhase in
-    if newPhase == .stopped {
-        try await saveDraft()
+```swift
+@Environment(\.window) private var window
+func saveDraft() async throws {}
+
+VStack { … }
+    .onChanged(window.phase, policy: .waitForPrevious) { oldPhase, newPhase in
+        if newPhase == .stopped {
+            try await saveDraft()
+        }
     }
-}
 ```
 
 ## What a view says of its page
@@ -483,8 +617,9 @@ What the page is, the view it shows says by modifier:
 | Modifier | Meaning |
 | --- | --- |
 | `.title` | navigation title, and the caption where the page is an item of something else |
-| `.icon` | the page's representative image, commonly a tab icon |
-| `.pageBackground` | what the whole page is made of behind what it shows - a colour, a gradient, a blur or glass - also where the view does not reach |
+| `.subtitle` | the line under the page's title, wherever its title shows - the current document or section |
+| `.icon` | the page's representative image: a tab's icon, and a sidebar page's mark where it names the application |
+| `.pageBackground` | what the whole page is made of behind what it shows - a color, a gradient, a blur or glass - also where the view does not reach; on an arrangement, what each of its pages that says none stands on |
 | `.showsNavigationBar` | whether a containing navigation stack shows its bar for this page |
 | `.showsTitle` | whether the page shows its title - on its bar, or over its content where the bar names the application; the title names the window and the way back all the same |
 | `.showsBackButton` | whether that bar offers its native back affordance |
@@ -496,12 +631,16 @@ edge and what it shows is that view's own `.padding`. These are said of the
 page only by the view it shows - or by that view's `body` - and a view further
 in that says them says nothing, and is told so once.
 
-An arrangement - `NavigationStack`, `TabView`, `SplitView`, `ModalStack` - is
+An arrangement - `NavigationStack`, `TabView`, `SplitView` - is
 a view that stands where a page stands, as the page itself: written there, or
-the `body` of the view written there. Anywhere else - inside a `VStack`, inside
-a page's content - it is left out and said once. It fills where it stands, so
+the `body` of the view written there - through a modifier, a `Group`, or an
+`if`/`else` whose every branch is one. A `body` whose type cannot tell - an
+`if` choosing between an arrangement and another view, an `AnyView` - stands
+on a page. Anywhere else - inside a `VStack`, inside a page's content - an
+arrangement is left out and said once. It fills where it stands, so
 it keeps only what its contract declares, and takes its own `.title` and
-`.icon`, for where it is an item of something else, such as a tab.
+`.icon`, for where it is an item of something else, such as a tab, and
+`.pageBackground`, the ground of each of its pages that says none.
 
 What has a body of its own - the page's actions, the view in its title's place
 and its menus - is declared in the view as well, with `.toolbar { }`,
@@ -516,31 +655,33 @@ The back-button title belongs to the page being returned to, not the page
 currently on top. Hiding the native back button hides that affordance; it is
 not a cross-platform navigation lock. Title views, toolbar
 items, and menu items are ordinary identified subtrees built where their
-native surface presents them. Modal presentation is adaptive: each host uses
-its platform's native presentation for the pages a `ModalStack` presents
-([modal pages](navigation-and-presentation.md#modal-pages)).
+native surface presents them. A sheet is adaptive: each host uses its
+platform's native presentation for the pages views present
+([sheets](navigation-and-presentation.md#sheets)).
 
 Page content remains compositional. An image behind content is an `Image` in
 the page tree, safe-area participation is a layout property, and input is
-released explicitly with `Aim.unfocus()` or `OnScreenKeyboard.hide()`. A custom title,
+released explicitly with `Aim.unfocus()` or `window.hideOnScreenKeyboard()`. A custom title,
 including an image, belongs in `.titleView { }`; bar foreground color
 belongs to the containing page arrangement.
 
 A value the body computes is said again whenever the body is built again:
 
-```swift quote
+```swift
 struct EditorPage: View {
     @State private var dirty = false
 
     var body: some View {
         TextEditor()
             .toolbar {
-                ToolbarItem("Save")
+                ToolbarButton("Save")
                     .isEnabled(dirty)
                     .onClicked { save() }
             }
             .title(dirty ? "Draft - Edited" : "Draft")
     }
+
+    private func save() { dirty = false }
 }
 ```
 
@@ -567,8 +708,9 @@ session phase whose scope matches the work.
 
 ## The window's bar
 
-The window's bar is declared on the arrangement the window's view is, as values
-read in the body - so it follows the state it reads with no write of its own:
+What the bar says, each page says of itself; how the bar looks, the
+arrangement around the pages declares - as values read in the body, so both
+follow the state they read with no write of their own:
 
 ```swift
 import StateUI
@@ -579,46 +721,50 @@ struct NotesPage: View {
     @State private var query = ""
 
     var body: some View {
-        SplitView($showsFolders) {
+        SplitView {
             Text("Folders")
+                .title("Notes")
+                .icon("notes.png")
         } detail: {
             Text("Notes in \(folder)")
+                .title(folder)
+                .subtitle("Updated today")
         }
-        .barTitle("Notes")
-        .barSubtitle(folder)
-        .barIcon("notes.png")
-        .barBackgroundColor(.cornflowerBlue)
+        .showsSidebar($showsFolders)
+        .barBackground(.cornflowerBlue)
         .barForegroundColor(.white)
         .titleView {
             SearchField($query)
         }
-        .toolbar(.leading) {
-            ToolbarItem("New folder")
-        }
         .toolbar {
-            ToolbarItem("Account")
+            ToolbarButton("New folder").placement(.sidebar, at: .start)
+            ToolbarButton("Account")
         }
     }
 }
 ```
 
-`barTitle`, `barSubtitle` and `barIcon` are the application naming itself, the
-line under the title, and its mark; `barBackgroundColor` and
-`barForegroundColor` paint the bar and what stands on it. Each is taken from
-the nearest arrangement on the visible path that declares it, so a stack
-further in paints its own bar or says its own line while it is shown; a
-sidebar takes only what its own split view declares, and a sheet takes nothing
-from around it. What stands on the bar is
-declared the same way: actions with `.toolbar`, `.toolbar(.leading)` at the
-leading edge, and a view in the title's place with `.titleView`
+A page's bar shows its title and the line under it, `.subtitle`, and nothing
+climbs from around the page. `barBackground` - a color, a gradient, a blur or
+glass - and `barForegroundColor` make the bar and what stands on it, each taken
+from the nearest arrangement
+on the visible path that declares it, so a stack further in paints its own bar
+while it is shown; a sidebar takes only what its own split view declares, and a
+stack in a sheet takes the look of the bar over the view presenting the sheet.
+What stands on the bar is
+declared the same way: actions with `.toolbar`, each saying where it stands
+with `.placement`, and a view in the title's place with `.titleView`
 ([Toolbars](navigation-and-presentation.md#toolbars)).
 
-AppKit and WinUI show the name, the line and the mark where their platform
-names the application - AppKit as text at the trailing edge of the title bar,
-WinUI in its title bar's title, subtitle and icon - while the visible page's
-title still names the window to the system. GTK's header bar names its page,
-as each bar on a phone and a tablet does: the line stands under each page's
-title, and the application's name and mark stand nowhere.
+A split view's sidebar page names the application where the platform's chrome
+does: its title - the application's name where it says none - the line under
+it, and its picture as the application's mark. WinUI shows them in its title
+bar's title, subtitle and icon, and heads the detail's page with its own title
+and line; the sidebar's own bar shows them on Android, and its title and line
+on iPadOS, GNOME and the Web. A Mac window names no application of itself:
+AppKit shows at the trailing edge of the title bar only what the sidebar's page
+says, and a page's line as the window's subtitle. The visible page's title
+still names the window to the system.
 [BarElement](../controls/tiers/BarElement.md) lists each value, and the page
 of each arrangement wearing it says what each host does with it.
 

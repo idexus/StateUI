@@ -23,8 +23,17 @@ struct AppKitTabItem {
 /// The tab view is the system's, and nothing is painted on it.
 @MainActor
 final class AppKitTabView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
-    NSTabViewDelegate {
+    NSTabViewDelegate, AppKitDirectedLayout {
     var onSelection: ((_ previous: Int, _ selected: Int) -> Void)?
+
+    /// The direction the tabbed view lays its pages out in, which says which side a page's margin starts at.
+    var direction = LayoutDirection.leftToRight {
+        didSet {
+            guard direction != oldValue else { return }
+            for tab in tabView.tabViewItems { (tab.view as? AppKitTabPane)?.direction = direction }
+            invalidateIntrinsicContentSize()
+        }
+    }
 
     /// Whether the window shows this tabbed view's tabs, beneath its toolbar.
     /// The tab view then shows no tabs and no border, and the page takes the
@@ -122,7 +131,7 @@ final class AppKitTabView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
 
         let size = item.layout.fittingSize(
             width: availableWidth.map { max(0, $0 - chrome.left - chrome.right) })
-        let margin = item.layout.margin
+        let margin = item.layout.values.margin.sides(in: direction)
         return NSSize(
             width: max(minimum,
                 size.width + margin.left + margin.right + chrome.left + chrome.right),
@@ -135,7 +144,7 @@ final class AppKitTabView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
         tabView.selectedTabViewItem?.view?.frame = tabView.contentRect
     }
 
-    /// One native tab per page, each holding its page in a pane, labelled by
+    /// One native tab per page, each holding its page in a pane, labeled by
     /// the segments.
     private func reconcileTabs() {
         selecting = true
@@ -158,6 +167,7 @@ final class AppKitTabView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
 
         for (index, segment) in segments.enumerated() {
             let tab = tabView.tabViewItems[index]
+            (tab.view as? AppKitTabPane)?.direction = direction
             (tab.view as? AppKitTabPane)?.item = items[index].layout
             tab.label = segment.title
             tab.image = segment.image
@@ -214,6 +224,11 @@ final class AppKitTabView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
 /// A tab's page inside the native tab view, laid at its margins.
 @MainActor
 final class AppKitTabPane: NSView {
+    /// The direction the page lays out in, which says which side its margin starts at.
+    var direction = LayoutDirection.leftToRight {
+        didSet { if direction != oldValue { needsLayout = true } }
+    }
+
     var item: AppKitLayoutItem? {
         didSet {
             guard !AppKitLayoutItem.sameArrangement(oldValue, item) else { return }
@@ -229,7 +244,7 @@ final class AppKitTabPane: NSView {
     override func layout() {
         super.layout()
         guard let item else { return }
-        let margin = item.margin
+        let margin = item.values.margin.sides(in: direction)
         item.view.frame = NSRect(
             x: margin.left,
             y: margin.top,

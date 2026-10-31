@@ -34,7 +34,7 @@ final class WebImageView: WebDOMView {
     }
 
     /// Shows `picture`, fitted as `aspect` says - a file served beside the page, an icon of the Web's own as a mask
-    /// over the words' colour, or bytes as a `data:` URL; the same picture again is shown anew only where the aspect
+    /// over the words' color, or bytes as a `data:` URL; the same picture again is shown anew only where the aspect
     /// turns to or from stretched.
     func apply(picture: HostPicture?, aspect: ContentMode) {
         style("object-fit", Self.fit(aspect))
@@ -65,7 +65,7 @@ final class WebImageView: WebDOMView {
         }
     }
 
-    /// Wears `icon` as a mask over the colour of the words around it; nil wears none.
+    /// Wears `icon` as a mask over the color of the words around it; nil wears none.
     private func mask(_ icon: Icon?) {
         let url = icon.map(WebIcons.url)
         for name in ["mask-image", "-webkit-mask-image"] { style(name, url) }

@@ -16,10 +16,8 @@ final class WebWindowClosingTests: XCTestCase {
 
     func testAWindowClosingTakesItsSheetsAway() throws {
         let host = WebRenderer.running {
-            ModalStack(State(wrappedValue: [1, 2]).projectedValue) {
-                Text("Beneath")
-            } destination: { number in
-                Text("On sheet \(number)")
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                Text("On sheet 1").sheet(isPresented: State(wrappedValue: true).projectedValue) { Text("On sheet 2") }
             }
         }
         host.settle { (try? WebBrowser.number("document.querySelectorAll('dialog[open]').length", on: 0)) == 2 }

@@ -4,11 +4,11 @@
 /// A factory of windows, each showing one view, made as they are asked for - in the scene that declares it, which
 /// opens with its first window and stands while one is open. With no name, what launch and *File ▸ New Window* make
 /// one more of, one such group in an application; with a name, a window each time `application.openWindow(.kind)`
-/// asks; with a name and `for:`, one window per value.
+/// asks; with a name and `for:`, one window per value - the kind's.
 ///
 ///     WindowGroup { MainPage() }
 ///     WindowGroup(.editor) { EditorPage() }
-///     WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
+///     WindowGroup(.document) { $id in DocumentPage(id: id) }
 ///
 /// One window of a kind in its scene is a `Window`.
 public struct WindowGroup: Scene {
@@ -32,46 +32,41 @@ public struct WindowGroup: Scene {
     ///
     ///     WindowGroup(.editor) { EditorPage() }
     ///
-    ///     Button("New editor").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.editor) }
+    ///     Button("New editor").onClicked(.ignoreWhileRunning) { try await application.openWindow(.editor) }
     ///
     /// - Parameters:
     ///   - type: what `ApplicationSession.openWindow` opens one by, and what the platform restores one as.
     ///   - content: the view a window shows.
-    public init<Content: View>(_ type: WindowType, @ViewBuilder content: @escaping () -> Content) {
+    public init<Content: View>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) {
         declared = DeclaredWindows(
-            type: type, valueType: nil,
+            type: type.key, valueType: nil,
             page: { _, _ in Node.page(content()) })
     }
 
-    /// One window per value - a document per document, an inspector per item.
+    /// One window per value of the kind - a document per document, an inspector per item.
     ///
-    ///     WindowGroup(.document, for: UUID.self) { $id in DocumentPage(id: id) }
+    ///     extension WindowType where Value == UUID { static let document = WindowType("document") }
     ///
-    /// The view is handed a binding to its window's value: reading it says which value the window is for, and
-    /// writing it makes the same window about another - which is also what the system restores it for.
+    ///     WindowGroup(.document) { $id in DocumentPage(id: id) }
+    ///
+    /// The view is handed a binding to its window's value, a state of the window's own: reading it says which
+    /// value the window is for, and writing it makes the same window about another - which is also what the
+    /// system restores it for.
     ///
     /// - Parameters:
-    ///   - type: what `ApplicationSession.openWindow` opens one by.
-    ///   - value: the type of value one window stands for - anything `Codable` and `Hashable`, so the platform
-    ///     can write it down.
+    ///   - type: what `ApplicationSession.openWindow` opens one by, with a value of its type - anything `Codable`
+    ///     and `Hashable`, so the platform can write it down.
     ///   - content: the view for one value.
     public init<Value: Codable & Hashable & SendableMetatype, Content: View>(
-        _ type: WindowType,
-        for value: Value.Type,
+        _ type: WindowType<Value>,
         @ViewBuilder content: @escaping (Binding<Value>) -> Content
     ) {
         declared = DeclaredWindows(
-            type: type, valueType: Value.self,
+            type: type.key, valueType: Value.self,
             page: { opened, record in
-                // The value the scene was built with; a write retargets this window, and the scene, which reads
-                // what it has open, builds it again.
-                let standing = opened?.value?.base as! Value
+                guard let opened, let record else { preconditionFailure("A window for a value is built in its scene.") }
 
-                let binding = Binding<Value>(
-                    get: { standing },
-                    set: { if let opened, let record { record.retarget(opened.serial, to: $0) } })
-
-                return Node.page(content(binding))
+                return Node.page(content(Binding(record.windowValue(opened, as: Value.self))))
             },
             restore: { text in ValueText.read(Value.self, from: text).map(AnyHashable.init) })
     }

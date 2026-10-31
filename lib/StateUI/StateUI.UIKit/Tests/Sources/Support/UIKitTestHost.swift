@@ -47,7 +47,7 @@ extension UIKitRenderer {
         let renderer = UIKitRenderer(
             clock: clock.map { clock in { clock.now } }, preferences: preferences, reducesMotion: { reducesMotion })
         renderer.ownsScenes = false
-        renderer.hydratePersistentState()
+        renderer.readKeptFromPreferences()
         TestScene.scene?.session.userInfo = nil  // no window an earlier test kept
         renderer.connect(TestScene.scene!)
         renderer.layOut()
@@ -66,13 +66,16 @@ extension UIKitRenderer {
         runtime.displayCycle.frame(now: frameClock.now())
     }
 
-    /// Turns the main run loop until `done` holds: a handler resumed on the main queue runs there.
+    /// Turns the main run loop until `done` holds: a handler resumed on the main queue runs there. Each turn drains
+    /// what it autoreleased, as the application's run loop does, so a controller let go is gone.
     func settle(until done: () -> Bool) {
         for _ in 0..<150 {
-            guard !done() else { break }
-            RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
-            runtime.pump.turn()
-            layOut()
+            guard !autoreleasepool(invoking: done) else { break }
+            autoreleasepool {
+                RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.01))
+                runtime.pump.turn()
+                layOut()
+            }
         }
     }
 
@@ -94,8 +97,9 @@ extension UIKitRenderer {
 
     /// Ends the host: its windows leave the tests' scene, which stays for the next, and its tree leaves. A sheet still
     /// moving in the scene would stop the next window's own from coming: every sheet goes first, and UIKit is let
-    /// finish.
+    /// finish. A field still focused would keep the keyboard over the next window's page: it lets go first.
     func finish() {
+        for (_, controller) in roster.windows { controller.window?.endEditing(true) }
         for (_, controller) in roster.windows {
             guard let root = controller.window?.rootViewController, root.presentedViewController != nil else { continue }
             root.dismiss(animated: false)

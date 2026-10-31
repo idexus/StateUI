@@ -16,12 +16,6 @@ extension View {
     public var nodes: [Node] { [node] }
 }
 
-/// Views held as `any View`, in order, matched by their places.
-extension Array: Views where Element == any View {
-    /// The views' nodes, in order.
-    public var nodes: [Node] { map(\.node) }
-}
-
 /// What an `if` with no `else` built: nothing, or what its branch built, keyed
 /// apart from the statement after it.
 extension Optional: Views where Wrapped: Views {

@@ -22,6 +22,12 @@ final class WebShapeView: WebDOMView {
     private let brushes = WebDOMView(vector: "defs")
     private var shown: [WebDOMView] = []
 
+    /// The blur the figure is made of - a box of the page's blur under its color - cut to the figure by a mask of its
+    /// own path; nil where the fill is a paint.
+    /// Design: docs/design/platforms/web/drawing.md#a-figure-made-of-a-material
+    private var backdrop: WebDOMView?
+    private var material = HostMaterial(nil)
+
     private var geometry: Geometry?
     private var fill: HostValue?
     private var stroke: HostValue?
@@ -41,7 +47,10 @@ final class WebShapeView: WebDOMView {
         fill: HostValue?, stroke: HostValue?, width: Double, dashes: [Double], dashOffset: Double,
         cap: LineCap, join: LineJoin, miter: Double
     ) {
-        (self.fill, self.stroke, lineWidth) = (fill, stroke, ShapeArithmetic.lineWidth(width))
+        material = HostMaterial(fill)
+        // A blur's tint lies in the backdrop's color, over the blur.
+        (self.fill, self.stroke, lineWidth) = (
+            material.blur == nil ? material.paint : nil, stroke, ShapeArithmetic.lineWidth(width))
         let lengths = ShapeArithmetic.dashLengths(dashes, lineWidth: lineWidth)
         path.attribute("stroke-width", WebCSS.number(lineWidth))
         path.attribute("stroke-linecap", cap == .round ? "round" : cap == .square ? "square" : "butt")
@@ -69,23 +78,28 @@ final class WebShapeView: WebDOMView {
         let room = Rect(x: inset, y: inset, width: max(0, width - inset * 2), height: max(0, height - inset * 2))
         // The path's own transform, which a gradient over the room undoes: it lies in the path's units.
         let placed: [Double]?
+        let rule: String?
+        let drawn: String
         switch geometry {
         case .rectangle(let radii, let transform):
-            path.attribute("d", WebVector.rounded(room, radii: radii))
-            path.attribute("fill-rule", nil)
-            placed = transform
+            drawn = WebVector.rounded(room, radii: radii)
+            path.attribute("d", drawn)
+            (rule, placed) = (nil, transform)
         case .ellipse(let transform):
-            path.attribute("d", WebVector.ellipse(in: room))
-            path.attribute("fill-rule", nil)
-            placed = transform
+            drawn = WebVector.ellipse(in: room)
+            path.attribute("d", drawn)
+            (rule, placed) = (nil, transform)
         case .authored(let commands, let evenOdd, let aspect, let transform):
-            path.attribute("d", WebVector.path(commands))
-            path.attribute("fill-rule", evenOdd ? "evenodd" : "nonzero")
+            drawn = WebVector.path(commands)
+            path.attribute("d", drawn)
+            rule = evenOdd ? "evenodd" : "nonzero"
             placed = ShapeArithmetic.placement(
                 of: WebRelay.shapeBounds(of: path.node), in: LayoutSize(width: width, height: height),
                 aspect: aspect, transform: transform)
         }
+        path.attribute("fill-rule", rule)
         path.attribute("transform", placed.flatMap(WebVector.matrix))
+        showBackdrop(drawn, rule: rule, transform: placed.flatMap(WebVector.matrix), width: width, height: height)
         let painted = Rect(x: -lineWidth, y: -lineWidth, width: width + lineWidth * 2, height: height + lineWidth * 2)
         let undone = placed.flatMap(WebVector.inverse).flatMap(WebVector.matrix)
         for gone in shown { gone.release() }
@@ -94,7 +108,33 @@ final class WebShapeView: WebDOMView {
         path.attribute("stroke", outlined ? brush(stroke, "stroke", over: painted, undoing: undone) : "none")
     }
 
-    /// A brush as SVG paints it over `painted`: a colour, or a gradient of its own, its geometry in that room.
+    /// Shows the fill's blur under the figure, cut by a mask of the path as it is drawn now - a backdrop filter keeps
+    /// to a mask, and not to a clip path; takes it away where the fill is a paint.
+    private func showBackdrop(_ drawn: String, rule: String?, transform: String?, width: Double, height: Double) {
+        guard material.blur != nil else {
+            backdrop?.release()
+            backdrop = nil
+            return
+        }
+        let shown = backdrop ?? WebDOMView(tag: "div")
+        if backdrop == nil {
+            shown.attribute("class", "stateui-shape-backdrop")
+            WebRelay.insert(shown.node, into: node, at: 0)
+            backdrop = shown
+        }
+        for (name, value) in WebBox(fill: material.paint, material: material).styles(
+            size: LayoutSize(width: width, height: height)) {
+            shown.style(name, value)
+        }
+        let figure = "<svg xmlns='http://www.w3.org/2000/svg' width='\(WebCSS.number(width))' "
+            + "height='\(WebCSS.number(height))'><path d='\(drawn)'"
+            + (transform.map { " transform='\($0)'" } ?? "") + " fill-rule='\(rule ?? "nonzero")'/></svg>"
+        let mask = "url(\"data:image/svg+xml," + figure.replacing("<", with: "%3C").replacing(">", with: "%3E") + "\")"
+        for name in ["mask-image", "-webkit-mask-image"] { shown.style(name, mask) }
+        for name in ["mask-size", "-webkit-mask-size"] { shown.style(name, "100% 100%") }
+    }
+
+    /// A brush as SVG paints it over `painted`: a color, or a gradient of its own, its geometry in that room.
     private func brush(_ value: HostValue?, _ role: String, over painted: Rect, undoing placed: String?) -> String {
         guard let gradient = WebVector.gradient(HostBrush(value), over: painted, id: "stateui-\(serial)-\(role)") else {
             return WebCSS.color(HostBrush(value).firstColor) ?? "none"
@@ -116,6 +156,7 @@ final class WebShapeView: WebDOMView {
     }
 
     override func release() {
+        backdrop?.release()
         for each in shown { each.release() }
         path.release()
         brushes.release()

@@ -21,7 +21,7 @@ public struct Act: Hashable, Sendable, CustomStringConvertible {
     @_spi(Host) public let key: KeyName
 
     /// An act from its name - what a member's token is made from.
-    public init(_ name: String) {
+    @_spi(Host) public init(_ name: String) {
         key = KeyName(name)
     }
 

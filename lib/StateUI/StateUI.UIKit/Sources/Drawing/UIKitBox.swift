@@ -6,13 +6,14 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A layout's box: its background within its outline - a colour or a gradient, or a blur or glass with its tint - the
+/// A layout's box: its background within its outline - a color or a gradient, or a blur or glass with its tint - the
 /// outline's stroke inside its edge, all behind the children - by their depth, whatever their order - and the cut
 /// of what the layout shows to the outline, each made only while there is something to paint. Over a blur or glass
-/// the stroke is the effect's.
+/// the stroke is the effect's. A class: painting may lay its view out again at once - glass given way to glass - and
+/// that pass finds the box painted already.
 /// Design: docs/design/platforms/uikit/drawing.md#a-layouts-box
 @MainActor
-struct UIKitBox {
+final class UIKitBox {
     private var fill = UIKitBrush()
     private var stroke = UIKitBrush()
     private var width = 0.0
@@ -27,7 +28,7 @@ struct UIKitBox {
     private var generation = 0
 
     /// Takes what the tree says of the box, by the host layer's reading of it (`BoxArithmetic`).
-    mutating func set(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
+    func set(background: HostValue?, stroke: HostValue?, width: Double?, shape: HostValue?, clips: Bool) {
         material = HostMaterial(background)
         fill = UIKitBrush(material.paint)
         self.stroke = UIKitBrush(stroke)
@@ -38,7 +39,7 @@ struct UIKitBox {
     }
 
     /// Paints the box on `view` for its size, where the size or the box changed since it last did.
-    mutating func paint(on view: UIView) {
+    func paint(on view: UIView) {
         let size = view.bounds.size
         guard painted.map({ $0.size != size || $0.generation != generation }) ?? (generation > 0) else { return }
         painted = (size, generation)
@@ -54,8 +55,12 @@ struct UIKitBox {
             let shown = backdropView ?? UIKitBackdropView()
             if backdropView == nil { view.insertSubview(shown, at: 0) }
             backdropView = shown
-            shown.show(material)
-            shown.lay(material.glass == nil ? fill : UIKitBrush(), stroke: stroke, width: width, over: bounds, cut: outline)
+            shown.frame = bounds
+            let corners = BoxArithmetic.roundedCorners(of: outline, width: bounds.width, height: bounds.height)
+            shown.show(material, as: corners.map { .rounded($0) }
+                ?? .cut(outline.path(in: CGRect(origin: .zero, size: bounds.size)), evenOdd: false))
+            let wash = shown.showsGlass ? UIKitBrush() : fill
+            shown.lay(wash, stroke: stroke, width: width, over: bounds, along: outline)
         } else {
             backdropView?.removeFromSuperview()
             backdropView = nil

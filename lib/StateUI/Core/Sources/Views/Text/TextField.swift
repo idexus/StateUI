@@ -49,7 +49,8 @@ extension TextFieldProperties {
 ///
 /// The handler receives the whole text as it stands after the edit. It runs
 /// beside a binding rather than instead of one, so a field may have both.
-public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentElement, TextFieldProperties {
+public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentElement, BorderElement,
+    TextFieldProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -66,8 +67,8 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
-    public init(_ text: Binding<String>) {
-        self = TextField().text(text)
+    public init(_ state: Binding<String>) {
+        self = TextField().text(state)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
@@ -80,26 +81,29 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
     /// with no view rebuilt for it: a keystroke costs a render only in a body
     /// that reads the state.
     ///
-    /// - Parameter value: the state shown, and written back into as the user
+    /// - Parameter state: the state shown, and written back into as the user
     ///   types.
     /// - Returns: the control, wearing and reporting that text.
-    public func text(_ value: Binding<String>) -> Modified {
-        value.image == nil
-            ? described(TextualElementContract.text.token, value, on: .textChanged)
-            : words(TextualElementContract.text.token, by: value, mode: .inOut)
+    public func text(_ state: Binding<String>) -> Modified {
+        words(TextualElementContract.text.token, by: state, mode: .inOut)
     }
 
     // MARK: Events
 
     /// Fires when the return key is pressed - the moment to move to the next
     /// field or run the search.
-    public func onSubmitted(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onSubmitted(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(TextFieldContract.submitted, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSubmitted(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(TextFieldContract.submitted, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(TextFieldContract.submitted, gate: gate, handler)
     }
 }

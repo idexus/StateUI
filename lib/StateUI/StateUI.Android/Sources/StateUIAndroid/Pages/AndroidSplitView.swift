@@ -5,8 +5,8 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// A SplitView: its detail page, and its sidebar - a drawer sliding over the detail where the room is narrow,
-/// beside it where it is wide.
+/// A SplitView: its detail - a page in a column under a bar of its own - and its sidebar - a drawer sliding over the
+/// detail where the room is narrow, beside it where it is wide.
 /// Design: docs/design/platforms/android/pages.md#a-split-view
 @MainActor
 final class AndroidSplitView: AndroidLayoutView {
@@ -28,7 +28,10 @@ final class AndroidSplitView: AndroidLayoutView {
     /// What the split does when its first room shows the sidebar, said as the user's.
     var onAdapted: (() -> Void)?
 
-    /// The colours the sidebar stands on beside the detail and over it, as the split view says them; nil for the
+    /// What the split does when a new room stands the sidebar over the detail rather than beside it, or back.
+    var onPlaced: (() -> Void)?
+
+    /// The colors the sidebar stands on beside the detail and over it, as the split view says them; nil for the
     /// platform's own.
     var grounds: (beside: Int32?, over: Int32?) = (nil, nil) {
         didSet { if grounds != oldValue { ground() } }
@@ -37,44 +40,83 @@ final class AndroidSplitView: AndroidLayoutView {
     /// The split's one adaptation, by the host layer's rule.
     private var adaptation = SidebarAdaptation()
 
-    /// The drawer holding the sidebar page, and the shade over the detail while it is open.
-    let drawer = AndroidSingleChildView()
+    /// The sidebar's column - its bar over its page - and the shade over the detail while it is open over it.
+    let drawer = AndroidColumnView()
+
+    /// The detail's column, its bar over the detail where the detail is a page: an arrangement brings its own bars.
+    let detailColumn = AndroidColumnView()
+
+    /// Whether the detail stands in its column: where it is a page.
+    var framesDetail = false
     private let scrim = AndroidView { _ in Java.new(JavaAPI.view, JavaAPI.newView, .object(AndroidRenderer.context)) }
     private var drawerWidth = 0.0
 
-    override init() {
+    /// Whether the user asks for less motion: the sidebar beside the detail then shows and hides at once.
+    private let reducesMotion: () -> Bool
+
+    init(reducesMotion: @escaping () -> Bool = { false }) {
+        self.reducesMotion = reducesMotion
         super.init()
         Java.call(scrim.reference, JavaAPI.setBackgroundColor, .int(0x6600_0000))
         Java.call(scrim.reference, JavaAPI.setAlpha, .float(0))
     }
 
-    /// The sidebar page goes in the drawer; the detail, the shade and the drawer in the split, front last.
+    /// The sidebar page goes in the drawer, a detail page in its column; the detail, the shade and the drawer in the
+    /// split, front last.
     @discardableResult
     override func setItems(_ items: [AndroidLayoutItem]) -> Bool {
         drawer.setItems(Array(items.prefix(1)))
+        detailColumn.setItems(framesDetail ? Array(items.dropFirst().prefix(1)) : [])
         return super.setItems(items)
     }
 
+    /// The detail as it stands in the split: its column where it has one.
+    private var detailView: AndroidView? {
+        framesDetail ? detailColumn : items.dropFirst().first?.view
+    }
+
     override func heldViews() -> [AndroidView] {
-        Array(items.dropFirst().prefix(1).map(\.view)) + [scrim, drawer]
+        (detailView.map { [$0] } ?? []) + [scrim, drawer]
     }
 
     override func forgetMeasurements() {
         super.forgetMeasurements()
         drawer.forgetMeasurements()
+        detailColumn.forgetMeasurements()
     }
 
-    /// Shows or hides the sidebar, sliding where it slides over the detail.
+    /// Shows or hides the sidebar: sliding over the detail, or beside it moving in or out as the detail narrows or
+    /// widens.
     func present(_ presented: Bool) {
         guard presented != isPresented else { return }
 
         isPresented = presented
-        showDrawer(animated: overlays)
+        if !overlays { moveDetail() }
+        showDrawer(animated: overlays || !reducesMotion())
         if !overlays { invalidateMeasurements() }
     }
 
+    /// Begins Android's transition over the detail's bounds the next frame lays out, on the easing and length the
+    /// sidebar beside it slides on - the detail's own: its bar changes in place.
+    /// Design: docs/design/platforms/android/pages.md#a-split-view
+    private func moveDetail() {
+        guard !reducesMotion(), let detail = detailView else { return }
+        let transitions = Java.new(JavaAPI.transitionSet, JavaAPI.newTransitionSet)
+        let easing = Java.new(
+            JavaAPI.pathInterpolator, JavaAPI.newPathInterpolator, .float(0.4), .float(0), .float(0.2), .float(1))
+        Java.release(local: Java.callObject(
+            transitions.reference, JavaAPI.setTransitionsInterpolator, .object(easing.reference)))
+        Java.release(local: Java.callObject(transitions.reference, JavaAPI.setTransitionsDuration, .long(Self.slide)))
+        let bounds = Java.new(JavaAPI.changeBounds, JavaAPI.newChangeBounds)
+        Java.release(local: Java.callObject(transitions.reference, JavaAPI.addTransition, .object(bounds.reference)))
+        Java.release(local: Java.callObject(
+            transitions.reference, JavaAPI.addTransitionTarget, .object(detail.outermost)))
+        Java.callStatic(
+            JavaAPI.transitionManager, JavaAPI.beginDelayedTransition, .object(reference), .object(transitions.reference))
+    }
+
     override func contentSize(width: Double?) -> LayoutSize {
-        SingleChildArithmetic.size(of: items.dropFirst().first, width: width)
+        framesDetail ? detailColumn.contentSize(width: width) : SingleChildArithmetic.size(of: items.dropFirst().first, width: width)
     }
 
     /// Lays the detail and the drawer out. A layout while the drawer slides leaves it sliding; only a new room -
@@ -88,20 +130,29 @@ final class AndroidSplitView: AndroidLayoutView {
         let overlaid = bounds.width < Self.sideBySide
         let width = min(320, bounds.width * (overlaid ? 0.84 : 0.4))
         let newRoom = overlaid != overlays || width != drawerWidth
+        let replaced = overlaid != overlays
         overlays = overlaid
         drawerWidth = width
         let beside = !overlays && isPresented ? drawerWidth : 0
         // The drawer stands at the edge the language starts from, the detail beside it.
         let leading = direction == .leftToRight
 
-        if let detail = items.dropFirst().first {
-            let room = Rect(x: leading ? beside : 0, y: 0, width: bounds.width - beside, height: bounds.height)
-            detail.view.layout(
-                SingleChildArithmetic.place(of: detail, in: room, direction: direction))
+        // The sidebar and the detail each stand in the whole height, under what stands over the room; the sidebar
+        // beside the detail stands apart from it by the theme's line.
+        drawer.roomInsets = roomInsets
+        drawer.showsEdge = !overlays
+        let room = Rect(x: leading ? beside : 0, y: 0, width: bounds.width - beside, height: bounds.height)
+        if framesDetail {
+            detailColumn.roomInsets = roomInsets
+            detailColumn.layout(room)
+        } else if let detail = items.dropFirst().first {
+            (detail.view as? AndroidLayoutView)?.roomInsets = roomInsets
+            detail.view.layout(SingleChildArithmetic.place(of: detail, in: room, direction: direction))
         }
         scrim.layout(Rect(x: 0, y: 0, width: bounds.width, height: bounds.height))
         drawer.layout(Rect(x: leading ? 0 : bounds.width - drawerWidth, y: 0, width: drawerWidth, height: bounds.height))
         if newRoom { showDrawer(animated: false) }
+        if replaced { onPlaced?() }
     }
 
     /// Stands the drawer and the shade where the sidebar's state puts them. A closed drawer holds nothing the
@@ -111,9 +162,19 @@ final class AndroidSplitView: AndroidLayoutView {
     private func showDrawer(animated: Bool) {
         let duration = animated ? Self.slide : 0
         ground()
-        let visibility = isPresented ? ViewConstants.visible : overlays ? ViewConstants.invisible : ViewConstants.gone
         let away = direction == .leftToRight ? -drawerWidth : drawerWidth
-        slide(drawer, to: overlays && !isPresented ? away : 0, alpha: 1, visibility: visibility, duration: duration)
+        if overlays {
+            let visibility = isPresented ? ViewConstants.visible : ViewConstants.invisible
+            slide(drawer, to: isPresented ? 0 : away, alpha: 1, visibility: visibility, duration: duration)
+        } else {
+            // Beside the detail it comes in from its leading edge by its own width, or goes out there, as the
+            // detail's bounds move.
+            let (from, to) = isPresented ? (away, 0.0) : (0.0, away)
+            Java.callStatic(
+                JavaAPI.views, JavaAPI.slideViewAcross, .object(drawer.reference), .float(Float(from * density)),
+                .float(Float(to * density)), .long(duration),
+                .int(isPresented ? ViewConstants.visible : ViewConstants.gone))
+        }
 
         let shaded = overlays && isPresented
         slide(scrim, to: 0, alpha: shaded ? 1 : 0, visibility: ViewConstants.visible, duration: duration)
@@ -123,10 +184,10 @@ final class AndroidSplitView: AndroidLayoutView {
     /// Stands the sidebar on what the split view says of its place, or on the platform's own there.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     private func ground() {
-        let colour = overlays ? grounds.over : grounds.beside
+        let color = overlays ? grounds.over : grounds.beside
         Java.callStatic(
-            JavaAPI.views, JavaAPI.groundSidebar, .object(drawer.reference), .bool(overlays), .bool(colour != nil),
-            .int(colour ?? 0))
+            JavaAPI.views, JavaAPI.groundSidebar, .object(drawer.reference), .bool(overlays), .bool(color != nil),
+            .int(color ?? 0))
     }
 
     private func slide(_ view: AndroidView, to points: Double, alpha: Float, visibility: Int32, duration: Int64) {
@@ -139,5 +200,6 @@ final class AndroidSplitView: AndroidLayoutView {
         super.detach()
         onScrimTapped = nil
         onAdapted = nil
+        onPlaced = nil
     }
 }

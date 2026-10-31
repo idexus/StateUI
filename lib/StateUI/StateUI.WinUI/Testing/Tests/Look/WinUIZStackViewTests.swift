@@ -17,9 +17,18 @@ struct LayeredBoxes: View {
     var body: some View {
         VStack {
             ZStack {
-                Rectangle().fill(.red).width(10).zIndex(blueInFront ? 0 : 1)
-                Rectangle().fill(.blue).width(20).zIndex(blueInFront ? 1 : 0)
-                Rectangle().fill(.green).width(30).zIndex($green)
+                Rectangle()
+                    .fill(.red)
+                    .width(10)
+                    .zIndex(blueInFront ? 0 : 1)
+                Rectangle()
+                    .fill(.blue)
+                    .width(20)
+                    .zIndex(blueInFront ? 1 : 0)
+                Rectangle()
+                    .fill(.green)
+                    .width(30)
+                    .zIndex($green)
             }
             .width(40)
             .height(40)
@@ -36,7 +45,7 @@ private let green: UInt32 = 0xFF00_8000
 private let blue: UInt32 = 0xFF00_00FF
 
 final class WinUIZStackViewTests: XCTestCase {
-    /// An engine's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
+    /// A motion layout's run, its phase landing where it is written: each view's holder at its rectangle, as opaque as
     /// it says, the higher rank drawn over the lower.
     func testAPlacementRunStandsAndDrawsEachChildAsItSays() throws {
         try onUIThread {
@@ -44,14 +53,14 @@ final class WinUIZStackViewTests: XCTestCase {
             let placed = State(wrappedValue: 0.0)
             let host = WinUIRenderer.running(clock: clock) {
                 VStack {
-                    LayoutEngine(["back", "front"]) { name in
-                        Rectangle(name == "back" ? .red : .blue)
+                    MotionLayout(["back", "front"], parameters: placed.projectedValue) { name in
+                        Rectangle()
+                            .fill(name == "back" ? .red : .blue)
                     } placements: { room, phase in
                         phase < 1
                             ? [Placement(room), Placement(room)]
                             : [Placement(Rect(10, 20, 30, 40), zIndex: 1), Placement(Rect(0, 0, 50, 50), opacity: 0.5)]
                     }
-                    .phase(placed.projectedValue)
                     .motion(.none)
                     .height(200)
 
@@ -104,22 +113,31 @@ final class WinUIZStackViewTests: XCTestCase {
         onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    ZStack { Rectangle().fill(.red) }
+                    ZStack {
+                        Rectangle()
+                            .fill(.red)
+                    }
                         .padding(10)
-                        .background(Color("#00FF00"))
-                        .stroke(Color("#0000FF"))
+                        .background(Color(hex: 0x00FF00))
+                        .stroke(Color(hex: 0x0000FF))
                         .lineWidth(2)
                         .shape(.roundedRectangle(20))
                         .clipsContent(true)
                         .width(100)
                         .height(80)
                         .horizontalAlignment(.start)
-                    ZStack { Rectangle().fill(.red) }
+                    ZStack {
+                        Rectangle()
+                            .fill(.red)
+                    }
                         .shape(.roundedRectangle(20))
                         .width(100)
                         .height(80)
                         .horizontalAlignment(.start)
-                    ZStack { Rectangle().fill(.red) }
+                    ZStack {
+                        Rectangle()
+                            .fill(.red)
+                    }
                         .shape(.roundedRectangle(20))
                         .clipsContent(true)
                         .width(100)

@@ -8,6 +8,14 @@ import XCTest
 /// The layout arithmetic every Swift host places its children with.
 @MainActor
 final class LayoutArithmeticTests: XCTestCase {
+    /// An inset's start is the left left to right and the right right to left, its end the other way; top and bottom
+    /// stand - what a toolkit's own control, padded by left and right, is given.
+    func testAnInsetsStartIsTheSideItsDirectionStartsFrom() {
+        let insets = Insets(start: 16, top: 4, end: 2, bottom: 8)
+        XCTAssertEqual(insets.sides(in: .leftToRight), InsetSides(left: 16, top: 4, right: 2, bottom: 8))
+        XCTAssertEqual(insets.sides(in: .rightToLeft), InsetSides(left: 2, top: 4, right: 16, bottom: 8))
+    }
+
     /// A row of an arrangement's own stands across the top or the bottom of its room, the page taking the rest -
     /// never less than none where the row is taller than the room.
     func testARowBesideAPageLeavesItTheRest() {
@@ -30,12 +38,12 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(Extent.bounded(.nan, minimum: 5, maximum: nil), 5)
     }
 
-    /// A growing child - a spacer - takes the room its siblings leave along the stack, shared alike among several,
+    /// A growing child - a space - takes the room its siblings leave along the stack, shared alike among several,
     /// and none where nothing is left; it measures as no room of its own.
     func testAGrowingChildTakesTheRoomItsSiblingsLeave() {
-        var spacer = Child(width: 0, height: 0)
-        spacer.values.grows = true
-        let row = [Child(width: 20, height: 10), spacer, Child(width: 30, height: 10)]
+        var space = Child(width: 0, height: 0)
+        space.values.grows = true
+        let row = [Child(width: 20, height: 10), space, Child(width: 30, height: 10)]
 
         let size = StackArithmetic.size(of: row, axis: .horizontal, spacing: 5, padding: Insets(0), width: nil)
         let places = StackArithmetic.places(
@@ -45,18 +53,18 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places[1], Rect(25, 0, 140, 10), "the 200 less the boxes' 50 and the two spacings' 10")
         XCTAssertEqual(places[2], Rect(170, 0, 30, 10), "the last box stands at the far end")
 
-        let column = [spacer, Child(width: 10, height: 20), spacer]
+        let column = [space, Child(width: 10, height: 20), space]
         let shared = StackArithmetic.places(
             of: column, axis: .vertical, spacing: 0, padding: Insets(0), in: Rect(0, 0, 10, 100),
             direction: .leftToRight)
-        XCTAssertEqual(shared[1], Rect(0, 40, 10, 20), "two spacers share the room alike")
+        XCTAssertEqual(shared[1], Rect(0, 40, 10, 20), "two spaces share the room alike")
 
         let tight = StackArithmetic.places(
             of: row, axis: .horizontal, spacing: 5, padding: Insets(0), in: Rect(0, 0, 40, 10),
             direction: .leftToRight)
         XCTAssertEqual(tight[1]?.width, 0, "no room left, none taken")
 
-        var stated = spacer
+        var stated = space
         stated.values.width = 12
         let fixed = StackArithmetic.places(
             of: [Child(width: 20, height: 10), stated], axis: .horizontal, spacing: 0, padding: Insets(0),
@@ -64,21 +72,21 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(fixed[1]?.width, 12, "a length it states wins over growing")
     }
 
-    /// A divider is a stack's view; a menu's separator, like its entries, is one the menu draws.
-    func testAMenusSeparatorIsViewlessAndADividerIsAView() {
-        XCTAssertFalse(NodeType.viewlessTypes.contains(.divider))
+    /// A separator is a stack's view; a menu's separator, like its entries, is one the menu draws.
+    func testAMenusSeparatorIsViewlessAndASeparatorIsAView() {
+        XCTAssertFalse(NodeType.viewlessTypes.contains(.separator))
         XCTAssertTrue(NodeType.viewlessTypes.contains(.menuSeparator))
         XCTAssertTrue(NodeType.menuTypes.contains(.menuSeparator))
         XCTAssertTrue(NodeType.viewlessTypes.contains(.menuItem))
-        XCTAssertFalse(NodeType.viewlessTypes.contains(.spacer))
+        XCTAssertFalse(NodeType.viewlessTypes.contains(.space))
     }
 
     /// A vertical stack sets shown children one under another; a hidden one takes no room and no spacing.
     @MainActor
     func testAVerticalStackPlacesItsShownChildrenInOrder() {
-        var centred = Child(width: 20, height: 10)
-        centred.values.horizontal = 1
-        let items = [Child(width: 20, height: 10), Child(width: 20, height: 10, shown: false), centred]
+        var centered = Child(width: 20, height: 10)
+        centered.values.horizontal = 1
+        let items = [Child(width: 20, height: 10), Child(width: 20, height: 10, shown: false), centered]
 
         let size = StackArithmetic.size(of: items, axis: .vertical, spacing: 5, padding: Insets(2), width: nil)
         let places = StackArithmetic.places(
@@ -88,7 +96,7 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(size, LayoutSize(width: 24, height: 29))
         XCTAssertEqual(places[0], Rect(2, 2, 96, 10), "a filling child takes the slot's width")
         XCTAssertNil(places[1])
-        XCTAssertEqual(places[2], Rect(40, 17, 20, 10), "a centred child stands in the middle")
+        XCTAssertEqual(places[2], Rect(40, 17, 20, 10), "a centered child stands in the middle")
     }
 
     // MARK: - Right to left
@@ -98,11 +106,11 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testARowRightToLeftFillsFromTheRight() {
         var first = Child(width: 20, height: 10)
-        first.values.margin = Insets(left: 3, top: 0, right: 0, bottom: 0)
+        first.values.margin = Insets(start: 3, top: 0, end: 0, bottom: 0)
         let items = [first, Child(width: 30, height: 10)]
 
         let places = StackArithmetic.places(
-            of: items, axis: .horizontal, spacing: 5, padding: Insets(left: 2, top: 0, right: 0, bottom: 0), in: Rect(0, 0, 100, 10),
+            of: items, axis: .horizontal, spacing: 5, padding: Insets(start: 2, top: 0, end: 0, bottom: 0), in: Rect(0, 0, 100, 10),
             direction: .rightToLeft)
 
         XCTAssertEqual(places[0], Rect(75, 0, 20, 10), "the first child against the right edge, inside padding and margin")
@@ -162,9 +170,9 @@ final class LayoutArithmeticTests: XCTestCase {
     /// A picture beside a button's words leaves half of what the two and their gap do not fill on each side, so they
     /// stand together in the middle; nothing where they fill the room, or where the picture stands above or below.
     func testAButtonsPictureAndWordsStandTogetherInTheMiddle() {
-        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .leading), 100)
-        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .trailing), 100)
-        XCTAssertEqual(ButtonArithmetic.sideRoom(80, picture: 40, gap: 8, words: 52, position: .leading), 0, "too narrow")
+        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .start), 100)
+        XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .end), 100)
+        XCTAssertEqual(ButtonArithmetic.sideRoom(80, picture: 40, gap: 8, words: 52, position: .start), 0, "too narrow")
         XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .top), 0)
         XCTAssertEqual(ButtonArithmetic.sideRoom(300, picture: 40, gap: 8, words: 52, position: .bottom), 0)
     }
@@ -174,7 +182,7 @@ final class LayoutArithmeticTests: XCTestCase {
     func testOneChildRightToLeftTurnsWithItsRoom() {
         var child = Child(width: 20, height: 10)
         child.values.horizontal = 0
-        child.values.margin = Insets(left: 4, top: 0, right: 0, bottom: 0)
+        child.values.margin = Insets(start: 4, top: 0, end: 0, bottom: 0)
 
         let room = Rect(0, 0, 100, 10)
         XCTAssertEqual(SingleChildArithmetic.place(of: child, in: room, direction: .rightToLeft), Rect(76, 0, 20, 10))
@@ -198,6 +206,160 @@ final class LayoutArithmeticTests: XCTestCase {
 
         XCTAssertEqual(places.map { $0?.x }, [0, 20, 50])
         XCTAssertEqual(places.map { $0?.width }, [20, 30, 50])
+    }
+
+    /// A ROW SHORT OF ROOM TAKES IT FROM ITS WORDS: the controls keep their width, and the words share what the
+    /// others and the spacing leave, in proportion to their natural widths.
+    @MainActor
+    /// A ROW STANDS ITS FIRST-BASELINE CHILDREN ON ONE LINE: each rests its first line of words on the lowest of
+    /// theirs, one with none its foot; the row is as tall as what stands above the line and below it; the stack's
+    /// own baseline is that line.
+    func testARowStandsItsFirstBaselineChildrenOnOneLine() {
+        var small = Child(width: 40, height: 16)
+        small.baseline = 12
+        var large = Child(width: 60, height: 40)
+        large.baseline = 30
+        var box = Child(width: 20, height: 10)
+        var top = Child(width: 10, height: 50)
+        small.values.vertical = Alignment.firstBaseline.rawValue
+        large.values.vertical = Alignment.firstBaseline.rawValue
+        box.values.vertical = Alignment.firstBaseline.rawValue
+        top.values.vertical = Alignment.start.rawValue
+        let row = [small, large, box, top]
+
+        let size = StackArithmetic.size(of: row, axis: .horizontal, spacing: 0, padding: Insets(0), width: nil)
+        XCTAssertEqual(size.height, 50, "the tallest child on the top, beside 30 above the line and 10 below")
+        let places = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 0, padding: Insets(0), in: Rect(x: 0, y: 0, width: 200, height: 50),
+            direction: .leftToRight)
+        XCTAssertEqual(places.map { $0?.y }, [18, 0, 20, 0], "12, 30 and the box's foot on 30; the other at the top")
+        XCTAssertEqual(
+            StackArithmetic.firstBaseline(
+                of: row, axis: .horizontal, spacing: 0, padding: Insets(0), in: Rect(x: 0, y: 0, width: 200, height: 50)),
+            30)
+
+        var column = [small, large]
+        column[0].values.vertical = Alignment.firstBaseline.rawValue
+        let stacked = StackArithmetic.places(
+            of: column, axis: .vertical, spacing: 4, padding: Insets(0), in: Rect(x: 0, y: 0, width: 100, height: 60),
+            direction: .leftToRight)
+        XCTAssertEqual(stacked.map { $0?.y }, [0, 20], "a column reads it as the near edge")
+    }
+
+    /// A row that wraps goes on onto a further line where its room ends: each line as many children as it takes at
+    /// their natural widths, at least one, the lines the row's line spacing apart, each as tall as its children; right
+    /// to left, each line fills from the right, and a growing child takes what its own line leaves.
+    func testARowThatWrapsGoesOnOntoFurtherLines() {
+        var low = Child(width: 40, height: 10)
+        low.values.vertical = Alignment.start.rawValue
+        let row = [Child(width: 60, height: 20), Child(width: 60, height: 20), Child(width: 60, height: 30), low]
+        let lines = StackArithmetic.Lines.wrapped(spacing: 6)
+        let padding = Insets(4)
+
+        let size = StackArithmetic.size(
+            of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, width: 158)
+        XCTAssertEqual(size, LayoutSize(width: 138, height: 64), "lines of 130 and 110, 20 and 30 tall, 6 apart")
+        let bounds = Rect(0, 0, 158, 64)
+        let places = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, in: bounds, direction: .leftToRight)
+        XCTAssertEqual(places, [Rect(4, 4, 60, 20), Rect(74, 4, 60, 20), Rect(4, 30, 60, 30), Rect(74, 30, 40, 10)])
+        XCTAssertEqual(
+            StackArithmetic.size(of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, width: nil),
+            LayoutSize(width: 258, height: 38), "offered no width, on one line")
+
+        let mirrored = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 10, lines: lines, padding: padding, in: bounds, direction: .rightToLeft)
+        XCTAssertEqual(mirrored.map { $0?.x }, [94, 24, 94, 44], "each line from the right")
+
+        var space = Child(width: 0, height: 0)
+        space.values.grows = true
+        let spread = StackArithmetic.places(
+            of: [Child(width: 200, height: 10), Child(width: 60, height: 10), space, Child(width: 30, height: 10)],
+            axis: .horizontal, spacing: 10, lines: lines, padding: Insets(0), in: Rect(0, 0, 150, 40),
+            direction: .leftToRight)
+        XCTAssertEqual(spread[0], Rect(0, 0, 200, 10), "wider than the room, alone on its line")
+        XCTAssertEqual(spread[2].map { [$0.x, $0.y, $0.width] }, [70, 16, 40], "the space takes what its own line leaves")
+        XCTAssertEqual(spread[3]?.x, 120)
+    }
+
+    /// A WRAPPED ROW'S LINES STAND WHERE ITS LINE ALIGNMENT SAYS: a line shorter than the row in its middle or at its
+    /// end - right to left, the end the left - and a line a growing child fills stands as it fills.
+    func testAWrappedRowsLinesStandWhereItsLineAlignmentSays() {
+        let row = [Child(width: 60, height: 20), Child(width: 60, height: 20), Child(width: 60, height: 20)]
+        let bounds = Rect(0, 0, 130, 46)
+        func places(_ alignment: TextAlignment, _ direction: LayoutDirection = .leftToRight) -> [Double?] {
+            StackArithmetic.places(
+                of: row, axis: .horizontal, spacing: 10, lines: .wrapped(spacing: 6, alignment: alignment),
+                padding: Insets(0), in: bounds, direction: direction).map { $0?.x }
+        }
+
+        XCTAssertEqual(places(.start), [0, 70, 0], "the second line at the start")
+        XCTAssertEqual(places(.center), [0, 70, 35], "the second line in the middle")
+        XCTAssertEqual(places(.end), [0, 70, 70], "the second line at the end")
+        XCTAssertEqual(places(.end, .rightToLeft), [70, 0, 0], "right to left, the end the left")
+
+        var space = Child(width: 0, height: 0)
+        space.values.grows = true
+        let filled = StackArithmetic.places(
+            of: [Child(width: 120, height: 10), Child(width: 60, height: 10), space], axis: .horizontal, spacing: 10,
+            lines: .wrapped(spacing: 6, alignment: .center), padding: Insets(0), in: bounds, direction: .leftToRight)
+        XCTAssertEqual(filled[1]?.x, 0, "a line a growing child fills stands as it fills")
+    }
+
+    func testARowShortOfRoomTakesItFromItsWords() {
+        let row = Self.row(title: 300, note: 100)
+
+        let places = StackArithmetic.places(
+            of: row, axis: .horizontal, spacing: 10, padding: Insets(0), in: Rect(0, 0, 300, 100),
+            direction: .leftToRight)
+
+        XCTAssertEqual(places.map { $0?.width }, [150, 50, 80], "200 left for the words, shared 3 to 1")
+        XCTAssertEqual(places.map { $0?.x }, [0, 160, 220], "the button still on the row")
+        XCTAssertEqual(places[0]?.height, 40, "the title wrapped to its 150")
+    }
+
+    /// A row with room enough keeps every child at its natural width.
+    @MainActor
+    func testARowWithRoomKeepsItsWordsWhole() {
+        let places = StackArithmetic.places(
+            of: Self.row(title: 300, note: 100), axis: .horizontal, spacing: 10, padding: Insets(0),
+            in: Rect(0, 0, 600, 100), direction: .leftToRight)
+
+        XCTAssertEqual(places.map { $0?.width }, [300, 100, 80])
+    }
+
+    /// A row measured for a width is as tall as its words wrapped to the width it gives them there, and its natural
+    /// width is still its words on one line - the words placed at the width they were measured at, offered any room.
+    @MainActor
+    func testARowMeasuresItsWordsAtTheWidthItPlacesThem() {
+        let measured = Self.row(title: 300, note: 100, offers: Offers())
+        let placed = Self.row(title: 300, note: 100, offers: Offers())
+
+        let size = StackArithmetic.size(of: measured, axis: .horizontal, spacing: 10, padding: Insets(0), width: 300)
+        XCTAssertEqual(size, LayoutSize(width: 500, height: 40), "the title two lines at its 150")
+
+        for room in stride(from: 100.0, through: 700, by: 23) {
+            _ = StackArithmetic.size(of: measured, axis: .horizontal, spacing: 10, padding: Insets(0), width: room)
+            _ = StackArithmetic.places(
+                of: placed, axis: .horizontal, spacing: 10, padding: Insets(0), in: Rect(0, 0, room, 100),
+                direction: .leftToRight)
+            XCTAssertEqual(measured[0].offers?.widths.last, placed[0].offers?.widths.last, "the title at \(room)")
+        }
+    }
+
+    /// A row of a title, a note and a button: the words wrap and yield, the button keeps its 80.
+    @MainActor
+    private static func row(title: Double, note: Double, offers: Offers? = nil) -> [Child] {
+        var words = [Child(width: title, height: 20), Child(width: note, height: 20)]
+        for index in words.indices {
+            words[index].values.words = .bare
+            words[index].values.vertical = 0
+            words[index].wraps = true
+        }
+        words[0].offers = offers
+        var button = Child(width: 80, height: 30)
+        button.values.words = .boxed
+        return words + [button]
     }
 
     /// Words in a proportional column wrap to it: their row is as tall as they are at the column's width, where
@@ -251,6 +413,47 @@ final class LayoutArithmeticTests: XCTestCase {
         }
     }
 
+    /// A child spanning tracks asks its room of the tracks it spans: a grid measured with no room and placed at
+    /// its size holds every child at least at its natural size - across proportional, automatic, and fixed and
+    /// proportional columns, and down proportional rows.
+    @MainActor
+    func testAChildSpanningTracksAsksItsRoomOfThem() {
+        func spanning(columns span: Int = 1, rows rowSpan: Int = 1, width: Double, height: Double) -> Child {
+            var child = Child(width: width, height: height)
+            child.wraps = true
+            child.values.columnSpan = span
+            child.values.rowSpan = rowSpan
+            return child
+        }
+        var one = Child(width: 30, height: 20)
+        one.values.row = 1
+        let grids: [(name: String, items: [Child], rows: [GridLength], columns: [GridLength])] = [
+            ("across proportional columns", [spanning(columns: 2, width: 100, height: 20)], [], [.fill, .proportional(3)]),
+            ("across automatic columns", [spanning(columns: 2, width: 100, height: 20), one], [.auto, .auto], [.auto, .auto]),
+            ("across a fixed and a proportional column", [spanning(columns: 2, width: 100, height: 20)], [], [.fixed(40), .fill]),
+            ("down proportional rows", [spanning(rows: 2, width: 30, height: 80), one], [.fill, .fill], [.auto, .auto]),
+        ]
+
+        for grid in grids {
+            let size = GridArithmetic.size(
+                of: grid.items, rows: grid.rows, columns: grid.columns,
+                rowSpacing: 10, columnSpacing: 14, padding: Insets(0))
+            let places = GridArithmetic.places(
+                of: grid.items, rows: grid.rows, columns: grid.columns, rowSpacing: 10, columnSpacing: 14,
+                padding: Insets(0), in: Rect(0, 0, size.width, size.height), direction: .leftToRight)
+            for (child, place) in zip(grid.items, places) {
+                XCTAssertGreaterThanOrEqual(place?.width ?? 0, child.natural.width, grid.name)
+                XCTAssertGreaterThanOrEqual(place?.height ?? 0, child.natural.height, grid.name)
+            }
+        }
+
+        let alone = [spanning(columns: 2, width: 100, height: 20)]
+        let size = GridArithmetic.size(
+            of: alone, rows: [], columns: [.fill, .fill], rowSpacing: 0, columnSpacing: 14, padding: Insets(0),
+            width: 360)
+        XCTAssertEqual(size, LayoutSize(width: 100, height: 20), "one line, measured at its own width")
+    }
+
     /// A ZStack stands each child in its area - the room within the padding, a rectangle in points, or one
     /// in fractions of the room - by the child's own alignments; a hidden one has no place.
     @MainActor
@@ -281,7 +484,7 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testAZStackMeasuresAsItsNeediestChild() {
         var margined = Child(width: 30, height: 10)
-        margined.values.margin = Insets(left: 5, top: 0, right: 5, bottom: 0)
+        margined.values.margin = Insets(start: 5, top: 0, end: 5, bottom: 0)
         var badge = Child(width: 20, height: 10)
         badge.values.area = .absolute(10, 5, 40, 30)
         var half = Child(width: 30, height: 20)
@@ -294,16 +497,16 @@ final class LayoutArithmeticTests: XCTestCase {
             LayoutSize(width: 60, height: 40), "half of the room holds the child only in twice its size")
     }
 
-    /// A layout engine has no size of its own: whatever its views need, it takes only its padding and the room its
+    /// A motion layout has no size of its own: whatever its views need, it takes only its padding and the room its
     /// layout gives it.
     @MainActor
-    func testALayoutEngineHasNoSizeOfItsOwn() {
+    func testAMotionLayoutHasNoSizeOfItsOwn() {
         var badge = Child(width: 20, height: 10)
         badge.values.area = .absolute(10, 5, 40, 30)
         let views = [Child(width: 30, height: 20), badge]
 
-        XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(0), width: 100, engine: true), LayoutSize(width: 0, height: 0))
-        XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(2), width: nil, engine: true), LayoutSize(width: 4, height: 4))
+        XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(0), width: 100, motionLayout: true), LayoutSize(width: 0, height: 0))
+        XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(2), width: nil, motionLayout: true), LayoutSize(width: 4, height: 4))
     }
 
     /// A child that fills both ways takes the room within its margin, whatever it would measure.
@@ -366,7 +569,7 @@ final class LayoutArithmeticTests: XCTestCase {
         var child = Child(width: 20, height: 10)
         child.values.horizontal = 0
         child.values.vertical = 0
-        child.values.margin = Insets(left: 5, top: 0, right: 0, bottom: 0)
+        child.values.margin = Insets(start: 5, top: 0, end: 0, bottom: 0)
         let viewport = LayoutSize(width: 100, height: 50)
 
         XCTAssertEqual(ScrollArithmetic.arrange(
@@ -434,6 +637,11 @@ private struct Child: LayoutChild {
         natural = LayoutSize(width: width, height: height)
         isShown = shown
     }
+
+    /// How far below its top its first line of words rests; nil for none.
+    var baseline: Double?
+
+    func firstBaseline(offered width: Double?) -> Double? { baseline }
 
     func size(offered width: Double?) -> LayoutSize {
         offers?.widths.append(width)

@@ -40,8 +40,8 @@ extension Node {
         }
     }
 
-    /// Takes, as an arrangement standing where a page stands, the title and the icon `values` give; anything else
-    /// a page alone says, and anywhere but at a page's position nothing, is complained about.
+    /// Takes, as an arrangement standing where a page stands, the title, the icon and the ground of its pages `values`
+    /// give; anything else a page alone says, and anywhere but at a page's position nothing, is complained about.
     mutating func takeAsArrangement(_ values: PageValues) {
         let node = values.node
         guard NodeType.arrangements.contains(type) else {
@@ -56,20 +56,26 @@ extension Node {
 
         for (key, value) in node.props where Self.pageProps.contains(key) { props[key] = value }
         for (key, value) in node.driven where Self.pageProps.contains(key) { driven[key] = value }
+        for (name, handlers) in node.events.sorted(by: { $0.key < $1.key }) where Self.pageEvents.contains(name) {
+            addHandlers(name, handlers)
+        }
 
         let others = node.props.keys.filter { !Self.pageProps.contains($0) }.map(\.name)
             + node.driven.keys.filter { !Self.pageProps.contains($0) }.map(\.name)
-            + node.events.keys.map(\.name)
+            + node.events.keys.filter { !Self.pageEvents.contains($0) }.map(\.name)
         if !others.isEmpty {
             complain("""
                 \(Set(others).sorted().joined(separator: ", ")) says something of a page, written on \(type.name), \
-                which stands where a page stands as a page already and takes only a title and an icon.
+                which stands where a page stands as a page already and takes only a title, an icon, the ground of its \
+                pages and the links its window is given.
                 """)
         }
     }
 
-    /// The keys the page tier's properties - a title, an icon - are written under, made once; the tier has no event.
+    /// The keys the page tier's properties - a title, an icon, a ground - and its event - a link given - are written
+    /// under, made once.
     private static let pageProps = Set(PageElementContract.members.map { Prop($0.name) })
+    private static let pageEvents = Set(PageElementContract.members.map { Event($0.name) })
 }
 
 /// A page's values as modifiers write them - every way a view's own property is written, kept to the page.

@@ -1,4 +1,2 @@
-# revision 3.1
+# revision 4.1
 MenuItem: ✅
-MenuItem.isOn: ✅
-MenuItem.toggled: ✅

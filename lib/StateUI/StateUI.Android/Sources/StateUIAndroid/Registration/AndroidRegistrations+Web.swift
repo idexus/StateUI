@@ -18,7 +18,7 @@ extension AndroidRegistrations {
             web.onProcessGone = { reports.raise(WebViewContract.processTerminated) }
             return web
         }, members: { web in
-            web.applies([WebViewContract.userAgent, WebViewContract.source]) { view, values in
+            web.applies(WebViewContract.userAgent, WebViewContract.source) { view, values in
                 if values.changed(WebViewContract.source) {
                     view.show(values[WebViewContract.source], userAgent: values[WebViewContract.userAgent])
                 } else if values.changed(WebViewContract.userAgent) {

@@ -68,6 +68,31 @@ public struct Hear<Owner: Contract, Value: HostRepresentable & Sendable>: Worn {
     }
 }
 
+/// One event carrying two values, and what hears them.
+@MainActor
+public struct HearTwo<Owner: Contract, First, Second>: Worn
+where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable {
+    /// The event.
+    public let event: ElementEvent<Owner, (First, Second)>
+
+    /// What hears it.
+    public let handler: @MainActor (First, Second) throws -> Void
+
+    /// `event` heard by `handler`.
+    public init(
+        _ event: ElementEvent<Owner, (First, Second)>, _ handler: @escaping @MainActor (First, Second) throws -> Void
+    ) {
+        self.event = event
+        self.handler = handler
+    }
+
+    @MainActor
+    public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
+        let handler = handler
+        return element.onEvent(event) { first, second in try handler(first, second) }
+    }
+}
+
 /// One event carrying three values, and what hears them.
 @MainActor
 public struct HearThree<Owner: Contract, First, Second, Third>: Worn
@@ -91,6 +116,33 @@ where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable,
     public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
         let handler = handler
         return element.onEvent(event) { first, second, third in try handler(first, second, third) }
+    }
+}
+
+/// One event carrying four values, and what hears them.
+@MainActor
+public struct HearFour<Owner: Contract, First, Second, Third, Fourth>: Worn
+where First: HostRepresentable & Sendable, Second: HostRepresentable & Sendable, Third: HostRepresentable & Sendable,
+    Fourth: HostRepresentable & Sendable {
+    /// The event.
+    public let event: ElementEvent<Owner, (First, Second, Third, Fourth)>
+
+    /// What hears it.
+    public let handler: @MainActor (First, Second, Third, Fourth) throws -> Void
+
+    /// `event` heard by `handler`.
+    public init(
+        _ event: ElementEvent<Owner, (First, Second, Third, Fourth)>,
+        _ handler: @escaping @MainActor (First, Second, Third, Fourth) throws -> Void
+    ) {
+        self.event = event
+        self.handler = handler
+    }
+
+    @MainActor
+    public func worn<Element: ModifiableElement>(by element: Element) -> Element where Element.Modified == Element {
+        let handler = handler
+        return element.onEvent(event) { first, second, third, fourth in try handler(first, second, third, fourth) }
     }
 }
 

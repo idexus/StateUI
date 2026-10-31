@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import Dispatch
-import StateUIFoundation
+@_spi(Host) import StateUIFoundation
 import XCTest
 
 /// Which thread code runs on, as a number to compare.

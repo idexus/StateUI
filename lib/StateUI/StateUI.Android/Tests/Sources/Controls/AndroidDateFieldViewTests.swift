@@ -20,16 +20,18 @@ final class AndroidDateFieldViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    DatePicker(CalendarDate(year: 2026, month: 9, day: 24)).format("yyyy-MM-dd")
+                    DatePicker(CalendarDate(year: 2026, month: 9, day: 24)).format(.short)
                     TimePicker(ClockTime(hour: 7, minute: 5)).format("HH:mm")
-                    DatePicker(CalendarDate(year: 2026, month: 9, day: 24)).format("D")
+                    DatePicker(CalendarDate(year: 2026, month: 9, day: 24)).format(.long)
+                    DatePicker(CalendarDate(year: 2026, month: 9, day: 24)).format(.medium)
                 }
             }
             let fields = host.views(AndroidDateFieldView.self)
 
-            XCTAssertEqual(fields[0].text, "2026-09-24")
+            XCTAssertFalse(fields[0].text.isEmpty)
             XCTAssertEqual(fields[1].text, "07:05")
             XCTAssertTrue(fields[2].text.contains("2026"), fields[2].text)
+            XCTAssertEqual(Set([fields[0].text, fields[2].text, fields[3].text]).count, 3, "three forms of one day")
         }
     }
 
@@ -39,7 +41,7 @@ final class AndroidDateFieldViewTests: XCTestCase {
             let due = State(wrappedValue: CalendarDate(year: 2026, month: 9, day: 24))
             let heard = Received<String>()
             let host = AndroidRenderer.running {
-                DatePicker(due.projectedValue).format("yyyy-MM-dd").onDateChanged { heard.values.append($0.text) }
+                DatePicker(due.projectedValue).format(.long).onDateChanged { heard.values.append($0.text) }
             }
             let field = try XCTUnwrap(host.views(AndroidDateFieldView.self).first)
 
@@ -47,7 +49,7 @@ final class AndroidDateFieldViewTests: XCTestCase {
 
             XCTAssertEqual(due.wrappedValue, CalendarDate(year: 2027, month: 1, day: 15))
             XCTAssertEqual(heard.values, ["2027-01-15"])
-            XCTAssertEqual(field.text, "2027-01-15")
+            XCTAssertTrue(field.text.contains("2027"), field.text)
         }
     }
 

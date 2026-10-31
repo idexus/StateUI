@@ -31,8 +31,10 @@ extension AndroidDriver {
             _ = Java.callBool(cell.reference, JavaAPI.performClick)
         case (.scroll(let target), let items as AndroidItemsView): items.scrollForTesting(to: target)
         case (.endContent, let web as AndroidWebView): try Self.endContent(of: web)
-        case (.activate, _) where element.type == .menuItem || element.type == .toolbarItem: try choose(element)
-        case (.activate, let button as AndroidButtonView): button.click()
+        case (.activate, _) where [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle].contains(element.type): try choose(element)
+        // A touch clicks no view that is not enabled; `performClick` would.
+        case (.activate, let button as AndroidButtonView): if Java.callBool(button.reference, JavaAPI.isEnabled) { button.click() }
+        case (.activate, let link as AndroidLinkView): if Java.callBool(link.reference, JavaAPI.isEnabled) { link.click() }
         case (.toggle, let toggle as AndroidToggleView): toggle.click()
         case (.toggle, let split as AndroidSplitView):
             // The scrim's tap hides the sidebar, the bar's button shows it: both the host's own entry.
@@ -42,12 +44,17 @@ extension AndroidDriver {
             // The keyboard's own action, as the field's return key says it - done where it says nothing.
             let action = Java.callInt(field.reference, Self.getImeOptions) & 0xff
             Java.call(field.reference, Self.onEditorAction, .int(action == 0 ? 6 : action))
-        case (.answer(let caption, let words), _):
+        case (.answer(let button, let words), _):
+            let (role, place): (AndroidAnswer, Int32) = switch button {
+            case .accept: (.accept, -1)
+            case .cancel: (.cancel, -1)
+            case .action(let place): (.action, Int32(place))
+            }
             let answered = Java.frame {
                 Java.callStaticBool(
-                    Self.dialogs, Self.answer, .object(Java.string(caption)), .object(words.flatMap(Java.string)))
+                    Self.dialogs, Self.answer, .int(role.rawValue), .int(place), .object(words.flatMap(Java.string)))
             }
-            guard answered else { throw DriverCannot("answer by \(caption)") }
+            guard answered else { throw DriverCannot("answer by \(button)") }
         case (.dragAndDrop(let target, let across), _):
             try dragAndDrop(element, onto: target, across: across)
         case (.dropFiles(let names), let view?):
@@ -73,9 +80,17 @@ extension AndroidDriver {
         case (.enterWords, is AndroidStepperView):
             throw DriverCannot("type words into a Stepper", because: "Android's stepper is two buttons, with no field")
         case (.scroll(let target), let scroll as AndroidScrollView): Self.scroll(scroll, to: target)
+        case (.pullToRefresh, let pulled as any AndroidRefreshing):
+            // The swipe to refresh spins as a pull far enough leaves it, then tells what hears it.
+            guard let swipe = pulled.refresh?.layout.reference, Java.callBool(swipe, JavaAPI.isEnabled) else {
+                throw DriverCannot(act, on: element)
+            }
+            Java.call(swipe, JavaAPI.setRefreshing, .bool(true))
+            Java.call(swipe, JavaAPI.refreshPulled)
         case (.choose(let place), let tabs as AndroidTabView):
             guard Self.tap(tab: place, of: tabs) else { throw DriverCannot(act, on: element) }
         case (.tap(let count), let view?): Self.tap(view, count: count)
+        case (.hold, let view?): Self.hold(view)
         case (.pan(let offset), let view?): Self.pan(view, by: offset)
         case (.sweep(let offset, let speed), let view?):
             // One finger as the listener tells it, lifted at `speed`: a sweep shorter than the slop goes past it its
@@ -122,16 +137,32 @@ extension AndroidDriver {
         case (.goBack, _) where element.type == .window || element.type == .navigationStack:
             // The system's back, as the activity hands it on; what it reached, the case reads.
             _ = renderer?.goBack()
+        case (.openLink(let address), _): renderer?.runtime.openLink(address)
         case (.switchAway, _) where element.type == .window: renderer?.setPhase(.inactive)
         case (.switchBack, _) where element.type == .window: renderer?.setPhase(.active)
         case (.minimize, _) where element.type == .window:
             renderer?.setPhase(.inactive)
             renderer?.setPhase(.background)
         case (.restore, _) where element.type == .window: renderer?.setPhase(.active)
+        case (.close, let popover as AndroidPopoverView):
+            // As a touch beside it: Android's popup window dismissed, which tells its listener.
+            guard let window = popover.window else { throw DriverCannot(act, on: element) }
+            Java.call(window.reference, JavaAPI.dismissPopover)
+        case (.close, _) where element.type == .page:
+            // The close button on the bar over the page, as a touch presses it.
+            guard Self.pressNavigation(over: element) else { throw DriverCannot(act, on: element) }
         case (.close, _) where element.type == .window:
             renderer?.setPhase(.inactive)
             renderer?.setPhase(.background)
             renderer?.destroying()
+        case (.answerShare(let shared), _):
+            guard renderer?.actToolkit.sharing != nil else { throw DriverCannot("answer a share sheet: none shows") }
+            renderer?.actToolkit.answerShareForTesting(shared: shared)
+        case (.performAccessibilityAction(let name), let view?):
+            // The action TalkBack offers on the view's node, performed as TalkBack performs it.
+            _ = TestAccessibility.perform(name, on: view)
+        case (.adjust(let step), let view?):
+            _ = TestAccessibility.step(up: step == .increment, on: view)
         default: throw DriverCannot(act, on: element)
         }
     }
@@ -143,6 +174,15 @@ extension AndroidDriver {
             view.touch(down, x: x, y: y, at: run * 150)
             view.touch(up, x: x, y: y, at: run * 150 + 50)
         }
+    }
+
+    /// A finger put down in the middle of `view`, held there through Android's long-press time, and lifted.
+    private static func hold(_ view: AndroidView) {
+        let (x, y) = (Float(view.frame.width) / 2, Float(view.frame.height) / 2)
+        let held = Int64(Java.callStaticInt(JavaAPI.viewConfiguration, longPressTimeout)) + 100
+        view.touch(down, x: x, y: y, at: 0)
+        runLooper(held)
+        view.touch(up, x: x, y: y, at: held)
     }
 
     /// A finger put down in the middle of `view`, moved by `offset` points in two steps, and lifted.
@@ -197,6 +237,9 @@ extension AndroidDriver {
     static let chooseRadio = Java.staticMethod(testPicker, "chooseRadio", "(Landroid/widget/RadioGroup;I)V")
     static let getSelectedItemPosition = Java.method(
         Java.findClass("android/widget/AdapterView"), "getSelectedItemPosition", "()I")
+
+    /// Android's long-press time, in milliseconds.
+    private static let longPressTimeout = Java.staticMethod(JavaAPI.viewConfiguration, "getLongPressTimeout", "()I")
 
     /// A motion event's actions, as Android numbers them.
     private static let (down, up, move) = (Int32(0), Int32(1), Int32(2))

@@ -13,5 +13,5 @@ public struct OneWindowApplication: Application, Sendable {
         self.page = page
     }
 
-    public var body: some Scene { WindowGroup { ModifiedContent(node: page().node) } }
+    public var body: some Scene { WindowGroup { AnyView(page()) } }
 }

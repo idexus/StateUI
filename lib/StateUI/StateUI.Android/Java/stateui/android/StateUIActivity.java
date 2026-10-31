@@ -4,6 +4,7 @@
 package stateui.android;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -29,11 +30,20 @@ public class StateUIActivity extends Activity {
     private boolean handlesBack;
     /** What {@link StateUIEnvironment#watch} started, stopped as the activity goes. */
     private Object[] environmentWatch;
+    /** Whether the activity was made in the night theme: another night makes it again, its controls drawn in it. */
+    private boolean madeAtNight;
+
+    /** Before Android 12, the activity is made in the night mode the application holds. */
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        StateUIEnvironment.holdNightMode(this);
+    }
 
     @Override
     protected void onCreate(Bundle state) {
-        StateUIEnvironment.followSystemOnce(this);
-        setTheme(StateUIEnvironment.night(this)
+        madeAtNight = StateUIEnvironment.night(this);
+        setTheme(madeAtNight
                 ? android.R.style.Theme_DeviceDefault_NoActionBar
                 : android.R.style.Theme_DeviceDefault_Light_NoActionBar);
         super.onCreate(state);
@@ -42,29 +52,50 @@ public class StateUIActivity extends Activity {
         System.loadLibrary(library());
 
         FrameLayout root = new FrameLayout(this);
-        root.setFitsSystemWindows(true);
         setContentView(root);
+        StateUIViews.edgeToEdge(this, root, !StateUIEnvironment.night(this));
 
         StateUIHost.start(this, root, getResources().getDisplayMetrics().density);
+        StateUIEnvironment.settleNightMode(this);
         environmentWatch = StateUIEnvironment.watch(this);
+        // A link the activity was started for - not again when it is made anew for a new configuration.
+        if (state == null) openLink(getIntent());
+    }
+
+    /**
+     * A link the system asks the running activity to open - one its head's intent filter takes, the activity
+     * single in its task - reaches the host as the start's own does. An activity of the application's own calls
+     * {@code super} where it overrides.
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        openLink(intent);
+    }
+
+    /** The address {@code intent} asks the application to view, handed to the host; nothing for any other intent. */
+    private static void openLink(Intent intent) {
+        if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction()) || intent.getDataString() == null) return;
+        StateUIHost.linkOpened(intent.getDataString());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        StateUIHost.phase(StateUIHost.ACTIVE);
+        StateUIHost.phase(StateUIHost.ACTIVE, false);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        StateUIHost.phase(StateUIHost.INACTIVE);
+        StateUIHost.phase(StateUIHost.INACTIVE, isChangingConfigurations());
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        StateUIHost.phase(StateUIHost.BACKGROUND);
+        StateUIHost.phase(StateUIHost.BACKGROUND, isChangingConfigurations());
     }
 
     /**
@@ -83,10 +114,18 @@ public class StateUIActivity extends Activity {
         super.onDestroy();
     }
 
-    /** The display turned or resized: the host reads it again. */
+    /**
+     * The display turned or resized: the host reads it again. Another night - a manifest that takes a change of the
+     * night mode itself - makes the activity again, as one that does not is: its native controls take a theme only
+     * as they are made.
+     */
     @Override
     public void onConfigurationChanged(Configuration configuration) {
         super.onConfigurationChanged(configuration);
+        if (StateUIEnvironment.night(this) != madeAtNight) {
+            recreate();
+            return;
+        }
         StateUIHost.configured();
     }
 

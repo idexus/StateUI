@@ -5,6 +5,7 @@ struct StyleSample: SampleContent, ExampleContent {
     // listing: StyleSample
     @State private var enabled = true
     @State private var platformLook = false
+    @State private var span = "Week"
     // listing: end
 
     static let id = "styles"
@@ -40,26 +41,14 @@ struct StyleSample: SampleContent, ExampleContent {
                 .horizontalAlignment(.center)
                 .onClicked {}
 
-            HStack {
-                Text("Enabled")
-                    .verticalAlignment(.center)
+            Switch($enabled)
+                .text("Enabled")
+                .accessibilityIdentifier("styles.enabled")
+                .horizontalAlignment(.center)
 
-                Switch($enabled)
-                    .accessibilityIdentifier("styles.enabled")
-                    .accessibilityLabel("Enabled")
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
-
-            HStack {
-                Text("Platform look")
-                    .verticalAlignment(.center)
-
-                Switch($platformLook)
-                    .accessibilityLabel("Platform look")
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Switch($platformLook)
+                .text("Platform look")
+                .horizontalAlignment(.center)
 
             SectionTitle("A style for a role")
 
@@ -72,6 +61,15 @@ struct StyleSample: SampleContent, ExampleContent {
             .spacing(12)
             .horizontalAlignment(.center)
 
+            SectionTitle("A style for a presentation")
+
+            // The segments wear the style their presentation chooses, over the
+            // one every picker wears.
+            Picker(["Day", "Week", "Month"], selection: $span) { $0 }
+                .presentation(.segmented)
+                .style(platformLook ? .platform : nil)
+                .horizontalAlignment(.center)
+
             SectionTitle("A style asked for by name")
 
             // A keyed style is asked for; a keyed style REPLACES the implicit
@@ -82,13 +80,13 @@ struct StyleSample: SampleContent, ExampleContent {
             SectionTitle("A style written from another")
 
             // The same words twice. "Quote" states the shape; "QuoteLoud" is
-            // `.basedOn(.quote)` plus one colour - so everything that matches
+            // `.basedOn(.quote)` plus one color - so everything that matches
             // below is inherited, and the one thing that differs is the one
             // thing it declares.
-            Text("The same eleven words, and one of these declares a colour.")
+            Text("The same eleven words, and one of these declares a color.")
                 .style(.quote)
 
-            Text("The same eleven words, and one of these declares a colour.")
+            Text("The same eleven words, and one of these declares a color.")
                 .style(.quoteLoud)
         }
         .spacing(14)
@@ -107,6 +105,11 @@ struct StyleSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Text("The segments wear `Style<Picker>(presentation: .segmented)` the same way, the style of their "
+                + "presentation over `Style<Picker>()`.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Text("A style with no key is implicit: every control of its type wears it, "
                 + "as every button here wears `Style<Button>()`. `Headline` has a key "
                 + "and is asked for by name, and a keyed style REPLACES the implicit one, "
@@ -114,18 +117,18 @@ struct StyleSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Both quotes are italic, both are 17 point, both are centred, both "
+            Text("Both quotes are italic, both are 17 point, both are centered, both "
                 + "carry the same letter spacing - and only one of them says so. "
-                + "`QuoteLoud` is `.basedOn(.quote)` and a text colour, which "
+                + "`QuoteLoud` is `.basedOn(.quote)` and a text color, which "
                 + "is the whole of its declaration. A property the child states "
                 + "wins; every property it leaves out comes from the parent.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("Every colour these styles use is one `Color(light:dark:)`, a value "
+            Text("Every color these styles use is one `Color(light:dark:)`, a value "
                 + "for each theme. None of this crosses the boundary: the styles are "
                 + "resolved in Swift, into the controls, so what the host receives is "
-                + "a button with its colours already on it.")
+                + "a button with its colors already on it.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }

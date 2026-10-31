@@ -57,6 +57,25 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         attribute("disabled", enabled ? nil : "")
     }
 
+    /// The outline the tree gives the field - its color and width - and the shape its ground and outline follow, over
+    /// the page's own frame; the page's where it gives none. Only the border and the corners: the background
+    /// shorthand would clear the picture the page's look draws in a field.
+    /// Design: docs/design/platforms/web/look.md#a-fields-outline
+    func setOutline(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
+        let width = BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth)
+        let color = WebCSS.color(HostBrush(stroke).firstColor) ?? "currentColor"
+        style("border", stroke == nil ? nil : width > 0 ? "\(WebCSS.pixels(width)!) solid \(color)" : "none")
+        style("border-radius", shape == nil ? nil : WebCSS.corners(BoxArithmetic.outline(shape)) ?? "0")
+    }
+
+    /// An editor given a ground of its own stands in it with no frame of the page's look, as the platforms' editors
+    /// draw none.
+    /// Design: docs/design/platforms/web/look.md#a-views-background
+    override func setBackground(_ value: HostValue?) {
+        super.setBackground(value)
+        if kind == .editor { attribute("data-ground", value == nil ? nil : "") }
+    }
+
     func setPlaceholder(_ placeholder: String?) {
         self.placeholder = placeholder ?? ""
         attribute("placeholder", placeholder)
@@ -66,7 +85,7 @@ final class WebTextInputView: WebDOMView, WebWordsView {
     /// The words shown while there are none, which a field's natural width counts too.
     private var placeholder = ""
 
-    /// The colour of the words shown while there are none; nil for the page's.
+    /// The color of the words shown while there are none; nil for the page's.
     func setPlaceholderColor(_ color: HostValue?) {
         style("--stateui-placeholder", WebCSS.color(color))
     }
@@ -110,6 +129,7 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         case .words: nil
         case .email: "email"
         case .number: "decimal"
+        case .digits: "numeric"
         case .telephone: "tel"
         case .url: "url"
         }
@@ -117,7 +137,17 @@ final class WebTextInputView: WebDOMView, WebWordsView {
         attribute("autocapitalize", traits.capitals == .none ? "off" : traits.capitals == .sentences ? "sentences" : nil)
         attribute("spellcheck", traits.checksSpelling ? "true" : "false")
         attribute("autocorrect", traits.corrects ? "on" : "off")
-        attribute("autocomplete", traits.predicts ? nil : "off")
+        // What the words are names what the browser fills them in with; words of no such kind, unpredicted, take none.
+        let filled: String? = switch traits.content {
+        case .emailAddress: "email"
+        case .telephoneNumber: "tel"
+        case .url: "url"
+        case .username: "username"
+        case .newPassword: "new-password"
+        case .oneTimeCode: "one-time-code"
+        case nil: traits.predicts ? nil : "off"
+        }
+        attribute("autocomplete", filled)
     }
 
     /// What the keyboard's Return key says.

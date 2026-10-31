@@ -19,8 +19,7 @@ final class AppKitSharedMemberTests: XCTestCase {
         let controls: [(NodeType, [Prop: HostValue], @MainActor (NSView) -> Bool?)] = [
             (.button, [.text: .string("Save")], { ($0 as? NSControl)?.isEnabled }),
             (.checkBox, [:], { ($0 as? NSControl)?.isEnabled }),
-            (.radioButton, [.text: .string("One")], { ($0 as? NSControl)?.isEnabled }),
-            (.switch, [:], { ($0 as? NSControl)?.isEnabled }),
+            (.switch, [:], { ($0 as? AppKitSwitchView)?.control.isEnabled }),
             (.slider, [:], { ($0 as? NSControl)?.isEnabled }),
             (.stepper, [:], { ($0 as? NSControl)?.isEnabled }),
             (.datePicker, [:], { ($0 as? NSControl)?.isEnabled }),
@@ -58,7 +57,6 @@ final class AppKitSharedMemberTests: XCTestCase {
                     .attribute(.font, at: 0, effectiveRange: nil) as? NSFont
             }),
             (.button, [.text: .string("Text")], { ($0 as? NSButton)?.font }),
-            (.radioButton, [.text: .string("Text")], { ($0 as? NSButton)?.font }),
             (.textField, [.text: .string("Text")], { ($0 as? AppKitTextFieldView)?.textField.font }),
             (.textEditor, [.text: .string("Text")], { ($0 as? AppKitTextEditorView)?.textView.font }),
             (.searchField, [.text: .string("Text")], { ($0 as? NSSearchField)?.font }),
@@ -89,9 +87,9 @@ final class AppKitSharedMemberTests: XCTestCase {
         }
     }
 
-    /// A control that sets text sets it in the colour `textColor` says.
+    /// A control that sets text sets it in the color `textColor` says.
     @MainActor
-    func testEveryTextControlSetsItsTextInTheWrittenColour() throws {
+    func testEveryTextControlSetsItsTextInTheWrittenColor() throws {
         func foreground(_ text: NSAttributedString?) -> NSColor? {
             text?.attribute(.foregroundColor, at: 0, effectiveRange: nil) as? NSColor
         }
@@ -100,7 +98,8 @@ final class AppKitSharedMemberTests: XCTestCase {
                 foreground(($0 as? AppKitTextView)?.attributedStringValue)
             }),
             (.button, [.text: .string("Text")], { foreground(($0 as? NSButton)?.attributedTitle) }),
-            (.radioButton, [.text: .string("Text")], { foreground(($0 as? NSButton)?.attributedTitle) }),
+            (.checkBox, [.text: .string("Text")], { foreground(($0 as? NSButton)?.attributedTitle) }),
+            (.switch, [.text: .string("Text")], { ($0 as? AppKitSwitchView)?.caption.textColor }),
             (.textField, [.text: .string("Text")], { ($0 as? AppKitTextFieldView)?.textField.textColor }),
             (.textEditor, [.text: .string("Text")], { ($0 as? AppKitTextEditorView)?.textView.textColor }),
             (.searchField, [.text: .string("Text")], { ($0 as? NSSearchField)?.textColor }),
@@ -112,7 +111,7 @@ final class AppKitSharedMemberTests: XCTestCase {
             (.timePicker, [:], { ($0 as? NSDatePicker)?.textColor }),
         ]
 
-        for (type, properties, nativeColour) in controls {
+        for (type, properties, nativeColor) in controls {
             let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
             defer { renderer.closeForTesting() }
             var control = HostPatch(id: .manual("control"), type: type)
@@ -121,20 +120,20 @@ final class AppKitSharedMemberTests: XCTestCase {
             renderer.applyForTesting(tree(control))
 
             let native = try XCTUnwrap(renderer.viewForTesting(id: .manual("control")), type.name)
-            assertChannels(channels(nativeColour(native)), [0.2, 0.4, 0.6, 1], type.name)
+            assertChannels(channels(nativeColor(native)), [0.2, 0.4, 0.6, 1], type.name)
         }
     }
 
-    /// A background colour paints the view it is written on: its layer, or -
+    /// A background color paints the view it is written on: its layer, or -
     /// for a view that draws its own - its own fill, a field's and an
     /// editor's. A search field takes none: AppKit draws its
     /// rounded field itself, and no square is painted under it.
     @MainActor
-    func testABackgroundColourPaintsEveryView() throws {
+    func testABackgroundColorPaintsEveryView() throws {
         let layered: [NodeType] = [
-            .activityIndicator, .button, .canvas, .checkBox, .datePicker,
+            .spinner, .button, .canvas, .checkBox, .datePicker,
             .ellipse, .grid, .hStack, .image, .text, .line, .path, .picker, .polygon,
-            .polyline, .progressBar, .radioButton, .rectangle, .scrollView,
+            .polyline, .progressBar, .rectangle, .scrollView,
             .slider, .stepper, .switch, .timePicker, .vStack, .zStack,
         ]
         let layer: (NSView) -> [CGFloat]? = { channels($0.layer?.backgroundColor) }
@@ -253,7 +252,7 @@ func assertChannels(
     line: UInt = #line
 ) {
     guard let actual else {
-        return XCTFail("no colour. \(message)", file: file, line: line)
+        return XCTFail("no color. \(message)", file: file, line: line)
     }
     XCTAssertEqual(actual.count, expected.count, message, file: file, line: line)
     for (channel, wanted) in zip(actual, expected) {

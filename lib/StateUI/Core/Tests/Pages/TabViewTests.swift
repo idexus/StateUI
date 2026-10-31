@@ -24,7 +24,7 @@ private struct TabPage: View {
     let tab: Tab
 
     var body: some View {
-        ModifiedContent(node: label("\(tab)"))
+        AnyView(node: label("\(tab)"))
             .title("\(tab)")
             .icon(ImageSource("\(tab).png"))
     }
@@ -35,7 +35,7 @@ private struct TabPage: View {
 private func tabs(
     _ selection: Binding<Tab>,
     _ offered: [Tab] = Tab.allCases
-) -> TabView {
+) -> TabView<Tab> {
     TabView(offered) { tab in
         TabPage(tab: tab)
     }
@@ -187,12 +187,12 @@ final class TabViewTests: XCTestCase {
         let selection = State<Tab>(.home)
 
         let node = tabs(selection.projectedValue)
-            .barBackgroundColor(Color("#512BD4"))
+            .barBackground(Color(hex: 0x512BD4))
             .node
             .built
 
-        XCTAssertEqual(node.props["barBackgroundColor"], Color("#512BD4").propValue)
-        XCTAssertNil(node.children.first?.built.props["barBackgroundColor"],
+        XCTAssertEqual(node.props["barBackground"], Color(hex: 0x512BD4).propValue)
+        XCTAssertNil(node.children.first?.built.props["barBackground"],
                      "the page under the arrangement does not own its bar")
     }
 
@@ -205,7 +205,7 @@ final class TabViewTests: XCTestCase {
 
         let sent = Set(
             tabs(selection.projectedValue)
-                .barBackgroundColor(.black)
+                .barBackground(.black)
                 .node
                 .built
                 .props
@@ -252,7 +252,7 @@ final class TabViewTests: XCTestCase {
             }
         }
         .selection(selection.projectedValue)
-        .barBackgroundColor(Color("#512BD4"))
+        .barBackground(Color(hex: 0x512BD4))
         .node
 
         // As the message that brings the tabs carries them - with the caption
@@ -260,7 +260,7 @@ final class TabViewTests: XCTestCase {
         let tabs = Renders().settled(tree)
 
         XCTAssertEqual(tabs.props, [
-            "barBackgroundColor": Color("#512BD4").propValue, "selectedTab": .number(1),
+            "barBackground": Color(hex: 0x512BD4).propValue, "selectedTab": .number(1),
         ])
         XCTAssertEqual(tabs.eventNames, ["selectedTabChanged"])
         XCTAssertEqual(tabs.arrangement, [.manual("home"), .manual("settings")])
@@ -345,29 +345,5 @@ final class TabViewTests: XCTestCase {
         XCTAssertEqual(node.children.map { $0.id }, ["home", "browse", "settings"])
         XCTAssertNil(node.props["selectedTab"], "nothing says which tab is showing")
         XCTAssertTrue(node.events.isEmpty, "and nothing is listening for one")
-    }
-
-    /// A binding of a type the TABS are not - the one mistake erasing them to
-    /// `AnyHashable` makes possible - names no tab and writes nothing.
-    ///
-    /// It cannot be caught at compile time: `selection` is generic over any
-    /// `Hashable` because the page it sits on is not generic at all. So it
-    /// behaves as a selection naming a tab that is not offered does, which is
-    /// the neighbouring test above - no index out, no trap, and the host's
-    /// report simply finds nothing to write.
-    func testASelectionOfAnotherTypeEntirelyNamesNoTab() {
-        let selection = State<String>("home")
-        let renders = Renders()
-
-        let page = TabView(Tab.allCases) { TabPage(tab: $0) }
-            .selection(selection.projectedValue)
-
-        let patch = renders.settled(page.node)
-
-        XCTAssertNil(page.node.built.props["selectedTab"],
-                     "a String is not one of these tabs, whatever it spells")
-
-        XCTAssertTrue(renders.fire(patch.events?["selectedTabChanged"] ?? -1, with: [.number(2)]))
-        XCTAssertEqual(selection.wrappedValue, "home", "and the report writes nothing")
     }
 }

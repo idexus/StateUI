@@ -1,5 +1,0 @@
-# revision 2.1
-RadioButton: ✅
-RadioButton.groupName: ✅
-RadioButton.isOn: ✓ read isOn of RadioButton: the host's own flag, not the button's state
-RadioButton.toggled: ✅

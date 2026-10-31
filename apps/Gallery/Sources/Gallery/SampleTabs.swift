@@ -114,12 +114,12 @@ struct SampleTabPage: View {
             }
 
             if let notes = example.notes {
-                SamplePage.section("Notes", ModifiedContent(node: notes.node))
+                SamplePage.section("Notes", AnyView(notes))
             }
 
             SamplePage.section(example.codeHeading, CodeBlock(example.code))
 
-            example.hostCode.listings.map { listing -> any View in
+            ForEach(example.hostCode.listings, id: \.language) { listing in
                 SamplePage.section(
                     example.hostCode.heading(of: listing), CodeBlock(listing.code).language(listing.language))
             }

@@ -15,13 +15,14 @@ own.
     Scene                            windows and the state they share
       Window                         a window onto a page
         Page, NavigationStack,       what a window shows; the arrangements are pages too
-        TabView, SplitView,
-        ModalStack                   a page with the pages presented over it, the last on top
+        TabView, SplitView
+  Sheet                              a page a view presents over its window while a state says so
+  Anchor                             what a view whose root may change stands on
   Overlay                            the views a page lays over its window, and the library's own
   MenuBar, Menu, MenuItem,           a page's menus, their entries, and the lines between them
   MenuSeparator
   ContextMenu                        the menu a view offers where the user asks for one
-  ToolbarItemGroup, ToolbarItem      a page's actions in its bar or toolbar
+  ToolbarGroup, ToolbarButton      a page's actions in its bar or toolbar
   TitleView                          the view a page shows in its bar in place of its title
   TextSpans, TextSpan                the runs of text a label is made of
   Marker                             a pin on a map, which stands only among its map's pins
@@ -36,7 +37,7 @@ again when that state moves.
 
 ## Collections as one node
 
-A page's toolbar items hang off it as one `ToolbarItemGroup` node for each
+A page's toolbar items hang off it as one `ToolbarGroup` node for each
 `.toolbar` declaration, holding its items, its menus as one `MenuBar`, and a
 label's runs as one `TextSpans`. The host
 has a list to keep in step, and a list needs a parent of its own to be matched

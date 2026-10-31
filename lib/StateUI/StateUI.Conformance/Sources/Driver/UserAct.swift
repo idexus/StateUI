@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import StateUI
+import StateUIHost
 
 /// What a user does to a control, a page or a window, which a driver does through its toolkit's own path.
 public enum UserAct: Equatable, Sendable, CustomStringConvertible {
@@ -23,12 +24,15 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case choose(Int)
     /// A picker's list, a date's calendar or a time's clock opened; a map's pin's details.
     case open
-    /// A picker's list, a date's calendar or a time's clock closed; a window closed.
+    /// A picker's list, a date's calendar or a time's clock closed; a window closed; a popover dismissed; a sheet
+    /// closed by the close button on the bar over its page.
     case close
     /// A day picked from a date's calendar.
     case pickDate(CalendarDate)
     /// A time of day picked from a time's clock.
     case pickTime(ClockTime)
+    /// A color picked in a color picker's panel.
+    case pickColor(Color)
     /// A pointer pressed down on the element, at a point of its own.
     case pressDown(at: Point)
     /// The pointer pressed down moved to a point of the element's.
@@ -41,6 +45,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case leave
     /// A quick run of taps on the element.
     case tap(count: Int)
+    /// A press on the element held as long as its hold waits, and let go.
+    case hold
     /// A press dragged across the element by an offset, and let go.
     case pan(by: Point)
     /// The hand swept over a layout - a press dragged, a trackpad's fingers - moving what is under it by an offset,
@@ -63,6 +69,8 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case dropFiles([String])
     /// A scroll view scrolled to an offset.
     case scroll(to: Point)
+    /// A scroller or a list pulled to refresh it, as far as its platform's pull asks.
+    case pullToRefresh
     /// The keyboard moved to the element.
     case focus
     /// The way back taken: a navigation's page, or the top modal page, gone.
@@ -77,15 +85,25 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
     case switchBack
     /// A window of the application brought in front of its others, as the user picks it.
     case bringToFront
-    /// The question the window shows answered by its button of that caption, its field first holding the words.
-    case answer(String, typing: String? = nil)
+    /// The application asked to open a link - one the user chose elsewhere, of a scheme it registers - as the system
+    /// asks it, given to the element's window where the platform names one.
+    case openLink(String)
+    /// The question the window shows answered by its button doing that - accepting, cancelling, an action of a
+    /// choice - its field first holding the words.
+    case answer(QuestionButton, typing: String? = nil)
     /// The file dialog the window shows answered by the files of these names in the driver's own folder - a save's
     /// place by one; none cancels it.
     case answerFiles([String])
+    /// The share sheet the window shows answered: shared to a target the user chose, or cancelled.
+    case answerShare(shared: Bool)
     /// A web view's content ended, as the platform ends it when its process goes.
     case endContent
     /// A keyboard shortcut pressed while the element's window is in front.
     case pressKeys(KeyboardShortcut)
+    /// One of the element's actions performed, by its words, as a screen reader performs it.
+    case performAccessibilityAction(String)
+    /// The element stepped up or down as a screen reader steps it.
+    case adjust(AccessibilityAdjustment)
 
     /// The act's name, as a driver says what it cannot do.
     public var description: String {
@@ -102,12 +120,15 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .close: "close"
         case .pickDate: "pickDate"
         case .pickTime: "pickTime"
+        case .pickColor: "pickColor"
         case .pressDown: "pressDown"
         case .drag: "drag"
         case .lift: "lift"
         case .hover: "hover"
         case .leave: "leave"
         case .tap: "tap"
+        case .openLink: "openLink"
+        case .hold: "hold"
         case .pan: "pan"
         case .sweep: "sweep"
         case .notch: "notch"
@@ -116,6 +137,7 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .dragAndDrop: "dragAndDrop"
         case .dropFiles: "dropFiles"
         case .scroll: "scroll"
+        case .pullToRefresh: "pullToRefresh"
         case .focus: "focus"
         case .goBack: "goBack"
         case .minimize: "minimize"
@@ -125,8 +147,11 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .switchBack: "switchBack"
         case .answer: "answer"
         case .answerFiles: "answerFiles"
+        case .answerShare: "answerShare"
         case .endContent: "endContent"
         case .pressKeys: "pressKeys"
+        case .performAccessibilityAction: "performAccessibilityAction"
+        case .adjust: "adjust"
         }
     }
 }

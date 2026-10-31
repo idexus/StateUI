@@ -19,6 +19,11 @@ extension AppKitDriver {
         if let button = view as? AppKitButtonView, let held = buttonHolds(property, button) { return held }
         switch (property, view) {
         case (.clipsContent, _) where !(view is NSControl): return view.clipsToBounds.propValue
+        case (.edge, _):
+            let bar = sequence(first: view, next: \.superview).lazy.compactMap { $0 as? AppKitBottomBarView }.first
+            return bar?.edge.propValue
+        case (.scrollOffset, let scroll as AppKitScrollView):
+            return Point(scroll.offset).propValue
         case (.scrollOffset, let scroll as NSScrollView):
             let origin = scroll.contentView.bounds.origin
             return Point(x: Double(origin.x), y: Double(origin.y)).propValue
@@ -26,6 +31,7 @@ extension AppKitDriver {
             return bar(shown: scroll.hasVerticalScroller, hides: scroll.autohidesScrollers).propValue
         case (.horizontalScrollIndicator, let scroll as NSScrollView):
             return bar(shown: scroll.hasHorizontalScroller, hides: scroll.autohidesScrollers).propValue
+        case (.text, let link as AppKitLinkView): return link.attributedTitle.string.propValue
         case (.isAnimating, let image as AppKitImageView): return image.animationPlaying.propValue
         case (.contentMode, let image as AppKitImageView): return aspect(of: image).propValue
         case (.horizontalTextAlignment, let picker as AppKitPickerView):
@@ -61,11 +67,21 @@ extension AppKitDriver {
             // The words stand their padding in from the label's edges; a label is as tall as its words.
             let frame = field.frame
             let bounds = label.bounds
+            let (left, right) = (Double(frame.minX - bounds.minX), Double(bounds.maxX - frame.maxX))
+            let rightToLeft = label.userInterfaceLayoutDirection == .rightToLeft
             return Insets(
-                left: Double(frame.minX - bounds.minX), top: Double(frame.minY - bounds.minY),
-                right: Double(bounds.maxX - frame.maxX), bottom: Double(bounds.maxY - frame.maxY)).propValue
+                start: rightToLeft ? right : left, top: Double(frame.minY - bounds.minY),
+                end: rightToLeft ? left : right, bottom: Double(bounds.maxY - frame.maxY)).propValue
         default: return nil
         }
+    }
+
+    /// The purpose macOS fills a field in for, as its content type says; nil for one it fills nothing in for.
+    private static func filled(_ content: NSTextContentType?) -> InputPurpose? {
+        let filled: [NSTextContentType: InputPurpose] = [
+            .username: .username, .newPassword: .newPassword, .oneTimeCode: .oneTimeCode,
+        ]
+        return content.flatMap { filled[$0] }
     }
 
     /// The purpose the host's traits were read from: the keys first, then what the traits leave of the words.
@@ -74,6 +90,7 @@ extension AppKitDriver {
         case .email: return .email
         case .url: return .url
         case .number: return .numeric
+        case .digits: return .oneTimeCode
         case .telephone: return .telephone
         case .words:
             if traits.offersEmoji { return .chat }
@@ -88,6 +105,19 @@ extension AppKitDriver {
     /// A field's and an editor's: its placeholder, whether it hides what is typed, how its words stand, and - on an
     /// editor, which keeps them itself - its spelling, its completion and its selection.
     private static func fieldHolds(_ property: Prop, _ view: NSView) -> HostValue? {
+        // A field's outline as its layer draws it: its color, its width, and its corners - none for a rectangle.
+        let outlined = (view as? AppKitTextEditorView)?.scrollView.layer ?? (view as? AppKitTextFieldView)?.layer
+        if [.stroke, .lineWidth, .shape].contains(property), let layer = outlined {
+            switch property {
+            case .stroke:
+                guard layer.borderWidth > 0 else { return nil }
+                return layer.borderColor.flatMap(NSColor.init(cgColor:)).map { Brush.solidColor(color($0)).propValue }
+            case .lineWidth: return Double(layer.borderWidth).propValue
+            default:
+                let radius = Double(layer.cornerRadius)
+                return (radius == 0 ? ContainerShape.rectangle : .roundedRectangle(radius)).propValue
+            }
+        }
         if let editor = view as? AppKitTextEditorView {
             let text = editor.textView
             let placeholder = editor.subviews.lazy.compactMap { $0 as? NSTextField }.first
@@ -99,11 +129,13 @@ extension AppKitDriver {
             case .isTextPredictionEnabled: return text.isAutomaticTextCompletionEnabled.propValue
             case .cursorPosition: return text.selectedRange().location.propValue
             case .selectionLength: return text.selectedRange().length.propValue
-            case .inputPurpose: return purpose(of: editor.traits).propValue
+            case .inputPurpose: return (filled(text.contentType) ?? purpose(of: editor.traits)).propValue
             default: return nil
             }
         }
         if property == .inputPurpose {
+            let field = (view as? AppKitTextFieldView)?.textField ?? view as? AppKitSearchFieldView
+            if let filled = filled(field?.contentType) { return filled.propValue }
             let traits = ((view as? AppKitTextFieldView)?.textField as? AppKitWordsField)?.traits
                 ?? (view as? AppKitSearchFieldView)?.traits
             return traits.map { purpose(of: $0).propValue }
@@ -135,7 +167,7 @@ extension AppKitDriver {
             return (kern?.doubleValue ?? 0).propValue
         case .iconPosition:
             let positions: [NSControl.ImagePosition: IconPosition] = [
-                .imageAbove: .top, .imageTrailing: .trailing, .imageBelow: .bottom, .imageLeading: .leading,
+                .imageAbove: .top, .imageTrailing: .end, .imageBelow: .bottom, .imageLeading: .start,
             ]
             return positions[button.imagePosition]?.propValue
         default: return nil

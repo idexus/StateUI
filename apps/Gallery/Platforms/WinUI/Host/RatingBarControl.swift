@@ -55,6 +55,7 @@ extension RatingBarControl {
     @MainActor
     static func register() {
 // listing: end
+        // listing: winui.md.applies
         // The bar, made once per element, reporting the rating its user chooses; its stars and its rating taken together.
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarControl in
             let bar = RatingBarControl()
@@ -63,19 +64,22 @@ extension RatingBarControl {
             }
             return bar
         }) { bar in
-            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
                 control.show(
                     rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
             }
             bar.raises(RatingBarContract.ratingChanged)
         }
+        // listing: end
 
         // listing: InteropActsSample.WinUI.swift
+        // listing: winui.md.acts
         // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
             // A Storyboard in the relay fades the bar's opacity down and back, twice.
             bar.flash()
         }
+        // listing: end
     }
 }
 // listing: end

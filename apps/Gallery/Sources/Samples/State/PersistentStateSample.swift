@@ -10,15 +10,19 @@ enum Shade: String, PersistentValue {
 // listing: end
 
 // listing: PersistentStateSample
-extension PersistentKey {
+extension PersistentKey where Value == Int {
     /// How many times the user has pressed the button, ever.
-    static let visits = PersistentKey("dev.stateui.gallery.visits", of: Int.self)
+    static let visits = PersistentKey("dev.stateui.gallery.visits")
+}
 
+extension PersistentKey where Value == String {
     /// What the user is called.
-    static let who = PersistentKey("dev.stateui.gallery.who", of: String.self)
+    static let who = PersistentKey("dev.stateui.gallery.who")
+}
 
+extension PersistentKey where Value == Shade {
     /// Whether the panel below paints loudly.
-    static let shade = PersistentKey("dev.stateui.gallery.shade", of: Shade.self)
+    static let shade = PersistentKey("dev.stateui.gallery.shade")
 }
 // listing: end
 
@@ -35,7 +39,7 @@ struct PersistentStateSample: SampleContent, ExampleContent {
     static let title = "Persistent state"
     static let summary = "State under a key survives the app being closed."
 
-    static var code: String { Listings.joined("PersistentStateSample", "GalleryApp") }
+    static var code: String { Listings.joined("PersistentStateSample") }
 
     var notes: (any View)? {
         VStack {
@@ -49,13 +53,6 @@ struct PersistentStateSample: SampleContent, ExampleContent {
                 + "it can be seen. Reading and writing are exactly what they are on any "
                 + "other @State: nothing is awaited, and a write reaches the store by "
                 + "itself.")
-                .fontSize(12)
-                .textColor(Palette.subtle)
-
-            Text("The application LISTS its keys, in its session's persistentKeys. That is not "
-                + "ceremony: the host reads the store key by key, each with its kind, so "
-                + "naming them is what puts the values in memory before the first view "
-                + "asks for one.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -103,17 +100,12 @@ struct PersistentStateSample: SampleContent, ExampleContent {
 
             // A key whose value is an enum - kept as the word it is spelled
             // with, so anything else that opens the store can read it.
-            HStack {
-                Text("Bold shade")
-                    .verticalAlignment(.center)
+            Switch(shade == .bold)
+                .text("Bold shade")
+                .onToggled { on in shade = on ? .bold : .quiet }
 
-                Switch(shade == .bold)
-                    .accessibilityLabel("Bold shade")
-                    .onToggled { on in shade = on ? .bold : .quiet }
-            }
-            .spacing(12)
-
-            Rectangle(shade == .bold ? Palette.accent : Palette.well)
+            Rectangle()
+                .fill(shade == .bold ? Palette.accent : Palette.well)
                 .height(48)
                 .cornerRadius(8)
         }

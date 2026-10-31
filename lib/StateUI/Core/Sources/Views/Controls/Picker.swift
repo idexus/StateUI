@@ -37,11 +37,12 @@ extension PickerProperties {
 ///         .placeholder("Span")
 ///
 /// The choice is one of the values, not a place in the list: the list may
-/// change its order and the choice stays. Each value shows by its caption -
+/// change its order and the choice stays. A choice is always a state, which
+/// the picker reads as it is described. Each value shows by its caption -
 /// its description unless the picker is given one. The picker takes
 /// `.textColor` but has no `.text`: the field shows the chosen value's caption,
 /// or the placeholder while nothing is chosen.
-public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentElement, TintElement,
+public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentElement, TintElement,
     PickerProperties, FocusElement {
     /// The node this control describes.
     public var node: Node
@@ -61,8 +62,8 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
     public init<Item: Equatable>(
         _ items: [Item], selection: Binding<Item>, caption: (Item) -> String = { "\($0)" }
     ) {
-        let chosen = Binding<Item?>(get: { selection.wrappedValue }, set: { if let value = $0 { selection.wrappedValue = value } })
-        self.init(items, chosen: chosen, caption: caption)
+        let write: @MainActor (Item?) -> Void = { if let value = $0 { selection.wrappedValue = value } }
+        self.init(items, read: { selection.wrappedValue }, write: write, caption: caption)
     }
 
     /// A picker offering `items`, each by its `caption`, with nothing chosen
@@ -76,44 +77,76 @@ public struct Picker: ElementView, TextStyleElement, FontElement, TextAlignmentE
     public init<Item: Equatable>(
         _ items: [Item], selection: Binding<Item?>, caption: (Item) -> String = { "\($0)" }
     ) {
-        self.init(items, chosen: selection, caption: caption)
+        let write: @MainActor (Item?) -> Void = { if let value = $0 { selection.wrappedValue = value } }
+        self.init(items, read: { selection.wrappedValue }, write: write, caption: caption)
     }
 
     /// The choice crosses as the chosen value's place in the list, worked out
     /// again at each build, and a choice reported comes back as its value.
     /// Design: docs/design/views/bindings.md#two-way-controls
-    private init<Item: Equatable>(_ items: [Item], chosen: Binding<Item?>, caption: (Item) -> String) {
+    private init<Item: Equatable>(
+        _ items: [Item], read: @escaping @MainActor () -> Item?, write: @escaping @MainActor (Item?) -> Void,
+        caption: (Item) -> String
+    ) {
         var picker = Picker()
         picker.node.write(PickerContract.options, items.map(caption))
-        let place = Binding<Int>(
-            get: { chosen.wrappedValue.flatMap { items.firstIndex(of: $0) } ?? -1 },
-            set: { place in if items.indices.contains(place) { chosen.wrappedValue = items[place] } })
-        self = picker.described(.selectedIndex, place, on: .selectedIndexChanged)
+        self = picker.described(
+            .selectedIndex,
+            read: { read().flatMap { items.firstIndex(of: $0) } ?? -1 },
+            write: { place in if items.indices.contains(place) { write(items[place]) } },
+            on: .selectedIndexChanged)
     }
 
     // MARK: Events
 
+    /// The user has chosen the value at `index` in the list, after the state's
+    /// write. A choice the application makes raises nothing.
+    public func onSelectedIndexChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way.
+    public func onSelectedIndexChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSelectedIndexChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, gate: gate, handler)
+    }
+
     /// The user has opened the list of choices. Opening it with `isOpen(true)`
     /// raises nothing: the application already knows.
-    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onOpened(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(PickerContract.opened, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onOpened(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onOpened(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(PickerContract.opened, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onOpened(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PickerContract.opened, gate: gate, handler)
     }
 
     /// The user has closed it - by a choice, a click outside or the platform's
     /// own dismissal.
-    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onClosed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(PickerContract.closed, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onClosed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onClosed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(PickerContract.closed, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onClosed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(PickerContract.closed, gate: gate, handler)
     }
 }

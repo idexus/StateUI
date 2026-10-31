@@ -20,9 +20,20 @@ final class GTKListening {
     /// The controllers hung on the widget for each kind of input.
     private(set) var controllers: [Hearing: [OpaquePointer]] = [:]
 
-    /// Where the press a tap follows went down, and whether it has since moved too far to be a tap.
+    /// Where the press a tap follows went down, and whether it has since moved too far to be a tap, or was held.
     private var tapFrom = Point(x: 0, y: 0)
     private var tapMoved = false
+    private var tapHeld = false
+
+    /// Whether the view counts a run of taps, which GTK's click counts; a single tap is the press's.
+    var countsRuns = false
+
+    /// Where the press on the view began, while one stands and is the view's own; whether a finger presses.
+    private var pressFrom: Point?
+    private var pressByFinger = false
+
+    /// The event a view began its press with: a view around it the same event reaches leaves it to the view.
+    private static var pressEvent: OpaquePointer?
 
     /// Where the pointer's press went down in the view.
     private var pointerFrom = Point(x: 0, y: 0)
@@ -87,7 +98,8 @@ final class GTKListening {
 
     private func makeControllers(for kind: Hearing) -> [OpaquePointer] {
         switch kind {
-        case .taps: [makeTaps()]
+        case .taps: [makeTaps(), makePress()]
+        case .holds: [makeHold()]
         case .pointer: makePointer()
         case .drags: [makeDrag()]
         case .hand: makeHand()
@@ -122,6 +134,7 @@ final class GTKListening {
     func tapPressed(at point: Point) {
         tapFrom = point
         tapMoved = false
+        tapHeld = false
     }
 
     /// GTK stopped counting the press as a click - it moved past the drag threshold, or it is held past the
@@ -136,10 +149,123 @@ final class GTKListening {
     /// answers it too.
     func tapReleased(_ gesture: OpaquePointer?, run: Int, at point: Point) {
         defer { tapMoved = false }
-        guard !tapMoved, gtk_widget_contains(widget, point.x, point.y) != 0 else { return }
+        guard !tapMoved, !tapHeld, gtk_widget_contains(widget, point.x, point.y) != 0 else { return }
 
+        guard countsRuns else { return }
         if let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
         tell(.tap(run: run))
+    }
+
+    // MARK: - A press as a button takes it
+
+    /// A press on the view, followed from its fall to its lift by a drag gesture, which knows no threshold - or to
+    /// GTK cancelling it, as a control under it or a scroller around it claims the sequence - each phase told with
+    /// where it stands in the view.
+    /// Design: docs/design/platforms/gtk/input.md#taps
+    private func makePress() -> OpaquePointer {
+        let drag = gtk_gesture_drag_new()!
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-begin", number: number) { (gesture, x: Double, y: Double, data) in
+            let number = viewNumber(data)
+            nonisolated(unsafe) let gesture = gesture
+            MainActor.assumeIsolated {
+                GTKListening.find(number)?.pressBegan(OpaquePointer(gesture), at: Point(x: x, y: y))
+            }
+        }
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-update", number: number) { _, x, y, data in
+            let number = viewNumber(data)
+            MainActor.assumeIsolated { GTKListening.find(number)?.pressMoved(by: Point(x: x, y: y)) }
+        }
+        connectSignal(UnsafeMutableRawPointer(drag), "drag-end", number: number) { (_, x: Double, y: Double, data) in
+            let number = viewNumber(data)
+            MainActor.assumeIsolated { GTKListening.find(number)?.pressEnded(by: Point(x: x, y: y)) }
+        }
+        connectSignal(UnsafeMutableRawPointer(drag), "cancel", number: number) { (_, _: UnsafeMutableRawPointer?, data) in
+            let number = viewNumber(data)
+            MainActor.assumeIsolated { GTKListening.find(number)?.pressCancelled() }
+        }
+        return drag
+    }
+
+    /// A press began at `point`: the view's own, unless a view inside it began its press with the same event.
+    func pressBegan(_ gesture: OpaquePointer?, at point: Point) {
+        let event: OpaquePointer? = gesture.flatMap { gtk_event_controller_get_current_event($0) }
+        guard event == nil || event != Self.pressEvent else { return }
+        Self.pressEvent = event
+        pressFrom = point
+        let device: OpaquePointer? = gesture.flatMap { gtk_event_controller_get_current_event_device($0) }
+        pressByFinger = device.map { gdk_device_get_source($0) == GDK_SOURCE_TOUCHSCREEN } ?? false
+        press(.began, at: point)
+    }
+
+    func pressMoved(by offset: Point) {
+        guard let from = pressFrom else { return }
+        press(.changed, at: Point(x: from.x + offset.x, y: from.y + offset.y))
+    }
+
+    func pressEnded(by offset: Point) {
+        guard let from = pressFrom else { return }
+        pressFrom = nil
+        press(.ended, at: Point(x: from.x + offset.x, y: from.y + offset.y))
+    }
+
+    func pressCancelled() {
+        guard pressFrom != nil else { return }
+        pressFrom = nil
+        press(.cancelled, at: Point(x: 0, y: 0))
+    }
+
+    /// The press at `phase`, at `point` in the widget's coordinates, measured against the widget's whole box - its
+    /// CSS padding and border included, as a gesture's points are - not its content's.
+    private func press(_ phase: GesturePhase, at point: Point) {
+        var box = graphene_rect_t()
+        guard gtk_widget_compute_bounds(widget, widget, &box) != 0 else { return }
+        let at = Point(x: point.x - Double(box.origin.x), y: point.y - Double(box.origin.y))
+        let size = LayoutSize(width: Double(box.size.width), height: Double(box.size.height))
+        _ = tell(.press(phase, at: at, size: size, byFinger: pressByFinger))
+    }
+
+    // MARK: - A press held
+
+    private func makeHold() -> OpaquePointer {
+        let hold = gtk_gesture_long_press_new()!
+        connectSignal(UnsafeMutableRawPointer(hold), "pressed", number: number) { (gesture, _: Double, _: Double, data) in
+            let number = viewNumber(data)
+            nonisolated(unsafe) let gesture = gesture
+            MainActor.assumeIsolated { GTKListening.find(number)?.held(OpaquePointer(gesture)) }
+        }
+        return hold
+    }
+
+    /// GTK's long press came: a press not yet a drag is the hold's, by the host layer's rule - claimed, so no view
+    /// around it answers it, and no tap as it lets go.
+    /// Design: docs/design/platforms/gtk/input.md#a-press-held
+    func held(_ gesture: OpaquePointer?) {
+        guard drag.held() else { return }
+        tapHeld = true
+        if let gesture { gtk_gesture_set_state(gesture, GTK_EVENT_SEQUENCE_CLAIMED) }
+        tell(.hold)
+    }
+
+    /// Waits `milliseconds` for a hold - between half and twice GTK's long-press time, the most GTK waits apart from
+    /// it - or GTK's own time for nil.
+    func wait(_ milliseconds: Double?) {
+        guard let hold = controllers[.holds]?.first else { return }
+        let factor = milliseconds.map { $0 / Self.longPressTime(of: widget) } ?? 1
+        gtk_gesture_long_press_set_delay_factor(hold, min(max(factor, 0.5), 2))
+    }
+
+    /// How long the view's hold waits, in milliseconds; nil while it listens for none.
+    var holdTime: Double? {
+        controllers[.holds]?.first.map { gtk_gesture_long_press_get_delay_factor($0) * Self.longPressTime(of: widget) }
+    }
+
+    private static func longPressTime(of widget: GTKWidget) -> Double {
+        var value = GValue()
+        g_value_init(&value, g_type_from_name("gint"))
+        defer { g_value_unset(&value) }
+        g_object_get_property(
+            UnsafeMutablePointer<GObject>(gtk_widget_get_settings(widget)), "gtk-long-press-time", &value)
+        return Double(g_value_get_int(&value))
     }
 
     // MARK: - The pointer

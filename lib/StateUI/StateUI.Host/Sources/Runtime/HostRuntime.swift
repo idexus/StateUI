@@ -24,7 +24,7 @@
     /// The animations the tree describes: a property's transition.
     public let describedMotion: DescribedMotion
 
-    /// A layout's children travelling to their new places.
+    /// A layout's children traveling to their new places.
     public let layoutMotion: LayoutMotion
 
     /// Split views' sidebars sliding in and out, where a host slides them itself.
@@ -62,6 +62,11 @@
 
     /// Whether a settling of what the toolkit told waits for its turn.
     private var settling = false
+
+    /// The links the application was asked to open that wait for a window hearing them, and whether a turn is
+    /// asked to give them.
+    private var links = LinkInbox()
+    private var givingLinks = false
 
     /// A runtime on `clock`, its elements' native halves made by `makeNative`, a drift the intake refused told to
     /// `log`, and the host's own views alive counted by `views` for the tally.
@@ -106,8 +111,8 @@
     }
 
     /// Starts the runtime in the one order every host keeps: what it realizes, the environment it reports, the
-    /// values the platform kept - read once the device is told, as reading their keys makes the application - the
-    /// language's direction, the windows, then the turns. Each step but the first and the direction is the host's.
+    /// reader of the platform's store (`CoreLink.readsKept`) - before any state reads a kept key - the language's
+    /// direction, the windows, then the turns. Each step but the first and the direction is the host's.
     /// Design: docs/design/host/runtime.md#starting
     public func start(
         realizing realization: HostRealization, unrealized: [any ElementContract.Type],
@@ -213,6 +218,28 @@
         return core.connectWindow(kind: kind, value: value, restoring: values)
     }
 
+    /// The application was asked to open `address` - a link the user chose elsewhere - the platform naming the
+    /// `window` it gave it to where it names one: the window the host layer's rule chooses hears it, at once, or as
+    /// soon as a window that hears links stands.
+    /// Design: docs/design/host/runtime.md#a-link-opened
+    public func openLink(_ address: String, in window: MountedElement? = nil) {
+        links.opened(address, in: window)
+        giveLinks()
+    }
+
+    /// Gives the waiting links to the views of the windows the rule chooses, each rendered before the next.
+    private func giveLinks() {
+        givingLinks = false
+        let given = links.deliver(to: tree.root?.windows ?? [], activatedLast: lifecycle.activatedLast(among:))
+        guard !given.isEmpty else { return }
+        for each in given {
+            if let handler = each.view.handler(.linkOpened) {
+                pump.handlers.enqueuePhase(handler, payload: [.string(each.address)])
+            }
+        }
+        pump.turn()
+    }
+
     /// The application is ending: every window hears it is going.
     public func ending() {
         tell(ApplicationLifecycle.ending(windows: tree.root?.windows ?? []))
@@ -223,14 +250,14 @@
     /// shows again for the page the user sees, whether or not anything renders.
     /// Design: docs/design/host/pages.md#a-pages-phases
     public func tabChosen(_ tabbed: MountedElement, from previous: Int, to selected: Int) {
-        let tabs = tabbed.children
+        let tabs = tabbed.arrangedChildren
         guard tabs.indices.contains(selected) else { return }
 
         if tabbed.isPagePresented {
             if tabs.indices.contains(previous) { tabs[previous].setPagePresented(false, reason: .appearance) }
             tabs[selected].setPagePresented(true, reason: .appearance)
         }
-        tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self) { _ in }
+        tabbed.reportUserChange(.selectedTab, .selectedTabChanged, .number(Double(selected)), in: self)
         tree.chromeTouched = true
         pump.turnIfWanted()
         if tree.takeChromeTouched() { presenter?.presentRendered(touchedChrome: true) }
@@ -238,8 +265,8 @@
 
     /// The sidebar of `split` showed or hid on screen: its page hears it, then the state its binding carries.
     public func sidebarShown(_ split: MountedElement, _ shown: Bool) {
-        if split.isPagePresented { split.children.first?.setPagePresented(shown, reason: .appearance) }
-        split.reportUserChange(.showsSidebar, .showsSidebarChanged, .bool(shown), in: self) { _ in }
+        if split.isPagePresented { split.arrangedChildren.first?.setPagePresented(shown, reason: .appearance) }
+        split.reportUserChange(.showsSidebar, .showsSidebarChanged, .bool(shown), in: self)
         pump.turnIfWanted()
     }
 
@@ -251,18 +278,21 @@
         dispatch(handler, payload: [.number(Double(staying - 1))])
     }
 
-    /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or the top sheet goes,
-    /// the modal stack told how many remain.
+    /// Goes `way` back in `window`: a stack's top page goes, the path told it is one shorter, or sheets go, the
+    /// state of each told it closed - the user's dismissal, written onto it.
     /// Design: docs/design/host/pages.md#the-way-back
     public func goBack(_ way: WayBack, in window: MountedElement) {
         switch way {
         case .pop(let stack):
             guard stack.children.count > 1 else { return }
             stackPopped(stack, staying: stack.children.count - 1)
-        case .dismissSheet(let remaining):
-            let stack = window.children.first { $0.type == .modalStack }
-            guard let handler = stack?.handler(.popped) else { return }
-            dispatch(handler, payload: [.number(Double(remaining))])
+        case .dismissSheets(let pages):
+            // One render for them all: none between may ask again for a sheet already gone.
+            performUserTransaction {
+                for sheet in pages.compactMap(\.parent) where sheet.type == .sheet {
+                    sheet.reportUserChange(.isPresented, .isPresentedChanged, .bool(false), in: self)
+                }
+            }
         }
     }
 
@@ -298,7 +328,13 @@
 }
 
 extension HostRuntime: TurnPresenter {
-    func presentRendered(touchedChrome: Bool) { presenter?.presentRendered(touchedChrome: touchedChrome) }
+    func presentRendered(touchedChrome: Bool) {
+        presenter?.presentRendered(touchedChrome: touchedChrome)
+        // A window that hears links may stand now: what waits for one is given a turn later.
+        guard links.isWaiting, !givingLinks else { return }
+        givingLinks = true
+        Task { @MainActor [weak self] in self?.giveLinks() }
+    }
 
     func perform(_ call: HostActCall) { presenter?.perform(call) }
 }

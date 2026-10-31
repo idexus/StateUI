@@ -4,6 +4,7 @@
 import AppKit
 import GalleryUI
 import IOKit.ps
+import os
 import StateUIAppKit
 
 // listing: InteropActsSample.AppKit.swift
@@ -19,20 +20,17 @@ enum GalleryActs {
     /// application runs.
     @MainActor
     static func register() {
+        // listing: appkit.md.acts
         // A performer is handed the arguments its act declares and answers
         // the values it declares.
-        StateUIActs.add(GalleryContract.setClipboard) { text in
-            NSPasteboard.general.clearContents()
-            NSPasteboard.general.setString(text, forType: .string)
-        }
-
-        StateUIActs.add(GalleryContract.readClipboard) {
-            NSPasteboard.general.string(forType: .string) ?? ""
+        StateUIActs.add(GalleryContract.log) { line in
+            Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
         }
 
         StateUIActs.add(GalleryContract.batteryLevel) {
             battery()
         }
+        // listing: end
     }
     // listing: end
 

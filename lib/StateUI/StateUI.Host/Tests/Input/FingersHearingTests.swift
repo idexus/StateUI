@@ -13,7 +13,7 @@ final class FingersHearingTests: XCTestCase {
     /// - goes on moving the run; let go, each rests on its target.
     func testTheHandAndTwoFingersMoveAtOnce() throws {
         let (runtime, clock) = running()
-        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
         XCTAssertTrue(dial.hearing.contains(.hand))
         XCTAssertTrue(dial.hearing.contains(.pinches))
         XCTAssertFalse(dial.hearing.contains(.rotations), "no rotation asked for")
@@ -41,7 +41,7 @@ final class FingersHearingTests: XCTestCase {
     /// still: the axis comes onto its target with no lift told.
     func testAWheelTurnedAsAPinchSpreadsTheMagnification() throws {
         let (runtime, clock) = running()
-        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
 
         for _ in 0..<8 { dial.hear(.wheelPinch(scale: WheelPinch.notch, at: Point(0.5, 0.5)), in: runtime) }
         frames(runtime, clock, until: 48)
@@ -58,7 +58,7 @@ final class FingersHearingTests: XCTestCase {
     /// middle, they spread the magnification - and the hand stays where it was; let go, the axis rests.
     func testAnAltDragIsTwoFingersMirroredAboutTheMiddle() throws {
         let (runtime, clock) = running()
-        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
         XCTAssertTrue(dial.hearsMirroredFingers)
 
         let middle = Point(150, 100)
@@ -73,6 +73,31 @@ final class FingersHearingTests: XCTestCase {
         XCTAssertEqual(handed.last?.zoom ?? 0, 2, accuracy: 0.001, "onto the end nearer by the logarithm")
     }
 
+    /// TWO FINGERS TURNING A MIRRORED LAYOUT TURN IT THE OTHER WAY: laid out right to left, the run's turn is drawn
+    /// the other way round, so the fingers' turn reaches the arithmetic the other way too, and the views turn under
+    /// them.
+    func testTwoFingersTurningAMirroredLayoutTurnItTheOtherWay() throws {
+        XCTAssertEqual(try turned(mirrors: true), -0.5, accuracy: 0.001)
+    }
+
+    /// Two fingers turning a layout that places as written turn it as they turn, whatever the direction.
+    func testTwoFingersTurningALayoutAsWrittenTurnItAsTheyTurn() throws {
+        XCTAssertEqual(try turned(mirrors: false), 0.5, accuracy: 0.001)
+    }
+
+    /// How far two fingers turning 45 degrees clockwise move a layout laid out right to left from where it stood.
+    private func turned(mirrors: Bool) throws -> Double {
+        let (runtime, clock) = running(TurnedApplication(mirrors: mirrors))
+        let dial = try XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
+        XCTAssertTrue(dial.hearing.contains(.rotations))
+        XCTAssertEqual(dial.runDirection, mirrors ? .rightToLeft : .leftToRight)
+
+        dial.hear(.rotation(.began, degrees: 0), in: runtime)
+        dial.hear(.rotation(.changed, degrees: 45), in: runtime)
+        frames(runtime, clock, until: 48)
+        return (handed.last?.zoom ?? 0) - Dial().zoom
+    }
+
     /// Display frames until `end`, sixteen milliseconds apart, the clock standing at each.
     private func frames(_ runtime: HostRuntime, _ clock: FingersClock, until end: Double) {
         while clock.time < end {
@@ -82,14 +107,14 @@ final class FingersHearingTests: XCTestCase {
         }
     }
 
-    private func running() -> (HostRuntime, FingersClock) {
+    private func running(_ application: some Application = FingersApplication()) -> (HostRuntime, FingersClock) {
         handed = []
-        stateUIUseApp(FingersApplication())
+        stateUIUseApp(application)
         let clock = FingersClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
         runtime.pump.turn()
-        try? XCTUnwrap(runtime.tree.root?.first(type: .layoutEngine))
+        try? XCTUnwrap(runtime.tree.root?.first(type: .motionLayout))
             .reportFrame([0, 0, 300, 200, 0, 0, 0, 0], in: runtime)
         frames(runtime, clock, until: 16)
         return (runtime, clock)
@@ -97,7 +122,7 @@ final class FingersHearingTests: XCTestCase {
 }
 
 /// A phase a hand turns and two fingers spread.
-private struct Dial: LayoutPhase {
+private struct Dial: LayoutParameters {
     var turn = 0.0
     var zoom = 1.0
 
@@ -120,17 +145,39 @@ private struct FingersPage: View {
     @State private var dial = Dial()
 
     var body: some View {
-        LayoutEngine([0, 1, 2, 3, 4]) { Text("\($0)") } placements: { _, dial in
+        MotionLayout([0, 1, 2, 3, 4], parameters: $dial) { Text("\($0)") } placements: { _, dial in
             handed.append(dial)
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
-        .phase($dial)
         .axis(\.turn, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
-        .axis(\.zoom, input: .magnification, range: 1...2, snaps: .limits)
+        .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
         .motion(.eased(.milliseconds(200), .linear))
     }
 }
 
 private struct FingersApplication: Application {
     var body: some Scene { WindowGroup { FingersPage() } }
+}
+
+/// A layout two fingers turn, laid out right to left, mirrored or placed as written: its second axis turns a unit
+/// for 90 degrees.
+private struct TurnedPage: View {
+    let mirrors: Bool
+    @State private var dial = Dial()
+
+    var body: some View {
+        MotionLayout([0, 1, 2, 3, 4], parameters: $dial) { Text("\($0)") } placements: { _, dial in
+            handed.append(dial)
+            return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
+        }
+        .axis(\.zoom, input: .rotation(degreesPerUnit: 90), range: -2...2)
+        .mirrorsRightToLeft(mirrors)
+        .layoutDirection(.rightToLeft)
+    }
+}
+
+private struct TurnedApplication: Application {
+    let mirrors: Bool
+
+    var body: some Scene { WindowGroup { TurnedPage(mirrors: mirrors) } }
 }

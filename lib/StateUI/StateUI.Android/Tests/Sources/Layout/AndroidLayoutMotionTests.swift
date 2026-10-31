@@ -7,11 +7,30 @@
 import StateUIConformance
 import XCTest
 
+/// Words in a stack as wide as they are, which travels on a 400 ms linear law as they change.
+private struct SaidPage: View {
+    let open: State<Bool>
+
+    var body: some View {
+        VStack {
+            VStack {
+                Text(open.wrappedValue ? "The popover shows" : "The popover is closed").fontSize(13).id("said")
+            }
+            .horizontalAlignment(.start)
+            .id("stack")
+        }
+        .motion(.eased(.milliseconds(400), .linear))
+        .verticalAlignment(.start)
+    }
+}
+
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
 final class AndroidLayoutMotionTests: XCTestCase {
     static var allTests: [(String, (AndroidLayoutMotionTests) -> () throws -> Void)] {
         [
             ("testATextsWordsStandAtTheWidthItTravelsTo", testATextsWordsStandAtTheWidthItTravelsTo),
+            ("testAButtonsGrownWordsShowOnceItsBoxHoldsThem", testAButtonsGrownWordsShowOnceItsBoxHoldsThem),
+            ("testALabelInAStackThatTravelsKeepsItsWordsOnOneLine", testALabelInAStackThatTravelsKeepsItsWordsOnOneLine),
             ("testAChildAPatchMovesTravelsToItsNewPlace", testAChildAPatchMovesTravelsToItsNewPlace),
             ("testAChildThatJoinsAStandingStackFadesIn", testAChildThatJoinsAStandingStackFadesIn),
             ("testWithLessMotionEveryChildArrives", testWithLessMotionEveryChildArrives),
@@ -20,7 +39,7 @@ final class AndroidLayoutMotionTests: XCTestCase {
         ]
     }
 
-    /// A vertical stack of 100 x 40 labels in `order`, travelling on a 200 ms linear law; `hidden` fade out in 100 ms.
+    /// A vertical stack of 100 x 40 labels in `order`, traveling on a 200 ms linear law; `hidden` fade out in 100 ms.
     private static func stack(_ order: [String], hidden: Set<String> = []) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
@@ -64,6 +83,73 @@ final class AndroidLayoutMotionTests: XCTestCase {
 
             XCTAssertGreaterThan(label.frame.width, start + 2, "the caption grew")
             XCTAssertEqual(midway, label.frame.width, "its words at the width it is bound for")
+        }
+    }
+
+    /// A button whose new words need more than its box keeps showing its former words while the box grows, and
+    /// shows the new ones as it lands.
+    func testAButtonsGrownWordsShowOnceItsBoxHoldsThem() throws {
+        try onMainActor {
+            func row(_ words: String) -> HostPatch {
+                var stack = HostPatch(id: .manual("stack"), type: .vStack)
+                stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+                var button = HostPatch(id: .manual("toggle"), type: .button)
+                button.properties = [
+                    .text: .string(words), .horizontalAlignment: .enumeration(Alignment.center.rawValue),
+                ]
+                stack.children = .arranged([button])
+                return stack
+            }
+            let clock = TestClock()
+            let host = AndroidRenderer.bare(clock: clock)
+            host.apply(row("On"))
+            let layout = try XCTUnwrap(host.view(id: .manual("stack")))
+            let button = try XCTUnwrap(host.view(id: .manual("toggle")) as? AndroidButtonView)
+            layout.layOut(width: 600, height: 400)
+            let start = button.frame.width
+
+            host.apply(row("Switched off"))
+            layout.layOut(width: 600, height: 400)
+            clock.now = 100
+            host.frame()
+            let (midway, saidMidway) = (button.frame.width, button.text)
+            clock.now = 200
+            host.frame()
+
+            XCTAssertEqual(saidMidway, "On", "midway, its former words")
+            XCTAssertEqual(midway, (start + button.frame.width) / 2, accuracy: 1, "in a box halfway grown")
+            XCTAssertEqual(button.text, "Switched off", "and the new ones as it lands")
+            XCTAssertGreaterThan(button.frame.width, start + 10)
+        }
+    }
+
+    /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
+    /// stack lays its children out there, its own place traveling around them - the words never break onto a second
+    /// line on the way, as the Popover sample's did as its popover closed.
+    func testALabelInAStackThatTravelsKeepsItsWordsOnOneLine() throws {
+        try onMainActor {
+            let clock = TestClock()
+            let open = State(wrappedValue: true)
+            let host = AndroidRenderer.running(clock: clock) { SaidPage(open: open) }
+            host.layOut()
+            let said = try XCTUnwrap(host.view(id: .manual("said")))
+            let stack = try XCTUnwrap(host.view(id: .manual("stack")))
+            let line = said.frame.height
+
+            open.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+            var (heights, widths) = ([said.frame.height], [stack.frame.width])
+            for now in stride(from: 50, through: 800, by: 50) {
+                clock.now = Double(now)
+                host.frame()
+                host.layOut()
+                heights.append(said.frame.height)
+                widths.append(stack.frame.width)
+            }
+
+            XCTAssertTrue(widths.contains { $0 > widths[0] + 1 && $0 < widths[widths.count - 1] - 1 }, "\(widths)")
+            XCTAssertEqual(heights.max() ?? 0, line, "one line all the way: \(heights)")
         }
     }
 

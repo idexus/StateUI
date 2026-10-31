@@ -1,4 +1,4 @@
-# revision 3.1
+# revision 5.1
 Button.fontAttributes: ✅
 Button.fontFamily: ✅
 Button.fontSize: ✅
@@ -17,12 +17,6 @@ Picker.fontSize: ✅
 Picker.fontWeight: ✅
 Picker.isFontAutoScalingEnabled: ✅
 Picker.textStyle: ✅
-RadioButton.fontAttributes: ✅
-RadioButton.fontFamily: ✅
-RadioButton.fontSize: ✅
-RadioButton.fontWeight: ✅
-RadioButton.isFontAutoScalingEnabled: ✅
-RadioButton.textStyle: ✅
 SearchField.fontAttributes: ✅
 SearchField.fontFamily: ✅
 SearchField.fontSize: ✅
@@ -59,3 +53,15 @@ TimePicker.fontSize: ✅
 TimePicker.fontWeight: ✅
 TimePicker.isFontAutoScalingEnabled: ✅
 TimePicker.textStyle: ✅
+ToolbarButton.fontAttributes: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.fontFamily: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.fontSize: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.fontWeight: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.isFontAutoScalingEnabled: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.textStyle: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.fontAttributes: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.fontFamily: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.fontSize: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.fontWeight: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.isFontAutoScalingEnabled: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.textStyle: – The title bar's commands stand in WinUI's own look.

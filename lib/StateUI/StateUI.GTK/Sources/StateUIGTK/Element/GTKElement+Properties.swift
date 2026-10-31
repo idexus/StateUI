@@ -13,7 +13,7 @@ extension GTKElement {
             })
         }
         if element.isDrawnByParent(in: GTKRegistrations.registry) || element.isViewless { return nil }
-        if type == .divider { return GTKDividerView(inRow: element.parent?.type == .hStack) }
+        if type == .separator { return GTKSeparatorView(inRow: element.placingParent?.type == .hStack) }
         if let registered = GTKRegistrations.registry.makeView(
             for: type,
             sending: { [weak self] event, values in self?.send(event, values) },
@@ -26,6 +26,7 @@ extension GTKElement {
 
         switch type {
         case .page: return GTKSingleChildView()
+        case .popover: return GTKPopoverView()
         case .overlay:
             let overlay = GTKSingleChildView()
             overlay.passesBeside = true
@@ -41,6 +42,10 @@ extension GTKElement {
     /// registration's first, then what every element takes.
     /// Design: docs/design/host/patches.md#program-write
     func applyProperties(changed: Set<Prop>) {
+        // An arrangement's background is its pages': each that says none stands on it.
+        for page in element.pagesGroundedAnew(by: changed) {
+            (page.native as? GTKElement)?.applyProperties(changed: [.background])
+        }
         guard let view else {
             if !changed.isDisjoint(with: MountedElement.arrangedProperties) { parent?.invalidateMeasurements() }
             return
@@ -56,13 +61,13 @@ extension GTKElement {
             case .ignoresInput: view.setIgnoresInput(value(.ignoresInput)?.bool ?? false)
             case .isVisible: view.setShown(isShown)
             case .tooltip: view.setTooltip(element.string(.tooltip))
-            // GTK blurs nothing behind a widget: a blur's or glass's colour stands in, its tint over it.
-            case .background: view.setBackground(HostMaterial(value(.background)).painted)
+            // GTK blurs nothing behind a widget: a blur's or glass's color stands in, its tint over it.
+            case .background: view.setBackground(HostMaterial(element.drawnBackground).painted)
             default: break
             }
         }
         if !own.isDisjoint(with: MountedElement.transformProperties) { view.setTransform(element.drawingTransform) }
-        if !own.isDisjoint(with: MountedElement.accessibilityProperties) {
+        if element.changesAccessibility(changed) {
             view.setAccessibility(element.accessibilityWords)
         }
         if let layers = view as? GTKZStackView { layers.placement = element.placement }

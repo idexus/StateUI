@@ -9,6 +9,7 @@ lib/StateUI/Core/Tests/            core tests and shared test support
 lib/StateUI/Foundation/            StateUIFoundation: the platform's C library and its basics, and their tests
 lib/StateUI/StateUI.Host/          the host layer every host stands on, and its tests
 lib/StateUI/StateUI.Conformance/   the conformance suite every host's tests run
+lib/StateUI/StateUI.Testing/       StateUITesting, what an application's tests show and use its pages through
 lib/StateUI/exports/               what each host's runs declare and prove, the marks
 lib/StateUI/StateUI.AppKit/        independent AppKit host package and tests
 lib/StateUI/StateUI.UIKit/         UIKit host package, its tests an application of their own
@@ -40,7 +41,7 @@ apps/Gallery/Platforms/GTK/        Gallery GTK head
 apps/Gallery/Platforms/Web/        Gallery Web head
 apps/Gallery/Tests/                Gallery acceptance tests
 apps/HelloWorld/Sources/           small platform-neutral example application
-apps/HelloWorld/Tests/             its example test, which every new application starts with
+apps/HelloWorld/Tests/             its example test, which every new application starts with: a click in a test window
 apps/HelloWorld/Platforms/AppKit/  HelloWorld AppKit entry point
 apps/HelloWorld/Platforms/UIKit/   HelloWorld UIKit head
 apps/HelloWorld/Platforms/Android/ HelloWorld Android head
@@ -139,7 +140,7 @@ Treat one control, property, event, or host action as one vertical change:
    owner when the documents are rendered. What a registry cannot know stays
    written by hand, in the host's `<Host>Realization` - `AppKitRealization`,
    `UIKitRealization`, `AndroidRealization`, `WinUIRealization`,
-   `GTKRealization`, `WebRealization` - every judgement: a partial record
+   `GTKRealization`, `WebRealization` - every judgment: a partial record
    saying what is missing, what a host realizes none of, what it leaves to the
    application or to a backend, and what it presents with no view of its own.
    Where the change alters what a family's cases prove, raise the family's
@@ -293,8 +294,9 @@ layer's suite proves the rules every host shares, pure, with no toolkit. The
 conformance package's own tests prove its runner and that every member has
 its case; each host's suite runs the cases themselves. The AppKit suite drives
 native AppKit objects. The Gallery's treats Gallery as application behavior
-and compiles the documentation examples. HelloWorld's holds one example test
-of the application's own logic, which a new application starts with. In VS Code, **StateUI: Run Tests**
+and compiles the documentation examples. HelloWorld's holds one example test,
+which a new application starts with: its page shown in a test window, its
+button clicked. In VS Code, **StateUI: Run Tests**
 runs them as the chosen host.
 
 Each host's suite - its own tests and the conformance cases - has a script.
@@ -454,7 +456,7 @@ The core's suite also guards the project itself, in
 - `ReleaseTests` - every place that names the release names the one
   `lib/StateUI.VSCode/package.json` states ([Distribution
   boundary](#distribution-boundary));
-- `LicenceTests` - every source under `lib/` starts with the two SPDX lines;
+- `LicenseTests` - every source under `lib/` starts with the two SPDX lines;
 - `DocumentationTests` - every public declaration of the library has its
   `///`;
 - `HeldByNumberTests` - every number a host hands out is the process's one
@@ -484,12 +486,12 @@ records anything while it is off.
 The inspector shows the renders inside the running application: each one's
 cause, its road, the time Swift took to describe it and the host to apply it,
 and the composed views it built and carried; a render chosen shows its tree of
-composed views, each with its time. `ToolbarItem.inspector(window)` - `window`
+composed views, each with its time. `ToolbarButton.inspector(window)` - `window`
 the session a view reads with `@Environment(\.window)` - puts its ⓘ in a
 page's bar, and `InspectorButton()` stands anywhere a view goes. The ⓘ
 opens its scene's inspector along the bottom of its window, folded to one line;
 opened out, it can dock at the side on a desktop or a tablet.
-`Inspector.open(.side, in: window)` opens it from code. A scene that declares
+`window.openInspector(.side)` opens it from code. A scene that declares
 `Window(.debugInspector) { DebugInspector() }` can show it in a window of its
 own, where the platform opens windows.
 

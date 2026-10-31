@@ -12,9 +12,9 @@
         guard let item, item.isShown else { return LayoutSize(width: 0, height: 0) }
 
         let margin = item.values.margin
-        let size = item.size(offered: offered.map { max(0, $0 - margin.left - margin.right) })
+        let size = item.size(offered: offered.map { max(0, $0 - margin.start - margin.end) })
         return LayoutSize(
-            width: margin.left + margin.right + size.width, height: margin.top + margin.bottom + size.height)
+            width: margin.start + margin.end + size.width, height: margin.top + margin.bottom + size.height)
     }
 
     /// Where the child stands in `room`; right to left, turned about the room's middle.
@@ -28,7 +28,7 @@
     private static func leftToRight<Child: LayoutChild>(of item: Child, in content: Rect) -> Rect {
         let values = item.values
         let margin = values.margin
-        let availableWidth = max(0, content.width - margin.left - margin.right)
+        let availableWidth = max(0, content.width - margin.start - margin.end)
         let availableHeight = max(0, content.height - margin.top - margin.bottom)
         let natural = placesByNaturalSize(values) ? item.size(offered: availableWidth) : .zero
         let width = Extent.of(
@@ -39,7 +39,7 @@
             available: availableHeight, minimum: values.minimumHeight, maximum: values.maximumHeight)
 
         return Rect(
-            x: Extent.start(option: values.horizontal, extent: width, start: content.x + margin.left, available: availableWidth),
+            x: Extent.start(option: values.horizontal, extent: width, start: content.x + margin.start, available: availableWidth),
             y: Extent.start(option: values.vertical, extent: height, start: content.y + margin.top, available: availableHeight),
             width: width,
             height: height)

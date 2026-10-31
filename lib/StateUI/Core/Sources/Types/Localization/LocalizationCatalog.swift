@@ -3,7 +3,7 @@
 
 /// The languages an application speaks, and the one it falls back to - nothing else, so it never grows.
 ///
-///     enum AppLanguage: String, CaseIterable, Sendable {
+///     enum AppLanguage: LocaleTag, CaseIterable {
 ///         case english = "en"
 ///         case polish = "pl"
 ///     }
@@ -18,8 +18,8 @@
 /// Design: docs/design/types/localization.md#a-catalog-and-its-parts
 public protocol LocalizationCatalog {
     /// The application's languages: an enum whose raw values are language tags.
-    associatedtype Language: RawRepresentable<String>, CaseIterable, Hashable, Sendable
+    associatedtype CatalogLanguage: RawRepresentable<LocaleTag>, CaseIterable, Hashable, Sendable
 
     /// The language that stands in where none of the user's matches.
-    static var defaultLanguage: Language { get }
+    static var defaultLanguage: CatalogLanguage { get }
 }

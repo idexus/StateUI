@@ -13,12 +13,15 @@ still apply the final destination, normally by snapping. Only checked rows in
 
 ## Motion laws
 
-`Motion` has two destination-seeking laws:
+`Motion` has three destination-seeking laws:
 
 - `.eased(length, curve)` takes the stated `Duration` - `.milliseconds(300)` -
   and lands on the destination exactly;
 - `.spring(response:damping:)` keeps standing velocity when retargeted and
-  settles on the destination rather than at an unrelated resting point.
+  settles on the destination rather than at an unrelated resting point;
+- `.glide(longest:)` sets out at the speed the value has and slows onto the
+  destination, as long as that speed takes to get there and no longer than
+  `longest` - what a value thrown by the hand goes on with.
 
 Three special values select ownership:
 
@@ -42,7 +45,8 @@ struct MovingPanel: View {
 
     var body: some View {
         VStack {
-            Rectangle(.cornflowerBlue)
+            Rectangle()
+                .fill(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
                 .motion(.spring(response: .milliseconds(280)))
@@ -91,7 +95,9 @@ merged over that plan.
 
 This lets size snap while placement travels:
 
-```swift quote
+```swift
+let content = Text("Content")
+
 VStack { content }
     .motion(.spring(response: .milliseconds(240)))
     .motion(.none, .size)
@@ -115,6 +121,7 @@ exposes what the host is showing between writes:
 | `velocity` | per-second velocity, lane by lane |
 | `motion` | law owned by this value wherever it is attached |
 | `move(to:_:)` | set a destination; `arrived()` awaits its outcome |
+| `reach(_:)` | where a law would carry the value on alone, at the speed it has |
 | `stop()` | stop at the standing value |
 | `snap(to:)` | set standing value, destination, and zero velocity together |
 | `convert` | derive another host-driven value from live journey lanes |
@@ -129,7 +136,9 @@ reads the new value at once and every body that read it is built again, as
 after an assignment, while the host walks the value there on the move's law.
 It returns at once; its `arrived()` awaits the outcome:
 
-```swift quote
+```swift
+@State private var opacity = 1.0
+
 let arrived = try await $opacity.journey.move(
     to: 0.2,
     .eased(.milliseconds(400), .cubicOut)).arrived()
@@ -150,8 +159,23 @@ The destination is written as `move` is called, so moves sent one after
 another are in the air together, each awaited apart. An unrelated
 body rebuild does not restart or cancel a journey: the motion channel belongs
 to the state storage and continues from its standing value and velocity. A
-later motion passed to `move` is retained as that value's law, so subsequent
-plain writes use it until `journey.motion` changes again.
+motion passed to `move` is that move's alone: the next plain write, or a move
+that names no motion, travels under the value's own law again.
+
+```swift
+struct Drawer: View {
+    @State(motion: .spring()) private var offset = 0.0
+
+    var body: some View {
+        Button("Open")
+            .onClicked {
+                $offset.journey.move(to: 300, .eased(.milliseconds(2000)))
+                offset = 0   // on the value's own spring, not the two seconds
+            }
+            .translationY($offset)
+    }
+}
+```
 
 For a host-carried state, motion selection is:
 
@@ -176,6 +200,47 @@ Writing `journey.value` alone changes only the standing value. Writing
 for custom engines; an ordinary application decision writes the state or calls
 `move(to:_:)`.
 
+## A throw
+
+A gesture's report says how fast the hand goes, and its end how fast it
+lifted. Handing that speed to the value's journey, then moving it on a glide,
+lets the value go on from the hand and slow onto where it is sent; `reach(_:)`
+says where the glide alone would carry it, so the value can be sent to the
+nearest place it may rest at instead:
+
+```swift
+struct Strip: View {
+    @State private var offset = 0.0
+
+    var body: some View {
+        Rectangle()
+            .fill(.cornflowerBlue)
+            .width(60)
+            .height(60)
+            .translationX($offset)
+            .onPanUpdated { pan in
+                switch pan.phase {
+                case .changed:
+                    $offset.journey.snap(to: pan.totalX)
+                case .ended:
+                    let glide = Motion.glide(longest: .milliseconds(800))
+                    $offset.journey.velocity = pan.velocityX
+                    // The nearest stop of every hundred points to where the throw would land.
+                    let stop = ($offset.journey.reach(glide) / 100).rounded() * 100
+                    $offset.journey.move(to: stop, glide)
+                default:
+                    break
+                }
+            }
+    }
+}
+```
+
+A glide always lands where it is sent, never sooner than 80 milliseconds nor
+later than `longest`: a fast throw to a near stop slows over a short glide, a
+slow one over a longer, and a value standing still - or thrown away from the
+stop - takes half of `longest`.
+
 ## Visibility and layout motion
 
 `isVisible` is a semantic visibility transition for a host that implements its
@@ -198,7 +263,9 @@ says nothing, the application's. A room that moves with no patch behind it - a
 window resized, a sidebar dragged - is followed exactly, and so is a layout
 whose own width changed: a child gliding after the user's hand is late on
 every frame. A layout's first arrangement arrives. A size a child states for
-itself arrives while its place still travels. Where a frame under the layout is
+itself arrives while its place still travels. A label or a button travels no
+narrower than its words need, and a button whose new words need more room
+than its box keeps showing its former words until the box holds the new ones. Where a frame under the layout is
 read - an `onFrameChanged` handler, a driven frame - every child arrives,
 because each step of a walk would report a room nobody chose. A child that
 joins a layout already standing fades in under the same law, unless a state

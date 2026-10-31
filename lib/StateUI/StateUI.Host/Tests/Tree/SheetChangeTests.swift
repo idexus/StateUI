@@ -4,7 +4,7 @@
 @_spi(Host) @testable import StateUIHost
 import XCTest
 
-/// What a window's sheets become as its modal stack changes.
+/// What a window's sheets become as the pages its views present change.
 @MainActor
 final class SheetChangeTests: XCTestCase {
     /// The sheets standing as asked from the bottom stay; the rest leave from the top, and the new come from the

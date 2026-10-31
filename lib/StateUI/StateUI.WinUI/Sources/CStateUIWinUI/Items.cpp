@@ -71,6 +71,10 @@ namespace {
         bool draining = false;
         bool released = false;
 
+        /// The item a scroll asked for before the list was loaded brings into view once it is: before, WinUI's list
+        /// has no part to bring it with.
+        std::function<void()> bringing;
+
         /// The wait for the layout of cells just asked for or put aside, after which what stands in view is told.
         winrt::event_token laidOut{};
 
@@ -205,6 +209,19 @@ namespace {
         scroller.ContentOrientation(shape == StateUIItemsShapeRow ? controls::ScrollingContentOrientation::Horizontal
                                                                    : controls::ScrollingContentOrientation::Vertical);
     }
+
+    /// Brings the item at `index` where `anchor` says, gliding there or not.
+    void bring(controls::ItemsView const &list, int32_t index, int32_t anchor, bool animated) {
+        xaml::BringIntoViewOptions options;
+        options.AnimationDesired(animated);
+        // Nearest leaves the ratios unset: WinUI then moves the item only as far as brings it wholly into view.
+        if (anchor != 3) {
+            auto ratio = anchor == 0 ? 0.0 : anchor == 1 ? 0.5 : 1.0;
+            if (cellsOf(list)->shape == StateUIItemsShapeRow) options.HorizontalAlignmentRatio(ratio);
+            else options.VerticalAlignmentRatio(ratio);
+        }
+        list.StartBringItemIntoView(index, options);
+    }
 }
 
 extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
@@ -249,6 +266,10 @@ extern "C" StateUIObjectRef stateui_winui_items_make(int64_t view) {
                 ++cells->scrollerHandlers;
             }
             tellShowing(list, view);
+            if (auto bring = std::move(cells->bringing)) {
+                cells->bringing = nullptr;
+                bring();
+            }
         }));
         return detach(list);
     } catch (...) {
@@ -367,14 +388,14 @@ extern "C" void stateui_winui_items_scroll_to(StateUIObjectRef handle, int32_t i
         cells->change([cells, weak, index, anchor, animated] {
             auto list = weak.get();
             if (!list) return;
-            xaml::BringIntoViewOptions options;
-            options.AnimationDesired(animated);
-            // Nearest leaves the ratios unset: WinUI then moves the item only as far as brings it wholly into view.
-            if (anchor != 3) {
-                auto ratio = anchor == 0 ? 0.0 : anchor == 1 ? 0.5 : 1.0;
-                if (cells->shape == StateUIItemsShapeRow) options.HorizontalAlignmentRatio(ratio); else options.VerticalAlignmentRatio(ratio);
+            // A list not loaded yet has nowhere to glide from: it brings the item once it is, unanimated.
+            if (!list.IsLoaded()) {
+                cells->bringing = [weak, index, anchor] {
+                    if (auto list = weak.get()) bring(list, index, anchor, false);
+                };
+                return;
             }
-            list.StartBringItemIntoView(index, options);
+            bring(list, index, anchor, animated);
         });
     } catch (...) {
         report("scrolling an ItemsView to an item");
@@ -387,6 +408,7 @@ extern "C" void stateui_winui_items_release(StateUIObjectRef handle) {
         auto cells = cellsOf(list);
         cells->released = true;
         cells->waiting.clear();
+        cells->bringing = nullptr;
         list.ItemsSource(nullptr);
         // A container refuses to hold nothing: each is let go of whole, and its panel with it.
         for (auto &kind : cells->aside) kind.clear();
@@ -459,13 +481,13 @@ extern "C" bool stateui_winui_items_invoke_as_user(StateUIObjectRef cell) {
     }
 }
 
-extern "C" void stateui_winui_items_scroll_as_user(StateUIObjectRef handle, double x, double y) {
+extern "C" void stateui_winui_items_move_to(StateUIObjectRef handle, double x, double y) {
     try {
         auto scroller = borrow<controls::ItemsView>(handle).ScrollView();
         if (!scroller) return;
         scroller.ScrollTo(x, y, controls::ScrollingScrollOptions(controls::ScrollingAnimationMode::Disabled));
     } catch (...) {
-        report("scrolling an ItemsView as the user");
+        report("moving an ItemsView's view");
     }
 }
 

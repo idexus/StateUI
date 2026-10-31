@@ -15,7 +15,7 @@ enum AppKitVerticalTextAlignment: Int32, Equatable {
 /// A native read-only text surface with StateUI-owned padding and vertical
 /// placement. AppKit still owns glyph shaping, wrapping and drawing.
 @MainActor
-final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
+final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring, AppKitBaselineMeasuring,
     AppKitMeasurementCaching {
     private let textField: NSTextField = AppKitLabel(labelWithString: "")
     let measurements = MeasurementCache(holdsWhenWider: true)
@@ -153,6 +153,11 @@ final class AppKitTextView: AppKitHitTestView, AppKitWidthConstrainedMeasuring,
             height: ceil(measured.height) + verticalInsets)
     }
 
+    /// Its label's first baseline, below the padding.
+    func firstBaseline(width: CGFloat?) -> CGFloat? {
+        padding.top + textField.firstBaselineOffsetFromTop
+    }
+
     override func layout() {
         super.layout()
         let content = NSRect(
@@ -224,12 +229,12 @@ final class AppKitLabel: NSTextField {
         if let laidOut, laidOut.width == bounds.width, laidOut.text.isEqual(to: text) { return }
         laidOut = (text, bounds.width)
         room.size = NSSize(width: bounds.width, height: .greatestFiniteMagnitude)
-        let coloured = NSMutableAttributedString(attributedString: text)
-        let whole = NSRange(location: 0, length: coloured.length)
-        coloured.enumerateAttribute(.foregroundColor, in: whole) { value, range, _ in
-            if value == nil { coloured.addAttribute(.foregroundColor, value: textColor ?? .labelColor, range: range) }
+        let colored = NSMutableAttributedString(attributedString: text)
+        let whole = NSRange(location: 0, length: colored.length)
+        colored.enumerateAttribute(.foregroundColor, in: whole) { value, range, _ in
+            if value == nil { colored.addAttribute(.foregroundColor, value: textColor ?? .labelColor, range: range) }
         }
-        words.setAttributedString(coloured)
+        words.setAttributedString(colored)
         layoutsForTesting += 1
     }
 }

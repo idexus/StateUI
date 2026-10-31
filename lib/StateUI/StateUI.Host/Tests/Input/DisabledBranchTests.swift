@@ -15,9 +15,10 @@ final class DisabledBranchTests: XCTestCase {
 
         inner.hear(.tap(run: 1), in: runtime)
         inner.hear(.pointer(.pointerEntered, Point(1, 1)), in: runtime)
+        inner.hear(.hold, in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
 
-        XCTAssertEqual(heard, [], "neither a tap nor the pointer in a disabled branch")
+        XCTAssertEqual(heard, [], "neither a tap, the pointer nor a hold in a disabled branch")
         XCTAssertFalse(inner.isEffectivelyEnabled)
         XCTAssertEqual(inner.presented(.isEnabled), .bool(false), "presented disabled, its own value written nowhere")
         XCTAssertNil(inner.value(.isEnabled), "its own value is what the tree wrote")
@@ -38,8 +39,9 @@ final class DisabledBranchTests: XCTestCase {
         XCTAssertTrue(told.contains(.manual("inner")), "the view in the branch heard its enablement turn")
 
         inner.hear(.tap(run: 1), in: runtime)
+        inner.hear(.hold, in: runtime)
         for _ in 0..<5 { runtime.pump.turn() }
-        XCTAssertEqual(heard, ["opened", "inner tapped"])
+        XCTAssertEqual(heard, ["opened", "inner tapped", "inner held"])
     }
 
     /// A bar's action and a menu's entry declared in a disabled branch are out of reach as every view in it is, and
@@ -96,6 +98,8 @@ private final class TellingView: NativeElement {
     }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func leave() {}
 }
 
@@ -107,8 +111,9 @@ private struct BranchPage: View {
             VStack {
                 Text("Inner").onTapped { @MainActor in heard.append("inner tapped") }.id("inner")
                     .onPointerEntered { @MainActor in heard.append("inner entered") }
+                    .onHeld { @MainActor in heard.append("inner held") }
                     .contextMenu { MenuItem("Copy").id("copy") }
-                    .toolbar { ToolbarItem("Save").id("save") }
+                    .toolbar { ToolbarButton("Save").id("save") }
             }
             .isEnabled(open)
             .id("branch")

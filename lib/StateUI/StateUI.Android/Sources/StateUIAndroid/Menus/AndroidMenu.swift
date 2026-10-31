@@ -29,6 +29,11 @@ enum AndroidMenu {
         var onBar = false
         var withText = false
         var group = 0
+        /// Whether it is words nobody chooses (`ToolbarLabel`), a label where it stands on the bar.
+        var isLabel = false
+        /// The entries of the menu it opens where it stands as one - a bar's button whose click opens its menu, or
+        /// one behind the overflow; nil for an item that acts.
+        var entries: [Entry]?
     }
 
     /// Writes `entries` into `menu`, an item chosen reported to `view` by its place among the items.
@@ -66,12 +71,22 @@ enum AndroidMenu {
         for entry in entries {
             switch entry {
             case .item(let item):
-                kinds.append(
-                    (item.isEnabled ? 0 : disabled) | (item.isDestructive ? destructive : 0) | (item.onBar ? onBar : 0)
-                        | (item.withText ? withText : 0) | (item.isOn != nil ? checkable : 0)
-                        | (item.isOn == true ? checked : 0) | (item.shortcut.map(shown) ?? 0))
+                let marks = (item.isEnabled ? 0 : disabled) | (item.isDestructive ? destructive : 0)
+                    | (item.onBar ? onBar : 0) | (item.withText ? withText : 0) | (item.isLabel ? label : 0)
+                guard let inner = item.entries else {
+                    kinds.append(
+                        marks | (item.isOn != nil ? checkable : 0) | (item.isOn == true ? checked : 0)
+                            | (item.shortcut.map(shown) ?? 0))
+                    texts.append(item.text)
+                    pictures.append(item.picture)
+                    continue
+                }
+                // An item opening a menu is a submenu counted among the items, standing where the item does.
+                kinds.append(menu | counted | marks)
                 texts.append(item.text)
                 pictures.append(item.picture)
+                encode(inner, kinds: &kinds, texts: &texts, pictures: &pictures)
+                kinds.append(end)
             case .menu(let text, let isEnabled, let inner):
                 kinds.append(menu | (isEnabled ? 0 : disabled))
                 texts.append(text)
@@ -97,6 +112,7 @@ enum AndroidMenu {
     private static let disabled = AndroidMenuMark.disabled.rawValue, destructive = AndroidMenuMark.destructive.rawValue
     private static let onBar = AndroidMenuMark.onBar.rawValue, withText = AndroidMenuMark.withText.rawValue
     private static let checkable = AndroidMenuMark.checkable.rawValue, checked = AndroidMenuMark.checked.rawValue
+    private static let counted = AndroidMenuMark.counted.rawValue, label = AndroidMenuMark.label.rawValue
     private static let control = AndroidMenuModifier.control.rawValue, shift = AndroidMenuModifier.shift.rawValue
     private static let alt = AndroidMenuModifier.alt.rawValue
 }

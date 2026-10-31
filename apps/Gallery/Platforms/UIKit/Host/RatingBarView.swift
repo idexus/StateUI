@@ -125,6 +125,7 @@ extension RatingBarView {
     @MainActor
     static func register() {
         // listing: end
+        // listing: uikit.md.applies
         // The bar, added for its contract: its stars and its rating put on it together, a tapped star reported.
         StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
             let bar = RatingBarView()
@@ -140,20 +141,23 @@ extension RatingBarView {
         }) { bar in
             // The stars and the rating come together: a rating stands within
             // the stars, whichever of the two changed.
-            bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { view, values in
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { view, values in
                 view.show(
                     rating: values[RatingBarContract.rating] ?? 0,
                     of: Int(values[RatingBarContract.maximum] ?? 5))
             }
             bar.raises(RatingBarContract.ratingChanged)
         }
+        // listing: end
 
         // listing: InteropActsSample.UIKit.swift
+        // listing: uikit.md.acts
         // Aimed at one bar: the identity the aim sent is turned back into the
         // view this host made, and the performer is handed that view.
         StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
             bar.flash()
         }
+        // listing: end
     }
 }
 // listing: end

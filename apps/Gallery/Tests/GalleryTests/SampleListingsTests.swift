@@ -30,6 +30,59 @@ final class SampleListingsTests: XCTestCase {
             """)
     }
 
+    /// A handbook's ```swift listing <name> block holds the listing of that name - a host's code is cut from the
+    /// Gallery's head, which that host's build compiles. With `STATEUI_UPDATE_SAMPLES=1` the test writes them.
+    func testTheHandbooksListingsAreCutFromTheCodeTheyShow() throws {
+        let listings = try ListingRegions.all().listings
+        let updating = ProcessInfo.processInfo.environment["STATEUI_UPDATE_SAMPLES"] == "1"
+        var stale: [String] = []
+        var unmarked: [String] = []
+
+        for (document, url) in try DocumentationExamplesTests.documents() {
+            let standing = try String(contentsOf: url, encoding: .utf8).replacingOccurrences(of: "\r\n", with: "\n")
+            let cut = Self.cut(standing, from: listings)
+            unmarked += cut.unmarked.map { "\(document): \($0)" }
+            guard cut.text != standing else { continue }
+            if updating { try cut.text.write(to: url, atomically: true, encoding: .utf8) } else { stale.append(document) }
+        }
+
+        XCTAssertEqual(unmarked, [], "listings a handbook names that no region marks")
+        XCTAssertEqual(stale, [], """
+            These documents are not what the marked code says. Write them again: STATEUI_UPDATE_SAMPLES=1 swift test \
+            --package-path apps/Gallery --filter SampleListingsTests
+            """)
+    }
+
+    /// `text` with each ```swift listing <name> block holding the listing of its name, at the fence's indent, and the
+    /// names no region marks.
+    static func cut(_ text: String, from listings: [String: String]) -> (text: String, unmarked: [String]) {
+        let lines = text.split(separator: "\n", omittingEmptySubsequences: false).map(String.init)
+        var written: [String] = []
+        var unmarked: [String] = []
+        var index = 0
+
+        while index < lines.count {
+            let fence = lines[index].trimmingCharacters(in: .whitespaces)
+            written.append(lines[index])
+            index += 1
+            guard fence.hasPrefix("```swift listing ") else { continue }
+
+            let name = String(fence.dropFirst("```swift listing ".count))
+            let indent = String(lines[index - 1].prefix { $0 == " " })
+            let end = lines[index...].firstIndex { $0.trimmingCharacters(in: .whitespaces).hasPrefix("```") } ?? lines.count
+            if let listing = listings[name] {
+                written += listing.split(separator: "\n", omittingEmptySubsequences: false)
+                    .map { $0.isEmpty ? "" : indent + $0 }
+            } else {
+                unmarked.append(name)
+                written += lines[index..<end]
+            }
+            index = end
+        }
+
+        return (written.joined(separator: "\n"), unmarked)
+    }
+
     /// Every example the sources declare shows code - the listing of its own name, or the listings its `code`
     /// joins - and every listing a sample names is marked.
     func testEveryExampleShowsItsCode() throws {

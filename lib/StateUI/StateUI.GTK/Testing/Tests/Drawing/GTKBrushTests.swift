@@ -26,9 +26,15 @@ final class GTKBrushTests: XCTestCase {
             let host = GTKRenderer.running {
                 VStack {
                     ZStack {}.background(circle).width(200).height(100)
-                    Rectangle().fill(circle).width(200).height(100)
+                    Rectangle()
+                        .fill(circle)
+                        .width(200)
+                        .height(100)
                     ZStack {}.background(circle).width(100).height(200)
-                    Rectangle().fill(circle).width(100).height(200)
+                    Rectangle()
+                        .fill(circle)
+                        .width(100)
+                        .height(200)
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)

@@ -8,9 +8,9 @@
 /// unsupported - and, member by member, what its records say: the Web column of the control dictionary.
 /// Design: docs/design/contracts/dictionary.md#marks
 enum WebRealization {
-    /// The elements the host makes itself, outside the registry: the pages, the arrangements they stand in, and
-    /// what a window lays over them.
-    static let madeByHost: Set<NodeType> = [.page, .navigationStack, .splitView, .tabView, .overlay]
+    /// The elements the host makes itself, outside the registry: the pages, the arrangements they stand in, what a
+    /// window lays over them, and a view's popover.
+    static let madeByHost: Set<NodeType> = [.page, .navigationStack, .splitView, .tabView, .overlay, .popover]
 
     /// The entries this host leaves to the application, which registers its own control for each: the browser has
     /// no map of its own, and a map needs a provider and its key.
@@ -18,56 +18,79 @@ enum WebRealization {
 
     /// What the host's own records say, member by member, before what its registry says: what it realizes through
     /// the host layer's pages and chrome, outside the registry, and what a page never asks of the browser's window.
+    /// Why no element is pulled to refresh here.
+    private static let noPull = "The DOM offers no pull to refresh of a part of a page - a browser's own pull "
+        + "reloads the whole page: a page refreshes by a command."
+
     static let records: [HostRecord] = [
+        .complete(BottomBarContract.edge),
         // MARK: Tiers - a member every wearer realizes alike
-        .complete(BarElementContract.barBackgroundColor),
+        .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
+        .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),
+        .notPlanned(RefreshElementContract.refreshRequested, reason: Self.noPull),
+        .notPlanned(VisualElementContract.accessibilityActionPerformed,
+            reason: "ARIA offers no action of an application's own words."),
+        .notPlanned(VisualElementContract.accessibilityActions,
+            reason: "ARIA offers no action of an application's own words."),
+        .notPlanned(VisualElementContract.accessibilityAdjusted,
+            reason: "A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own."),
+        .partial(BarElementContract.barBackground,
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
+        .complete(BarElementContract.barScrollEdge),
+        .complete(BarElementContract.toolbarStyle),
         .complete(BarElementContract.barForegroundColor),
-        .notPlanned(BarElementContract.barIcon,
-            reason: "A page's bar names its page and the application, and no mark: the browser's tab shows the site's icon."),
-        .complete(BarElementContract.barSubtitle),
-        .complete(BarElementContract.barTitle),
         .complete(MenuBarContract.order),
         .complete(MenuContract.isEnabled),
         .complete(MenuContract.text),
-        .complete(MenuItemContract.isOn),
-        .complete(MenuItemContract.toggled),
-        .complete(MenuItemElementContract.clicked),
+        .complete(MenuToggleContract.isOn),
+        .complete(MenuToggleContract.toggled),
+        .complete(ActionElementContract.clicked),
         .complete(MenuItemElementContract.icon),
-        .complete(MenuItemElementContract.isDestructive),
+        .complete(ActionElementContract.role),
         .complete(MenuItemElementContract.isEnabled),
         .complete(MenuItemElementContract.keyboardShortcut),
         .complete(MenuItemElementContract.text),
         .complete(PageElementContract.icon),
         .complete(PageElementContract.title),
         .complete(VisualElementContract.style),
+        .partial(FilledShapeContract.fill, missing: "A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(VisualElementContract.background,
-            missing: "A brush fills the view with its first colour alone; a blur and glass are drawn by a layout, and elsewhere a blur's colour stands in."),
+            missing: "A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in."),
         .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
             why: "No style can name an ItemsView: a style names its control by an "
             + "initializer that sets nothing, which a list of some items has not."),
 
         // MARK: Entries - a control's or a part's own
-        .complete(ButtonContract.menuKind),
-        .complete(ButtonContract.showsMenuArrow),
-        .complete(ModalStackContract.popped),
+        .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),
+        .complete(ButtonMenuElementContract.menuKind, on: ToolbarButtonContract.self),
+        .complete(ButtonMenuElementContract.showsMenuArrow, on: ButtonContract.self),
+        .complete(TextAndIconElementContract.showsText, on: ButtonContract.self),
+        .complete(ButtonMenuElementContract.showsMenuArrow, on: ToolbarButtonContract.self),
+        .complete(SheetContract.isPresented),
+        .complete(SheetContract.isPresentedChanged),
         .complete(NavigationStackContract.popped),
         .complete(PageContract.appearing),
         .complete(PageContract.backButtonTitle),
-        .complete(PageContract.background),
+        .complete(PageElementContract.background),
+        .complete(PageElementContract.linkOpened),
         .complete(PageContract.disappearing),
         .complete(PageContract.navigatedFrom),
         .complete(PageContract.navigatedTo),
         .complete(PageContract.navigatingFrom),
         .complete(PageContract.showsBackButton),
+        .complete(PageContract.showsCloseButton),
         .complete(PageContract.showsNavigationBar),
         .complete(PageContract.showsTitle),
-        .complete(RadioButtonContract.groupName),
+        .complete(PageContract.subtitle),
+        .complete(PopoverContract.isPresented),
+        .complete(PopoverContract.isPresentedChanged),
         .complete(SplitViewContract.showsSidebar),
         .complete(SplitViewContract.showsSidebarChanged),
+        .complete(SplitViewContract.showsSidebarToggle),
         .partial(SplitViewContract.sidebarBackground,
-            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
-        .partial(SplitViewContract.flyoutBackground,
-            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
+        .partial(SplitViewContract.sidebarOverlayBackground,
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .complete(SplitViewContract.sidebarOverlays),
         .notPlanned(VisualElementContract.background, on: SliderContract.self,
             reason: "The browser draws its slider over the whole box and paints no "
@@ -84,13 +107,25 @@ enum WebRealization {
         .complete(FontElementContract.isFontAutoScalingEnabled, on: TextSpanContract.self),
         .complete(TextualElementContract.text, on: TextSpanContract.self),
         .complete(TextualElementContract.textCase, on: TextSpanContract.self),
-        .complete(TextStyleElementContract.textColor, on: TextSpanContract.self),
+        .complete(TextColorElementContract.textColor, on: TextSpanContract.self),
         .complete(DecorableTextElementContract.textDecorations, on: TextSpanContract.self),
         .complete(TrackingElementContract.tracking, on: TextSpanContract.self),
-        .complete(ToolbarItemContract.placement),
-        .complete(ToolbarItemContract.showsText),
-        .complete(ToolbarItemGroupContract.order),
-        .complete(ToolbarItemGroupContract.side),
+        .complete(TextAndIconElementContract.showsText, on: ToolbarButtonContract.self),
+        .complete(ToolbarToggleContract.isOn),
+        .complete(ToolbarToggleContract.onIcon),
+        .complete(TextAndIconElementContract.showsText, on: ToolbarToggleContract.self),
+        .complete(ToolbarToggleContract.toggled),
+        .complete(ViewContract.layoutBody),
+        .complete(ToolbarLabelContract.icon),
+        .complete(ToolbarLabelContract.text),
+        .complete(ToolbarGroupContract.barEdge),
+        .complete(ToolbarGroupContract.order),
+        .complete(ToolbarGroupContract.part),
+        .complete(ToolbarGroupContract.hidesWithSidebar),
+        .complete(ToolbarGroupContract.isEnabled),
+        .complete(ToolbarGroupContract.position),
+        .notPlanned(ToolbarGroupContract.standsAlone,
+            reason: "The bar draws every group on a glass of its own, a lone item's too."),
         .complete(SceneContract.activated),
         .complete(SceneContract.deactivated),
         .complete(SceneContract.stopped),
@@ -115,28 +150,33 @@ enum WebRealization {
         .notPlanned(WindowContract.isMinimizable,
             reason: "A page asks nothing of how the browser's window is put away."),
         .partial(VisualElementContract.background, on: GridContract.self,
-            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(VisualElementContract.background, on: HStackContract.self,
-            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(VisualElementContract.background, on: VStackContract.self,
-            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(VisualElementContract.background, on: ZStackContract.self,
-            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
-        .partial(VisualElementContract.background, on: LayoutEngineContract.self,
-            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its colour."),
-        .complete(LayoutEngineContract.handAxis),
-        .complete(LayoutEngineContract.handMoved),
-        .complete(LayoutEngineContract.handStepped),
-        .complete(LayoutEngineContract.itemDrag),
-        .complete(LayoutEngineContract.itemMoved),
-        .complete(LayoutEngineContract.magnifies),
-        .complete(LayoutEngineContract.pans),
-        .partial(LayoutEngineContract.rotates,
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
+        .partial(VisualElementContract.background, on: FillContract.self,
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
+        .partial(VisualElementContract.background, on: SpaceContract.self,
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
+        .partial(VisualElementContract.background, on: MotionLayoutContract.self,
+            missing: "A page has no glass: glass is drawn as the blur as clear as it is, a filter under its color."),
+        .complete(MotionLayoutContract.translationOrientation),
+        .complete(LayoutContract.ignoresSafeArea),
+        .complete(MotionLayoutContract.translationUpdated),
+        .complete(MotionLayoutContract.wheelStepped),
+        .complete(MotionLayoutContract.itemDrag),
+        .complete(MotionLayoutContract.itemDragUpdated),
+        .complete(MotionLayoutContract.magnifies),
+        .complete(MotionLayoutContract.pans),
+        .partial(MotionLayoutContract.rotates,
             missing: "Chrome and Firefox tell no trackpad's rotation: two fingers turn "
             + "a layout on a touch screen, and on a trackpad in Safari."),
-        .complete(LayoutEngineContract.pinchMoved),
+        .complete(MotionLayoutContract.pinchRotationUpdated),
         .partial(WindowContract.background,
-            missing: "A page draws its window opaque: a blur or glass shows its colour."),
+            missing: "A page draws its window opaque: a blur or glass shows its color."),
         .notPlanned(WindowContract.maximumHeight, reason: "A page bounds no browser window: the user sizes it."),
         .notPlanned(WindowContract.maximumWidth, reason: "A page bounds no browser window: the user sizes it."),
         .notPlanned(WindowContract.minimumHeight, reason: "A page bounds no browser window: the user sizes it."),
@@ -146,7 +186,9 @@ enum WebRealization {
             reason: "A page sizes no browser window: the user does, and the page fills it."),
         .notPlanned(WindowContract.x, reason: "A page places no browser window: the system does."),
         .notPlanned(WindowContract.y, reason: "A page places no browser window: the system does."),
-    ] + pickerOpening + dayFields + HostRecord.layoutEngine
+        .notPlanned(ColorPickerContract.choosesOpacity,
+            reason: "The browser's color input chooses no opacity: every color it gives is opaque."),
+    ] + pickerOpening + dayFields + HostRecord.motionLayout + BarItemLook.realized
 
     /// A day's and a time's field: left to right, whatever the direction around them.
     private static let dayFields: [HostRecord] = ([DatePickerContract.self, TimePickerContract.self] as [any ElementContract.Type]).map {
@@ -170,9 +212,9 @@ enum WebRealization {
         ]
     }()
 
-    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), a list
-    /// scrolled to an item, and a web view's steps and scripts.
-    static let acts: [any ContractMember] = HostActs.performed + HostActs.files + [
+    /// The acts this host performs: every host's (`HostActs.performed`), the files (`HostActs.files`), the requests
+    /// (`HostActs.network`), a list scrolled to an item, and a web view's steps and scripts.
+    static let acts: [any ContractMember] = HostActs.performed + HostActs.files + HostActs.network + [
         ItemsViewContract.scrollTo, WebViewContract.goBack, WebViewContract.goForward, WebViewContract.reload,
         WebViewContract.evaluateJavaScript,
     ]

@@ -32,13 +32,19 @@ final class AndroidDriver: HostDriver {
                 "Android's field keeps no bound of StateUI's: the host cuts what is typed, and typing proves it"
         }
         let shapePaint = [
-            "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "contentMode", "geometryTransform", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
             for member in shapePaint {
                 none["read \(member) of \(shape)"] =
                     "StateUI draws a shape in its view's onDraw, which holds none of its \(member); its drawing proves it"
+            }
+        }
+        for member in ["stroke", "lineWidth", "shape"] {
+            for region in ["Fill", "Space"] {
+                none["read \(member) of \(region)"] =
+                    "StateUI draws a box in a drawable of its own, which holds none of its \(member); its drawing proves it"
             }
         }
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
@@ -53,8 +59,8 @@ final class AndroidDriver: HostDriver {
             none["read \(member) of Button"] =
                 "StateUI draws a button's box in a drawable of its own, which holds none of its \(member); its drawing proves it"
         }
-        none["read a background of no one colour"] =
-            "StateUI draws the box in a drawable of its own, which holds no one colour; its drawing proves it"
+        none["read a background of no one color"] =
+            "StateUI draws the box in a drawable of its own, which holds no one color; its drawing proves it"
         for stack in ["HStack", "VStack"] {
             none["read spacing of \(stack)"] =
                 "Android's view group places its children where StateUI's layout says; their frames prove it"
@@ -82,9 +88,21 @@ final class AndroidDriver: HostDriver {
     func start(
         clock: TestClock?, reducesMotion: Bool, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> MountedTree {
+        started(clock: clock, reducesMotion: reducesMotion) { OneWindowApplication(page: page) }
+    }
+
+    /// Runs `application` in the test's activity: its window, the one an activity has.
+    func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
+        started(clock: clock, reducesMotion: false, application)
+    }
+
+    /// Runs `application` on a new host in the test's activity, as an activity's start does.
+    private func started(
+        clock: TestClock?, reducesMotion: Bool, _ application: @escaping @MainActor () -> any Application
+    ) -> MountedTree {
         finish()
         written.listen()
-        stateUIUseApp(OneWindowApplication(page: page))
+        Renderer.shared.setApplication(application())
         let window = TestContext.window!
         let root = Java.new(TestJava.frameLayout, TestJava.newFrameLayout, .object(window.reference))
         let renderer = AndroidRenderer(
@@ -92,6 +110,8 @@ final class AndroidDriver: HostDriver {
             reducesMotion: { reducesMotion })
         AndroidRenderer.shared = renderer
         self.renderer = renderer
+        renderer.actToolkit.announcedForTesting = []
+        renderer.actToolkit.holdsShareForTesting = true
         Java.call(window.reference, Self.setContentView, .object(root.reference))
         Java.callStatic(Self.testPixels, Self.paintNothing, .object(window.reference))
         AndroidPersistence.writeScenes("", context: window.reference)  // no scenes an earlier case kept
@@ -161,7 +181,7 @@ final class AndroidDriver: HostDriver {
     /// Runs the UI thread's own messages for `millis` milliseconds: a web page's client, a choreographer's frame, a
     /// posted callback arrive as they do in an application.
     /// Design: docs/design/platforms/android/conformance.md#the-ui-threads-messages
-    private static func runLooper(_ millis: Int64) {
+    static func runLooper(_ millis: Int64) {
         Java.callStatic(looper, runLooperFor, .long(millis))
     }
 
@@ -189,8 +209,26 @@ final class AndroidDriver: HostDriver {
     }
 
     /// The night mode the activity's configuration stands in: the application's where it holds one.
+    func standUnderSystemBars(top: Double, bottom: Double) {
+        guard let renderer else { return }
+        let density = renderer.density
+        renderer.insetsChanged(
+            left: 0, top: Int32((top * density).rounded()), right: 0, bottom: Int32((bottom * density).rounded()),
+            keyboard: 0)
+    }
+
     func theme() throws -> ColorScheme {
         Java.callStaticBool(JavaAPI.environment, Self.night, .object(TestContext.window.reference)) ? .dark : .light
+    }
+
+    /// What the chooser the host holds offers: its words, then its link on a line of its own.
+    func shared(over element: MountedElement) throws -> String? {
+        renderer?.actToolkit.sharing?.shared.together
+    }
+
+    /// What the host handed Android to say to the screen reader, in order.
+    func announced() throws -> [String] {
+        renderer?.actToolkit.announcedForTesting ?? []
     }
 
     /// What the relay handed the system to launch, in order: an address as written, a document by its name.
@@ -198,16 +236,16 @@ final class AndroidDriver: HostDriver {
         Java.frame { Java.texts(Java.callStaticObject(Self.files, Self.launchedForTesting)) }
     }
 
-    /// The colour the window shows at `point` of the view, as the user sees it; nil where the view draws nothing there.
+    /// The color the window shows at `point` of the view, as the user sees it; nil where the view draws nothing there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         try colors(of: element, at: [point])[0]
     }
 
-    /// The colours the window shows at each of `points` of the view, read from one copy of it
+    /// The colors the window shows at each of `points` of the view, read from one copy of it
     /// (`TestPixels.colors`); nil where the view draws nothing.
     func colors(of element: MountedElement, at points: [Point]) throws -> [Color?] {
         guard let view = (element.native as? AndroidElement)?.view else {
-            throw DriverCannot("read the colour of \(element.type.name)")
+            throw DriverCannot("read the color of \(element.type.name)")
         }
         let argbs: [Int32] = Java.frame {
             let pixels = points.flatMap { [Int32($0.x * 2), Int32($0.y * 2)] }
@@ -216,12 +254,35 @@ final class AndroidDriver: HostDriver {
             else { return [] }
             return Java.intsOf(shown)
         }
-        guard argbs.count == points.count else { throw DriverCannot("read the colours of \(element.type.name)") }
+        guard argbs.count == points.count else { throw DriverCannot("read the colors of \(element.type.name)") }
         return argbs.map { argb in
             let argb = UInt32(bitPattern: argb)
             return argb >> 24 > 0x80 ? Self.color(argb | 0xFF00_0000) : nil
         }
     }
+
+    /// Whether a press at `point` of the view reaches it or what stands in it, by the rule Android's layouts hand a
+    /// touch by (`StateUIViewGroup.reaches`): from the window's root, the frontmost view under it at each level.
+    func reaches(_ element: MountedElement, at point: Point) throws -> Bool {
+        guard let renderer, let view = (element.native as? AndroidElement)?.view else {
+            throw DriverCannot("read what reaches \(element.type.name)")
+        }
+        layOut()
+        let window = Java.ints([0, 0])
+        Java.call(renderer.root.reference, JavaAPI.getLocationInWindow, .object(window))
+        let origin = window.map(Java.intsOf) ?? [0, 0]
+        Java.release(local: window)
+        let corner = view.cornerInWindow
+        let x = Float((corner.x + point.x) * view.density) - Float(origin[0])
+        let y = Float((corner.y + point.y) * view.density) - Float(origin[1])
+        return Java.callStaticBool(
+            JavaAPI.viewGroupHost, Self.reachesAt, .object(renderer.root.reference), .float(x), .float(y),
+            .object(view.outermost))
+    }
+
+    /// Whether a touch at a point of a root reaches a view - the layouts' own hit test.
+    static let reachesAt = Java.staticMethod(
+        JavaAPI.viewGroupHost, "reaches", "(Landroid/view/View;FFLandroid/view/View;)Z")
 
     /// A heading is a view TalkBack meets as one (`isAccessibilityHeading`).
     func isHeading(_ element: MountedElement) throws -> Bool {
@@ -276,8 +337,7 @@ final class AndroidDriver: HostDriver {
     static let getParent = Java.method(JavaAPI.view, "getParent", "()Landroid/view/ViewParent;")
     static let dialogs = Java.findClass("stateui/android/StateUIDialogs")
     static let question = Java.staticMethod(dialogs, "question", "()[Ljava/lang/String;")
-    static let answer = Java.staticMethod(
-        dialogs, "answer", "(Ljava/lang/String;Ljava/lang/String;)Z")
+    static let answer = Java.staticMethod(dialogs, "answer", "(IILjava/lang/String;)Z")
     static let dismissAll = Java.staticMethod(dialogs, "dismissAll", "()V")
     static let files = Java.findClass("stateui/android/StateUIFiles")
     static let holdForTesting = Java.staticMethod(files, "holdForTesting", "()V")

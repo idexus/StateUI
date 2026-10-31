@@ -39,7 +39,7 @@
             height: orientation == .vertical || orientation == .both
                 ? max(viewport.height, natural.height + down) : viewport.height)
         let room = Rect(
-            x: padding.left + margin.left,
+            x: padding.start + margin.start,
             y: padding.top + margin.top,
             width: max(0, document.width - across),
             height: max(0, document.height - down))
@@ -65,7 +65,7 @@
 
     /// The room the padding and the child's margin take, across and down.
     private static func insets(_ margin: Insets, _ padding: Insets) -> (across: Double, down: Double) {
-        (padding.left + padding.right + margin.left + margin.right,
+        (padding.start + padding.end + margin.start + margin.end,
          padding.top + padding.bottom + margin.top + margin.bottom)
     }
 }

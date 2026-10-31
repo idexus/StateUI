@@ -1,0 +1,5 @@
+# revision 2.1
+ToolbarToggle: ✅
+ToolbarToggle.isOn: ☑️ An Android bar shows a setting's state by its on picture alone; behind the overflow, by its check.
+ToolbarToggle.onIcon: ✅
+ToolbarToggle.toggled: ✅

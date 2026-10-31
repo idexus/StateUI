@@ -1,0 +1,4 @@
+# revision 2.1
+Link: ✅
+Link.clicked: ✅
+Link.destination: ✓ read what was launched: the relay's own record of what it handed the system, which a test holds back from launching

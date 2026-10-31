@@ -23,6 +23,9 @@ struct SplitViewSample: SampleContent, ExampleContent {
             SwitchRow("Menu open", nav.$menuOpen)
                 .horizontalAlignment(.center)
 
+            SwitchRow("Menu button", nav.$showsMenuButton)
+                .horizontalAlignment(.center)
+
             // Where the platform places the menu for the room, as the split
             // view writes it.
             Text(nav.menuOverlays ? "The menu lies over the page" : "The menu stands beside the page")
@@ -59,13 +62,19 @@ struct SplitViewSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`SplitView($menuOpen)` is two-way. The native host adapts the pane; "
+            Text("`.showsSidebar($menuOpen)` is two-way. The native host adapts the pane; "
                 + "when it keeps both sides visible, the binding settles on `true`.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
+            Text("`.showsSidebarToggle` takes the menu's button off the bar - a value from "
+                + "the path, `path.isEmpty`, keeps it to the root. Without it, where no swipe "
+                + "opens the menu, the switch above is the way in.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
             Text("What the pane stands on beside the page, and while it slides over it, "
-                + "is the split view's: `.sidebarBackground` and `.flyoutBackground`, "
+                + "is the split view's: `.sidebarBackground` and `.sidebarOverlayBackground`, "
                 + "which the Appearance sample chooses.")
                 .fontSize(12)
                 .textColor(Palette.subtle)

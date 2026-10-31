@@ -1,12 +1,13 @@
-# revision 6.1
+# revision 9.1
 Page: ✅
 Page.appearing: ✅
 Page.backButtonTitle: ✅
-Page.background: ✅
 Page.disappearing: ✅
 Page.navigatedFrom: ✅
 Page.navigatedTo: ✅
 Page.navigatingFrom: ✅
 Page.showsBackButton: ✅
+Page.showsCloseButton: ✅
 Page.showsNavigationBar: ✅
 Page.showsTitle: ✅
+Page.subtitle: ✅

@@ -37,7 +37,7 @@ a property and its value meet in the compiler and nothing is spelled twice.
                  maximumLines   ElementProperty<Self, Int>     travels: false
 
   TextContract.worn    Text, View, VisualElement, AutomationElement, TextualElement,
-                        TextStyleElement, FontElement, TextAlignmentElement, ...
+                        TextColorElement, FontElement, TextAlignmentElement, ...
                         each once, in the order met - depth first,
                         in declaration order
 ```
@@ -104,7 +104,7 @@ way and registers them with its hosts.
 
 ## What an element does not wear
 
-A modifier stands on the tier of the elements that can honour it, so the typed
+A modifier stands on the tier of the elements that can honor it, so the typed
 roads offer nothing an element's contract does not wear. The generic roads -
 `setValue`, `onEvent` over any member - cannot be tied to an element's tiers
 by type: Swift has no constraint saying a contract is among those another

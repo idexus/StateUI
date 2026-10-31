@@ -26,11 +26,11 @@ final class DisplayCycleTests: XCTestCase {
         let presenter = CountingPresenter()
         cycle.presenter = presenter
 
-        let travelling = HostJourney(
+        let traveling = HostJourney(
             value: [0], destination: [100], velocity: [0], motion: .eased(.milliseconds(400)), completion: nil, stopped: 0)
         _ = channels.presentedValue(
             for: HostStateBinding(state: 9, mode: .out, kind: .property, laneKind: .number),
-            from: HostBoundary.value(of: travelling),
+            from: HostBoundary.value(of: traveling),
             now: 0,
             reducesMotion: false)
         described.receive(
@@ -85,10 +85,12 @@ final class DisplayCycleTests: XCTestCase {
         let child = Placed()
         let travels = Arrangement(law: .eased(.milliseconds(200), .linear), lanes: .all)
         runtime.layoutMotion.place(
-            child, mount: 2, at: Rect(x: 0, y: 0, width: 10, height: 10), stated: [], fadeIn: nil, in: travels)
+            child, mount: 2, at: Rect(x: 0, y: 0, width: 10, height: 10), stated: [], words: .none, natural: { .zero },
+            fadeIn: nil, in: travels)
         XCTAssertFalse(runtime.clock.held, "a child standing at its place does not move")
         runtime.layoutMotion.place(
-            child, mount: 2, at: Rect(x: 0, y: 50, width: 10, height: 10), stated: [], fadeIn: nil, in: travels)
+            child, mount: 2, at: Rect(x: 0, y: 50, width: 10, height: 10), stated: [], words: .none, natural: { .zero },
+            fadeIn: nil, in: travels)
         XCTAssertTrue(runtime.clock.held, "a child on its way to its place holds it")
         runtime.displayCycle.frame(now: 400)
         XCTAssertFalse(runtime.clock.held)
@@ -148,7 +150,7 @@ final class DisplayCycleTests: XCTestCase {
     }
 
     /// A STATE AN ELEMENT WEARS HAS ITS CHANNEL from the moment it is worn, whatever its view reads: the host layer
-    /// walks it and tells the core every frame - a layout engine's phase, which no view draws, included.
+    /// walks it and tells the core every frame - a motion layout's phase, which no view draws, included.
     @MainActor
     func testAWornStateOpensItsChannelThoughNoViewReadsIt() throws {
         stateUIUseApp(WornApplication())
@@ -197,16 +199,19 @@ final class DisplayCycleTests: XCTestCase {
     }
 }
 
-/// A layout engine, whose element wears its phase and whose view draws none of it.
+/// A motion layout, whose element wears its phase and whose view draws none of it.
 private struct WornApplication: Application {
     var body: some Scene {
         WindowGroup {
-            LayoutEngine([0]) { _ in Rectangle(.red) } placements: { _, _ in [] }
+            MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+                Rectangle()
+                    .fill(.red)
+            } placements: { _, _ in [] }
         }
     }
 }
 
-/// A slider travelling where two buttons send its state.
+/// A slider traveling where two buttons send its state.
 private struct TravelApplication: Application {
     var body: some Scene {
         WindowGroup { TravelPage() }
@@ -225,7 +230,7 @@ private struct TravelPage: View {
     }
 }
 
-/// A slider travelling where a button sends its state, in a stack whose frame the page reads.
+/// A slider traveling where a button sends its state, in a stack whose frame the page reads.
 private struct ReadTravelApplication: Application {
     var body: some Scene {
         WindowGroup { ReadTravelPage() }

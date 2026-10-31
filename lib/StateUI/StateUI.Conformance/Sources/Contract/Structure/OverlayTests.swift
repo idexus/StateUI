@@ -85,7 +85,9 @@ struct OverlaidPage: View {
     var body: some View {
         let notice = notice
         return ZStack {
-            Rectangle().fill(.red).id("beneath")
+            Rectangle()
+                .fill(.red)
+                .id("beneath")
             VStack {
                 Button("Show").onClicked { notice.wrappedValue = true }.id("show")
                 Button("Hide").onClicked { notice.wrappedValue = false }.id("hide")

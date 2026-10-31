@@ -10,7 +10,7 @@ extension AppKitDriver {
     func byHost(_ ability: String) -> String? {
         let (act, element) = (Ability(ability).act, Ability(ability).element)
         switch act {
-        case "tap", "pan", "sweep", "notch", "pinch", "rotate", "hover", "leave", "drag", "pressDown", "lift":
+        case "tap", "hold", "pan", "sweep", "notch", "pinch", "rotate", "hover", "leave", "drag", "pressDown", "lift":
             return "handed to the host's recognizer or handler, no NSEvent sent"
         case "open" where element == "Picker", "close" where element == "Picker":
             return "the host's menu delegate told, no menu opened"
@@ -30,12 +30,18 @@ extension AppKitDriver {
             return "the drag source and the window's drop routing told by the driver, no dragging session"
         case "dropFiles":
             return "the window's drop routing told the driver's files, no dragging session"
+        case "answerShare":
+            return "the host's picker told the user's answer, no picker shown"
+        case "close" where element == "Popover":
+            return "the host's own close of a popover held unshown, as a test shows no window"
         case "answerFiles":
             return "the host's response called with the driver's files, no panel shown"
         case "goBack":
             return "the host's toolbar or sheet entry called, no toolbar item or sheet touched"
-        case "activate" where element == "ToolbarItem":
+        case "activate" where element == "ToolbarButton":
             return "the host's toolbar entry called, no toolbar item touched"
+        case "openLink":
+            return "the host's entry the application's delegate calls, no Apple event sent"
         case "switchAway", "switchBack", "bringToFront", "minimize", "restore":
             return "the notification AppKit would post, posted by the driver; the window does not move"
         case "endContent":
@@ -44,15 +50,17 @@ extension AppKitDriver {
         }
         switch ability {
         case "read selectedTab of TabView": return "the host's tab choice, not the tab view's"
-        case "read isAnimating of ActivityIndicator": return "the host's own flag; the indicator holds none to read"
+        case "read isAnimating of Spinner": return "the host's own flag; the indicator holds none to read"
         case "read inputPurpose of TextField", "read inputPurpose of SearchField", "read inputPurpose of TextEditor":
             return "the traits the host keeps; a Mac shows no keys a purpose picks"
-        case "read keyboardShortcut of ToolbarItem": return "the host's own record; AppKit holds no shortcut on a toolbar's item"
+        case "read keyboardShortcut of ToolbarButton": return "the host's own record; AppKit holds no shortcut on a toolbar's item"
         case "read windowType of Window", "read windowValue of Window": return "the host's restoration record"
         case "read the menu of Window": return "menu items built from the tree at the read, not the main menu"
         case "read what the screen reader said": return "the host's own list of what it announced"
         case "read a question": return "the captions the host keeps, not the alert's buttons"
         case "read a file dialog": return "the host's own panel, held unshown"
+        case "read a share sheet": return "the host's own picker, held unshown"
+        case "read isShown of Popover": return "the host's own popover, held unshown where a test shows no window"
         case "read what was launched":
             return "the host's own record of what it handed macOS, which a test holds back from launching"
         default: break

@@ -20,6 +20,8 @@ final class GTKDriver: HostDriver {
     /// what StateUI measures, what the host cuts - each proven by its effect in another case - and a clock's format.
     private static func none() -> [String: String] {
         var none = [
+            "read an accent of the application's":
+                "this desktop lets the user choose the accent - GNOME 47 on - and the user's stands",
             "read submitLabel of TextField": "GTK gives an entry no word for the return key of a keyboard on the screen",
             "read submitLabel of SearchField": "GTK gives an entry no word for the return key of a keyboard on the screen",
             "read growsWithText of TextEditor":
@@ -32,9 +34,13 @@ final class GTKDriver: HostDriver {
                 "GTK bounds code points, not characters, so the host cuts what is typed; typing proves it",
             "read format of TimePicker": "GTK's clock holds no format: it writes hours and minutes in the user's own clock",
         ]
+        for field in ["TextField", "SearchField", "TextEditor"] {
+            none["read what the platform fills in of \(field)"] =
+                "GNOME keeps no saved names, passwords or codes to fill a field in from"
+        }
         let shapes = ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"]
         let shapePaint = [
-            "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "contentMode", "geometryTransform", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in shapes {
@@ -55,6 +61,12 @@ final class GTKDriver: HostDriver {
             none["read padding of \(layout)"] =
                 "GTK's panel places its children where StateUI's layout says; their frames prove it"
         }
+        for member in ["background", "stroke", "lineWidth", "shape"] {
+            for region in ["Fill", "Space"] {
+                none["read \(member) of \(region)"] =
+                    "StateUI draws a \(region.lowercased())'s box on GTK's snapshot, which holds none of its \(member); its drawing proves it"
+            }
+        }
         for stack in ["HStack", "VStack"] {
             none["read spacing of \(stack)"] = "GTK's panel places its children where StateUI's layout says; their frames prove it"
         }
@@ -73,7 +85,9 @@ final class GTKDriver: HostDriver {
         if Ability(ability).act == "sweep" { return "the hand handed to the host's entry with its speed, no event" }
         if Ability(ability).act == "notch" { return "a wheel's notches handed to the host's entry, no event" }
         if Ability(ability).readsATransform { return "the host's own transform: GTK reads back no part of one" }
-        if ability.hasPrefix("read background of "), ["Grid", "HStack", "VStack", "ZStack"].contains(Ability(ability).element) {
+        if ability.hasPrefix("read fill of ") { return "the brush the host draws the figure with: GTK reads back no drawing" }
+        if ability.hasPrefix("read background of "),
+           ["Fill", "Grid", "HStack", "Space", "VStack", "ZStack"].contains(Ability(ability).element) {
             return "the brush the host draws the box with: GTK reads back no drawing"
         }
         // A span's look is its run's Pango attributes, which GTK reads back.
@@ -87,12 +101,20 @@ final class GTKDriver: HostDriver {
     /// The members read from the classes of the host's style sheet a widget wears.
     private static let recordedMembers = ["padding", "background", "stroke", "lineWidth", "shape", "placeholderColor"]
 
+    /// How a bar's background is read: GTK reads back none, and a translucent one's pixels mix with what is under it.
+    private static let headerClass = "the class of the host's style sheet the header wears: GTK reads back no background"
+
     private static let byHostReasons = [
-        "read keyboardShortcut of ToolbarItem": "the host's own record: a header bar's button shows no shortcut",
+        "read keyboardShortcut of ToolbarButton": "the host's own record: a header bar's button shows no shortcut",
+        "close on Popover": "the popover popped down as a click beside it pops it down, no click sent",
+        "read the ground of Sheet": "the class of the host's style sheet the dialog wears: GTK reads back no background",
+        "read barBackground of NavigationStack": headerClass,
+        "read barBackground of SplitView": headerClass,
+        "read barBackground of TabView": headerClass,
         "read sidebarBackground of SplitView":
             "the class of the host's style sheet the sidebar wears: GTK reads back no background",
-        "read flyoutBackground of SplitView":
-            "the colour the split keeps for its sidebar over the detail, which a wide window never shows",
+        "read sidebarOverlayBackground of SplitView":
+            "the color the split keeps for its sidebar over the detail, which a wide window never shows",
         "read source of Image": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read icon of Button": "the file the host's own panel draws: GTK's snapshot holds no picture's name",
         "read contentMode of Image": "how the host's own panel fills its room: GTK's snapshot holds no aspect",
@@ -107,6 +129,7 @@ final class GTKDriver: HostDriver {
         "answerFiles": "the host's answer handed the driver's files, no dialog shown",
         "dragAndDrop": "the drag source's and the drop targets' signals told by the driver, no drag GTK began",
         "dropFiles": "the drop target's signal told the driver's files, no drag GTK began",
+        "openLink": "the host's entry the application's open signal reaches, no file opened",
         "switchAway": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "switchBack": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
         "bringToFront": "the notice GTK's window would give, told by the driver: a desktop moves no window a test shows",
@@ -155,7 +178,7 @@ final class GTKDriver: HostDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
-        if case .pressKeys(let shortcut) = act, [.toolbarItem, .menuItem].contains(element.type) {
+        if case .pressKeys(let shortcut) = act, [.toolbarButton, .toolbarToggle, .menuItem, .menuToggle].contains(element.type) {
             // The window's shortcut for the keys, run as its controller runs it for them.
             guard let window = renderer?.windows.first(where: { window in
                 window.element.map { owner in element.enclosing(type: .window) === owner } == true
@@ -192,9 +215,25 @@ final class GTKDriver: HostDriver {
             guard let files = renderer?.fileToolkit, files.held != nil else { throw DriverCannot(act, on: element) }
             return files.chooseForTesting(names.map { Self.files + "/" + $0 })
         }
-        if act == .activate, element.type == .toolbarItem { return try chooseAction(element) }
-        if act == .activate, element.type == .menuItem { return try chooseMenuItem(element) }
+        if act == .activate, [.toolbarButton, .toolbarToggle].contains(element.type) { return try chooseAction(element) }
+        if act == .activate, [.menuItem, .menuToggle].contains(element.type) { return try chooseMenuItem(element) }
         if act == .close, element.type == .window { return try close(element) }
+        if act == .close, element.type == .page {
+            // The close button of the dialog the page's sheet is, as a click presses it: libadwaita closes the
+            // dialog as its close button does, which tells the closing.
+            let page = element.enclosing(type: .sheet)?.children.first
+            guard (try? frame(of: element)).map({ adw_header_bar_get_show_end_title_buttons($0.header.opaque) }) == 1,
+                  let shown = renderer?.windows.lazy.flatMap(\.sheets).first(where: { $0.element === page })
+            else { throw DriverCannot(act, on: element) }
+            _ = adw_dialog_close(shown.sheet.dialog)
+            return
+        }
+        if act == .close, let popover = (element.native as? GTKElement)?.view as? GTKPopoverView {
+            // As a click beside it: the popover popped down while it is wanted, which tells its closing.
+            guard let shown = popover.popover else { throw DriverCannot(act, on: element) }
+            return gtk_popover_popdown(shown.of(GtkPopover.self))
+        }
+        if case .openLink(let address) = act { return renderer?.openLinks([address]) ?? () }
         if case .answer = act, try windowAct(act, on: element) { return }
         if element.type == .window, try windowAct(act, on: element) { return }
         if try backendPerforms(act, on: element) { return }
@@ -214,7 +253,13 @@ final class GTKDriver: HostDriver {
         switch (act, view) {
         // GTK lets a click reach no button that cannot be chosen.
         case (.activate, let button as GTKButtonView): if gtk_widget_is_sensitive(button.widget) != 0 { button.click() }
-        case (.toggle, let toggle as GTKSwitchView): gtk_switch_set_active(toggle.widget.opaque, toggle.isOn ? 0 : 1)
+        case (.activate, let link as GTKLinkView): if gtk_widget_is_sensitive(link.widget) != 0 { GTKTestHost.click(link.widget) }
+        // What the dialog does as the user chooses: the button takes the color.
+        case (.pickColor(let color), let picker as GTKColorPickerView):
+            let held = color.propValue.fractions ?? (0, 0, 0, 1)
+            var native = GdkRGBA(red: Float(held.red), green: Float(held.green), blue: Float(held.blue), alpha: Float(held.alpha))
+            gtk_color_dialog_button_set_rgba(picker.widget.opaque, &native)
+        case (.toggle, let toggle as GTKSwitchView): toggle.toggle()
         case (.toggle, let check as GTKCheckView): gtk_widget_activate(check.widget)
         case (.slide(let value), let slider as GTKSliderView): gtk_range_set_value(slider.widget.of(GtkRange.self), value)
         case (.step(let up), let stepper as GTKStepperView):
@@ -242,19 +287,48 @@ final class GTKDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
-        if element.type == .toolbarItem { return try actionHolds(property, element) }
+        if property == .edge,
+           let page = (element.enclosing(type: .page)?.native as? GTKElement)?.view as? GTKSingleChildView {
+            return page.bottomBarEdge?.propValue
+        }
+        if property == .barScrollEdge {
+            return ((element.visiblePage?.native as? GTKElement)?.view as? GTKSingleChildView)?.barScrollEdge?.propValue
+        }
+        if element.type == .toolbarLabel, let held = labelHolds(property, element) { return held }
+        if [.toolbarButton, .toolbarToggle, .toolbarLabel].contains(element.type) { return try actionHolds(property, element) }
         if element.type == .window { return try windowHolds(property, element) }
-        if element.type == .menuItem { return try menuItemHolds(property, element) }
-        if [.barBackgroundColor, .barForegroundColor, .barSubtitle].contains(property) {
+        if element.type == .sheet, property == .background {
+            let page = element.children.first
+            guard let sheet = renderer?.windows.lazy.flatMap(\.sheets).first(where: { $0.element === page })
+            else { throw DriverCannot(reading: property, of: element) }
+            return Self.sheetGround(of: sheet.sheet.dialog.of(GtkWidget.self)).map { StandIns.material(painted: $0).propValue }
+        }
+        if [.menuItem, .menuToggle].contains(element.type) { return try menuItemHolds(property, element) }
+        if [.barBackground, .barForegroundColor].contains(property) || property == .subtitle && element.type == .page {
             return try barHolds(property, element)
         }
         if let value = backendHolds(property, on: element) { return value }
         let view = (element.native as? GTKElement)?.view
         if let picker = view as? GTKPopoverPickerView, let value = held(property, on: picker) { return value }
+        if property == .holdDuration, let time = view?.listening?.holdTime { return .number(time) }
         if let value = try recorded(property, on: element, view: view) { return value }
         if let value = reads(property, on: element, view: view) { return value }
         switch (property, view) {
+        case (.fill, let shape as GTKShapeView):
+            // The brush the figure is drawn with - GTK blurs nothing, so a blur's stand-in is that brush.
+            return shape.fillForTesting.firstColor.map { rgba in
+                let channel = { (value: Double) in Int((value * 255).rounded()) }
+                let drawn = Color(
+                    red: channel(Double(rgba.red)), green: channel(Double(rgba.green)), blue: channel(Double(rgba.blue)),
+                    alpha: channel(Double(rgba.alpha)))
+                return StandIns.material(painted: drawn).propValue
+            }
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
+        case (.color, let picker as GTKColorPickerView):
+            let held = picker.rgba
+            return Color(fractions: (Double(held.red), Double(held.green), Double(held.blue), Double(held.alpha))).propValue
+        case (.choosesOpacity, let picker as GTKColorPickerView): return picker.choosesOpacity.propValue
+        case (.isPresented, let popover as GTKPopoverView): return popover.popoverShows.propValue
         case (.value, let slider as GTKSliderView): return slider.value.propValue
         case (.minimum, let slider as GTKSliderView):
             return gtk_adjustment_get_lower(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue
@@ -262,12 +336,13 @@ final class GTKDriver: HostDriver {
             return gtk_adjustment_get_upper(gtk_range_get_adjustment(slider.widget.of(GtkRange.self))).propValue
         case (.value, let stepper as GTKStepperView): return stepper.value.propValue
         case (.progress, let bar as GTKProgressBarView): return bar.progress.propValue
-        case (.isAnimating, let spinner as GTKActivityIndicatorView): return spinner.isAnimating.propValue
+        case (.isAnimating, let spinner as GTKSpinnerView): return spinner.isAnimating.propValue
         case (.text, let label as GTKTextualView): return label.text.propValue
         case (.text, let field as GTKTextFieldView): return field.text.propValue
         case (.text, let editor as GTKTextEditorView): return editor.text.propValue
         case (.text, let button as GTKButtonView): return button.text.propValue
         case (.showsMenuArrow, let button as GTKButtonView): return button.showsArrow.propValue
+        case (.showsText, let button as GTKButtonView): return (button.captionLabel != nil).propValue
         case (.icon, let button as GTKButtonView), (.source, let button as GTKButtonView):
             return button.picture.flatMap { $0.found ? $0.picture?.value : nil }
         case (.iconPosition, let button as GTKButtonView): return Self.position(in: button)?.propValue
@@ -275,17 +350,21 @@ final class GTKDriver: HostDriver {
             return button.pictureAndCaption.map { Double(gtk_box_get_spacing($0.of(GtkBox.self))).propValue }
         case (.lineBreak, let button as GTKButtonView): return button.captionLabel.map { Self.lineBreak(of: $0).propValue }
         case (.contentMode, let button as GTKButtonView): return button.picture?.aspect.propValue
-        case (.tint, let spinner as GTKActivityIndicatorView): return Self.color(of: spinner.widget).propValue
+        case (.tint, let spinner as GTKSpinnerView): return Self.color(of: spinner.widget).propValue
         case (.tint, let view?): return view.tint.map { Self.color($0).propValue }
         case (.source, let image as GTKImageView): return image.found ? image.picture?.value : nil
         case (.contentMode, let image as GTKImageView): return image.aspect.propValue
         case (.text, let check as GTKCheckView): return check.text.propValue
+        case (.text, let link as GTKLinkView): return link.text.propValue
+        case (.text, let toggle as GTKSwitchView): return toggle.text.propValue
         case (.showsSidebar, let split as GTKSplitView): return split.showsSidebar.propValue
+        // The toggle at the start of the bar over a detail standing in no stack of its own.
+        case (.showsSidebarToggle, let split as GTKSplitView): return (split.detailFrame?.sidebarToggle != nil).propValue
         case (.sidebarOverlays, let split as GTKSplitView): return split.isCollapsed.propValue
-        case (.sidebarBackground, let split as GTKSplitView), (.flyoutBackground, let split as GTKSplitView):
-            // The sidebar's class in the place it stands; the other place's colour as the split keeps it.
-            guard split.isCollapsed == (property == .flyoutBackground) else {
-                return (property == .flyoutBackground ? split.grounds.over : split.grounds.beside)
+        case (.sidebarBackground, let split as GTKSplitView), (.sidebarOverlayBackground, let split as GTKSplitView):
+            // The sidebar's class in the place it stands; the other place's color as the split keeps it.
+            guard split.isCollapsed == (property == .sidebarOverlayBackground) else {
+                return (property == .sidebarOverlayBackground ? split.grounds.over : split.grounds.beside)
                     .map { Material.color(Self.color($0)).propValue }
             }
             return split.sidebarWidgetForTesting.flatMap(Self.fill).map { Material.color($0).propValue }
@@ -303,14 +382,14 @@ final class GTKDriver: HostDriver {
         }
     }
 
-    /// The colour GTK draws `widget`'s words and marks in.
+    /// The color GTK draws `widget`'s words and marks in.
     static func color(of widget: GTKWidget) -> Color {
         var color = GdkRGBA()
         gtk_widget_get_color(widget, &color)
         return Self.color(color)
     }
 
-    /// `rgba` as the tree writes a colour.
+    /// `rgba` as the tree writes a color.
     static func color(_ rgba: GdkRGBA) -> Color {
         let channel = { (value: Float) in Int((value * 255).rounded()) }
         return Color(red: channel(rgba.red), green: channel(rgba.green), blue: channel(rgba.blue), alpha: channel(rgba.alpha))
@@ -321,7 +400,7 @@ final class GTKDriver: HostDriver {
         guard let box = button.pictureAndCaption, let picture = button.picture else { return nil }
         let first = gtk_widget_get_first_child(box) == picture.widget
         return gtk_orientable_get_orientation(box.opaque) == GTK_ORIENTATION_HORIZONTAL
-            ? (first ? .leading : .trailing) : (first ? .top : .bottom)
+            ? (first ? .start : .end) : (first ? .top : .bottom)
     }
 
     /// How a label's words break, as it wraps them or cuts them.

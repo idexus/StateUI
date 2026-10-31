@@ -18,6 +18,7 @@ extension WinUIRegistrations {
             field.property(TextFieldContract.isPassword) { view, password in view.setPassword(password ?? false) }
             field.applies(wordMembers) { view, values in applyWords(view, values) }
             field.applies(boxMembers) { view, values in applyBox(view, values) }
+            field.applies(outlineMembers) { view, values in applyOutline(view, values) }
             field.raises(TextInputContract.textChanged)
             field.raises(TextFieldContract.submitted)
         })
@@ -28,6 +29,7 @@ extension WinUIRegistrations {
         }, members: { editor in
             editor.applies(wordMembers) { view, values in applyWords(view, values) }
             editor.applies(boxMembers) { view, values in applyBox(view, values) }
+            editor.applies(outlineMembers) { view, values in applyOutline(view, values) }
             editor.property(TextEditorContract.growsWithText) { view, grows in view.growsWithText = grows ?? false }
             editor.raises(TextInputContract.textChanged)
         })
@@ -38,18 +40,28 @@ extension WinUIRegistrations {
             return search
         }, members: { search in
             search.applies(wordMembers) { view, values in applyWords(view, values) }
+            search.applies(outlineMembers) { view, values in applyOutline(view, values) }
             search.property(TextInputContract.isReadOnly) { view, readOnly in view.setReadOnly(readOnly ?? false) }
             search.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
                 view.setAlignment(alignment ?? .start)
             }
             search.property(TextInputContract.placeholderColor) { view, color in view.setPlaceholderColor(color?.propValue) }
-            search.applies([
+            search.applies(
                 TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
-                TextInputContract.inputPurpose,
-            ]) { view, values in view.setTraits(InputTraits(values)) }
+                TextInputContract.inputPurpose) { view, values in view.setTraits(InputTraits(values)) }
             search.raises(TextInputContract.textChanged)
             search.raises(SearchFieldContract.submitted)
         })
+    }
+
+    /// A field's outline and the shape its corners take.
+    private static let outlineMembers = PropertyList(
+        BorderElementContract.stroke, BorderElementContract.lineWidth, BorderElementContract.shape)
+
+    private static func applyOutline<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
+        view.setOutline(
+            stroke: values[BorderElementContract.stroke]?.propValue, lineWidth: values[BorderElementContract.lineWidth],
+            shape: values[BorderElementContract.shape]?.propValue)
     }
 
     private static func hearInput<Realized: ElementContract>(_ view: WinUITextInputView, _ reports: Reports<Realized>) {
@@ -57,11 +69,11 @@ extension WinUIRegistrations {
     }
 
     /// What every view the user types in takes: its words and their case, what it shows while they are none, how
-    /// many it holds, whether it takes them, and their font and colour.
-    private static let wordMembers: [any ContractMember] = [
+    /// many it holds, whether it takes them, and their font and color.
+    private static let wordMembers = PropertyList(
         TextualElementContract.text, TextualElementContract.textCase, TextInputContract.placeholder,
-        TextInputContract.maximumLength, VisualElementContract.isEnabled,
-    ] + TextMembers.lookMembers
+        TextInputContract.maximumLength, VisualElementContract.isEnabled)
+        + TextMembers.lookMembers
 
     private static func applyWords<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
         view.maximumLength = values[TextInputContract.maximumLength].flatMap { $0 > 0 ? $0 : nil }
@@ -77,16 +89,15 @@ extension WinUIRegistrations {
         if let look = TextMembers.look(values) { view.setLook(look) }
     }
 
-    /// What a text box takes beyond: how it takes words, its words across it, its placeholder's colour, and the
+    /// What a text box takes beyond: how it takes words, its words across it, its placeholder's color, and the
     /// caret and the selection.
-    private static let boxMembers: [any ContractMember] = [
+    private static let boxMembers = PropertyList(
         TextInputContract.isReadOnly, TextInputContract.isSpellCheckEnabled, TextInputContract.isTextPredictionEnabled,
         TextInputContract.inputPurpose, TextAlignmentElementContract.horizontalTextAlignment,
-        TextInputContract.placeholderColor, TextInputContract.cursorPosition, TextInputContract.selectionLength,
-    ]
+        TextInputContract.placeholderColor, TextInputContract.cursorPosition, TextInputContract.selectionLength)
 
     private static func applyBox<Realized: ElementContract>(_ view: WinUITextInputView, _ values: ElementValues<Realized>) {
-        view.setBehaviour(readOnly: values[TextInputContract.isReadOnly] ?? false, traits: InputTraits(values))
+        view.setBehavior(readOnly: values[TextInputContract.isReadOnly] ?? false, traits: InputTraits(values))
         view.setLook(
             alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start,
             placeholderColor: values[TextInputContract.placeholderColor]?.propValue)

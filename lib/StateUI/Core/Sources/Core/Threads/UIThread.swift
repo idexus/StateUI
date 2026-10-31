@@ -10,7 +10,7 @@ import Synchronization
 #if !os(WASI)
 import Dispatch
 #endif
-import StateUIFoundation
+@_spi(Host) import StateUIFoundation
 #if !canImport(Darwin)
 @_spi(ExperimentalCustomExecutors) import _Concurrency
 #endif
@@ -25,7 +25,7 @@ final class UIThreadExecutor: SerialExecutor, Sendable {
     /// The one executor. There is one host, and one thread it draws on.
     static let shared = UIThreadExecutor()
 
-    /// Makes this `MainActor`'s executor where nothing drains the main queue - once,
+    /// Makes this `MainActor`'s executor where no run loop of the platform's turns the main queue - once,
     /// before the first task.
     static func install() {
         _ = installed
@@ -242,7 +242,7 @@ extension UIThreadExecutor: MainExecutor {
     }
 }
 
-/// MainActor's executor where nothing drains the platform's main queue, and
+/// MainActor's executor where no run loop of the platform's turns its main queue, and
 /// the platform's own for every other task.
 private struct UIThreadExecutorFactory: ExecutorFactory {
     static var mainExecutor: any MainExecutor { UIThreadExecutor.shared }

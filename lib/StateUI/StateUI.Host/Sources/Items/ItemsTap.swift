@@ -16,15 +16,15 @@
     /// A tap on the item of `identity` in a list choosing as `mode` says, `chosen` chosen before it.
     public init(on identity: String, mode: SelectionMode, chosen: [String]) {
         switch mode {
-        case .none:
-            self.chosen = nil
-            opens = true
-        case .single:
-            self.chosen = [identity]
-            opens = true
-        case .multiple:
-            self.chosen = chosen.contains(identity) ? chosen.filter { $0 != identity } : chosen + [identity]
-            opens = false
+        case .none: self.chosen = nil
+        case .single: self.chosen = [identity]
+        case .multiple: self.chosen = chosen.contains(identity) ? chosen.filter { $0 != identity } : chosen + [identity]
         }
+        opens = Self.opens(in: mode)
+    }
+
+    /// Whether a tap opens an item in a list choosing as `mode` says: not where it changes a choice of many.
+    public static func opens(in mode: SelectionMode) -> Bool {
+        mode != .multiple
     }
 }

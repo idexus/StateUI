@@ -5,6 +5,8 @@
 // builds. The script names every path below; Gradle compiles the host's Java
 // layer and packages what the Swift build left.
 
+import java.util.Properties
+
 plugins {
     id("com.android.application") version "9.2.1"
 }
@@ -15,6 +17,12 @@ fun stated(name: String): String =
 
 layout.buildDirectory.set(file(stated("stateui.build")))
 
+// The Maps SDK's key is the application's own, never the repository's: google-maps-key.properties beside this file,
+// which git keeps out, says `key=...`. Without it the map draws its grid and no tiles.
+val googleMapsKey: String = file("google-maps-key.properties").takeIf { it.exists() }?.let { keyFile ->
+    Properties().apply { keyFile.inputStream().use { load(it) } }.getProperty("key")
+} ?: ""
+
 android {
     namespace = "com.stateui.gallery"
     compileSdk = 36
@@ -24,7 +32,8 @@ android {
         minSdk = 28
         targetSdk = 36
         versionCode = 1
-        versionName = "0.7.1"
+        versionName = "0.8.0"
+        manifestPlaceholders["googleMapsKey"] = googleMapsKey
     }
 
     sourceSets {
@@ -56,7 +65,9 @@ android {
     }
 }
 
-// The recycler an ItemsView stands on.
+// The recycler an ItemsView stands on, the swipe to refresh a scroller or a list stands in, and the gallery's own map.
 dependencies {
     implementation("androidx.recyclerview:recyclerview:1.4.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("com.google.android.gms:play-services-maps:20.0.0")
 }

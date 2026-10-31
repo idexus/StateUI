@@ -10,13 +10,24 @@ import UIKit
 /// look as attributes, standing across and down its room within its padding as the tree says.
 /// Design: docs/design/platforms/uikit/controls.md#a-labels-words
 @MainActor
-final class UIKitTextView: UILabel, UIKitLabel {
+final class UIKitTextView: UILabel, UIKitLabel, UIKitSteppable {
+    /// What a reader's step performs, while the element says it is adjustable.
+    var stepAction: ((AccessibilityAdjustment) -> Void)?
+
+    override func accessibilityIncrement() { stepAction?(.increment) }
+
+    override func accessibilityDecrement() { stepAction?(.decrement) }
+
     var shown = UIKitLabelWords()
 
     /// The room between the label's edge and its words.
-    private(set) var padding = UIEdgeInsets.zero
+    /// The room between the label's edge and its words, as the tree says it.
+    private var insets = Insets(0)
 
-    /// What fills the label's box behind its words: a colour, or a brush; nothing where the tree says none.
+    /// That room in UIKit's sides, by the direction the label lays out in.
+    var padding: UIEdgeInsets { UIEdgeInsets(insets, in: semanticContentAttribute) }
+
+    /// What fills the label's box behind its words: a color, or a brush; nothing where the tree says none.
     private var fill = UIKitBrush()
 
     /// The words' sizes as measured for each width offered; the size measured without one holds in any wider room.
@@ -43,7 +54,11 @@ final class UIKitTextView: UILabel, UIKitLabel {
 
     /// The room between the label's edge and its words.
     func setPadding(_ insets: Insets?) {
-        padding = insets.map(UIEdgeInsets.init) ?? .zero
+        self.insets = insets ?? Insets(0)
+        directionTurned()
+    }
+
+    func directionTurned() {
         measurements.invalidate()
         invalidateIntrinsicContentSize()
         setNeedsDisplay()
@@ -58,6 +73,12 @@ final class UIKitTextView: UILabel, UIKitLabel {
         measurements.invalidate()
         invalidateIntrinsicContentSize()
         setNeedsDisplay()
+    }
+
+    /// How far below its top its first line of words rests: the padding, and the font's rise above its baseline.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    var firstBaseline: Double {
+        Double(padding.top + (font?.ascender ?? 0))
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -82,7 +103,7 @@ final class UIKitTextView: UILabel, UIKitLabel {
             width: fitted.width + padding.left + padding.right, height: fitted.height + padding.top + padding.bottom)
     }
 
-    /// What fills the label's box behind its words: a colour as the view's own background, a brush painted before
+    /// What fills the label's box behind its words: a color as the view's own background, a brush painted before
     /// the words - they are the layer's own contents, which any layer added over it would cover.
     func setBackground(_ value: HostValue?) {
         let brush = HostBrush(value)

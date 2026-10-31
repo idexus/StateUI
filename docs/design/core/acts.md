@@ -7,7 +7,7 @@ they are calls on the host's native objects. So the same split applies: Swift
 describes the act and the host performs it.
 
 ```text
-  handler: try await Dialogs.alert("Saved", message: "…")
+  handler: try await window.alert("Saved", message: "…")
      |
      v  Renderer.send -> ActCall(act, arguments, completion: -7) in the queue
      |                   (completion ids count down from -1)
@@ -74,6 +74,18 @@ exist yet when the outcome is reported - it lands a moment later and posts a
 turn - so a test waiting for a quiet queue reads this count to tell "the
 resume has not landed yet" from "nothing to wait for". `dispatch` runs nothing
 for a completion, for the same reason.
+
+## A call ends with its run
+
+A caller waiting for an answer waits in its run, and the run can end before
+the answer comes: a later event under `.cancelPrevious`, the element leaving,
+the task cancelled. The caller then stops waiting at once - it throws
+`CancellationError`, which a superseded run ends with quietly - its id is let
+go of, so an answer coming later reaches no one, and the host is told to stop
+the call (`cancelCall`, the id as its argument, nobody waiting). The host
+stops what it can: a request is cancelled through the platform's own call, a
+question still waiting its turn leaves the queue. Every act ends the same
+way; one that answers at once has nothing left to stop.
 
 ## A batch is not a transaction
 
@@ -156,7 +168,7 @@ model is the model's; the walk never enters a model.
 ## Focus and the keyboard
 
 Focus is an act with two forms: `field.focus()` on a known view, and
-`OnScreenKeyboard.hide()` for whatever has the keyboard. The first exists only
+`window.hideOnScreenKeyboard()` for whatever in a window has the keyboard. The first exists only
 on the aim of an element that takes the focus itself - the `FocusElement`
 tier, with `.isFocused` and the `.focused` visual state - so a text or a stack,
 which never can, offers none. The focused control is
@@ -164,7 +176,25 @@ whichever one the user touched last, so the host asks its native focus system,
 and StateUI does not mirror that identity as state. The second form lets a Done
 button close a keyboard it did not open. On iOS a search field on the
 navigation bar takes the whole bar while it has focus, the back button with it;
-`hide()` is what gives the bar back, which is why the keyboard sample offers it.
+`hideOnScreenKeyboard()` is what gives the bar back, which is why the keyboard sample offers it.
+
+## A window's acts
+
+A question, a file dialog and the keyboard taken down belong to a window, so
+they are its session's: `window.confirm(…)`, `window.openFile(…)`,
+`window.hideOnScreenKeyboard()`, as `window.close()` is. What happens for the
+whole application - an address launched, a word to the screen reader - is
+the application's: `application.launch(…)`, `application.announce(…)`. One
+road each, and on a desktop of several windows the question stands over the
+window whose view asked it.
+
+A window's act names the window by its first two arguments: its scene's key
+and its own, as the tree keys both. A session of no scene - the one a view
+outside every window reads - names none, and its act asks in the window the
+user is in; a session whose scene ended, or whose window closed, throws
+`WindowError` before anything is sent. The host finds the window by the two
+keys once, in the host layer; a window that closed while the act waited its
+turn is answered as the user dismissing it does.
 
 ## Dialogs
 
@@ -173,13 +203,13 @@ is up and resumes with the answer. Asking, waiting and branching is one
 sequential thought; an act keeps it in one place where a binding would split it
 into a state write here and a result closure there. No dialog names a page:
 a handler holds a description of a page, not the page, so the host shows the
-dialog on the page the user is looking at, the top of the modal stack
-included, which only the host can know.
+dialog on the page its window shows, the top sheet included,
+which only the host can know.
 
 ## Files
 
-The dialogs that open and save files are dialogs too, asked of the showing
-page and awaited. Every platform's dialog answers a place - a path, a
+The dialogs that open and save files are dialogs too, asked of a window and
+awaited. Every platform's dialog answers a place - a path, a
 document's address, a browser's file - and no place is portable: one has no
 path at all. So a `ChosenFile` shows only its name; where it stands crosses
 to the host and back unread, and the host reads and launches it while the
@@ -197,16 +227,40 @@ was written, so no host strips a dot or a star of its own. A dialog's title,
 its button's caption and its starting folder are not asked for: not every
 platform has them.
 
+## Sharing
+
+What the user shares - words, a link, or both - is offered from a window, as a
+dialog is, and awaited: the platform's share sheet over it, the user choosing
+where it goes. The answer is whether the user shared it, false where they
+cancelled; a platform with no share sheet fails the act with that reason.
+Three overloads take the words, the link or both, so nothing is ever offered
+empty - the compiler refuses a share of nothing. The words and the link cross
+apart, as a platform carrying both - a message and its address - keeps them
+apart; one carrying a single text puts the link on a line after the words.
+
 ## Launching
 
-`Links.launch` and `ChosenFile.launch` hand an address or a file to the
+`application.launch` and `ChosenFile.launch` hand an address or a file to the
 system, which opens it in the application it gives it. The answer is
 whether one took it - false where nothing opens that scheme or kind - and
 not that it opened: the application starts on its own.
 
+## Requests
+
+`application.send` asks a server through the platform's own networking - the
+system's certificates, proxy and network rules hold, and the platform keeps
+the cookies a server sets - and answers what the server said. Any status is
+an answer: a 404 is the server's word, not a failure, and what throws is no
+answer at all. The request crosses as its address, its method's name, its
+headers as names and values in turn, sorted by name, and its body as bytes;
+the answer comes back as its status, its headers the same way and its body.
+What every host does alike - the header names in lowercase, a header said
+twice joined with a comma, an address with no scheme refused but where a
+page stands to read it against - is the host layer's (`HostRequest`).
+
 ## Announcements
 
-`ScreenReader.announce` is an act for the same reason every act is one: it is
+`application.announce` is an act for the same reason every act is one: it is
 something that happens, at a moment, and no value on a tree can say "again".
 It is for a change the user is not looking at - a finished search, a deleted
 row - and nothing happens where no screen reader runs.

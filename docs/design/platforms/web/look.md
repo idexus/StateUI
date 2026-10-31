@@ -3,25 +3,26 @@
 The Web host looks like a current web page, not like another platform's
 application: one stylesheet of the host's, `stateui-web.css`, gives the window
 its bar, the sidebar, the pages and the controls their look, light or dark as
-the user's system is - a control in the window's room, on a sheet and over
-every page alike, as the rules for controls name all three. What an application says of an element's look - a
-colour, a font, a box, a shape - is that element's own style, which wins over
+the user's system is - a control in the window's room, on a sheet, over
+every page and in a popover alike, as the rules for controls name all four.
+What an application says of an element's look - a
+color, a font, a box, a shape - is that element's own style, which wins over
 every rule of the stylesheet, so the application's look is always the one
 shown.
 
 ## The parts
 
-The page's colours, its radius and its bar's height are CSS variables on the
-root, each colour one `light-dark()` pair of the light appearance's and the
+The page's colors, its radius and its bar's height are CSS variables on the
+root, each color one `light-dark()` pair of the light appearance's and the
 dark's. The font is the system's own. The bar stands in the row above the
 room, so nothing scrolls beneath it, translucent and blurred where the
 application paints it nothing; its buttons are round and glassy - a veil of
-the bar's own foreground colour - and the
+the bar's own foreground color - and the
 buttons of one group of actions share one capsule. The sidebar is a surface of
 its own beside the page, a drawer over it where the page is narrow. Buttons
-and fields take a border, rounded corners and a ring in the accent colour
+and fields take a border, rounded corners and a ring in the accent color
 where the keyboard's focus is; a checkbox, a radio button, a slider and a
-progress bar take the accent colour. A ScrollView's scroll bars are thin. A
+progress bar take the accent color. A ScrollView's scroll bars are thin. A
 control the host makes no element for yet is named in red, in a dashed box,
 where it belongs.
 
@@ -37,15 +38,26 @@ a field stands as wide as the room it is given.
 ## A view's background
 
 A view's plain background - one that paints no box of its own - is the CSS
-background colour of its element, under its whole box: a colour, or a brush's
-first colour; a layout and a button paint theirs as a box
+background color of its element, under its whole box: a color, or a brush's
+first color; a layout and a button paint theirs as a box
 ([drawing](drawing.md#a-brush-on-a-box)). A field, a picker's `<select>`, a
 date or a time is filled where the user writes, as the browser draws a field
-the page colours. The trap: written as the `background` shorthand, the colour
+the page colors. The trap: written as the `background` shorthand, the color
 would clear the picture the page's look draws in a field - a picker's chevron,
-a search field's glass. A web view's background shows where the page it shows paints none, and stands white where
+a search field's glass. An editor given a ground of its own stands in it
+with no frame of the page's look, focused or not (`data-ground`), as the
+platforms' editors draw none. A web view's background shows where the page it shows paints none, and stands white where
 the application gives none. The browser draws its slider over the slider's
 whole box and paints no background under it, so a slider has none.
+
+## A field's outline
+
+A field the tree outlines (`stroke`, `lineWidth`) stands in that border over
+the page's own frame, and in the shape the tree gives it (`shape`), its
+corners rounded as its ground's - focused or not, as the inline style wins
+over the look's. Only the border and the corners are written: the background
+shorthand would clear the picture the page's look draws in a field. A field
+the tree outlines in nothing keeps the page's frame.
 
 ## Motion
 

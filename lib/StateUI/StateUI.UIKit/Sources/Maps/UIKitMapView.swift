@@ -9,7 +9,7 @@ import MapKit
 @_spi(Host) import StateUIApple
 
 /// A Map on UIKit: the map Apple's hosts share, its tap heard by a recognizer beside MapKit's own, a marker's callout
-/// showing the platform's details disclosure, a marker dressed in UIKit's colours.
+/// showing the platform's details disclosure, a marker dressed in UIKit's colors.
 /// Design: docs/design/platforms/apple/maps.md#a-map
 @MainActor
 final class UIKitMapView: MapKitView {
@@ -51,7 +51,7 @@ final class UIKitMapView: MapKitView {
         marker.glyphImage = look.sfSymbol.flatMap { UIImage(systemName: $0) }
     }
 
-    /// The platform's own colour of a marker's hue.
+    /// The platform's own color of a marker's hue.
     static func tint(_ hue: MarkerLook.Hue) -> UIColor {
         switch hue {
         case .red: .systemRed

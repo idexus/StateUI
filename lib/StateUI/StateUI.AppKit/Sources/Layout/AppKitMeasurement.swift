@@ -15,6 +15,14 @@ protocol AppKitWidthConstrainedMeasuring: AnyObject {
     func fittingContentSize(width: CGFloat?) -> NSSize
 }
 
+/// A view that answers where its first line of words rests, laid out `width` wide - a label, a stack - rather than
+/// AppKit's own reading of a control.
+/// Design: docs/design/host/layout.md#a-first-baseline
+@MainActor
+protocol AppKitBaselineMeasuring: AnyObject {
+    func firstBaseline(width: CGFloat?) -> CGFloat?
+}
+
 extension MeasurementCache {
     /// The size measured for `width`, in AppKit's units, measuring only when none is kept.
     func size(offering width: CGFloat?, measure: () -> NSSize) -> NSSize {
@@ -41,13 +49,6 @@ extension Point {
     /// A native point as StateUI's.
     init(_ point: NSPoint) {
         self.init(x: Double(point.x), y: Double(point.y))
-    }
-}
-
-extension Insets {
-    /// Native edge insets as StateUI's.
-    init(_ insets: NSEdgeInsets) {
-        self.init(left: Double(insets.left), top: Double(insets.top), right: Double(insets.right), bottom: Double(insets.bottom))
     }
 }
 
@@ -84,7 +85,8 @@ extension NSView {
     ///
     /// The climb goes over the native views a container keeps inside itself -
     /// a scroller's clip view, a tab view - and stops below a room, or at the
-    /// window's content. A change that cannot alter a size never calls this,
+    /// window's content; a room lays itself again for its bottom bar, the one
+    /// child it measures. A change that cannot alter a size never calls this,
     /// so nothing beside it moves.
     func invalidateMeasurements() {
         var current: NSView? = self
@@ -93,10 +95,11 @@ extension NSView {
             (view as? AppKitMeasurementCaching)?.measurements.invalidate()
             view.needsLayout = true
 
-            guard view !== view.window?.contentView,
-                  let above = view.superview,
-                  !(above is AppKitRoom)
-            else { break }
+            guard view !== view.window?.contentView, let above = view.superview else { break }
+            if above is AppKitRoom {
+                if view is AppKitBottomBarView { above.needsLayout = true }
+                break
+            }
 
             // What the parent reads when it measures this view; a room does
             // not measure its child, so the view below one keeps its answer.
@@ -118,21 +121,19 @@ extension NSRect {
 
 @MainActor
 extension NSView {
-    /// Makes `wanted` the view's children, in order, over the material or glass its box draws, which stays.
+    /// Makes `wanted` the view's children, in order, over the material or glass its box draws, which stays. A child
+    /// that stays is moved, never removed, so it keeps the keyboard.
     func replaceSubviews(with wanted: [NSView]) {
+        let surfaces = subviews.filter { $0 is any AppKitBoxSurface }
         let children = subviews.filter { !($0 is any AppKitBoxSurface) }
         let alreadyArranged = children.count == wanted.count
             && zip(children, wanted).allSatisfy { $0 === $1 }
         guard !alreadyArranged else { return }
 
-        for child in children {
-            child.removeFromSuperview()
-        }
-
         for child in wanted {
             child.translatesAutoresizingMaskIntoConstraints = true
-            addSubview(child)
         }
+        subviews = surfaces + wanted
     }
 }
 

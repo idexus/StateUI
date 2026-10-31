@@ -12,6 +12,15 @@ public enum HStackContract: ElementContract {
     /// A row is a stack.
     public static let tiers: [any Contract.Type] = [StackContract.self]
 
+    /// The gap between one line and the next of a row that wraps, in device units.
+    public static let rowSpacing = ElementProperty<Self, Double>("rowSpacing", layer: .stateUI, moves: .spacing)
+
+    /// Whether the row goes on onto a further line where its room ends, rather than standing on one line.
+    public static let wraps = ElementProperty<Self, Bool>("wraps", layer: .stateUI)
+
+    /// Where each line of a row that wraps stands across the row: at its start, in its middle or at its end.
+    public static let lineAlignment = ElementProperty<Self, TextAlignment>("lineAlignment", layer: .stateUI)
+
     /// The element's own members.
-    public static let members: [any ContractMember] = []
+    public static let members: [any ContractMember] = [lineAlignment, rowSpacing, wraps]
 }

@@ -21,6 +21,7 @@ final class GTKShapeView: GTKPanelView {
 
     private var geometry = Geometry.rectangle([0, 0, 0, 0], transform: nil)
     private var fill = GTKBrush.none
+    var fillForTesting: GTKBrush { fill }
     private var stroke = GTKBrush.none
     private var lineWidth = 1.0
     private var dashes: [Double] = []

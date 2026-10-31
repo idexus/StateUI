@@ -11,6 +11,7 @@ extension AndroidElement {
         guard let view else { return }
         Java.call(view.reference, JavaAPI.setLayoutDirection, .int(element.layoutDirection == .rightToLeft ? 1 : 0))
         (view as? AndroidLayoutView)?.direction = element.layoutDirection
+        (view as? AndroidTextualView)?.direction = element.layoutDirection
     }
 
     /// Hands a layout its children's items, in order, and a label the runs of its spans.
@@ -21,6 +22,7 @@ extension AndroidElement {
         }
         let layout = view as? AndroidLayoutView
         layout?.direction = element.layoutDirection
+        (view as? AndroidSplitView)?.framesDetail = element.arrangedChildren.dropFirst().first?.type == .page
         layout?.setItems(element.arrangedChildren.compactMap { $0.android.layoutItem })
     }
 

@@ -35,13 +35,13 @@ final class AppKitViewDrawingTests: XCTestCase {
         cornered.properties[.pivotX] = .number(0)
         cornered.properties[.pivotY] = .number(0)
         renderer.applyForTesting(tree(stack(box(rotation: 90), cornered)))
-        let centred = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
+        let centered = try XCTUnwrap(renderer.viewForTesting(id: .manual("box")))
         let turned = try XCTUnwrap(renderer.viewForTesting(id: .manual("cornered")))
-        centred.frame = NSRect(x: 0, y: 0, width: 100, height: 60)
+        centered.frame = NSRect(x: 0, y: 0, width: 100, height: 60)
         turned.frame = NSRect(x: 0, y: 0, width: 100, height: 60)
 
-        assertPoint(try drawn(CGPoint(x: 0, y: 0), in: centred), CGPoint(x: 80, y: -20))
-        assertPoint(try drawn(CGPoint(x: 50, y: 30), in: centred), CGPoint(x: 50, y: 30))
+        assertPoint(try drawn(CGPoint(x: 0, y: 0), in: centered), CGPoint(x: 80, y: -20))
+        assertPoint(try drawn(CGPoint(x: 50, y: 30), in: centered), CGPoint(x: 50, y: 30))
         assertPoint(try drawn(CGPoint(x: 100, y: 0), in: turned), CGPoint(x: 0, y: 100))
     }
 

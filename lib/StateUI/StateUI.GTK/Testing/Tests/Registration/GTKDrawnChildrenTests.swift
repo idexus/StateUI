@@ -90,7 +90,7 @@ final class GTKDrawnChildrenTests: XCTestCase {
     @MainActor
     private static func registerShelf() {
         StateUIControls.add(ShelfContract.self, create: { _ in ShelfControl() }) { shelf in
-            shelf.children(BookContract.self, members: [BookContract.title, BookContract.opened]) { control, books in
+            shelf.children(BookContract.self, properties: BookContract.title, events: BookContract.opened) { control, books in
                 control.books = books
                 control.handed += 1
             }

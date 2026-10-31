@@ -33,6 +33,28 @@ private struct TapsPage: View {
     }
 }
 
+/// A row held - waiting a minute - or tapped, and what it heard; a row held after a moment.
+private struct HoldPage: View {
+    @State private var said = ""
+
+    var body: some View {
+        VStack {
+            Text("said \(said)")
+            HStack { Text("long") }
+                .width(200)
+                .height(40)
+                .onTapped { said += "tapped; " }
+                .onHeld(minimum: .seconds(60)) { said += "held; " }
+            HStack { Text("short") }
+                .width(200)
+                .height(40)
+                .onHeld(minimum: .milliseconds(1)) {}
+        }
+        .horizontalAlignment(.start)
+        .verticalAlignment(.start)
+    }
+}
+
 /// A box a press drags across, a swipe told apart, and what the pan, the pinch and the pointer said, in order.
 private struct DragPage: View {
     @State private var x = 10.0
@@ -41,7 +63,8 @@ private struct DragPage: View {
     var body: some View {
         VStack {
             Text("x \(Int(x)) \(said)")
-            Rectangle().fill(.steelBlue)
+            Rectangle()
+                .fill(.steelBlue)
                 .width(100)
                 .height(100)
                 .panX($x)
@@ -59,34 +82,82 @@ private struct DragPage: View {
 
 @MainActor
 final class GTKGesturesTests: XCTestCase {
-    /// A click on a row that answers a tap is a tap, past its words where it draws nothing; a press that moved past
-    /// the drag threshold, or is let go beside the row, is none.
-    func testAClickIsATapWhereItHasNotMoved() throws {
+    /// A press on a row that answers a tap taps as a button does, past its words where it draws nothing: let go over
+    /// the row it taps, let go away it taps nothing, and back over the row before it lets go it taps.
+    func testAPressTapsAsAButtonDoes() throws {
         try onUIThread {
             let host = GTKRenderer.running { TapsPage(count: 1) }
             let row = try XCTUnwrap(host.views(GTKStackView.self).dropFirst().first)
-            let taps = try XCTUnwrap(row.listening?.controllers[.taps]?.first)
+            let press = try XCTUnwrap(row.listening?.controllers[.taps]?.last)
 
-            GTKTestHost.emit(taps, "pressed", [1, 190, 20])
-            GTKTestHost.emit(taps, "released", [1, 190, 20])
+            GTKTestHost.emit(press, "drag-begin", [190, 20])
+            GTKTestHost.emit(press, "drag-end", [0, 0])
             host.settle { host.texts.first == "taps 1" }
             XCTAssertEqual(host.texts.first, "taps 1")
 
-            let listening = try XCTUnwrap(row.listening)
-            listening.tapPressed(at: Point(x: 20, y: 20))
-            listening.tapStopped(at: Point(x: 60, y: 20))
-            listening.tapReleased(nil, run: 1, at: Point(x: 20, y: 20))
-            listening.tapPressed(at: Point(x: 20, y: 20))
-            listening.tapReleased(nil, run: 1, at: Point(x: 260, y: 20))
-            GTKTestHost.emit(taps, "pressed", [1, 20, 20])
-            GTKTestHost.emit(taps, "released", [1, 20, 20])
+            GTKTestHost.emit(press, "drag-begin", [20, 20])
+            GTKTestHost.emit(press, "drag-update", [0, 80])
+            GTKTestHost.emit(press, "drag-end", [0, 80])
+            GTKTestHost.emit(press, "drag-begin", [20, 20])
+            GTKTestHost.emit(press, "drag-update", [0, 80])
+            GTKTestHost.emit(press, "drag-update", [5, 2])
+            GTKTestHost.emit(press, "drag-end", [5, 2])
             host.settle { host.texts.first == "taps 2" }
 
-            XCTAssertEqual(host.texts.first, "taps 2", "only the last press was a tap")
+            XCTAssertEqual(host.texts.first, "taps 2", "the press let go away was none; the one back over the row was")
+        }
+    }
+
+    /// A press stands over a view across the widget's whole box - its CSS padding and border included - not its
+    /// content alone: a gesture's points are measured from the content's corner, and a slider's content is far
+    /// smaller than its box.
+    func testAPressStandsOverTheWidgetsWholeBox() throws {
+        try onUIThread {
+            var taps = 0
+            let host = GTKRenderer.running {
+                VStack { Slider().onTapped { taps += 1 }.width(80).height(40) }.horizontalAlignment(.start)
+            }
+            let slider = try XCTUnwrap(host.views(GTKSliderView.self).first)
+            XCTAssertLessThan(gtk_widget_get_height(slider.widget), 30, "the slider's content is shorter than its box")
+            let press = try XCTUnwrap(slider.listening?.controllers[.taps]?.last)
+
+            for y in [8.0, 22.0, 30.0] {
+                GTKTestHost.emit(press, "drag-begin", [28, y])
+                GTKTestHost.emit(press, "drag-end", [0, 0])
+            }
+            host.settle { taps == 2 }
+            XCTAssertEqual(taps, 2, "over the content and over the padding below it; none past the box")
         }
     }
 
     /// GTK hits a row across its bounds, past its words, where it draws nothing.
+    /// GTK waits from half to twice its long-press time and refuses any other factor: a view's time beyond
+    /// either stands at that end. A press held is no tap as it lets go; the next press taps again.
+    func testAHoldWaitsWithinGTKsRangeAndIsNoTap() throws {
+        try onUIThread {
+            let host = GTKRenderer.running { HoldPage() }
+            let rows = Array(host.views(GTKStackView.self).dropFirst())
+            let listening = try XCTUnwrap(rows.first?.listening)
+            let time = try XCTUnwrap(listening.holdTime)
+            let gtks = time / 2
+            XCTAssertGreaterThan(gtks, 0)
+            XCTAssertEqual(rows.dropFirst().first?.listening?.holdTime, gtks / 2, "half GTK's time, the least it waits")
+
+            let press = try XCTUnwrap(listening.controllers[.taps]?.last)
+            let hold = try XCTUnwrap(listening.controllers[.holds]?.first)
+            GTKTestHost.emit(press, "drag-begin", [20, 20])
+            GTKTestHost.emit(hold, "pressed", [20, 20])
+            GTKTestHost.emit(press, "drag-end", [0, 0])
+            host.settle { host.texts.first == "said held; " }
+            XCTAssertEqual(host.texts.first, "said held; ", "held, and its release no tap")
+
+            GTKTestHost.emit(press, "drag-begin", [20, 20])
+            GTKTestHost.emit(press, "drag-end", [0, 0])
+            host.settle { host.texts.first == "said held; tapped; " }
+            XCTAssertEqual(host.texts.first, "said held; tapped; ")
+        }
+    }
+
     func testARowIsHitWhereItDrawsNothing() throws {
         try onUIThread {
             let host = GTKRenderer.running { TapsPage(count: 1) }
@@ -131,9 +202,9 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
-    /// A press dragged moves the state it carries from where it stood, says its phases and totals, and a swipe is
-    /// told when it ends having gone far enough a way the view listens for; the pointer's press says where it went
-    /// down and where it was let go.
+    /// A press dragged moves the state it carries from where it stood, says its phases and totals - its end where it
+    /// reached - and a swipe is told when it ends having gone far enough a way the view listens for; the pointer's
+    /// press says where it went down and where it was let go.
     func testADragMovesItsStateAndEndsAsASwipe() throws {
         try onUIThread {
             let host = GTKRenderer.running { DragPage() }
@@ -146,7 +217,7 @@ final class GTKGesturesTests: XCTestCase {
             GTKTestHost.emit(drag, "drag-update", [-60, 5])
             GTKTestHost.emit(drag, "drag-end", [-60, 5])
             GTKTestHost.emit(press, "drag-end", [-60, 5])
-            let expected = "x -50 pressed 70; pan 0 0; pan 1 -60; pan 2 0; swiped 2; released 10; "
+            let expected = "x -50 pressed 70; pan 0 0; pan 1 -60; pan 2 -60; swiped 2; released 10; "
             host.settle { host.texts.first == expected }
 
             XCTAssertEqual(host.texts.first, expected)
@@ -174,7 +245,8 @@ final class GTKGesturesTests: XCTestCase {
         }
     }
 
-    /// A pinch says its scale since the last step and where it is; the pointer says where it moved.
+    /// A pinch says its scale since it began and where it is - begun first where GTK told no beginning; the pointer
+    /// says where it moved.
     func testAPinchAndThePointerSayWhereTheyAre() throws {
         try onUIThread {
             let host = GTKRenderer.running { DragPage() }
@@ -185,7 +257,7 @@ final class GTKGesturesTests: XCTestCase {
             GTKTestHost.emit(zoom, "scale-changed", [1.5])
             GTKTestHost.emit(zoom, "scale-changed", [3])
             GTKTestHost.emit(motion, "motion", [12, 7])
-            let expected = "x 10 pinch 1.5 at 0.5; pinch 2.0 at 0.5; moved 12,7; "
+            let expected = "x 10 pinch 1.0 at 0.5; pinch 1.5 at 0.5; pinch 3.0 at 0.5; moved 12,7; "
             host.settle { host.texts.first == expected }
 
             XCTAssertEqual(host.texts.first, expected)
@@ -219,6 +291,7 @@ final class GTKGesturesTests: XCTestCase {
             let rows = host.views(GTKStackView.self)
             let row = try XCTUnwrap(rows.dropFirst().first)
             let before = row.controllerCount
+            let tapping = try XCTUnwrap(row.listening?.controllers[.taps]).count
             XCTAssertEqual(row.hearing, .taps)
             XCTAssertEqual(try XCTUnwrap(rows.last).hearing, [])
 
@@ -226,7 +299,7 @@ final class GTKGesturesTests: XCTestCase {
             host.settle { row.hearing.isEmpty }
 
             XCTAssertEqual(row.hearing, [])
-            XCTAssertEqual(row.controllerCount, before - 1)
+            XCTAssertEqual(row.controllerCount, before - tapping)
         }
     }
 }

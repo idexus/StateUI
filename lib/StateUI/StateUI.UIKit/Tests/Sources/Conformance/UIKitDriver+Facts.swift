@@ -7,14 +7,14 @@ import UIKit
 @testable import StateUIUIKit
 @_spi(Host) import StateUIConformance
 
-/// What the UIKit driver reads of the screen: the colour at a point of a view, and whether a touch there reaches it.
+/// What the UIKit driver reads of the screen: the color at a point of a view, and whether a touch there reaches it.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
-    /// The colour the user sees at `point` of the element's view, as the screen shows it, in sRGB; nil where
+    /// The color the user sees at `point` of the element's view, as the screen shows it, in sRGB; nil where
     /// nothing opaque is drawn there.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
         guard let view = (element.native as? UIKitElement)?.view else {
-            throw DriverCannot("read the colour of \(element.type.name)")
+            throw DriverCannot("read the color of \(element.type.name)")
         }
         renderer?.layOut()
         let size = view.bounds.size
@@ -42,33 +42,83 @@ extension UIKitDriver {
         return Color(red: channel(0), green: channel(1), blue: channel(2))
     }
 
-    /// The bar `page` shows, read from its navigation item: its leading and trailing groups, the overflow's entries -
-    /// each action told by the element whose identifier it carries.
-    func bar(of page: MountedElement) throws -> String {
+    /// The bar at `edge` of `page`: at its top read from its navigation item - its leading and trailing groups, the
+    /// overflow's entries - at its foot from its toolbar items.
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        guard edge == .top else { return try toolbar(of: page) }
         guard let item = (page.native as? UIKitElement)?.controller?.navigationItem else {
             throw DriverCannot("read the bar of \(page.type.name)")
         }
-        var root = page
-        while let parent = root.parent { root = parent }
-        let items = Self.toolbarItems(in: root)
-        let word = { (action: UIAction?, enabled: Bool) -> String? in
-            guard let action, let element = items.first(where: { ($0.native as? UIKitElement)?.actionIdentifier == action.identifier })
-            else { return nil }
-            return BarWords.word(element, enabled: enabled)
-        }
+        let word = Self.word(on: page)
         let groups = { (groups: [UIBarButtonItemGroup]) -> [[String]] in
-            groups.map { $0.barButtonItems.compactMap { word($0.primaryAction, $0.isEnabled) } }.filter { !$0.isEmpty }
+            groups.map { $0.barButtonItems.compactMap(word) }.filter { !$0.isEmpty }
         }
-        let overflow = item.trailingItemGroups.flatMap(\.barButtonItems).filter { $0.primaryAction == nil }
-            .flatMap { $0.menu?.children ?? [] }
-            .compactMap { ($0 as? UIAction).flatMap { word($0, !$0.attributes.contains(.disabled)) } }
+        let overflow = item.trailingItemGroups.flatMap(\.barButtonItems)
+            .filter { $0.primaryAction == nil && $0.customView == nil }
+            .flatMap { Self.entries(of: $0, on: page) }
         return BarWords.said(
             leading: groups(item.leadingItemGroups), trailing: groups(item.trailingItemGroups), overflow: overflow)
     }
 
+    /// How the bar over `page` says an item of its own - an action by the element whose identifier it carries, words
+    /// by the element whose label it shows; nil for one no element stands for.
+    private static func word(on page: MountedElement) -> (UIBarButtonItem) -> String? {
+        var root = page
+        while let parent = root.parent { root = parent }
+        let elements = toolbarItems(in: root)
+        return { item in
+            let element = elements.first { element in
+                guard let native = element.native as? UIKitElement else { return false }
+                if let label = item.customView { return native.barLabel === label }
+                return item.primaryAction.map { $0.identifier == native.actionIdentifier } ?? false
+            }
+            return element.map { BarWords.word($0, enabled: item.isEnabled) }
+        }
+    }
+
+    /// The entries of the menu `item` opens behind a bar's overflow, each said by its element.
+    private static func entries(of item: UIBarButtonItem, on page: MountedElement) -> [String] {
+        var root = page
+        while let parent = root.parent { root = parent }
+        let elements = toolbarItems(in: root)
+        return (item.menu?.children ?? []).compactMap { entry in
+            guard let action = entry as? UIAction,
+                  let element = elements.first(where: { ($0.native as? UIKitElement)?.actionIdentifier == action.identifier })
+            else { return nil }
+            return BarWords.word(element, enabled: !action.attributes.contains(.disabled))
+        }
+    }
+
+    /// The bar at `page`'s foot, read from its toolbar items while its stack shows the toolbar: the groups apart by
+    /// fixed spaces, the leading before the space between the edges, the overflow the More button's entries.
+    private func toolbar(of page: MountedElement) throws -> String {
+        guard let controller = (page.native as? UIKitElement)?.controller else {
+            throw DriverCannot("read the bar at the foot of \(page.type.name)")
+        }
+        guard controller.navigationController?.isToolbarHidden == false else {
+            return BarWords.said(leading: [], trailing: [], overflow: [])
+        }
+        let word = Self.word(on: page)
+        var sides: [[[String]]] = [[[]]]
+        var overflow: [String] = []
+        for item in controller.toolbarItems ?? [] {
+            if item.identifier == UIKitPageToolbar.betweenIdentifier {
+                sides.append([[]])
+            } else if item.identifier == UIKitPageToolbar.moreIdentifier {
+                overflow = Self.entries(of: item, on: page)
+            } else if let said = word(item) {
+                sides[sides.count - 1][sides[sides.count - 1].count - 1].append(said)
+            } else {
+                sides[sides.count - 1].append([])
+            }
+        }
+        let groups = { (side: Int) in sides.indices.contains(side) ? sides[side].filter { !$0.isEmpty } : [] }
+        return BarWords.said(leading: groups(0), trailing: groups(1), overflow: overflow)
+    }
+
     /// Every toolbar item under `root`, the arrangements' slots included.
     private static func toolbarItems(in root: MountedElement) -> [MountedElement] {
-        (root.type == .toolbarItem ? [root] : []) + (root.children + root.slots).flatMap { toolbarItems(in: $0) }
+        (NodeType.toolbarItemTypes.contains(root.type) ? [root] : []) + (root.children + root.slots).flatMap { toolbarItems(in: $0) }
     }
 
     /// A view's context menu, or a window's menus on the menu bar, as UIKit is handed them.
@@ -80,8 +130,14 @@ extension UIKitDriver {
         return UIKitMenus.said(native.builtContextMenu?.children ?? [])
     }
 
-    /// The menu UIKit's button standing for `button` holds.
+    /// The menu UIKit's button standing for `button` holds - a bar's button, the menu of its bar button.
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton {
+            guard let identifier = (button.native as? UIKitElement)?.menuIdentifier,
+                  let menu = barMenu(identified: identifier)
+            else { throw DriverCannot("read the menu \(button.type.name) opens: its bar button opens none") }
+            return UIKitMenus.said(menu.children)
+        }
         guard let view = (button.native as? UIKitElement)?.view as? UIKitButtonView, let menu = view.offeredMenu else {
             throw DriverCannot("read the menu \(button.type.name) opens")
         }
@@ -98,6 +154,12 @@ extension UIKitDriver {
     }
 
     /// The file dialog UIKit's document picker shows now: one that opens or one that exports.
+    /// What the activity sheet the window presents offers: its words, then its link on a line of its own.
+    func shared(over element: MountedElement) throws -> String? {
+        guard let sheet = renderer?.actToolkit.sharing, sheet.controller != nil else { return nil }
+        return sheet.shared.together
+    }
+
     func fileDialog(over element: MountedElement) throws -> FileDialog? {
         guard let shown = renderer?.fileToolkit.showing, shown.picker != nil else { return nil }
         return shown.dialog.kind == .save ? .save : .open
@@ -121,17 +183,21 @@ extension UIKitDriver {
         return window.traitCollection.userInterfaceStyle == .dark ? .dark : .light
     }
 
-    /// What the host keeps under `key` for the next launch, as it reads it back.
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+    /// The tint the user's window draws its controls in.
+    func accent() throws -> Color {
+        guard let window = renderer?.userWindow else { throw DriverCannot("read the accent: no window shows") }
+        // A window with no tint of its own draws in the system's.
+        let tint: UIColor? = window.tintColor
+        return Self.color(tint ?? UIColor.tintColor.resolvedColor(with: window.traitCollection))
+    }
+
+    /// The words the host keeps under `key` for the next launch.
+    func kept(_ key: String, inScene: Bool) throws -> String? {
         if inScene {
             let record = TestScene.scene?.session.userInfo?[UIKitRenderer.recordKey] as? String
-            return record.flatMap(WindowRecord.init)?.kept[key]
+            return record.flatMap(WindowRecord.init)?.kept[key]?.string
         }
-        guard let word = TestScene.preferences.string(forKey: key) else { return nil }
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { KeptWord.restored([key: word], for: [$0])[key] }.first
+        return TestScene.preferences.string(forKey: key)
     }
 
     /// Whether a touch at `point` of the element's view lands on it or on something inside it, as the window's
@@ -151,7 +217,7 @@ extension UIKitDriver {
         guard let view = (element.native as? UIKitElement)?.view else {
             throw DriverCannot("read whether \(element.type.name) is a heading")
         }
-        return view.accessibilityTraits.contains(.header)
+        return Self.met(view).accessibilityTraits.contains(.header)
     }
 
     /// The layout's children by where each one's view stands among its view's subviews - a higher layer's

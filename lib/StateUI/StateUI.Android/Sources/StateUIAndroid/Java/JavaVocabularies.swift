@@ -7,7 +7,7 @@
 
 /// What the listener heard (`StateUIGestures`).
 enum AndroidGestureKind: Int32 {
-    case tapped = 0, pinched = 3, entered = 4, exited = 5, moved = 6, pressed = 7, released = 8
+    case tapped = 0, pinched = 3, entered = 4, exited = 5, moved = 6, pressed = 7, released = 8, buttonPress = 9
 }
 
 /// A press's step the listener tells (`StateUIGestures`).
@@ -35,9 +35,20 @@ enum AndroidShapeKind: Int32 {
     case rectangle = 0, ellipse = 1, drawn = 2
 }
 
+/// What a press of a question answers (`StateUIDialogs.answer`): its accepting button, its cancel, an action of
+/// its list.
+enum AndroidAnswer: Int32 {
+    case accept = 0, cancel = 1, action = 2
+}
+
 /// What a bar's navigation button does (`StateUIBar`).
 enum AndroidBarNavigation: Int32 {
-    case none = 0, back = 1, sidebar = 2
+    case none = 0, back = 1, sidebar = 2, close = 3
+}
+
+/// A bar's own button apart from its navigation button, by the place it tells the host (`StateUIBar`).
+enum AndroidBarButton: Int32 {
+    case afterNavigation = 0, atEnd = 1
 }
 
 /// An entry of a list (`StateUIItemsView`).
@@ -62,7 +73,8 @@ enum AndroidMenuEntry: Int32 {
 
 /// A menu entry's marks (`StateUIMenus`).
 enum AndroidMenuMark: Int32 {
-    case disabled = 4, destructive = 8, onBar = 16, withText = 32, checkable = 64, checked = 128
+    case disabled = 4, destructive = 8, onBar = 16, withText = 32, checkable = 64, checked = 128, counted = 2048
+    case label = 4096
 }
 
 /// The modifiers an item's shortcut holds (`StateUIMenus`).

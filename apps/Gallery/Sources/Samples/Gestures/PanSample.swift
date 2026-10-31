@@ -11,6 +11,11 @@ struct PanSample: SampleContent, ExampleContent {
     /// Whether the reading written on every report is a SNAP.
     @State private var snaps = true
 
+    /// What the box does as it is let go: stays, springs home, or glides on
+    /// - the last two at the hand's speed.
+    @State private var letting = "Stays"
+    static let lettings = ["Stays", "Springs home", "Glides on"]
+
     /// Where the box IS, driven - the host reads the translation off these on
     /// its own frames, so a drag costs the arithmetic and no renders at all.
     @State private var liveX = 0.0
@@ -37,7 +42,8 @@ struct PanSample: SampleContent, ExampleContent {
             // A fixed box for it to move inside, so the layout does not follow
             // the view about.
             ZStack {
-                Rectangle(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .cornerRadius(10)
                     .width(64)
                     .height(64)
@@ -51,6 +57,24 @@ struct PanSample: SampleContent, ExampleContent {
                         switch update.phase {
                         case .changed:
                             follow(panX + update.totalX, panY + update.totalY)
+                        case .ended where letting == "Springs home":
+                            // The hand's speed is the box's as it lets go: it
+                            // goes on that way, and the spring brings it home.
+                            (panX, panY) = (0, 0)
+                            $liveX.journey.velocity = update.velocityX
+                            $liveY.journey.velocity = update.velocityY
+                            $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+                            $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+                        case .ended where letting == "Glides on":
+                            // It glides on from the hand's speed to where that
+                            // throw carries it, kept inside the box.
+                            let glide = Motion.glide(longest: .milliseconds(900))
+                            $liveX.journey.velocity = update.velocityX
+                            $liveY.journey.velocity = update.velocityY
+                            panX = min(max($liveX.journey.reach(glide), -140), 140)
+                            panY = min(max($liveY.journey.reach(glide), -60), 60)
+                            $liveX.journey.move(to: panX, glide)
+                            $liveY.journey.move(to: panY, glide)
                         case .ended:
                             panX = $liveX.journey.value
                             panY = $liveY.journey.value
@@ -70,13 +94,17 @@ struct PanSample: SampleContent, ExampleContent {
             // Two states into one conversion: the host works the words out
             // from where the box HAS GOT TO, on its own frames.
             Text()
-                .text($liveX.journey.convert(with: $liveY.journey) { x, y in
+                .text(.multi($liveX.journey, $liveY.journey).convert { x, y in
                     "Moved \(Int(x.value)), \(Int(y.value))"
                 })
                 .fontSize(15)
                 .horizontalTextAlignment(.center)
 
             SwitchRow("The drag snaps", $snaps)
+            // What the box does as the hand lets it go.
+            Picker(Self.lettings, selection: $letting) { $0 }
+                .accessibilityLabel("Let go")
+                .presentation(.segmented)
 
             Button("Put it back")
                 .horizontalAlignment(.center)
@@ -121,6 +149,14 @@ struct PanSample: SampleContent, ExampleContent {
                 + "the last report - which is why the changed case adds them to "
                 + "where the view was, and the ended case is what commits "
                 + "the move.")
+                .fontSize(12)
+                .textColor(Palette.subtle)
+
+            Text("Each report says how fast the hand goes, `velocityX` and `velocityY`, "
+                + "a second - at the end, as fast as it lifted. `Springs home` and `Glides "
+                + "on` hand that to the box's journey as it lets go: a spring brings it "
+                + "back, or a glide carries it to where `journey.reach(_:)` says the throw "
+                + "would land.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

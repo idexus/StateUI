@@ -21,7 +21,7 @@ design notes beside them.
   extension, builds the smallest application, and explains the application
   module, native host, resources, and registration boundary.
 - [Glossary](design/glossary.md) maps StateUI's own words - kept, worn,
-  honours, journey, aim - to the common term for each; keep it open beside
+  honors, journey, aim - to the common term for each; keep it open beside
   the rest.
 
 ## Concepts
@@ -63,9 +63,12 @@ design notes beside them.
 - [Composition and identity](interface/composition-and-identity.md) covers
   composed views, builders, identity, lifetime reactions, frame reports, and
   render diagnostics.
+- [Testing an application](interface/testing.md) shows a page in a test
+  window and uses it as its user does: views found by their identifier or
+  aim, acts, and reads of contract members.
 - [Concurrency](interface/concurrency.md) defines handler isolation on
   `MainActor`, what an awaiting handler does when its event comes again
-  (`Gate`, `Gatekeeper`, `Task(gate:)`), a run superseded, posting to state from other threads,
+  (`GatePolicy`, `Gate`, `Task(gate:)`), a run superseded, posting to state from other threads,
   `Ticker`, and the application module's compiler setting.
 
 ## Internals

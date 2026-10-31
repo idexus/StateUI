@@ -172,6 +172,6 @@ struct ItemsEntry: View, @MainActor Equatable {
 
     var body: some View {
         // Chosen by identity, so held as `any View` and handed on as its node.
-        ModifiedContent(node: (source.view(for: identity) ?? VStack {}).node)
+        AnyView(node: (source.view(for: identity) ?? VStack {}).node)
     }
 }

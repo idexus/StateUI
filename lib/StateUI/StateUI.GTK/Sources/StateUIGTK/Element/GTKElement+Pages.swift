@@ -34,6 +34,7 @@ extension GTKElement {
             guard element.showsTheStacksBar else {
                 var chrome = GTKPageChrome()
                 chrome.showsBar = false
+                chrome.barStandsElsewhere = true
                 return chrome
             }
             var chrome = element.selectedTab?.visiblePage?.gtk.chrome ?? GTKPageChrome()
@@ -50,17 +51,28 @@ extension GTKElement {
         var chrome = GTKPageChrome()
         chrome.title = element.barTitle(applicationName: host?.runtime.core.applicationName ?? "")
         chrome.showsTitle = value(.showsTitle)?.bool != false
-        chrome.subtitle = element.titleArea?.subtitle
+        chrome.subtitle = element.barSubtitle
         chrome.titleView = element.chromeTitleView?.gtk.view
+        chrome.bottomBar = element.chromeBottomBar?.gtk.view
+        chrome.bottomBarEdge = element.chromeBottomBarEdge
+        chrome.bottomBarScroller = element.pageScroller?.gtk.view as? GTKPageScroller
+        chrome.barScrollEdge = element.barScrollEdge
         chrome.showsBar = value(.showsNavigationBar)?.bool != false
         chrome.offersBack = value(.showsBackButton)?.bool != false
+        chrome.offersClose = element.enclosing(type: .sheet) == nil || element.offersItsSheetsClose
         (chrome.barBackground, chrome.barForeground) = element.barColors
 
         let actions = element.chromeActions
-        chrome.leading = actions.leading.map { $0.map(GTKToolbarAction.init) }
-        chrome.trailing = actions.trailing.map { $0.map(GTKToolbarAction.init) }
+        chrome.leading = actions.start.map { $0.map(GTKToolbarAction.init) }
+        chrome.trailing = actions.end.map { $0.map(GTKToolbarAction.init) }
         chrome.overflow = actions.overflow.map(GTKToolbarAction.init)
-        chrome.mainMenu = element.chromeMenus.menus
+        let foot = element.chromeBottomActions
+        chrome.foot = GTKFootActions(
+            leading: foot.start.map { $0.map(GTKToolbarAction.init) }, trailing: foot.end.map { $0.map(GTKToolbarAction.init) },
+            overflow: foot.overflow.map(GTKToolbarAction.init))
+        // GNOME keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
+        chrome.mainMenu = element.chromeMenus
+            .editing(CoreLink().editWords, redo: KeyboardShortcut("z", modifiers: [.primary, .shift])).menus
         return chrome
     }
 
@@ -71,9 +83,10 @@ extension GTKElement {
         switch type {
         case .navigationStack:
             guard let navigation = view as? GTKNavigationView else { return }
-            for (index, (page, frame)) in zip(children, navigation.frames).enumerated() {
+            let pages = arranged
+            for (index, (page, frame)) in zip(pages, navigation.frames).enumerated() {
                 var chrome = page.chrome
-                if index == children.count - 1 {
+                if index == pages.count - 1 {
                     chrome.sidebar = sidebar
                     if let tabs { chrome.tabs = tabs }
                 }
@@ -86,14 +99,15 @@ extension GTKElement {
             guard let split = view as? GTKSplitView else { return }
             groundSidebar()
             let shows = element.sidebarIsVisible
-            let showing: (shows: Bool, toggle: () -> Void) = (shows, { [weak self] in
-                self?.changeSidebarVisibility(to: !shows)
-            })
-            if let sidebar = children.first {
+            // The sidebar's toggle on the detail's bar, where the split view offers it.
+            let showing: (shows: Bool, toggle: () -> Void)? = element.offersSidebarToggle
+                ? (shows, { [weak self] in self?.changeSidebarVisibility(to: !shows) })
+                : nil
+            if let sidebar = arranged.first {
                 split.sidebarFrame?.show(sidebar.chrome)
                 sidebar.composeChrome()
             }
-            if let detail = children.dropFirst().first {
+            if let detail = arranged.dropFirst().first {
                 if let frame = split.detailFrame {
                     var chrome = detail.chrome
                     chrome.sidebar = showing
@@ -120,7 +134,7 @@ extension GTKElement {
             (view as? GTKNavigationView)?.onPopped = { [weak self] remaining in self?.userPopped(remaining: remaining) }
         case .tabView:
             guard let tabs = view as? GTKTabView else { return }
-            tabs.show(children.map { $0.value(.title)?.string ?? "" }, requested: value(.selectedTab)?.number.map { Int($0) })
+            tabs.show(arranged.map { $0.value(.title)?.string ?? "" }, requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         case .splitView:
             guard let split = view as? GTKSplitView else { return }
@@ -160,12 +174,12 @@ extension GTKElement {
     }
 
     /// Stands a split view's sidebar on its materials - GTK blurs nothing inside a window, so a blur stands as its
-    /// colour.
+    /// color.
     func groundSidebar() {
         guard let split = view as? GTKSplitView else { return }
-        let colour = { (over: Bool) in
+        let color = { (over: Bool) in
             self.element.sidebarMaterial(over: over).painted.flatMap { GTKBrush($0).firstColor }
         }
-        split.grounds = (colour(false), colour(true))
+        split.grounds = (color(false), color(true))
     }
 }

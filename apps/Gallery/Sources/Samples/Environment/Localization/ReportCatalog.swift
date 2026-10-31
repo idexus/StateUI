@@ -2,7 +2,7 @@ import StateUI
 
 // listing: LocalizationSample
 /// The languages the folder report is written in.
-enum ReportLanguage: String, CaseIterable, Sendable {
+enum ReportLanguage: LocaleTag, CaseIterable {
     case english = "en"
     case polish = "pl"
 }

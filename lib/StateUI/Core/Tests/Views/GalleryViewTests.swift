@@ -5,7 +5,7 @@
 // how long the run the user swipes is, and what the one number the scroller
 // sends it does.
 //
-// A GalleryView is a LayoutEngine with the arithmetic of three shapes
+// A GalleryView is a MotionLayout with the arithmetic of three shapes
 // written, so there is nothing in a host to check it against and everything
 // worth pinning is here.
 
@@ -116,10 +116,10 @@ final class GalleryViewTests: XCTestCase {
         // The run told its room as well, as the host tells it: the hand is measured against the cards it draws.
         if let feeder {
             turned += 16
-            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+            _ = HostBoundary.cycle(now: turned, reducesMotion: false)
             moved(feeder, to: [0, 0, width, height])
             turned += 16
-            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+            _ = HostBoundary.cycle(now: turned, reducesMotion: false)
         }
 
         return (patch, renders.renderFromScratch(tree()))
@@ -155,7 +155,7 @@ final class GalleryViewTests: XCTestCase {
 
     /// The layout the cards are placed in.
     private func board(_ patch: HostPatch) -> HostPatch {
-        find(.layoutEngine, in: patch) ?? patch
+        find(.motionLayout, in: patch) ?? patch
     }
 
     /// The run the gallery's engine wrote, driven the way the host drives it:
@@ -179,7 +179,7 @@ final class GalleryViewTests: XCTestCase {
         // THE FIRST CYCLE OF ALL LATCHES rather than runs, so the room is fed
         // after it: a write swallowed by the latch is a write no engine ever
         // sees. Two turns and the arithmetic has answered.
-        let board = Renderer.shared.board(for: .display)
+        let board = Renderer.shared.board
 
         _ = board.cycle(now: turned, reducesMotion: false)
 
@@ -294,8 +294,16 @@ final class GalleryViewTests: XCTestCase {
         }
     }
 
+    /// THE CARDS STAND IN READING ORDER, as a stack's views do: the gallery's
+    /// layout mirrors right to left.
+    func testTheCardsStandInReadingOrder() throws {
+        let patch = Renders().render(gallery(3).node)
+
+        XCTAssertEqual(try XCTUnwrap(patch.first(.motionLayout)).props[.mirrorsRightToLeft], .bool(true))
+    }
+
     /// The card the run is ON stands in the middle of the room, at the size it
-    /// was told, and its neighbours stand out from it.
+    /// was told, and its neighbors stand out from it.
     func testTheChosenCardStandsInTheMiddle() {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).node }).patch
@@ -318,7 +326,7 @@ final class GalleryViewTests: XCTestCase {
         assertCard(showing, 1, Rect(200.64, 76, 176, 248))
     }
 
-    /// A FAN leans them out and sinks them, so the neighbour sits LOWER as
+    /// A FAN leans them out and sinks them, so the neighbor sits LOWER as
     /// well as to the side.
     func testAFanLeansTheCardsOutAndSinksThem() {
         let renders = Renders()
@@ -438,7 +446,10 @@ final class GalleryViewTests: XCTestCase {
 
         let shaded = settled {
             self.gallery(5)
-                .shade(Rectangle().fill(Color("#000000")).cornerRadius(16))
+                .shade(
+                    Rectangle()
+                        .fill(Color(hex: 0x000000))
+                        .cornerRadius(16))
                 .node
         }
 
@@ -487,7 +498,9 @@ final class GalleryViewTests: XCTestCase {
             return (opacity, shade)
         }
 
-        let mask = Rectangle().fill(Color("#000000")).cornerRadius(16)
+        let mask = Rectangle()
+            .fill(Color(hex: 0x000000))
+            .cornerRadius(16)
 
         let whole = farCard { $0.shade(mask) }
         let half = farCard { $0.shade(mask, amount: 0.5) }
@@ -512,7 +525,10 @@ final class GalleryViewTests: XCTestCase {
         func shade(of amount: Double) -> Double {
             placements(settled {
                 self.gallery(5)
-                    .shade(Rectangle().fill(Color("#000000")), amount: amount)
+                    .shade(
+                        Rectangle()
+                            .fill(Color(hex: 0x000000)),
+                        amount: amount)
                     .node
             }).card(4)?.shade ?? -1
         }
@@ -528,13 +544,13 @@ final class GalleryViewTests: XCTestCase {
     private func hand(
         _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, moved: Point = .zero, speed: Point = .zero
     ) {
-        guard let heard = find(.layoutEngine, in: renders.renderFromScratch(tree()))?.events?[.handMoved] else {
+        guard let heard = find(.motionLayout, in: renders.renderFromScratch(tree()))?.events?[.translationUpdated] else {
             return XCTFail("the gallery hears no hand")
         }
 
         XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, moved, speed)))
         turned += 16
-        _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+        _ = HostBoundary.cycle(now: turned, reducesMotion: false)
     }
 
     /// The hand NAMES the card it passes: as it crosses halfway between two
@@ -560,6 +576,26 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(shown.wrappedValue, 4, "a card past the last is the last")
     }
 
+    /// EACH CARD FOLLOWS ITS PLACE AS THE BODY ITS GALLERY GIVES ITS ITEMS: carried a card along by the hand, a
+    /// card with a body stands behind where a card with none stands.
+    func testEachCardFollowsItsPlaceAsTheBodyItIsGiven() throws {
+        func carried(_ body: LayoutBody?) throws -> Double {
+            Renderer.shared.clearInvalidation()
+            Renderer.shared.clearStates()
+            let renders = Renders()
+            func tree() -> Node { (body.map { gallery(5).itemBody($0) } ?? gallery(5)).node }
+            _ = laid(renders, tree)
+            hand(renders, tree, .began)
+            hand(renders, tree, .changed, moved: Point(-reach, 0))
+            let run = try XCTUnwrap(standing(try XCTUnwrap(placer), as: PlacedRun.self))
+            return try XCTUnwrap(run.placements.dropFirst().first).bounds.x
+        }
+        let placed = try carried(nil)
+        let following = try carried(.followsLayout(.spring(response: .milliseconds(300), damping: 0.8)))
+
+        XCTAssertGreaterThan(abs(following - placed), 1, "behind its place as the hand carries it")
+    }
+
     /// A ROOM THAT GROWS KEEPS THE CARD IN FRONT: the run stands on the
     /// phase, which a room does not move - a phone turned shows the card the
     /// user left there.
@@ -568,7 +604,7 @@ final class GalleryViewTests: XCTestCase {
         let shown = State(0)
         func tree() -> Node { gallery(5).position(shown.projectedValue).node }
         let showing = laid(renders, tree)
-        let phase = try XCTUnwrap(find(.layoutEngine, in: showing.whole)?.driven?[.phase]?.state)
+        let phase = try XCTUnwrap(find(.motionLayout, in: showing.whole)?.driven?[.parameters]?.state)
 
         hand(renders, tree, .began)
         hand(renders, tree, .changed, moved: Point(-4 * reach, 0))
@@ -577,7 +613,7 @@ final class GalleryViewTests: XCTestCase {
 
         if let feeder { moved(feeder, to: [0, 0, 700, 300]) }
         turned += 16
-        _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+        _ = HostBoundary.cycle(now: turned, reducesMotion: false)
 
         XCTAssertEqual(shown.wrappedValue, 4, "the card the user left in front")
         XCTAssertEqual(try XCTUnwrap(standing(phase, as: JourneyLanes<Double>.self)).destination, 4)
@@ -594,14 +630,14 @@ final class GalleryViewTests: XCTestCase {
             gallery(5).position(shown.projectedValue).onPositionChanged { heard.append($0) }.node
         }
         let showing = laid(renders, tree)
-        let board = Renderer.shared.board(for: .display)
+        let board = Renderer.shared.board
 
         shown.wrappedValue = 3
         _ = renders.render(tree())
         _ = await settle()
 
         // The host walks the phase from card 1 towards card 3: a frame of the way.
-        let phase = try XCTUnwrap(find(.layoutEngine, in: showing.whole)?.driven?[.phase]?.state)
+        let phase = try XCTUnwrap(find(.motionLayout, in: showing.whole)?.driven?[.parameters]?.state)
         moved(phase, to: 1.4)
         turned += 16
         _ = board.cycle(now: turned, reducesMotion: false)
@@ -616,7 +652,7 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         func tree() -> Node { gallery(5).node }
         let showing = laid(renders, tree)
-        let phase = try XCTUnwrap(find(.layoutEngine, in: showing.whole)?.driven?[.phase]?.state)
+        let phase = try XCTUnwrap(find(.motionLayout, in: showing.whole)?.driven?[.parameters]?.state)
 
         hand(renders, tree, .began)
         hand(renders, tree, .changed, moved: Point(-1.4 * reach, 0))
@@ -625,11 +661,12 @@ final class GalleryViewTests: XCTestCase {
         let sent = try XCTUnwrap(standing(phase, as: JourneyLanes<Double>.self))
         XCTAssertEqual(sent.destination, 1, accuracy: 0.001, "the nearer card")
 
-        // The run comes onto it, and the hand lets go of it on the card.
+        // The run comes onto it - the host's animator lands its phase there - and the hand lets go of it on the card.
         for _ in 0..<30 {
             turned += 16
-            _ = HostBoundary.cycle(.display, now: turned, reducesMotion: false)
+            _ = HostBoundary.cycle(now: turned, reducesMotion: false)
         }
+        HostAnimatorReport.land(phase)
         hand(renders, tree, .began)
         hand(renders, tree, .ended)
 
@@ -638,7 +675,7 @@ final class GalleryViewTests: XCTestCase {
         XCTAssertEqual(left.value, 1, accuracy: 0.001)
     }
 
-    /// A THROW GOES ON AS `.throwing` SAYS: the same swipe let go with speed,
+    /// A THROW GOES ON AS `.throwMotion` SAYS: the same swipe let go with speed,
     /// carried for three seconds' worth, comes to rest two cards on, where
     /// the light friction of a gallery that says nothing slides it back to the
     /// first.
@@ -649,7 +686,7 @@ final class GalleryViewTests: XCTestCase {
             let shown = State(0)
             func tree() -> Node {
                 let swiped = gallery(5).position(shown.projectedValue)
-                return (throwing.map { swiped.throwing($0) } ?? swiped).node
+                return (throwing.map { swiped.throwMotion($0) } ?? swiped).node
             }
             _ = laid(renders, tree)
 
@@ -657,17 +694,18 @@ final class GalleryViewTests: XCTestCase {
             hand(renders, tree, .changed, moved: Point(-0.1 * reach, 0))
             hand(renders, tree, .ended, speed: Point(-200, 0))
 
-            XCTAssertEqual(shown.wrappedValue, card, "thrown \(throwing.map { "\($0.law)" } ?? "as a gallery is")")
+            XCTAssertEqual(shown.wrappedValue, card, "thrown \(throwing.map { "\($0.kind)" } ?? "as a gallery is")")
         }
     }
 
-    /// A tap is answered ON THE CARD IN FRONT, on the card itself, rather than
-    /// anywhere along the run: a card behind it hears the tap and does nothing.
-    func testATapIsAnsweredOnTheCardInFront() async throws {
+    /// A tap ACTIVATES THE CARD IN FRONT, on the card itself, rather than
+    /// anywhere along the run: a card behind it hears the tap and does nothing,
+    /// and the card in front is handed over by its identity.
+    func testATapActivatesTheCardInFront() async throws {
         var heard: [Int] = []
         let renders = Renders()
-        let shown = laid(renders, { self.gallery(5).onItemTapped { heard.append($0) }.node })
-        let cards = try XCTUnwrap(find(.layoutEngine, in: shown.whole)).children.compactMap { $0.events?[.tapped] }
+        let shown = laid(renders, { self.gallery(5).onItemActivated { heard.append($0) }.node })
+        let cards = try XCTUnwrap(find(.motionLayout, in: shown.whole)).children.compactMap { $0.events?[.tapped] }
 
         XCTAssertEqual(cards.count, 5, "every card hears a tap")
 
@@ -687,7 +725,7 @@ final class GalleryViewTests: XCTestCase {
     /// target stands where the card does.
     func testAGalleryNobodyMaySwipeAnswersATapOnItsCardInFront() throws {
         let renders = Renders()
-        let shown = laid(renders, { self.gallery(5).isSwipeEnabled(false).onItemTapped { _ in }.node })
+        let shown = laid(renders, { self.gallery(5).isSwipeEnabled(false).onItemActivated { _ in }.node })
 
         XCTAssertNotNil(tappable(in: shown.whole), "the gallery laid no target")
     }
@@ -707,7 +745,7 @@ final class GalleryViewTests: XCTestCase {
     @MainActor
     func testTheCardInFrontIsPressedWhileTheTapIsAnswered() async throws {
         let renders = Renders()
-        let view = gallery(5).onItemTapped { _ in }
+        let view = gallery(5).onItemActivated { _ in }
         let showing = laid(renders, { view.node }).whole
 
         let target = try XCTUnwrap(tappable(in: showing))
@@ -781,8 +819,8 @@ final class GalleryViewTests: XCTestCase {
         let renders = Renders()
         let showing = laid(renders, { self.gallery(3).isSwipeEnabled(false).node }).whole
 
-        XCTAssertNil(find(.layoutEngine, in: showing)?.events?[.handMoved])
-        XCTAssertNotNil(find(.layoutEngine, in: showing))
+        XCTAssertNil(find(.motionLayout, in: showing)?.events?[.translationUpdated])
+        XCTAssertNotNil(find(.motionLayout, in: showing))
     }
 
     /// And one with nothing to show shows what it was given instead.
@@ -829,13 +867,19 @@ final class GalleryViewTests: XCTestCase {
     func testAGallerySaysWhetherItHasAShadeAtAll() {
         let bare = placements(laid(Renders(), { self.gallery(3).node }).whole)
 
-        XCTAssertEqual(bare.first?.shade, PackedPlacement.unshaded, """
+        XCTAssertEqual(bare.first?.shade, Placement.unshaded, """
             a gallery given no shade view says so on every card, whatever \
             the arithmetic answered
             """)
 
         let shaded = placements(
-            laid(Renders(), { self.gallery(3).shade(Rectangle().fill(.black)).node }).whole)
+            laid(Renders(), {
+                self.gallery(3)
+                    .shade(
+                        Rectangle()
+                            .fill(.black))
+                    .node
+            }).whole)
 
         XCTAssertEqual(shaded.first?.shade, 0, "the card in front wears none of it")
         XCTAssertTrue((shaded.card(2)?.shade ?? -1) > 0, "and a card behind it wears some")
@@ -855,7 +899,7 @@ final class GalleryViewTests: XCTestCase {
 
         // THE CARD BEHIND, never the one in front: the front card stands in
         // the middle of the room whatever shape the run is in, and it is where
-        // its NEIGHBOURS go that the three shapes disagree about.
+        // its NEIGHBORS go that the three shapes disagree about.
         guard let row = lined.card(2)?.bounds, let fan = fanned.card(2)?.bounds else {
             return XCTFail("the gallery placed no cards")
         }

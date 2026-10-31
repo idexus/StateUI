@@ -53,6 +53,13 @@ GLib's post is thread-safe: on the UI thread for work it made - a state
 written, an act sent - and on the thread that queued a job, a handler's resume
 or a post among them. No thread of the host's waits.
 
+## The main queue
+
+GLib's main loop watches libdispatch's main queue's eventfd
+(`g_unix_fd_add`) and drains the queue as it is readable
+([the main queue](../../host/runtime.md#the-main-queue)); the host watches it
+once, as it starts.
+
 ## One frame
 
 The frame clock adds a tick callback to the window while something holds it,
@@ -71,9 +78,9 @@ bar is the window's title bar, an arrangement as it stands, its pages
 carrying their own ([pages](pages.md)). A window is presented the first time
 it shows something while its scene shows it, and told it was made once, in
 its turn. Every window is one of its own, and a window its scene hides while
-another is in front is hidden. A question, a word to the screen
-reader and the way back go to the window the user is in: the one activated
-last.
+another is in front is hidden. A word to the screen reader and the
+way back go to the window the user is in: the one activated last; a question
+goes over the window that asked, that one where it names none.
 
 ## A window's frame
 
@@ -98,6 +105,14 @@ closes](../../host/runtime.md#a-window-the-user-closes)); one the tree or the
 host closes tells nothing. A window let go of tells nobody it went: its
 handlers leave before GTK destroys it.
 
+## A link opened
+
+The application handles `open` (`G_APPLICATION_HANDLES_OPEN`): started with a
+link, it starts as an activation would and hears the link; a second start with
+one hands it to the first through GApplication's own uniqueness. The desktop
+finds the application for a scheme by its entry's `MimeType`, which
+`run-app.sh` writes from the head's `Platforms/GTK/link-schemes`.
+
 ## The environment
 
 As the host starts it tells the core what it stands on: a desktop, Linux, the
@@ -107,18 +122,30 @@ its identifier. It tells the core what may change, and again whenever the
 desktop says one did, through the host layer ([the
 environment](../../host/runtime.md#the-environment)): the desktop's style -
 dark or light, as libadwaita's style manager reads it from the desktop's
-settings - and its accent, the colour libadwaita's `accent` class gives words,
-read again as the style turns and, where libadwaita offers the user an accent
-to choose (1.6 on), as it changes; the locale - the language and region GLib
+settings - and its accent, the color libadwaita's `accent` class gives words
+to a label made for each reading (a label kept stands in no window, where a
+change of the rules never reaches it), read again as the style turns and,
+where libadwaita offers the user an accent to choose (1.6 on), as it changes; the locale - the language and region GLib
 reads from the environment, the local zone, and the clock, the first day of
 the week and the measures of the C library's locale, the week's first day
 read as GTK's own calendar reads it, and the direction GTK writes its
 language in; the power - UPower's display device, whether the machine
 is on mains, and whether the power profiles save energy, no battery where
 UPower stands nowhere; and the network - GIO's monitor, and the kind of
-connection NetworkManager calls the primary one. Once the window stands it
+connection NetworkManager calls the primary one; and the accessibility
+settings - less motion where GTK's animations are off, libadwaita's high
+contrast, GNOME's screen reader where the desktop keeps that setting (none
+elsewhere), and GTK's text scale - each watched. Once the window stands it
 tells the screen it stands on: its size in pixels, its scale and its refresh
 rate.
+
+## The suite's desktop
+
+The host's suite meets one desktop on every machine: `test-gtk.sh` pins
+libadwaita's accent (`ADW_DEBUG_ACCENT_COLOR=blue`), a desktop whose user
+chose one, as GNOME's from 47 on - where the application's own accent does
+not apply - so a machine with no desktop's settings, a CI container, gives
+the verdicts a desktop gives.
 
 ## Acts
 
@@ -135,6 +162,16 @@ which GTK allows. The keyboard GNOME shows on a touch screen stands for the
 field holding the focus, so taking it down lets that field's focus go, and
 answers whether a field held it.
 
+## The clipboard
+
+The clipboard is the display's `GdkClipboard`: words are set on it at once,
+and read through GDK's asynchronous read, the act answered once it returns -
+nothing where it holds no words.
+
+## Sharing
+
+GNOME offers an application no share sheet: a share fails with that reason.
+
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
@@ -144,9 +181,11 @@ across the process, so an answer that arrives after its renderer has gone
 answers nothing of another's. The host layer shows one question at a time,
 as a desktop's sheets are, so a question asked while one shows waits for it
 to close. A
-choice of actions is a button a choice, the dangerous one first, and the
-pressed caption is the answer - the cancelling one too; a dialog dismissed
-any other way, Escape among them, answers that nothing was chosen. A
+question's cancel stands first, as GNOME stands it, and a choice of actions
+is a button an action, in order, the dangerous one marked: the place of the
+one pressed is the answer, and the cancel - Escape among the ways - answers
+that nothing was chosen. Each response is named by what it answers
+(`accept`, `cancel`, `action-<place>`). A
 prompt's field takes the placeholder, the most characters and the keyboard
 its purpose asks for, holds the keyboard as the dialog shows, and Enter in
 it accepts.
@@ -154,7 +193,7 @@ it accepts.
 ## Files
 
 A file dialog is GTK's `GtkFileDialog` - the desktop's own dialog, through
-its portal, where the session has one - over the window the user is in,
+its portal, where the session has one - over the window that asked,
 waiting its turn among the questions ([files](../../host/runtime.md#files)).
 One that opens shows every kind's files under one filter; one that saves
 offers each kind under its caption, the first chosen, and suggests the act's
@@ -171,9 +210,9 @@ holds the dialog and the launches back in the host, which records them.
 The desktop keeps no store an application can use without a schema
 installed, so the host keeps one of its own: `kept values.txt` in the user's
 state folder, in a folder named by the application's ID, in the host
-layer's text ([kept values](../../host/runtime.md#kept-values)). Every key
-the application lists is read before the first scene connects and handed to
-the core ahead of the first view; a key's new value writes the whole file
+layer's text ([kept values](../../host/runtime.md#kept-values)). A key is
+read from it as its first state is made, through the reader the host gives
+the core as it starts; a key's new value writes the whole file
 again, beside the old one and then in its place, so a failed write leaves
 the old. The desktop restores no windows, so the application's scenes are
 kept beside them, in `kept scenes.txt` ([kept

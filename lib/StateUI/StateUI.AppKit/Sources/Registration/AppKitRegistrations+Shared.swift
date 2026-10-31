@@ -13,6 +13,7 @@ extension AppKitRegistrations {
     /// Design: docs/design/platforms/appkit/registrations.md#shared-members
     static func shared(_ registry: Registry<NSView>) {
         registry.everyElementMeetsAssistiveTechnology()
+        registry.everyElementTakesAccessibilityActions()
         registry.everyElementShowsItsTooltip()
         registry.everyElementTakesItsPlace()
         registry.everyElementIsDrawnOverItsPlace()

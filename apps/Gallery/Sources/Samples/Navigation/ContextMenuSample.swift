@@ -46,13 +46,13 @@ struct ContextMenuSample: SampleContent, ExampleContent {
 
                             // A setting: its check follows the state, and
                             // choosing it turns the state over.
-                            MenuItem("Large text").isOn($large)
+                            MenuToggle("Large text", isOn: $large)
 
                             MenuSeparator()
 
                             MenuItem("Remove")
                                 .icon(ImageSource(light: "menu_remove.png", dark: "menu_remove_dark.png"))
-                                .isDestructive(true)
+                                .role(.destructive)
                                 .onClicked {
                                     items.remove(at: index)
                                     chosen = "removed \(item)"
@@ -80,9 +80,9 @@ struct ContextMenuSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Right-click or long-press a row. The entries are the same three a menu bar takes - "
-                + "an item, a submenu and a separator - attached to a view instead of to "
-                + "a page. An item given `isOn` shows a check and turns its state when chosen.")
+            Text("Right-click or long-press a row. The entries are the same a menu bar takes - "
+                + "an item, a setting's toggle, a submenu and a separator - attached to a view "
+                + "instead of to a page. A `MenuToggle` shows a check and turns its state when chosen.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

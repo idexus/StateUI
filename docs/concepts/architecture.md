@@ -112,7 +112,9 @@ struct Level: View {
     var body: some View {
         VStack {
             Slider($level)
-            Rectangle(.cornflowerBlue).scaleX($level)
+            Rectangle()
+                .fill(.cornflowerBlue)
+                .scaleX($level)
             Text($level.convert { "\(Int($0 * 100))%" })
         }
     }
@@ -149,9 +151,7 @@ This path is for continuous or platform-owned values:
 
 Bindings and handlers may coexist on one control. The host first commits the
 reported value to its state channel, then invokes the handler. The handler
-therefore observes the new state. For a binding the host does not carry - a
-part of a state, or one made from closures - the write-back is a handler of
-its own, and handlers run in the order written.
+therefore observes the new state.
 
 Program writes are silent at the event boundary. This prevents a write such as
 `enabled = true` from pretending that the user toggled the native control.
@@ -223,7 +223,8 @@ struct ResizingPanel: View {
 
     var body: some View {
         VStack {
-            Rectangle(.cornflowerBlue)
+            Rectangle()
+                .fill(.cornflowerBlue)
                 .width(expanded ? 280 : 120)
                 .cornerRadius(expanded ? 28 : 8)
                 .motion(.spring(response: .milliseconds(320)))
@@ -270,7 +271,8 @@ struct FallingDot: View {
 
     var body: some View {
         VStack {
-            Rectangle(.cornflowerBlue)
+            Rectangle()
+                .fill(.cornflowerBlue)
                 .translationY($y)
                 .engine(tracking: $y) { cycle in
                     let journey = $y.journey
@@ -350,7 +352,7 @@ declaring the kind, which opens with it where it does not stand
 restoration, focus, hiding, and closure are mapped to those sessions while
 StateUI retains deterministic state and tree ownership.
 
-Navigation paths, tab selections, sidebar visibility, and modal stacks are
+Navigation paths, tab selections, sidebar visibility, and presented sheets are
 state. A control method is invoked through an `@Aim`; an aim identifies a
 control and is not state.
 

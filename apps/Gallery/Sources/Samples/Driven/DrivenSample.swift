@@ -12,7 +12,7 @@ struct DrivenSample: SampleContent, ExampleContent {
     /// Where the marker sits - the value the HOST carries.
     @State private var offset = 0.0
 
-    /// The rail's colour, which the HOST carries with no engine at all.
+    /// The rail's color, which the HOST carries with no engine at all.
     @State private var tint = Palette.outline
     // listing: end
 
@@ -36,12 +36,14 @@ struct DrivenSample: SampleContent, ExampleContent {
 
             ZStack {
                 Grid {
-                    Rectangle($tint)
+                    Rectangle()
+                        .fill($tint)
                         .height(6)
                         .cornerRadius(3)
                         .verticalAlignment(.center)
 
-                    Rectangle(Palette.brand)
+                    Rectangle()
+                        .fill(Palette.brand)
                         .width(20)
                         .height(20)
                         .cornerRadius(10)
@@ -93,7 +95,7 @@ struct DrivenSample: SampleContent, ExampleContent {
         VStack {
             Text("The reading at the top says how many times this closure has been "
                 + "described and which value for. Press the buttons and watch the marker "
-                + "cross, the colour change and the percentage count up: the count does "
+                + "cross, the color change and the percentage count up: the count does "
                 + "not move. Throw the switch, which changes one caption, and it goes up "
                 + "by one and says `for slowly`. The percentage is written off a driven "
                 + "value by a conversion; the caption under it is described from "

@@ -11,9 +11,10 @@ import UIKit
 /// builds what a cell holds.
 /// Design: docs/design/platforms/uikit/items.md
 @MainActor
-final class UIKitItemsView: UIView, UICollectionViewDelegate {
+final class UIKitItemsView: UIView, UICollectionViewDelegate, UIKitRefreshing, UIKitPageScroller {
     let cells: ItemsCells
     private(set) var collection: UICollectionView
+    private(set) lazy var refresh = UIKitRefresh(collection)
     private var source: UICollectionViewDiffableDataSource<String, String>!
     private var layout = ItemsLayout.list()
     private var mode = SelectionMode.none
@@ -33,9 +34,11 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         collection = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
         super.init(frame: .zero)
         collection.backgroundColor = .clear
+        // What it keeps clear of the bars over it is the page's word (`keepClear`), never UIKit's own guess.
+        collection.contentInsetAdjustmentBehavior = .never
         collection.allowsSelection = false
         collection.delegate = self
-        collection.setCollectionViewLayout(UIKitItemsLayout.make(layout) { [cells] in cells.entries }, animated: false)
+        collection.setCollectionViewLayout(madeLayout(layout), animated: false)
         addSubview(collection)
         source = makeSource()
     }
@@ -47,8 +50,10 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
 
     override func layoutSubviews() {
         super.layoutSubviews()
+        let resized = collection.frame.size != bounds.size
         if collection.frame != bounds { collection.frame = bounds }
         cells.showing(shownIdentities)
+        if resized { roomChanged() }
     }
 
     /// As wide as it is offered and as tall as nothing asks: its room is what its layout gives it.
@@ -56,16 +61,54 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         CGSize(width: size.width.isFinite ? size.width : 0, height: 0)
     }
 
+    // MARK: - A page's scroller
+
+    /// What the list keeps clear of the bars over it, where it is its page's scroller (`UIKitScrollClearance`).
+    private let kept = UIKitScrollClearance()
+
+    var scroller: UIScrollView { collection }
+
+    /// Keeps `clearance` clear: its first and last items scroll out from under the bars, its end kept as they grow.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-foot
+    func keepClear(_ clearance: Clearance) {
+        guard clearance != kept.clearance else { return }
+        // A new inset ends a glide under way, and UIKit tells that as the glide's end: the glide takes the inset alone,
+        // is owed still, and sets out again to its item in the room the inset leaves.
+        let glides = gliding || glideOwed
+        keeping = true
+        if glides { kept.inset(clearance, on: collection) } else { kept.keep(clearance, on: collection) { $0() } }
+        keeping = false
+        if glides { (gliding, glideOwed) = (false, true) }
+        roomChanged()
+    }
+
+    /// Whether the list is taking a new inset, which ends a glide with no end of the glide's own.
+    private var keeping = false
+
+    /// The list's room changed - its size, or what it keeps clear of the bars over it: the item the program scrolled
+    /// to stands again where it put it (`ItemsCells.roomChanged`), a glide the change cut short going on from where it
+    /// stopped.
+    /// Design: docs/design/platforms/uikit/items.md#scrolling-to-an-item
+    private func roomChanged() {
+        guard let target = cells.roomChanged() else { return }
+        guard !gliding, !glideOwed else { return glide(to: target) }
+        collection.layoutIfNeeded()
+        stand(target, animated: false)
+    }
+
     // MARK: - What the tree says
 
     /// The entries, the layout, how many may be chosen and which are.
     func apply(layout: ItemsLayout, mode: SelectionMode) {
+        // UIKit takes no snapshot while it asks for a view: a change rendered meanwhile stands once it has the view.
+        // Design: docs/design/platforms/uikit/items.md#a-cell-asked-for
+        guard !asking else { return wait(applying: (layout, mode)) }
         let changes = cells.takeEntries()
         let framed = (header: cells.entries.header != nil, footer: cells.entries.footer != nil)
         if layout != self.layout || framed != self.framed {
             self.layout = layout
             self.framed = framed
-            collection.setCollectionViewLayout(UIKitItemsLayout.make(layout) { [cells] in cells.entries }, animated: false)
+            collection.setCollectionViewLayout(madeLayout(layout), animated: false)
         }
         if let changes {
             applyEntries(changes)
@@ -93,6 +136,7 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
             self.groupsFramed = groupsFramed
             collection.collectionViewLayout.invalidateLayout()
         }
+        if asking { appliedWhileAskingForTesting += 1 }
         source.apply(snapshot, animatingDifferences: !changes.isEmpty && !reducesMotion())
     }
 
@@ -150,8 +194,32 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
     /// Holds the entry of `identity` in a cell, as the host layer keeps one cell an entry.
     private func hold(_ identity: String, in holding: UIKitItemHolding) {
         holding.across = layout.isAcross
+        asking = true
         cells.hold(identity, in: holding)
+        asking = false
     }
+
+    /// Whether the collection is asking for a cell or a supplement now, its entry built for it as it waits.
+    private var asking = false
+
+    /// What a change rendered while the collection asked for a view brings, done once it has the view: the layout
+    /// and choice to apply, and whether the item scrolled to stands again.
+    private var waiting: (applying: (layout: ItemsLayout, mode: SelectionMode)?, settles: Bool)?
+
+    private func wait(applying: (layout: ItemsLayout, mode: SelectionMode)? = nil, settles: Bool = false) {
+        if waiting == nil { Task { @MainActor [weak self] in self?.doWaiting() } }
+        waiting = (applying ?? waiting?.applying, settles || waiting?.settles == true)
+    }
+
+    private func doWaiting() {
+        guard let waiting else { return }
+        self.waiting = nil
+        if let applying = waiting.applying { apply(layout: applying.layout, mode: applying.mode) }
+        if waiting.settles { settle() }
+    }
+
+    /// The snapshots applied while the collection asked for a view; read by a test.
+    private(set) var appliedWhileAskingForTesting = 0
 
     /// The identity of the header or footer of `kind` at `indexPath`.
     private func supplement(_ kind: String, at indexPath: IndexPath) -> String? {
@@ -220,6 +288,11 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
         userChose()
     }
 
+    /// A tap extends a choice of many: UIKit chooses the item alone where it performs a primary action.
+    func collectionView(_ collection: UICollectionView, canPerformPrimaryActionForItemAt indexPath: IndexPath) -> Bool {
+        ItemsTap.opens(in: mode)
+    }
+
     func collectionView(_ collection: UICollectionView, performPrimaryActionForItemAt indexPath: IndexPath) {
         guard let identity = source.itemIdentifier(for: indexPath) else { return }
         cells.userActivated(identity)
@@ -243,32 +316,44 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
     func scroll(to identity: String, anchor: ScrollAnchor) {
         cells.scroll(to: identity, anchor: anchor)
         gliding = false
-        guard !ItemsScrollTarget.glides(reducingMotion: reducesMotion()) else {
-            gliding = stand(ItemsScrollTarget(identity: identity, anchor: anchor), animated: true)
-            return
-        }
+        glideOwed = ItemsScrollTarget.glides(reducingMotion: reducesMotion())
         settle()
     }
 
     /// Stands the item the program scrolled to, lays out what that brings into view, and stands it again from the
-    /// cells measured - and so after every pass that brings cells their entries, while the host layer holds it.
+    /// cells measured - and so after every pass that brings cells their entries, while the host layer holds it. A
+    /// scroll still owing its glide glides there instead.
     /// Design: docs/design/platforms/uikit/items.md#scrolling-to-an-item
     private func settle() {
+        guard !asking else { return wait(settles: true) }
         guard !gliding, let target = cells.scrollTarget else { return }
+        guard !glideOwed else { return glide(to: target) }
         stand(target, animated: false)
         collection.layoutIfNeeded()
         if let target = cells.laidOut() { stand(target, animated: false) }
     }
 
+    /// Glides to `target` where it can stand now; owed still where it cannot - an item come a moment ago and not
+    /// laid out yet glides there once it is, never jumps.
+    private func glide(to target: ItemsScrollTarget) {
+        collection.layoutIfNeeded()
+        gliding = stand(target, animated: true)
+        if gliding { glideOwed = false }
+    }
+
     /// Whether a scroll the program asked for glides now, which stands its item again as it stops.
     private var gliding = false
 
+    /// Whether a scroll the program asked for to glide has not set out yet: its item could not stand.
+    private var glideOwed = false
+
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        gliding = false
+        (gliding, glideOwed) = (false, false)
         cells.userScrolled()
     }
 
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        guard !keeping else { return }
         gliding = false
         settle()
     }
@@ -300,6 +385,33 @@ final class UIKitItemsView: UIView, UICollectionViewDelegate {
     // MARK: - For the tests
 
     /// The items UIKit holds selected, in the order they show.
+    /// The layout `layout` says, over the cells' entries, a list's item swiping to its actions.
+    private func madeLayout(_ layout: ItemsLayout) -> UICollectionViewCompositionalLayout {
+        UIKitItemsLayout.make(
+            layout, entries: { [cells] in cells.entries }, swipe: { [weak self] in self?.swipeActions(at: $0) })
+    }
+
+    /// The item's actions at `indexPath` as its swipe shows them: its context menu's (`ItemsCells.actions`); nil for
+    /// none.
+    private func swipeActions(at indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let identity = source.itemIdentifier(for: indexPath) else { return nil }
+        let actions = cells.actions(of: identity).map { entry in
+            let action = UIContextualAction(style: entry.isDestructive ? .destructive : .normal, title: entry.title) {
+                [weak element = entry.element] _, _, done in
+                element?.uiKit.choose()
+                done(true)
+            }
+            action.image = entry.icon.flatMap(UIKitRenderer.image)
+            return action
+        }
+        return actions.isEmpty ? nil : UISwipeActionsConfiguration(actions: actions)
+    }
+
+    /// The swipe actions of `identity`'s item, as the list's swipe asks for them.
+    func swipeActionsForTesting(_ identity: String) -> UISwipeActionsConfiguration? {
+        source.indexPath(for: identity).flatMap(swipeActions(at:))
+    }
+
     var selectedForTesting: [String] {
         let chosen = Set((collection.indexPathsForSelectedItems ?? []).compactMap { source.itemIdentifier(for: $0) })
         return cells.identities.filter(chosen.contains)

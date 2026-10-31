@@ -17,7 +17,7 @@ final class GTKImageView: GTKPanelView {
     /// How the picture fills its room.
     private(set) var aspect = ContentMode.fit
 
-    /// The colour written for the words an icon stands beside; nil draws it in the colour the theme gives them.
+    /// The color written for the words an icon stands beside; nil draws it in the color the theme gives them.
     var wordsColor: GdkRGBA? {
         didSet { if case .icon = picture { gtk_widget_queue_draw(widget) } }
     }
@@ -133,8 +133,8 @@ final class GTKImageView: GTKPanelView {
     /// The size, in logical pixels, GTK draws an icon at: `GTK_ICON_SIZE_NORMAL`'s.
     static let iconSize: Int32 = 16
 
-    /// Draws `icon`, the theme's symbolic one, filling `place` in the colour of the words the image stands among -
-    /// the colour written for them, else the theme's.
+    /// Draws `icon`, the theme's symbolic one, filling `place` in the color of the words the image stands among -
+    /// the color written for them, else the theme's.
     /// Design: docs/design/platforms/gtk/drawing.md#icons
     private func drawIcon(_ icon: Icon, _ snapshot: OpaquePointer, in place: Rect) {
         guard place.width > 0, place.height > 0 else { return }

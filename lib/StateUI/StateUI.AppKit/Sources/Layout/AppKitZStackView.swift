@@ -6,9 +6,9 @@ import AppKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A ZStack: its children one over another, each in its area, or where an engine's placement run puts it.
+/// A ZStack: its children one over another, each in its area, or where a motion layout's placements put it.
 @MainActor
-final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
+final class AppKitZStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuring,
     AppKitMeasurementCaching {
     let measurements = MeasurementCache()
     var placement: HostPlacementRun? {
@@ -16,14 +16,14 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
     }
 
     /// The room inside the ZStack's own edge.
-    var padding = NSEdgeInsets() {
-        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
+    var padding = Insets(0) {
+        didSet { if padding != oldValue { invalidateMeasurements() } }
     }
 
-    /// Whether the ZStack stands a layout engine, which has no size of its own.
-    var engine = false
+    /// Whether the ZStack stands a motion layout, which has no size of its own.
+    var motionLayout = false
 
-    /// The hand over the layout engine it stands, where one moves it: whether it took a scroll event.
+    /// The hand over the motion layout it stands, where one moves it: whether it took a scroll event.
     var hand: ((NSEvent) -> Bool)?
     private var items: [AppKitLayoutItem] = []
     private var drawingOrder: [ObjectIdentifier] = []
@@ -57,27 +57,28 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
     }
 
     private func measuredContentSize(width: CGFloat?) -> NSSize {
-        NSSize(ZStackArithmetic.size(of: items, padding: Insets(padding), width: width.map(Double.init), engine: engine))
+        NSSize(ZStackArithmetic.size(of: items, padding: padding, width: width.map(Double.init), motionLayout: motionLayout))
     }
 
     override func layout() {
         super.layout()
 
-        if let placements = placement?.placements, !placements.isEmpty {
-            apply(placements)
+        if let run = placement, !run.placements.isEmpty {
+            apply(run)
             return
         }
 
         beginArrangement()
         for item in items { drawUnplaced(item) }
         let places = ZStackArithmetic.places(
-            of: items, in: bounds.placed, padding: Insets(padding), direction: direction)
+            of: items, in: arrangementBounds.placed, padding: padding, direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: NSRect(placed: place)) }
         }
     }
 
-    private func apply(_ placements: [HostPlacement]) {
+    private func apply(_ run: HostPlacementRun) {
+        let placements = run.placements
         let count = min(items.count, placements.count)
         let ordered = ZStackArithmetic.drawingOrder(of: items.count, placedBy: placements)
         let identities = ordered.map { ObjectIdentifier(items[$0].view) }
@@ -92,9 +93,9 @@ final class AppKitZStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeas
         for index in 0..<count {
             let placement = placements[index]
             let item = items[index]
-            item.view.frame = NSRect(placed: placement.place)
+            item.view.frame = NSRect(placed: run.place(of: index, in: bounds.placed))
             (item.view as? AppKitGridView)?.setShadeOpacity(placement.drawnShade)
-            item.drawing?.placement = placement.drawing
+            item.drawing?.placement = run.drawing(of: index)
             item.drawing?.placedOpacity = placement.drawnOpacity
         }
         for item in items[count...] { drawUnplaced(item) }

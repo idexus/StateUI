@@ -19,28 +19,29 @@ extension GTKRegistrations {
             button.property(TrackingElementContract.tracking) { view, spacing in
                 view.setLook { $0.letterSpacing = spacing ?? 0 }
             }
-            button.applies([
-                VisualElementContract.background,
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
-            ]) { view, values in
+            button.applies(
+                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BorderElementContract.lineWidth) { view, values in
                 view.setBox(
                     fill: HostMaterial(values[VisualElementContract.background]?.propValue).painted,
                     stroke: values[BorderElementContract.stroke]?.propValue,
                     lineWidth: values[BorderElementContract.lineWidth],
                     shape: values[BorderElementContract.shape]?.propValue)
             }
-            button.applies([
-                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing, ImageElementContract.contentMode,
-            ]) { view, values in
+            button.applies(
+                ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
+                ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
+                let picture = HostPicture(values[ButtonContract.icon], dark: false)
                 view.setPicture(
-                    HostPicture(values[ButtonContract.icon], dark: false),
-                    position: values[ButtonContract.iconPosition] ?? .leading,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
+                    picture, position: values[ButtonContract.iconPosition] ?? .start,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
+                    showsText: TextAndIcon.showsText(
+                        values[TextAndIconElementContract.showsText], hasPicture: picture != nil, byDefault: true))
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLineBreak(lineBreak) }
             // GTK's own shortcut - the one stated, else the role's - and the role's look, libadwaita's classes for the
             // suggested action and a destructive one.
-            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { view, values in
                 let role = values[ButtonContract.role]
                 view.setShortcut(KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role))
                 view.setRole(role)

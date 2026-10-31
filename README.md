@@ -55,7 +55,7 @@ application's, written once.
 
 The cubes are each platform's own GPU view, which the application registers
 with its host - a `GtkGLArea` drawing with OpenGL on GTK, an `MTKView`
-drawing with Metal on UIKit - their size, colour and spin described from
+drawing with Metal on UIKit - their size, color and spin described from
 StateUI. The edge is handed over as a state, so dragging the slider rebuilds
 nothing. On the Web the same module, compiled to WebAssembly, runs in the page
 and draws it with the browser's own elements - here a list of 120 tiles in

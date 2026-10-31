@@ -4,7 +4,7 @@
 // gallery shows wears its violet, and every field lets the panel behind it
 // through. Every other control keeps its platform's own look.
 //
-// Every colour comes through `Palette`, one name per job.
+// Every color comes through `Palette`, one name per job.
 //
 // WHAT IS NOT HERE:
 //
@@ -63,7 +63,11 @@ enum AppStyles {
     /// Built once, as the application is made, and never sent: the differ
     /// merges each style into the controls it applies to, so what crosses is a
     /// control with its values already on it.
-    static var sheet: StyleSheet {
+    static var sheet: StyleSheet { sheet(barsInOwnLook: false) }
+
+    /// The sheet, the bars' buttons in the gallery's own look where
+    /// `barsInOwnLook` (Appearance ▸ The bars' buttons).
+    static func sheet(barsInOwnLook: Bool) -> StyleSheet {
         StyleSheet {
             // MARK: Text
 
@@ -109,7 +113,10 @@ enum AppStyles {
             // Every button the gallery shows wears its violet - a style with no
             // key is every button's - in its platform's shape: a capsule on
             // Apple's platforms and the Web, rounded everywhere else; and
-            // lower on the native desktops, where a pointer presses it.
+            // lower on the desktops and the Web, where a pointer presses it.
+            // Held down on a phone or a tablet, it grows a breath and lights
+            // up, under its own motion; elsewhere it presses as the
+            // platform's own button does.
             Style<Button>()
                 .textColor(Palette.onAccent)
                 .background(Palette.accent)
@@ -119,12 +126,18 @@ enum AppStyles {
                 #else
                 .shape(.roundedRectangle(10))
                 #endif
-                #if APPKIT || WINUI || GTK
+                #if APPKIT || WINUI || GTK || WEB
                 .padding(horizontal: 16, vertical: 6)
-                #elseif UIKIT || WEB
+                #elseif UIKIT
                 .padding(horizontal: 22, vertical: 10)
                 #else
                 .padding(horizontal: 16, vertical: 11)
+                #endif
+                #if UIKIT || ANDROID
+                .visualState(.pressed) { $0
+                    .scale(1.05)
+                    .background(Palette.accentLit)
+                }
                 #endif
                 .visualState(.disabled) { $0
                     .textColor(Palette.disabled)
@@ -133,13 +146,26 @@ enum AppStyles {
 
             // A button's role chooses a style over the one above: it says
             // only what the role changes. The main action keeps the violet;
-            // the way out steps back, and what destroys something is red.
+            // the way out steps back, and what destroys something is red -
+            // each lit in its own color while held down on a phone or a
+            // tablet.
             Style<Button>(role: .cancel)
                 .textColor(Palette.text)
                 .background(Palette.selected)
+                #if UIKIT || ANDROID
+                .visualState(.pressed) { $0.background(Palette.selectedLit) }
+                #endif
             Style<Button>(role: .destructive)
                 .textColor(Palette.danger)
                 .background(Palette.dangerWash)
+                #if UIKIT || ANDROID
+                .visualState(.pressed) { $0.background(Palette.dangerWashLit) }
+                #endif
+
+            // A picker's presentation chooses a style as a button's role
+            // does: the chosen segment in the gallery's violet.
+            Style<Picker>(presentation: .segmented)
+                .tint(Palette.accent)
             // listing: end
 
             Style<Button>(.iconButton)
@@ -164,14 +190,6 @@ enum AppStyles {
             Style<SearchField>()
                 .background(Palette.field)
 
-            // On the Web a picker stands on the page's surface, opaque, where
-            // every platform's own lets what lies behind through: there it
-            // takes the fields' ground.
-            #if WEB
-            Style<Picker>()
-                .background(Palette.field)
-            #endif
-
             // MARK: The menu's rows
             //
             // A menu row is a view like any other, so it takes a style like any
@@ -184,6 +202,9 @@ enum AppStyles {
             Style<HStack>(.menuRow)
                 .shape(.roundedRectangle(8))
                 .background(.transparent)
+                .visualState(.pressed) { $0
+                    .background(Palette.hovered)
+                }
 
             Style<Text>(.menuRowText)
                 .verticalAlignment(.center)
@@ -191,7 +212,8 @@ enum AppStyles {
             // MARK: Lists
 
             // A list's rows stand in one rounded group, shaded and edged as a
-            // sample's panel is; a row lights up under the pointer.
+            // sample's panel is; a row lights up under the pointer, and more
+            // while it is pressed - as a button is, out as the press leaves it.
             Style<VStack>(.rowGroup)
                 .background(Palette.shade)
                 .stroke(Palette.edge)
@@ -201,6 +223,9 @@ enum AppStyles {
 
             Style<ZStack>(.listRow)
                 .background(.transparent)
+                .visualState(.pressed) { $0
+                    .background(Palette.selected)
+                }
                 .visualState(.pointerOver) { $0
                     .background(Palette.hovered)
                 }
@@ -217,7 +242,7 @@ enum AppStyles {
                 .clipsContent(true)
 
             // A card within it fills nothing: an outline and its corners mark
-            // it, and a card that sets a background of its own - a colour, or
+            // it, and a card that sets a background of its own - a color, or
             // a gradient like the home page's - shows it. What a card holds is
             // cut to its corners: a picture reaches them.
             Style<ZStack>(.card)
@@ -225,6 +250,43 @@ enum AppStyles {
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))
                 .clipsContent(true)
+
+            // MARK: The bars
+
+            if barsInOwnLook {
+                barStyles
+            }
         }
+    }
+
+    /// The bars' buttons in the gallery's own look.
+    @StyleBuilder
+    private static var barStyles: [AnyStyle] {
+        // listing: AppStyles.bars
+        // Where the host draws the bars' buttons itself - the Web - each
+        // group stands in a light rounded box in a fine outline, its buttons
+        // inset from it, a button standing alone in one of its own; its
+        // buttons' words semibold, each a shade darker under the pointer and
+        // pressed.
+        Style<ToolbarGroup>()
+            .background(Color(light: Color(hex: 0xF4F6F8), dark: Color(hex: 0x2A2F37)))
+            .shape(.roundedRectangle(12))
+            .stroke(Color(light: Color(hex: 0xB8BEC6), dark: Color(hex: 0x4A515C)))
+            .lineWidth(1)
+            .padding(3)
+            .spacing(2)
+            .visualState(.pointerOver) { $0.stroke(Color(light: Color(hex: 0x8E96A0), dark: Color(hex: 0x6B7380))) }
+
+        Style<ToolbarButton>()
+            .fontWeight(.semibold)
+            .shape(.roundedRectangle(9))
+            .visualState(.pointerOver) { $0.background(Color(light: .black, dark: .white).opacity(0.06)) }
+            .visualState(.pressed) { $0.background(Color(light: .black, dark: .white).opacity(0.12)) }
+
+        Style<ToolbarToggle>()
+            .fontWeight(.semibold)
+            .shape(.roundedRectangle(9))
+            .visualState(.pointerOver) { $0.background(Color(light: .black, dark: .white).opacity(0.06)) }
+        // listing: end
     }
 }

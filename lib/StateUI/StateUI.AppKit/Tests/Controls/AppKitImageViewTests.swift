@@ -11,7 +11,7 @@ import XCTest
 @MainActor
 final class AppKitImageViewTests: XCTestCase {
     @MainActor
-    func testFillCoversAndCentresWithoutDistortingTheImage() {
+    func testFillCoversAndCentersWithoutDistortingTheImage() {
         let view = AppKitImageView()
         view.frame = NSRect(x: 0, y: 0, width: 120, height: 60)
         view.apply(
@@ -48,6 +48,52 @@ final class AppKitImageViewTests: XCTestCase {
         view.layoutSubtreeIfNeeded()
         XCTAssertEqual(view.renderedImageFrame, view.bounds)
         XCTAssertEqual(view.nativeImageScaling, .scaleNone)
+    }
+
+    /// A DRAWN PICTURE STANDS AS PIXELS OF THE SIZE IT IS SHOWN AT: AppKit draws an image view again whenever a
+    /// transform above it moves, and an SVG drawn anew each time cost a turning light table 300 ms of every 500. As
+    /// pixels a draw costs nothing; made away from the main thread, they are made again only for more pixels, by the
+    /// host layer's rule.
+    func testADrawnPictureStandsAsPixelsOfTheSizeItIsShownAt() throws {
+        let svg = #"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50"><rect width="100" height="50" fill="red"/></svg>"#
+        let drawing = try XCTUnwrap(NSImage(data: Data(svg.utf8)))
+        let view = AppKitImageView()
+        view.frame = NSRect(x: 0, y: 0, width: 60, height: 60)
+        view.apply(image: drawing, aspect: .fill, animationPlaying: false)
+        view.layoutSubtreeIfNeeded()
+        XCTAssertTrue(view.shownImage === drawing, "the drawing as it is, until its pixels come")
+
+        let shown = try pixels(of: view)
+        let bitmap = try XCTUnwrap(shown.representations.first as? NSBitmapImageRep)
+        XCTAssertEqual(shown.size, view.renderedImageFrame.size, "pixels of the size it covers")
+        XCTAssertGreaterThanOrEqual(bitmap.pixelsWide, 120, "a pixel a point at the least")
+        XCTAssertTrue(view.image === drawing, "the picture as given")
+        XCTAssertEqual(view.intrinsicContentSize, drawing.size)
+
+        view.frame = NSRect(x: 0, y: 0, width: 50, height: 50)
+        view.layoutSubtreeIfNeeded()
+        pump()
+        XCTAssertTrue(view.shownImage === shown, "fewer pixels draw nothing again")
+
+        view.frame = NSRect(x: 0, y: 0, width: 200, height: 200)
+        view.layoutSubtreeIfNeeded()
+        let grown = try pixels(of: view, other: shown)
+        XCTAssertEqual(grown.size, NSSize(width: 400, height: 200), "more pixels, drawn again")
+    }
+
+    /// The pixels the view shows once they come, other than `other`.
+    private func pixels(of view: AppKitImageView, other: NSImage? = nil) throws -> NSImage {
+        let deadline = Date(timeIntervalSinceNow: 2)
+        while Date() < deadline {
+            if let shown = view.shownImage, shown !== other, shown.representations.first is NSBitmapImageRep { return shown }
+            pump()
+        }
+        return try XCTUnwrap(nil as NSImage?, "no pixels came")
+    }
+
+    /// A turn of the main run loop, where what the background made is taken.
+    private func pump() {
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
     }
 
     @MainActor
@@ -194,8 +240,8 @@ final class AppKitImageViewTests: XCTestCase {
         return result == KERN_SUCCESS ? Int(info.phys_footprint) : 0
     }
 
-    /// An icon standing alone is drawn in the words' colour, as the label beside it is.
-    func testAnIconIsDrawnInTheWordsColour() throws {
+    /// An icon standing alone is drawn in the words' color, as the label beside it is.
+    func testAnIconIsDrawnInTheWordsColor() throws {
         let renderer = AppKitRenderer.running {
             HStack {
                 Image(.icon(.share)).width(24).height(24)
@@ -206,8 +252,8 @@ final class AppKitImageViewTests: XCTestCase {
         }
         defer { renderer.closeForTesting() }
         renderer.windowsForTesting.first?.window?.contentView?.layoutSubtreeIfNeeded()
-        let icon = try inkColour(of: XCTUnwrap(renderer.nativeViews(AppKitImageView.self).first))
-        let words = try inkColour(of: XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first))
+        let icon = try inkColor(of: XCTUnwrap(renderer.nativeViews(AppKitImageView.self).first))
+        let words = try inkColor(of: XCTUnwrap(renderer.nativeViews(AppKitTextView.self).first))
 
         XCTAssertTrue(sameInk(icon, words), "the icon's \(String(describing: icon)), the words' \(String(describing: words))")
     }

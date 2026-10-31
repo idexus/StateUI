@@ -10,6 +10,9 @@ struct TooltipSample: SampleContent, ExampleContent {
     static let title = "Tooltip"
     static let summary = "Words a view shows while the pointer rests on it."
 
+    /// Listed where the host shows tooltips: an iPhone and an iPad show none.
+    static func shows(_ device: Device) -> Bool { device.honors(VisualElementContract.tooltip) }
+
     // listing: TooltipSample
     var body: some View {
         VStack {
@@ -19,48 +22,45 @@ struct TooltipSample: SampleContent, ExampleContent {
             HStack {
                 // A button that is only a picture says what it does
                 // to the eye under the pointer.
-                Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                Button("Media")
+                    .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    .showsText(false)
                     .style(.iconButton)
                     .contentMode(.fit)
                     .width(48)
                     .height(48)
                     .padding(10)
-                    .accessibilityLabel("Media")
                     .tooltip(detailed ? "Opens the pictures, films and sounds" : "Media")
 
-                Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                Button("Layout")
+                    .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                    .showsText(false)
                     .style(.iconButton)
                     .contentMode(.fit)
                     .width(48)
                     .height(48)
                     .padding(10)
-                    .accessibilityLabel("Layout")
                     .tooltip(detailed ? "Opens the stacks, grids and placement" : "Layout")
 
                 // Any view takes one, not only a control.
-                Rectangle(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .width(48)
                     .height(48)
-                    .tooltip(detailed ? "The colour the gallery marks things with" : "Accent")
+                    .tooltip(detailed ? "The color the gallery marks things with" : "Accent")
             }
             .spacing(12)
 
-            HStack {
-                Switch($detailed)
-                    .accessibilityIdentifier("tooltip.detailed")
-                    .accessibilityLabel("Detailed")
-
-                Text("Detailed")
-                    .verticalAlignment(.center)
-            }
-            .spacing(12)
+            Switch($detailed)
+                .text("Detailed")
+                .accessibilityIdentifier("tooltip.detailed")
         }
         .spacing(16)
     }
     // listing: end
 
     var notes: (any View)? {
-        Text("An iPhone and an iPad show no tooltips; Android shows one after a long press too.")
+        Text("Android shows one after a long press too.")
             .fontSize(12)
             .textColor(Palette.subtle)
     }

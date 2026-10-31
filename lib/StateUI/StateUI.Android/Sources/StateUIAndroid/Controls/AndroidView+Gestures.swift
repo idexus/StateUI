@@ -27,23 +27,29 @@ extension AndroidView {
 
         if listening == .nothing || listening.hearing.contains(.hand) != hearing.contains(.hand) { watchTouches(hearing) }
         listening = told
+        longPressChanged()
         if hearing.contains(.drags) { press = DragRecognition(distance: .radius(Self.touchSlop(density: density))) }
         if hearing.contains(.hand) { handRecognition = HandRecognition(distance: .radius(Self.touchSlop(density: density))) }
         if countsTaps, hearing.contains(.taps) { taps = Self.doubleTap(density: density) }
         Java.call(
             listener.reference, JavaAPI.setGestures, .object(reference), .float(Float(density)),
-            .bool(countsTaps && hearing.contains(.taps)), .bool(hearing.contains(.drags)),
+            .bool(countsTaps && hearing.contains(.taps)), .bool(hearing.contains(.taps)),
+            .bool(hearing.contains(.taps) && !ownsClick), .bool(hearing.contains(.drags)),
             .bool(hearing.contains(.pinches)), .bool(hearing.contains(.pointer)), .bool(hearing.contains(.hand)),
             .bool(hearing.contains(.rotations)))
     }
 
     /// What the listener says the view heard, by the kind `StateUIGestures` numbers: a tap where it landed on the
     /// screen and when, in `phase`'s milliseconds - its place in its run counted by the host layer (`TapRun`) - a
-    /// pinch's step and where it is centred in points, the pointer.
+    /// pinch's step and where it is centered in points, the pointer.
     func heard(kind: Int32, phase: Int32, x: Double, y: Double, z: Double) {
         let point = Point(x: x, y: y)
         let input: HeardInput? = switch AndroidGestureKind(rawValue: kind) {
         case .tapped: .tap(run: taps.tapped(at: point, time: .milliseconds(Int(phase))))
+        case .buttonPress: GesturePhase(rawValue: phase).map { phase in
+            let size = standingFrame
+            return .press(phase, at: point, size: LayoutSize(width: size.width, height: size.height), byFinger: z != 0)
+        }
         case .pinched: GesturePhase(rawValue: phase).map { phase in
             let size = standingFrame
             let at = PinchStep.share(of: Point(x: y, y: z), width: size.width, height: size.height)

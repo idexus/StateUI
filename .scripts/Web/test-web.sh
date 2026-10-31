@@ -29,13 +29,17 @@ scratch="$package/.build/web"
 
 . "$here/swift-sdk.sh"
 
+# The tests' archive holds every module's objects and only gains members: one of a source since renamed or deleted
+# would link twice, or link what is gone. It is made anew each build.
+rm -f "$scratch/out/Products/Debug-webassembly-wasm32/libStateUIWebTests.a"
+
 STATEUI_HOST=web swift build --package-path "$package" --scratch-path "$scratch" --swift-sdk "$sdk" --build-tests
 products="$(STATEUI_HOST=web swift build --package-path "$package" --scratch-path "$scratch" --swift-sdk "$sdk" --show-bin-path)"
 program="$products/StateUIWebTests-test-runner.wasm"
 relay="$checkout/lib/StateUI/StateUI.Web/JavaScript/stateui-web.js"
 conformance="StateUIWebTests.WebConformanceTests"
 # The classes whose tests need a browser's own page: the host's own, and the conformance suite.
-hosts_in_browser="StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebShapeRoomTests,StateUIWebTests.WebKeyboardTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests,StateUIWebTests.WebTabTitleTests,StateUIWebTests.WebLeaveTests,StateUIWebTests.WebLookTests,StateUIWebTests.WebScrollOffsetTests,StateUIWebTests.WebHandTests,StateUIWebTests.WebTabStripTests,StateUIWebTests.WebPageElementTests,StateUIWebTests.WebCanvasViewTests,StateUIWebTests.WebEnvironmentTests"
+hosts_in_browser="StateUIWebTests.WebDrawnChildrenTests,StateUIWebTests.WebShapeRoomTests,StateUIWebTests.WebKeyboardTests,StateUIWebTests.WebFrameReportTests,StateUIWebTests.WebWindowClosingTests,StateUIWebTests.WebHistoryTests,StateUIWebTests.WebLinksTests,StateUIWebTests.WebTabTitleTests,StateUIWebTests.WebLeaveTests,StateUIWebTests.WebLookTests,StateUIWebTests.WebScrollOffsetTests,StateUIWebTests.WebHandTests,StateUIWebTests.WebPointerTests,StateUIWebTests.WebTabStripTests,StateUIWebTests.WebPageElementTests,StateUIWebTests.WebCanvasViewTests,StateUIWebTests.WebEnvironmentTests,StateUIWebTests.WebToggleTests,StateUIWebTests.WebChoiceTests,StateUIWebTests.WebEditMenuTests,StateUIWebTests.WebTestWindowTests,StateUIWebTests.WebHeldMenuTests,StateUIWebTests.WebWordsOnTheWayTests"
 in_browser="$conformance,$hosts_in_browser"
 
 browser () {

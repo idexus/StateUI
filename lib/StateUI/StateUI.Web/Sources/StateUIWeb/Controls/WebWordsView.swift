@@ -15,7 +15,7 @@ extension WebWordsView {
         WebRelay.setText(node, text)
     }
 
-    /// The words' font and colour; what the look leaves unsaid is the page's.
+    /// The words' font and color; what the look leaves unsaid is the page's.
     /// Design: docs/design/platforms/web/controls.md#words
     func setLook(_ look: TextLook) {
         for (name, value) in WebCSS.font(look) { style(name, value) }

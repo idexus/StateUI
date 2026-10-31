@@ -9,15 +9,18 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-private extension WindowType {
+private extension WindowType where Value == Void {
     static let fonts = WindowType("fonts")
     static let note = WindowType("note")
-    static let document = WindowType("document")
     static let about = WindowType("about")
 }
 
-private extension SceneKey {
-    static let shade = SceneKey("shade", of: String.self)
+private extension WindowType where Value == Int {
+    static let document = WindowType("document")
+}
+
+private extension SceneKey where Value == String {
+    static let shade = SceneKey("shade")
 }
 
 /// What a scene shares with every window of it.
@@ -45,11 +48,11 @@ private struct Home: View {
             Accent()
             Text(shade)
             Button("teal").onClicked { palette.accent = "teal" }
-            Button("new").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow() }
-            Button("fonts").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.fonts) }
-            Button("note").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.note) }
-            Button("document").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.document, value: 42) }
-            Button("about").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(.about) }
+            Button("new").onClicked(.ignoreWhileRunning) { try await application.openWindow() }
+            Button("fonts").onClicked(.ignoreWhileRunning) { try await application.openWindow(.fonts) }
+            Button("note").onClicked(.ignoreWhileRunning) { try await application.openWindow(.note) }
+            Button("document").onClicked(.ignoreWhileRunning) { try await application.openWindow(.document, value: 42) }
+            Button("about").onClicked(.ignoreWhileRunning) { try await application.openWindow(.about) }
             Button("dusk").onClicked { shade = "dusk" }
         }
     }
@@ -92,7 +95,7 @@ private struct StudioScene: Scene {
             .environment(palette)
         WindowGroup(.note) { Showing() }
             .environment(palette)
-        WindowGroup(.document, for: Int.self) { $number in Retargeting(number: $number) }
+        WindowGroup(.document) { $number in Retargeting(number: $number) }
             .environment(palette)
     }
 }
@@ -101,6 +104,43 @@ private struct StudioScene: Scene {
 private struct Studio: Application {
     var body: some Scene {
         StudioScene()
+        Window(.about) { Blank() }
+    }
+}
+
+/// A window's page that hears the links its window is given, and says the last - its own state.
+private struct LinkedPage: View {
+    @State private var opened = "none"
+
+    var body: some View {
+        Text("link \(opened)")
+            .onLinkOpened { opened = $0 }
+    }
+}
+
+/// A window whose stack, standing where its page stands, hears the links its window is given.
+private struct LinkedStack: View {
+    @State private var path: [Int] = []
+
+    var body: some View {
+        NavigationStack($path) {
+            Text("root")
+        } destination: { number in
+            Text("\(number)")
+        }
+        .onLinkOpened { _ in path = [7] }
+    }
+}
+
+/// The linked stack in a window.
+private struct LinkedStackApplication: Application {
+    var body: some Scene { WindowGroup { LinkedStack() } }
+}
+
+/// An application whose main windows show the linked page; About hears no link.
+private struct Linked: Application {
+    var body: some Scene {
+        WindowGroup { LinkedPage() }
         Window(.about) { Blank() }
     }
 }
@@ -312,6 +352,41 @@ final class SceneTests: XCTestCase {
         XCTAssertLessThan(scene, window, "and its window under that:\n\(dump)")
     }
 
+    // MARK: - A link opened
+
+    /// A view hears the links its window is given, with its own state; a window whose views hear none is not
+    /// offered one.
+    func testAViewHearsTheLinksItsWindowIsGiven() async throws {
+        start(Linked())
+        let renders = Renders()
+        let patch = renders.render(tree())
+        let window = try XCTUnwrap(patch.children.first?.children.first)
+        let page = try XCTUnwrap(Self.hearingLinks(in: window).first)
+
+        XCTAssertTrue(renders.fire(try XCTUnwrap(page.events?[.linkOpened]), with: [.string("notes://note/7")]))
+        XCTAssertEqual(texts(in: renders.renderFromScratch(tree())), ["link notes://note/7"])
+
+        try await application.openWindow(.about)
+        let both = renders.renderFromScratch(tree())
+        XCTAssertEqual(both.children.flatMap(\.children).map { Self.hearingLinks(in: $0).count }, [1, 0],
+                       "About - a scene of its own - hears none")
+    }
+
+    /// An arrangement where a page stands hears the links its window is given, as it takes a page's title.
+    func testAnArrangementWhereAPageStandsHearsLinks() throws {
+        start(LinkedStackApplication())
+        let patch = Renders().render(tree())
+        let window = try XCTUnwrap(patch.children.first?.children.first)
+
+        XCTAssertEqual(Self.hearingLinks(in: window).map(\.type), [.navigationStack])
+        XCTAssertFalse(hasComplained("linkOpened says something of a page"), "taken, as a title is")
+    }
+
+    /// Every patch under `patch` that hears links, outermost first.
+    private static func hearingLinks(in patch: HostPatch) -> [HostPatch] {
+        (patch.events?[.linkOpened] != nil ? [patch] : []) + patch.children.flatMap { hearingLinks(in: $0) }
+    }
+
     // MARK: - A scene stands once
 
     /// Every window of a scene SHARES ITS STATE: the palette one window changes is what every other window of the
@@ -372,23 +447,24 @@ final class SceneTests: XCTestCase {
             ["window 1", "fonts 2", "document 3", "document 4", "note 5", "note 6", "window 7"])
     }
 
-    /// What cannot open is said BY NAME: a kind no scene declares, a value a group is not for, and a window not
-    /// open to close.
+    /// What cannot open is said BY NAME: a kind no scene declares, a kind of a name the scene declares for another
+    /// value, and a window not open to close. A value for a kind of none, or none for a kind of one, does not
+    /// compile at all - `openWindow(.document)` is refused by the type its kind is.
     func testWhatCannotOpenIsSaidByName() async {
         Renders().render(tree())
 
-        let palette = WindowType("palette")
-
-        let undeclared = await refusal { try await self.application.openWindow(palette) }
-        let valueForOne = await refusal { try await self.application.openWindow(.fonts, value: 3) }
-        let noValue = await refusal { try await self.application.openWindow(.document) }
-        let otherType = await refusal { try await self.application.openWindow(.document, value: "x") }
+        let undeclared = await refusal { try await self.application.openWindow(WindowType<Void>("palette")) }
+        let valueForOne = await refusal { try await self.application.openWindow(WindowType<Int>("fonts"), value: 3) }
+        let noValue = await refusal { try await self.application.openWindow(WindowType<Void>("document")) }
+        let otherType = await refusal {
+            try await self.application.openWindow(WindowType<String>("document"), value: "x")
+        }
         let notOpen = await refusal { try await self.application.closeWindow(.fonts) }
 
-        XCTAssertEqual(undeclared, .undeclared(palette))
-        XCTAssertEqual(valueForOne, .wrongValue(.fonts))
-        XCTAssertEqual(noValue, .wrongValue(.document))
-        XCTAssertEqual(otherType, .wrongValue(.document))
+        XCTAssertEqual(undeclared, .undeclared("palette"))
+        XCTAssertEqual(valueForOne, .wrongValue("fonts"))
+        XCTAssertEqual(noValue, .wrongValue("document"))
+        XCTAssertEqual(otherType, .wrongValue("document"))
         XCTAssertEqual(notOpen, .notOpen)
     }
 
@@ -545,6 +621,24 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(again, .notOpen)
     }
 
+    /// A window's acts name it by its scene's key and its own; a session of no scene names none - its acts ask in
+    /// the window the user is in - and a window closed, or one whose scene ended, throws before anything is sent.
+    func testAWindowsActsNameItsSceneAndItself() async throws {
+        Renders().render(tree())
+        try await application.openWindow(.fonts)
+        let studio = try scene("1")
+        let fonts = studio.windowSession("fonts 2")
+
+        XCTAssertEqual(try fonts.address.scene, Name("1"))
+        XCTAssertEqual(try fonts.address.window, Name("fonts 2"))
+        XCTAssertEqual(try WindowSession().address.window, Name(""))
+
+        try await fonts.close()
+        XCTAssertThrowsError(try fonts.address) { XCTAssertEqual($0 as? WindowError, .notOpen) }
+        let refused = await refusal { _ = try await fonts.hideOnScreenKeyboard() }
+        XCTAssertEqual(refused, .notOpen)
+    }
+
     /// A window's session is the same one for as long as the window is open, and goes with it.
     func testAWindowsSessionLastsAsLongAsItsWindow() async throws {
         let renders = Renders()
@@ -570,7 +664,7 @@ final class SceneTests: XCTestCase {
     func testNoApplicationSaysWhatItsSessionHolds() throws {
         // What an application is told through its session.
         let held: [(kind: String, names: [String])] = [
-            ("Application", ["styles", "motion", "persistentKeys"]),
+            ("Application", ["styles", "motion"]),
         ]
 
         var files = [SourceTree.repository.appendingPathComponent("README.md")]
@@ -785,8 +879,8 @@ final class SceneTests: XCTestCase {
     /// A value a scene kept comes back WITH ITS FIRST WINDOW, from the scene's first build; a scene's later
     /// windows find the scene standing.
     func testAValueASceneKeptComesBackWithItsFirstWindow() {
-        HostBoundary.connectWindow(restoring: ["shade": .string("dark")])
-        HostBoundary.connectWindow(kind: "fonts", restoring: ["shade": .string("ignored")])
+        HostBoundary.connectWindow(restoring: ["shade": .string("\"dark\"")])
+        HostBoundary.connectWindow(kind: "fonts", restoring: ["shade": .string("\"ignored\"")])
 
         let patch = Renders().render(tree())
 
@@ -804,7 +898,7 @@ final class SceneTests: XCTestCase {
         let saves = OpenScenes.shared.takeSaves()
 
         XCTAssertEqual(saves.map(\.act), [.persistSceneValue])
-        XCTAssertEqual(saves.first?.arguments, [.name("1"), .name("shade"), .string("dusk")])
+        XCTAssertEqual(saves.first?.arguments, [.name("1"), .name("shade"), .string("\"dusk\"")])
     }
 
     // MARK: - A window and the view it shows

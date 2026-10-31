@@ -23,7 +23,7 @@ private struct BatteryLabel: View {
     @Environment(\.device) var device
 
     var body: some View {
-        ModifiedContent(node: label("\(Int(device.battery.chargeLevel * 100))% \(device.battery.state)"))
+        AnyView(node: label("\(Int(device.battery.chargeLevel * 100))% \(device.battery.state)"))
     }
 }
 
@@ -38,7 +38,7 @@ private struct Heading: View {
     var fits: Bool { device.display.orientation != .landscape }
 
     var body: some View {
-        ModifiedContent(node: label(fits ? "fits" : "too wide"))
+        AnyView(node: label(fits ? "fits" : "too wide"))
     }
 }
 
@@ -48,7 +48,7 @@ private struct Bystander: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label("still"))
+        return AnyView(node: label("still"))
     }
 }
 
@@ -87,7 +87,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.device.info.manufacturer = ""
         StandardEnvironment.device.info.name = ""
         StandardEnvironment.device.info.versionString = ""
-        StandardEnvironment.device.info.deviceType = .unknown
+        StandardEnvironment.device.info.isVirtual = nil
         StandardEnvironment.application.info.name = ""
         StandardEnvironment.application.info.packageName = ""
         StandardEnvironment.application.info.versionString = ""
@@ -255,6 +255,15 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.device.battery.powerSource, .battery)
         XCTAssertEqual(StandardEnvironment.device.battery.energySaverStatus, .off)
 
+        HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: true, prefersHigherContrast: true, isScreenReaderOn: true, textScale: 1.3))
+        XCTAssertTrue(StandardEnvironment.device.accessibility.reducesMotion)
+        XCTAssertTrue(StandardEnvironment.device.accessibility.prefersHigherContrast)
+        XCTAssertTrue(StandardEnvironment.device.accessibility.isScreenReaderOn)
+        XCTAssertEqual(StandardEnvironment.device.accessibility.textScale, 1.3)
+        HostBoundary.setAccessibilityInfo(HostAccessibilityInfo(
+            reducesMotion: false, prefersHigherContrast: false, isScreenReaderOn: false, textScale: 1))
+
         HostBoundary.setConnectivityInfo(HostConnectivityInfo(
             networkAccess: .constrainedInternet, connectionProfiles: [.wifi, .ethernet]))
         XCTAssertEqual(StandardEnvironment.device.connectivity.networkAccess, .constrainedInternet)
@@ -284,14 +293,14 @@ final class HostEnvironmentTests: XCTestCase {
 
         HostBoundary.setDeviceInfo(HostDeviceInfo(
             formFactor: .desktop, platform: "macOS", model: "Mac14,9", manufacturer: "Apple",
-            name: "Studio", versionString: "26.0", deviceType: .physical))
+            name: "Studio", versionString: "26.0", isVirtual: false))
         XCTAssertEqual(StandardEnvironment.device.info.formFactor, .desktop)
         XCTAssertEqual(StandardEnvironment.device.info.platform, "macOS")
         XCTAssertEqual(StandardEnvironment.device.info.model, "Mac14,9")
         XCTAssertEqual(StandardEnvironment.device.info.manufacturer, "Apple")
         XCTAssertEqual(StandardEnvironment.device.info.name, "Studio")
         XCTAssertEqual(StandardEnvironment.device.info.versionString, "26.0")
-        XCTAssertEqual(StandardEnvironment.device.info.deviceType, .physical)
+        XCTAssertEqual(StandardEnvironment.device.info.isVirtual, false)
 
         HostBoundary.setApplicationInfo(HostApplicationInfo(
             name: "Gallery", packageName: "com.example.gallery", versionString: "1.2", buildString: "34"))
@@ -306,21 +315,27 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.application.phase, .inactive)
     }
 
-    /// The device says whether the platform honours a member: what its host realizes, and nothing it leaves out.
-    func testTheDeviceSaysWhatThePlatformHonours() {
+    /// The device says whether the platform honors a member - a property, an event, an act: what its host
+    /// realizes, and nothing it leaves out.
+    func testTheDeviceSaysWhatThePlatformHonors() {
         HostBoundary.setRealization(HostRealization(
-            elements: ["Picker"],
-            members: [HostRealizedMember(element: "Picker", owner: "Picker", member: "isOpen")]))
+            elements: ["Picker", "Map"],
+            members: [
+                HostRealizedMember(element: "Picker", owner: "Picker", member: "isOpen"),
+                HostRealizedMember(element: "Map", owner: "Map", member: "moveToRegion"),
+            ]))
         defer { HostBoundary.setRealization(HostRealization()) }
         let device = Device()
 
-        XCTAssertTrue(device.honours(PickerContract.isOpen))
-        XCTAssertFalse(device.honours(PickerContract.placeholder), "a member its host leaves out")
-        XCTAssertFalse(device.honours(PickerContract.opened), "an event its host raises not")
+        XCTAssertTrue(device.honors(PickerContract.isOpen))
+        XCTAssertFalse(device.honors(PickerContract.placeholder), "a member its host leaves out")
+        XCTAssertFalse(device.honors(PickerContract.opened), "an event its host raises not")
+        XCTAssertTrue(device.honors(MapContract.moveToRegion), "an act its host performs")
+        XCTAssertFalse(device.honors(WebViewContract.goBack), "and one it does not")
     }
 
     /// Where the host hands its register, the register answers - what the platform contract shows: a member the
-    /// host judges its family never has is not honoured, though its runtime registered it.
+    /// host judges its family never has is not honored, though its runtime registered it.
     func testTheDeviceAnswersFromTheHostsRegister() {
         HostBoundary.setRealization(HostRealization(
             elements: ["Picker"],
@@ -335,19 +350,19 @@ final class HostEnvironmentTests: XCTestCase {
         }
         let device = Device()
 
-        XCTAssertFalse(device.honours(VisualElementContract.tooltip), "never on this family")
-        XCTAssertTrue(device.honours(PickerContract.isOpen), "in part")
-        XCTAssertFalse(device.honours(PickerContract.placeholder), "said nowhere")
+        XCTAssertFalse(device.honors(VisualElementContract.tooltip), "never on this family")
+        XCTAssertTrue(device.honors(PickerContract.isOpen), "in part")
+        XCTAssertFalse(device.honors(PickerContract.placeholder), "said nowhere")
     }
 
     /// A tier's member the register records element by element - realized on one wearer, never on another - is
-    /// honoured in part: the device answers as it did before the register came.
-    func testTheDeviceHonoursATierMemberSomeElementsRealize() {
+    /// honored in part: the device answers as it did before the register came.
+    func testTheDeviceHonorsATierMemberSomeElementsRealize() {
         HostBoundary.setRealization(HostRealization(
             elements: ["Slider", "Switch"],
             members: [HostRealizedMember(element: "Slider", owner: "TintElement", member: "tint")]))
         let device = Device()
-        XCTAssertTrue(device.honours(TintElementContract.tint), "before the register")
+        XCTAssertTrue(device.honors(TintElementContract.tint), "before the register")
 
         HostBoundary.setRegister(HostRegister(records: [
             .complete(TintElementContract.tint, on: SliderContract.self),
@@ -358,6 +373,6 @@ final class HostEnvironmentTests: XCTestCase {
             HostBoundary.setRealization(HostRealization())
         }
 
-        XCTAssertTrue(device.honours(TintElementContract.tint), "after it, the same answer")
+        XCTAssertTrue(device.honors(TintElementContract.tint), "after it, the same answer")
     }
 }

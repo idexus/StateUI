@@ -31,11 +31,38 @@ can interrupt, such as a card being dragged or a value still being chosen.
 
 ## Every law arrives
 
-Both laws arrive at what the tree said, and that is why there are only two.
-A law with no destination - a throw, bled off, coming to rest wherever its
-speed runs out - would leave the screen showing a value nothing described,
-and because an absent field means unchanged, nothing could ever put it
-right. The physics of a throw lives where a throw is: in the scroller.
+Every law arrives at what the tree said, a glide too. A law with no
+destination - a throw, bled off, coming to rest wherever its speed runs out -
+would leave the screen showing a value nothing described, and because an
+absent field means unchanged, nothing could ever put it right. A throw
+names where it comes to rest first, and glides there.
+
+## A glide
+
+A glide sets out at the speed the value has and slows onto its destination
+on `cubicOut`, as long as that speed takes there - three times the way over
+the speed, where the curve sets out at the value's own speed - never shorter
+than 80 milliseconds nor longer than its longest; held to either, it is bent
+to set out at its speed as an eased lane already moving is. A lane setting
+out still, or away from its destination, takes half its longest. Each lane
+glides by its own way, and the glide rests when the last lane does. It is
+the law a motion layout's throw goes on by, the input's eased motion going on
+from the hand's speed, and an application's (`Motion.glide(longest:)`); on
+the image it is `[5, longest, 0]`. It glides on `cubicOut` alone: a glide's
+length is the one that sets the curve out at the value's speed, which a curve
+setting out flat - every `In` and `InOut` - cannot give.
+
+## Where a throw reaches
+
+How far a value going at a speed carries on under a law alone
+(`HostMotionLaw.carried`) is its speed for the law's length over how steeply
+the law sets out (`HostMotionLaw.setsOut`): an eased law on its curve's first
+slope, never under a tenth; a glide and a spring as `cubicOut` does - a
+spring's length its response. A law that does not animate carries it
+nowhere. `journey.reach(_:)` is that, lane by lane, from where the value
+stands at the speed it has; a motion layout's throw finds the snap it goes on
+to by the same rule, so a value an application throws and a run the hand
+throws reach alike.
 
 ## Custom animates in an engine
 
@@ -55,10 +82,14 @@ what makes `move(to:)` without a motion and a plain assignment agree, so the
 two differ only in being awaited. `.none` applies a change at once, and an
 ordinary property that snaps carries no `HostTransition` beside its value.
 
-Both are made of an eased motion of no duration on this side. On a carried
-state they cross as themselves, the first of a law's three lanes naming
-which, and an inherited law is resolved against the element's motion on its
-way out.
+Each is a kind of its own, as `.custom` is: a motion is one of five kinds -
+inherited, none, custom, eased, spring - and only the last two carry numbers,
+an eased one its length and curve, a spring its response and damping. An
+eased motion of no time is `none`, so nothing has two spellings, and a host
+asks a motion whether it animates (`animates`) rather than reading flags
+that could disagree. On a carried state each kind crosses as itself, the
+first of a law's three lanes naming which, and an inherited law is resolved
+against the element's motion on its way out.
 
 ## The standard motion
 
@@ -87,7 +118,7 @@ both, which is why `.cubicOut` suits something arriving on screen and
 
 `MotionValues` names groups rather than single properties, because that is
 how a user thinks about what they are watching: where a view sits, how big
-it is, its shape, its colours. A motion written on a view applies to all of
+it is, its shape, its colors. A motion written on a view applies to all of
 them unless it names some. A panel whose content changes shape says
 `.motion(.none, .size)`: its children move to their new places and take
 their new size at once, since a view growing out of nothing is the one
@@ -95,8 +126,8 @@ movement a user reads as a fault. How big a view is and how it is drawn stay
 apart: `.size` is its width and height, `.shape` its corner radius and the
 width of its outline, so a panel's size can arrive while its corners travel.
 
-A colour's group is read off the value rather than from a list of property
-names, so a colour property added later is in the group the day it arrives.
+A color's group is read off the value rather than from a list of property
+names, so a color property added later is in the group the day it arrives.
 Every other property says its group through its member's `moves`; see
 [moves](../contracts/member-facts.md#moves).
 

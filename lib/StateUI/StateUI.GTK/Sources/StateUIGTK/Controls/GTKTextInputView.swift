@@ -12,6 +12,9 @@ protocol GTKTextInputView: GTKView {
     /// What the view does when the user changes its words, handed all of them.
     var onTextChanged: ((String) -> Void)? { get set }
 
+    /// The class drawing the outline and the shape the tree gives the view; nil for the platform's.
+    var outlineClass: String? { get set }
+
     /// The words the view shows now, read back from GTK.
     var text: String { get }
 
@@ -28,13 +31,16 @@ protocol GTKTextInputView: GTKView {
     func setTextCase(_ textCase: TextCase?)
 
     /// Whether the user can change the words, and what the input method is told of them.
-    func setBehaviour(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose)
+    func setBehavior(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose)
 
     /// The words across the view.
     func setAlignment(_ alignment: TextAlignment)
 
     /// The class of the display-wide sheet giving the words their look.
     func setWordsClass(_ name: String?)
+
+    /// Whether every digit stands as wide as the others, as the words' own attribute.
+    func setTabularDigits(_ tabular: Bool)
 
     /// Puts the caret `start` characters in and selects `length` from it.
     func select(start: Int, length: Int)
@@ -52,9 +58,23 @@ extension GTKTextInputView {
         case .words: GTK_INPUT_PURPOSE_FREE_FORM
         case .email: GTK_INPUT_PURPOSE_EMAIL
         case .number: GTK_INPUT_PURPOSE_NUMBER
+        case .digits: GTK_INPUT_PURPOSE_DIGITS
         case .telephone: GTK_INPUT_PURPOSE_PHONE
         case .url: GTK_INPUT_PURPOSE_URL
         }
         return (GtkInputHints(rawValue: hints), purpose)
+    }
+}
+
+extension GTKTextInputView {
+    /// The outline the tree gives the view - its color and width - and the shape its ground and outline follow, as a
+    /// class of the host's style sheet over the theme's frame; the theme's where it gives none.
+    /// Design: docs/design/platforms/gtk/controls.md#a-fields-outline
+    func setOutline(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
+        let drawn = GTKStyleSheet.box(
+            fill: nil, stroke: stroke.flatMap { GTKBrush($0).firstColor },
+            lineWidth: stroke == nil ? nil : BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth),
+            shape: shape.map(BoxArithmetic.outline))
+        swapClass(&outlineClass, to: drawn)
     }
 }

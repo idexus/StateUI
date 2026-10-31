@@ -35,7 +35,7 @@
         case .zStack:
             return property == .padding || layoutBoxProperties.contains(property)
 
-        case .layoutEngine:
+        case .motionLayout, .fill, .space:
             return layoutBoxProperties.contains(property)
 
         case .scrollView:
@@ -54,9 +54,6 @@
         case .textField, .textEditor, .searchField:
             return fieldProperties.contains(property)
 
-        case .radioButton:
-            return radioProperties.contains(property)
-
         case .picker:
             return pickerProperties.contains(property)
 
@@ -72,7 +69,7 @@
         case .progressBar:
             return property == .progress
 
-        case .navigationStack, .tabView, .splitView, .modalStack:
+        case .navigationStack, .tabView, .splitView:
             return barProperties.contains(property)
 
         case .rectangle:
@@ -93,12 +90,12 @@
     }
 
     private static let nativeViewTypes: Set<NodeType> = [
-        .activityIndicator, .button,
+        .spinner, .button,
         .checkBox, .datePicker, .textEditor, .ellipse, .textField, .canvas,
         .grid, .hStack, .image, .itemsView, .text, .line,
-        .path, .picker, .polygon, .polyline, .progressBar, .radioButton,
+        .path, .picker, .polygon, .polyline, .progressBar,
         .rectangle, .scrollView, .searchField, .slider,
-        .stepper, .switch, .timePicker, .vStack, .zStack, .layoutEngine,
+        .stepper, .switch, .timePicker, .vStack, .zStack, .motionLayout, .fill, .space,
     ]
 
     private static let shapeTypes: Set<NodeType> = [
@@ -110,7 +107,7 @@
         .width, .height,
         .minimumWidth, .minimumHeight,
         .maximumWidth, .maximumHeight,
-        .rotation, .scale, .scaleX, .scaleY, .translationX, .translationY,
+        .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .translationX, .translationY,
         .margin,
     ]
 
@@ -118,7 +115,7 @@
 
     private static let stackProperties: Set<Prop> = [.padding, .spacing]
 
-    /// What a layout draws of its own box.
+    /// What a layout, a space or a fill draws of its own box.
     private static let layoutBoxProperties: Set<Prop> = [.background, .stroke, .lineWidth, .shape]
 
     private static let gridProperties: Set<Prop> = [
@@ -144,13 +141,12 @@
         .fontSize, .textColor, .placeholderColor,
     ]
 
-    private static let radioProperties: Set<Prop> = [.padding, .fontSize, .textColor]
 
     private static let pickerProperties: Set<Prop> = [.fontSize, .textColor, .tint]
 
     private static let sliderProperties: Set<Prop> = [.value, .tint]
 
-    private static let barProperties: Set<Prop> = [.barBackgroundColor, .barForegroundColor]
+    private static let barProperties: Set<Prop> = [.barBackground, .barForegroundColor]
 
     private static let shapeProperties: Set<Prop> = [
         .fill, .stroke, .lineWidth, .dashPhase, .miterLimit,

@@ -25,8 +25,8 @@ private struct Profile {
 private struct Settings {
     @State var profile = Profile()
 
-    /// What `TextField($profile.name)` would be given.
-    var name: Binding<String> { $profile.name }
+    /// One property of the state: `$profile.name`.
+    var name: StatePart<String> { $profile.name }
 }
 
 @MainActor
@@ -77,7 +77,7 @@ private struct Shelf: View {
     var body: some View {
         VStack {
             if let extra {
-                ModifiedContent(node: extra.node)
+                AnyView(extra)
             }
 
             Button("Shelf: \(count)").onClicked { count += 1 }
@@ -104,8 +104,8 @@ private struct TitledPage: View {
     let titled: Bool
 
     var body: some View {
-        let counter = ModifiedContent(node: Counter().node)
-        return titled ? ModifiedContent(node: counter.title("Named").node) : counter
+        let counter = AnyView(Counter())
+        return titled ? AnyView(counter.title("Named")) : counter
     }
 }
 
@@ -142,22 +142,6 @@ final class StateTests: XCTestCase {
 
         fresh.wrappedValue = 7
         XCTAssertEqual(old.get(), 7, "and a handler holding the old box reads the new value")
-    }
-
-    func testABindingCanBeBuiltFromAGetterAndASetter() {
-        var held = "start"
-
-        let binding = Binding(get: { held }, set: { held = $0 })
-
-        XCTAssertEqual(binding.wrappedValue, "start")
-
-        binding.wrappedValue = "typed"
-
-        XCTAssertEqual(held, "typed", """
-            The escape hatch: a binding to something this library does not own. \
-            Whether the write asks for a render is then the setter's business - \
-            this one owns nothing, so nothing was asked for.
-            """)
     }
 
     func testABindingReachesOnePropertyOfAValue() {
@@ -744,7 +728,8 @@ extension StateTests {
 
         XCTAssertEqual(readers.count, 2, "the body that printed the state was not built again for the move")
         XCTAssertEqual(fade.get(), 0.2, "and it reads where the value is going")
-        XCTAssertEqual(fade.projectedValue.journey.motion, .eased(.milliseconds(400), .linear), "on the move's own law")
+        XCTAssertEqual(fade.storage.journeyLanes?.motion, .eased(.milliseconds(400), .linear), "on the move's own law")
+        XCTAssertEqual(fade.projectedValue.journey.motion, .inherited, "the value's own standing")
         XCTAssertEqual(fade.projectedValue.journey.value, 1, "the value waits for the host to walk it")
     }
 

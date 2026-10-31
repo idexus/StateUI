@@ -7,7 +7,7 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension TextLook {
-    /// The look as UIKit's text attributes in `traits`: the font, the words' colour, what stands behind them, the
+    /// The look as UIKit's text attributes in `traits`: the font, the words' color, what stands behind them, the
     /// space between the letters, a line's height, and the lines under or through them.
     func attributes(color standingColor: UIColor, in traits: UITraitCollection = .current) -> [NSAttributedString.Key: Any] {
         let shown = UIFont.stateUI(self, in: traits)
@@ -28,7 +28,7 @@ extension TextLook {
     }
 
     /// The look as a button's title takes it: its font in the traits the button updates in, the space between its
-    /// letters, and its colour where it says one - the button's own where it says none.
+    /// letters, and its color where it says one - the button's own where it says none.
     func titleTransformer(color standingColor: UIColor) -> UIConfigurationTextAttributesTransformer {
         // The configuration keeps the transformer: it holds the look's values, never the button that holds it.
         let (look, colored) = (self, color != nil)
@@ -53,9 +53,11 @@ extension UIButton {
 }
 
 extension UIEdgeInsets {
-    /// StateUI's insets in UIKit's order.
-    init(_ insets: Insets) {
-        self.init(top: insets.top, left: insets.left, bottom: insets.bottom, right: insets.right)
+    /// StateUI's insets in UIKit's sides: the start at the left or the right as a view of `attribute` lays out.
+    /// Design: docs/design/host/layout.md#right-to-left
+    init(_ insets: Insets, in attribute: UISemanticContentAttribute) {
+        let sides = insets.sides(in: attribute == .forceRightToLeft ? .rightToLeft : .leftToRight)
+        self.init(top: sides.top, left: sides.left, bottom: sides.bottom, right: sides.right)
     }
 }
 #endif

@@ -4,7 +4,7 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// An ActivityIndicator: a ring turning while work goes on, at its own size in the middle of the view's frame - a
+/// An Spinner: a ring turning while work goes on, at its own size in the middle of the view's frame - a
 /// busy progress bar for assistive technology; stopped, it shows nothing and keeps its room.
 /// Design: docs/design/platforms/web/controls.md#indicators
 @MainActor
@@ -27,7 +27,7 @@ final class WebActivityView: WebDOMView {
         attribute("aria-busy", running ? "true" : "false")
     }
 
-    /// The ring's colour; nil for the page's accent.
+    /// The ring's color; nil for the page's accent.
     func setTint(_ tint: HostValue?) {
         style("--stateui-on", WebCSS.color(tint))
     }

@@ -6,7 +6,7 @@
 
 /// A Grid: the host layer's grid arithmetic over the relay's panel.
 @MainActor
-final class WinUIGridView: WinUITravellingLayout {
+final class WinUIGridView: WinUITravelingLayout {
     var rows: [GridLength] = [] {
         didSet { if rows != oldValue { invalidateMeasurements() } }
     }

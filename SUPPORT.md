@@ -21,7 +21,7 @@ the whole answer.
   answer; none is promised one.
 - **A response time.** There is none, and nothing here implies one.
 - **Help with your own application's code.** Questions about StateUI's own
-  behaviour are the interesting kind; an application's own design is its
+  behavior are the interesting kind; an application's own design is its
   author's to answer.
 - **A stable API.** This is a version before 1.0 and the shape of things is still being
   found, so **using StateUI in a project is at your own risk**: names and

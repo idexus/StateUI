@@ -40,9 +40,9 @@ final class AndroidPickerViewTests: XCTestCase {
         try onMainActor {
             let chosen = State(wrappedValue: "S")
             let heard = Received<String>()
-            let written = Binding(get: { chosen.wrappedValue }, set: { heard.values.append($0); chosen.wrappedValue = $0 })
+            let sizes = ["S", "M", "L"]
             let host = AndroidRenderer.running {
-                Picker(["S", "M", "L"], selection: written)
+                Picker(sizes, selection: chosen.projectedValue).onSelectedIndexChanged { heard.values.append(sizes[$0]) }
             }
             host.layOut()
             let picker = try XCTUnwrap(host.views(AndroidPickerView.self).first)

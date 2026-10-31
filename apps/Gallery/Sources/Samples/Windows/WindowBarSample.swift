@@ -1,10 +1,10 @@
 import StateUI
 
 // listing: WindowBarSample
-/// What the gallery's window says on its bar, written by the sample and declared by the window.
+/// What the gallery's window says on its bar, written by the sample and declared by the window and the sample's page.
 @MainActor
 final class WindowBarState {
-    /// The line under the bar's title.
+    /// The line under the sample page's title.
     @State var subtitle = ""
 
     /// Whether the window's bar carries "Surprise me" on every page.
@@ -12,8 +12,7 @@ final class WindowBarState {
 }
 // listing: end
 
-/// The bar the window declares on its page: the application's name, a line under the title, and an action on every
-/// page.
+/// The bar: the line a page says under its title, and an action the window declares on every page.
 struct WindowBarSample: SampleContent, ExampleContent {
     // listing: WindowBarSample
     /// The values shared with the gallery window the sample is in.
@@ -22,7 +21,7 @@ struct WindowBarSample: SampleContent, ExampleContent {
 
     static let id = "windowBar"
     static let title = "Window bar"
-    static let summary = "Type a line for the bar, then turn on an action every page carries."
+    static let summary = "Type a line under this page's title, then turn on an action every page carries."
 
     static var code: String { Listings.joined("WindowBarSample", "MainPage.bar") }
 
@@ -36,17 +35,13 @@ struct WindowBarSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Subtitle for the window")
                 .placeholder("Window subtitle")
 
-            HStack {
-                Switch(bar.$showsSurprise)
-                    .accessibilityIdentifier("windowBar.surprise")
-                    .accessibilityLabel("Show an action on every page")
-
-                Text("Surprise me on every page")
-                    .verticalAlignment(.center)
-            }
-            .spacing(8)
+            Switch(bar.$showsSurprise)
+                .text("Surprise me on every page")
+                .accessibilityIdentifier("windowBar.surprise")
         }
         .spacing(12)
+        // The line under the page's title, wherever its title shows.
+        .subtitle(bar.$subtitle)
     }
     // listing: end
 }

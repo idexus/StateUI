@@ -8,7 +8,7 @@ of cases, or each part of the largest, in `WinUIConformanceTests`.
 
 A user's act goes through UI Automation where WinUI offers a pattern for it -
 Invoke for a button, a menu's item and a search box's query, Toggle,
-SelectionItem for a radio button, ExpandCollapse for a picker's list, a
+ExpandCollapse for a picker's list, a
 range's value. A picker's choice, a tab, a day, a time and a stepper's words
 are written straight into the control's own selection or value, outside a
 program's write. Any other act goes through the relay's callback that WinUI's
@@ -39,7 +39,7 @@ the driver's scroll of a list is done once the view stands where it was
 asked, as far as the list reaches. A list asked to move before its first
 frames are composed stays where it is.
 
-## A colour at a point
+## A color at a point
 
 A bitmap WinUI renders of an element that is no panel - a shape, a picture -
 holds what the element draws from the first thing drawn, not its room from
@@ -68,7 +68,7 @@ in their last suite.
 
 A member's value is read from the control WinUI holds, never from what the
 host last wrote: through the relay's general reader, `stateui_winui_read`, by
-the native property's name - a font, a colour, a padding, a border, a field's
+the native property's name - a font, a color, a padding, a border, a field's
 placeholder and bound, a path's paint, a layout's box, a range, a date, a scroll
 bar, the chrome's title, way back and actions, a row's tabs - and the relay's
 readers of words, toggles, values, choices and dates. What WinUI keeps
@@ -78,4 +78,10 @@ growing, which is StateUI's measuring - the driver says WinUI holds none of it
 effect proves the member.
 
 A running ring's automation peer says it is busy before the name its element
-holds, so the driver reads an activity indicator's label from the element.
+holds, so the driver reads a spinner's label from the element.
+
+What was said to the screen reader is the relay's own list of what it handed
+UI Automation to announce, and what was launched the host's record of what it
+handed Windows: a test runs with no screen reader to hear the one and holds
+back the other, so the driver names both (`byHost`), and a case proving a
+member through them proves the host's own - ✓.

@@ -9,14 +9,15 @@ import XCTest
 /// A member is reached through its contract, never by a token and a list of
 /// values; a view stands where a view stands, never among a text's runs or a
 /// map's markers; a scene is made of windows, and an application of scenes; a
-/// modifier is offered only where it can be honoured. Each closed road is written here
+/// modifier is offered only where it can be honored. Each closed road is written here
 /// the way an application would write it, and must NOT compile against the
 /// library's public module; the open road beside it must. The pair is what makes
 /// the refusal mean something: the two listings differ in that one spelling, so
 /// a failure is the spelling's and never a typo's.
 ///
 /// Compiled as an application compiles - a plain `import StateUI` - with the
-/// compiler and the module the handbook's examples are checked against.
+/// compiler and the module the handbook's examples are checked against; a
+/// road a host takes, as its registrations do, with `@_spi(Host)`.
 @MainActor
 final class ContractRoadsTests: XCTestCase {
     /// A road the API closes, and the road it offers to the same place.
@@ -24,6 +25,7 @@ final class ContractRoadsTests: XCTestCase {
         let name: String
         let closed: String
         let open: String
+        var host = false
     }
 
     /// An application's own control, acts and event - what every listing leans
@@ -111,8 +113,12 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = Device(battery: Battery(chargeLevel: 1)).battery.chargeLevel"),
         Road(
             name: "a provided object replaced from below",
-            closed: "Environment<ApplicationSession>().projectedValue.wrappedValue = ApplicationSession()",
-            open: "_ = Environment<ApplicationSession>().projectedValue.motion"),
+            closed: "Environment<ApplicationSession>().wrappedValue = ApplicationSession()",
+            open: "_ = Environment<ApplicationSession>().wrappedValue.$motion"),
+        Road(
+            name: "a provided object's property lent through the environment",
+            closed: "_ = Environment<ApplicationSession>().projectedValue",
+            open: "let motion: Binding<Motion> = Environment<ApplicationSession>().wrappedValue.$motion; _ = motion"),
         Road(
             name: "a style asked for by a name as words",
             closed: #"_ = Text("x").style("Headline")"#,
@@ -155,8 +161,12 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Button("Save").visualState(.pointerOver) { $0.opacity(0.5) }"#),
         Road(
             name: "an action standing in a stack",
-            closed: #"_ = VStack { ToolbarItem("Save") }"#,
-            open: #"_ = VStack { Text("Notes") }.toolbar { ToolbarItem("Save") }"#),
+            closed: #"_ = VStack { ToolbarButton("Save") }"#,
+            open: #"_ = VStack { Text("Notes") }.toolbar { ToolbarButton("Save") }"#),
+        Road(
+            name: "a group inside a group",
+            closed: #"_ = Text("Notes").toolbar { ToolbarGroup { ToolbarGroup { ToolbarButton("Bold") } } }"#,
+            open: #"_ = Text("Notes").toolbar { ToolbarGroup { ToolbarButton("Bold") } }"#),
         Road(
             name: "a run of text standing in a stack",
             closed: #"_ = VStack { TextSpan("Hi") }"#,
@@ -191,8 +201,18 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Text().spans { TextSpan("Hi") }"#),
         Road(
             name: "a view standing among a map's markers",
-            closed: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).markers { Text("Castle") }"#,
-            open: #"_ = Map(latitude: 52, longitude: 21, radiusMeters: 500).markers { Marker("Castle") }"#),
+            closed: #"_ = Map(region: MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 500)).markers { Text("Castle") }"#,
+            open: #"_ = Map(region: MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 500)).markers { Marker(at: Location(latitude: 52, longitude: 21)) }"#),
+        Road(
+            name: "a tab selection of another type than the tabs",
+            closed: """
+                @State var tab = "a"
+                _ = TabView([1, 2]) { Text("\\($0)") }.selection($tab)
+                """,
+            open: """
+                @State var tab = 1
+                _ = TabView([1, 2]) { Text("\\($0)") }.selection($tab)
+                """),
         Road(
             name: "a view standing on the menu bar",
             closed: #"_ = Text("Notes").menuBar { Text("File") }"#,
@@ -252,17 +272,199 @@ final class ContractRoadsTests: XCTestCase {
             closed: #"_ = SearchField("Name").tint(.red)"#,
             open: #"_ = CheckBox(true).tint(.red)"#),
         Road(
-            name: "an outline around a radio button",
-            closed: #"_ = RadioButton("Small").stroke(.gray)"#,
+            name: "an outline around a check box",
+            closed: #"_ = CheckBox(true).text("Small").stroke(.gray)"#,
             open: #"_ = Button("Small").stroke(.gray)"#),
         Road(
             name: "a stack's line in a menu",
-            closed: #"_ = Menu("File") { MenuItem("New"); Divider() }"#,
+            closed: #"_ = Menu("File") { MenuItem("New"); Separator() }"#,
             open: #"_ = Menu("File") { MenuItem("New"); MenuSeparator() }"#),
         Road(
             name: "a menu's separator in a stack",
             closed: "_ = VStack { MenuSeparator() }",
-            open: "_ = VStack { Divider() }"),
+            open: "_ = VStack { Separator() }"),
+        Road(
+            name: "an event among the properties a view takes together",
+            closed: """
+                final class Lamp {}
+                Registry<Lamp>().add(BeaconContract.self, create: { _ in Lamp() }) { beacon in
+                    beacon.applies(BeaconContract.title, BeaconContract.tapped) { _, _ in }
+                }
+                """,
+            open: """
+                final class Lamp {}
+                Registry<Lamp>().add(BeaconContract.self, create: { _ in Lamp() }) { beacon in
+                    beacon.applies(BeaconContract.title, BeaconContract.level) { _, _ in }
+                }
+                """,
+            host: true),
+        Road(
+            name: "an event in a list of properties",
+            closed: "_ = PropertyList(BeaconContract.title, BeaconContract.tapped)",
+            open: "_ = PropertyList(BeaconContract.title, BeaconContract.level)",
+            host: true),
+        Road(
+            name: "an act among a child's events",
+            closed: """
+                final class Lamp {}
+                Registry<Lamp>().add(BeaconContract.self, create: { _ in Lamp() }) { beacon in
+                    beacon.children(BeaconContract.self, events: NotesContract.export) { _, _ in }
+                }
+                """,
+            open: """
+                final class Lamp {}
+                Registry<Lamp>().add(BeaconContract.self, create: { _ in Lamp() }) { beacon in
+                    beacon.children(BeaconContract.self, events: BeaconContract.tapped) { _, _ in }
+                }
+                """,
+            host: true),
+        Road(
+            name: "a property's key made from its name",
+            closed: #"_ = Prop("fontSize")"#,
+            open: "_ = FontElementContract.fontSize"),
+        Road(
+            name: "an event's key made from its name",
+            closed: #"_ = Event("tapped")"#,
+            open: "_ = BeaconContract.tapped"),
+        Road(
+            name: "an act's key made from its name",
+            closed: #"_ = Act("Notes.Export")"#,
+            open: "_ = NotesContract.export"),
+        Road(
+            name: "a type of an application's own taken as properties",
+            closed: "struct Lamps: AppliedProperties {}",
+            open: "struct Lamps {}"),
+        Road(
+            name: "a part of a state followed by an engine",
+            closed: """
+                struct Room { var width = 0.0 }
+                @State var room = Room()
+                _ = Text("x").engine(following: $room.width) { _ in }
+                """,
+            open: """
+                @State var width = 0.0
+                _ = Text("x").engine(following: $width) { _ in }
+                """),
+        Road(
+            name: "a part of a state followed by a motion layout",
+            closed: """
+                struct Room { var width = 0.0 }
+                @State var phase = 0.0
+                @State var room = Room()
+                _ = MotionLayout([1], parameters: $phase) { Text("\\($0)") } placements: { _, _ in [] }
+                    .following($room.width)
+                """,
+            open: """
+                @State var phase = 0.0
+                @State var width = 0.0
+                _ = MotionLayout([1], parameters: $phase) { Text("\\($0)") } placements: { _, _ in [] }
+                    .following($width)
+                """),
+        Road(
+            name: "a part of a state on a journey",
+            closed: """
+                @State var levels = [0.2, 0.5]
+                _ = $levels[1].journey
+                """,
+            open: """
+                @State var level = 0.5
+                _ = $level.journey
+                """),
+        Road(
+            name: "a part of a state driving a property",
+            closed: """
+                struct Room { var width = 0.0 }
+                @State var room = Room()
+                _ = Text("x").minimumWidth($room.width)
+                """,
+            open: """
+                @State var width = 0.0
+                _ = Text("x").minimumWidth($width)
+                """),
+        Road(
+            name: "a part of a state converted",
+            closed: """
+                struct Room { var width = 0.0 }
+                @State var room = Room()
+                _ = $room.width.convert { $0 * 2 }
+                """,
+            open: """
+                @State var width = 0.0
+                _ = $width.convert { $0 * 2 }
+                """),
+        Road(
+            name: "a part of a state lent to a child borrowing a whole state",
+            closed: """
+                struct Room { var name = "" }
+                struct NameRow: View {
+                    @Binding var name: String
+                    var body: some View { TextField($name) }
+                }
+                @State var room = Room()
+                _ = NameRow(name: $room.name)
+                """,
+            open: """
+                struct NameRow: View {
+                    @Binding var name: String
+                    var body: some View { TextField($name) }
+                }
+                @State var name = ""
+                _ = NameRow(name: $name)
+                """),
+        Road(
+            name: "closures taken for a state",
+            closed: "_ = Slider(StatePart(get: { 0.5 }, set: { _ in }))",
+            open: """
+                @State var level = 0.5
+                _ = Slider($level)
+                """),
+        Road(
+            name: "a part of a state handed to a control",
+            closed: """
+                struct Contact { var name = "" }
+                @State var contact = Contact()
+                _ = TextField($contact.name)
+                """,
+            open: """
+                @State var name = ""
+                _ = TextField($name)
+                """),
+        Road(
+            name: "a part of a state shown as a channel",
+            closed: """
+                struct Contact { var name = "" }
+                @State var contact = Contact()
+                _ = Text($contact.name)
+                """,
+            open: """
+                struct Contact { var name = "" }
+                @State var contact = Contact()
+                _ = Text(contact.name)
+                """),
+        Road(
+            name: "a part of a state worn by a property wrapper",
+            closed: """
+                struct NameRow: View {
+                    @StatePart var name: String
+                    var body: some View { Text(name) }
+                }
+                """,
+            open: """
+                struct NameRow: View {
+                    let name: StatePart<String>
+                    var body: some View { Text(name.wrappedValue) }
+                }
+                """),
+        Road(
+            name: "an element of an array of values edited through a part",
+            closed: """
+                @State var done = [false, true]
+                _ = CheckBox($done[0])
+                """,
+            open: """
+                @State var done = [false, true]
+                _ = CheckBox(done[0]).onToggled { done[0] = $0 }
+                """),
     ]
 
     /// Each closed road fails to compile, and the open road beside it compiles.
@@ -279,18 +481,18 @@ final class ContractRoadsTests: XCTestCase {
 
         // Every listing in a file of its own, a road's two side by side.
         let listings = Self.roads.flatMap { road in
-            [(road: road.name, compiles: false, source: road.closed),
-             (road: road.name, compiles: true, source: road.open)]
+            [(road: road.name, compiles: false, source: road.closed, host: road.host),
+             (road: road.name, compiles: true, source: road.open, host: road.host)]
         }
         let files = try listings.enumerated().map { index, listing in
             let file = scratch.appendingPathComponent("road_\(index).swift")
-            try Data(Self.file(around: listing.source).utf8).write(to: file)
+            try Data(Self.file(around: listing.source, host: listing.host).utf8).write(to: file)
             return file
         }
 
         let outputs = CompilerOutputs(count: files.count)
         DispatchQueue.concurrentPerform(iterations: files.count) { index in
-            outputs.set(index, DocumentationExamplesTests.typecheck(files[index], module: module, sdk: sdk))
+            outputs.set(index, DocumentationExamplesTests.compile(files[index], module: module, sdk: sdk))
         }
 
         for (index, listing) in listings.enumerated() {
@@ -305,13 +507,14 @@ final class ContractRoadsTests: XCTestCase {
         }
     }
 
-    /// A listing as a file an application could hold: the declarations, and
-    /// the listing as the body of a function.
-    private static func file(around listing: String) -> String {
+    /// A listing as a file an application could hold - or a host, which imports the library's host side: the
+    /// declarations, and the listing as the body of a function.
+    private static func file(around listing: String, host: Bool) -> String {
         let body = listing.split(separator: "\n", omittingEmptySubsequences: false)
             .map { $0.isEmpty ? "" : "    \($0)" }
             .joined(separator: "\n")
 
-        return "import StateUI\n\n\(declarations)\n\n@MainActor func road() async throws {\n\(body)\n}\n"
+        let library = host ? "@_spi(Host) import StateUI" : "import StateUI"
+        return "\(library)\n\n\(declarations)\n\n@MainActor func road() async throws {\n\(body)\n}\n"
     }
 }

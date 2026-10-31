@@ -39,9 +39,9 @@ ancestors contribute only the path of patches down to them. It is sound only
 when every cause of the render named the state it wrote. Two asks name
 nothing and force a build: the core's own `setNeedsBuild()` (a scene opened, a
 new application), whose build carries every composed view whose inputs and
-reads stand, and the public `setNeedsRender()`, whose build carries none,
+reads stand, and the host's `setNeedsRender()`, whose build carries none,
 because what moved is outside StateUI and no view's inputs or reads can say
-it stands.
+it stands. An application has no unnamed ask: what it changes is a state.
 
 The root build reads the open scenes, whatever the application's `body`
 reads, and the application session's styles and motion. Those reads are kept
@@ -152,12 +152,11 @@ waits for the platform's first window, and the next render describes the
 whole of the new application - every element arriving, which is what
 `.onCreated` is told.
 
-The application itself is made at its first need - the first render, or the
-host reading the keys it keeps (`persistentKeys`) - never as it registers: a
-head registers it before the host starts, and what its initializer reads of
-the environment - the device's form factor a style sheet is chosen by - is
-only told once the host has started. Every host tells the environment
-before it reads the kept keys and before its first render. The
+The application itself is made at its first need - the first render - never
+as it registers: a head registers it before the host starts, and what its
+initializer reads of the environment - the device's form factor a style sheet
+is chosen by - is only told once the host has started. Every host tells the
+environment and gives the reader of its store before its first render. The
 application's own `@State` properties are named by reflection once, as it is
 made, because the application is never walked like a view.
 

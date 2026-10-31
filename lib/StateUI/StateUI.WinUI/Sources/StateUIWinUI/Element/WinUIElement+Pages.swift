@@ -24,7 +24,7 @@ extension WinUIElement {
         case .tabView:
             guard let tabs = view as? WinUITabView else { return }
             tabs.tabsShownByWindow = element.tabsStandInWindow
-            tabs.show(children.map { WinUITab(of: $0.element) }, requested: value(.selectedTab)?.number.map { Int($0) })
+            tabs.show(arranged.map { WinUITab(of: $0.element) }, requested: value(.selectedTab)?.number.map { Int($0) })
             tabs.onSelection = { [weak self] previous, selected in self?.tabChosen(from: previous, to: selected) }
         case .splitView:
             guard let split = view as? WinUISplitView else { return }
@@ -34,7 +34,7 @@ extension WinUIElement {
                 WinUIRenderer.afterLayout { [weak self] in self?.sidebarShown(presented) }
             }
             if changed.contains(.showsSidebar) { split.present(value(.showsSidebar)?.bool == true) }
-            split.grounds = (element.sidebarMaterial(over: false), element.sidebarMaterial(over: true))
+            groundSidebar()
         default:
             break
         }

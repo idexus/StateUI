@@ -11,12 +11,18 @@ import UIKit
 /// item what the page says of its bar.
 /// Design: docs/design/platforms/uikit/pages.md
 @MainActor
-final class UIKitPageController: UIViewController {
+final class UIKitPageController: UIViewController, UIKitSheetStanding {
+    /// What runs once the controller has left the screen, as a sheet (`UIKitSheetStanding`).
+    var leftScreen: (() -> Void)?
+
     /// The page's element, which stands its view.
     private weak var page: UIKitElement?
 
-    /// The blur or glass a sidebar page stands on, under what it shows; nil while it stands on a colour.
+    /// The blur or glass a sidebar page stands on, under what it shows; nil while it stands on a color.
     private var ground: (view: UIKitBackdropView, material: HostMaterial)?
+
+    /// The page's bottom bar, over its foot.
+    private let bottomBar = UIKitBottomBarView()
 
     init(page: UIKitElement) {
         self.page = page
@@ -28,37 +34,50 @@ final class UIKitPageController: UIViewController {
         fatalError("UIKitPageController is made in code")
     }
 
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        leftScreen?()
+    }
+
     override func loadView() {
         view = UIView()
         showBackground()
         if let shown = page?.view { view.addSubview(shown) }
+        // The page lays itself out again as the keyboard moves, within its animation.
+        // Design: docs/design/platforms/uikit/pages.md#the-keyboard
+        UIKitKeyboardPlace.follow(view)
     }
 
-    /// The room UIKit's own bars take over the page's view - a stack's bar above, the tabs below - which its content
-    /// never stands under: only the screen's bars and notch are the safe area's to give.
-    private var barsOver: UIEdgeInsets {
-        func covered(by bar: UIView?) -> CGRect? {
-            guard let bar, !bar.isHidden, bar.window != nil else { return nil }
-            return view.convert(bar.bounds, from: bar).intersection(view.bounds)
-        }
-        var over = UIEdgeInsets.zero
-        if navigationController?.isNavigationBarHidden == false,
-           let bar = covered(by: navigationController?.navigationBar), !bar.isNull {
-            over.top = max(0, bar.maxY)
-        }
-        if let tabs = covered(by: tabBarController?.tabBar), !tabs.isNull, tabs.height > 0 {
-            over.bottom = max(0, view.bounds.maxY - tabs.minY)
-        }
-        return over
+    /// The edge the page's scroller shows under the bar at its top, as the bar's path declares it.
+    private(set) var topEdge = ScrollEdge.automatic
+
+    /// Has the page's scroller show `edge` under the bar at its top, from its next layout.
+    /// Design: docs/design/host/layout.md#a-bar-at-the-top
+    func showTopEdge(_ edge: ScrollEdge) {
+        guard edge != topEdge else { return }
+        topEdge = edge
+        view.setNeedsLayout()
     }
 
-    /// The page's background behind the whole screen it stands on, the bars and the notch included; where the page
-    /// says none, a sidebar's ground, else the window's - what the window is made of under a page that paints nothing
+    /// Shows `bar` - the page's bottom bar - over its foot; nil for none.
+    func showBottomBar(_ bar: MountedElement?) {
+        loadViewIfNeeded()
+        bottomBar.show(bar)
+        if bar == nil {
+            bottomBar.removeFromSuperview()
+        } else if bottomBar.superview !== view {
+            view.insertSubview(bottomBar, aboveSubview: page?.view ?? view)
+        }
+        view.setNeedsLayout()
+    }
+
+    /// The page's background - its own, else its arrangement's (`pageBackground`) - behind the whole screen it stands
+    /// on, the bars and the notch included; where the page says none, a sidebar's ground, else the window's - what the window is made of under a page that paints nothing
     /// of its own - else the system's.
     /// Design: docs/design/platforms/uikit/pages.md#a-pages-background
     func showBackground() {
         let element = page?.element
-        let background = HostMaterial(element?.value(.background)).painted.flatMap { HostBrush($0).firstColor }
+        let background = HostMaterial(element?.pageBackground).painted.flatMap { HostBrush($0).firstColor }
         let sidebar = background == nil ? sidebarMaterial(of: element) : nil
         showGround(sidebar.flatMap { $0.material.blur == nil ? nil : $0.material })
         view.backgroundColor = background.flatMap(UIColor.init(stateUI:))
@@ -70,13 +89,14 @@ final class UIKitPageController: UIViewController {
     /// for a page that is no sidebar.
     /// Design: docs/design/host/pages.md#a-sidebars-material
     private func sidebarMaterial(of element: MountedElement?) -> (material: HostMaterial, over: Bool)? {
-        guard let element, let split = element.parent, split.type == .splitView, split.children.first === element,
+        guard let element, let split = element.placingParent, split.type == .splitView,
+              split.arrangedChildren.first === element,
               let controller = splitViewController as? UIKitSplitViewController
         else { return nil }
         return (split.sidebarMaterial(over: controller.overlays), controller.overlays)
     }
 
-    /// The colour a sidebar page stands on: its material's, else over the detail the system's background, never the
+    /// The color a sidebar page stands on: its material's, else over the detail the system's background, never the
     /// window's; nil beside the detail where the split view says nothing.
     private static func ground(of sidebar: (material: HostMaterial, over: Bool)) -> UIColor? {
         sidebar.material.painted.flatMap { HostBrush($0).firstColor }.flatMap(UIColor.init(stateUI:))
@@ -95,15 +115,16 @@ final class UIKitPageController: UIViewController {
         let shown = ground?.view ?? UIKitBackdropView()
         if ground == nil { view.insertSubview(shown, at: 0) }
         ground = (shown, material)
-        shown.show(material)
         layGround()
     }
 
     /// The ground across the page's whole view, as large as it now stands.
     private func layGround() {
         guard let (shown, material) = ground else { return }
-        let wash = material.glass == nil ? UIKitBrush(material.paint) : UIKitBrush()
-        shown.lay(wash, stroke: UIKitBrush(), width: 0, over: view.bounds, cut: .rectangle)
+        shown.frame = view.bounds
+        shown.show(material, as: .rounded([0, 0, 0, 0]))
+        let wash = shown.showsGlass ? UIKitBrush() : UIKitBrush(material.paint)
+        shown.lay(wash, stroke: UIKitBrush(), width: 0, over: view.bounds, along: .rectangle)
     }
 
     override func viewIsAppearing(_ animated: Bool) {
@@ -111,10 +132,12 @@ final class UIKitPageController: UIViewController {
         showBackground()
     }
 
-    /// The safe area the page's content stands in: clear of the screen's bars, the notch, and the window's own
-    /// controls in its corner - an iPad's window - which a bar over the page stands clear of already.
+    /// The safe area the page's content stands in: clear of the screen's bars, the notch, the keyboard, and the
+    /// window's own controls in its corner - an iPad's window - which a bar over the page stands clear of already.
     var safeInsets: UIEdgeInsets {
-        view.edgeInsets(for: .safeArea(cornerAdaptation: .vertical))
+        var insets = view.edgeInsets(for: .safeArea(cornerAdaptation: .vertical))
+        insets.bottom = SafeAreaArithmetic.bottom(system: insets.bottom, keyboard: UIKitKeyboardPlace.height(over: view))
+        return insets
     }
 
     /// How far the page's room stands from its leading edge while a sidebar slides beside it - as far as the sidebar
@@ -139,19 +162,45 @@ final class UIKitPageController: UIViewController {
         return insets
     }
 
+    /// Whether a split view's sidebar stands beside this page - in its detail - rather than over it, or slides so.
+    private var standsBesideASidebar: Bool {
+        guard let split = splitViewController, let detail = split.viewController(for: .secondary),
+              slidingInset != nil || [.oneBesideSecondary, .twoBesideSecondary].contains(split.displayMode)
+        else { return false }
+        var controller: UIViewController? = self
+        while let shown = controller, shown !== detail { controller = shown.parent }
+        return controller != nil
+    }
+
+    /// The whole room the page stands in: its view, but for a sidebar beside it - UIKit lays the detail under that
+    /// column, which is no part of what the page runs under.
+    private var whole: CGRect {
+        guard standsBesideASidebar else { return view.bounds }
+        var beside = UIEdgeInsets.zero
+        if leadsRight { beside.right = insets.right } else { beside.left = insets.left }
+        return view.bounds.inset(by: beside)
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         layGround()
-        let (safe, whole) = (view.bounds.inset(by: insets), view.bounds.inset(by: barsOver))
+        // The bars over the page are its safe area's as the screen's are: content stands clear of them, or under.
+        // Design: docs/design/host/layout.md#the-safe-area
+        let (inside, whole) = (view.bounds.inset(by: insets), whole)
+        let wholeRect = Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height)
+        let bar = bottomBar.superview === view
+            ? bottomBar.place(safe: Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height),
+                              whole: wholeRect)
+            : nil
+        let safe = bar?.safe ?? Rect(x: inside.minX, y: inside.minY, width: inside.width, height: inside.height)
         let room = SafeAreaArithmetic.room(
-            safe: Rect(x: safe.minX, y: safe.minY, width: safe.width, height: safe.height),
-            whole: Rect(x: whole.minX, y: whole.minY, width: whole.width, height: whole.height),
-            edges: page?.element.contentSafeArea)
+            safe: safe, whole: wholeRect,
+            edges: page?.element.contentIgnoresSafeArea ?? .none, direction: page?.element.layoutDirection ?? .leftToRight)
         page?.placedFrame = room
-        let clearance = SafeAreaArithmetic.endClearance(
-            room: room, safe: Rect(x: safe.minX, y: safe.minY, width: safe.width, height: safe.height))
-        (page?.element.pageScroller?.uiKit.view as? UIKitScrollView)?.keepEndClear(
-            right: clearance.right, bottom: clearance.bottom)
+        let scroller = page?.element.pageScroller?.uiKit.view as? UIKitPageScroller
+        scroller?.keepClear(SafeAreaArithmetic.clearance(room: room, safe: safe))
+        bottomBar.stand(at: bar, edge: page?.element.chromeBottomBarEdge ?? .automatic, scroller: scroller?.scroller)
+        scroller?.scroller.topEdgeEffect.show(topEdge)
         page?.view?.layoutIfNeeded()
         // What reads a frame says where it stands within this pass, and what that moves is laid out again: a room
         // UIKit alone narrowed - a sidebar sliding - places its layout in the frame that measured it.

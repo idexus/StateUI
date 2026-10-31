@@ -90,6 +90,7 @@ final class ControlTests: XCTestCase {
         // the same thing an application holds.
         let followed = State(wrappedValue: 0.0)
         let offset = State(wrappedValue: Point.zero)
+        let refreshing = State(false)
         let hasBack = State(false)
         let hasForward = State(false)
         let chosen = State<String?>(wrappedValue: "two")
@@ -129,7 +130,7 @@ final class ControlTests: XCTestCase {
                     .shape(.roundedRectangle(8))
                     .lineBreak(.noWrap)
                     .icon("tab_list.png")
-                    .iconPosition(.leading)
+                    .iconPosition(.start)
                     .iconSpacing(8)
                     .keyboardShortcut("i", modifiers: [.primary, .shift])
                     .role(.primary)
@@ -144,7 +145,9 @@ final class ControlTests: XCTestCase {
                     .showsMenuArrow(false)),
 
             ControlCase("IconButton", source: "Button.swift",
-                Button(icon: "tab_list.png")
+                Button("List")
+                    .icon("tab_list.png")
+                    .showsText(false)
                     .contentMode(.fit)
                     .onClicked {}),
 
@@ -182,7 +185,7 @@ final class ControlTests: XCTestCase {
                     .date(CalendarDate(year: 2026, month: 8, day: 9))
                     .minimumDate(CalendarDate(year: 2026, month: 1, day: 1))
                     .maximumDate(CalendarDate(year: 2026, month: 12, day: 31))
-                    .format("D")
+                    .format(.long)
                     .isOpen(false)
                     .onDateChanged { _ in }
                     .onOpened {}
@@ -200,22 +203,30 @@ final class ControlTests: XCTestCase {
             ControlCase("Switch", source: "Switch.swift",
                 Switch(true)
                     .isOn(true)
+                    .text("Sound")
                     .tint(.green)
                     .onToggled { _ in }),
 
             ControlCase("CheckBox", source: "CheckBox.swift",
                 CheckBox(true)
                     .isOn(true)
+                    .text("Agree")
+                    .textCase(.uppercase)
                     .tint(.firebrick)
                     .onToggled { _ in }),
 
-            ControlCase("RadioButton", source: "RadioButton.swift",
-                RadioButton("Medium")
-                    .text("Medium")
-                    .isOn(true)
-                    .groupName("size")
+            ControlCase("ColorPicker", source: "ColorPicker.swift",
+                ColorPicker(.steelBlue)
+                    .color(.firebrick)
+                    .choosesOpacity(true)
+                    .onColorChanged { _ in }),
+
+            ControlCase("Link", source: "Link.swift",
+                Link("Terms", destination: "https://www.swift.org/legal")
+                    .text("Terms of use")
                     .textCase(.uppercase)
-                    .onToggled { _ in }),
+                    .textColor(.firebrick)
+                    .onClicked {}),
 
             ControlCase("Slider", source: "Slider.swift",
                 Slider(40)
@@ -240,8 +251,8 @@ final class ControlTests: XCTestCase {
                     .onTextChanged { _ in }
                     .onSubmitted {}),
 
-            ControlCase("ActivityIndicator", source: "ActivityIndicator.swift",
-                ActivityIndicator(true)
+            ControlCase("Spinner", source: "Spinner.swift",
+                Spinner(true)
                     .isAnimating(true)
                     .tint(.cornflowerBlue)),
 
@@ -250,11 +261,21 @@ final class ControlTests: XCTestCase {
                     .progress(0.4)
                     .tint(.cornflowerBlue)),
 
-            ControlCase("Spacer", source: "Spacer.swift",
-                Spacer()
-                    .minimumWidth(8)),
+            // A space: room that pushes, at least 8 long, here drawn as a blur in a capsule.
+            ControlCase("Space", source: "Space.swift",
+                Space()
+                    .minimumWidth(8)
+                    .background(.blur(.thin))
+                    .shape(.capsule)),
 
-            ControlCase("Divider", source: "Divider.swift", Divider()),
+            // A fill: the room it is offered made of its material, here a blur, in its box's shape and outlined.
+            ControlCase("Fill", source: "Fill.swift",
+                Fill(.blur(.regular))
+                    .shape(.capsule)
+                    .stroke(.white)
+                    .lineWidth(1)),
+
+            ControlCase("Separator", source: "Separator.swift", Separator()),
 
             ControlCase("Grid", source: "Grid.swift",
                 Grid {
@@ -275,15 +296,19 @@ final class ControlTests: XCTestCase {
                 }
                 .spacing(12)),
 
-            ControlCase("HStack", source: "StackLayouts.swift",
+            ControlCase("HStack", sources: ["StackLayouts.swift", "HStackProperties.swift"],
                 HStack {
                     Text("One")
                 }
-                .spacing(6)),
+                .spacing(6)
+                .wraps(true)
+                .rowSpacing(4)
+                .lineAlignment(.center)),
 
             ControlCase("ZStack", source: "ZStack.swift",
                 ZStack {
-                    Rectangle().fill(.cornflowerBlue)
+                    Rectangle()
+                        .fill(.cornflowerBlue)
                         .area(.proportional(0, 0, 1, 0.5))
 
                     Text("Bottom right")
@@ -305,7 +330,11 @@ final class ControlTests: XCTestCase {
                 // The offset is ONE POINT - both axes on one state - written
                 // by the host on its own frames and walked by it on a write.
                 .scrollOffset(offset.projectedValue)
-                .onScrollStopped {}),
+                .onScrollStopped {}
+                // The pull: offered, its spinner on a state the pull writes into.
+                .isRefreshEnabled(true)
+                .isRefreshing(refreshing.projectedValue)
+                .onRefreshRequested {}),
 
             // The collection as its view writes it: every entry's identity, the
             // layout, the choice, and what choosing, opening and scrolling to the
@@ -317,35 +346,43 @@ final class ControlTests: XCTestCase {
                     .selection(chosen.projectedValue)
                     .onItemActivated { _ in }
                     .onEndReached(within: 5) {}
+                    .isRefreshEnabled(true)
+                    .isRefreshing(refreshing.projectedValue)
+                    .onRefreshRequested {}
                     .node.built),
 
-            // The layout engine as its view writes it: the views, the arithmetic, the
+            // The motion layout as its view writes it: the views, the arithmetic, the
             // phase and the hand over them. A composed view, so the case is its body built.
-            ControlCase("LayoutEngine", sources: ["PlacedStack.swift", "LayoutEngine.swift"],
-                LayoutEngine(["one", "two"]) { Text($0) } placements: { room, phase in
+            ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
+                MotionLayout(["one", "two"], parameters: turn.projectedValue) {
+                    Text($0)
+                        .layoutBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
+                } placements: { room, phase in
                     [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
                 }
-                .phase(turn.projectedValue)
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .every(1))
                 .following(chosen.projectedValue)
-                .shade(Rectangle(.black))
+                .shade(
+                    Rectangle()
+                        .fill(.black))
                 .motion(.spring(response: .milliseconds(240)))
+                .dynamics(.standard)
+                .mirrorsRightToLeft(true)
                 .onItemTapped { _ in }
-                .itemDrag(begins: .held)
+                .itemDrag(begins: .longPress)
                 .onItemDragged { _ in }
                 .onItemDismissed(.up, beyond: 80) { _ in }
                 .node.built),
 
-            // A pan and two fingers over the layout engine: a rotation and a magnification, each driving its axis.
-            ControlCase("LayoutEngine", sources: ["PlacedStack.swift", "LayoutEngine.swift"],
-                LayoutEngine(["one", "two"]) { Text($0) } placements: { room, dial in
+            // A pan and two fingers over the motion layout: a rotation and a magnification, each driving its axis.
+            ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
+                MotionLayout(["one", "two"], parameters: dial.projectedValue) { Text($0) } placements: { room, dial in
                     [Placement(Rect(dial.turn, 0, room.width / 2 * dial.size, room.height)), Placement(.zero)]
                 }
-                .phase(dial.projectedValue)
-                .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .limits)
-                .axis(\.size, input: .magnification, range: 1...2, snaps: .limits)
-                .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .limits)
-                .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 90), range: 0...1, snaps: .limits)
+                .axis(\.turn, input: .rotation(degreesPerUnit: 90), range: 0...1, snaps: .endpoints)
+                .axis(\.size, input: .magnification, range: 1...2, snaps: .endpoints)
+                .axis(\.x, input: .scroll(.horizontal, pointsPerUnit: 90), range: 0...1, snaps: .endpoints)
+                .axis(\.y, input: .scroll(.vertical, pointsPerUnit: 90), range: 0...1, snaps: .endpoints)
                 .node.built),
 
             // Both halves of a map: the control, and the markers on it. A Marker is
@@ -354,23 +391,22 @@ final class ControlTests: XCTestCase {
             // map LOOKS is an act (moveToRegion), checked with the other acts
             // in ActCallShapeTests rather than here.
             ControlCase("Map", source: "Map.swift",
-                Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
+                Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
                     .mapType(.hybrid)
                     .isScrollEnabled(true)
                     .isZoomEnabled(true)
                     .showsTraffic(false)
                     .showsUserLocation(false)
                     .markers {
-                        Marker("Royal Castle")
+                        Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
+                            .label("Royal Castle")
                             .subtitle("Plac Zamkowy 4")
                             .type(.place)
-                            .location(latitude: 52.2479, longitude: 21.0155)
                             .onSelected {}
                             .onDetailsClicked {}
 
-                        Marker("Second")
+                        Marker(at: Location(latitude: 52.2151, longitude: 21.0355))
                             .label("Lazienki Park")
-                            .location(latitude: 52.2151, longitude: 21.0355)
                     }
                     .onMapClicked { _ in }),
 
@@ -510,14 +546,16 @@ final class ControlTests: XCTestCase {
                         .isFontAutoScalingEnabled(false)
                         .horizontalTextAlignment(.center)
                         // What the view says about itself: a handle for a
-                        // driver, and three things a screen reader says.
+                        // driver, and what a screen reader says and does.
                         .accessibilityIdentifier("tiers")
                         .accessibilityLabel("The shared tier")
                         .accessibilityHint("Everything every view can be told")
+                        .accessibilityRole(.adjustable)
+                        .accessibilityValue("3 of 5")
                         .tooltip("Every view can say what it does")
                         .accessibilityHeading(.h2)
                         .isAccessibilityHidden(false)
-                        .automationExcludedWithChildren(false)
+                        .hidesChildrenFromAccessibility(false)
                         .gridRow(1)
                         .gridColumn(2)
                         .gridRowSpan(3)
@@ -547,14 +585,14 @@ final class ControlTests: XCTestCase {
                         .selectionLength(2)
                 }
                 .spacing(12)
-                // The safe strip is one of the LAYOUT tier's own properties;
-                // the four-value form markers its full spelling in the patch.
-                .avoidsSafeArea(.none, .keyboard, .container, .all)
+                // The safe area is one of the LAYOUT tier's own properties;
+                // a set of edges spells its bits in the patch.
+                .ignoresSafeArea([.start, .top])
                 .clipsContent(true)
                 .letsInputThrough(true)
                 .style(.card)
-                .padding(left: 24, top: 16, right: 24, bottom: 16)
-                .margin(left: 4, top: 8, right: 4, bottom: 8)
+                .padding(start: 24, top: 16, end: 24, bottom: 16)
+                .margin(start: 4, top: 8, end: 4, bottom: 8)
                 .horizontalAlignment(.center)
                 .verticalAlignment(.fill)
                 .isVisible(true)
@@ -584,9 +622,11 @@ final class ControlTests: XCTestCase {
                 // only way to check that each recognizer is asked for on its
                 // own terms.
                 .onTapped(count: 2) {}
+                .onHeld(minimum: .milliseconds(800)) {}
                 .onSwiped(direction: [.left, .up], threshold: 60) { _ in }
                 .onPanUpdated(touchCount: 1) { _ in }
                 .onPinchUpdated { _ in }
+                .onRotationUpdated { _ in }
                 .onPointerEntered {}
                 .onPointerExited {}
                 .onPointerMoved { _ in }
@@ -611,7 +651,7 @@ final class ControlTests: XCTestCase {
     /// A menu written again stands in for the last, all of it: a button's kind of menu, and a view's context menu.
     func testAMenuWrittenAgainStandsInForTheLast() {
         let button = Button("Share").menu(.held) { MenuItem("Mail") }.menu { MenuItem("Message") }.node
-        XCTAssertNil(button.props[ButtonContract.menuKind.token], "the second menu says no kind, so none stands")
+        XCTAssertNil(button.props[ButtonMenuElementContract.menuKind.token], "the second menu says no kind, so none stands")
 
         let text = Text("Row").contextMenu { MenuItem("Copy") }.contextMenu { MenuItem("Paste") }.node
         XCTAssertEqual(text.children.filter { $0.type == ContextMenuContract.nodeType }.count, 1)
@@ -717,7 +757,7 @@ final class ControlTests: XCTestCase {
     /// weaker and is the one the other guard's own message asks: is this
     /// property carried by SOME case, or built by some test? Proof is taken
     /// from wherever it comes, exactly as `testEveryEventModifierIsExercised`
-    /// takes it. A `ToolbarItem` is the case for the second: it is not a view,
+    /// takes it. A `ToolbarButton` is the case for the second: it is not a view,
     /// so it has no case here, and PageTests is where it is built with
     /// everything it can do.
     func testEveryModifierOfATierIsExercisedSomewhere() throws {
@@ -773,18 +813,21 @@ final class ControlTests: XCTestCase {
     func testEveryValueModifierHasABindingTwin() throws {
         let remaking = Set(LibraryContracts.remaking.map(\.name))
         let allowed: Set<String> = remaking.union([
+            // A button's purpose in its window, said where it is written.
+            "role",
             // Named rather than valued.
-            "style", "fontFamily", "groupName", "accessibilityIdentifier", "source", "userAgent", "data", "content", "format",
+            "style", "fontFamily", "accessibilityIdentifier", "source", "userAgent", "data", "content", "format",
             // A value the host cannot be handed whole.
             "background", "pageBackground", "fill", "stroke", "icon", "icon",
             "icon", "maximumDate",
             "minimumDate", "dash", "points", "options", "columns",
-            "rows", "shape", "geometryTransform", "transform", "motion", "id",
+            "rows", "shape", "geometryTransform", "transform", "motion", "throwMotion", "layoutBody", "followsLayout", "id",
             "assign", "area",
             // Tiers no view wears.
-            "barBackgroundColor", "barForegroundColor", "barIcon", "barSubtitle", "barTitle", "isScrollEnabled",
-            "isZoomEnabled", "showsTraffic", "showsUserLocation", "isDestructive", "title",
-            "mapType", "avoidsSafeArea",
+            "barBackground", "barForegroundColor", "barScrollEdge", "toolbarStyle", "toolbarSpacing",
+            "isScrollEnabled",
+            "isZoomEnabled", "showsTraffic", "showsUserLocation", "title",
+            "mapType", "ignoresSafeArea",
         ])
         var values: Set<String> = []
         var twins: Set<String> = []
@@ -809,7 +852,8 @@ final class ControlTests: XCTestCase {
                 let name = String(line[line.index(line.startIndex, offsetBy: 12)..<open])
                 let type = String(inside[inside.index(after: colon)...].drop(while: { $0 == " " }))
 
-                guard !name.contains("<") else { continue }
+                // A view or a protocol's value - a header, a shade - is no value a state carries.
+                guard !name.contains("<"), !type.hasPrefix("some "), !type.hasPrefix("any ") else { continue }
 
                 // Keyed by the file: a twin stands beside its value form, in the file of its tier or control, so
                 // one type's twin never hides another's missing one.
@@ -817,16 +861,36 @@ final class ControlTests: XCTestCase {
                     let bare = String(type.dropFirst("Binding<".count).dropLast())
 
                     twins.insert(path + "|" + name + ":" + bare)
-                } else if !type.contains("<"), line[returns.upperBound...].hasPrefix("Modified") {
+                } else if !type.contains("<"),
+                          line[returns.upperBound...].hasPrefix("Modified") || line[returns.upperBound...].hasPrefix("Self") {
                     values.insert(path + "|" + name + ":" + type)
                 }
             }
         }
 
-        // A menu item is a tier no view wears: its words and its enabling are rebuilt with its menu. The driven
-        // text goes per control, its direction differing (bindings.md, driven text): the tier holds the value form.
-        let tiersNoViewWears = ["Views/Mixins/MenuItemElement.swift"]
-        let perControl = ["Views/Mixins/TextualElement.swift|text:String"]
+        // A menu, its items and a bar's item are rebuilt with their menu or bar, a scene's settings are its
+        // declaration's: no view wears them. The driven text goes per control, its direction differing (bindings.md,
+        // driven text): the tier holds the value form.
+        let tiersNoViewWears = [
+            "Views/Mixins/MenuItemElement.swift", "Views/Menus/ToolbarButton.swift", "Views/Menus/ToolbarGroup.swift",
+            "Views/Menus/ToolbarLabel.swift", "Views/Menus/ToolbarToggle.swift", "Views/Menus/Menu.swift",
+            "Views/Structure/Window.swift", "Views/Structure/WindowGroup.swift",
+        ]
+        // A map's markers are rebuilt with the map; a composed view's configuration changes what it builds, which a
+        // state carried past the tree cannot - a gallery's shape, fading and its cards' body, a list's layout, a
+        // layout's drag, its mirror and its world.
+        let perControl = [
+            "Views/Mixins/TextualElement.swift|text:String",
+            "Views/Controls/Map.swift|label:String", "Views/Controls/Map.swift|subtitle:String",
+            "Views/Controls/Map.swift|type:MarkerType",
+            "Views/Collections/GalleryView.swift|arrangement:GalleryArrangement",
+            "Views/Collections/GalleryView.swift|fade:Double", "Views/Collections/GalleryView.swift|isSwipeEnabled:Bool",
+            "Views/Collections/GalleryView.swift|itemBody:LayoutBody",
+            "Views/Collections/GalleryView.swift|throwMotion:Motion", "Views/Collections/ItemsView.swift|itemsLayout:ItemsLayout",
+            "Views/Layouts/MotionLayout.swift|itemDrag:ItemDragStart",
+            "Views/Layouts/MotionLayout.swift|mirrorsRightToLeft:Bool",
+            "Views/Layouts/MotionLayout.swift|dynamics:LayoutDynamics",
+        ]
         let missing = values
             .filter { value in
                 let parts = value.split(separator: "|")
@@ -987,6 +1051,7 @@ final class ControlTests: XCTestCase {
     private static func carriedNames(in node: Node) -> Set<String> {
         var node = node
         node.materialize()
+        node.readAsDescribed()
 
         let own = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
 
@@ -1005,7 +1070,6 @@ final class ControlTests: XCTestCase {
         let volume = State(0.0)
         let due = State(CalendarDate(year: 2026, month: 1, day: 1))
         let ticked = State(false)
-        let chosen = State(false)
         let servings = State(0.0)
         let query = State("")
         let alarm = State(ClockTime(hour: 0, minute: 0))
@@ -1021,7 +1085,6 @@ final class ControlTests: XCTestCase {
             Slider(volume.projectedValue).node,
             DatePicker(due.projectedValue).node,
             CheckBox(ticked.projectedValue).id("checkBox").node,
-            RadioButton("Medium").isOn(chosen.projectedValue).id("radio").node,
             Stepper(servings.projectedValue).id("stepper").node,
             SearchField(query.projectedValue).id("search").node,
             TimePicker(alarm.projectedValue).id("time").node,
@@ -1032,7 +1095,7 @@ final class ControlTests: XCTestCase {
         // same words land on.
         typed(text.number, "Ada")
         typed(text.number, "Notes")
-        // A switch, a box and a radio button are the HOST's own writes onto
+        // A switch and a box are the HOST's own writes onto
         // plain ties, not events.
         moved(toggled.number, to: 1)
         // A slider's and a stepper's report is the HOST's own write onto the
@@ -1041,7 +1104,6 @@ final class ControlTests: XCTestCase {
         // A chosen day and a chosen time are three lanes each, landed the same way.
         moved(due.number, to: [2026, 8, 2], mask: 0b111)
         moved(ticked.number, to: 1)
-        moved(chosen.number, to: 1)
         dragged(servings.number, to: 4)
         typed(query.number, "al")
         moved(alarm.number, to: [9, 30, 0], mask: 0b111)
@@ -1051,28 +1113,9 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(volume.wrappedValue, 12.5)
         XCTAssertEqual(due.wrappedValue, CalendarDate(year: 2026, month: 8, day: 2))
         XCTAssertTrue(ticked.wrappedValue)
-        XCTAssertTrue(chosen.wrappedValue)
         XCTAssertEqual(servings.wrappedValue, 4)
         XCTAssertEqual(query.wrappedValue, "al")
         XCTAssertEqual(alarm.wrappedValue, ClockTime(hour: 9, minute: 30))
-    }
-
-    /// A radio button hears its own CLEARING as well: a change of mind is
-    /// reported from both buttons, and the host lands the false on the state
-    /// the button borrows exactly as it lands the true.
-    func testARadioButtonThatLosesTheGroupWritesBackFalse() {
-        let chosen = State(true)
-
-        let renders = Renders()
-        renders.render(
-            RadioButton("Medium")
-                .isOn(chosen.projectedValue)
-                .groupName("size")
-                .node)
-
-        moved(chosen.number, to: 0)
-
-        XCTAssertFalse(chosen.wrappedValue)
     }
 
     /// A day READS AND WRITES its text form - year, month and day, hyphen-separated,
@@ -1183,7 +1226,7 @@ final class ControlTests: XCTestCase {
 
         let renders = Renders()
         let patch = renders.render(
-            RadioButton("Medium")
+            CheckBox()
                 .onToggled {
                     seen.append($0)
                     stateAsTheHandlerRan.append(chosen.wrappedValue)
@@ -1224,14 +1267,14 @@ final class ControlTests: XCTestCase {
     /// The same promise on the non-view items, which each carry their typed
     /// event modifier by hand: one that ASSIGNED the handler would let a
     /// second silently replace the first while "every typed event modifier
-    /// composes" stood written on Button. A ToolbarItem and a Marker
+    /// composes" stood written on Button. A ToolbarButton and a Marker
     /// stand for the family - MenuItem is the same two lines.
     func testASecondHandlerOnAnItemRunsBesideTheFirst() {
         var seen: [String] = []
 
         let renders = Renders()
         let bar = renders.render(
-            ToolbarItem("Save")
+            ToolbarButton("Save")
                 .onClicked { seen.append("first") }
                 .onClicked { seen.append("second") }
                 .node)
@@ -1242,7 +1285,8 @@ final class ControlTests: XCTestCase {
 
         seen = []
         let pin = renders.render(
-            Marker("Office")
+            Marker(at: Location(latitude: 52.23, longitude: 21.01))
+                .label("Office")
                 .onSelected { seen.append("first") }
                 .onSelected { seen.append("second") }
                 .node)
@@ -1265,69 +1309,6 @@ final class ControlTests: XCTestCase {
         renders.fire(handler(patch, "selectedIndexChanged"), with: [.string("not-a-number")])
 
         XCTAssertEqual(size.wrappedValue, "M")
-    }
-
-    /// A two-way control handed a binding the host CANNOT carry - a part of a
-    /// state, or one made from closures - keeps the described road: the value
-    /// is read at build, the report is written back through the binding, and
-    /// nothing is registered for the host to tie.
-    func testAPartOrClosureBindingKeepsTheDescribedRoad() {
-        var on = false
-        let closure = Binding<Bool>(get: { on }, set: { on = $0 })
-        let room = State(wrappedValue: Rect(0, 0, 3, 4))
-        let sizes = ["S", "M", "L", "XL"]
-
-        struct Profile { var name = "" }
-        let profile = State(wrappedValue: Profile())
-        var typed = ""
-        let text = Binding<String>(get: { typed }, set: { typed = $0 })
-        var day = CalendarDate(year: 2026, month: 1, day: 1)
-        let date = Binding<CalendarDate>(get: { day }, set: { day = $0 })
-        var clock = ClockTime(hour: 0, minute: 0)
-        let time = Binding<ClockTime>(get: { clock }, set: { clock = $0 })
-
-        let renders = Renders()
-        let patch = renders.render(Node(type: "VStack", children: [
-            Switch(closure).node,
-            Picker(sizes, selection: Binding(
-                get: { sizes[Int(room.wrappedValue.width)] },
-                set: { room.wrappedValue.width = Double(sizes.firstIndex(of: $0) ?? 0) })).node,
-            TextField(text).node,
-            TextEditor(profile.projectedValue.name).id("editor").node,
-            SearchField(text).id("search").node,
-            DatePicker(date).id("date").node,
-            TimePicker(time).id("time").node,
-        ]))
-
-        XCTAssertEqual(patch.children[0].props[.isOn], .bool(false), "described: the value is written at build")
-        XCTAssertNil(patch.children[0].driven, "and nothing is tied")
-        XCTAssertEqual(patch.children[1].props[.selectedIndex], .number(3))
-
-        // The fields and the pickers take the same road over a part or a
-        // closure: the value read at build, nothing tied, the report written
-        // back through the binding.
-        XCTAssertEqual(patch.children[2].props[.text], .string(""))
-        XCTAssertNil(patch.children[2].driven)
-        XCTAssertEqual(patch.child("editor")?.props[.text], .string(""))
-        XCTAssertNil(patch.child("editor")?.driven)
-        XCTAssertEqual(patch.child("date")?.props[.date], .numbers([2026, 1, 1]))
-        XCTAssertNil(patch.child("date")?.driven)
-        XCTAssertEqual(patch.child("time")?.props[.time], .numbers([0, 0, 0]))
-        XCTAssertNil(patch.child("time")?.driven)
-
-        renders.fire(handler(patch.children[0], "toggled"), with: [.bool(true)])
-        renders.fire(handler(patch.children[1], "selectedIndexChanged"), with: [.number(1)])
-        renders.fire(handler(patch.children[2], "textChanged"), with: [.string("Ada")])
-        renders.fire(handler(patch.child("editor"), "textChanged"), with: [.string("Notes")])
-        renders.fire(handler(patch.child("date"), "dateChanged"), with: [.numbers([2026, 8, 2])])
-        renders.fire(handler(patch.child("time"), "timeChanged"), with: [.numbers([9, 30, 0])])
-
-        XCTAssertTrue(on, "the report went back through the closure")
-        XCTAssertEqual(room.wrappedValue.width, 1, "and through the part")
-        XCTAssertEqual(typed, "Ada")
-        XCTAssertEqual(profile.wrappedValue.name, "Notes")
-        XCTAssertEqual(day, CalendarDate(year: 2026, month: 8, day: 2))
-        XCTAssertEqual(clock, ClockTime(hour: 9, minute: 30))
     }
 
     /// A value the PLATFORM moves - the scroller's offset, which the platform
@@ -1447,6 +1428,7 @@ final class ControlTests: XCTestCase {
     private static func propNames(in node: Node) -> Set<String> {
         var node = node
         node.materialize()
+        node.readAsDescribed()
 
         // A property driven from a state is carried as much as one stated.
         let carried = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
@@ -1458,7 +1440,7 @@ final class ControlTests: XCTestCase {
 }
 
 /// A phase a pan and two fingers move: where a layout is panned to, how far it is turned, and how large it stands.
-private struct ControlDial: LayoutPhase {
+private struct ControlDial: LayoutParameters {
     var x = 0.0
     var y = 0.0
     var turn = 0.0

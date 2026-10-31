@@ -51,8 +51,13 @@ control does not keep a flag of its own.
 
 A long press is decided in one place, the host's (`AndroidView.longClicked`),
 through the view's one long-press listener: a button's own menu - a split
-button's or a held one's, the road TalkBack offers - else the view's drag,
-else nothing the host takes, and Android goes on to the view's context menu.
+button's or a held one's, the road TalkBack offers - else the view's hold,
+where it is no drag yet, and its drag, else nothing the host takes, and
+Android goes on to the view's context menu. A long press taken is no tap of
+the listener's counting, and comes after the system's time: a view keeps
+none of its own. As Android's click, it lasts while the finger stays on the
+view: a press that moved, short of a drag the view hears, is still held. A control that takes its own press - a slider, a scroller,
+a list, a canvas, a stepper - gets no long click.
 A view hands that listener on while a long press is its to decide and takes
 it back after, still taking a long press where it took one of itself or
 offers a context menu.
@@ -147,13 +152,13 @@ is its own and starts a new line.
 
 ## The background a view is made with
 
-A button, a field, a switch and a slider draw their own background. A colour
-the tree describes replaces it, and a colour the tree takes away gives back
+A button, a field, a switch and a slider draw their own background. A color
+the tree describes replaces it, and a color the tree takes away gives back
 the background the view was made with, read before the first change.
 
 A background brings its own padding - the room a button's drawing leaves
 around its words - and Android takes the view's padding from each new one. A
-padding the tree describes is put back over it, so a button with a colour and
+padding the tree describes is put back over it, so a button with a color and
 a padding keeps its room; one whose padding is taken away gives back the
 padding it was made with.
 
@@ -175,12 +180,12 @@ behind it.
 
 ## A label's words
 
-A label's words stand in the theme's primary words colour
-(`textColorPrimary`) where the tree colours them not, as Android's own body
-text; a `TextView` made bare reads its text appearance, whose colour is the
+A label's words stand in the theme's primary words color
+(`textColorPrimary`) where the tree colors them not, as Android's own body
+text; a `TextView` made bare reads its text appearance, whose color is the
 secondary one. A label's words are one text, or the runs its spans describe as the host
 layer reads them (`textRuns`), laid down as one spanned text: each run in its
-own colour, size, family, weight, background and decorations where it has
+own color, size, family, weight, background and decorations where it has
 its own.
 A run's size is in points the user's font scale applies to, as the label's
 is. The label's letter spacing is in points and Android counts it in the
@@ -213,7 +218,7 @@ then the author's, `minimumWidth` and `minimumHeight`, as on every host. The
 stepper's buttons keep a square of 48 points, the room a finger needs, as
 the stepper's own choice.
 
-Android draws a button's icon at the edge of its padding and centres the words
+Android draws a button's icon at the edge of its padding and centers the words
 in what is left, so a button laid out wider than its words would stand them
 apart. Where it is placed, the host adds to each side of the padding what the
 icon, the gap and the words leave (`ButtonArithmetic.sideRoom`,
@@ -225,18 +230,18 @@ and measures the button as if that room were not there.
 A button says nothing of its look and keeps its theme's: a background with
 its own pressed ripple. A fill, an outline or corners make it one shape -
 the host's shape drawable - under Android's pressed ripple in the theme's
-highlight colour, kept within the same shape, so a drawn button still
+highlight color, kept within the same shape, so a drawn button still
 answers a finger as the platform's do. The shape dims while the button is
-disabled, to the theme's `disabledAlpha`, and so do words in a colour the
-tree gave, as the theme's own colours do. The theme lifts a button, and its
+disabled, to the theme's `disabledAlpha`, and so do words in a color the
+tree gave, as the theme's own colors do. The theme lifts a button, and its
 shadow falls under the whole outline: a shape the page shows through - a
 see-through fill, an outline alone - says its outline is clear, as Android's
-own drawables do, so no grey shadow shows inside it.
+own drawables do, so no gray shadow shows inside it.
 
 A role draws where the tree draws nothing of its own ([a button's
 role](../../host/layout.md#a-buttons-role)): the main action wears the
-platform's coloured button - `Widget.DeviceDefault.Button.Colored`, its
-background and its words' colours - and a destructive one's words the
+platform's colored button - `Widget.DeviceDefault.Button.Colored`, its
+background and its words' colors - and a destructive one's words the
 theme's `colorError`.
 
 An icon beside words is a compound drawable at the picture's own size,
@@ -252,7 +257,7 @@ sent again only when the room changes.
 Android's Views draw no menu button and no split button, so a button holding a
 menu is Android's own button, its menu a `PopupMenu` at the button, written as
 it opens. Where its click opens the menu, an arrow pointing down - Material's
-`expand_more` - stands after its words, in their colours, and the button keeps
+`expand_more` - stands after its words, in their colors, and the button keeps
 room for it beyond its padding, so its words never run under it. A split
 button's arrow stands at its right edge in a part of its own, set off by a
 line: where the finger went down on it, the click opens the menu rather than
@@ -260,11 +265,28 @@ being the button's, and a long press opens it too, the road TalkBack offers. A
 held menu opens with a long press. The arrow and the line are layers of the
 button's foreground, which an icon standing alone shares.
 
+## A link
+
+Android has no link control of its own, and a `URLSpan` would open its
+address itself through the text's movement method. A link is a `TextView` in
+the theme's link color (`getLinkTextColors`) - or the tree's color - dimmed
+while it cannot be chosen, as the host dims a color of its own (the theme's
+link colors dim nothing) -
+underlined by its paint's flag, focusable, its click heard as any view's; the
+host layer opens the address (`host/runtime.md#a-link-chosen`).
+
+## A color picker
+
+Android has no color picker of its own: neither the platform nor its own
+libraries offer one, and Google's applications draw their own swatches. The
+element is not planned on Android (`AndroidRealization.notPlanned`); a tree
+holding one shows the host's unsupported view in its place.
+
 ## A picker
 
 A picker is Android's dropdown spinner. A spinner always shows one of its
 rows, and StateUI's choice may be none, so the first row is the title: the
-closed field shows it, in the theme's hint colour, while nothing is chosen,
+closed field shows it, in the theme's hint color, while nothing is chosen,
 and the open list leaves it out; a choice is the row after its index. Android
 tells a spinner's selection as it next measures or lays the spinner out -
 the row it started on, then the program's - when the program's write is long
@@ -298,14 +320,16 @@ field that leaves closes its dialog.
 ## Work under way
 
 A progress bar is Android's horizontal bar, the share done in 10 000 steps.
-An activity indicator is Android's turning bar: it is drawn only while it
+A spinner is Android's turning bar: it is drawn only while it
 runs, and keeps its room while it does not, so starting the work moves
 nothing around it; hidden, it takes no room.
 
 ## A stepper
 
 Android has no stepper, so the host builds one from its own buttons: one a
-step down, one a step up, side by side, each off at its end of the range. A
+step down, one a step up, side by side, each off at its end of the range,
+each named to TalkBack in the library's words (`ControlWords`), in the
+system's language. A
 step is the user's report, held in the range; the value the tree writes is
 put where it said, within it.
 
@@ -342,10 +366,18 @@ not the frame holding it, so what hears the frame's focus hears the page's.
 ## What assistive technology meets
 
 A view's accessibility crosses in one call: the name a test finds it by, the
-words read for it in place of its own and the hint read after them, whether
-it is a heading, and whether it - or it with everything in it - is met at
-all. The name and the hint are the view's node's, written as the node is
-made; the rest are the view's own. A view the element says nothing of is as
+words read for it in place of its own and the hint read after them, its kind
+and its value, whether it is a heading, and whether it - or it with
+everything in it - is met at all. The name, the hint and the kind are the
+view's node's, written as the node is made; the rest are the view's own.
+TalkBack says a node's kind by its class, so a kind is the class of the
+widget TalkBack names it by - a button `Button`, a toggle `ToggleButton`,
+something adjustable `SeekBar`, an image `ImageView`, words `TextView`;
+Android names no class for a link, which is said as its view is. A value is
+the view's state description, which Android has from 11. Its actions are
+actions of the node, numbered from a base no action of Android's uses, and a
+view that says it is adjustable offers a slider's scrolls forward and back,
+which TalkBack's swipes perform as its steps. A view the element says nothing of is as
 it is of itself: a text is met, a layout as Android decides, so its own
 presence is read once, before the element first says. Android marks a
 heading but not its level.
@@ -356,7 +388,16 @@ A view has one listener, and what its element listens for
 (`MountedElement.hearing`) is told there from the touches and the hovering pointer the view
 gets, in points, and heard by the host layer's rule (`MountedElement.hear`):
 taps, a press dragged, a pinch, two fingers turning, and the pointer. One
-tap is the view's click, which keeps what a click brings; where more make one, the listener counts
+tap is the view's press, taken as a button takes one by the host layer's rule
+([a press as a button takes it](../../host/runtime.md#a-press-as-a-button-takes-it)):
+the listener tells it as it goes down, moves, lets go or is taken away - a
+scroller around the view intercepting the touch - where it stands in the view,
+and where the view's click is only that tap it calls the click off as the
+touch lifts, so a click comes from no touch: a screen reader's, the keyboard's,
+which taps at once. A view whose click is its own - a button, a link, a
+switch's turn (`ownsClick`) - keeps its click; its tap is the press all the
+same. Android's own click is no button's here: a finger that leaves the view
+and comes back clicks nothing, where the press taps. Where more taps make one, the listener counts
 quick taps near each other as Android measures a double tap - Android itself
 counts no run past two - and tells each with its place in its run. A press is
 told as it goes down, moves, lets go or is taken away, measured on the screen,
@@ -370,9 +411,21 @@ view that listens for a drag or a pinch keeps its touch from a scroller around
 it, so a drag that starts on it is its own. A pinch is Android's own: it
 starts once Android tells it apart, takes the press away and calls off the
 view's own click - a touch that pinched is no tap, however still the finger it
-ends with - scales from there, and ends where it was last centred, cancelled
+ends with - scales from there, and ends where it was last centered, cancelled
 where the touch was. A view with no handling of its own is
 given the whole touch; a control keeps its own.
+
+A touch reaches the view in front and those around it alone, as on every
+platform: a layout (`StateUIViewGroup`) hands a touch down to the frontmost
+child under it - in the order it draws them - and, where that child takes
+none, to its own handling, never to a child behind it, which Android's own
+dispatch would offer it to next. A child hidden or clear is passed by, and
+so is a plain view answering no tap - a split view's shade, a column's edge -
+which only draws. Where the touch lands on no child, the layout's own area
+has it, unless it lets input through (`letsInputThrough`): then it is as if
+the layout were not there, and the touch goes on to whatever stands behind
+it. An overlay lets a touch beside what it holds through to the page under
+it.
 
 A view made of parts - a stepper's two buttons, a web view's page - would hand
 its listener only what no part takes, so its gestures see the touches and the
@@ -390,4 +443,12 @@ gives stand over the style's (`TextLook.standing`). A weight is a typeface of
 the family - the platform's where it names none - at the weight's number
 (`Typeface.create(Typeface, int, boolean)`), which carries the slant; with no
 weight, the view's style bits slant the platform's face. A run's weight is a
-`TypefaceSpan` of such a typeface.
+`TypefaceSpan` of such a typeface. Digits of one width are the font feature
+`tnum`: a view's `setFontFeatureSettings`, a run's `StateUIDigitsSpan`.
+
+## A field's outline
+
+A field the tree outlines or shapes (`stroke`, `lineWidth`, `shape`) is drawn
+as a shape in place of the theme's underline - its ground, its outline and its
+corners, fitted to each size it is placed at - and with neither stands on its
+ground alone, or on the theme's look.

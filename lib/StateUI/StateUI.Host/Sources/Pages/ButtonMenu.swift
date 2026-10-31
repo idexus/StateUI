@@ -3,8 +3,9 @@
 
 @_spi(Host) import StateUI
 
-/// A button's menu (`Button.menu`), read alike on every host: how it opens, from the patch the button is made from
-/// or as it stands, whether its arrow shows, and the entries its menu holds.
+/// A button's menu (`.menu` on a `Button` or a `ToolbarButton`), read alike on every host: how it opens, from the
+/// patch the button is made from or as it stands, whether its arrow shows, the entries its menu holds, and what a
+/// bar's button holding one offers behind the bar's overflow.
 /// Design: docs/design/views/controls.md#a-buttons-menu
 @_spi(Host) @MainActor public enum ButtonMenu {
     /// How a button made from `patch` opens its menu: its menu among its children, its click heard or not, the kind
@@ -21,9 +22,9 @@
         return ButtonMenuOpening(holdsMenu: holdsMenu, clicks: clicks, kind: kind)
     }
 
-    /// How `button` opens its menu as it stands.
+    /// How `button` - a button or a bar's button - opens its menu as it stands.
     public static func opening(of button: MountedElement) -> ButtonMenuOpening {
-        guard button.type == .button else { return .none }
+        guard button.type == .button || button.type == .toolbarButton else { return .none }
         let kind = button.value(.menuKind).flatMap(ButtonMenuKind.init(propValue:)) ?? .automatic
         return ButtonMenuOpening(holdsMenu: menu(of: button) != nil, clicks: button.handler(.clicked) != nil, kind: kind)
     }
@@ -47,5 +48,21 @@
     /// The menu `button` holds, where it holds one.
     public static func menu(of button: MountedElement) -> MountedElement? {
         button.children.first { $0.type == .buttonMenu }
+    }
+
+    /// What a bar's button holding a menu offers behind the bar's overflow, as a submenu under its words: its own
+    /// action first where its click is its own, a line, then its menu's entries; none for a button holding no menu.
+    /// Design: docs/design/host/pages.md#a-bar-buttons-menu
+    public static func inOverflow(_ button: MountedElement) -> [MenuEntry] {
+        let entries = entries(of: button)
+        guard !entries.isEmpty, opening(of: button) != .click else { return entries }
+        return [MenuEntry.entry(of: button), .separator] + entries
+    }
+
+    /// A bar's item as its overflow lists it: an item, or - a button holding a menu - a submenu under its words
+    /// holding what it offers there (`inOverflow`).
+    public static func overflowEntry(of item: MountedElement) -> MenuEntry {
+        let offered = inOverflow(item)
+        return offered.isEmpty ? MenuEntry.entry(of: item) : MenuEntry(menu: item, entries: offered)
     }
 }

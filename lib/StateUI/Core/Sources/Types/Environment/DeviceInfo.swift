@@ -35,13 +35,13 @@ public final class DeviceInfo {
     /// The operating system version as displayable text.
     @State public internal(set) var versionString = ""
 
-    /// Real hardware or an emulator.
-    @State public internal(set) var deviceType: DeviceType = .unknown
+    /// Whether this is an emulator, a simulator or a virtual machine; nil where the host has not said.
+    @State public internal(set) var isVirtual: Bool?
 
     /// A device as a test or a preview fakes it; what is not said starts as a headless host's does.
     public init(
         formFactor: FormFactor = .unknown, platform: String = "", model: String = "", manufacturer: String = "",
-        name: String = "", versionString: String = "", deviceType: DeviceType = .unknown
+        name: String = "", versionString: String = "", isVirtual: Bool? = nil
     ) {
         self.formFactor = formFactor
         self.platform = platform
@@ -49,6 +49,6 @@ public final class DeviceInfo {
         self.manufacturer = manufacturer
         self.name = name
         self.versionString = versionString
-        self.deviceType = deviceType
+        self.isVirtual = isVirtual
     }
 }

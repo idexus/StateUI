@@ -28,8 +28,24 @@ extension AndroidDriver {
         return Self.said(menu, menusOnly: false)
     }
 
-    /// The menu Android's button standing for `button` pops up, written as it opens.
+    /// The menu Android's button standing for `button` pops up, written as it opens - a bar's button, the submenu of
+    /// its bar's menu holding its entries.
     func buttonMenu(of button: MountedElement) throws -> String {
+        if button.type == .toolbarButton {
+            var root = button
+            while let parent = root.parent { root = parent }
+            guard let bar = Self.bars(in: root).first(where: { $0.items.contains { $0 === button } }),
+                  let place = ButtonMenu.entries(of: button).lazy
+                      .compactMap({ ($0.element?.native as? AndroidElement)?.menuPlace }).first
+            else { throw DriverCannot("read the menu \(button.type.name) opens") }
+            let menu = Self.menu(of: bar)
+            return withExtendedLifetime(menu) {
+                Java.frame {
+                    Java.callStaticObject(Self.testMenus, Self.saidHolding, .object(menu.reference), .int(Int32(place + 1)))
+                        .map { Java.text($0) }
+                }
+            } ?? ""
+        }
         guard let view = (button.native as? AndroidElement)?.view as? AndroidButtonView, let write = view.writeMenu
         else { throw DriverCannot("read the menu \(button.type.name) opens") }
         let menu = TestMenus.empty()
@@ -45,10 +61,10 @@ extension AndroidDriver {
 
     /// The bar `page` shows, as Android lays it out: its actions in its menu's order, each run of one group a
     /// group, then the entries behind its overflow. Android's bar has no leading side.
-    func bar(of page: MountedElement) throws -> String {
-        var each: MountedElement? = page
-        while let found = each, found.type != .navigationStack { each = found.parent }
-        guard let bar = ((each?.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar else {
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        let foot = ((page.native as? AndroidElement)?.view as? AndroidPageView)?.toolbar
+        if edge == .bottom, foot == nil { return BarWords.said(leading: [], trailing: [], overflow: []) }
+        guard let bar = edge == .bottom ? foot : Self.bar(over: page) else {
             throw DriverCannot("read the bar of \(page.type.name)")
         }
         var (groups, overflow, group): ([[String]], [String], Int32?) = ([], [], nil)
@@ -70,22 +86,19 @@ extension AndroidDriver {
 
     /// What a menu's entry or a bar's action holds, as Android's item holds it.
     func itemHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
-        if property == .placement || property == .showsText {
+        if property == .showsText {
             var root = element
             while let parent = root.parent { root = parent }
             guard let bar = Self.bars(in: root).first(where: { $0.items.contains { $0 === element } }),
                   let place = (element.native as? AndroidElement)?.menuPlace,
                   let entry = Self.laidOut(bar).first(where: { $0.id == Int32(place + 1) })
             else { throw DriverCannot(reading: property, of: element) }
-            if property == .showsText {
-                if !entry.words, element.value(.icon) != nil, Self.screenWidth() < 480 {
-                    throw DriverCannot(
-                        "read an action's words beside its picture",
-                        because: "Android shows them on a screen 480 points wide or more, and this one is narrower")
-                }
-                return entry.words.propValue
+            if !entry.words, element.value(.icon) != nil, Self.screenWidth() < 480 {
+                throw DriverCannot(
+                    "read an action's words beside its picture",
+                    because: "Android shows them on a screen 480 points wide or more, and this one is narrower")
             }
-            return (entry.onBar ? ToolbarItemPlacement.bar : .overflow).propValue
+            return entry.words.propValue
         }
         let (menu, id) = try nativeItem(element)
         let held = Java.frame {
@@ -99,12 +112,19 @@ extension AndroidDriver {
         switch property {
         case .text: return String(lines[0]).propValue
         case .isEnabled: return (lines[1] == "1").propValue
-        case .isDestructive: return (lines[2] == "1").propValue
+        case .role: return (lines[2] == "1" ? ActionRole.destructive : .normal).propValue
         case .isOn: return (lines[4] == "1").propValue
         case .keyboardShortcut:
             guard let key = Int32(lines[5]), key != 0, let meta = Int32(lines[6]) else { return HostValue.nothing }
             return AndroidKeys.shortcut(code: 0, character: key, meta: meta)?.propValue
-        case .icon: throw DriverCannot("read a picture's name", because: "Android's item keeps its picture, not its name")
+        case .icon:
+            // The picture whose pixels the item shows, of those the cases give; nil for none of them.
+            let shown = Self.pictures.first { name in
+                guard let picture = AndroidPictures.bitmap(.file(name)) else { return false }
+                return Java.callStaticBool(
+                    Self.testMenus, Self.showsPicture, .object(menu.reference), .int(id), .object(picture.reference))
+            }
+            return shown.map { .string($0) }
         default: throw DriverCannot(reading: property, of: element)
         }
     }
@@ -142,10 +162,29 @@ extension AndroidDriver {
         return ((each?.native as? AndroidElement)?.view as? AndroidNavigationView)?.bar
     }
 
-    /// The bars of every stack under `root`.
+    /// The bars of every stack under `root`, and of every page's foot.
     private static func bars(in root: MountedElement) -> [AndroidBarView] {
-        let own = ((root.native as? AndroidElement)?.view as? AndroidNavigationView).map { [$0.bar] } ?? []
+        let view = (root.native as? AndroidElement)?.view
+        let split = (view as? AndroidSplitView).map { [$0.drawer.bar] + ($0.framesDetail ? [$0.detailColumn.bar] : []) }
+        let foot = (view as? AndroidPageView)?.toolbar.map { [$0] }
+        let own = (view as? AndroidNavigationView).map { [$0.bar] } ?? split ?? foot ?? []
         return own + (root.children + root.slots).flatMap(bars(in:))
+    }
+
+    /// The bar over `page`: its stack's, else its split view's column's - the sidebar's, or the detail's own; nil for
+    /// none.
+    private static func bar(over page: MountedElement) -> AndroidBarView? {
+        var (child, each) = (page, page.parent)
+        while let found = each {
+            let view = (found.native as? AndroidElement)?.view
+            if let stack = view as? AndroidNavigationView { return stack.bar }
+            if let split = view as? AndroidSplitView {
+                if found.arrangedChildren.first === child { return split.drawer.bar }
+                return split.framesDetail ? split.detailColumn.bar : nil
+            }
+            (child, each) = (found, found.parent)
+        }
+        return nil
     }
 
     /// The bar's entries as Android lays them out (`TestMenus.laidOut`), in its menu's order.
@@ -193,9 +232,13 @@ extension AndroidDriver {
     static let testMenus = Java.findClass("stateui/android/test/TestMenus")
     static let showsMenuArrow = Java.staticMethod(testMenus, "showsMenuArrow", "(Landroid/view/View;)Z")
     private static let saidMenu = Java.staticMethod(testMenus, "said", "(Landroid/view/Menu;Z)Ljava/lang/String;")
+    private static let saidHolding = Java.staticMethod(
+        testMenus, "saidHolding", "(Landroid/view/Menu;I)Ljava/lang/String;")
     private static let laidOutBar = Java.staticMethod(
         testMenus, "laidOut", "(Landroid/view/ViewGroup;Landroid/view/Menu;)Ljava/lang/String;")
     private static let chooseById = Java.staticMethod(testMenus, "choose", "(Landroid/view/Menu;I)Z")
+    private static let showsPicture = Java.staticMethod(
+        testMenus, "shows", "(Landroid/view/Menu;ILandroid/graphics/Bitmap;)Z")
     private static let heldById = Java.staticMethod(
         testMenus, "held", "(Landroid/content/Context;Landroid/view/Menu;I)Ljava/lang/String;")
 }

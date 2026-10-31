@@ -8,7 +8,7 @@ public enum FontElementContract: Contract {
     /// The tier's name.
     public static let name = "FontElement"
 
-    /// Whether the text is italic.
+    /// Whether the text is italic, and whether its digits are of one width.
     public static let fontAttributes = ElementProperty<Self, FontAttributes>("fontAttributes", layer: .native)
 
     /// How heavy the text's strokes are, over its style's weight.

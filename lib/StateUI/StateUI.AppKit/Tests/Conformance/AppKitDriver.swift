@@ -37,7 +37,7 @@ final class AppKitDriver: HostDriver {
             none["read submitLabel of \(field)"] = "a Mac has no keyboard on the screen whose return key says anything"
         }
         let shapePaint = [
-            "contentMode", "geometryTransform", "fill", "stroke", "lineWidth", "dashPhase", "dash",
+            "contentMode", "geometryTransform", "stroke", "lineWidth", "dashPhase", "dash",
             "lineCap", "lineJoin", "miterLimit",
         ]
         for shape in ["Capsule", "Ellipse", "Line", "Path", "Polygon", "Polyline", "Rectangle"] {
@@ -46,10 +46,10 @@ final class AppKitDriver: HostDriver {
                     "StateUI draws a shape in its view's draw(_:), which holds none of its \(member); its drawing proves it"
             }
         }
-        for layout in ["Grid", "HStack", "VStack", "ZStack"] {
+        for box in ["Fill", "Grid", "HStack", "Space", "VStack", "ZStack"] {
             for member in ["stroke", "lineWidth", "shape"] {
-                none["read \(member) of \(layout)"] =
-                    "StateUI draws a layout's box in its view's draw(_:), which holds none of its \(member); its drawing proves it"
+                none["read \(member) of \(box)"] =
+                    "StateUI draws a box in its view's draw(_:), which holds none of its \(member); its drawing proves it"
             }
         }
         for layout in ["Grid", "HStack", "VStack", "ZStack", "ScrollView"] {
@@ -121,6 +121,8 @@ final class AppKitDriver: HostDriver {
         Self.emptyFiles()
         renderer.fileToolkit.holdsLaunchesForTesting = true
         renderer.actToolkit.announcedForTesting = []
+        // A pasteboard of the driver's own name: a run never writes over the user's clipboard.
+        renderer.actToolkit.pasteboard = NSPasteboard(name: NSPasteboard.Name("org.stateui.conformance"))
         AppKitRestorationBroker.shared.host = renderer
         for window in restorable { Self.restore(window) }
         renderer.startForTesting()
@@ -179,15 +181,29 @@ final class AppKitDriver: HostDriver {
         renderer?.runtime.pump.turn()
     }
 
+    /// The edge the band under the toolbar shows over `page`: the band of the room nearest the page's view.
+    static func bandEdge(over page: MountedElement?) -> HostValue? {
+        var view = (page?.native as? AppKitElement)?.view
+        while let standing = view {
+            if let band = standing.superview?.subviews.lazy.compactMap({ $0 as? AppKitTopEdgeView }).first {
+                return band.edge.propValue
+            }
+            view = standing.superview
+        }
+        return nil
+    }
+
     func frame() {
         renderer?.displayFrameForTesting()
     }
 
     /// Where the element's view stands in its window, as AppKit placed it - measured down from the window's top.
     func place(of element: MountedElement) throws -> Rect {
-        guard let view = (element.native as? AppKitElement)?.view, let window = view.window,
-              let content = window.contentView
-        else { throw DriverCannot("read where \(element.type.name) stands") }
+        layOutWindows()
+        guard let view = (element.native as? AppKitElement)?.view else {
+            throw DriverCannot("read where \(element.type.name) stands")
+        }
+        guard let content = view.window?.contentView else { throw NotPlaced(element) }
         let frame = view.convert(view.bounds, to: nil)
         return Rect(
             x: frame.minX, y: content.bounds.height - frame.maxY, width: frame.width, height: frame.height)
@@ -195,10 +211,23 @@ final class AppKitDriver: HostDriver {
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
         layOutWindows()
+        if property == .barScrollEdge { return Self.bandEdge(over: element.visiblePage) }
         if element.type == .window { return try windowHolds(property, element) }
-        if element.type == .menuItem || element.type == .toolbarItem { return try itemHolds(property, element) }
+        if element.type == .sheet, property == .background { return try sheetGround(element) }
+        if element.type == .popover, property == .isPresented {
+            return ((element.native as? AppKitElement)?.shownPopover?.isShown ?? false).propValue
+        }
+        if [.menuItem, .menuToggle, .toolbarButton, .toolbarToggle, .toolbarLabel].contains(element.type) {
+            return try itemHolds(property, element)
+        }
         if element.type == .marker { return try markerHolds(property, element) }
         if element.type == .textSpan { return try spanHolds(property, on: element) }
+        if property == .fill, let shape = (element.native as? AppKitElement)?.view as? AppKitShapeView {
+            // A figure made of a blur or glass shows AppKit's own view of it; a painted one, what it draws.
+            if let surface = shape.surface { return Self.material(surface)?.propValue }
+            let middle = Point(Double(shape.bounds.midX), Double(shape.bounds.midY))
+            return try color(of: element, at: middle).map { Material.color($0).propValue }
+        }
         if property == .title, let tabs = element.parent, tabs.type == .tabView { return try tabTitle(of: element, in: tabs) }
         if let map = (element.native as? AppKitElement)?.view as? AppKitMapView, let held = mapHolds(property, map) {
             return held
@@ -206,10 +235,12 @@ final class AppKitDriver: HostDriver {
         if let web = (element.native as? AppKitElement)?.view as? WebKitView, let held = webHolds(property, web) {
             return held
         }
-        if property == .barTitle || property == .barSubtitle { return try titleAreaHolds(property, element) }
-        if property == .barBackgroundColor { return try barHolds(element) }
+        if property == .holdDuration, let hold = (element.native as? AppKitElement)?.holdRecognizer {
+            return .number(hold.minimumPressDuration * 1000)
+        }
+        if property == .subtitle, element.type == .page { return try subtitleHolds(element) }
+        if property == .barBackground { return try barHolds(element) }
         if property == .barForegroundColor { return try barWordsColor(element) }
-        if property == .barIcon { return try titleAreaIcon(element) }
         if property == .icon, let button = (element.native as? AppKitElement)?.view as? AppKitButtonView {
             return pictureName(button.image)
         }
@@ -221,6 +252,10 @@ final class AppKitDriver: HostDriver {
         if property == .showsBackButton, element.type == .page {
             return (try controller(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.back) != nil).propValue
         }
+        // Whether a page offers the close button: the toolbar of the sheet its stack stands in holds it.
+        if property == .showsCloseButton, element.type == .page {
+            return (try sheet(of: element).toolbarForTesting.itemForTesting(AppKitWindowToolbar.close) != nil).propValue
+        }
         let view = (element.native as? AppKitElement)?.view
         switch (property, view) {
         case (.layoutDirection, let view?):
@@ -229,7 +264,6 @@ final class AppKitDriver: HostDriver {
         case (.selectionMode, let items as AppKitItemsView): return items.modeForTesting.propValue
         case (.isOn, let toggle as AppKitSwitchView): return (toggle.state == .on).propValue
         case (.isOn, let check as AppKitCheckBoxView): return (check.state == .on).propValue
-        case (.isOn, let radio as AppKitRadioButtonView): return (radio.state == .on).propValue
         case (.value, let slider as AppKitSliderView): return slider.doubleValue.propValue
         case (.minimum, let slider as AppKitSliderView): return slider.minValue.propValue
         case (.maximum, let slider as AppKitSliderView): return slider.maxValue.propValue
@@ -238,14 +272,14 @@ final class AppKitDriver: HostDriver {
         case (.maximum, let stepper as AppKitStepperView): return stepper.maxValue.propValue
         case (.step, let stepper as AppKitStepperView): return stepper.increment.propValue
         case (.progress, let bar as AppKitProgressView): return bar.doubleValue.propValue
-        case (.isAnimating, let spinner as AppKitActivityIndicatorView): return spinner.isSpinning.propValue
+        case (.isAnimating, let spinner as AppKitSpinnerView): return spinner.isSpinning.propValue
         case (.text, let label as AppKitTextView): return label.stringValue.propValue
         case (.text, let field as AppKitTextFieldView): return field.textField.stringValue.propValue
         case (.text, let search as AppKitSearchFieldView): return search.stringValue.propValue
         case (.text, let editor as AppKitTextEditorView): return editor.textView.string.propValue
         case (.text, let button as AppKitButtonView): return button.title.propValue
         case (.text, let check as AppKitCheckBoxView): return check.title.propValue
-        case (.text, let radio as AppKitRadioButtonView): return radio.title.propValue
+        case (.text, let toggle as AppKitSwitchView): return toggle.caption.stringValue.propValue
         case (.selectedIndex, let picker as any AppKitChoosing):
             return picker.indexOfSelectedItem >= 0 ? picker.indexOfSelectedItem.propValue : nil
         case (.options, let picker as any AppKitChoosing): return picker.itemTitles.propValue
@@ -257,8 +291,12 @@ final class AppKitDriver: HostDriver {
         case (.minimumDate, let picker as AppKitDatePickerView): return picker.earliestForTesting?.propValue
         case (.maximumDate, let picker as AppKitDatePickerView): return picker.latestForTesting?.propValue
         case (.time, let picker as AppKitTimePickerView): return picker.time.propValue
+        case (.color, let picker as AppKitColorPickerView): return Self.color(picker.color).propValue
+        case (.choosesOpacity, let picker as AppKitColorPickerView): return picker.supportsAlpha.propValue
         case (.selectedTab, let tabs as AppKitTabView): return tabs.selectedIndexForTesting.propValue
         case (.showsSidebar, let split as AppKitSplitView): return split.isEffectivelyPresentedForTesting.propValue
+        case (.showsSidebarToggle, let split as AppKitSplitView):
+            return (split.window?.toolbar?.items.contains { $0.itemIdentifier == .toggleSidebar } == true).propValue
         case (.sidebarBackground, let split as AppKitSplitView): return Self.ground(of: split)
         case (.sidebarOverlays, let split as AppKitSplitView): return split.sidebarOverlaysForTesting.propValue
         // Shown: in a window, and neither it nor any view it stands in hidden.
@@ -272,6 +310,8 @@ final class AppKitDriver: HostDriver {
             return (editor.textView.isEditable || editor.textView.isSelectable).propValue
         case (.isReadOnly, let editor as AppKitTextEditorView):
             return (!editor.textView.isEditable && editor.textView.isSelectable).propValue
+        // A switch stands beside its words: the switch itself takes the input.
+        case (.isEnabled, let toggle as AppKitSwitchView): return toggle.control.isEnabled.propValue
         case (.isEnabled, let control as NSControl): return control.isEnabled.propValue
         case (.isEnabled, let picker as AppKitPickerView): return picker.isEnabled.propValue
         // A view that is no control holds whether it answers as assistive technology meets it.

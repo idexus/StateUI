@@ -28,12 +28,12 @@ struct ScenesSample: SampleContent, ExampleContent {
             Button("New scratchpad")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.scratchpad")
-                .onClicked(gate: .ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
+                .onClicked(.ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
 
             Button("About")
                 .horizontalAlignment(.center)
                 .accessibilityIdentifier("scene.about")
-                .onClicked(gate: .ignoreWhileRunning) { await open(.about, "About") }
+                .onClicked(.ignoreWhileRunning) { await open(.about, "About") }
 
             VStack {
                 DebugInfoLabel()
@@ -54,7 +54,7 @@ struct ScenesSample: SampleContent, ExampleContent {
     }
 
     /// Opens a window of the kind `type` names, in the scene declaring it, and says what came of it.
-    private func open(_ type: WindowType, _ caption: String) async {
+    private func open(_ type: WindowType<Void>, _ caption: String) async {
         do {
             try await application.openWindow(type)
             said = "\(caption): opened."

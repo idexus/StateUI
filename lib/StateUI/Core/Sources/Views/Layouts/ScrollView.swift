@@ -44,7 +44,8 @@ extension ScrollViewProperties {
 /// axis and passes a dominant gesture on the disabled axis to the enclosing
 /// scroller. A horizontal code listing can therefore live inside a vertical
 /// page without interrupting the page's movement.
-public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollViewProperties, FocusElement {
+public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollViewProperties, FocusElement,
+    RefreshElement {
     /// The node this control describes.
     public var node: Node
 
@@ -79,7 +80,7 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     ///
     /// - Parameter state: the state the offset is carried on.
     /// - Returns: the scroller, moving with that state and reporting into it.
-    public func scrollOffset(_ state: Binding<Point>) -> Self {
+    public func scrollOffset(_ state: Binding<Point>) -> Modified {
         journey(.scrollOffset, by: state)
     }
 
@@ -93,13 +94,18 @@ public struct ScrollView: ElementView, PaddingElement, BorderElement, ScrollView
     /// runs once per movement the user makes - a drag let go, a throw that ran
     /// out, a wheel, a key - and not for one that leaves the offset where it
     /// was, nor for one the application wrote.
-    public func onScrollStopped(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onScrollStopped(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ScrollViewContract.scrollStopped, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onScrollStopped(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onScrollStopped(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ScrollViewContract.scrollStopped, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onScrollStopped(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ScrollViewContract.scrollStopped, gate: gate, handler)
     }
 }

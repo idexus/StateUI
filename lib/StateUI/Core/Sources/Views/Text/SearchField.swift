@@ -30,7 +30,8 @@ extension SearchFieldProperties {
 /// Given a binding the field shows the value and writes every edit back; given a
 /// plain string it shows that, and `.onTextChanged` is how what is typed gets
 /// anywhere.
-public struct SearchField: TextInput, TextualElement, FontElement, TextAlignmentElement, SearchFieldProperties {
+public struct SearchField: TextInput, TextualElement, FontElement, TextAlignmentElement, BorderElement,
+    SearchFieldProperties {
     /// The node this control describes.
     public var node: Node
 
@@ -47,8 +48,8 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
-    public init(_ text: Binding<String>) {
-        self = SearchField().text(text)
+    public init(_ state: Binding<String>) {
+        self = SearchField().text(state)
     }
 
     // Design: docs/design/views/bindings.md#two-way-controls
@@ -61,26 +62,29 @@ public struct SearchField: TextInput, TextualElement, FontElement, TextAlignment
     /// with no view rebuilt for it: a keystroke costs a render only in a body
     /// that reads the state.
     ///
-    /// - Parameter value: the state shown, and written back into as the user
+    /// - Parameter state: the state shown, and written back into as the user
     ///   types.
     /// - Returns: the control, wearing and reporting that text.
-    public func text(_ value: Binding<String>) -> Modified {
-        value.image == nil
-            ? described(TextualElementContract.text.token, value, on: .textChanged)
-            : words(TextualElementContract.text.token, by: value, mode: .inOut)
+    public func text(_ state: Binding<String>) -> Modified {
+        words(TextualElementContract.text.token, by: state, mode: .inOut)
     }
 
     // MARK: Events
 
     /// Fires when the search is submitted - the return key, or the magnifier
     /// where a platform draws a button.
-    public func onSubmitted(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onSubmitted(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(SearchFieldContract.submitted, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onSubmitted(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onSubmitted(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(SearchFieldContract.submitted, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSubmitted(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(SearchFieldContract.submitted, gate: gate, handler)
     }
 }

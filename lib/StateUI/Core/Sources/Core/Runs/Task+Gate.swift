@@ -11,7 +11,7 @@ extension Task where Success == Void, Failure == Never {
     /// The run belongs to the gate: no element leaving, nor the handler that started it, ends it.
     /// Design: docs/design/core/runs.md#work-started-from-code
     @MainActor @discardableResult
-    public init(gate: Gatekeeper, operation: @escaping EventHandler) {
+    public init(gate: Gate, operation: @escaping EventHandler) {
         self = gate.runs.start(operation, gate.policy, payload: nil, owner: gate.tasks)
     }
 }

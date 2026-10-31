@@ -32,14 +32,17 @@ final class NativeProjectTests: XCTestCase {
                 contentsOf: app.appendingPathComponent("Platforms/AppKit/main.swift"),
                 encoding: .utf8)
             XCTAssertTrue(entry.contains("import StateUIAppKit"))
+            XCTAssertTrue(entry.contains("registerApplication()"))
             XCTAssertTrue(entry.contains("StateUIAppKit.run("))
 
+            // Every head names the application to its host in Swift: the module exports no C function to be named.
             let registration = try String(
                 contentsOf: app.appendingPathComponent("Sources/\(name)App.swift"),
                 encoding: .utf8)
             XCTAssertTrue(
-                registration.contains("@_cdecl(\"stateui_app_register\")"),
-                "\(name)'s module does not register the application for its Android head")
+                registration.contains("public func registerApplication()"),
+                "\(name)'s module does not name the application to its heads")
+            XCTAssertFalse(registration.contains("@_cdecl("), "\(name)'s module exports a C function")
         }
     }
 
@@ -131,8 +134,8 @@ final class NativeProjectTests: XCTestCase {
 
     /// A host calls the library in Swift, in its own process, so the library
     /// exports no C function: a `@_cdecl` in its sources is a door no host
-    /// opens. An application's own - the registration its Android head calls
-    /// from `JNI_OnLoad` - is the application's.
+    /// opens. An application's one is its Android head's `JNI_OnLoad`, which
+    /// Android calls by name.
     func testTheLibraryExportsNoCFunction() throws {
         var read = 0
 
@@ -426,7 +429,7 @@ final class NativeProjectTests: XCTestCase {
                 "\(name)'s Package.swift declares no WinUI head in Platforms/WinUI")
 
             let entry = try text("Platforms/WinUI/main.swift")
-            for shape in ["import StateUIWinUI", "stateui_app_register()", "StateUIWinUI.run()"] {
+            for shape in ["import StateUIWinUI", "registerApplication()", "StateUIWinUI.run()"] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s WinUI head does not say \(shape)")
             }
         }
@@ -496,9 +499,10 @@ final class NativeProjectTests: XCTestCase {
         }
     }
 
-    /// The GTK 4 host is a Swift package beside the others, Swift alone over GTK's C API: its C module is
-    /// the system's headers and nothing else - a module map and one header that includes libadwaita's and names
-    /// GLib's flags, each under a name of the host's - and its scripts stand under `.scripts/GTK`.
+    /// The GTK 4 host is a Swift package beside the others, Swift alone over GTK's C API: its C modules are
+    /// the system's headers and nothing else - each a module map and one header: one including libadwaita's and
+    /// GLib's watch of a file descriptor, and naming GLib's flags, each under a name of the host's, the other
+    /// libsoup's - and its scripts stand under `.scripts/GTK`.
     func testTheGTKHostIsSwiftAloneOverGTKsCAPI() throws {
         let repository = SourceTree.repository
         let host = "lib/StateUI/StateUI.GTK"
@@ -514,12 +518,22 @@ final class NativeProjectTests: XCTestCase {
 
         let header = try String(contentsOf: repository.appendingPathComponent("\(module)/CStateUIGTK.h"), encoding: .utf8)
         let code = header.split(separator: "\n").filter { !$0.hasPrefix("//") && !$0.isEmpty }
-        XCTAssertEqual(code.first, "#include <adwaita.h>")
+        let includes = code.prefix { $0.hasPrefix("#include") }
+        XCTAssertEqual(includes, ["#include <adwaita.h>", "#include <glib-unix.h>"], "the system's headers alone")
         // A flag GLib 2.86 hides from Swift, typed as GLib's own and given its value: nothing of the host's.
         let flag = try Regex(#"^static const G[A-Za-z]+ STATEUI_[A-Z_]+ = G_[A-Z_]+;$"#)
         XCTAssertEqual(
-            code.dropFirst().filter { (try? flag.wholeMatch(in: String($0))) == nil }, [],
+            code.dropFirst(includes.count).filter { (try? flag.wholeMatch(in: String($0))) == nil }, [],
             "the header declares something of its own")
+
+        let soup = "\(host)/Sources/CStateUISoup"
+        let soupFiles = try SourceTree.files(under: repository.appendingPathComponent(soup), entering: { _ in true })
+        XCTAssertEqual(soupFiles.sorted(), ["CStateUISoup.h", "module.modulemap"], "libsoup's module holds more")
+        let soupHeader = try String(
+            contentsOf: repository.appendingPathComponent("\(soup)/CStateUISoup.h"), encoding: .utf8)
+        XCTAssertEqual(
+            soupHeader.split(separator: "\n").filter { !$0.hasPrefix("//") && !$0.isEmpty }, ["#include <libsoup/soup.h>"],
+            "libsoup's headers alone")
     }
 
     /// Every GTK HEAD is an executable its application declares exactly when a
@@ -542,7 +556,7 @@ final class NativeProjectTests: XCTestCase {
                 "\(name)'s Package.swift declares no GTK head in Platforms/GTK")
 
             let entry = try text("Platforms/GTK/main.swift")
-            for shape in ["import StateUIGTK", "stateui_app_register()", "StateUIGTK.run(applicationID: \"com.stateui."] {
+            for shape in ["import StateUIGTK", "registerApplication()", "StateUIGTK.run(applicationID: \"com.stateui."] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s GTK head does not say \(shape)")
             }
         }
@@ -584,7 +598,7 @@ final class NativeProjectTests: XCTestCase {
             XCTAssertTrue(android.contains("android:value=\"\(name)Android\""))
 
             let entry = try text("Platforms/Android/Swift/\(name)Android.swift")
-            for shape in ["@_cdecl(\"JNI_OnLoad\")", "stateui_app_register()", "StateUIAndroid.load("] {
+            for shape in ["@_cdecl(\"JNI_OnLoad\")", "registerApplication()", "StateUIAndroid.load("] {
                 XCTAssertTrue(entry.contains(shape), "\(name)'s Android head does not say \(shape)")
             }
 
@@ -837,6 +851,42 @@ final class NativeProjectTests: XCTestCase {
         XCTAssertTrue(
             tools.contains("draw-app-icon") && tools.contains("-Pstateui.res="),
             "an Android head is built without its icon being drawn")
+    }
+
+    /// The Android scripts' shared tools find the checkout they stand in by themselves: a script sourcing them from
+    /// anywhere, strict about names never set, sets nothing first.
+    func testTheAndroidToolsFindTheirCheckoutThemselves() throws {
+        let bash = URL(fileURLWithPath: "/bin/bash")
+        guard FileManager.default.fileExists(atPath: bash.path) else {
+            throw XCTSkip("no /bin/bash here; an Android head is built on macOS and Linux.")
+        }
+        let sdk = FileManager.default.temporaryDirectory.appendingPathComponent("NativeProjectTests-\(UUID().uuidString)")
+        let aapt2 = sdk.appendingPathComponent("build-tools/1.0.0/aapt2")
+        try FileManager.default.createDirectory(
+            at: sdk.appendingPathComponent("platform-tools"), withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: aapt2.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try Data().write(to: aapt2)
+        defer { try? FileManager.default.removeItem(at: sdk) }
+
+        let process = Process()
+        process.executableURL = bash
+        process.arguments = [
+            "-c", #"set -euo pipefail; source "$0"; echo "$repository_dir""#,
+            SourceTree.repository.appendingPathComponent(".scripts/Android/tools.sh").path,
+        ]
+        process.environment = ["ANDROID_HOME": sdk.path, "HOME": sdk.path, "PATH": "/usr/bin:/bin"]
+        process.currentDirectoryURL = sdk
+        let pipe = Pipe()
+        process.standardOutput = pipe
+        process.standardError = pipe
+        try process.run()
+        let output = String(decoding: pipe.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+        process.waitUntilExit()
+
+        XCTAssertEqual(process.terminationStatus, 0, output)
+        XCTAssertEqual(
+            URL(fileURLWithPath: output.trimmingCharacters(in: .newlines)).resolvingSymlinksInPath(),
+            SourceTree.repository.resolvingSymlinksInPath())
     }
 
     /// Every Android head may read the network: the host reports it to the application's views, and a head

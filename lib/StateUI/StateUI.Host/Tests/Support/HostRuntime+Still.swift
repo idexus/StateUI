@@ -31,9 +31,13 @@ final class NoView: NativeElement {
     func presentFrame(_ changed: Set<Prop>) {}
     func leave() {}
 
-    /// How many times the element's children were arranged.
+    /// How many times the element's children were arranged, and the layouts around it asked to measure again.
     var arranged = 0
+    var measuredAgain = 0
+    var travels = 0
     func arrangeChildren() { arranged += 1 }
+    func invalidateMeasurements() { measuredAgain += 1 }
+    func configureLayoutMotion() { travels += 1 }
 }
 
 extension HostRuntime {

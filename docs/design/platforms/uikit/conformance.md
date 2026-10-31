@@ -52,16 +52,16 @@ words, caret and selection, a button's title, a toggle's state, a slider's
 and a stepper's value and range, a picker's choices, a view's hiding, alpha
 and a control's enabled state, a button's and a label's padding, its
 transform as its layer holds it, what VoiceOver meets, a control's font and
-colours, a menu entry's and a bar item's action - never from what the host
+colors, a menu entry's and a bar item's action - never from what the host
 last wrote. A run of a text's words is the label's attributes over the
 letters the host layer's runs place it at (`RunPlace`). A text view takes
 input while the user can edit or select it,
-and is read only while they can select it and not edit it. A colour at a point is read from the screen: the view drawn as the
+and is read only while they can select it and not edit it. A color at a point is read from the screen: the view drawn as the
 screen shows it into a bitmap in sRGB. Whether a touch reaches a view is the
 window's own hit testing at that point.
 
 A layout's box and a shape's paint are layers UIKit holds: a box's fill and
-outline layers, a shape's colour layers cut by the shape layers that draw its
+outline layers, a shape's color layers cut by the shape layers that draw its
 line, whose dashes UIKit keeps in points and the driver reads back in the
 line's widths. A shape given no stroke draws no line, and holds none of it.
 A button's box, icon and breaking are its configuration's. What UIKit holds

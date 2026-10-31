@@ -9,6 +9,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-slider-in-steps
 @MainActor
 final class AndroidSliderView: AndroidView {
+    /// The view's click is its own - its thumb's - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// The SeekBar's whole steps across the range.
     static let steps: Int32 = 10_000
 
@@ -54,7 +57,7 @@ final class AndroidSliderView: AndroidView {
         }
     }
 
-    /// The colour of the track's filled part and the thumb; nil puts back the platform's.
+    /// The color of the track's filled part and the thumb; nil puts back the platform's.
     func setTint(_ color: HostValue?) {
         let made = madeTints ?? (
             Java.callObject(reference, JavaAPI.getProgressTintList).map(JavaObject.init),

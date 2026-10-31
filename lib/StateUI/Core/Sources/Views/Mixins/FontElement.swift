@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// How the text of a control is set in type - its step of the platform's type
-/// ramp, its size, its family, its weight and its slant.
+/// ramp, its size, its family, its weight, its slant and its digits.
 public protocol FontElement: PropertyContainer {}
 
 extension FontElement {
@@ -12,9 +12,10 @@ extension FontElement {
     /// Which font, by the alias the app registered it under - not the file name.
     public func fontFamily(_ value: String) -> Modified { setValue(FontElementContract.fontFamily, Name(value)) }
 
-    /// Italic, or upright.
+    /// Italic or upright, and digits of one width or of their own.
     ///
     ///     Text("Total").fontAttributes(.italic)
+    ///     Text("\(seconds) s").fontAttributes(.monospacedDigits)
     public func fontAttributes(_ value: FontAttributes) -> Modified { setValue(FontElementContract.fontAttributes, value) }
 
     /// How heavy the strokes are - regular, medium, semibold or bold - over the

@@ -23,38 +23,48 @@ for - a tab chosen, the sidebar shown:
 - the way back is the chrome's own back button, while the visible stack's
   top page can go back;
 - a split view adds the chrome's pane toggle, which shows and hides its
-  sidebar;
-- the groups of actions the visible path declares
-  ([the actions of a path](../../host/pages.md#the-actions-of-a-path)) stand
+  sidebar, unless it offers none (`showsSidebarToggle`);
+- the groups of actions the visible page declares
+  ([a page's actions](../../host/pages.md#a-pages-actions)) stand
   on a command bar at the chrome's edge they declare - the leading one in its
   left header, after the way back and the toggle, shown only while it holds
   an action; the trailing one in its right header - each group apart from the
-  one before it by WinUI's own line between commands (`AppBarSeparator`),
+  one before it by room ([a bar's buttons](#a-bars-buttons)),
+  a setting a two-state button, checked while on,
   and those placed in overflow behind the trailing bar's own "more"; an
   action with a picture - the first of the files its
   name stands for that the application's pictures hold
   ([pictures](controls.md#pictures)) - shows its words at the picture's
-  right where it `showsText`, the command bar's own place for them, and
+  right where it `showsText`, as a command bar places them, and
   otherwise the picture alone, its words naming it to Narrator and in its
-  tip (`MountedElement.showsActionWords`); a destructive one stands in the theme's critical colour
-  ([a destructive entry](#a-destructive-entry));
-- the page's title view stands at the chrome's centre, where an application
+  tip (`MountedElement.showsActionWords`); a destructive one stands in the theme's critical color
+  ([a destructive entry](#a-destructive-entry)); one that cannot be chosen
+  fades its picture as far as the theme fades its words - the bar's
+  disabled brush's alpha over its own - since WinUI fades a glyph with the
+  words and leaves the application's own picture as drawn;
+- the page's title view stands at the chrome's center, where an application
   puts its search;
-- the title area the path declares - the application's name, the line under
-  it and its mark ([the bar a path declares](../../host/pages.md#the-bar-a-path-declares))
+- the title area a split view's sidebar page names the application with -
+  its title, else the application's name, the line under it and its picture
+  as the mark ([a page's title area](../../host/pages.md#a-pages-title-area))
   - stands in the chrome's title, subtitle and icon, as WinUI 3 Gallery names
   itself on its title bar, while the visible page's title still names the
   window to the system - the taskbar, Alt+Tab; its picture is read from the
-  application's pictures by its address; and
-  the bars' colours paint the chrome: its title and the actions on it, a
+  application's pictures by its address. With no split view the chrome's
+  title and subtitle are the page's title and the line under it; and
+  the bars' material paints the chrome - a color, a gradient over its box as
+  WinUI's gradient brushes take one, in fractions of the box - a point's an
+  ellipse, as the chrome's size is not the host's to know - or a blur as the
+  in-app acrylic at its thickness, glass at its fallback one - its title and the
+  actions on it, a
   destructive one excepted, stand
-  in the colour written for what stands on the bars, else white on a dark
+  in the color written for what stands on the bars, else white on a dark
   band and black on a light one ([words on a painted
   band](../../host/layout.md#words-on-a-painted-band)); the chrome takes the
   dark theme on a dark band and the light one on a light band, for its
   buttons and a pointer over an action; an action behind "more" keeps the
-  menu's colours on the menu's background, and the window's own caption
-  buttons keep Windows' colours;
+  menu's colors on the menu's background, and the window's own caption
+  buttons keep Windows' colors;
 - the visible page's menus stand on a menu bar beneath the chrome
   ([menus](#menus)).
 
@@ -76,6 +86,73 @@ The title view's place is a content control, which Tab stops at by default
 though it shows nothing of its own: it is no stop, so Tab walks the chrome's
 buttons and what the place holds, and never lands where nothing shows.
 
+A bar's button holding a menu stands as WinUI's control for how the menu
+opens: a split one is a `SplitButton` - its click its own, its arrow the
+menu's - and one whose click opens the menu with its arrow a
+`DropDownButton`. A click opening the menu with no arrow is a `Button` with
+its `Flyout`, and a held menu its `ContextFlyout`; behind "more", every one is
+an `AppBarButton` opening what it offers there. Every menu on the bar answers
+through the title bar's one view, so each menu's items are counted on from
+where the menu before it ends.
+
+## A bar's buttons
+
+The bar's buttons stand as a Windows application's toolbar keeps them - its
+pictures narrow, its groups apart by room, a declared group on a capsule,
+every button clear until the pointer comes - each through what WinUI exposes
+publicly:
+
+- every action on the bar is a control of its own in the
+  `AppBarElementContainer` a command bar holds any control in - a
+  `ToggleButton` for a setting, a `SplitButton` or `DropDownButton` for a
+  menu ([the window's chrome](#the-windows-chrome)), else a `Button` - told
+  by its place as a bar's button is, its picture and its words in a row.
+  WinUI's `AppBarButton` fills under the pointer as its template insets its
+  inner border, 36 high, and a two-state one reads that inset as a static
+  resource no element can name again: a fill 32 high is asked of a control's
+  own `Height`. Behind "more", every one is an `AppBarButton` or an
+  `AppBarToggleButton`, as the overflow's menu draws them;
+- each stands 32 DIPs high, centered on the bar - its own alignment and its
+  container's, which a command bar's container sets at the top - its words
+  at a bar button's label's size, 12, where its own style gives a control's
+  14; its fill comes from the brushes its template reads (`ButtonBackground`,
+  `ToggleButtonBackground`, `SplitButtonBackground`, their states, their
+  borders and a split's `SplitButtonBorderBrushDivider`), named in its own
+  resources for the light theme and the dark: clear at rest and with no
+  border, so a split's two parts show as the pointer meets each. The
+  high-contrast theme keeps the system's;
+- a button showing its picture alone stands in 40 DIPs, WinUI's compact
+  command (`MediaTransportControlsAppBarButtonWidth`);
+- a group stands apart from the one before it by the room of WinUI's
+  separator, which draws its line only behind "more": on the bar its brush
+  is clear, and the bar's colors never paint it;
+- the buttons of a group its author declares - a group of one too - stand on
+  one capsule ([a bar's capsules](../../host/pages.md#a-bars-capsules)): a
+  `Border` 32 high, its corners 16, filled with the theme's
+  `SubtleFillColorSecondary`, holding them in a row with no room between.
+  Each fills as a capsule of its own - its corners 16 - in
+  `ControlAltFillColorQuarternary` under the pointer and
+  `ControlAltFillColorTertiary` pressed, one tone deeper than the capsule;
+- a button declared alone stands bare, and fills as a rounded rectangle -
+  its corners 8, the theme's `OverlayCornerRadius` - in the fills of WinUI's
+  bar buttons, `SubtleFillColorSecondary` under the pointer and
+  `SubtleFillColorTertiary` pressed; 2 of its width stay clear on each side,
+  as an `AppBarButton` insets its fill (`AppBarButtonInnerBorderMargin`).
+
+## The bar at the foot
+
+A page's actions for the bar at its foot (`.toolbar(.bottom)`) stand on a row
+of WinUI's command bars beneath the page - its leading groups on one at its
+start, the rest and "more" on one at its end, as a split view's pane's head
+holds them - drawn as the title bar's buttons are, each group on its capsule.
+It stands under the page's view bar (`.bottomBar`), beside the content as
+Windows' bars stand, the line along their top shown while rows go on past
+them. Words on a bar (`ToolbarLabel`), on either bar, stand as a control
+holding its picture and words in the theme's secondary color of words
+(`TextFillColorSecondaryBrush`), with no fill and no stop for the keyboard,
+told by its place as an action is; a painted bar's words color leaves them
+in their theme's; behind "more" they are a button nobody can choose.
+
 ## A navigation stack
 
 A navigation stack shows its top page across its whole frame; the pages below
@@ -88,11 +165,12 @@ layer says the path changed
 
 ## A page's heading
 
-Where the window's chrome names the application - a title area declared on the
-visible path - the page that would name the window is headed by its own
-title, as Windows' own applications head a page under a title bar naming the
-application: a row across the top of the page's room in WinUI's title style,
-24 DIPs from its top and sides, the page's content under it - a tab view
+Where the window's chrome names the application - over a split view's
+sidebar - the page that would name the window is headed by its own title and
+the line under it, as Windows' own applications head a page under a title bar
+naming the application: a row across the top of the page's room in WinUI's
+title style, the line in its body style, 24 DIPs from its top and sides, the
+page's content under it - a tab view
 naming the window by its own title is headed over its tabs, which then stand
 in its own row under the heading rather than across the window over it: the
 title names what the tabs are tabs of. The window heads one page at a time,
@@ -116,8 +194,17 @@ it (`Overlay`). `SplitView` places by no width of itself, so the host places
 it by the host layer's rule (`SidebarAdaptation.place`), and a sidebar beside
 the detail closes as the window narrows it over, as WinUI's own navigation
 panes do. The pane holds the sidebar page at its whole height, so a sidebar's
-scroller scrolls and a footer stands at the pane's foot. The view shows none
-of its own buttons, which the window's chrome carries. A closed pane would
+scroller scrolls and a footer stands at the pane's foot. As the window's
+height changes, everything in the pane is measured again
+(`stateui_winui_split_measure_pane_again`): WinUI applies an arrange inside
+the pane only to what it measured in that pass, and a footer would keep its
+place in the taller window, below the shorter one. The view shows none
+of its own buttons, which the window's chrome carries, but for the sidebar's
+part of the bar ([a page's actions](../../host/pages.md#a-pages-actions)): a
+head over the sidebar page holds its actions - a command bar at its leading
+edge and one at its trailing edge with "more" - as a Windows application's
+navigation pane holds its commands over what it lists, and stands only while
+it holds one. A closed pane would
 keep what it holds where the keyboard's Tab and Narrator still reach it - a
 sign-out button among them - so the sidebar is collapsed while its pane is
 closed: shown as the pane starts to open, collapsed once it has closed, and
@@ -154,13 +241,16 @@ a pane over the detail it runs along the top alone.
 
 The pane stands on a ground of its own for each place ([a sidebar's
 material](../../host/pages.md#a-sidebars-material)), its `PaneBackground`:
-the split view's material for that place - a colour, or a blur as WinUI's
-in-app acrylic in its colour, its luminosity and tint by its thickness as the
+the split view's material for that place - a color, or a blur as WinUI's
+in-app acrylic in its color, its luminosity and tint by its thickness as the
 window's acrylic ([a window's backdrop](runtime.md#a-windows-backdrop)) -
 else the sidebar page's background, else the brush WinUI's theme gives a
 navigation pane there (`NavigationViewExpandedPaneBackground` beside,
 `NavigationViewDefaultPaneBackground` over), in the theme the split stands
-in and again as it turns. WinUI has no glass: glass is the acrylic at its
+in and again as it turns. Over the detail a color the detail would show
+through - a clear or tinted window's, which the pane stands on where the
+split view says nothing - is the in-app acrylic WinUI lays there, tinted in
+it as far as it is opaque. WinUI has no glass: glass is the acrylic at its
 fallback thickness.
 
 ## A native arrangement
@@ -203,14 +293,32 @@ phases](../../host/pages.md#a-pages-phases)); WinUI supplies the tab the user
 chose and whether the split view's pane shows, which the layer reads to
 know what an arrangement shows.
 
-## The modal stack
+## Sheets
 
-The pages a modal stack standing as the window's page presents stand over
+The pages a window's views present stand over
 everything the window shows, as WinUI presents a dialog: each on a card over a veil across the
 whole window - the chrome and the tabs too - the last on top. The card is a
 dialog's own - its background, outline and corners, no wider than a dialog
-and clear of the window's edges - with the presented page's title above the
-page, and it enters as a dialog enters. The veil takes every click meant for
+and clear of the window's edges - and it enters as a dialog enters. It stands
+as large as its page asks ([a sheet's size](../../host/pages.md#a-sheets-size)):
+in the middle, at least 320 x 184 and at most a dialog's 548 wide; one whose
+page asks none - a stack among them - stretches to 548 x 640, which WinUI's
+layout holds within the window less the card's 48 a side. The head is the
+bar's band across the card's top, painted in the bar's look as the window's
+title bar is - its words, its buttons and its actions in the bar's words'
+color, in the theme its band asks for. The card stands on
+its window's background ([a page's ground](../../host/pages.md#a-pages-ground)):
+a color laid over the dialog's own background inside its outline, a blur as
+WinUI's in-app acrylic in its place, showing what the card covers; the
+dialog's own where the window says none. A stack it
+holds brings its bar to the card's head, above the page: the way back as WinUI
+draws one outside a navigation view (`NavigationBackButtonSmallStyle`), the
+page's actions at the leading edge, the top page's title, its actions at the
+trailing edge with "more" - two command bars filled as the window's title
+bar's are, one relay for both (`ActionEdges`) - and, unless the page says not,
+the button closing the sheet, an `AppBarButton` of the Cancel symbol last,
+which writes false onto the sheet's state as Escape does; a page alone shows
+no head (`bringsABar`). The veil takes every click meant for
 what is beneath, and the keyboard goes round inside the top card.
 
 The sheets stand in one layer of the window's root over its rows by their own
@@ -233,6 +341,16 @@ changes, the page that stops showing hears it and then the one that starts,
 as a move. Escape takes the top sheet away, and so does the window's way back
 while a sheet shows, once the sheet's own stack has no page to go back to;
 the stack is told how many sheets remain.
+
+## A popover
+
+A view's popover is the relay's `StateUIPopover`: WinUI's `Flyout`,
+derived to keep whether the program wants it shown - a flyout is no
+`FrameworkElement` and has no `Tag` to keep it in. It holds the popover's
+panel and shows at its anchor (`ShowAt`) once the anchor is loaded: one not
+loaded has no root to show over. `Closed` while the program wants it shown
+is the user's - a click beside it, Escape - told through `presented`; the
+program's own `Hide` is heard by nobody.
 
 ## The window's overlays
 
@@ -263,7 +381,7 @@ entry that cannot be chosen is shown dimmed. An item with a picture shows it
 before its words, as the item's `ImageIcon` - the first of the files its name
 stands for that the application's pictures hold ([pictures](controls.md#pictures)) -
 and WinUI keeps every item's words in line beside it; a destructive item's
-words stand in the theme's critical colour ([a destructive
+words stand in the theme's critical color ([a destructive
 entry](#a-destructive-entry)). The host hands the relay the menu flat - an
 item, a separator, a submenu opening and closing, each with its caption, an
 item with its picture and its mark - and hears a choice by the item's place
@@ -273,9 +391,9 @@ gives the view its menu again, and so does the view's own reach turning - a
 branch disabled or enabled around it - as its entries are in reach with it; a
 menu with no entries is none.
 
-The window's menu bar is one of its bars: it wears the bars' colour as the
+The window's menu bar is one of its bars: it wears the bars' color as the
 title bar does, its `Background` and the theme of its words - light on a dark
-bar - and its menus' words take the bars' colour through
+bar - and its menus' words take the bars' color through
 `MenuBarItemForeground`, the brush their template reads, written into the
 bar's own resources. Where nothing is declared it keeps the platform's own.
 
@@ -283,23 +401,38 @@ A stack with a menu is hit across its bounds, as a listening one is
 ([listening](input.md#listening)): a right click anywhere across it opens the
 menu, not only on its children.
 
+## The Edit menu
+
+WinUI keeps no Edit menu of its own, so a menu joining `StandardMenu.edit`
+holds the host layer's entries (`ChromeMenus.editing`), Redo's keys
+Windows' Ctrl+Y. Each is the text box's own act through the relay
+(`stateui_winui_field_edit`): `Undo`, `Redo`, `CutSelectionToClipboard`,
+`CopySelectionToClipboard`, `PasteFromClipboard`, the selection emptied,
+`SelectAll` - a password box gives none of its words away, so it only pastes
+and selects all. A menu takes the focus as it opens, so every field hears the
+focus whatever the tree hears and the last one the user typed into is kept
+(`WinUIEditing`), handed the focus back as the entry acts. The entries' keys
+give way to a field holding the keyboard, which takes them itself: the menu
+bar's accelerator acts only where no field holds the keyboard, never twice.
+
 ## A destructive entry
 
 A menu's item or a bar's action whose choice destroys something says so in
-the theme's critical colour, the one Windows gives an error. Its words'
+the theme's critical color, the one Windows gives an error. Its words'
 brushes - at rest, under the pointer and pressed - are named again in the
 entry's own resources, as lightweight styling names them
-(`MenuFlyoutItemForeground`, `AppBarButtonForeground` and their states); one
-out of reach keeps the theme's dimmed words. Each brush takes its colour
+(`MenuFlyoutItemForeground`, `AppBarButtonForeground`, a bar control's
+`ButtonForeground` and their states); one
+out of reach keeps the theme's dimmed words. Each brush takes its color
 from the theme resource `SystemFillColorCritical`, in a theme dictionary for
 the light theme and one for the dark, so it follows the entry's own theme: a
 bar the tree paints dark stands its destructive action in the dark theme's
 lighter red. A brush looked up from code, or an alias of the theme's brush,
-keeps the colour of the application's theme at the moment it is written.
+keeps the color of the application's theme at the moment it is written.
 The entry is marked before it stands, so its template reads the brushes as
 it first draws.
 
-The bar's words' colour paints every action on the bar but a destructive
+The bar's words' color paints every action on the bar but a destructive
 one. Whether an entry is marked is read from its own theme dictionaries,
 walked: `HasKey` and `Lookup` look on into the application's theme
 ([a control's accent](controls.md#a-controls-accent)).

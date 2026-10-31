@@ -72,9 +72,10 @@
     /// The menu `button` opens (`Button.menu`), written as `menu(of:)` writes one.
     func buttonMenu(of button: MountedElement) throws -> String
 
-    /// The bar `page` shows as the user meets it: the leading groups, "|", the trailing groups, "|", the actions in
-    /// the overflow - a group its actions' ids in brackets, in reading order, "!" before one that cannot be chosen.
-    func bar(of page: MountedElement) throws -> String
+    /// The bar at `edge` of `page` as the user meets it: the leading groups, "|", the trailing groups, "|", the
+    /// actions in the overflow - a group its actions' ids in brackets, in reading order, "!" before one that cannot be
+    /// chosen.
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String
 
     /// Whether `element` holds the keyboard.
     func focused(_ element: MountedElement) throws -> Bool
@@ -98,34 +99,59 @@
     /// The theme the platform shows the application in now: light or dark.
     func theme() throws -> ColorScheme
 
+    /// The platform's bars over the window's edges, `top` and `bottom` points deep, as a phone's status bar and
+    /// gesture bar stand - told to a host whose test window stands under none; a host whose window has its own, or
+    /// whose platform stands nothing over a window's content, leaves it.
+    func standUnderSystemBars(top: Double, bottom: Double)
+
+    /// The accent the platform draws the application's controls in now.
+    func accent() throws -> Color
+
+    /// The address of an HTTP server the driver stands up on this machine, no scheme left out: it answers every
+    /// request with the status 201, the header `X-Method` naming the request's method, `X-Asked` saying what the
+    /// request's own `X-Asked` said, and the request's body.
+    func served() throws -> String
+
+    /// How many requests for `/held` the driver's server took, and how many of them their client stopped - the
+    /// connection closed before the answer.
+    func held() throws -> (taken: Int, stopped: Int)
+
     /// The file dialog the window of `element` shows now; nil where it shows none.
     func fileDialog(over element: MountedElement) throws -> FileDialog?
+
+    /// What the share sheet over the window of `element` offers now - its words, then its link on a line of its
+    /// own; nil where none shows.
+    func shared(over element: MountedElement) throws -> String?
 
     /// What the host handed the system to launch, in order, since the host started: an address as written, a file
     /// by its name.
     func launched() throws -> [String]
 
-    /// The colour `element` shows at `point`, in its own coordinates; nil where it shows nothing there. Asked only of
+    /// The color `element` shows at `point`, in its own coordinates; nil where it shows nothing there. Asked only of
     /// what StateUI draws itself - a canvas, a shape, a box's fill - never of a native control's look.
     func color(of element: MountedElement, at point: Point) throws -> Color?
 
-    /// The colours `element` shows at each of `points`, in its own coordinates, read at once - a host reading its
+    /// The colors `element` shows at each of `points`, in its own coordinates, read at once - a host reading its
     /// window a frame at a time reads them all from one; nil where it shows nothing.
     func colors(of element: MountedElement, at points: [Point]) throws -> [Color?]
 
     /// Where `element` stands in its window, as the toolkit placed its view - an item in a collection's cell
-    /// included.
+    /// included; `NotPlaced` where its view stands in no window yet.
     func place(of element: MountedElement) throws -> Rect
 
     /// What the host wrote to its log, a line a message, since it started.
     func logged() throws -> [String]
 
-    /// What the host's store keeps under `key` - one every scene shares, or one of the scene the case's page is
-    /// in - as the next launch reads it; nil where it keeps nothing.
-    func kept(_ key: String, inScene: Bool) throws -> HostValue?
+    /// The words the host's store keeps under `key` - one every scene shares, or one of the scene the case's page
+    /// is in - as the next launch reads them; nil where it keeps nothing.
+    func kept(_ key: String, inScene: Bool) throws -> String?
 
     /// How many of its own views the host holds alive - the count its tally writes; nil where it counts none.
     var liveViews: Int? { get }
+
+    /// How many of those views are alive by their kind, where a host can say - what names a view that outlived its
+    /// element; nil where it cannot.
+    var liveViewKinds: [String: Int]? { get }
 }
 
 extension HostDriver {
@@ -147,6 +173,10 @@ extension HostDriver {
         nil
     }
 
+    public var liveViewKinds: [String: Int]? {
+        nil
+    }
+
     public func start(clock: TestClock?, application: @escaping @MainActor () -> any Application) throws -> MountedTree {
         throw DriverCannot("start an application")
     }
@@ -159,7 +189,7 @@ extension HostDriver {
         throw DriverCannot("read the menu \(button.type.name) opens")
     }
 
-    public func bar(of page: MountedElement) throws -> String {
+    public func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
         throw DriverCannot("read the bar of \(page.type.name)")
     }
 
@@ -188,12 +218,34 @@ extension HostDriver {
         throw DriverCannot("read what the screen reader said")
     }
 
+    public func standUnderSystemBars(top: Double, bottom: Double) {}
+
     public func theme() throws -> ColorScheme {
         throw DriverCannot("read the theme the application shows in")
     }
 
+    public func accent() throws -> Color {
+        throw DriverCannot("read the accent the application draws in")
+    }
+
+    public func served() throws -> String {
+        guard let server = LoopbackServer.shared else { throw DriverCannot("serve a request") }
+        return server.address
+    }
+
+    public func held() throws -> (taken: Int, stopped: Int) {
+        guard LoopbackServer.shared != nil else { throw DriverCannot("count the requests held") }
+        return (
+            LoopbackServer.heldStarted.load(ordering: .sequentiallyConsistent),
+            LoopbackServer.heldStopped.load(ordering: .sequentiallyConsistent))
+    }
+
     public func fileDialog(over element: MountedElement) throws -> FileDialog? {
         throw DriverCannot("read a file dialog")
+    }
+
+    public func shared(over element: MountedElement) throws -> String? {
+        throw DriverCannot("read a share sheet")
     }
 
     public func launched() throws -> [String] {
@@ -201,7 +253,7 @@ extension HostDriver {
     }
 
     public func color(of element: MountedElement, at point: Point) throws -> Color? {
-        throw DriverCannot("read the colour of \(element.type.name)")
+        throw DriverCannot("read the color of \(element.type.name)")
     }
 
     public func colors(of element: MountedElement, at points: [Point]) throws -> [Color?] {
@@ -216,7 +268,7 @@ extension HostDriver {
         throw DriverCannot("read the log")
     }
 
-    public func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+    public func kept(_ key: String, inScene: Bool) throws -> String? {
         throw DriverCannot("read what is kept")
     }
 }

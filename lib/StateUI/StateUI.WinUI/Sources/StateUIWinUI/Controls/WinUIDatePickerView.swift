@@ -50,9 +50,9 @@ final class WinUIDatePickerView: WinUIView {
         if asked != nil { setDate(asked) }
     }
 
-    /// How the day is written: "D" the long form, anything else the short.
-    func setFormat(_ format: String?) {
-        stateui_winui_date_set_format(handle, format == "D")
+    /// How much of the day is written out: the long form, else the short.
+    func setFormat(_ style: DateStyle?) {
+        stateui_winui_date_set_format(handle, style == .long)
     }
 
     /// Opens or closes the calendar; neither is the user's, so neither is reported.

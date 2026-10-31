@@ -12,7 +12,7 @@ final class AndroidCheckBoxViewTests: XCTestCase {
         [
             ("testACheckBoxShowsWhatTheTreeSays", testACheckBoxShowsWhatTheTreeSays),
             ("testAUsersTickReachesTheStateAndTheHandlerOnce", testAUsersTickReachesTheStateAndTheHandlerOnce),
-            ("testATintColoursTheBoxAndNilPutsThePlatformsBack", testATintColoursTheBoxAndNilPutsThePlatformsBack),
+            ("testATintColorsTheBoxAndNilPutsThePlatformsBack", testATintColorsTheBoxAndNilPutsThePlatformsBack),
         ]
     }
 
@@ -58,7 +58,7 @@ final class AndroidCheckBoxViewTests: XCTestCase {
         }
     }
 
-    func testATintColoursTheBoxAndNilPutsThePlatformsBack() throws {
+    func testATintColorsTheBoxAndNilPutsThePlatformsBack() throws {
         try onMainActor {
             let host = AndroidRenderer.running { CheckBox(true).tint(.firebrick) }
             let box = try XCTUnwrap(host.views(AndroidCheckBoxView.self).first)

@@ -12,8 +12,7 @@ final class WebPressTests: XCTestCase {
     private let corner = Point(x: 100, y: 100)
     private let size = LayoutSize(width: 200, height: 200)
 
-    /// A mouse's press is a drag once it moves more than four points, measured from where it went down; its click
-    /// is then no tap.
+    /// A mouse's press is a drag once it moves more than four points, measured from where it went down.
     func testAMousePressMovedFarEnoughIsADrag() {
         var press = WebPress()
         XCTAssertEqual(press.down(1, at: Point(x: 150, y: 150), kind: .mouse, origin: corner, size: size), [])
@@ -21,9 +20,6 @@ final class WebPressTests: XCTestCase {
         XCTAssertEqual(press.moved(1, to: Point(x: 160, y: 155), origin: corner, size: size),
                        [.drag(.began, x: 0, y: 0), .drag(.changed, x: 10, y: 5)])
         XCTAssertEqual(press.up(1, letGo: true, origin: corner, size: size), [.drag(.ended, x: 10, y: 5)])
-        XCTAssertTrue(press.wasDragged)
-        _ = press.down(1, at: Point(x: 150, y: 150), kind: .mouse, origin: corner, size: size)
-        XCTAssertFalse(press.wasDragged, "a new press is no drag yet")
     }
 
     /// A second finger takes the press from its drag to a pinch: the scale each step is how far apart the fingers

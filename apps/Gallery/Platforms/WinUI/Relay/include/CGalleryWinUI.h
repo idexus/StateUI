@@ -48,7 +48,7 @@ void gallery_rating_bar_flash(GalleryObjectRef bar);
 /// A cube Direct3D 11.1 draws into a SwapChainPanel, turning on WinUI's frames while it spins and is on screen.
 GalleryObjectRef gallery_cube_make(void);
 
-/// Its edge as a share of the panel, 0 through 1; its colour, 0 teal, 1 amber, 2 violet; whether it turns.
+/// Its edge as a share of the panel, 0 through 1; its color, 0 teal, 1 amber, 2 violet; whether it turns.
 void gallery_cube_set(GalleryObjectRef cube, double size, int32_t color, bool spinning);
 
 /// Lets go of the cube's device and frames; its element is let go with `gallery_winui_release`.

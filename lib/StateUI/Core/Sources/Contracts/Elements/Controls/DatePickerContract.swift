@@ -9,9 +9,9 @@ public enum DatePickerContract: ElementContract {
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native
 
-    /// A date picker is a view whose text has a colour, a spacing and a font.
+    /// A date picker is a view whose text has a color, a spacing and a font.
     public static let tiers: [any Contract.Type] = [
-        ViewContract.self, TextStyleElementContract.self, FontElementContract.self, FocusElementContract.self,
+        ViewContract.self, TextColorElementContract.self, FontElementContract.self, FocusElementContract.self,
     ]
 
     /// The calendar has closed - by a choice, a tap outside, or the platform.
@@ -23,8 +23,8 @@ public enum DatePickerContract: ElementContract {
     /// A day was chosen.
     public static let dateChanged = ElementEvent<Self, CalendarDate>("dateChanged", layer: .native)
 
-    /// How the day is written in the field, as a format string.
-    public static let format = ElementProperty<Self, String>("format", layer: .native)
+    /// How much of the day is written out in the field, in the user's language.
+    public static let format = ElementProperty<Self, DateStyle>("format", layer: .native)
 
     /// Whether the calendar is showing.
     public static let isOpen = ElementProperty<Self, Bool>("isOpen", layer: .native)

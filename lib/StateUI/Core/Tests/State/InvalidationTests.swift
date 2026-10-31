@@ -33,7 +33,7 @@ private final class Chooses: View {
     }
 
     var body: some View {
-        ModifiedContent(node: label("\(decision ? first.get() : second.get())"))
+        AnyView(node: label("\(decision ? first.get() : second.get())"))
     }
 }
 
@@ -43,7 +43,7 @@ private struct Shows: View {
     let state: State<Int>
 
     var body: some View {
-        ModifiedContent(node: label("\(state.get())"))
+        AnyView(node: label("\(state.get())"))
     }
 }
 
@@ -55,7 +55,7 @@ private struct Tile: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label("\(tag)\(n)"))
+        return AnyView(node: label("\(tag)\(n)"))
     }
 }
 
@@ -67,7 +67,7 @@ private struct Panel: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: "c").node]))
+        return AnyView(node: stack([label(title), Tile(builds: child, tag: "c").node]))
     }
 }
 
@@ -79,7 +79,7 @@ private struct Handing: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([label(title), Tile(builds: child, tag: title).node]))
+        return AnyView(node: stack([label(title), Tile(builds: child, tag: title).node]))
     }
 }
 
@@ -91,7 +91,7 @@ private struct FlagOwner: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([FlagReader(builds: reader, flag: $flag).node]))
+        return AnyView(node: stack([FlagReader(builds: reader, flag: $flag).node]))
     }
 }
 
@@ -101,7 +101,7 @@ private struct FlagReader: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label("\(flag)"))
+        return AnyView(node: label("\(flag)"))
     }
 }
 
@@ -175,7 +175,7 @@ private struct Outer: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([label(title), Inner(builds: innerBuilds, count: innerCount).node]))
+        return AnyView(node: stack([label(title), Inner(builds: innerBuilds, count: innerCount).node]))
     }
 }
 
@@ -185,7 +185,7 @@ private struct Inner: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label("inner \(count.get())"))
+        return AnyView(node: label("inner \(count.get())"))
     }
 }
 
@@ -1033,7 +1033,8 @@ final class InvalidationTests: XCTestCase {
             "not knowing what moved must never mean guessing that nothing did")
     }
 
-    func testATickerNamesItselfAndItsReadersFollow() {
+    /// A ticker's property is a state: what it writes is named, and the view reading it follows.
+    func testATickersWriteIsNamedAndItsReadersFollow() {
         let renders = Renders()
         let builds = Builds()
         let ticker = Ticker(every: .seconds(1))
@@ -1044,7 +1045,7 @@ final class InvalidationTests: XCTestCase {
 
             var body: some View {
                 builds.count += 1
-                return ModifiedContent(node: label("\(ticker.ticks)"))
+                return AnyView(node: label("\(ticker.limit ?? 0)"))
             }
         }
 
@@ -1053,12 +1054,12 @@ final class InvalidationTests: XCTestCase {
 
         ticker.limit = 5
 
-        XCTAssertFalse(Renderer.shared.hasUntrackedCause, "a ticker names itself")
+        XCTAssertFalse(Renderer.shared.hasUntrackedCause, "the write names its state")
 
         let patch = renders.revisit(changed: changed)
 
         XCTAssertEqual(builds.count, 2, "the view that read the ticker was built again")
-        XCTAssertTrue(patch.isEmpty, "the text did not change, so nothing was sent")
+        XCTAssertFalse(patch.isEmpty, "the text changed, and was sent")
     }
 
     func testReadsAreReRecordedByEachBuild() {
@@ -1074,7 +1075,7 @@ final class InvalidationTests: XCTestCase {
 
             var body: some View {
                 builds.count += 1
-                return ModifiedContent(node: toggle.get() ? label("\(counter.get())") : label("off"))
+                return AnyView(node: toggle.get() ? label("\(counter.get())") : label("off"))
             }
         }
 
@@ -1128,7 +1129,7 @@ private struct WritingBody: View {
             page.count.wrappedValue = shown + 1
         }
 
-        return ModifiedContent(node: label("\(shown)"))
+        return AnyView(node: label("\(shown)"))
     }
 }
 
@@ -1155,7 +1156,7 @@ private struct AsideBody: View {
             aside.unread.wrappedValue += 1
         }
 
-        return ModifiedContent(node: label("aside"))
+        return AnyView(node: label("aside"))
     }
 }
 
@@ -1189,7 +1190,7 @@ private struct UntrackedPage: View {
 
     var body: some View {
         model.builds += 1
-        return ModifiedContent(node: label(model.title))
+        return AnyView(node: label(model.title))
     }
 }
 
@@ -1201,7 +1202,7 @@ private struct UntrackedApp: Application {
 private struct ChosenPage: View {
     let text: String
 
-    var body: some View { ModifiedContent(node: label(text)) }
+    var body: some View { AnyView(node: label(text)) }
 }
 
 /// A window choosing its page in its own build, outside every composed view.

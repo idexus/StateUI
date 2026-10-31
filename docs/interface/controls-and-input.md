@@ -12,7 +12,6 @@ The value that gives a control its purpose belongs in its initializer:
 ```swift
 Text("Account")
 Button("Save")
-Button(icon: "trash.png")
 Image("avatar.png")
 ```
 
@@ -73,27 +72,30 @@ hands the state channel to the host instead:
 @State var volume = 0.5
 
 Slider($volume)
-Rectangle(.cornflowerBlue).scaleX($volume)
+Rectangle()
+    .fill(.cornflowerBlue)
+    .scaleX($volume)
 ```
 
 Passing `$volume` does not make the body a reader. Native input and program
 writes update the attached controls through the host-carried path. Read
 `volume` elsewhere only when the tree actually needs its discrete destination.
 
-A binding derived from arbitrary `get` and `set` closures has no StateUI
-storage identity for the host to carry. A switch, check box, radio button,
-picker, date and time pickers, text field, text editor and search field then
-take the described/event path: the getter supplies the property and the
-native report calls the setter. A slider, a stepper and every driven modifier
-refuse it, say so once, and set nothing.
+A `Binding` always comes from a `@State` - there is no binding made from
+closures - so every binding a control is handed is a storage the host
+carries. A part of a state, `$record.field`, reaches no control
+([Two words and a part](../concepts/why.md#two-words-and-a-part-state-binding-statepart)).
 
 ## Two-way input and event ordering
 
-Controls with an editable purpose value accept either a value or a binding.
-Examples include `TextField`, `TextEditor`, `SearchField`, `Switch`,
-`CheckBox`, `RadioButton`, `Slider`, `Stepper`, `Picker`, `DatePicker`, and
-`TimePicker`. Every property is one modifier named for it, which takes the
-value itself or, where the host can carry the value, a state, `$x`
+Controls with an editable purpose value that crosses to the host as it is
+accept either a value or a binding: `TextField`, `TextEditor`, `SearchField`,
+`Switch`, `CheckBox`, `Slider`, `Stepper`, `DatePicker`, `TimePicker` and
+`ColorPicker`. A choice the library translates for the host - a picker's
+place in its list, a list's chosen items, a tab - takes the state alone
+([Editing a record: two ways](../concepts/state-and-reactivity.md#editing-a-record-two-ways)).
+Every property is one modifier named for it, which takes the value itself
+or, where the host can carry the value, a state, `$x`
 ([A property is one modifier](../concepts/why.md#a-property-is-one-modifier-a-value-or-a-state)).
 
 ```swift
@@ -132,9 +134,16 @@ foreground, and run background properties, but it has no independent frame,
 margin, or gesture surface. Runs made from a list go in as an array, each
 matched by where it sits:
 
-```swift quote
+```swift
+struct Token {
+    let text: String
+    let color: Color
+}
+
+let tokens = [Token(text: "let ", color: .purple), Token(text: "total", color: .black)]
+
 Text().spans {
-    tokens.map { TextSpan($0.text).textColor($0.colour) }
+    tokens.map { TextSpan($0.text).textColor($0.color) }
 }
 ```
 
@@ -144,8 +153,8 @@ label. A label given both a `text` and runs shows the runs.
 Text properties distinguish their semantic tier; [Text](../controls/Text.md)
 and the tier pages it links list each with its mark per host:
 
-- text-bearing controls - a label, a button, a radio button, the fields, a
-  span - take `textCase`, which draws the words `.uppercase` or `.lowercase`
+- text-bearing controls - a label, a button, a check box, a switch, the
+  fields, a span - take `textCase`, which draws the words `.uppercase` or `.lowercase`
   while the text stays as written; a field turns what is typed into the case
   and reports it so;
 - text-styled controls take `textColor`; a label, a button and a span take
@@ -154,7 +163,9 @@ and the tier pages it links list each with its mark per host:
   `.caption`, each the platform's own size and weight - `fontSize` and
   `fontWeight` - `.regular`, `.medium`, `.semibold` or `.bold` - which stand
   over the style's, `fontFamily` - the name the application registered the
-  font under - `fontAttributes`, which is `.italic` or `.none`, and
+  font under - `fontAttributes`: `.italic`, `.monospacedDigits` - every
+  digit as wide as the others, so a countdown keeps its width - both, or
+  `.none` - and
   `isFontAutoScalingEnabled`,
   on unless said, which makes the text follow the user's text-size setting -
   iOS's text size, Android's font size, Windows' text size, GNOME's text
@@ -181,6 +192,9 @@ VStack {
 
     Text("Letters spaced out")
         .tracking(3)
+
+    Text("59 s left")
+        .fontAttributes(.monospacedDigits)
 
     Text("Two lines,\nlineHeight 2")
         .lineHeight(2)
@@ -260,14 +274,15 @@ of its own:
 
 | Modifier | On | Meaning |
 | --- | --- | --- |
-| `placeholder`, `placeholderColor` | every field | what an empty field says, and its colour |
-| `inputPurpose` | every field | what the text is for - `.plain`, `.text`, `.chat`, `.email`, `.numeric`, `.telephone`, `.url` - which picks the keyboard the platform offers |
+| `placeholder`, `placeholderColor` | every field | what an empty field says, and its color |
+| `inputPurpose` | every field | what the text is for - `.plain`, `.text`, `.chat`, `.email`, `.numeric`, `.telephone`, `.url`, and for signing in `.username`, `.newPassword`, `.oneTimeCode` - which picks the keyboard the platform offers and what it fills the field in with |
 | `isReadOnly` | every field | the text can be selected and copied but not changed, which is not the same as disabled |
-| `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelt |
+| `isSpellCheckEnabled` | every field | whether the platform marks what it takes to be misspelled |
 | `isTextPredictionEnabled` | every field | whether the platform offers the next word |
 | `isPassword` | `TextField` | what is typed hides behind the platform's secure-entry marks |
 | `submitLabel` | `TextField`, `SearchField` | the return key's caption - `.done`, `.go`, `.next`, `.search`, `.send`; what the key does is `.onSubmitted`, whatever it says, and `.next` hands the keyboard on to the next field |
 | `showsClearButton` | `TextField` | whether the native button that empties the field shows, where the platform's field has one; it does unless told otherwise |
+| `stroke`, `lineWidth`, `shape` | every field | an outline of the application's own and the shape the field's ground and outline follow, in place of the platform's frame - as a button's box; AppKit's search field keeps its own |
 
 ```swift
 @State var code = ""
@@ -313,21 +328,39 @@ VStack {
 }
 ```
 
+A sign-in form says what each field holds, and the platform fills it in: a
+name it keeps, a strong password it makes and keeps for a new account, a code
+it received by message. GNOME and WinUI keep nothing to fill a field in from;
+there the fields take their keys and checking alone.
+
+```swift
+@State var name = ""
+@State var password = ""
+@State var code = ""
+
+VStack {
+    TextField($name).placeholder("Name").inputPurpose(.username)
+    TextField($password).placeholder("New password").isPassword(true).inputPurpose(.newPassword)
+    TextField($code).placeholder("Code").inputPurpose(.oneTimeCode)
+}
+```
+
 Focus is not a Boolean command hidden in the description. When state needs to
 observe it, use the `isFocused` feed. When an action needs to move it, use an
 `@Aim`; see [Interaction and actions](interaction-and-actions.md). Where the
 field holding the keyboard is not known - a Done button above a form of
-several fields - `OnScreenKeyboard.hide()` takes the focus off whatever has it
-on the page showing. It answers a `Bool`: `true` when something was focused
+several fields - `window.hideOnScreenKeyboard()` takes the focus off whatever
+has it in the window. It answers a `Bool`: `true` when something was focused
 and is not any more, `false` when the keyboard was already down, which is an
 answer and not a failure:
 
 ```swift
+@Environment(\.window) var window
 @State var said = ""
 
 Button("Close keyboard")
-    .onClicked(gate: .ignoreWhileRunning) {
-        said = try await OnScreenKeyboard.hide()
+    .onClicked(.ignoreWhileRunning) {
+        said = try await window.hideOnScreenKeyboard()
             ? "Focus released"
             : "Nothing was focused"
     }
@@ -344,6 +377,7 @@ Choice controls follow the same binding rule:
 
 VStack {
     CheckBox($accepted)
+        .text("I accept the terms")
 
     Slider($level)
         .minimum(0)
@@ -352,6 +386,11 @@ VStack {
     Picker(["Small", "Medium", "Large"], selection: $size)
 }
 ```
+
+A check box and a switch say the words they stand for with `.text`, and the
+words belong to the control: a tap on them turns it, and assistive technology
+calls the control by them. A check box's words stand after its box; a
+switch's stand at its start and the switch at its end, mirrored right to left.
 
 A picker chooses a value, not a place in its list: the state holds one of
 the values - an application's own enum, a model - and each shows by its
@@ -378,25 +417,26 @@ VStack {
 }
 ```
 
-The application owns the selected value. A group name on radio buttons defines
-mutual exclusion in the native control surface; the bindings remain the source
-of application truth. Range bounds are semantic constraints and are not
+The application owns the selected value: one choice of several is a picker,
+offered as radio buttons where `.radio` says so, and the one state holding its
+selection. Range bounds are semantic constraints and are not
 animated presentation values.
 
 ## Activity and progress
 
-`ActivityIndicator` is the spinner for work with no measurable length;
-`ProgressBar` says how far along measurable work is:
+`Spinner` turns while work with no measurable length runs; `ProgressBar`
+says how far along measurable work is:
 
 ```swift
 @State var loading = true
 @State var done = 3.0
 
 VStack {
-    ActivityIndicator(loading)
+    Spinner(loading)
         .height(48)
 
     Switch($loading)
+        .text("Working")
 
     ProgressBar(done / 5)
         .height(8)
@@ -408,9 +448,9 @@ VStack {
 }
 ```
 
-`isAnimating`, the indicator's one property, says whether it spins. A still
-indicator is invisible on most platforms, so `ActivityIndicator(loading)` shows
-it only while the work runs. `progress` is a fraction from 0 to 1, not a
+`isAnimating`, the spinner's one property, says whether it turns. A still
+spinner is invisible on most platforms, so `Spinner(loading)` shows it only
+while the work runs. `progress` is a fraction from 0 to 1, not a
 percentage or a count: work counted in steps divides by their total itself, and
 the host clamps a value outside that range. The initializer's argument is the
 same property as the modifier: `ProgressBar().progress(0.4)` sets what
@@ -442,6 +482,34 @@ VStack {
 pretends to be an instant. Conversion to Foundation or another date library
 belongs in the application boundary; see [Environment](../concepts/environment.md).
 
+## Colors
+
+A `ColorPicker` is a well showing a color, which the user opens to choose
+another in the platform's own picker:
+
+```swift
+@State var tint = Color.steelBlue
+
+VStack {
+    ColorPicker($tint)
+        .choosesOpacity(true)
+        .onColorChanged { print("Chose \($0)") }
+    Rectangle()
+        .fill($tint)
+        .height(80)
+}
+```
+
+The host carries the color as a journey, as it carries a fill or a
+background, so one state takes what the user chooses and paints whatever
+wears it, with no render. Every change the user makes in the picker is heard,
+as a slider's drag is; a color the program writes moves the well and is heard
+by nobody. The color is opaque unless `choosesOpacity` is true, and then only
+where the platform's picker offers opacity - a browser's color input offers
+none. Android has no color picker of its own, so the element is not planned
+there: an application for Android offers its own choice, a `Picker` of named
+colors, say.
+
 ## Images and media providers
 
 `ImageSource` is one of three pictures: an application resource, which can
@@ -451,7 +519,7 @@ platform image type.
 
 An icon is chosen by its meaning from a closed set, `Icon`, and each host draws
 it as its platform draws its own - an SF Symbol, a Material Symbol on Android,
-a Segoe Fluent Icons glyph, the GTK theme's symbolic icon - in the colour of
+a Segoe Fluent Icons glyph, the GTK theme's symbolic icon - in the color of
 what holds it, at the platform's icon size where nothing gives it room. Bytes
 are a picture encoded whole - a PNG or a JPEG the application downloaded or
 made - shown at one pixel a point:
@@ -469,39 +537,41 @@ Button("Share")
 Image(ImageSource(bytes: downloaded))
 ```
 
-A button carries a picture in one of two ways. When the picture is its whole
-purpose, it goes in the initializer: `Button(icon:)`. Beside a caption it is the
-`icon` modifier, placed by `iconPosition` and set apart by `iconSpacing`:
+A button's picture is its `icon`, beside its words, placed by `iconPosition` and
+set apart by `iconSpacing`. A button standing for its picture alone keeps its
+words and leaves them out of sight with `showsText(false)` - they still name it
+to a screen reader:
 
 ```swift
-Button(icon: "trash.png")
-    .accessibilityLabel("Delete")
+Button("Delete")
+    .icon("trash.png")
+    .showsText(false)
 
 Button("Surprise me")
     .icon("nav_surprise.png")
-    .iconPosition(.leading)
+    .iconPosition(.start)
     .iconSpacing(8)
 ```
 
-`.leading`, the default, is the side a line of text starts from, so the icon
-follows the layout direction. A button with only an icon is the same control as
-one with a caption - the same outline, shape and pressed state - with
-`contentMode` for how its picture fills it. A picture alone gives it no name for a
-screen reader, so it carries a `accessibilityLabel`.
+`.start`, the default, is the side a line of text starts from, so the icon
+follows the layout direction. A button showing its picture alone is the same
+control as one with words beside it - the same outline, shape and pressed
+state - with `contentMode` for how its picture fills it. `showsText` takes a
+state too, `.showsText($wordsShown)`.
 
 ## A place in a sequence
 
-`PositionIndicator` is a row of dots saying how many there are and which one
+`PositionDots` is a row of dots saying how many there are and which one
 is current - the dots under a run of cards, the steps of a short sequence:
 
 ```swift
 @State var step = 0
 
 VStack {
-    PositionIndicator()
+    PositionDots()
         .count(4)
         .position(step)
-        .currentIndicatorColor(.cornflowerBlue)
+        .currentDotColor(.cornflowerBlue)
 
     Button("Next")
         .onClicked { step = (step + 1) % 4 }
@@ -511,10 +581,35 @@ VStack {
 StateUI composes it of rectangles in a row, so it looks and behaves the same
 on every platform. `maximumVisible` caps the dots, the current one kept among
 them; one lone dot is hidden unless `hidesForSinglePage(false)` asks for it;
-`indicatorShape(.square)` draws squares. Given items,
-`PositionIndicator(items) { … }` shows each item's own mark, the current one
+`dotShape(.square)` draws squares. Given items,
+`PositionDots(items) { … }` shows each item's own mark, the current one
 whole and the others faded. Its look is written on it: being StateUI's own
 composition, it takes no `Style`.
+
+## Links
+
+A `Link` is words that open an address - a page, a mail, a call - in the
+application the system gives it, as `application.launch` does:
+
+```swift
+@State var help = "https://www.swift.org"
+
+VStack {
+    Link("Terms of use", destination: "https://www.swift.org/legal")
+    Link("Write to us", destination: "mailto:hello@example.com")
+    Link("Help", destination: $help)
+        .onClicked { print("Help opened") }
+}
+```
+
+It stands as the platform's own link where it has one, and as a button drawn
+as a link elsewhere: in the platform's link color unless `textColor` gives
+another, named to a screen reader by its words, and called a link where the
+platform's accessibility has the role - Android's has none. StateUI
+opens the address as the user chooses the link, before its `onClicked`
+handlers run, so a handler only does what else the click means; an address
+the platform will not open opens nothing. Given a binding, the link takes the
+address from the state as it changes, with no render.
 
 ## Web content
 
@@ -550,11 +645,11 @@ Grid {
     HStack {
         Button("Back")
             .isEnabled(canGoBack)
-            .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
+            .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
         Button("Reload")
-            .onClicked(gate: .ignoreWhileRunning) { try await browser.reload() }
+            .onClicked(.ignoreWhileRunning) { try await browser.reload() }
         Button("Title?")
-            .onClicked(gate: .ignoreWhileRunning) { title = try await browser.evaluateJavaScript("document.title") }
+            .onClicked(.ignoreWhileRunning) { title = try await browser.evaluateJavaScript("document.title") }
     }
     WebView("https://example.com")
         .canGoBack($canGoBack)
@@ -614,7 +709,7 @@ provider and the key that map needs ([Children a control
 draws](../hosts/gtk.md#children-a-control-draws), on each host's page); the
 platform matrix marks it 🧩 there.
 
-A map opens on the region its initializer gives: a centre and a radius in
+A map opens on the region its initializer gives: a center and a radius in
 meters, the circle the map shows whole whatever its proportions. Its markers are
 its children, and a tap is heard where it fell - on the map itself, on a marker,
 or on a marker's details:
@@ -622,13 +717,13 @@ or on a marker's details:
 ```swift
 @State var said = "tap the map or a marker"
 
-Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
+Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
     .mapType(.hybrid)
     .markers {
-        Marker("Wawel Castle")
+        Marker(at: Location(latitude: 50.0540, longitude: 19.9354))
+            .label("Wawel Castle")
             .subtitle("Wawel 5")
             .type(.place)
-            .location(latitude: 50.0540, longitude: 19.9354)
             .onSelected { said = "the castle" }
             .onDetailsClicked { said = "the castle's details" }
     }
@@ -636,7 +731,7 @@ Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
     .height(300)
 ```
 
-Markers drawn from data are each given an id - `places.map { Marker($0.name).id($0.name) }`
+Markers drawn from data are each given an id - `places.map { Marker(at: $0.location).id($0.name) }`
 - so a marker put before them leaves the others themselves, each pin and its
 open callout where it stood; without one a marker is matched by its position.
 
@@ -649,7 +744,9 @@ aim, which slides the map there:
 @Aim(Map.self) var map
 
 Button("Kraków")
-    .onClicked(gate: .cancelPrevious) { try await map.moveToRegion(latitude: 50.06, longitude: 19.94, radiusMeters: 2000) }
+    .onClicked(.cancelPrevious) {
+        try await map.moveToRegion(MapRegion(center: Location(latitude: 50.06, longitude: 19.94), radiusMeters: 2000))
+    }
 ```
 
 `showsUserLocation(true)` draws the user's own position. The platform asks
@@ -693,7 +790,7 @@ struct ContactsPage: View {
             .gridRow(0)
 
             Button("Back to the top")
-                .onClicked(gate: .cancelPrevious) { try await list.scrollTo(contacts[0].name, anchor: .start) }
+                .onClicked(.cancelPrevious) { try await list.scrollTo(contacts[0].name, anchor: .start) }
                 .gridRow(1)
         }
         .rows(.fill, .auto)
@@ -707,7 +804,8 @@ builds that item alone, and a state it declares lives while the item stays
 near what the platform holds. The binding given to `.selection` says how many the
 user may choose - an optional for one, a `Set` for many - and the user's
 choice lands on it, while a value the application writes is shown and
-reported to nobody. `.onItemActivated` hears an item opened: a tap on a
+reported to nobody. `.onSelectionChanged` hears the user's choice after the
+write, handed the ids chosen - a set in either mode. `.onItemActivated` hears an item opened: a tap on a
 phone, a double-click or Return on a desktop. An aim at the list,
 `Aim<ItemsView<ID>>`, scrolls it to an item by an identity of the list's
 own type.
@@ -725,6 +823,39 @@ groups may hold equal items - and each with a `.header` and a `.footer`;
 `.onEndReached(within:)` hears the user come within so many items of the
 end - once, until they scroll away or the number of items changes - and
 `.emptyView` stands in the list's place while it has no items.
+
+### Pull to refresh
+
+A list or a scroller the user pulls down for what is new offers the
+platform's own pull and spinner once it hears the pull:
+
+```swift
+struct InboxPage: View {
+    @State private var mail = ["Welcome"]
+    @State private var refreshing = false
+
+    var body: some View {
+        ItemsView(mail, id: \.self) { Text($0).padding(12) }
+            .isRefreshing($refreshing)
+            .onRefreshRequested(.ignoreWhileRunning) {
+                defer { refreshing = false }
+                try await Task.sleep(for: .seconds(1))
+                mail.insert("Fresh", at: 0)
+            }
+    }
+}
+```
+
+`isRefreshing` carries the spinner both ways: the user's pull writes true
+into the state before `onRefreshRequested` runs, and the application writes
+false once what it shows is fresh - or true, to show a refresh it began
+itself, which runs no handler. Without it the spinner a pull shows goes at
+once. `.isRefreshEnabled(false)` withholds the pull while there is nothing to
+refresh. An empty list keeps its pull: its empty view stands in a scroller
+that offers it. The pull is the platform's - UIKit's refresh control,
+Android's swipe to refresh, WinUI's refresh container on a scroller; AppKit,
+GTK and the web offer none, and there a refresh is the application's command,
+a button or a menu item that sets `isRefreshing` itself.
 
 ## Choosing a control
 

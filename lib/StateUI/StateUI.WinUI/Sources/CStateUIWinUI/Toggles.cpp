@@ -1,10 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The controls that are on or off: a switch, a check box and a radio button,
-// each turn told through `toggled`, and what they are drawn over. Which of a
-// radio button's set loses its check is the host's: each button stands in a
-// group of its own.
+// The controls that are on or off: a switch and a check box, each turn told
+// through `toggled`, the words it says and what they are drawn over.
 // Design: docs/design/platforms/winui/controls.md#on-or-off
 
 #include "Automation.h"
@@ -12,8 +10,11 @@
 #include <string>
 #include <vector>
 
+#include <winrt/Microsoft.UI.Xaml.Media.h>
+
 using namespace stateui;
 namespace primitives = winrt::Microsoft::UI::Xaml::Controls::Primitives;
+namespace media = winrt::Microsoft::UI::Xaml::Media;
 
 namespace {
     /// Tells the view `view` of each check and uncheck of `button`.
@@ -27,8 +28,8 @@ namespace {
 
 extern "C" StateUIObjectRef stateui_winui_switch_make(int64_t view) {
     try {
-        // The track and nothing else: a switch has no words of its own, WinUI's "On" and "Off" among them, so it
-        // takes no words' room.
+        // The track and its header: WinUI's "On" and "Off" beside the track are left out, and the room its style
+        // keeps for them with them.
         controls::ToggleSwitch toggle;
         toggle.OnContent(winrt::box_value(L""));
         toggle.OffContent(winrt::box_value(L""));
@@ -45,7 +46,7 @@ extern "C" StateUIObjectRef stateui_winui_switch_make(int64_t view) {
 
 extern "C" StateUIObjectRef stateui_winui_check_box_make(int64_t view) {
     try {
-        // The box and nothing else: a check box has no caption, so it takes no caption's room.
+        // The box alone until it says words: WinUI's style keeps the width of words beside it.
         controls::CheckBox box;
         box.MinWidth(0);
         box.Padding({0, 0, 0, 0});
@@ -57,15 +58,32 @@ extern "C" StateUIObjectRef stateui_winui_check_box_make(int64_t view) {
     }
 }
 
-extern "C" StateUIObjectRef stateui_winui_radio_make(int64_t view) {
+extern "C" void stateui_winui_toggle_set_words(StateUIObjectRef handle, char const *utf8, bool has, uint32_t argb) {
     try {
-        controls::RadioButton radio;
-        radio.GroupName(L"StateUI " + std::to_wstring(view));
-        hear(radio, view);
-        return detach(radio);
+        auto words = text(utf8);
+        auto shown = words.empty() ? nullptr : winrt::box_value(words);
+        auto brush = has ? media::Brush(media::SolidColorBrush(winrt::Windows::UI::Color{
+                               static_cast<uint8_t>(argb >> 24), static_cast<uint8_t>(argb >> 16),
+                               static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)}))
+                         : media::Brush{nullptr};
+        auto control = as<controls::Control>(handle);
+        // The color goes where the control's style reads its words' color, in every state that keeps them.
+        std::vector<std::pair<std::wstring, media::Brush>> brushes;
+        if (auto toggle = control.try_as<controls::ToggleSwitch>()) {
+            toggle.Header(shown);
+            brushes.emplace_back(L"ToggleSwitchHeaderForeground", brush);
+        } else {
+            auto box = control.as<controls::CheckBox>();
+            box.Content(shown);
+            if (words.empty()) box.Padding({0, 0, 0, 0});
+            else box.ClearValue(controls::Control::PaddingProperty());
+            for (std::wstring state : {L"Unchecked", L"Checked", L"Indeterminate"})
+                for (std::wstring under : {L"", L"PointerOver", L"Pressed"})
+                    brushes.emplace_back(L"CheckBoxForeground" + state + under, brush);
+        }
+        writeResources(control, brushes);
     } catch (...) {
-        report("making a radio button");
-        return nullptr;
+        report("setting a toggle's words");
     }
 }
 
@@ -99,10 +117,7 @@ extern "C" bool stateui_winui_toggle_is_on(StateUIObjectRef handle) {
 extern "C" void stateui_winui_toggle_press(StateUIObjectRef handle) {
     try {
         auto control = as<xaml::UIElement>(handle);
-        if (control.try_as<controls::RadioButton>())
-            pattern<provider::ISelectionItemProvider>(control, PatternInterface::SelectionItem).Select();
-        else
-            pattern<provider::IToggleProvider>(control, PatternInterface::Toggle).Toggle();
+        pattern<provider::IToggleProvider>(control, PatternInterface::Toggle).Toggle();
     } catch (...) {
         report("turning a control as the user");
     }

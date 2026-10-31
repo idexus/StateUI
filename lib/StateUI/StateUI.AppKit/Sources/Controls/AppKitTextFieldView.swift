@@ -36,22 +36,29 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         fatalError("AppKitTextFieldView is created in code")
     }
 
-    /// The colour the field stands on, in a rounded field's shape; nil for AppKit's own bezel.
+    /// The color the field stands on, in a rounded field's shape; nil for AppKit's own bezel.
     private(set) var fill: NSColor?
 
-    /// How far a field standing on a colour sets its words in from its edge, as the rounded bezel does.
+    /// The outline and the shape the tree gives the field.
+    let outline = AppKitFieldOutline()
+
+    /// Whether the field stands in a box of its own - filled, outlined or shaped - its bezel stepping aside.
+    private var boxed: Bool { fill != nil || outline.isDrawn }
+
+    /// How far a field standing in a box of its own sets its words in from its edge, as the rounded bezel does.
     static let inset = NSSize(width: 6, height: 4)
 
     override var intrinsicContentSize: NSSize {
         let own = textField.intrinsicContentSize
-        guard fill != nil else { return own }
+        guard boxed else { return own }
         let width = own.width == NSView.noIntrinsicMetric ? own.width : own.width + Self.inset.width * 2
         return NSSize(width: width, height: own.height + Self.inset.height * 2)
     }
 
     override func layout() {
         super.layout()
-        guard fill != nil else {
+        outline.draw(on: layer, size: bounds.size, ownRadius: boxed ? AppKitTextEditorView.cornerRadius : 0)
+        guard boxed else {
             textField.frame = bounds
             (textField as? AppKitBoxedField)?.ringBox = nil
             return
@@ -61,6 +68,17 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
             x: Self.inset.width, y: ((bounds.height - height) / 2).rounded(),
             width: max(0, bounds.width - Self.inset.width * 2), height: height)
         (textField as? AppKitBoxedField)?.ringBox = convert(bounds, to: textField)
+    }
+
+    /// Outlines and shapes the field as the tree says, its bezel stepping aside while it is.
+    /// Design: docs/design/platforms/appkit/registrations.md#a-fields-outline
+    func setOutline(stroke: HostValue?, lineWidth: Double?, shape: HostValue?) {
+        outline.set(stroke: stroke, lineWidth: lineWidth, shape: shape)
+        textField.isBordered = false
+        textField.isBezeled = !boxed
+        wantsLayer = true
+        invalidateIntrinsicContentSize()
+        needsLayout = true
     }
 
     /// Applies the StateUI properties that have direct AppKit semantics.
@@ -109,20 +127,20 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
         textField.isEditable = !readOnly
         textField.isSelectable = true
         textField.isAutomaticTextCompletionEnabled = traits.predicts
+        textField.contentType = traits.contentType
         textField.alignment = NSTextAlignment(horizontalAlignment, in: userInterfaceLayoutDirection)
 
-        // AppKit's rounded bezel draws its own ground over any colour: a field given one stands in the bezel's
+        // AppKit's rounded bezel draws its own ground over any color: a field given one stands in the bezel's
         // shape, filled with it. A border and a bezel exclude each other: the border is said first, so the bezel
         // said after it stands. Design: docs/design/platforms/appkit/registrations.md#a-background
         let colored = backgroundColor.map { $0.alphaComponent > 0 } ?? false
         fill = colored ? backgroundColor : nil
         textField.isBordered = false
-        textField.isBezeled = !colored
+        textField.isBezeled = !boxed
         textField.bezelStyle = .roundedBezel
         textField.drawsBackground = false
         wantsLayer = true
         layer?.backgroundColor = fill?.cgColor
-        layer?.cornerRadius = colored ? AppKitTextEditorView.cornerRadius : 0
         needsLayout = true
 
         if writeText, let text {

@@ -8,15 +8,19 @@ import AppKit
 
 /// A deterministic frame-based stack shared by horizontal and vertical stacks.
 @MainActor
-final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasuring,
+final class AppKitStackView: AppKitTravelingLayout, AppKitWidthConstrainedMeasuring, AppKitBaselineMeasuring,
     AppKitMeasurementCaching {
     let axis: StackArithmetic.Axis
     let measurements = MeasurementCache()
     var spacing: CGFloat = 0 {
         didSet { if spacing != oldValue { invalidateMeasurements() } }
     }
-    var padding = NSEdgeInsets() {
-        didSet { if !NSEdgeInsetsEqual(padding, oldValue) { invalidateMeasurements() } }
+    var padding = Insets(0) {
+        didSet { if padding != oldValue { invalidateMeasurements() } }
+    }
+    /// Whether a row stands on one line or wraps, and the room between its lines.
+    var lines = StackArithmetic.Lines.one {
+        didSet { if lines != oldValue { invalidateMeasurements() } }
     }
     private(set) var items: [AppKitLayoutItem] = []
     private(set) var arrangementCountForTesting = 0
@@ -55,8 +59,15 @@ final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasu
     /// Measures each visible child once for the width this stack offers it.
     private func measuredContentSize(width availableWidth: CGFloat?) -> NSSize {
         NSSize(StackArithmetic.size(
-            of: items, axis: axis, spacing: Double(spacing), padding: Insets(padding),
+            of: items, axis: axis, spacing: Double(spacing), lines: lines, padding: padding,
             width: availableWidth.map(Double.init)))
+    }
+
+    func firstBaseline(width: CGFloat?) -> CGFloat? {
+        let size = fittingContentSize(width: width)
+        return StackArithmetic.firstBaseline(
+            of: items, axis: axis, spacing: Double(spacing), lines: lines, padding: padding,
+            in: Rect(x: 0, y: 0, width: Double(size.width), height: Double(size.height))).map { CGFloat($0) }
     }
 
     override func layout() {
@@ -64,7 +75,7 @@ final class AppKitStackView: AppKitTravellingLayout, AppKitWidthConstrainedMeasu
 
         beginArrangement()
         let places = StackArithmetic.places(
-            of: items, axis: axis, spacing: Double(spacing), padding: Insets(padding), in: bounds.placed,
+            of: items, axis: axis, spacing: Double(spacing), lines: lines, padding: padding, in: arrangementBounds.placed,
             direction: direction)
         for (item, place) in zip(items, places) {
             if let place { self.place(item, at: NSRect(placed: place)) }

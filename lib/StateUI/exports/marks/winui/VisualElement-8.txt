@@ -1,64 +1,72 @@
-# revision 14.2
-ActivityIndicator.scaleY: ✅
-ActivityIndicator.style: ✅
-Button.isAccessibilityHidden: ✅
-Canvas.height: ✅
-Canvas.rotationX: ✓ read rotationX of Canvas: the host's own tip, checked against the projection it laid on the element
-Canvas.width: ✅
-Capsule.accessibilityHint: ✅
-CheckBox.isVisible: ✅
-CheckBox.pivotX: ✅
-DatePicker.translationX: ✅
-DatePicker.zIndex: ✅
-Divider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Ellipse.background: – A WinUI shape is its figure alone: it paints no ground around it.
-Grid.ignoresInput: ✅
-Grid.scale: ✅
-HStack.translationX: ✅
-HStack.zIndex: ✅
-Image.accessibilityHint: ✅
-ItemsView.isVisible: ✅
-ItemsView.pivotX: ✅
-LayoutEngine.automationExcludedWithChildren: ✅
-Line.opacity: ✅
-Line.pivotY: ✅
-Map.translationX: 🧩
-Map.zIndex: 🧩
-Path.frame: ✅
-Path.scaleX: ✅
-Picker.accessibilityHeading: ✅
-Polygon.height: ✅
-Polygon.rotationX: ✓ read rotationX of Polygon: the host's own tip, checked against the projection it laid on the element
-Polygon.width: ✅
-Polyline.accessibilityLabel: ✅
-Polyline.isEnabled: ✅
-ProgressBar.layoutDirection: ✅
-RadioButton.frame: ✅
-RadioButton.scaleX: ✅
-Rectangle.isAccessibilityHidden: ✅
-ScrollView.height: ✅
-ScrollView.rotationX: ✓ read rotationX of ScrollView: the host's own tip, checked against the projection it laid on the element
-ScrollView.width: ✅
-SearchField.translationX: ✅
-SearchField.zIndex: ✅
-Slider.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's colour standing in, its tint over it.
-Spacer.frame: ✅
-Spacer.scaleX: ✅
-Stepper.isAccessibilityHidden: ✅
-Switch.maximumHeight: ✅
-Switch.maximumWidth: ✅
-Switch.minimumHeight: ✅
-Switch.minimumWidth: ✅
-Switch.rotationY: ✓ read rotationY of Switch: the host's own tip, checked against the projection it laid on the element
-Text.translationX: ✅
-Text.zIndex: ✅
-TextEditor.tooltip: ✅
-TextField.isEnabled: ✅
-TextField.rotation: ✅
-TimePicker.accessibilityLabel: ✅
+# revision 22.2
+Button.accessibilityLabel: ✅
+Button.scaleX: ✅
+Canvas.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
+Canvas.translationY: ✅
+Capsule.accessibilityHeading: ✅
+CheckBox.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+CheckBox.isEnabled: ✅
+ColorPicker.frame: ✅
+ColorPicker.rotation: ✅
+DatePicker.accessibilityLabel: ✅
+DatePicker.scaleX: ✅
+Ellipse.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+Ellipse.accessibilityActions: – UI Automation offers no action of an application's own words.
+Ellipse.isEnabled: ✅
+Fill.accessibilityHeading: ✅
+Grid.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Grid.isAccessibilityHidden: ✅
+Grid.isVisible: ✅
+HStack.accessibilityHeading: ✅
+HStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Image.tooltip: ✅
+ItemsView.hidesChildrenFromAccessibility: ✅
+ItemsView.opacity: ✅
+Line.rotationY: ✓ read rotationY of Line: the host's own tip, checked against the projection it laid on the element
+Line.zIndex: ✅
+Link.accessibilityHint: ✅
+Link.scaleY: ✅
+Map.accessibilityAdjusted: 🧩
+MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own tip, checked against the projection it laid on the element
+MotionLayout.zIndex: ✅
+Path.ignoresInput: ✅
+Path.pivotY: ✅
+Picker.rotationY: ✓ read rotationY of Picker: the host's own tip, checked against the projection it laid on the element
+Picker.zIndex: ✅
+Polygon.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
+Polygon.translationX: ✅
+Polyline.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+ProgressBar.isAccessibilityHidden: ✅
+ProgressBar.isVisible: ✅
+Rectangle.height: ✅
+Rectangle.layoutDirection: ✓ read layoutDirection of Rectangle: the direction the host lays it out in: in WinUI it stands left to right, where a layout told right to left would mirror its places again and a drawing would be turned
+Rectangle.width: ✅
+ScrollView.frame: ✅
+ScrollView.rotation: ✅
+SearchField.rotationX: ✓ read rotationX of SearchField: the host's own tip, checked against the projection it laid on the element
+SearchField.style: ✅
+Separator.hidesChildrenFromAccessibility: ✅
+Separator.opacity: ✅
+Slider.accessibilityHint: ✅
+Slider.scaleY: ✅
+Space.accessibilityAdjusted: – UI Automation steps a range by its numbers, which a view made of parts does not say.
+Space.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Spinner.rotationX: ✓ read rotationX of Spinner: the host's own tip, checked against the projection it laid on the element
+Spinner.style: ✅
+Stepper.tooltip: ✅
+Switch.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+Switch.isEnabled: ✅
+Text.ignoresInput: ✅
+Text.pivotY: ✅
+TextEditor.frame: ✅
+TextEditor.rotation: ✅
+TextField.accessibilityLabel: ✅
+TextField.scaleX: ✅
+TimePicker.accessibilityActionPerformed: – UI Automation offers no action of an application's own words.
+TimePicker.accessibilityActions: – UI Automation offers no action of an application's own words.
+VStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+VStack.isAccessibilityHidden: ✅
 VStack.isVisible: ✅
-VStack.pivotX: ✅
-WebView.isEnabled: – WinUI's WebView2 is no control: it keeps no enabled state, and its page takes the user's hand whatever the tree says.
-WebView.rotation: ✅
-ZStack.accessibilityLabel: ✅
-ZStack.isEnabled: ✅
+WebView.tooltip: ✅
+ZStack.background: ☑️ An element's acrylic is not drawn yet: a blur or glass shows the theme's color standing in, its tint over it.
+ZStack.isEnabled: does not apply - read isEnabled of ZStack - WinUI keeps no enabled state on a view that is no control; the host layer holds the hand from it

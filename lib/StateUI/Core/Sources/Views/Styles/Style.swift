@@ -35,8 +35,9 @@ public struct StyleBag<Target: StyleTarget, Context> {
     /// sheet is built.
     var basedOn: String?
 
-    /// The role a button wears this style for, over the one every button gets; nil for any other style.
-    var role: ButtonRole?
+    /// The value of the target's member this style is worn for - a button's role, a picker's presentation - over the
+    /// one every control of the type gets; nil for any other style.
+    var variant: StyleVariant?
 
     /// The states written so far, in writing order.
     var states: [DeclaredState] = []
@@ -84,7 +85,20 @@ extension StyleBag where Context == StyleBase, Target == Button {
     ///     Style<Button>(role: .destructive).background(AppColors.danger)
     public init(role: ButtonRole) {
         self.init(key: nil)
-        self.role = role
+        variant = StyleVariant(ButtonContract.role, role)
+    }
+}
+
+extension StyleBag where Context == StyleBase, Target == Picker {
+    /// A style every picker of `presentation` gets - one saying none is a menu - standing over the one every picker
+    /// gets: it says only what the presentation changes. A picker asking for a style by its key, or for the
+    /// platform's own look, wears none of it.
+    ///
+    ///     Style<Picker>().textColor(AppColors.text)
+    ///     Style<Picker>(presentation: .segmented).tint(AppColors.accent)
+    public init(presentation: PickerPresentation) {
+        self.init(key: nil)
+        variant = StyleVariant(PickerContract.presentation, presentation, unsaid: .menu)
     }
 }
 
@@ -93,7 +107,7 @@ extension StyleBag where Context == StyleBase {
     ///
     /// The one it names must be in the same sheet. A key naming nothing is
     /// ignored, and a chain that comes back round to itself stops there.
-    public func basedOn(_ key: StyleKey<Target>) -> Self {
+    public func basedOn(_ key: StyleKey<Target>) -> Modified {
         var copy = self
         copy.basedOn = key.name
         return copy
@@ -128,7 +142,7 @@ extension StyleBag where Context == StyleBase {
     ///         .visualState(.disabled) { $0.textColor(.gray) }
     ///
     /// - Parameter state: the state, changing nothing.
-    public func visualState(_ state: VisualState<Target>) -> Self {
+    public func visualState(_ state: VisualState<Target>) -> Modified {
         var copy = self
         copy.states = written(copy.states, adding: DeclaredState(key: state.key))
         return copy
@@ -143,7 +157,7 @@ extension StyleBag where Context == StyleBase {
             target: node.type,
             key: key,
             basedOn: basedOn,
-            role: role,
+            variant: variant,
             props: node.props,
             states: states)
     }
@@ -163,8 +177,8 @@ public struct AnyStyle {
     /// The style it starts from, until the sheet flattens the chain.
     let basedOn: String?
 
-    /// The role a button wears it for, over the implicit style; nil for any other.
-    let role: ButtonRole?
+    /// The value of its target's member it is worn for, over the implicit style; nil for any other.
+    let variant: StyleVariant?
 
     /// What it sets.
     var props: [Prop: PropValue]

@@ -67,7 +67,7 @@ uikit_bundle () {
   plutil -insert CFBundleInfoDictionaryVersion -string 6.0 "$plist"
   plutil -insert CFBundleName -string "$name" "$plist"
   plutil -insert CFBundlePackageType -string APPL "$plist"
-  plutil -insert CFBundleShortVersionString -string 0.7.1 "$plist"
+  plutil -insert CFBundleShortVersionString -string 0.8.0 "$plist"
   plutil -insert CFBundleVersion -string 1 "$plist"
   plutil -insert CFBundleSupportedPlatforms -array "$plist"
   plutil -insert CFBundleSupportedPlatforms.0 -string "$platform" "$plist"
@@ -198,7 +198,7 @@ import json, sys
 wanted, listed = sys.argv[1:3]
 for each in json.load(open(listed))["result"]["devices"]:
     hardware = each.get("hardwareProperties", {})
-    if hardware.get("reality") != "physical" or hardware.get("platform") != "iOS":
+    if hardware.get("reality") == "simulated" or hardware.get("platform") != "iOS":
         continue
     if wanted in (each.get("identifier"), hardware.get("udid"), each.get("deviceProperties", {}).get("name")):
         print(each["identifier"], hardware["udid"])

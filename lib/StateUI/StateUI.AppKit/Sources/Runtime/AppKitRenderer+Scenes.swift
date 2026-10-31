@@ -24,6 +24,15 @@ extension AppKitRenderer {
         runtime.pump.turn()
     }
 
+    /// The system asked the application to open `addresses` - links of a scheme its head registers: each reaches a
+    /// window by the host layer's rule, a window opening first where none stands once the application started.
+    /// Design: docs/design/platforms/appkit/runtime.md#a-link-opened
+    func openLinks(_ addresses: [String]) {
+        for address in addresses { runtime.openLink(address) }
+        guard runtime.tree.root != nil, windowControllers.isEmpty else { return }
+        openNewWindow()
+    }
+
     func reopen(hasVisibleWindows: Bool) {
         if hasVisibleWindows {
             activeWindow?.window?.makeKeyAndOrderFront(nil)

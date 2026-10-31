@@ -8,6 +8,9 @@ import CStateUIAndroid
 /// A Button: an `android.widget.Button` whose click reaches Swift through its `StateUIListener`.
 @MainActor
 final class AndroidButtonView: AndroidTextualView {
+    /// The view's click is its own - a button's - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What the button does when it is clicked.
     var onClicked: (() -> Void)?
 
@@ -23,8 +26,17 @@ final class AndroidButtonView: AndroidTextualView {
     /// The icon, where it stands, how it fills the room, and the picture held for it.
     private var icon = Icon()
 
-    /// Whether the button has words: without them its icon stands alone in the middle.
+    /// Whether the button has words in sight: without them its icon stands alone in the middle.
     private var hasWords = false
+
+    /// The button's words, and whether they stand beside its icon: out of sight, they name it to TalkBack through
+    /// the host layer's words (`AccessibilityWords`).
+    private var words = ""
+    private var showsWords = true
+
+    /// The words shown before the tree's last ones, and those written last.
+    private var formerWords: String?
+    private var written: String?
 
     /// What the icon was last shown as, so an unchanged one is not sent again.
     private var shownIcon: Icon.Shown?
@@ -50,12 +62,11 @@ final class AndroidButtonView: AndroidTextualView {
         Java.call(reference, JavaAPI.setMinimumHeight, .int(height))
     }
 
-    /// A click is the button's own event, and a tap as any view's; a button whose click opens its menu opens it, and
-    /// so does a split button's arrow.
+    /// A click is the button's own event - a tap is its press, as any view's; a button whose click opens its menu
+    /// opens it, and so does a split button's arrow.
     override func clicked() {
         let at = Java.callFloat(listener.reference, JavaAPI.takeDownX)
         if opening == .click || opening == .arrow && onArrow(at) { showMenu() } else { onClicked?() }
-        super.clicked()
     }
 
     /// How the button opens its menu, whether it shows the arrow saying its click does, and what its menu writes
@@ -144,30 +155,30 @@ final class AndroidButtonView: AndroidTextualView {
     /// look shows.
     private var drawn: (shape: AndroidShapeDrawable, mask: AndroidShapeDrawable)?
 
-    /// The platform's coloured button - its background and words' colours - which the window's main action wears;
+    /// The platform's colored button - its background and words' colors - which the window's main action wears;
     /// nil for the theme's plain one.
-    private var coloured: (background: JavaObject, words: JavaObject)?
+    private var colored: (background: JavaObject, words: JavaObject)?
 
-    /// The theme's colours for an error, which a destructive action's words wear; nil for any other.
+    /// The theme's colors for an error, which a destructive action's words wear; nil for any other.
     private var critical: JavaObject?
 
-    /// What the button stands for (`ButtonRoleLook`): the window's main action wears the platform's coloured button,
-    /// its background where the button draws no look of its own and its words' colours where none is written; a
-    /// destructive one's words stand in the theme's colour for an error where none is written. The way out stands
+    /// What the button stands for (`ButtonRoleLook`): the window's main action wears the platform's colored button,
+    /// its background where the button draws no look of its own and its words' colors where none is written; a
+    /// destructive one's words stand in the theme's color for an error where none is written. The way out stands
     /// plain.
     /// Design: docs/design/platforms/android/controls.md#a-buttons-look
     func setRole(_ role: ButtonRole?) {
         self.role = role
-        // What the tree writes is weighed where the colours are used: these stand only where nothing is written.
+        // What the tree writes is weighed where the colors are used: these stand only where nothing is written.
         let look = ButtonRoleLook(role, fills: false, colorsWords: false)
-        let colours = look.fillsInAccent != (coloured != nil)
+        let colors = look.fillsInAccent != (colored != nil)
         let words = look.wordsInCritical != (critical != nil)
-        guard colours || words else { return }
-        if colours {
-            coloured = look.fillsInAccent ? Java.frame {
+        guard colors || words else { return }
+        if colors {
+            colored = look.fillsInAccent ? Java.frame {
                 let context = AndroidRenderer.context
-                let background = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredBackground, .object(context))
-                let words = Java.callStaticObject(JavaAPI.views, JavaAPI.colouredWords, .object(context))
+                let background = Java.callStaticObject(JavaAPI.views, JavaAPI.coloredBackground, .object(context))
+                let words = Java.callStaticObject(JavaAPI.views, JavaAPI.coloredWords, .object(context))
                 return background.flatMap { background in words.map { (JavaObject(background), JavaObject($0)) } }
             } : nil
         }
@@ -184,22 +195,22 @@ final class AndroidButtonView: AndroidTextualView {
     /// The role the tree gave the button; nil for none.
     private(set) var role: ButtonRole?
 
-    override var plainWordColours: JavaObject { coloured?.words ?? critical ?? super.plainWordColours }
+    override var plainWordColors: JavaObject { colored?.words ?? critical ?? super.plainWordColors }
 
-    /// The words' colour, which an icon is drawn in too.
+    /// The words' color, which an icon is drawn in too.
     override func setTextColor(_ color: HostValue?) {
         super.setTextColor(color)
         shownIcon = nil
         showIcon(room: placedSize)
     }
 
-    /// One shape under the platform's pressed ripple, or the theme's background - the coloured button's for the
+    /// One shape under the platform's pressed ripple, or the theme's background - the colored button's for the
     /// main action - where nothing is said.
     /// Design: docs/design/platforms/android/controls.md#a-buttons-look
     private func drawLook() {
         guard look.fill != nil || look.stroke != nil || look.shape != .rectangle else {
             drawn = nil
-            return showBackground(coloured?.background)
+            return showBackground(colored?.background)
         }
 
         let corners = look.shape
@@ -209,7 +220,7 @@ final class AndroidButtonView: AndroidTextualView {
         shape.setFill(look.fill)
         let mask = AndroidShapeDrawable()
         mask.setShape(corners, density: density)
-        mask.setFill(Color("#000000").propValue)
+        mask.setFill(Color(hex: 0x000000).propValue)
         drawn = (shape, mask)
         if let size = placedSize { sized(width: size.width, height: size.height) }
 
@@ -225,7 +236,11 @@ final class AndroidButtonView: AndroidTextualView {
 
     /// The picture beside the words `spacing` points away - the platform's gap for nil - or alone where
     /// there are none, filling its room as `aspect` says.
-    func setIcon(_ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode) {
+    func setIcon(_ source: HostPicture?, position: IconPosition, spacing: Double?, aspect: ContentMode, showsText: Bool) {
+        if showsText != showsWords {
+            showsWords = showsText
+            showWords()
+        }
         if source != icon.source {
             letGoOfIcon()
             icon.source = source
@@ -238,10 +253,34 @@ final class AndroidButtonView: AndroidTextualView {
         showIcon(room: placedSize)
     }
 
-    /// The words decide where the icon goes: beside them, or alone in the middle.
+    /// The words decide where the icon goes: beside them, or alone in the middle. New ones while some are held back
+    /// show at once.
     override func setText(_ text: String) {
-        super.setText(text)
-        hasWords = !text.isEmpty
+        let former = words
+        words = text
+        if text != former, heldWords != nil { return heldWords = nil }
+        if text != former { formerWords = former }
+        showWords()
+    }
+
+    /// The former words while new ones are held back, else the tree's.
+    /// Design: docs/design/host/motion.md#words-on-the-way
+    override func holdWords(_ holding: Bool) {
+        if !holding { formerWords = nil }
+        if inSight != written { showWords() }
+    }
+
+    /// The words in sight where they show, else none.
+    private var inSight: String {
+        guard showsWords else { return "" }
+        return heldWords == nil ? words : formerWords ?? words
+    }
+
+    private func showWords() {
+        let shown = inSight
+        written = shown
+        super.setText(shown)
+        hasWords = !shown.isEmpty
         showIcon(room: placedSize)
     }
 
@@ -354,8 +393,8 @@ final class AndroidButtonView: AndroidTextualView {
         shownIcon = shown
 
         let position: Int32 = switch icon.position {
-        case .leading: 0
-        case .trailing: 1
+        case .start: 0
+        case .end: 1
         case .top: 2
         case .bottom: 3
         }
@@ -413,7 +452,7 @@ final class AndroidButtonView: AndroidTextualView {
     private struct Icon {
         var source: HostPicture?
         var size: (width: Int32, height: Int32)?
-        var position: IconPosition = .leading
+        var position: IconPosition = .start
         var spacing: Double?
         var aspect: ContentMode = .fit
         var picture: JavaObject?

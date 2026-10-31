@@ -1,6 +1,3 @@
-ActivityIndicator
-  isAnimating
-  tint
 Button
   contentMode
   fontAttributes
@@ -16,6 +13,7 @@ Button
   padding
   role
   shape
+  showsText
   stroke
   text
   textCase
@@ -41,6 +39,9 @@ Capsule
   stroke
 CheckBox
   isOn
+  text
+  textCase
+  textColor
   tint
   toggled()
 DatePicker
@@ -59,7 +60,6 @@ DatePicker
   closed()
   dateChanged()
   opened()
-Divider
 Ellipse
   contentMode
   dash
@@ -69,11 +69,17 @@ Ellipse
   lineCap
   lineWidth
   stroke
+Fill
+  ignoresInput
+  lineWidth
+  shape
+  stroke
 Grid
   clipsContent
   columnSpacing
   columns
   ignoresInput
+  letsInputThrough
   lineWidth
   padding
   rowSpacing
@@ -83,16 +89,22 @@ Grid
 HStack
   clipsContent
   ignoresInput
+  letsInputThrough
+  lineAlignment
   lineWidth
   padding
+  rowSpacing
   shape
   spacing
   stroke
+  wraps
 Image
   contentMode
   source
 ItemsView
   endReachedWithin
+  isRefreshEnabled
+  isRefreshing
   items
   itemsLayout
   selectedItems
@@ -100,13 +112,8 @@ ItemsView
   endReached()
   itemActivated()
   realizedChanged()
+  refreshRequested()
   selectedItemsChanged()
-LayoutEngine
-  clipsContent
-  ignoresInput
-  lineWidth
-  shape
-  stroke
 Line
   contentMode
   dash
@@ -119,6 +126,19 @@ Line
   x2
   y1
   y2
+Link
+  destination
+  text
+  textCase
+  textColor
+  clicked()
+MotionLayout
+  clipsContent
+  ignoresInput
+  letsInputThrough
+  lineWidth
+  shape
+  stroke
 Path
   contentMode
   dash
@@ -177,19 +197,6 @@ Polyline
 ProgressBar
   progress
   tint
-RadioButton
-  fontAttributes
-  fontFamily
-  fontSize
-  fontWeight
-  isFontAutoScalingEnabled
-  isOn
-  padding
-  text
-  textCase
-  textColor
-  textStyle
-  toggled()
 Rectangle
   contentMode
   cornerRadius
@@ -204,6 +211,8 @@ Rectangle
   stroke
 ScrollView
   horizontalScrollIndicator
+  isRefreshEnabled
+  isRefreshing
   lineWidth
   orientation
   padding
@@ -211,9 +220,8 @@ ScrollView
   shape
   stroke
   verticalScrollIndicator
+  refreshRequested()
   scrollStopped()
-  scrollXChanged()
-  scrollYChanged()
 SearchField
   cursorPosition
   fontAttributes
@@ -225,10 +233,13 @@ SearchField
   isFontAutoScalingEnabled
   isReadOnly
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   submitLabel
   text
   textCase
@@ -236,6 +247,7 @@ SearchField
   textStyle
   submitted()
   textChanged()
+Separator
 Slider
   maximum
   minimum
@@ -244,7 +256,14 @@ Slider
   pressed()
   released()
   valueChanged()
-Spacer
+Space
+  ignoresInput
+  lineWidth
+  shape
+  stroke
+Spinner
+  isAnimating
+  tint
 Stepper
   maximum
   minimum
@@ -253,6 +272,9 @@ Stepper
   valueChanged()
 Switch
   isOn
+  text
+  textCase
+  textColor
   toggled()
 Text
   fontAttributes
@@ -285,10 +307,13 @@ TextEditor
   isFontAutoScalingEnabled
   isReadOnly
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   text
   textCase
   textColor
@@ -306,10 +331,13 @@ TextField
   isPassword
   isReadOnly
   isTextPredictionEnabled
+  lineWidth
   maximumLength
   placeholder
   placeholderColor
   selectionLength
+  shape
+  stroke
   submitLabel
   text
   textCase
@@ -334,6 +362,7 @@ TimePicker
 VStack
   clipsContent
   ignoresInput
+  letsInputThrough
   lineWidth
   padding
   shape
@@ -350,18 +379,21 @@ WebView
 ZStack
   clipsContent
   ignoresInput
+  letsInputThrough
   lineWidth
   padding
   shape
   stroke
 (every element)
+  accessibilityActions
   accessibilityHeading
   accessibilityHint
   accessibilityIdentifier
   accessibilityLabel
+  accessibilityRole
+  accessibilityValue
   allowsDrop
   area
-  automationExcludedWithChildren
   background
   canDrag
   dragText
@@ -372,6 +404,8 @@ ZStack
   gridRow
   gridRowSpan
   height
+  hidesChildrenFromAccessibility
+  holdDuration
   horizontalAlignment
   isAccessibilityHidden
   isEnabled
@@ -403,6 +437,8 @@ ZStack
   verticalAlignment
   width
   zIndex
+  accessibilityActionPerformed()
+  accessibilityAdjusted()
   dragEnded()
   dragLeave()
   dragOver()
@@ -410,6 +446,7 @@ ZStack
   drop()
   filesDropped()
   frameChanged()
+  held()
   isFocusedChanged()
   keyPressed()
   panUpdated()
@@ -419,11 +456,13 @@ ZStack
   pointerMoved()
   pointerPressed()
   pointerReleased()
+  rotationUpdated()
   swiped()
   tapped()
 (acts)
   alert()
   announce()
+  cancelCall()
   chooseAction()
   confirm()
   currentTime()
@@ -440,10 +479,15 @@ ZStack
   persistSceneValue()
   persistValue()
   prompt()
+  readClipboard()
   readFile()
   reload()
   saveFile()
   scrollTo()
+  sendRequest()
+  share()
   unfocus()
+  useAccentColor()
   useColorScheme()
   utcOffset()
+  writeClipboard()

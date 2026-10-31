@@ -90,7 +90,7 @@ changes one at a time - a recycler's adapter, a list model - takes them from
 the positions inserted into the new one, first first. The identities in both
 that keep their order against each other - the longest rising run of their
 new places - stay; every other one is removed and inserted, which is how a
-move is told. `removedRuns` and `insertedRuns` gather neighbours into runs,
+move is told. `removedRuns` and `insertedRuns` gather neighbors into runs,
 each told in one call, in the same order.
 
 ## The end reached
@@ -142,13 +142,13 @@ holds its choice itself tells what it holds (`userChose`) and what it opens
 Where a host draws the band behind an item the user chose from the accent, it
 draws the accent's hue at a fifth of its strength (`ChosenBand`): AppKit over
 the platform's accent, UIKit over the cell's tint, Android over the theme's
-accent, the Web over its own. GTK shades a chosen row in the colour of its
+accent, the Web over its own. GTK shades a chosen row in the color of its
 words, as GNOME's sidebars do, and WinUI's item container draws its own.
 
 ## Scrolling to an item
 
 `ScrollAnchor.place` says where the scroller stands for the item to stand at
-the start of the room, its centre or its end. Nearest leaves an item wholly
+the start of the room, its center or its end. Nearest leaves an item wholly
 in view where it is; otherwise it moves it the shorter way - to the start
 when it stands before the room, to the end when after it. The scroller keeps
 the place within its reach.
@@ -167,3 +167,18 @@ scroll; a scroll that glides stands its item again as it stops.
 Whether a scroll to an item glides is one rule,
 `ItemsScrollTarget.glides(reducingMotion:)`: it glides unless the user asks
 for less motion, and stands there at once when they do.
+
+
+Once let go, the item stands where the program put it while nothing else
+moves the list: a room that changes - the list's size, or what it keeps
+clear of the bars over it - stands it again (`ItemsCells.roomChanged`), until
+the user scrolls, the program scrolls elsewhere, or an entry comes or goes.
+## An item's actions
+
+An item's actions are its context menu (`.contextMenu` on the item's view):
+declared once, offered where the platform offers an item's actions. Every
+host offers the menu as it offers any view's; a list whose platform swipes an
+item - UIKit's - offers the menu's items the user can choose as the item's
+swipe actions too, in order, a destructive one marked
+(`ItemsCells.actions(of:)`). A line and a submenu stand in the menu alone: a
+swipe shows neither.

@@ -33,8 +33,15 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
 
     private var recognizers: [Hearing: [UIGestureRecognizer]] = [:]
 
+    /// The press held, while the view listens for one, and UIKit's own time, which a view saying none waits.
+    private var hold: UILongPressGestureRecognizer?
+    private static let platformHold = UILongPressGestureRecognizer().minimumPressDuration
+
     /// The place in its quick run of the tap the tap recognizer follows, as the touch counts it.
     var tapRun = 1
+
+    /// Whether the view counts a run of taps, which UIKit's tap recognizer counts; a single tap is the press's.
+    var countsRuns = false
 
     /// The press dragged, by the host layer's rule, on the window; and the pinch's steps.
     private var drag = DragRecognition(distance: .eachAxis(x: 0, y: 0))
@@ -64,6 +71,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
                     handPan = nil
                     handWheel = nil
                 }
+                if kind == .holds { hold = nil }
             }
         }
         self.hearing = hearing
@@ -71,7 +79,14 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
 
     private func recognizers(for kind: Hearing) -> [UIGestureRecognizer] {
         switch kind {
-        case .taps: return [UITapGestureRecognizer(target: self, action: #selector(tapped(_:)))]
+        case .taps:
+            let press = UIKitPressRecognizer(target: nil, action: nil)
+            press.onPress = { [weak self] phase, at, byFinger in self?.press(phase, at: at, byFinger: byFinger) }
+            return [press, UITapGestureRecognizer(target: self, action: #selector(tapped(_:)))]
+        case .holds:
+            let press = UILongPressGestureRecognizer(target: self, action: #selector(held(_:)))
+            hold = press
+            return [press]
         case .pointer:
             let press = UILongPressGestureRecognizer(target: self, action: #selector(pressed(_:)))
             press.minimumPressDuration = 0
@@ -85,7 +100,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         case .hand:
             // A finger and a trackpad's two fingers: one pan; a wheel turned notch by notch, which touches nothing:
             // another, each of its steps a notch.
-            let pan = UIKitHandPan(target: self, action: #selector(handMoved(_:)))
+            let pan = UIKitHandPan(target: self, action: #selector(translationUpdated(_:)))
             pan.allowedScrollTypesMask = .continuous
             pan.onPress = { [weak self] at in self?.hand(.began, moved: .zero, point: at) }
             pan.onLift = { [weak self] cancelled in self?.hand(cancelled ? .cancelled : .ended, moved: .zero) }
@@ -107,8 +122,34 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
     // MARK: - Taps
 
     @objc func tapped(_ recognizer: UITapGestureRecognizer) {
-        guard recognizer.state == .ended else { return }
+        guard recognizer.state == .ended, countsRuns else { return }
         tell(.tap(run: tapRun))
+    }
+
+    /// A press on the view at `phase`, at `point` in it, as a button takes one by the host layer's rule.
+    /// Design: docs/design/platforms/uikit/input.md#a-press-as-a-button-takes-it
+    func press(_ phase: GesturePhase, at point: CGPoint, byFinger: Bool = true) {
+        guard let view else { return }
+        let size = LayoutSize(width: Double(view.bounds.width), height: Double(view.bounds.height))
+        tell(.press(phase, at: Point(x: Double(point.x), y: Double(point.y)), size: size, byFinger: byFinger))
+    }
+
+    // MARK: - A press held
+
+    /// Waits `milliseconds` for a hold, or UIKit's own time for nil.
+    /// Design: docs/design/platforms/uikit/input.md#a-press-held
+    func wait(_ milliseconds: Double?) {
+        hold?.minimumPressDuration = milliseconds.map { $0 / 1000 } ?? Self.platformHold
+    }
+
+    /// How long the view's hold waits, in milliseconds; nil while it listens for none.
+    var holdTime: Double? {
+        hold.map { $0.minimumPressDuration * 1000 }
+    }
+
+    @objc func held(_ recognizer: UILongPressGestureRecognizer) {
+        guard recognizer.state == .began else { return }
+        tell(.hold)
     }
 
     // MARK: - The pointer
@@ -159,7 +200,7 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
 
     /// The hand over a layout: what it moved since the last report, from the top left, and as it lifts, its speed.
     /// Design: docs/design/platforms/uikit/input.md#the-hand-over-a-layout
-    @objc func handMoved(_ recognizer: UIPanGestureRecognizer) {
+    @objc func translationUpdated(_ recognizer: UIPanGestureRecognizer) {
         let total = recognizer.translation(in: view)
         switch recognizer.state {
         case .began:
@@ -264,17 +305,44 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
 
     func gestureRecognizer(_ recognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if recognizer is UITapGestureRecognizer { tapRun = max(1, touch.tapCount) }
+        if recognizer is UIKitPressRecognizer { return pressIsOwn(touch.view) }
+        return true
+    }
+
+    /// Whether a touch on `touched` is a press of the view: one begun on a control inside - a button, a field - or
+    /// on a view hearing its own taps is that one's, as UIKit keeps a control's touch from the gestures around it;
+    /// one on the parts of a view that is a control is its own.
+    private func pressIsOwn(_ touched: UIView?) -> Bool {
+        guard let view, !(view is UIControl) else { return true }
+        var each = touched
+        while let inner = each, inner !== view {
+            if inner is UIControl || inner.gestureRecognizers?.contains(where: { $0 is UIKitPressRecognizer }) == true {
+                return false
+            }
+            each = inner.superview
+        }
         return true
     }
 
     /// Every recognizer hears with the others but a stack's swipe back from within its page, which a drag comes
-    /// before.
+    /// before, and a press held, which keeps the view's tap and drag from the press.
     /// Design: docs/design/platforms/uikit/input.md#a-press-dragged
+    /// Design: docs/design/platforms/uikit/input.md#a-press-held
     func gestureRecognizer(
         _ recognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith other: UIGestureRecognizer
     ) -> Bool {
+        // A scroll takes the press: its pan recognized, the press fails and is told taken away.
+        if recognizer is UIKitPressRecognizer || other is UIKitPressRecognizer {
+            let another = recognizer is UIKitPressRecognizer ? other : recognizer
+            if let scroller = another.view as? UIScrollView, another === scroller.panGestureRecognizer { return false }
+            return !isSwipeBack(another)
+        }
         // The hand over a layout is the layout's alone: a scroller holding it does not move with it.
         if recognizer === handPan || recognizer === handWheel, other is UIPanGestureRecognizer { return false }
+        // A press held is the hold's: no tap of the view, and no drag of it.
+        if let hold, recognizer === hold || other === hold, heldApart(recognizer === hold ? other : recognizer) {
+            return false
+        }
         return !isSwipeBack(other)
     }
 
@@ -287,6 +355,11 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
             return true
         }
         return recognizer is UIPanGestureRecognizer && isSwipeBack(other)
+    }
+
+    /// Whether `other` is the view's own tap or drag, which a press held keeps from it.
+    private func heldApart(_ other: UIGestureRecognizer) -> Bool {
+        [Hearing.taps, .drags].contains { kind in recognizers[kind]?.contains { $0 === other } == true }
     }
 
     /// Whether `other` is the swipe back from within the page of the stack the view stands in.

@@ -23,6 +23,34 @@ final class UIKitValueControlsTests: XCTestCase {
         XCTAssertEqual([stepper.minimumValue, stepper.maximumValue, stepper.stepValue], [0, 10, 1])
     }
 
+    /// A switch and a check box say the words the tree gives them, in their case: the check box as its own title;
+    /// the switch's beside it at its start, the switch at its end, naming it for VoiceOver and flipping it at a tap.
+    @MainActor
+    func testATogglesWordsStandBesideIt() throws {
+        let on = State(wrappedValue: false)
+        let host = UIKitRenderer.running {
+            VStack {
+                Switch(on.projectedValue).text("Wi-Fi")
+                CheckBox(true).text("agree").textCase(.uppercase)
+            }
+        }
+        defer { host.finish() }
+        let toggle = try XCTUnwrap(host.views(UIKitSwitchView.self).first)
+        let box = try XCTUnwrap(host.views(UIKitCheckView.self).first)
+
+        XCTAssertEqual(box.configuration?.title, "AGREE")
+        XCTAssertEqual(toggle.caption.text, "Wi-Fi")
+        XCTAssertEqual(toggle.control.accessibilityLabel, "Wi-Fi", "the switch named by its words")
+        toggle.frame = CGRect(x: 0, y: 0, width: 300, height: 40)
+        toggle.layoutIfNeeded()
+        XCTAssertEqual(toggle.control.frame.maxX, 300, "the switch at the end")
+        XCTAssertEqual(toggle.caption.frame.minX, 0, "the words from the start")
+
+        toggle.tapWordsForTesting()
+        host.settle { on.wrappedValue }
+        XCTAssertTrue(on.wrappedValue, "a tap on the words flips it")
+    }
+
     /// A slider pressed is released however the touch ends - lifted inside, outside, or taken by the system's own
     /// gesture: no press stands with no release after it.
     @MainActor

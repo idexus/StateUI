@@ -30,7 +30,6 @@
 set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-repository_dir="$(cd "$script_dir/../.." && pwd)"
 # shellcheck source=tools.sh
 source "$script_dir/tools.sh"
 
@@ -112,7 +111,15 @@ echo "$output"
 
 summary="$(grep -E '^Executed [0-9]+ tests, with [0-9]+ failures' <<< "$output" | tail -n 1)"
 [[ -n "$summary" ]] || { echo "ERROR: the tests reported nothing - read: $ADB -s $serial logcat -s StateUI"; exit 1; }
-[[ "$summary" == *" with 0 failures" ]] || exit 1
+if [[ "$summary" != *" with 0 failures" ]]; then
+  # What the system did to the tests' window - a window taking its focus keeps the clipboard from it, a dialog over it
+  # takes its presses - said, so a failure on a machine nobody watches names its cause.
+  echo "The system on the tests' window:"
+  "$ADB" -s "$serial" logcat -d -v time 2>/dev/null \
+    | grep -E "Denying clipboard access to $package|ANR in|isn't responding" | tail -n 40 || true
+  "$ADB" -s "$serial" shell dumpsys window 2>/dev/null | grep -E "mCurrentFocus|mFocusedApp" | tr -d '\r' || true
+  exit 1
+fi
 [[ -z "${STATEUI_FILTER:-}" || "$stale_only" == 1 ]] || exit 0
 
 declared="$(mktemp -d)"

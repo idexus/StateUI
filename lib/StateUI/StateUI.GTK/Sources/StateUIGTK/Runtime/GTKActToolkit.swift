@@ -48,10 +48,11 @@ final class GTKActToolkit: ActToolkit {
 
     /// Design: docs/design/platforms/gtk/runtime.md#questions-for-the-user
     func show(
-        _ question: HostQuestion, answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
+        _ question: HostQuestion, over window: MountedElement?,
+        answered: @escaping (Result<HostQuestion.Given, ActFailure>) -> Void
     ) -> MountedElement? {
-        guard let window = renderer.userWindow, let element = renderer.element(of: window) else { return nil }
-        GTKQuestion(question) { answered(.success(HostQuestion.Given(accepted: $0, words: $1))) }.show(over: window)
+        guard let window = renderer.window(asked: window), let element = renderer.element(of: window) else { return nil }
+        GTKQuestion(question) { answered(.success($0)) }.show(over: window)
         return element
     }
 
@@ -61,7 +62,24 @@ final class GTKActToolkit: ActToolkit {
         gtk_accessible_announce(window.widget.opaque, words, GTK_ACCESSIBLE_ANNOUNCEMENT_PRIORITY_MEDIUM)
     }
 
-    /// Shows the application in `theme`: libadwaita's colour scheme, the system's own for the system's.
+    /// GNOME offers an application no share sheet: the act fails with that reason.
+    func share(
+        _ shared: HostShare, over window: MountedElement?, answered: @escaping (Result<Bool, ActFailure>) -> Void
+    ) -> MountedElement? {
+        let element = renderer.window(asked: window).flatMap(renderer.element(of:))
+        answered(.failure(ActFailure("GNOME offers an application no share sheet")))
+        return element
+    }
+
+    func writeClipboard(_ words: String) {
+        GTKClipboard.write(words)
+    }
+
+    func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        GTKClipboard.read { answered(.success($0)) }
+    }
+
+    /// Shows the application in `theme`: libadwaita's color scheme, the system's own for the system's.
     func useColorScheme(_ theme: ColorScheme) {
         let scheme: AdwColorScheme = switch theme {
         case .light: ADW_COLOR_SCHEME_FORCE_LIGHT
@@ -71,10 +89,20 @@ final class GTKActToolkit: ActToolkit {
         adw_style_manager_set_color_scheme(adw_style_manager_get_default(), scheme)
     }
 
-    /// The keyboard GNOME shows on a touch screen stands for the field holding the focus: the field lets the focus
-    /// go, and the keyboard goes down. Whether a field held it.
-    func hideOnScreenKeyboard() -> Bool {
-        guard let window = renderer.userWindow, let root = gtk_widget_get_root(window.widget),
+    /// Draws the application's controls in `accent` - libadwaita's accent colors - where the user chooses none for
+    /// the desktop, libadwaita's own again where nil; GNOME 47 on, the user's stands. The accent drawn is reported
+    /// again.
+    func useAccentColor(_ accent: Color?) -> Bool {
+        guard !GTKEnvironment.userChoosesAccent else { return false }
+        GTKStyleSheet.accent(accent.flatMap { GTKBrush.rgba($0.propValue) }, variables: GTKEnvironment.offersAccent)
+        CoreLink().setAccentColor(GTKEnvironment.accent)
+        return true
+    }
+
+    /// The keyboard GNOME shows on a touch screen stands for the field holding the focus in the window asked: the
+    /// field lets the focus go, and the keyboard goes down. Whether a field held it.
+    func hideOnScreenKeyboard(in window: MountedElement?) -> Bool {
+        guard let window = renderer.window(asked: window), let root = gtk_widget_get_root(window.widget),
               let held = gtk_root_get_focus(root),
               [gtk_text_get_type(), gtk_text_view_get_type()].contains(where: {
                   g_type_check_instance_is_a(held.of(GTypeInstance.self), $0) != 0
@@ -108,7 +136,7 @@ final class GTKActToolkit: ActToolkit {
     func keep(_ call: HostActCall) -> Bool {
         switch call.act {
         case .persistValue:
-            GTKKeptValues.keep(call, core: renderer.runtime.core, applicationID: renderer.applicationID)
+            GTKKeptValues.keep(call, applicationID: renderer.applicationID)
         case .persistSceneValue:
             let scenes = renderer.scenes
             if scenes.keep(call.arguments), let text = scenes.changed(root: renderer.runtime.tree.root) {

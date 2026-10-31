@@ -56,7 +56,7 @@ extension VisualElement {
     /// A view that comes back with the same key keeps its control, and only the
     /// properties that changed are written to it. Give one to anything whose
     /// position can change, so inserting, removing or reordering moves the
-    /// existing controls instead of rewriting each into its neighbour:
+    /// existing controls instead of rewriting each into its neighbor:
     ///
     ///     VStack {
     ///         ForEach(items, id: \.id) { item in
@@ -84,7 +84,7 @@ extension VisualElement {
     ///     @Aim(TextField.self) private var field
     ///
     ///     TextField($address).aim(field)
-    ///     Button("Edit").onClicked(gate: .ignoreWhileRunning) { try await field.focus() }
+    ///     Button("Edit").onClicked(.ignoreWhileRunning) { try await field.focus() }
     ///
     /// A model may declare its aims beside its state. An aim is not a key: a
     /// view carrying only an aim is still matched by where it was written, so
@@ -125,13 +125,10 @@ extension VisualElement {
         _ asks: Asks
     ) -> Modified {
         modified {
-            guard let from = source.described, let image = from.walkedImage(),
-                  let into = target.described
-            else {
-                complain("`.samples` was given a binding that borrows no @State the host "
-                    + "walks - a closure binding, a part of a state, or a state carried as "
-                    + "the value itself - so there is no journey to read. Hand it the "
-                    + "state itself.")
+            let from = source.storage, into = target.storage
+            guard let image = from.walkedImage() else {
+                complain("`.samples` was given a state the host carries as the value itself, so there is no "
+                    + "journey to read. Hand it a state the host walks.")
                 return
             }
 

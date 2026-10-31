@@ -20,7 +20,7 @@ class, so a property of the wrong type, or an event of a contract the element
 does not wear, does not compile. A registered control holds no views of
 children: this host arranges children only in the layouts it makes itself,
 and a control drawing children of its own - a map's markers - is handed them
-as values (`children(_:members:)`), each with no view.
+as values (`children(_:properties:events:apply:)`), each with no view.
 
 The application's relay reaches back through callbacks of its own, naming the
 control by a number its Swift half gave the element as it made it, held

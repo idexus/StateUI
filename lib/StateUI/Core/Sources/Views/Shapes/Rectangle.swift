@@ -3,11 +3,12 @@
 
 /// A rectangle, drawn as a shape - with square corners, or rounded ones.
 ///
-///     Rectangle(.cornflowerBlue)
+///     Rectangle()
+///         .fill(.cornflowerBlue)
 ///         .cornerRadius(8)
 ///         .height(60)
 ///
-/// The plainest thing a host draws: a block of colour, a bar of a chart, a
+/// The plainest thing a host draws: a block of color, a bar of a chart, a
 /// placeholder, a line one point thick. Being a shape, it takes a brush, an
 /// outline and everything else the shape tier declares.
 ///
@@ -21,25 +22,6 @@ public struct Rectangle: FilledShape, CorneredShape, RectangleProperties {
     /// written against.
     public init() {
         node = Node(contract: RectangleContract.self)
-    }
-
-    /// A rectangle painted with `fill`, a colour.
-    public init(_ fill: Color) {
-        self.init()
-        self = self.fill(fill)
-    }
-
-    /// A rectangle painted with `fill`, a brush - a colour or a gradient.
-    public init(_ fill: Brush) {
-        self.init()
-        self = self.fill(fill)
-    }
-
-    /// A rectangle painted with a colour state, `$x`: the host animates the colour to each new value, and no view is
-    /// rebuilt for it.
-    public init(_ fill: Binding<Color>) {
-        self.init()
-        self = self.fill(fill)
     }
 }
 

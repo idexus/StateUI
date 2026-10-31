@@ -16,7 +16,9 @@ or with the turn under way - stands in the cell. A cell that ends showing
 lets its entry go. The user's choice is the collection's selection -
 none, one or many as the tree says - told back in the list's order; what
 the tree selects is selected inside `ProgramWrite` and told nobody. An item
-opened is the collection's primary action, which a tap performs.
+opened is the collection's primary action, which a tap performs - but not in
+a choice of many (`ItemsTap.opens`): where UIKit performs a primary action, a
+tap chooses the item alone instead of adding it to the choice.
 `scrollTo` stands the item where its anchor says ([scrolling to an
 item](#scrolling-to-an-item)). The end reached is watched as the collection
 scrolls and lays out.
@@ -36,6 +38,16 @@ stay, so the layout is invalidated then - and only then: an invalidation
 drops every size the layout measured, and the items a change moves would
 travel towards places estimated, then jump to the places measured.
 
+## An item's actions
+
+A list lays its items out as UIKit's own list (`UICollectionLayoutListConfiguration`,
+plain, without separators, on the page's background), so its cells - UIKit's
+list cells - swipe: the trailing swipe shows the item's actions, the items of
+its context menu the user can choose (`ItemsCells.actions(of:)`), a
+destructive one UIKit's destructive style, each running the menu item's
+handler. The context menu itself stays the item's long press. A row or a grid
+lays out on a composed layout of its own and offers the menu alone.
+
 ## A cell
 
 A cell holds its entry's subtree in a single-child view, placed by the layer's
@@ -54,9 +66,22 @@ layout gives it - a height, or a row of a grid that fills.
 A cell at rest is clear, and the page shows through the list as it does on
 every host. The user's choice and a touch lay the platform's accent - the
 cell's tint - over the page at a fifth of its strength; the focus keeps the
-list cell's look. The list cell's own colours are the system background at
-rest and a grey when chosen, which a page of another colour shows as
+list cell's look. The list cell's own colors are the system background at
+rest and a gray when chosen, which a page of another color shows as
 blocks.
+
+## A cell asked for
+
+The collection asks for a cell in its own layout pass - a scroll, a row
+coming into view as others move - and the cell's entry is built as it waits
+([a cell before its entry](../../host/items.md#a-cell-before-its-entry)):
+the turn that builds it renders everything waiting, a change to the list's
+own entries among them. UIKit takes no snapshot then - one applied before
+the cell it dequeued is returned ends the application, "Expected dequeued
+view to be returned to the collection view" - nor a layout flushed: what that
+turn brings the list - its entries, its layout, the item scrolled to standing
+again - waits, and stands in a job of its own once the collection has the
+cell (`UIKitItemsView.wait`). The cell's own entry is not held back.
 
 ## One cell an entry
 
@@ -84,3 +109,21 @@ their entries, while the host layer holds it ([scrolling to an
 item](../../host/items.md#scrolling-to-an-item)). A scroll that glides
 stands its item again as its animation ends; the user's drag lets it go.
 
+
+
+The list a page scrolls by - its content, or the one its content holds alone
+- keeps the bars over it clear as a ScrollView does
+([a bar at the foot](../../host/layout.md#a-bar-at-the-foot)): the clearance
+is the collection's content inset (`UIKitScrollClearance`, the one rule both
+share), its first and last items scroll out from under the bars, and its end
+is kept where they grow. A room that changes - the collection's size, or
+the inset - stands the item the program scrolled to again where it put it,
+held or stood since (`ItemsCells.roomChanged`): a sheet lays its list out at
+the screen's size first, where a conversation's messages all fit and its
+last stands at the top, then at its own, and the conversation opened at its
+top. Setting the offset for a new inset cuts a glide short where it is and
+UIKit tells no end of it, so the glide goes on from there. And a scroll asked
+to glide to an item come a moment ago - the collection not having laid it
+out yet - owes its glide until the item can stand, whatever stands it then:
+a message sent from a field of several lines, the bar shrinking as the field
+empties, slid into view rather than jumped there and faded in.

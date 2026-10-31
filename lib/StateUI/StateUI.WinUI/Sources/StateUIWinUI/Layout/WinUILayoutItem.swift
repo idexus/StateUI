@@ -3,6 +3,7 @@
 
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
+import CStateUIWinUI
 
 /// One child as its WinUI layout places it: its view, and what the layout reads of it.
 @MainActor
@@ -24,6 +25,8 @@ struct WinUILayoutItem: LayoutChild {
 
     /// The view's size for the width offered it, margin taken out (`LayoutValues.offer`, `sized`).
     func size(offered width: Double?) -> LayoutSize {
+        // A view holding new words back is measured at their size.
+        if let held = view.heldWords { return held }
         let offer = values.offer(width)
         // A layout of StateUI's is measured at the width it stands at; its size for any width is the arithmetic's.
         // Design: docs/design/platforms/winui/layout.md#measured-every-pass
@@ -32,10 +35,18 @@ struct WinUILayoutItem: LayoutChild {
             if WinUIView.arranging == 0 { _ = view.measure(width: layout.standsAt ?? offer, height: nil) }
             measured = layout.naturalSize(width: offer)
         } else {
-            measured = view.measure(width: offer, height: nil)
+            measured = view.measured(width: offer)
         }
 
         return values.sized(measured)
+    }
+
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(offered width: Double?) -> Double? {
+        if let layout = view as? WinUILayoutView { return layout.firstBaseline(width: values.offer(width)) }
+        _ = size(offered: width)
+        let baseline = stateui_winui_first_baseline(view.handle)
+        return baseline >= 0 ? baseline : nil
     }
 
     /// Whether a parent would place this item as it places `other`.

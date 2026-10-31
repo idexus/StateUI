@@ -8,7 +8,7 @@ import AppKit
 
 /// The native AppKit button behind StateUI's `Button` - a caption, an icon or both - and, holding a menu, the menu it
 /// opens: by its click, an arrow pointing down after its words; by a split button's arrow part; or held, no arrow.
-/// AppKit's own menu buttons take no box or colour of their words, so a button holding a menu is this one too.
+/// AppKit's own menu buttons take no box or color of their words, so a button holding a menu is this one too.
 /// Design: docs/design/platforms/appkit/views.md#a-buttons-menu
 @MainActor
 final class AppKitButtonView: NSButton, AppKitPictureResolving {
@@ -36,6 +36,28 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
 
     /// How long a held button waits before it opens its menu, in seconds.
     private static let holdDelay = 0.5
+
+    /// The words the tree gives, those shown before them, and those shown now.
+    private var words = NSAttributedString()
+    private var formerWords: NSAttributedString?
+    private var shownWords: NSAttributedString?
+
+    /// The size of new words the button holds back while its box grows to hold them, its former ones shown; nil
+    /// shows the tree's and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet {
+            if heldWords == nil { formerWords = nil }
+            showWords()
+        }
+    }
+
+    private func showWords() {
+        let shown = heldWords == nil ? words : formerWords ?? words
+        guard shown !== shownWords else { return }
+        shownWords = shown
+        title = shown.string
+        attributedTitle = shown
+    }
 
     /// A button opening its menu as `opening` says, showing the arrow after its words where its click opens it and
     /// `showsArrow`.
@@ -67,14 +89,14 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         fatalError("AppKitButtonView is created in code")
     }
 
-    /// `image` as the button shows it: an icon - a template - in `colour` where its words stand in one of their own,
+    /// `image` as the button shows it: an icon - a template - in `color` where its words stand in one of their own,
     /// which a bordered button's tint leaves in the platform's; any other picture as it is.
     /// Design: docs/design/host/layout.md#an-icon
-    private static func picture(_ image: NSImage?, in colour: NSColor) -> NSImage? {
-        guard let image, image.isTemplate, colour != .controlTextColor else { return image }
+    private static func picture(_ image: NSImage?, in color: NSColor) -> NSImage? {
+        guard let image, image.isTemplate, color != .controlTextColor else { return image }
         return NSImage(size: image.size, flipped: false) { room in
             image.draw(in: room)
-            colour.set()
+            color.set()
             room.fill(using: .sourceAtop)
             return true
         }
@@ -95,14 +117,21 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
         lineBreakMode: NSLineBreakMode,
         enabled: Bool
     ) {
-        title = text
         self.image = Self.picture(image, in: textColor)
         self.font = font
         isEnabled = enabled
         cell?.lineBreakMode = lineBreakMode
-        attributedTitle = NSAttributedString(
-            string: text,
-            attributes: [.font: font, .foregroundColor: textColor, .kern: tracking])
+        let former = words
+        words = NSAttributedString(
+            string: text, attributes: [.font: font, .foregroundColor: textColor, .kern: tracking])
+        // New words while some are held back show at once.
+        if text != former.string, heldWords != nil {
+            heldWords = nil
+        } else {
+            if text != former.string { formerWords = former }
+            shownWords = nil
+            showWords()
+        }
         arrow?.tint(textColor)
         self.imagePosition = image == nil ? .noImage : imagePosition
         self.imageScaling = imageScaling
@@ -146,7 +175,7 @@ final class AppKitButtonView: NSButton, AppKitPictureResolving {
     /// The button's own fill, where it is given one, which the user's reach makes fainter.
     private var fill: NSColor?
 
-    /// The button's own outline, its colour and width, where it is given one.
+    /// The button's own outline, its color and width, where it is given one.
     private var outline: (color: NSColor, width: CGFloat)?
 
     /// The share of its opacity the fill keeps: all of it, less under the pointer, less still pressed.

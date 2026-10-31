@@ -11,6 +11,7 @@ import CStateUIGTK
 @MainActor
 final class GTKTextEditorView: GTKView, GTKTextInputView {
     var onTextChanged: ((String) -> Void)?
+    var outlineClass: String?
 
     /// Whether the editor takes the height of its words.
     private(set) var growsWithText = false
@@ -21,13 +22,16 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
     private var textCase: TextCase?
     private var wordsClass: String?
 
+    /// The class drawing the editor's box: an entry's, or none where it stands on a ground of its own.
+    private var boxClass: String?
+
     init() {
         editor = gtk_text_view_new()
         placeholder = gtk_label_new(nil)
         super.init { _ in gtk_scrolled_window_new() }
         gtk_scrolled_window_set_child(widget.opaque, editor)
         gtk_scrolled_window_set_policy(widget.opaque, GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC)
-        gtk_widget_add_css_class(widget, GTKStyleSheet.editor)
+        swapClass(&boxClass, to: GTKStyleSheet.editor)
         gtk_text_view_set_wrap_mode(view, GTK_WRAP_WORD_CHAR)
         gtk_text_view_set_left_margin(view, Self.margin.across)
         gtk_text_view_set_right_margin(view, Self.margin.across)
@@ -49,10 +53,17 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
         }
     }
 
+    /// An editor given a ground of its own stands in it with no box of the theme's, as the platforms' editors draw none.
+    /// Design: docs/design/platforms/gtk/controls.md#an-editor
+    override func setBackground(_ value: HostValue?) {
+        super.setBackground(value)
+        swapClass(&boxClass, to: value == nil ? GTKStyleSheet.editor : GTKStyleSheet.bareEditor)
+    }
+
     /// The room between the editor's edge and its words: an entry's.
     private static let margin = (across: Int32(9), down: Int32(8))
 
-    /// The class the placeholder wears, which a placeholder colour's rule names.
+    /// The class the placeholder wears, which a placeholder color's rule names.
     static let placeholderClass = "stateui-placeholder"
 
     private var view: UnsafeMutablePointer<GtkTextView> { editor.of() }
@@ -94,7 +105,7 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
         self.textCase = textCase
     }
 
-    func setBehaviour(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose) {
+    func setBehavior(readOnly: Bool, hints: GtkInputHints, purpose: GtkInputPurpose) {
         gtk_text_view_set_editable(view, readOnly ? 0 : 1)
         gtk_text_view_set_input_hints(view, hints)
         gtk_text_view_set_input_purpose(view, purpose)
@@ -110,6 +121,39 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
         invalidateMeasure()
     }
 
+    func setTabularDigits(_ tabular: Bool) {
+        tabularDigits = tabular
+        coverDigits()
+    }
+
+    /// Whether every digit stands as wide as the others.
+    private var tabularDigits = false
+
+    /// The tag laying digits of one width over the words, made the first time they ask for it.
+    private var digitsTag: UnsafeMutablePointer<GtkTextTag>?
+
+    /// Lays the digits' tag over all the words, or takes it off them: words typed take no tag of their own, so it is
+    /// laid again as they change.
+    private func coverDigits() {
+        guard tabularDigits || digitsTag != nil else { return }
+        var (start, end) = (GtkTextIter(), GtkTextIter())
+        gtk_text_buffer_get_bounds(buffer, &start, &end)
+        guard tabularDigits else { return gtk_text_buffer_remove_tag(buffer, digitsTag, &start, &end) }
+        let tag = digitsTag ?? {
+            let made = gtk_text_tag_new("stateui-digits")
+            var features = GValue()
+            g_value_init(&features, g_type_from_name("gchararray"))
+            g_value_set_string(&features, "tnum 1")
+            g_object_set_property(UnsafeMutablePointer<GObject>(OpaquePointer(made)), "font-features", &features)
+            g_value_unset(&features)
+            _ = gtk_text_tag_table_add(gtk_text_buffer_get_tag_table(buffer), made)
+            g_object_unref(UnsafeMutableRawPointer(made))
+            digitsTag = made
+            return made
+        }()
+        gtk_text_buffer_apply_tag(buffer, tag, &start, &end)
+    }
+
     func select(start: Int, length: Int) {
         var from = GtkTextIter()
         var to = GtkTextIter()
@@ -121,25 +165,29 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
     func setGrowsWithText(_ grows: Bool) {
         guard grows != growsWithText else { return }
         growsWithText = grows
+        // Growing, it shows no scrollbar, whose length would hold it taller than its words; it still scrolls to its
+        // caret where its room is shorter than they are.
+        gtk_scrolled_window_set_policy(widget.opaque, GTK_POLICY_NEVER, grows ? GTK_POLICY_EXTERNAL : GTK_POLICY_AUTOMATIC)
         invalidateMeasure()
     }
 
     /// As wide as the room offered, its words wrapping in it; growing, as tall as they are, and not, as tall as a
     /// line of them, whatever it holds - the room its layout gives it is the room it scrolls in. Never shorter than
-    /// GTK's least for its scrolled window, its scrollbar's length.
+    /// GTK's least for its scrolled window: its scrollbar's length where it shows one.
     /// Design: docs/design/platforms/gtk/controls.md#an-editor
     override func measure(width: Double?, height: Double?) -> LayoutSize {
         let across = width?.rounded(.down) ?? super.measure(width: nil, height: nil).width
         var least: Int32 = 0
         var words: Int32 = 0
         gtk_widget_measure(editor, GTK_ORIENTATION_VERTICAL, Int32(across), &least, &words, nil, nil)
-        let own = growsWithText ? words : lineHeight
+        // A line at the least: a text view not laid out yet tells less than one.
+        let own = growsWithText ? max(words, lineHeight) : lineHeight
         gtk_widget_measure(widget, GTK_ORIENTATION_VERTICAL, Int32(across), &least, &words, nil, nil)
         return LayoutSize(width: across, height: Double(max(own, least)))
     }
 
     /// One line of words in the editor's font, with the room above and below them.
-    private var lineHeight: Int32 {
+    var lineHeight: Int32 {
         let layout = gtk_widget_create_pango_layout(editor, "X")
         defer { g_object_unref(layout.map(UnsafeMutableRawPointer.init)) }
         var height: Int32 = 0
@@ -150,6 +198,7 @@ final class GTKTextEditorView: GTKView, GTKTextInputView {
     /// The words changed: the placeholder shown only while there are none, and the words handed on.
     private func changed() {
         showPlaceholder()
+        coverDigits()
         onTextChanged?(text)
     }
 

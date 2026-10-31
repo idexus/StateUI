@@ -35,12 +35,22 @@ extension Button {
     }
 }
 
-extension RadioButton {
-    /// What the radio button says, carried from a state; see `Text.text(_:)`.
+extension CheckBox {
+    /// What the check box says beside its box, carried from a state; see `Text.text(_:)`.
     ///
     /// - Parameter state: the state the caption is read from.
-    /// - Returns: the radio button, with its caption carried from that state.
-    public func text(_ state: Binding<String>) -> RadioButton {
+    /// - Returns: the check box, with its caption carried from that state.
+    public func text(_ state: Binding<String>) -> CheckBox {
+        setValue(TextualElementContract.text, on: state, mode: .out)
+    }
+}
+
+extension Switch {
+    /// What the switch says beside it, carried from a state; see `Text.text(_:)`.
+    ///
+    /// - Parameter state: the state the caption is read from.
+    /// - Returns: the switch, with its caption carried from that state.
+    public func text(_ state: Binding<String>) -> Switch {
         setValue(TextualElementContract.text, on: state, mode: .out)
     }
 }

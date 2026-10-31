@@ -9,11 +9,27 @@ extension ControlDictionary {
     static let examples: [(contract: any Contract.Type, code: String)] = [
         // MARK: - Elements
 
-        (ActivityIndicatorContract.self, #"""
+        (SpinnerContract.self, #"""
             @State var loading = true
 
-            ActivityIndicator(loading)
+            Spinner(loading)
                 .tint(.firebrick)
+            """#),
+
+        (AnchorContract.self, #"""
+            @State var signedIn = false
+            @State var showsHelp = false
+
+            Group {
+                if signedIn {
+                    Text("Welcome")
+                } else {
+                    Button("Sign in").onClicked { signedIn = true }
+                }
+            }
+            .sheet(isPresented: $showsHelp) {
+                Text("Help")
+            }
             """#),
 
         (ApplicationContract.self, #"""
@@ -22,9 +38,11 @@ extension ControlDictionary {
             }
 
             struct NotesPage: View {
+                @Environment(\.window) private var window
+
                 var body: some View {
                     Button("About")
-                        .onClicked(gate: .ignoreWhileRunning) { try await Dialogs.alert("Notes", message: "Version 1.0") }
+                        .onClicked(.ignoreWhileRunning) { try await window.alert("Notes", message: "Version 1.0") }
                 }
             }
             """#),
@@ -50,11 +68,7 @@ extension ControlDictionary {
         (CheckBoxContract.self, #"""
             @State var agreed = false
 
-            HStack {
-                CheckBox($agreed)
-                Text("I agree to the terms")
-            }
-            .spacing(8)
+            CheckBox($agreed).text("I agree to the terms")
             """#),
 
         (ButtonMenuContract.self, #"""
@@ -66,6 +80,16 @@ extension ControlDictionary {
             }
             """#),
 
+        (PopoverContract.self, #"""
+            @State var filtering = false
+
+            Button("Filters")
+                .onClicked { filtering = true }
+                .popover(isPresented: $filtering) {
+                    Text("Unread only").padding(12)
+                }
+            """#),
+
         (ContextMenuContract.self, #"""
             @State var title = "Groceries"
 
@@ -73,7 +97,7 @@ extension ControlDictionary {
                 .contextMenu {
                     MenuItem("Rename").onClicked { title = "Shopping" }
                     MenuItem("Clear")
-                        .isDestructive(true)
+                        .role(.destructive)
                         .onClicked { title = "" }
                 }
             """#),
@@ -87,13 +111,15 @@ extension ControlDictionary {
             """#),
 
         (EllipseContract.self, #"""
-            Ellipse(.tomato)
+            Ellipse()
+                .fill(.tomato)
                 .width(48)
                 .height(48)
             """#),
 
         (CapsuleContract.self, #"""
-            Capsule(.teal)
+            Capsule()
+                .fill(.teal)
                 .width(120)
                 .height(32)
             """#),
@@ -158,7 +184,7 @@ extension ControlDictionary {
         (MapContract.self, #"""
             @State var tapped = "nowhere yet"
 
-            Map(latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
+            Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
                 .mapType(.hybrid)
                 .onMapClicked { place in tapped = "\(place.latitude), \(place.longitude)" }
             """#),
@@ -200,10 +226,40 @@ extension ControlDictionary {
                 }
             """#),
 
-        (DividerContract.self, #"""
+        (ToolbarToggleContract.self, #"""
+            @State var showsInspector = false
+
+            Text("Draft")
+                .toolbar {
+                    ToolbarToggle("Inspector", isOn: $showsInspector)
+                        .icon("sidebar.png", on: "sidebar_filled.png")
+                }
+            """#),
+
+        (ToolbarLabelContract.self, #"""
+            @State var unread = 3
+
+            Text("Inbox")
+                .toolbar(.bottom) {
+                    ToolbarLabel("\(unread) unread")
+                        .icon("envelope.png")
+                }
+            """#),
+
+        (MenuToggleContract.self, #"""
+            @State var showsRuler = false
+
+            Text("Draft")
+                .contextMenu {
+                    MenuToggle("Show Ruler", isOn: $showsRuler)
+                        .keyboardShortcut("r")
+                }
+            """#),
+
+        (SeparatorContract.self, #"""
             VStack {
                 Text("Inbox")
-                Divider()
+                Separator()
                 Text("Archive")
             }
             """#),
@@ -214,22 +270,18 @@ extension ControlDictionary {
                     MenuItem("Open")
                     MenuItem("Rename")
                     MenuSeparator()
-                    MenuItem("Delete").isDestructive(true)
+                    MenuItem("Delete").role(.destructive)
                 }
             """#),
 
-        (ModalStackContract.self, #"""
-            struct MainPage: View {
-                @State private var sheets: [String] = []
+        (SheetContract.self, #"""
+            @State var editing = false
 
-                var body: some View {
-                    ModalStack($sheets) {
-                        Button("Settings").onClicked { sheets.append("Settings") }
-                    } destination: { sheet in
-                        Button("Close \(sheet)").onClicked { sheets.removeLast() }
-                    }
+            Button("Edit")
+                .onClicked { editing = true }
+                .sheet(isPresented: $editing) {
+                    Button("Done").onClicked { editing = false }
                 }
-            }
             """#),
 
         (NavigationStackContract.self, #"""
@@ -286,11 +338,11 @@ extension ControlDictionary {
         (MarkerContract.self, #"""
             @State var chosen = ""
 
-            Map(latitude: 52.2479, longitude: 21.0155, radiusMeters: 1500)
+            Map(region: MapRegion(center: Location(latitude: 52.2479, longitude: 21.0155), radiusMeters: 1500))
                 .markers {
-                    Marker("Royal Castle")
+                    Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
+                        .label("Royal Castle")
                         .subtitle("Plac Zamkowy 4")
-                        .location(latitude: 52.2479, longitude: 21.0155)
                         .onSelected { chosen = "castle" }
                 }
             """#),
@@ -313,21 +365,6 @@ extension ControlDictionary {
                 .tint(.firebrick)
             """#),
 
-        (RadioButtonContract.self, #"""
-            @State var size = "Medium"
-
-            VStack {
-                ForEach(["Small", "Medium", "Large"]) { option in
-                    RadioButton(option)
-                        .groupName("size")
-                        .isOn(option == size)
-                        .onToggled { checked in
-                            if checked { size = option }
-                        }
-                }
-            }
-            """#),
-
         (RectangleContract.self, #"""
             Rectangle()
                 .fill(.cornflowerBlue)
@@ -336,7 +373,7 @@ extension ControlDictionary {
             """#),
 
         (SceneContract.self, #"""
-            extension WindowType {
+            extension WindowType where Value == Void {
                 static let inspector = WindowType("notes.inspector")
             }
 
@@ -376,12 +413,22 @@ extension ControlDictionary {
                 }
             """#),
 
-        (SpacerContract.self, #"""
+        (SpaceContract.self, #"""
             HStack {
                 Text("Draft")
-                Spacer()
+                Space()
                 Button("Send")
             }
+            """#),
+
+        (FillContract.self, #"""
+            ZStack {
+                Fill(.blur(.regular))
+                    .shape(.roundedRectangle(16))
+
+                Text("Over the blur")
+            }
+            .height(120)
             """#),
 
         (SliderContract.self, #"""
@@ -416,11 +463,12 @@ extension ControlDictionary {
                 @State private var showsFolders = true
 
                 var body: some View {
-                    SplitView($showsFolders) {
+                    SplitView {
                         Text("Folders")
                     } detail: {
                         Text("Notes")
                     }
+                    .showsSidebar($showsFolders)
                 }
             }
             """#),
@@ -437,7 +485,7 @@ extension ControlDictionary {
         (SwitchContract.self, #"""
             @State var soundOn = true
 
-            Switch($soundOn)
+            Switch($soundOn).text("Sound")
                 .tint(.green)
             """#),
 
@@ -452,8 +500,7 @@ extension ControlDictionary {
 
             @State var shown = "Today"
 
-            TabView(["Today", "Archive"]) { name in Tab(name: name) }
-                .selection($shown)
+            TabView(["Today", "Archive"]) { name in Tab(name: name) }.selection($shown)
             """#),
 
         (TextEditorContract.self, #"""
@@ -481,6 +528,15 @@ extension ControlDictionary {
                 .format("t")
             """#),
 
+        (BottomBarContract.self, #"""
+            @State var draft = ""
+
+            Text("Messages")
+                .bottomBar {
+                    TextEditor($draft).growsWithText(true)
+                }
+            """#),
+
         (TitleViewContract.self, #"""
             @State var query = ""
 
@@ -490,34 +546,38 @@ extension ControlDictionary {
                 }
             """#),
 
-        (ToolbarItemContract.self, #"""
+        (ToolbarButtonContract.self, #"""
             @State var count = 0
 
             Text("\(count) items")
                 .toolbar {
-                    ToolbarItem("Add")
+                    ToolbarButton("Add")
                         .icon("add.png")
                         .showsText(true)
                         .onClicked { count += 1 }
-                    ToolbarItem("Clear")
-                        .placement(.overflow)
-                        .isDestructive(true)
+                    ToolbarButton("Clear")
+                        .placement(at: .overflow)
+                        .role(.destructive)
                         .onClicked { count = 0 }
                 }
             """#),
 
-        (ToolbarItemGroupContract.self, #"""
+        (ToolbarGroupContract.self, #"""
             @State var edited = false
 
             TextEditor()
                 .onTextChanged { _ in edited = true }
-                .toolbar(.leading) {
-                    ToolbarItem("New")
-                }
                 .toolbar {
-                    ToolbarItem("Save")
-                        .isEnabled(edited)
-                        .onClicked { edited = false }
+                    ToolbarButton("New").placement(at: .start)
+                    ToolbarGroup {
+                        ToolbarButton("Save")
+                            .isEnabled(edited)
+                            .onClicked { edited = false }
+                        ToolbarButton("Revert")
+                            .isEnabled(edited)
+                            .onClicked { edited = false }
+                    }
+                    .placement(order: 1)
                 }
             """#),
 
@@ -537,7 +597,7 @@ extension ControlDictionary {
             Grid {
                 Button("Back")
                     .isEnabled(canGoBack)
-                    .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
+                    .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
                 WebView("https://example.com")
                     .canGoBack($canGoBack)
                     .aim(browser)
@@ -564,24 +624,24 @@ extension ControlDictionary {
             }
             """#),
 
-        (LayoutEngineContract.self, #"""
+        (MotionLayoutContract.self, #"""
             @State var turn = 0.0
 
-            LayoutEngine(["Mural", "Nebula", "Ridge"]) { name in
+            MotionLayout(["Mural", "Nebula", "Ridge"], parameters: $turn) { name in
                 Text(name)
             } placements: { room, phase in
                 (0..<3).map { index in
                     Placement(Rect((Double(index) - phase) * 120 + room.width / 2 - 50, 0, 100, room.height))
                 }
             }
-            .phase($turn)
             .axis(\.self, input: .scroll(.horizontal), range: 0...2, snaps: .every(1))
             .height(160)
             """#),
 
         (ZStackContract.self, #"""
             ZStack {
-                Rectangle().fill(.cornflowerBlue)
+                Rectangle()
+                    .fill(.cornflowerBlue)
                 Text("Bottom right")
                     .horizontalAlignment(.end)
                     .verticalAlignment(.end)
@@ -620,7 +680,7 @@ extension ControlDictionary {
                 Text("Edge to edge")
             }
             .background(.steelBlue)
-            .avoidsSafeArea(.none)
+            .ignoresSafeArea(.all)
             .clipsContent(true)
             """#),
 
@@ -670,7 +730,7 @@ extension ControlDictionary {
                 .textCase(.uppercase)
             """#),
 
-        (TextStyleElementContract.self, #"""
+        (TextColorElementContract.self, #"""
             Text("Overdue")
                 .textColor(.firebrick)
             """#),
@@ -720,9 +780,10 @@ extension ControlDictionary {
             """#),
 
         (ImageElementContract.self, #"""
-            Button(icon: "trash.png")
+            Button("Delete")
+                .icon("trash.png")
+                .showsText(false)
                 .contentMode(.fit)
-                .accessibilityLabel("Delete")
             """#),
 
         (TintElementContract.self, #"""
@@ -739,14 +800,26 @@ extension ControlDictionary {
                 .isFocused($editing)
             """#),
 
+        (RefreshElementContract.self, #"""
+            @State var refreshing = false
+            @State var rows = ["First"]
+
+            ItemsView(rows) { Text($0) }
+                .isRefreshing($refreshing)
+                .onRefreshRequested {
+                    rows.insert("Fresh", at: 0)
+                    refreshing = false
+                }
+            """#),
+
         (KeyboardElementContract.self, #"""
             @State var row = 0
 
             VStack {
                 Text("Row \(row)")
             }
-            .onKeyPressed(.upArrow, .downArrow) { key in
-                row += key == .upArrow ? -1 : 1
+            .onKeyPressed(.upArrow, .downArrow) { press in
+                row += press.key == .upArrow ? -1 : 1
             }
             """#),
 
@@ -760,11 +833,76 @@ extension ControlDictionary {
                     } destination: { message in
                         Text("Message \(message)")
                     }
-                    .barTitle("Mail")
-                    .barBackgroundColor(.cornflowerBlue)
+                    .barBackground(.cornflowerBlue)
                     .barForegroundColor(.white)
                 }
             }
+            """#),
+
+        (BarItemElementContract.self, #"""
+            Text("Inbox")
+                .toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Archive")
+                        ToolbarButton("Move")
+                    }
+                    .background(.white)
+                    .shape(.roundedRectangle(12))
+                    .stroke(.gray)
+                    .visualState(.pointerOver) { $0.stroke(.cornflowerBlue) }
+                }
+            """#),
+
+        (BarButtonElementContract.self, #"""
+            Text("Inbox")
+                .toolbar {
+                    ToolbarButton("Sign out")
+                        .shape(.roundedRectangle(12))
+                        .visualState(.pressed) { $0.background(.lightGray) }
+                }
+            """#),
+
+        (ActionElementContract.self, #"""
+            @State var deleted = false
+
+            Text(deleted ? "Deleted" : "Report.pdf")
+                .contextMenu {
+                    MenuItem("Delete")
+                        .role(.destructive)
+                        .onClicked { deleted = true }
+                }
+            """#),
+
+        (ColorPickerContract.self, #"""
+            @State var tint = Color.steelBlue
+
+            ColorPicker($tint)
+            """#),
+
+        (LinkContract.self, #"""
+            Link("Terms of use", destination: "https://stateui.dev/terms")
+            """#),
+
+        (ButtonMenuElementContract.self, #"""
+            @State var sorted = "By name"
+
+            Text(sorted)
+                .toolbar {
+                    ToolbarButton("Sort")
+                        .icon("sort.png")
+                        .menu {
+                            MenuItem("By name").onClicked { sorted = "By name" }
+                            MenuItem("By date").onClicked { sorted = "By date" }
+                        }
+                }
+            """#),
+
+        (TextAndIconElementContract.self, #"""
+            @State var wordsShown = false
+
+            Button("Delete")
+                .icon("trash.png")
+                .showsText($wordsShown)
             """#),
 
         (MenuItemElementContract.self, #"""
@@ -772,7 +910,7 @@ extension ControlDictionary {
 
             Text(saved ? "Saved" : "Draft")
                 .toolbar {
-                    ToolbarItem("Save")
+                    ToolbarButton("Save")
                         .icon("save.png")
                         .isEnabled(!saved)
                         .onClicked { saved = true }
@@ -793,21 +931,15 @@ extension ControlDictionary {
     ]
 
     /// What an application registers with a host that does not realize a provider's element, shown under the
-    /// element's example: the words saying when, and the host's registration, quoted - it is written against a
-    /// host's facade, which no handbook block compiles with.
+    /// element's example: the words saying when, and where the hosts' pages show the Gallery's registration, cut from
+    /// its heads.
     /// Design: docs/design/contracts/dictionary.md#examples
-    static let registrations: [(contract: any ElementContract.Type, words: String, code: String)] = [
+    static let registrations: [(contract: any ElementContract.Type, words: String)] = [
         (MapContract.self,
          "A host with no map of its own shows the one the application registers with it - its control, the provider "
-            + "and the key it needs - and draws the pins as the map's children:",
-         #"""
-            StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
-                map.property(MapContract.region) { control, region in … }
-                map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { control, pins in
-                    // each marker: its typed values, and its own reports to raise selected on it
-                }
-            }
-            """#),
+            + "and the key it needs - and draws the pins as the map's children, as the Gallery's "
+            + "[Android](../hosts/android.md#children-a-control-draws) and "
+            + "[Web](../hosts/web.md#children-a-control-draws) heads register Google's."),
     ]
 
     /// The example opening `contract`'s page.

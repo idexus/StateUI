@@ -1,0 +1,5 @@
+# revision 1.1
+MenuItem.clicked: ✅
+MenuItem.role: ✅
+ToolbarButton.clicked: ✓ activate on ToolbarButton: the host's toolbar entry called, no toolbar item touched
+ToolbarButton.role: not realized

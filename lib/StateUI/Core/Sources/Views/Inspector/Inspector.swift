@@ -10,7 +10,10 @@
 ///     @Environment(\.window) private var window
 ///
 ///     VStack { … }
-///         .toolbar { ToolbarItem.inspector(window) }
+///         .toolbar { ToolbarButton.inspector(window) }
+///
+/// A window opens, closes and moves its scene's inspector:
+/// `window.openInspector(_:)`, `closeInspector()`, `toggleInspector()`.
 ///
 /// Each render is listed as it happens - its cause, its road, the time Swift
 /// took to describe it and the host to apply it, and how many composed views
@@ -42,56 +45,6 @@ public enum Inspector {
         case window
     }
 
-    /// Whether the inspector of a window's scene shows, in whichever window.
-    ///
-    /// - Parameter window: the window - the session a view in it holds.
-    public static func isOpen(in window: WindowSession) -> Bool {
-        window.record.map(showing(in:)) ?? false
-    }
-
-    /// Shows the inspector of a window's scene, docked in that window, or for
-    /// `.window` in the scene's own inspector window where it has one, and
-    /// records from now on.
-    ///
-    ///     @Environment(\.window) private var window
-    ///
-    ///     Button("Inspect").onClicked { Inspector.open(.side, in: window) }
-    ///
-    /// - Parameters:
-    ///   - place: where it shows, whole - or, left out, along the bottom and
-    ///     folded to its last render, which is what the ⓘ does.
-    ///   - window: the window it docks in - the session a view in it holds.
-    public static func open(_ place: Place? = nil, in window: WindowSession) {
-        guard let record = window.record else { return }
-
-        show(in: record, place ?? .bottom, folded: place == nil, window: window.key)
-    }
-
-    /// Hides the inspector of a window's scene, wherever it shows.
-    ///
-    /// - Parameter window: the window - the session a view in it holds.
-    public static func close(in window: WindowSession) {
-        guard let record = window.record else { return }
-
-        hide(in: record)
-    }
-
-    /// Shows the inspector of a window's scene docked in that window - moving it
-    /// there from another window of the scene - and hides it where it shows
-    /// there already.
-    ///
-    /// - Parameter window: the window - the session a view in it holds.
-    public static func toggle(in window: WindowSession) {
-        guard let record = window.record else { return }
-
-        if let docking = record.dockedInspector, docking.window != window.key {
-            let folded = InspectorModel.shared.collapsed.contains(record.id)
-            show(in: record, docking.place, folded: folded, window: window.key)
-        } else {
-            showing(in: record) ? hide(in: record) : open(in: window)
-        }
-    }
-
     /// How often, at most, an inspector is built again while renders land, in
     /// milliseconds.
     static var pace: Int { 150 }
@@ -106,7 +59,7 @@ public enum Inspector {
     /// Whether a scene's inspector may show in a window of its own: the scene
     /// declares one, and the platform opens windows.
     static func windowed(_ record: SceneRecord) -> Bool {
-        OpenScenes.shared.declares(.debugInspector, in: record) && OpenScenes.opensWindows
+        OpenScenes.shared.declares(WindowType.debugInspector.key, in: record) && OpenScenes.opensWindows
     }
 
     /// Where a scene's inspector is docked: its place, in the window keyed `window`.
@@ -129,7 +82,7 @@ public enum Inspector {
     /// Whether a scene's inspector shows, docked or in its window.
     static func showing(in record: SceneRecord) -> Bool {
         InspectorModel.shared.places[record.id] != nil
-            || record.windows.contains { $0.type == .debugInspector }
+            || record.windows.contains { $0.type == WindowType.debugInspector.key }
     }
 
     /// Shows a scene's inspector at a place - docked where it cannot show in a
@@ -140,10 +93,10 @@ public enum Inspector {
 
         if place == .window, windowed(record) {
             dock(nil, in: record)
-            try? OpenScenes.shared.open(.debugInspector)
+            try? OpenScenes.shared.open(WindowType.debugInspector.key)
         } else {
             if windowed(record) {
-                try? record.close(.debugInspector, value: nil)
+                try? record.close(WindowType.debugInspector.key, value: nil)
             }
 
             dock(place == .window ? (offersSide ? .side : .bottom) : place, in: record, window: window)
@@ -163,7 +116,7 @@ public enum Inspector {
         let model = InspectorModel.shared
 
         if windowed(record) {
-            try? record.close(.debugInspector, value: nil)
+            try? record.close(WindowType.debugInspector.key, value: nil)
         }
 
         dock(nil, in: record)

@@ -87,48 +87,53 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// The alert: three arguments, and nothing to answer beyond "it was
-    /// dismissed".
+    /// The alert: the window, three arguments, and nothing to answer beyond
+    /// "it was dismissed".
     func testAnAlertCrossesWithItsArgumentsInPlace() async throws {
-        try await check("alert", [.string("Saved"), .string("The draft is safe"), .string("OK")]) {
-            try await Dialogs.alert("Saved", message: "The draft is safe")
+        try await check("alert", Self.usersWindow + [.string("Saved"), .string("The draft is safe"), .string("OK")]) {
+            try await WindowSession().alert("Saved", message: "The draft is safe")
         }
     }
 
-    /// The confirmation: four arguments, accept before cancel.
+    /// The confirmation: the window, four arguments, accept before cancel.
     func testAConfirmationCrossesWithItsArgumentsInPlace() async throws {
-        try await check("confirm", [
+        try await check("confirm", Self.usersWindow + [
             .string("Delete draft?"), .string("This cannot be undone"), .string("Delete"), .string("Keep"),
         ]) {
-            _ = try await Dialogs.confirm(
+            _ = try await WindowSession().confirm(
                 "Delete draft?", message: "This cannot be undone",
                 accept: "Delete", cancel: "Keep")
         }
     }
 
-    /// Title, cancel, destruction, then the buttons as ONE argument - the list
-    /// of their captions, an argument being one value. An absent caption
-    /// crosses as NOTHING, never as an empty string: an empty string is a
-    /// caption someone could have written.
+    /// The window, the title, the actions' captions as ONE argument - an
+    /// argument being one value - the place of the dangerous one, and the
+    /// cancel's caption, the system's word where none is given. No dangerous
+    /// action crosses as NOTHING, never as a place no action stands at.
     func testAChoiceOfActionsCrossesWithItsArgumentsInPlace() async throws {
-        try await check("chooseAction", [
-            .string("Share via"), .string("Cancel"), .string("Delete"), .strings(["Mail", "Message"]),
+        try await check("chooseAction", Self.usersWindow + [
+            .string("Share via"), .strings(["Mail", "Message", "Delete"]), .number(2), .string("Back"),
         ]) {
-            _ = try await Dialogs.chooseAction(
-                "Share via", cancel: "Cancel", destruction: "Delete",
-                buttons: ["Mail", "Message"])
+            _ = try await WindowSession().chooseAction(
+                "Share via", among: ["Mail", "Message", "Delete"], destructive: "Delete", cancel: "Back")
+        }
+        try await check("chooseAction", Self.usersWindow + [
+            .string("Share via"), .strings(["mail"]), .nothing, .string("Cancel"),
+        ]) {
+            enum Share: CaseIterable { case mail }
+            _ = try await WindowSession().chooseAction("Share via", among: Share.allCases)
         }
     }
 
-    /// All eight parameters, in their order. An absent limit crosses as
+    /// The window, then all eight parameters, in their order. An absent limit crosses as
     /// NOTHING, which the HOST turns into whatever its toolkit means by "no
     /// limit" - a toolkit's sentinel stays in the host and never crosses.
     func testAPromptCrossesWithItsArgumentsInPlace() async throws {
-        try await check("prompt", [
+        try await check("prompt", Self.usersWindow + [
             .string("Rename"), .string("A new name for the draft"), .string("OK"), .string("Cancel"),
             .string("Name"), .number(40), InputPurpose.text.propValue, .string("Draft 1"),
         ]) {
-            _ = try await Dialogs.prompt(
+            _ = try await WindowSession().prompt(
                 "Rename", message: "A new name for the draft",
                 placeholder: "Name", initialValue: "Draft 1",
                 maximumLength: 40, inputPurpose: .text)
@@ -141,14 +146,14 @@ final class ActCallShapeTests: XCTestCase {
             language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw", uses24HourClock: true,
             firstDayOfWeek: .monday, isMetric: true, layoutDirection: .leftToRight))
 
-        try await check("prompt", [
+        try await check("prompt", Self.usersWindow + [
             .string("Rename"), .string(""), .string("OK"), .string("Anuluj"), .nothing, .nothing,
             InputPurpose.default.propValue, .string(""),
         ]) {
-            _ = try await Dialogs.prompt("Rename")
+            _ = try await WindowSession().prompt("Rename")
         }
-        try await check("alert", [.string("Zapisano"), .string("Szkic jest bezpieczny"), .string("OK")]) {
-            try await Dialogs.alert("Zapisano", message: "Szkic jest bezpieczny")
+        try await check("alert", Self.usersWindow + [.string("Zapisano"), .string("Szkic jest bezpieczny"), .string("OK")]) {
+            try await WindowSession().alert("Zapisano", message: "Szkic jest bezpieczny")
         }
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
@@ -168,13 +173,16 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// An act with no view in it: the host asks the page which of its
-    /// views has the focus, because the Swift side cannot know.
+    /// An act with no view in it, only its window: the host asks the window
+    /// which of its views has the focus, because the Swift side cannot know.
     func testClosingTheKeyboardCrossesWithItsArgumentsInPlace() async throws {
-        try await check("hideOnScreenKeyboard", []) {
-            _ = try await OnScreenKeyboard.hide()
+        try await check("hideOnScreenKeyboard", Self.usersWindow) {
+            _ = try await WindowSession().hideOnScreenKeyboard()
         }
     }
+
+    /// The address a window's act opens with where its session stands in no scene: the window the user is in.
+    private static let usersWindow: [PropValue] = [.name(""), .name("")]
 
     /// The three parameterless WebView acts share the Focus shape - the view
     /// at 0 and nothing else - and each is pinned by name, so a rename on one
@@ -233,12 +241,12 @@ final class ActCallShapeTests: XCTestCase {
         _ = try? await task.value
     }
 
-    /// A map slides on three numbers after the view: latitude, longitude, and
-    /// the radius in METERS.
+    /// A map slides on its region after the view: one run of three numbers - latitude, longitude, and the radius in
+    /// METERS.
     func testMovingAMapCrossesWithItsArgumentsInPlace() async throws {
-        try await check("moveToRegion", [.string("map"), .number(52.2297), .number(21.0122), .number(3000)]) {
+        try await check("moveToRegion", [.string("map"), .numbers([52.2297, 21.0122, 3000])]) {
             try await named("map", Map.self).moveToRegion(
-                latitude: 52.2297, longitude: 21.0122, radiusMeters: 3000)
+                MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
         }
     }
 
@@ -284,6 +292,40 @@ final class ActCallShapeTests: XCTestCase {
         XCTAssertTrue(drain().isEmpty, "the theme it holds already is sent no more")
         application.colorScheme = .system
         taken(drain(), "useColorScheme", [.enumeration(ColorScheme.system.rawValue)], awaited: false)
+
+        // The theme is a state: written through its binding - a control's, a picker's - it crosses the same way.
+        application.$colorScheme.wrappedValue = .light
+        taken(drain(), "useColorScheme", [.enumeration(ColorScheme.light.rawValue)], awaited: false)
+    }
+
+    /// The accent the application holds crosses as one color - a pair's half in force, and the other half as the
+    /// theme turns - and none once it gives the platform's back.
+    func testTheApplicationsAccentCrossesAsTheHalfInForce() throws {
+        drain()
+        HostBoundary.setColorScheme(.light)
+        let application = StandardEnvironment.application
+        defer {
+            application.accentColor = nil
+            HostBoundary.setColorScheme(.light)
+            drain()
+        }
+        application.accentColor = Color(light: .firebrick, dark: .steelBlue)
+        taken(drain(), "useAccentColor", [Color.firebrick.propValue], awaited: false)
+
+        HostBoundary.setColorScheme(.dark)
+        taken(drain(), "useAccentColor", [Color.steelBlue.propValue], awaited: false)
+
+        application.accentColor = .firebrick
+        taken(drain(), "useAccentColor", [Color.firebrick.propValue], awaited: false)
+        HostBoundary.setColorScheme(.light)
+        XCTAssertTrue(drain().isEmpty, "an accent of one color is not sent again as the theme turns")
+
+        application.accentColor = nil
+        taken(drain(), "useAccentColor", [.nothing], awaited: false)
+
+        // The accent is a state: written through its binding - a color picker's - it crosses the same way.
+        application.$accentColor.wrappedValue = .steelBlue
+        taken(drain(), "useAccentColor", [Color.steelBlue.propValue], awaited: false)
     }
 
     func testAFailedHandlerCrossesWithItsArgumentsInPlace() throws {
@@ -297,7 +339,21 @@ final class ActCallShapeTests: XCTestCase {
     /// said.
     func testAnAnnouncementCrossesWithItsArgumentsInPlace() async throws {
         try await check("announce", [.string("5 results")]) {
-            try await ScreenReader.announce("5 results")
+            try await StandardEnvironment.application.announce("5 results")
+        }
+    }
+
+    /// Words for the clipboard, and a handler waiting until they are on it.
+    func testWordsForTheClipboardCrossWithTheirArgumentsInPlace() async throws {
+        try await check("writeClipboard", [.string("Copied")]) {
+            try await StandardEnvironment.application.clipboard.write(text: "Copied")
+        }
+    }
+
+    /// The clipboard read, asked with no arguments, a handler waiting for its words.
+    func testReadingTheClipboardCrossesWithItsArgumentsInPlace() async throws {
+        try await check("readClipboard", []) {
+            _ = try? await StandardEnvironment.application.clipboard.text()
         }
     }
 
@@ -305,31 +361,41 @@ final class ActCallShapeTests: XCTestCase {
     /// take: the key as a NAME, the value as it is, and nobody waiting.
     func testAKeptValueCrossesWithItsArgumentsInPlace() throws {
         drain()
-        PersistentStore.shared.record(PersistentKey("com.example.theme", of: String.self), .string("dusk"))
+        PersistentStore.shared.record(PersistentKey<String>("com.example.theme"), .string("dusk"))
 
         taken(drain(), "persistValue", [.name("com.example.theme"), .string("dusk")], awaited: false)
     }
 
-    /// The kinds of file as ONE argument - each its caption and its extensions,
-    /// bare - then whether the dialog takes several: false for one, true for
-    /// several.
+    /// The window, the kinds of file as ONE argument - each its caption and its
+    /// extensions, bare - then whether the dialog takes several: false for one,
+    /// true for several.
     func testAFileToOpenCrossesWithItsArgumentsInPlace() async throws {
         let page: PropValue = .values([.string("HTML page"), .strings(["html", "htm"])])
-        try await check("openFiles", [.values([page]), .bool(false)]) {
-            _ = try await Dialogs.openFile(types: [FileType("HTML page", extensions: [".html", "*.HTM"])])
+        try await check("openFiles", Self.usersWindow + [.values([page]), .bool(false)]) {
+            _ = try await WindowSession().openFile(types: [FileType("HTML page", extensions: [".html", "*.HTM"])])
         }
-        try await check("openFiles", [.values([]), .bool(true)]) {
-            _ = try await Dialogs.openFiles()
+        try await check("openFiles", Self.usersWindow + [.values([]), .bool(true)]) {
+            _ = try await WindowSession().openFiles()
         }
     }
 
-    /// The contents first, as ONE run of bytes, then the name it suggests as
-    /// written, then the kinds.
+    /// The window, the contents, as ONE run of bytes, then the name it suggests
+    /// as written, then the kinds.
     func testAFileToSaveCrossesWithItsArgumentsInPlace() async throws {
-        try await check("saveFile", [
+        try await check("saveFile", Self.usersWindow + [
             .bytes([60, 112, 62]), .string("Report"), .values([.values([.string("Page"), .strings(["html"])])]),
         ]) {
-            _ = try await Dialogs.saveFile(Array("<p>".utf8), name: "Report", types: [FileType("Page", extensions: ["html"])])
+            _ = try await WindowSession().saveFile(Array("<p>".utf8), name: "Report", types: [FileType("Page", extensions: ["html"])])
+        }
+    }
+
+    /// The window, then the words and the link - absent ones as nothing, in place.
+    func testWhatIsSharedCrossesWithItsArgumentsInPlace() async throws {
+        try await check("share", Self.usersWindow + [.string("Notes"), .string("https://www.swift.org")]) {
+            _ = try await WindowSession().share(text: "Notes", link: "https://www.swift.org")
+        }
+        try await check("share", Self.usersWindow + [.nothing, .string("https://www.swift.org")]) {
+            _ = try await WindowSession().share(link: "https://www.swift.org")
         }
     }
 
@@ -344,10 +410,68 @@ final class ActCallShapeTests: XCTestCase {
         try await check("launchFile", [crossed]) { _ = try await file.launch() }
     }
 
+    /// A request crosses as its address, its method's name, its headers as names and values in turn - sorted by
+    /// name, so the same request crosses the same way every time - and its body as bytes.
+    func testARequestCrossesWithItsArgumentsInPlace() async throws {
+        let request = HTTPRequest(
+            "https://example.com/parcels", method: .post, headers: ["X-Kept": "2", "Accept": "json"], body: [1, 2])
+        try await check("sendRequest", [
+            .string("https://example.com/parcels"), .name("POST"), .strings(["Accept", "json", "X-Kept", "2"]),
+            .bytes([1, 2]),
+        ]) { _ = try await StandardEnvironment.application.send(request) }
+    }
+
+    /// The server's answer comes back as its status, its headers - by name in any case, one said twice holding both
+    /// values - and its body.
+    func testAServersAnswerComesBackAsItWasSaid() async throws {
+        drain()
+        let task = Self.begin { try await StandardEnvironment.application.send(HTTPRequest("https://example.com")) }
+        let call = try XCTUnwrap(drain().first?.completion)
+
+        HostBoundary.reply(call, with: [
+            .number(404), .strings(["content-type", "text/plain", "set-cookie", "a=1", "set-cookie", "b=2"]),
+            .bytes(Array("Not here".utf8)),
+        ])
+        await settle()
+        let response = try await task.value
+
+        XCTAssertEqual(response.status, 404, "a status is an answer")
+        XCTAssertEqual(response.header("Content-Type"), "text/plain")
+        XCTAssertEqual(response.header("set-cookie"), "a=1, b=2")
+        XCTAssertEqual(response.text, "Not here")
+    }
+
+    /// A caller whose run is cancelled stops waiting at once - it hears its cancellation, and an answer coming later
+    /// reaches no one - and the host is told to stop the call, nobody waiting for that.
+    func testACallEndsWithItsRun() async throws {
+        drain()
+        let task = Self.begin { _ = try await StandardEnvironment.application.send(HTTPRequest("https://example.com")) }
+        let id = try XCTUnwrap(drain().first?.completion)
+
+        task.cancel()
+        await settle()
+        let stopping = drain()
+        let stillWaited = Renderer.shared.waiting.contains(id)
+        if stillWaited {
+            HostBoundary.reply(id, with: [.number(200), .strings([]), .bytes([])])
+            await settle()
+        }
+
+        XCTAssertFalse(stillWaited, "no caller waits any more")
+        taken(stopping, "cancelCall", [.number(Double(id))], awaited: false)
+        do {
+            try await task.value
+            XCTFail("the call answered")
+        } catch {
+            XCTAssertTrue(error is CancellationError, "the caller hears its cancellation, not \(error)")
+        }
+        XCTAssertFalse(HostBoundary.reply(id, with: [.number(200)]), "a late answer reaches no one")
+    }
+
     /// An address launched crosses as written.
     func testALinkCrossesAsWritten() async throws {
         try await check("launchLink", [.string("https://www.swift.org")]) {
-            _ = try await Links.launch("https://www.swift.org")
+            _ = try await StandardEnvironment.application.launch("https://www.swift.org")
         }
     }
 

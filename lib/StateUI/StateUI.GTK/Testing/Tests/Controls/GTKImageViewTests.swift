@@ -10,10 +10,10 @@ import XCTest
 
 @MainActor
 final class GTKImageViewTests: XCTestCase {
-    /// The test's wide picture is an SVG, 40 by 20, of one colour.
+    /// The test's wide picture is an SVG, 40 by 20, of one color.
     private static let wide: UInt32 = 0xFF33_6699
 
-    /// An SVG is asked for by its PNG name, found, and drawn at the size it declares, in its colour.
+    /// An SVG is asked for by its PNG name, found, and drawn at the size it declares, in its color.
     func testAnSVGAskedForByItsPNGNameIsDrawnAtItsOwnSize() throws {
         try onUIThread {
             let host = GTKRenderer.running {
@@ -63,26 +63,26 @@ final class GTKImageViewTests: XCTestCase {
 
     /// Fitted, a wide picture is drawn whole across its room, with bands above and below.
     func testAFittedPictureIsDrawnWhole() throws {
-        let colours = try drawn(.fit, width: 30, height: 30, at: [(15, 15), (15, 3), (15, 27)])
-        XCTAssertEqual(colours, [Self.wide, 0, 0])
+        let colors = try drawn(.fit, width: 30, height: 30, at: [(15, 15), (15, 3), (15, 27)])
+        XCTAssertEqual(colors, [Self.wide, 0, 0])
     }
 
     /// Filling, a wide picture covers its room, its sides cut off.
     func testAFillingPictureCoversItsRoom() throws {
-        let colours = try drawn(.fill, width: 30, height: 30, at: [(1, 1), (15, 15), (28, 28)])
-        XCTAssertEqual(colours, [Self.wide, Self.wide, Self.wide])
+        let colors = try drawn(.fill, width: 30, height: 30, at: [(1, 1), (15, 15), (28, 28)])
+        XCTAssertEqual(colors, [Self.wide, Self.wide, Self.wide])
     }
 
     /// Stretched, a picture covers all of its room, whatever its own proportions.
     func testAStretchedPictureCoversItsRoom() throws {
-        let colours = try drawn(.stretch, width: 30, height: 30, at: [(1, 1), (15, 28), (28, 1)])
-        XCTAssertEqual(colours, [Self.wide, Self.wide, Self.wide])
+        let colors = try drawn(.stretch, width: 30, height: 30, at: [(1, 1), (15, 28), (28, 1)])
+        XCTAssertEqual(colors, [Self.wide, Self.wide, Self.wide])
     }
 
-    /// Centred, a picture is drawn at its own size in the middle of its room.
-    func testACentredPictureIsDrawnAtItsOwnSize() throws {
-        let colours = try drawn(.center, width: 60, height: 60, at: [(30, 30), (12, 22), (5, 30), (30, 15)])
-        XCTAssertEqual(colours, [Self.wide, Self.wide, 0, 0])
+    /// Centered, a picture is drawn at its own size in the middle of its room.
+    func testACenteredPictureIsDrawnAtItsOwnSize() throws {
+        let colors = try drawn(.center, width: 60, height: 60, at: [(30, 30), (12, 22), (5, 30), (30, 15)])
+        XCTAssertEqual(colors, [Self.wide, Self.wide, 0, 0])
     }
 
     /// SVGs a second window shows cost it little: the pictures of the first window, shown again in another, add
@@ -154,8 +154,8 @@ final class GTKImageViewTests: XCTestCase {
         }
     }
 
-    /// An icon is the theme's symbolic one, filling its room in the colour of the words around it.
-    func testAnIconIsDrawnInTheWordsColour() throws {
+    /// An icon is the theme's symbolic one, filling its room in the color of the words around it.
+    func testAnIconIsDrawnInTheWordsColor() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack { Image(.icon(.add)).width(32).height(32) }
@@ -181,13 +181,13 @@ final class GTKImageViewTests: XCTestCase {
         }
     }
 
-    /// A button's icon, with its words or alone, is drawn in the colour written for the words.
-    func testAButtonsIconTakesTheWordsWrittenColour() throws {
+    /// A button's icon, with its words or alone, is drawn in the color written for the words.
+    func testAButtonsIconTakesTheWordsWrittenColor() throws {
         try onUIThread {
             let host = GTKRenderer.running {
                 VStack {
-                    Button("Share").icon(.icon(.share)).textColor(Color("#FF0000"))
-                    Button(icon: .icon(.settings)).textColor(Color("#FF0000"))
+                    Button("Share").icon(.icon(.share)).textColor(Color(hex: 0xFF0000))
+                    Button().icon(.icon(.settings)).textColor(Color(hex: 0xFF0000))
                 }
                 .horizontalAlignment(.start)
                 .verticalAlignment(.start)
@@ -208,7 +208,7 @@ final class GTKImageViewTests: XCTestCase {
         }
     }
 
-    /// The colours at `points` of the test's wide picture drawn as `aspect` says in a room `width` by `height`,
+    /// The colors at `points` of the test's wide picture drawn as `aspect` says in a room `width` by `height`,
     /// read from the layout holding it, from the room's corner.
     private func drawn(
         _ aspect: ContentMode, width: Double, height: Double, at points: [(Double, Double)]
@@ -247,7 +247,7 @@ private struct PicturesPage: View {
         let application = self.application
         return VStack {
             if opens {
-                Button("Open").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("pictures.again")) }
+                Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("pictures.again")) }
             }
             ForEach(Array(0..<17)) { _ in
                 Image("test_wide.svg").width(177).height(248)

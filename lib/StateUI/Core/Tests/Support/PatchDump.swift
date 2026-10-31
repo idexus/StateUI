@@ -56,7 +56,7 @@ enum PatchDump {
         }
 
         for key in patch.transitions.keys.sorted() {
-            out += indent + "  \(key.name) \(travelling(patch.transitions[key]!.motion))\n"
+            out += indent + "  \(key.name) \(traveling(patch.transitions[key]!.motion))\n"
         }
 
         if case .replace(let driven)? = patch.driven {
@@ -112,23 +112,22 @@ enum PatchDump {
             said += " holding \(held.joined(separator: "+")) still"
         }
 
-        let motion = placement.motion
-
-        if motion.isInherited {
-            return said + " moves as the application does"
-        }
-
-        switch motion.law {
-        case .spring: return said + " moves on a spring over \(motion.milliseconds)ms"
-        case .eased: return said + (motion.milliseconds == 0 ? " moves at once" : " moves over \(motion.milliseconds)ms \(motion.curve)")
+        switch placement.motion.kind {
+        case .inherited: return said + " moves as the application does"
+        case .spring(let milliseconds, _): return said + " moves on a spring over \(milliseconds)ms"
+        case .eased(let milliseconds, let curve): return said + " moves over \(milliseconds)ms \(curve)"
+        case .glide(let milliseconds): return said + " glides within \(milliseconds)ms"
+        case .none, .custom: return said + " moves at once"
         }
     }
 
     /// How one property travels to the value the line above it states.
-    private static func travelling(_ motion: Motion) -> String {
-        switch motion.law {
-        case .spring: "springs over \(motion.milliseconds)ms, damping \(motion.factor)"
-        case .eased: "travels over \(motion.milliseconds)ms \(motion.curve)(\(motion.curve.rawValue))"
+    private static func traveling(_ motion: Motion) -> String {
+        switch motion.kind {
+        case .spring(let milliseconds, let damping): "springs over \(milliseconds)ms, damping \(damping)"
+        case .eased(let milliseconds, let curve): "travels over \(milliseconds)ms \(curve)(\(curve.rawValue))"
+        case .glide(let milliseconds): "glides within \(milliseconds)ms"
+        case .inherited, .none, .custom: "travels over 0ms \(Easing.cubicOut)(\(Easing.cubicOut.rawValue))"
         }
     }
 
@@ -204,8 +203,6 @@ enum PatchDump {
             return spelled(member, as: IconPosition.self)
         case Prop.type.name:
             return spelled(member, as: MarkerType.self)
-        case Prop.avoidsSafeArea.name:
-            return spelled(member, as: SafeArea.self)
         case Prop.layoutDirection.name:
             return spelled(member, as: LayoutDirection.self)
         case Prop.accessibilityHeading.name:
@@ -222,8 +219,14 @@ enum PatchDump {
             return spelled(member, as: ScrollOrientation.self)
         case Prop.horizontalScrollIndicator.name, Prop.verticalScrollIndicator.name:
             return spelled(member, as: ScrollIndicatorVisibility.self)
-        case Prop.placement.name:
-            return spelled(member, as: ToolbarItemPlacement.self)
+        case Prop.edge.name:
+            return spelled(member, as: ScrollEdge.self)
+        case Prop.position.name:
+            return spelled(member, as: ToolbarPosition.self)
+        case Prop.part.name:
+            return spelled(member, as: ToolbarPart.self)
+        case Prop.barEdge.name:
+            return spelled(member, as: ToolbarEdge.self)
 
         // The shapes and the map.
         case Prop.lineCap.name:
@@ -255,6 +258,17 @@ enum PatchDump {
                 ("up", SwipeDirection.up.rawValue),
                 ("down", SwipeDirection.down.rawValue),
                 ("all", SwipeDirection.all.rawValue),
+            ])
+        case Prop.ignoresSafeArea.name:
+            return spelled(member, asBitsOf: [
+                ("none", SafeAreaEdges.none.rawValue),
+                ("start", SafeAreaEdges.start.rawValue),
+                ("top", SafeAreaEdges.top.rawValue),
+                ("end", SafeAreaEdges.end.rawValue),
+                ("bottom", SafeAreaEdges.bottom.rawValue),
+                ("horizontal", SafeAreaEdges.horizontal.rawValue),
+                ("vertical", SafeAreaEdges.vertical.rawValue),
+                ("all", SafeAreaEdges.all.rawValue),
             ])
 
         default:
@@ -299,7 +313,7 @@ enum PatchDump {
         return named.joined(separator: "|")
     }
 
-    /// One channel as two uppercase hex digits, so a colour reads the way it
+    /// One channel as two uppercase hex digits, so a color reads the way it
     /// was written, alpha first.
     private static func hex2(_ value: UInt8) -> String {
         let digits = Array("0123456789ABCDEF")

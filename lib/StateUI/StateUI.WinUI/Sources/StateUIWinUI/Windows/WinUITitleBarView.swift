@@ -14,10 +14,11 @@ final class WinUITitleBarView: WinUIView {
     /// The chrome the bar shows, as it was last composed.
     private(set) var chrome = WinUIWindowChrome()
 
-    /// The actions as they were last drawn, in reading order, those behind "more" last; each one's group's place.
-    private(set) var drawn: [WinUIToolbarAction] = []
-    private var drawnPlaces: [Int32] = []
-    private var drawnLeading: Int32 = 0
+    /// The actions on the bar.
+    private var actions = WinUIBarActions(bar: .titleBar)
+
+    /// The actions as they were last drawn, in reading order, those behind "more" last.
+    var drawn: [WinUIToolbarAction] { actions.drawn }
 
     init() {
         super.init { number in stateui_winui_title_bar_make(number) }
@@ -28,45 +29,30 @@ final class WinUITitleBarView: WinUIView {
         let previous = self.chrome
         self.chrome = chrome
 
-        let background = chrome.background?.argb
-        // Words on a bar the tree paints - its title and its actions: the colour written, else light on a dark one
+        // The bar's material: a color, or the in-app acrylic for a blur.
+        let ground = WinUIGround(chrome.material)
+        // Words on a bar the tree paints - its title and its actions: the color written, else light on a dark one
         // and dark on a light one (`BandWords`).
         let foreground = BandWords.color(on: chrome.background, written: chrome.foreground)?.argb
         // The bar's own theme: dark for light words on a dark bar.
         let theme: ColorScheme = chrome.background.flatMap(BandWords.light(on:)).map { $0 ? .dark : .light } ?? .system
-        // A declared title area stands in the title's place, as an application names itself on WinUI's title bar.
+        // A title area stands in the title's place, as an application names itself on WinUI's title bar; else the
+        // page's title and the line under it.
         let area = chrome.titleArea
         let icon = WinUIStrings.lines(WinUIPictures.lines(area?.icon))
         let title = area?.title ?? (chrome.showsTitle ? chrome.title : "")
-        stateui_winui_title_bar_set(
-            handle, title, area?.subtitle ?? "", icon, chrome.back != nil,
-            chrome.sidebarToggle != nil, background != nil, background ?? 0, foreground != nil, foreground ?? 0,
-            theme.rawValue)
-
-        // Every action in reading order, each with its group's place - the leading edge's first - or -1 behind "more".
-        let groups = chrome.leading + chrome.trailing
-        let actions = groups.flatMap { $0 } + chrome.overflow
-        let places = groups.enumerated().flatMap { place, group in group.map { _ in Int32(place) } }
-            + chrome.overflow.map { _ in -1 }
-        let leading = Int32(chrome.leading.count)
-        if actions.count != drawn.count || places != drawnPlaces || leading != drawnLeading
-            || !zip(actions, drawn).allSatisfy({ $0.draws(like: $1) }) {
-            WinUIStrings.withCStrings(actions.map(\.title)) { titles in
-                WinUIStrings.withCStrings(actions.map { $0.identifier ?? "" }) { identifiers in
-                    WinUIStrings.withCStrings(actions.map { WinUIStrings.lines($0.icon) }) { icons in
-                        let spelled = actions.map { $0.shortcut.flatMap(WinUIKeys.spelled) ?? (key: 0, modifiers: 0) }
-                        stateui_winui_title_bar_set_actions(
-                            handle, titles, identifiers, icons, actions.map(\.showsWords), actions.map(\.isDestructive),
-                            places, leading, actions.map(\.isEnabled), spelled.map(\.key), spelled.map(\.modifiers),
-                            actions.map { $0.shortcut.map(KeyboardShortcuts.givesWayToTyping) ?? false },
-                            Int32(actions.count))
-                    }
-                }
-            }
-            drawnPlaces = places
-            drawnLeading = leading
+        let line = area.map(\.subtitle) ?? (chrome.showsTitle ? chrome.subtitle : nil)
+        // A gradient over the bar's box, in the ground's place.
+        let gradient = HostBrush(chrome.background).isGradient ? WinUIBrush(chrome.background) : .none
+        gradient.withRelayBrush(over: LayoutSize(width: 0, height: 0)) { painted in
+            stateui_winui_title_bar_set(
+                handle, title, line ?? "", icon, chrome.back != nil, chrome.sidebarToggle != nil, ground.kind,
+                ground.argb, ground.opacity, ground.tintOpacity, painted, foreground != nil, foreground ?? 0,
+                theme.rawValue)
         }
-        drawn = actions
+
+        menuActions = actions.show(
+            leading: chrome.leading, trailing: chrome.trailing, overflow: chrome.overflow, on: handle)
 
         if previous.center !== chrome.center { stateui_winui_title_bar_set_title_view(handle, chrome.center?.handle) }
     }
@@ -89,8 +75,6 @@ final class WinUITitleBarView: WinUIView {
     override func detach() {
         super.detach()
         chrome = WinUIWindowChrome()
-        drawn = []
-        drawnPlaces = []
-        drawnLeading = 0
+        actions = WinUIBarActions(bar: .titleBar)
     }
 }

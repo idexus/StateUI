@@ -32,9 +32,9 @@ final class UIKitImageViewTests: XCTestCase {
         XCTAssertEqual(images[0].image?.scale, 3, "the SVG's drawing, three pixels a point")
     }
 
-    /// An icon is the SF Symbol drawn in the colour of the words around it, not the accent; a file keeps its own.
+    /// An icon is the SF Symbol drawn in the color of the words around it, not the accent; a file keeps its own.
     @MainActor
-    func testAnIconIsDrawnInTheWordsColour() {
+    func testAnIconIsDrawnInTheWordsColor() {
         let host = UIKitRenderer.running {
             VStack {
                 Image(.icon(.add))
@@ -49,13 +49,13 @@ final class UIKitImageViewTests: XCTestCase {
         XCTAssertNotEqual(images[1].tintColor, .label)
     }
 
-    /// A button's icon is drawn in its words' colour where the tree writes one - with its words or alone.
+    /// A button's icon is drawn in its words' color where the tree writes one - with its words or alone.
     @MainActor
-    func testAButtonsIconTakesItsWordsColour() throws {
+    func testAButtonsIconTakesItsWordsColor() throws {
         let host = UIKitRenderer.running {
             VStack {
-                Button("Share").icon(.icon(.share)).textColor(Color("#FF0000"))
-                Button(icon: .icon(.settings)).textColor(Color("#FF0000"))
+                Button("Share").icon(.icon(.share)).textColor(Color(hex: 0xFF0000))
+                Button().icon(.icon(.settings)).textColor(Color(hex: 0xFF0000))
                 Button("Plain").icon(.icon(.add))
             }
         }
@@ -68,7 +68,7 @@ final class UIKitImageViewTests: XCTestCase {
             transform(.blue).getRed(&red, green: &green, blue: &blue, alpha: &alpha)
             XCTAssertEqual([red, green, blue], [1, 0, 0])
         }
-        XCTAssertNil(buttons[2].configuration?.imageColorTransformer, "the platform's colour where none is written")
+        XCTAssertNil(buttons[2].configuration?.imageColorTransformer, "the platform's color where none is written")
     }
 
     /// SVGs a second window shows cost it little: the pictures of the first window, shown again in a scene of their
@@ -145,7 +145,7 @@ private struct PicturesPage: View {
         let application = self.application
         return VStack {
             if opens {
-                Button("Open").onClicked(gate: .ignoreWhileRunning) { try await application.openWindow(WindowType("pictures.again")) }
+                Button("Open").onClicked(.ignoreWhileRunning) { try await application.openWindow(WindowType("pictures.again")) }
             }
             ForEach(Array(0..<17)) { _ in
                 Image("test_wide.svg").width(177).height(248)

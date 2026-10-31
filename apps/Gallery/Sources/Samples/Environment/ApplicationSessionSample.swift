@@ -39,12 +39,12 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
 
             // One write for the whole application: every value without a
             // motion of its own takes it.
-            Picker(Self.laws, selection: Binding(get: { application.motion }, set: { application.motion = $0 }),
-                   caption: Self.name)
+            Picker(Self.laws, selection: application.$motion, caption: Self.name)
                 .horizontalAlignment(.center)
 
             // No `.motion` here: the panel takes the application's.
-            Rectangle(wide ? Palette.accent : Palette.brand)
+            Rectangle()
+                .fill(wide ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(60)
                 .cornerRadius(8)

@@ -27,18 +27,18 @@ tier where a list of names would pass quietly.
 
 ## A background
 
-A view's background is its layer's colour, a rectangle under its whole frame,
+A view's background is its layer's color, a rectangle under its whole frame,
 unless its registration takes the background itself
 (`drawOwnBackground`): a text field fills its own field, a button its own
-face. A button's face is its layer - colour,
+face. A button's face is its layer - color,
 border, corners - but for an oval, which a layer's corners cannot draw: that
-the button draws itself, under its words. A text field given a colour drops AppKit's
-bezel, which on macOS 26 draws its own ground over any colour, and stands in
+the button draws itself, under its words. A text field given a color drops AppKit's
+bezel, which on macOS 26 draws its own ground over any color, and stands in
 the bezel's rounded shape, filled with it; one given none keeps the rounded
 bezel, with its own ground and its words set in from the edge. A border and a
 bezel exclude each other: `isBordered = false` said after `isBezeled = true`
 takes the bezel away, leaving bare words on whatever lies behind, so the
-border is said first. A search field given a colour stands in its bezel's
+border is said first. A search field given a color stands in its bezel's
 capsule, filled with it: AppKit's bezel ignores `backgroundColor`, so the
 field drops the bezel and its cell sets the magnifier, the words and the
 cancel button in as the bezel does, across the middle of its height - and hands
@@ -54,7 +54,8 @@ A declaration says what the host does, not what a tier offers:
 
 - `panTouchCount` is recorded partial: the host layer hears a one-finger pan
   only, which only a record with its note can say.
-- `avoidsSafeArea` is absent: this host does not read it.
+- `ignoresSafeArea` is absent: the window lays its page by it, and no
+  conformance case proves that effect yet, so nothing records it.
 - `background` is taken by the registrations of the controls that have it. A
   background is a partial realization on this host, which only a record with
   its note can say.
@@ -65,3 +66,12 @@ The host makes the scroll view itself: it reports through a user transaction
 and asks the host for display frames, and neither is an event of its
 contract, so its registration takes the members alone. Its offset is written
 only where the tree moved it - see [scrolling](input.md#scrolling).
+
+## A field's outline
+
+A field or an editor the tree outlines or shapes (`stroke`, `lineWidth`,
+`shape`) draws it on a layer of its own - the field's view, the editor's
+scroll view - the corners as `BoxArithmetic.cornerRadius` rounds the shape at
+its size (`AppKitFieldOutline`); a field so outlined, as one filled, lays its
+bezel aside and sets its words in as the bezel does. AppKit's search field
+draws its own rounded field, which no outline replaces: it takes none.

@@ -24,6 +24,9 @@ struct HomePage: View {
     /// The gallery this page is in - its scene.
     @Environment(\.scene) var scene
 
+    /// The application, which launches the repository's address.
+    @Environment(\.application) private var application
+
     let catalog: Catalog
 
     /// Where the gallery is - a card pushes its group.
@@ -77,7 +80,7 @@ struct HomePage: View {
     @State private var room = Rect(0, 0, 0, 0)
 
     /// The library's home opening: the panel and its button go through it, so a tap both hear opens it once.
-    @State private var opening = Gatekeeper(.ignoreWhileRunning)
+    @State private var opening = Gate(.ignoreWhileRunning)
 
     /// Where StateUI lives.
     private static let repository = "https://github.com/idexus/StateUI"
@@ -127,7 +130,7 @@ struct HomePage: View {
         // ONE GRID RATHER THAN A BRANCH PER SHAPE. An `if` in a builder is a
         // branch KEY, so a page that crossed the threshold would destroy the
         // run of cards and build it again; a row whose view is not visible
-        // collapses to nothing, and the pair - centred in the star row - then
+        // collapses to nothing, and the pair - centered in the star row - then
         // stands in the middle of the page by itself.
         return Grid {
             VStack {
@@ -164,17 +167,17 @@ struct HomePage: View {
                         Button("Open on GitHub")
                             .fontSize(13)
                             .textColor(Palette.onBrand)
-                            .background(Color("#33FFFFFF"))
+                            .background(Color(hex: 0xFFFFFF, opacity: 0.2))
                             .stroke(.transparent)
                             .shape(.capsule)
                             .padding(horizontal: 14, vertical: 6)
-                            .onClicked(gate: opening) { try await Links.launch(Self.repository) }
+                            .onClicked(gate: opening) { try await application.launch(Self.repository) }
                     }
                     .padding(14)
                     .horizontalAlignment(.end)
                     .verticalAlignment(.start)
                 }
-                .onTapped(gate: opening) { try await Links.launch(Self.repository) }
+                .onTapped(gate: opening) { try await application.launch(Self.repository) }
                 .style(.card)
                 .background(Palette.identity)
                 .stroke(.transparent)
@@ -201,15 +204,21 @@ struct HomePage: View {
                     GroupFace(title: group.title, summary: group.summary, picture: group.card)
                 }
                 .position($chosen)
-                .throwing(.spring(response: .milliseconds(500), damping: 0.8))
-                .onItemTapped { group in nav.push(.group(group.route)) }
+                .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
+                // EACH CARD A LIGHT BODY: it lags a breath behind the turn
+                // and settles back onto its place.
+                .itemBody(.followsLayout(.spring(response: .milliseconds(320), damping: 0.75)))
+                .onItemActivated { route in nav.push(.group(route)) }
                 // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card here
                 // would show the card BEHIND it - the wheel stands them one
                 // over another - so what reads as depth is a shade over the
                 // card rather than the card going transparent. It wears the
                 // card's own corners, which is why the view is the
                 // application's to give.
-                .shade(Rectangle(Color("#000000")).cornerRadius(16))
+                .shade(
+                    Rectangle()
+                        .fill(Color(hex: 0x000000))
+                        .cornerRadius(16))
                 // WHAT THE ROWS CAN SPARE, worn on the host's own frames. The
                 // state is written by the engine under this grid, so a page
                 // settling through half a dozen passes costs no render at all.
@@ -252,7 +261,7 @@ struct HomePage: View {
             .verticalAlignment(.center)
             .gridRow(1)
 
-            // WHAT THIS IS, at the FOOT of the page and centred: the cards are
+            // WHAT THIS IS, at the FOOT of the page and centered: the cards are
             // what a user came for, and these two lines are what they read
             // once they have found it. They go completely when the cards' cell
             // runs short - an auto row keeps its height whatever is left, and
@@ -676,7 +685,7 @@ private struct GroupFace: View {
                         .lineBreak(.tailTruncation)
                         .padding(horizontal: 12, vertical: 10)
                 }
-                .background(Color("#B3000000"))
+                .background(Color(hex: 0x000000, opacity: 0.7))
                 .verticalAlignment(.end)
             }
             // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL

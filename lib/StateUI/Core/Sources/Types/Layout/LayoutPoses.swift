@@ -4,7 +4,7 @@
 /// The poses a layout's arithmetic answered at keyframes, each asked once and kept while what it was worked out with
 /// stands: one description of the layout, its room, where its motion set out, the states it follows and the axes
 /// that have no keyframes.
-/// Design: docs/design/views/layout-engine.md#keyframes
+/// Design: docs/design/views/motion-layout.md#keyframes
 @MainActor
 final class LayoutPoses {
     /// What every kept pose was worked out with.
@@ -26,7 +26,7 @@ final class LayoutPoses {
         kept = [:]
     }
 
-    /// The pose kept at the phase whose axes stand at `lanes`, or the one `work` answers, kept.
+    /// The pose kept at the parameters whose axes stand at `lanes`, or the one `work` answers, kept.
     func pose(at lanes: [Double], _ work: () -> [Placement]) -> [Placement] {
         if let pose = kept[lanes] { return pose }
 

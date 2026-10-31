@@ -1,0 +1,13 @@
+# revision 1.1
+ToolbarButton.background: ✅
+ToolbarButton.pointerEntered: ✅
+ToolbarButton.pointerExited: ✅
+ToolbarButton.style: ✅
+ToolbarGroup.background: ✅
+ToolbarGroup.pointerEntered: ✅
+ToolbarGroup.pointerExited: ✅
+ToolbarGroup.style: ✅
+ToolbarToggle.background: ✅
+ToolbarToggle.pointerEntered: ✅
+ToolbarToggle.pointerExited: ✅
+ToolbarToggle.style: ✅

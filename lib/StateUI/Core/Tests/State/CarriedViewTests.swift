@@ -50,6 +50,17 @@ private struct Shown: View {
     }
 }
 
+/// The same, handed one property of a state.
+private struct ShownPart: View {
+    let text: StatePart<String>
+    let builds: Builds
+
+    var body: some View {
+        builds.count += 1
+        return Text(text.wrappedValue)
+    }
+}
+
 /// A composed view that hands what it is lent straight on, reading nothing.
 private struct Typed: View {
     @Binding var text: String
@@ -140,7 +151,7 @@ final class CarriedViewTests: XCTestCase {
         func tree(_ selected: Int) -> Node {
             VStack {
                 Text("row \(selected)")
-                Shown(text: rows.projectedValue[selected].title, builds: builds)
+                ShownPart(text: rows.projectedValue[selected].title, builds: builds)
             }.node
         }
 

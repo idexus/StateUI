@@ -78,6 +78,15 @@ room - waits in the host layer's queue (`HostRuntime.afterLayout`), which asks
 the relay to post a turn; the queue runs as that turn begins, once the pass is
 over ([after a layout pass](../../host/runtime.md#after-a-layout-pass)).
 
+## The main queue
+
+libdispatch's main queue signals an event. The system's thread pool waits on
+it and posts a turn through the relay, and every turn drains the queue - at
+once where it holds nothing - and waits again, since a wait ends at its signal
+([the main queue](../../host/runtime.md#the-main-queue)). The thread pool's
+callback is isolated to nobody: one formed in a `MainActor` function would be
+checked for `MainActor` on the pool's thread, which stops the process.
+
 ## One frame
 
 The frame clock subscribes to `CompositionTarget.Rendering` while something
@@ -95,8 +104,8 @@ arrangement of pages is its window's content, under the window's chrome, which
 names it after the visible page, else after the element's title
 ([the window's chrome](pages.md#the-windows-chrome)); the window is activated
 the first time it shows a page, and told it was made once, in its turn
-(`WindowPresentation`); the pages the window's modal stack presents stand on
-sheets over it.
+(`WindowPresentation`); the pages the window's views present stand on sheets
+over it.
 
 ## A window's frame
 
@@ -124,24 +133,24 @@ backdrop of the relay's own over WinUI's `DesktopAcrylicController`, since
 WinUI's ready one holds neither a kind nor an opacity: the two thinnest
 blurs are the thin kind, the rest the base one, and its luminosity hides as
 much of the desktop as the blur's thickness does
-(`Blur.Thickness.opacity`, the share it hides - the stand-in colour's own
+(`Blur.Thickness.opacity`, the share it hides - the stand-in color's own
 opacity), and its tint grows from none on the thinnest blur to nine tenths
 on the thickest: the luminosity alone - from 0.45 to 0.95 - barely tells the
 five apart, an ultra-thick window still showing the desktop through. Its
-colour - tint, and the fallback an inactive window shows - is the blur's
-stand-in colour, the theme's: a controller given any one value keeps none of
-the theme's own, so every colour is written, and the theme turning gives the
+color - tint, and the fallback an inactive window shows - is the blur's
+stand-in color, the theme's: a controller given any one value keeps none of
+the theme's own, so every color is written, and the theme turning gives the
 window its traits again. XAML's default configuration has
 the acrylic follow the window's activation. The backdrop is made
-again only where it turns. A tint colours the acrylic itself - its colour is
+again only where it turns. A tint colors the acrylic itself - its color is
 the tint laid over the theme's, which the acrylic's tint then carries as far
 as the thickness says - and lies over it on the window's root as well, as
-the colour a window is painted does. Glass is the acrylic at its fallback
+the color a window is painted does. Glass is the acrylic at its fallback
 thickness: WinUI has no glass.
 
 A background the application writes shows behind the detail as it does
 beside the sidebar and under the bars: the card a split view's detail stands
-on - WinUI's layer fill, which turns a written colour grey - is clear
+on - WinUI's layer fill, which turns a written color gray - is clear
 (`NavigationViewContentBackground`, written into the window root's
 resources, which every such card in the window reads on its way up),
 and its edge - the line under the bar and beside the sidebar - is the
@@ -175,11 +184,15 @@ locale, the battery and the network; and the screen once there is a window,
 at the system's scale, which a window on a second screen may not share, and
 turned as Windows says (`dmDisplayOrientation`, quarters of the picture's
 turn clockwise, the host layer's rotation). The theme is the one Windows
-paints its controls in, so a colour written for light and dark reads as
+paints its controls in, so a color written for light and dark reads as
 WinUI's own text beside it. Windows says when the theme, the power, the
 network or a screen's area changes - a tablet turned among them; the relay
 posts each change to the UI thread, and the host tells the core again,
-the screen with it, and renders what it changed.
+the screen with it, and renders what it changed. The accessibility settings
+are Windows's - animations off for less motion, high contrast, a screen
+reader running, and the text scale - told again as animations, the contrast
+or the text scale change; Windows tells no change of the screen reader, which
+is read again with any other.
 
 ## Acts
 
@@ -202,20 +215,46 @@ the focus, which then falls to the window's first stop, its title bar, as the
 field that held it leaves. So the window lays out what it was given before the
 focus moves.
 
+## A link opened
+
+An application that names its link schemes (`StateUIWinUI.run(linkSchemes:)`)
+registers them for the user as it starts
+(`ActivationRegistrationManager.RegisterForProtocolActivation`), as an
+application with no package must, and is its one instance: a second start finds
+the first by its key and hands it its activation
+(`AppInstance.RedirectActivationToAsync`, waited for on a thread of its own, as
+the UI thread may not wait), then ends. The first hears a protocol's address at
+its own start, once WinUI stands, and from every activation handed to it on the
+UI thread.
+
+## The clipboard
+
+The clipboard is Win32's - `OpenClipboard`, `CF_UNICODETEXT` - written and
+read at once from Swift, the words as UTF-16: what every Windows application
+reads and writes.
+
+## Sharing
+
+What the user shares is Windows' own share sheet over the window
+(`DataTransferManager`, reached for a window through its interop): the words
+as text, the link as a web link, handed over as the sheet asks for them; the
+answer is the sheet's, shared or cancelled, told once on the UI thread.
+
 ## Questions for the user
 
 A question - an alert, a confirmation, a choice of actions, a prompt - is
-WinUI's own dialog, over the window the user is in when its turn comes - the
-one activated last, else the first - and its call waits under a ticket the
+WinUI's own dialog, over the window that asked when its turn comes - where
+the act names none, the window the user is in, the one activated last, else
+the first - and its call waits under a ticket the
 dialog hands back as the user answers; a ticket is one number across the
 process, so an answer that arrives after its renderer has gone answers
 nothing of another's. Questions are asked one at a time, in the order the
 application asked them, by the host layer's queue ([questions for the
 user](../../host/runtime.md#questions-for-the-user)): the next shows once the
 one before is answered. A choice of actions is a
-button a choice, the dangerous one first, and the pressed caption is the
-answer - the cancelling one too; a dialog dismissed any other way, Escape
-among them, answers that nothing was chosen. A prompt's field takes the
+button an action, in order - WinUI draws no dangerous button apart - and the
+place of the one pressed is the answer; the cancel, and a dialog dismissed
+any other way, Escape among them, answer that nothing was chosen. A prompt's field takes the
 placeholder and the keyboard its purpose asks for; the most it may hold is
 counted in characters, as a field of the tree counts them: WinUI's
 `MaxLength` counts UTF-16 units, so the field tells each change of its words
@@ -244,7 +283,7 @@ it.
 ## Files
 
 A file dialog is Windows' own, from the Windows App SDK's pickers
-(`FileOpenPicker`, `FileSavePicker`), over the window the user is in, and it
+(`FileOpenPicker`, `FileSavePicker`), over the window that asked, and it
 waits its turn among the questions ([files](../../host/runtime.md#files)).
 A dialog that opens filters by every kind's extensions, as one list; one that
 saves offers each kind under its caption, the first as its default
@@ -263,9 +302,9 @@ the ticket the call was given.
 Windows keeps no store for an application that is no package, so the host
 keeps one of its own: a file in the user's local data, in a folder named
 after the executable, holding the host layer's text ([kept
-values](../../host/runtime.md#kept-values)). Every key the
-application lists is read before the first scene connects and handed to the
-core ahead of the first view; a key's new value writes the whole file again,
+values](../../host/runtime.md#kept-values)). A key is read from it as its
+first state is made, through the reader the host gives the core as it starts;
+a key's new value writes the whole file again,
 its keys in order, beside the old one first and then in its place, so a
 failed write leaves the old. Windows restores no windows either, so the
 scenes are kept the same way, in a second file beside it, by the host

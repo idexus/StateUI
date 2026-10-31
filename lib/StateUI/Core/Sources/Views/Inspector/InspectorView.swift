@@ -111,7 +111,7 @@ struct InspectorView: View {
                     .fontSize(15)
                     .fontWeight(.bold)
                     .textColor(Look.ink)
-                    .margin(left: 0, top: 0, right: 10, bottom: 4)
+                    .margin(start: 0, top: 0, end: 10, bottom: 4)
 
                 Look.action(model.paused ? "Record" : "Pause") { model.pause() }
                 Look.action("Clear") { model.clear() }
@@ -297,7 +297,7 @@ private struct Branch: View {
     let entry: InspectedEntry
 
     var body: some View {
-        let (mark, said, colour): (String, String, Color) = {
+        let (mark, said, color): (String, String, Color) = {
             switch entry.outcome {
             case let .built(reason):
                 return ("●", "\(reason) · \(Look.micros(entry.micros)) (\(Look.micros(entry.own)) own)",
@@ -311,7 +311,7 @@ private struct Branch: View {
 
         return Text("\(mark) \(entry.view) — \(said)")
             .fontSize(12)
-            .textColor(colour)
+            .textColor(color)
             .lineBreak(.tailTruncation)
             .padding(horizontal: Double(entry.depth) * 12 + 6, vertical: 2)
             .horizontalAlignment(.start)

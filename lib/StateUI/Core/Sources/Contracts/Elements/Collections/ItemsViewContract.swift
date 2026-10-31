@@ -12,8 +12,10 @@ public enum ItemsViewContract: ElementContract {
     /// Every base host presents it with its native control.
     public static let layer: ElementLayer = .native
 
-    /// A collection is a view.
-    public static let tiers: [any Contract.Type] = [ViewContract.self, FocusElementContract.self]
+    /// A collection is a view, pulled to refresh its items.
+    public static let tiers: [any Contract.Type] = [
+        ViewContract.self, FocusElementContract.self, RefreshElementContract.self,
+    ]
 
     /// Every item, header and footer it shows, by identity, in order.
     public static let items = ElementProperty<Self, ItemsEntries>("items", layer: .native, travels: false)

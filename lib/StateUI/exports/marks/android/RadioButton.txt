@@ -1,5 +1,0 @@
-# revision 2.1
-RadioButton: ✅
-RadioButton.groupName: ✅
-RadioButton.isOn: ✅
-RadioButton.toggled: ✅

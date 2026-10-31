@@ -87,6 +87,13 @@ then the bound or described value. Where none exists but the toolkit animates
 the property, the property's resting value is the start: no margin, no turn,
 a scale of one, a corner radius of the target's shape.
 
+A transform the tree stops stating - a pressed state's scale as the press
+lets go - travels back to the identity under its motion, as it traveled out
+from it, and stands untold once there: no turn, no shift and a scale of one are
+what every host draws for a transform it is told none of. Nothing else taken
+away travels: a margin, a padding or a line's width untold is the platform's
+own, which no resting value names.
+
 ## Leaving
 
 An element leaves by every road out of the tree - dropped from an arrangement,
@@ -95,16 +102,6 @@ last wearer takes the channel with it once it lands; its property and layout
 animations end; and its native half detaches what it attached outside the
 tree: observers, recognizers, a scroller's hold on the frame clock. Nothing
 keeps a control alive after the tree drops it.
-
-## A radio group
-
-A radio button checked by the user unchecks the others of its choice, and
-each of those reports that it is off. Which they are is the tree's to say,
-the same on every host: the radio buttons of its `groupName` anywhere in its
-window, or, where it names no group, the radio buttons beside it under the
-same parent. A native group of the platform's is not used: it holds only its
-own direct children, while StateUI's may stand anywhere in a window's
-layouts.
 
 ## Drawn over its place
 
@@ -119,11 +116,13 @@ its measure: the run moves its children without the layout measuring again.
 A frame presents what moved on each element touched, deepest first, and says
 what that asks of the elements around it (`FrameImpact`): the element
 arranges its children again where a value moved that is more than its own
-run of places and what is drawn over it - a layout engine's run is put by the
+run of places and what is drawn over it - a motion layout's run is put by the
 element's presentation, each host setting it on its layers view, so a run
-moving every frame builds no child's layout item again; its opacity, its
+moving every frame builds no child's layout item again, and its parameters,
+walked every frame on the host's channel, moves the children only through
+the places the run gives them, so it arranges none of them; its opacity, its
 drawing and its transform (`drawnOverProperties`) are read by nothing it
-holds, so a row fading in arranges none of its words, while a text's colour
+holds, so a row fading in arranges none of its words, while a text's color
 reaches its runs, which a host writes as it arranges them; a child whose
 place moved arranges its parent,
 passed up through an element with no view; a window's chrome is composed
@@ -135,9 +134,12 @@ A patch that changes a child somewhere below an element names the element too,
 and it is applied with nothing of its own changed. Whether its children are
 arranged again is the host layer's word (`childrenNeedArranging`): a new
 arrangement, a child made anew or drawn by the element, a page's own values -
-its title on a tab - and a child's place, size or drawing order changed
-(`arrangedProperties` and the z-index) ask it; a change inside a child that
-stands where it stood does not. A toolkit measuring its own views is told a
+its title on a tab - and a child's place, size or drawing order changed, or
+anything its measure reads - its words - ask it (every property but
+`unmeasuredProperties`); a change only drawn, or inside a child, does not. The
+trap is a child's words taken for a change in its place: they size it anew, and
+a layout not arranged again lets it jump to its new size where its siblings
+would travel. A toolkit measuring its own views is told a
 size by the element whose size changed (`measuredUpward`), not by its parents.
 A host whose arranging costs - the Web's places every child again - leaves its
 children as they stand where the word is no.
@@ -171,8 +173,9 @@ numbers, as a 64-bit one reaches JavaScript as a `BigInt`.
 ## A window shown
 
 A window shows the first arrangement of pages among its children - a page, a
-stack of them, tabs, a split view - and where that is a modal stack, the page
-it holds with the pages it presents over it as sheets; the overlays laid over
+stack of them, tabs, a split view, an anchor's standing in its place - and over
+it the pages its views present as sheets, in the order they showed
+(`MountedTree.presentedSheets`); the overlays laid over
 them ([the overlays of a window](pages.md#the-overlays-of-a-window)); and
 whether its scene hides it ([the
 application's phase](runtime.md#the-applications-phase)), and says each to
@@ -218,7 +221,7 @@ window alike.
 
 A label's spans are runs of its words, put together once
 (`MountedElement.textRuns`): each span's words in its own case, else the
-label's, and its own look - size, weight and slant, colour, what stands
+label's, and its own look - size, weight and slant, color, what stands
 behind it, its lines, whether it follows the user's text size - in the
 contract's terms (`TextLook`). A run's look stands over its label's: where the
 run says nothing, the label's says it, and a run scales only where neither it
@@ -226,12 +229,14 @@ nor its label says no. A host turns the finished look into its toolkit's
 attributes and nothing more. A label shown with no runs and given none
 writes nothing again: its own words stand already.
 
-An element showing words - a label, a button, a radio button - reads the
+An element showing words - a label, a button - reads the
 text tiers the same way on every host (`TextMembers`): its words in their
 case where the words or the case changed, and the look its font, its
-scaling and its colour give them where one of those did - the members a look
+scaling and its color give them where one of those did - the members a look
 is made of named once (`TextMembers.lookMembers`), so a host's own list of a
-field's or a picker's members takes them whole. A break keeps the words on one line unless
+field's or a picker's members takes them whole. A shape's line, fill and
+corners (`ShapeMembers`) and a layout's box and a stack's spacing
+(`LayoutMembers`) are named once the same way. A break keeps the words on one line unless
 it wraps - word and character wrapping do - and wrapped words stand on as
 many lines as the tree allows, any number where it allows none or fewer than
 one (`LineBreak.lines`), the last of a limited number ending with an ellipsis
@@ -253,20 +258,24 @@ style's, and with no style the host's own stand. A weight crosses as
 `FontWeight` and is weighed by its number, 400 to 700
 (`FontWeight.number`); a font a toolkit reports reads as the weight nearest
 its number, the lighter of two as near. A label takes a new look's font,
-scaling and colour whole (`TextLook.adopt(fontAndColorOf:)`), keeping its own
+scaling and color whole (`TextLook.adopt(fontAndColorOf:)`), keeping its own
 spacing, lines and decorations.
 
 ## What assistive technology meets
 
 What an element says for assistive technology is put together once, the same
-on every host: its identifier, its label, its hint, its level as a heading,
-and whether it is met at all - left out with everything in it where it says
+on every host: its identifier, its label, its hint, its kind, its value, the
+actions it offers, its level as a heading, and whether it is met at all - left out with everything in it where it says
 so, else left out itself where it is hidden, its children still met, else met
 where it says it is not hidden - or, saying nothing of it, where it says words
-of its own, a label standing for all it holds, a hint or a heading, or answers
-a tap - and as its view is of itself otherwise. A host puts those words on its
+of its own, a label standing for all it holds, a hint, a kind, a value, an
+action or a heading, or answers a tap - and as its view is of itself otherwise. A host puts those words on its
 view in its platform's terms, and puts them again whenever any of them
 changes; one the tree stops saying anything of stands as its view is again.
+What a screen reader does to an element is input like a tap, heard by the
+same rule (`MountedElement.hear`): an action it performs reaches the element
+only where the element offers one of those words, a step only where it hears
+steps, and neither reaches a disabled branch.
 Whether a view is an element to assistive technology is one rule
 (`AccessibilityWords.isElement(standing:)`): as its presence says, else as
 the view stood of itself before any word reached it - never as the last word

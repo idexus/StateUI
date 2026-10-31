@@ -1,16 +1,16 @@
-# revision 2.1
-Grid.avoidsSafeArea: not realized
+# revision 3.1
 Grid.clipsContent: ✅
-Grid.letsInputThrough: not realized
-HStack.avoidsSafeArea: not realized
+Grid.ignoresSafeArea: ✅
+Grid.letsInputThrough: ✅
 HStack.clipsContent: ✅
-HStack.letsInputThrough: not realized
-LayoutEngine.avoidsSafeArea: not realized
-LayoutEngine.clipsContent: ✅
-LayoutEngine.letsInputThrough: not realized
-VStack.avoidsSafeArea: not realized
+HStack.ignoresSafeArea: ✅
+HStack.letsInputThrough: ✅
+MotionLayout.clipsContent: ✅
+MotionLayout.ignoresSafeArea: ✅
+MotionLayout.letsInputThrough: ✅
 VStack.clipsContent: ✅
-VStack.letsInputThrough: not realized
-ZStack.avoidsSafeArea: not realized
+VStack.ignoresSafeArea: ✅
+VStack.letsInputThrough: ✅
 ZStack.clipsContent: ✅
-ZStack.letsInputThrough: not realized
+ZStack.ignoresSafeArea: ✅
+ZStack.letsInputThrough: ✅

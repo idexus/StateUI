@@ -84,7 +84,7 @@ class AndroidLayoutView: AndroidView {
     func setChildren(_ views: [AndroidView]) {
         guard !Self.same(views, held) else { return }
 
-        let children = Java.array(of: JavaAPI.view, views.map(\.reference))
+        let children = Java.array(of: JavaAPI.view, views.map(\.outermost))
         Java.call(reference, JavaAPI.setChildren, .object(children))
         Java.release(local: children)
         held = views
@@ -109,7 +109,7 @@ class AndroidLayoutView: AndroidView {
         paintBox()
     }
 
-    /// The layout's own box: a plain colour where it has no outline, shape or cut, and a drawable on its shape
+    /// The layout's own box: a plain color where it has no outline, shape or cut, and a drawable on its shape
     /// where it has.
     /// Design: docs/design/platforms/android/drawing.md#a-layouts-own-box
     func setOutline(_ outline: Outline) {
@@ -146,6 +146,11 @@ class AndroidLayoutView: AndroidView {
         Java.call(reference, JavaAPI.setIgnoresInput, .bool(ignores))
     }
 
+    /// Lets a touch on the layout's own empty area through to whatever stands behind it; its children take theirs.
+    func setLetsInputThrough(_ lets: Bool) {
+        Java.call(reference, JavaAPI.setLetsInputThrough, .bool(lets))
+    }
+
     /// Forgets the kept sizes and asks Android to measure again.
     func invalidateMeasurements() {
         forgetMeasurements()
@@ -174,9 +179,18 @@ class AndroidLayoutView: AndroidView {
         arrange(width: width, height: height)
     }
 
-    /// Places every child in `width` by `height` pixels.
+    /// Places every child in the room the layout is bound for, else in `width` by `height` pixels.
     func arrange(width: Int32, height: Int32) {
-        arrange(in: Rect(x: 0, y: 0, width: Double(width) / density, height: Double(height) / density))
+        let room = arrangementRoom ?? LayoutSize(width: Double(width) / density, height: Double(height) / density)
+        arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
+    }
+
+    /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#a-layout-bound-for-a-size
+    private(set) var arrangementRoom: LayoutSize?
+
+    override func travels(to destination: Rect?) {
+        arrangementRoom = destination.map { LayoutSize(width: $0.width, height: $0.height) }
     }
 
     /// The room the children take for the width offered, in points.
@@ -184,8 +198,22 @@ class AndroidLayoutView: AndroidView {
         .zero
     }
 
+    /// How far below its top its first line of words rests, laid out `width` wide, in points; nil for a layout that
+    /// answers none.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(width: Double?) -> Double? {
+        nil
+    }
+
     /// Places the children in `bounds`, in points.
     func arrange(in bounds: Rect) {}
+
+    /// What stands over this arrangement's room on each edge, in points - the system's bars, a cutout, the keyboard -
+    /// as the arrangement around it passes it down: its own bars take their edge, its page the rest.
+    /// Design: docs/design/platforms/android/pages.md#the-safe-area
+    var roomInsets = Clearance.none {
+        didSet { if roomInsets != oldValue { requestLayout() } }
+    }
 
     /// Whether two lists hold the same views in the same order.
     private static func same(_ left: [AndroidView], _ right: [AndroidView]) -> Bool {

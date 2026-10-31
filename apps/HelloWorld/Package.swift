@@ -24,8 +24,11 @@ var products: [Product] = [
 
 var targets: [Target] = [
     .target(name: "HelloWorldUI", dependencies: [.product(name: "StateUI", package: "StateUIRoot")], path: "Sources", swiftSettings: settings),
-    // The application's tests - `swift test`, or StateUI: Run Tests.
-    .testTarget(name: "HelloWorldTests", dependencies: ["HelloWorldUI"], path: "Tests", swiftSettings: settings),
+    // The application's tests - `swift test`, or StateUI: Run Tests - which show its pages in a test's window.
+    .testTarget(
+        name: "HelloWorldTests",
+        dependencies: ["HelloWorldUI", .product(name: "StateUITesting", package: "StateUITesting")],
+        path: "Tests", swiftSettings: settings),
 ]
 
 // The head in Platforms/<Host>: an executable its host runs, and on Android a
@@ -52,8 +55,11 @@ let package = Package(
         .macOS(.v26),
     ],
     products: products,
-    // The StateUI checkout: the library at its root, and a head's host.
-    dependencies: [.package(name: "StateUIRoot", path: "../..")]
+    // The StateUI checkout: the library at its root, what the tests show its pages through, and a head's host.
+    dependencies: [
+        .package(name: "StateUIRoot", path: "../.."),
+        .package(name: "StateUITesting", path: "../../lib/StateUI/StateUI.Testing"),
+    ]
         + (host == nil ? [] : [.package(name: "StateUIHead", path: "../../lib/StateUI.Head")]),
     targets: targets
 )

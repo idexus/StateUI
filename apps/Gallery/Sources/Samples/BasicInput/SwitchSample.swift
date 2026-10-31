@@ -5,11 +5,14 @@ struct SwitchSample: SampleContent, ExampleContent {
     // listing: SwitchSample
     @State private var soundOn = true
     @State private var said = "not thrown yet"
+    @State private var alignment = Alignment.fill
+
+    static let alignments: [Alignment] = [.fill, .start, .center, .end]
     // listing: end
 
     static let id = "switch"
     static let title = "Switch"
-    static let summary = "An on/off toggle, reported as the value it now has."
+    static let summary = "An on/off toggle with the words it says beside it, reported as the value it now has."
 
     // listing: SwitchSample
     var body: some View {
@@ -17,21 +20,21 @@ struct SwitchSample: SampleContent, ExampleContent {
             // The flag is read here, so every flip builds this closure.
             DebugInfoLabel()
 
-            HStack {
-                Text("Sound")
-                    .fontSize(16)
-                    .verticalAlignment(.center)
+            Switch($soundOn)
+                .text("Sound")
+                .accessibilityIdentifier("switch.sound")
+                .tint(Palette.accent)
+                // Runs beside the binding's write-back, carrying what the
+                // switch NOW is rather than what this side guessed.
+                .onToggled { on in said = on ? "thrown on" : "thrown off" }
+                // Filling its row, its words stand at the start and the switch
+                // at the end; aligned, it is as wide as the two together.
+                .horizontalAlignment($alignment)
 
-                Switch($soundOn)
-                    .accessibilityIdentifier("switch.sound")
-                    .accessibilityLabel("Sound on")
-                    .tint(Palette.accent)
-                    // Runs beside the binding's write-back, carrying what the
-                    // switch NOW is rather than what this side guessed.
-                    .onToggled { on in said = on ? "thrown on" : "thrown off" }
-            }
-            .spacing(12)
-            .horizontalAlignment(.center)
+            Picker(Self.alignments, selection: $alignment) { "\($0)".titled }
+                .accessibilityIdentifier("switch.alignment")
+                .accessibilityLabel("Alignment")
+                .presentation(.segmented)
 
             Text(soundOn ? "on" : "off")
                 .fontSize(15)

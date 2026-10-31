@@ -16,7 +16,23 @@ final class AndroidFrameReportTests: XCTestCase {
             ("testAViewThatJoinsSaysNothingBeforeItIsLaidOut", testAViewThatJoinsSaysNothingBeforeItIsLaidOut),
             ("testAViewInAListSaysWhereItStandsOnceTheListMoved", testAViewInAListSaysWhereItStandsOnceTheListMoved),
             ("testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn", testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn),
+            ("testAViewKeepsItsSizeWhereverItStands", testAViewKeepsItsSizeWhereverItStands),
         ]
+    }
+
+    /// A view is never narrower nor shorter than its size in whole pixels wherever it stands: each edge goes outward
+    /// to a whole pixel - a label a pixel narrower than it measured breaks its last word onto a line nobody sees.
+    func testAViewKeepsItsSizeWhereverItStands() {
+        onMainActor {
+            let view = AndroidSeparatorView()
+            let (width, height) = (Int32((47.3 * view.density).rounded(.up)), Int32((13.7 * view.density).rounded(.up)))
+            for step in 0..<20 {
+                let x = Double(step) * 0.05
+                view.layout(Rect(x: x, y: x, width: 47.3, height: 13.7))
+                XCTAssertGreaterThanOrEqual(Java.callInt(view.outermost, JavaAPI.getWidth), width, "at \(x)")
+                XCTAssertGreaterThanOrEqual(Java.callInt(view.outermost, JavaAPI.getHeight), height, "at \(x)")
+            }
+        }
     }
 
     /// A view says nothing of where it stands before a layout places it: the first report its handler hears is
@@ -26,7 +42,10 @@ final class AndroidFrameReportTests: XCTestCase {
             let heard = Received<[Double]>()
             let host = AndroidRenderer.running {
                 VStack {
-                    Rectangle().fill(.steelBlue).width(120).height(60)
+                    Rectangle()
+                        .fill(.steelBlue)
+                        .width(120)
+                        .height(60)
                         .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                 }
                 .horizontalAlignment(.start)
@@ -53,7 +72,10 @@ final class AndroidFrameReportTests: XCTestCase {
                 VStack {
                     Text("above").height(20)
                     if shown.wrappedValue {
-                        Rectangle().fill(.steelBlue).width(120).height(60)
+                        Rectangle()
+                            .fill(.steelBlue)
+                            .width(120)
+                            .height(60)
                             .onEvent(ViewContract.frameChanged) { heard.values.append($0) }
                     }
                 }
@@ -84,7 +106,10 @@ final class AndroidFrameReportTests: XCTestCase {
             _ = driver.start(clock: nil, reducesMotion: false) {
                 VStack {
                     ItemsView(0..<100) { item in
-                        Rectangle().fill(item == 2 ? .firebrick : .steelBlue).width(120).height(60)
+                        Rectangle()
+                            .fill(item == 2 ? .firebrick : .steelBlue)
+                            .width(120)
+                            .height(60)
                             .onEvent(ViewContract.frameChanged) { if item == 2 { heard.values.append($0) } }
                     }
                     .width(200).height(300)
@@ -112,7 +137,10 @@ final class AndroidFrameReportTests: XCTestCase {
     func testARoomAndroidNarrowedPlacesItsLayoutBeforeItIsDrawn() {
         onMainActor {
             let host = AndroidRenderer.running {
-                LayoutEngine([0]) { _ in Rectangle(.red) } placements: { room, _ in
+                MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in
+                    Rectangle()
+                        .fill(.red)
+                } placements: { room, _ in
                     [Placement(Rect(room.width / 2 - 10, 0, 20, 20))]
                 }
             }

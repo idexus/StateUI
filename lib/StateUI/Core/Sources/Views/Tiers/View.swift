@@ -47,21 +47,21 @@ public protocol View: VisualElement, ViewProperties, Views where Modified: View 
 }
 
 extension ViewProperties {
-    /// The space kept outside the view, between it and its neighbours.
+    /// The space kept outside the view, between it and its neighbors.
     /// Padding is the space inside.
     ///
     ///     Text("Total").margin(16)                      // all four sides
-    ///     Text("Total").margin(Insets(left: 16, top: 0, right: 0, bottom: 0))  // the left edge only
+    ///     Text("Total").margin(Insets(start: 16, top: 0, end: 0, bottom: 0))  // the start only
     public func margin(_ value: Insets) -> Modified { setValue(ViewContract.margin, value) }
 
-    /// The same on the left and the right, and the same above and below.
+    /// The same at the start and the end, and the same above and below.
     public func margin(horizontal: Double, vertical: Double) -> Modified {
         margin(Insets(horizontal: horizontal, vertical: vertical))
     }
 
     /// Each side by name.
-    public func margin(left: Double, top: Double, right: Double, bottom: Double) -> Modified {
-        margin(Insets(left: left, top: top, right: right, bottom: bottom))
+    public func margin(start: Double, top: Double, end: Double, bottom: Double) -> Modified {
+        margin(Insets(start: start, top: top, end: end, bottom: bottom))
     }
 
     /// How the view uses the width its parent offers - filling it, or sitting at
@@ -85,22 +85,26 @@ extension View {
     ///         .contextMenu {
     ///             MenuItem("Rename").onClicked { rename(item) }
     ///             MenuSeparator()
-    ///             MenuItem("Delete").isDestructive(true).onClicked { remove(item) }
+    ///             MenuItem("Delete").role(.destructive).onClicked { remove(item) }
     ///         }
     ///
     /// The same entries a menu bar takes - `MenuItem`, `Menu`
     /// and `MenuSeparator` - attached to a view instead of to a page.
     ///
+    /// On an item of an `ItemsView` it is the item's actions: a platform that
+    /// swipes a list's items - UIKit - offers its items as the item's swipe
+    /// actions too.
+    ///
     /// The menu stays hidden until the user asks for it, so do not put the
     /// only way to perform an essential action behind it.
     ///
     /// - Parameter items: the entries, in the order they are shown.
-    public func contextMenu(@MenuBuilder _ items: () -> [Element]) -> Modified {
+    public func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Modified {
         modified {
             // After the view's own children, one; the host finds it by type, and written again it stands in.
             // Design: docs/design/views/modifiers.md#slot-children
             $0.children.removeAll { $0.type == ContextMenuContract.nodeType }
-            $0.children.append(Node(contract: ContextMenuContract.self, children: items().map { $0.node }))
+            $0.children.append(Node(contract: ContextMenuContract.self, children: items().nodes))
         }
     }
 }

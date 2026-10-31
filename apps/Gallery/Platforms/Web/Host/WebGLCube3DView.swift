@@ -4,7 +4,7 @@
 import GalleryUI
 import StateUIWeb
 
-// listing: Cube3DSample.Web.swift
+// listing: Cube3DSample.Web.swift, web.md.control
 /// A cube drawn by WebGL 2 in the page: the gallery's own element, `<gallery-cube3d>` of Page/cube3d.js, which knows
 /// nothing of StateUI - told what it is through its attributes. The Swift half is Sources/Samples/Interop/Cube3D.swift.
 @MainActor
@@ -16,7 +16,7 @@ final class WebGLCube3DView: WebControl {
         didSet { if cubeSize != oldValue { element.setAttribute("size", String(cubeSize)) } }
     }
 
-    /// Which colour it is painted, as the element reads it: the vocabulary's member number.
+    /// Which color it is painted, as the element reads it: the vocabulary's member number.
     var color = CubeColor.teal {
         didSet { if color != oldValue { element.setAttribute("color", String(color.rawValue)) } }
     }
@@ -36,7 +36,7 @@ final class WebGLCube3DView: WebControl {
 
 // MARK: - Registration
 
-// listing: Cube3DSample.Web.swift
+// listing: Cube3DSample.Web.swift, web.md.control
 extension WebGLCube3DView {
     /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
     static func register() {

@@ -13,7 +13,7 @@
 import XCTest
 @_spi(Host) @testable import StateUI
 
-enum TestLanguage: String, CaseIterable, Sendable {
+enum TestLanguage: LocaleTag, CaseIterable {
     case english = "en"
     case polish = "pl"
 }
@@ -52,7 +52,7 @@ struct TestWords: LocalizedResources {
         })
 }
 
-enum Serbian: String, CaseIterable, Sendable {
+enum Serbian: LocaleTag, CaseIterable {
     case cyrillic = "sr-Cyrl"
     case latin = "sr-Latn"
 }
@@ -73,7 +73,7 @@ private struct SaveLabel: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: label(words.save))
+        return AnyView(node: label(words.save))
     }
 }
 
@@ -85,7 +85,7 @@ private struct Provider: View {
 
     var body: some View {
         builds.count += 1
-        return ModifiedContent(node: stack([SaveLabel(builds: reader).environment(localization).node]))
+        return AnyView(node: stack([SaveLabel(builds: reader).environment(localization).node]))
     }
 }
 

@@ -41,7 +41,7 @@
                     VStack {
                         WebView().source(html: Self.page("First")).aim(web)
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
-                        Button("Ask").onClicked(gate: .ignoreWhileRunning) { said.values.append(try await web.evaluateJavaScript("1 + 1")) }.id("ask")
+                        Button("Ask").onClicked(.ignoreWhileRunning) { said.values.append(try await web.evaluateJavaScript("1 + 1")) }.id("ask")
                     }
                 }
                 s.settle(for: Self.pageSeconds) { !arrived.values.isEmpty }
@@ -60,7 +60,7 @@
                     VStack {
                         WebView().userAgent("StateUI conformance").source(html: Self.page("First")).aim(web)
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
-                        Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Ask").onClicked(.ignoreWhileRunning) {
                             said.values.append(try await web.evaluateJavaScript("navigator.userAgent"))
                         }.id("ask")
                     }
@@ -88,8 +88,8 @@
                             .onNavigated { _ in arrived.values.append(true) }
                             .height(200).id("web")
                         Button("Second").onClicked { second.wrappedValue = true }.id("second")
-                        Button("Back").onClicked(gate: .ignoreWhileRunning) { try await web.goBack() }.id("back")
-                        Button("Forward").onClicked(gate: .ignoreWhileRunning) { try await web.goForward() }.id("forward")
+                        Button("Back").onClicked(.ignoreWhileRunning) { try await web.goBack() }.id("back")
+                        Button("Forward").onClicked(.ignoreWhileRunning) { try await web.goForward() }.id("forward")
                     }
                 }
                 // Each page arrives before the next is asked for: one asked for while another still loads takes its
@@ -116,17 +116,20 @@
             },
             ConformanceCase("aPageLoadedAgainIsHeard", proves: [
                 Covered(WebViewContract.reload), Covered(WebViewContract.navigating),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
+            ], needs: [Covered(WebViewContract.navigated), Covered(ButtonContract.clicked)]) { s in
                 let web = Aim(WebView.self)
                 let heard = Received<WebNavigationType>()
+                let arrived = Received<Bool>()
                 s.start {
                     VStack {
                         WebView().source(html: Self.page("First")).aim(web)
-                            .onNavigating { heard.values.append($0.type) }.height(200).id("web")
-                        Button("Reload").onClicked(gate: .ignoreWhileRunning) { try await web.reload() }.id("reload")
+                            .onNavigating { heard.values.append($0.type) }
+                            .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
+                        Button("Reload").onClicked(.ignoreWhileRunning) { try await web.reload() }.id("reload")
                     }
                 }
-                s.settle(for: Self.pageSeconds) { !heard.values.isEmpty }
+                // The first page arrived: a reload asked while it still loads would be no load of its own.
+                s.settle(for: Self.pageSeconds) { !arrived.values.isEmpty }
 
                 try s.perform(.activate, on: s.element("reload"))
                 s.settle(for: Self.pageSeconds) { heard.values.count >= 2 }
@@ -157,10 +160,10 @@
                     VStack {
                         (given.wrappedValue ? WebView().source(html: Self.page("First")) : WebView()).aim(web)
                             .onNavigated { _ in arrived.values.append(true) }.height(200).id("web")
-                        Button("Change").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Change").onClicked(.ignoreWhileRunning) {
                             said.values.append(try await web.evaluateJavaScript("document.body.innerText = 'Changed'"))
                         }.id("change")
-                        Button("Ask").onClicked(gate: .ignoreWhileRunning) {
+                        Button("Ask").onClicked(.ignoreWhileRunning) {
                             said.values.append(try await web.evaluateJavaScript("document.body.innerText"))
                         }.id("ask")
                     }

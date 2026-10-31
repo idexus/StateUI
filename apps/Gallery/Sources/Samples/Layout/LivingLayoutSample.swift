@@ -6,6 +6,10 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
     static let title = "A layout that moves"
     static let summary = "Insert, remove or reorder, and everything else slides to its new place."
 
+    var examples: [Example] {
+        [Example(self), Example(GrowingWords())]
+    }
+
     // listing: LivingLayoutSample
     @State private var rows = ["Alpha", "Bravo", "Charlie"]
     @State private var next = 4
@@ -41,7 +45,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                             .verticalAlignment(.center)
                     }
                     .style(.card)
-                    .padding(Insets(left: 12, top: 8, right: 12, bottom: 8))
+                    .padding(Insets(start: 12, top: 8, end: 12, bottom: 8))
                     .background(Palette.raised)
                     .lineWidth(0)
                     .height(40)
@@ -89,7 +93,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
     }
 
     private func cell(
-        _ text: String, _ colour: Color, at column: Int, faded: Bool = false
+        _ text: String, _ color: Color, at column: Int, faded: Bool = false
     ) -> some View {
         ZStack {
             Text(text)
@@ -99,7 +103,7 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .verticalAlignment(.center)
         }
         .style(.card)
-        .background(colour)
+        .background(color)
         .opacity(faded ? 0.55 : 1)
         .lineWidth(0)
         .gridColumn(column)
@@ -132,5 +136,32 @@ struct LivingLayoutSample: SampleContent, ExampleContent {
                 .textColor(Palette.subtle)
         }
         .spacing(8)
+    }
+}
+
+/// A button whose words lengthen: its box grows, and the longer words show
+/// once it holds them.
+private struct GrowingWords: ExampleContent {
+    // listing: GrowingWords
+    @State private var long = false
+
+    var body: some View {
+        VStack {
+            // The box travels to the width the new words take; they show as
+            // it arrives, never broken on the way. Shorter words show at once.
+            Button(long ? "Show every detail" : "Details")
+                .horizontalAlignment(.center)
+
+            SwitchRow("Longer words", $long)
+                .horizontalAlignment(.center)
+        }
+        .spacing(12)
+    }
+    // listing: end
+
+    var notes: (any View)? {
+        Text("Turn the switch on: the button grows, and its longer words show once its box holds them.")
+            .fontSize(12)
+            .textColor(Palette.subtle)
     }
 }

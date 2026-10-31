@@ -46,7 +46,7 @@ namespace {
         }));
     }
 
-    /// The words across a text box for StateUI's `TextAlignment`: centred, at the end, or at the start.
+    /// The words across a text box for StateUI's `TextAlignment`: centered, at the end, or at the start.
     xaml::TextAlignment across(int32_t alignment) {
         switch (static_cast<StateUITextAlignment>(alignment)) {
         case StateUITextAlignmentStart: return xaml::TextAlignment::Left;
@@ -62,7 +62,7 @@ namespace {
             static_cast<uint8_t>(argb)});
     }
 
-    /// The theme resources a text box's template reads its placeholder's colour from - at rest, under the pointer,
+    /// The theme resources a text box's template reads its placeholder's color from - at rest, under the pointer,
     /// focused and disabled.
     constexpr wchar_t const *placeholderResources[] = {
         L"TextControlPlaceholderForeground", L"TextControlPlaceholderForegroundPointerOver",
@@ -203,7 +203,7 @@ extern "C" void stateui_winui_field_set_placeholder(StateUIObjectRef handle, cha
     }
 }
 
-extern "C" void stateui_winui_field_set_behaviour(
+extern "C" void stateui_winui_field_set_behavior(
     StateUIObjectRef handle, bool readOnly, bool spellChecked, bool predicted, int32_t scope
 ) {
     try {
@@ -256,19 +256,45 @@ extern "C" void stateui_winui_search_set_box(
 
 extern "C" void stateui_winui_search_set_placeholder_color(StateUIObjectRef handle, uint32_t argb, bool colored) {
     try {
-        // The template reads its placeholder's colour from the theme resources, which the box's own name again.
+        // The template reads its placeholder's color from the theme resources, which the box's own name again.
         std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
         for (auto name : placeholderResources)
             brushes.emplace_back(name, colored ? brush(argb) : xaml::Media::Brush{nullptr});
         writeResources(borrow<controls::AutoSuggestBox>(handle), brushes);
     } catch (...) {
-        report("colouring a search box's placeholder");
+        report("coloring a search box's placeholder");
+    }
+}
+
+extern "C" void stateui_winui_field_set_outline(
+    StateUIObjectRef handle, StateUIBrush stroke, double lineWidth, double cornerRadius
+) {
+    try {
+        // A text box, a password box or a search box: a search box's template hands its box what it is given.
+        auto control = as<controls::Control>(handle);
+        auto outline = lineWidth > 0 ? brush(stroke) : xaml::Media::Brush{nullptr};
+        if (outline) {
+            control.BorderBrush(outline);
+            control.BorderThickness({lineWidth, lineWidth, lineWidth, lineWidth});
+        } else {
+            control.ClearValue(controls::Control::BorderBrushProperty());
+            control.ClearValue(controls::Control::BorderThicknessProperty());
+        }
+        // The field's template reads its border from keys of its own in each of its states: the outline stands in all.
+        std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
+        for (std::wstring state : {L"", L"PointerOver", L"Focused", L"Disabled"})
+            brushes.emplace_back(L"TextControlBorderBrush" + state, outline);
+        writeResources(control, brushes);
+        if (cornerRadius >= 0) control.CornerRadius({cornerRadius, cornerRadius, cornerRadius, cornerRadius});
+        else control.ClearValue(controls::Control::CornerRadiusProperty());
+    } catch (...) {
+        report("outlining a field");
     }
 }
 
 extern "C" void stateui_winui_field_set_look(StateUIObjectRef handle, int32_t alignment, uint32_t placeholderArgb, bool placeholderColored) {
     try {
-        // A password box has no alignment of its own, and colours its placeholder from the theme resources its
+        // A password box has no alignment of its own, and colors its placeholder from the theme resources its
         // template reads.
         if (auto password = as<IInspectable>(handle).try_as<controls::PasswordBox>()) {
             std::vector<std::pair<std::wstring, xaml::Media::Brush>> brushes;
@@ -298,6 +324,33 @@ extern "C" void stateui_winui_field_select(StateUIObjectRef handle, int32_t star
         field.Select(from, std::clamp(length, 0, size - from));
     } catch (...) {
         report("selecting in a field");
+    }
+}
+
+extern "C" void stateui_winui_field_edit(StateUIObjectRef handle, int32_t command) {
+    try {
+        if (auto password = as<IInspectable>(handle).try_as<controls::PasswordBox>()) {
+            password.Focus(xaml::FocusState::Programmatic);
+            // A password box gives none of its words away: no undo, cut or copy.
+            if (command == 4) password.PasteFromClipboard();
+            if (command == 6) password.SelectAll();
+            return;
+        }
+        auto box = boxOf(handle);
+        if (!box) return;
+        box.Focus(xaml::FocusState::Programmatic);
+        switch (command) {
+        case 0: box.Undo(); break;
+        case 1: box.Redo(); break;
+        case 2: box.CutSelectionToClipboard(); break;
+        case 3: box.CopySelectionToClipboard(); break;
+        case 4: box.PasteFromClipboard(); break;
+        case 5: box.SelectedText(L""); break;
+        case 6: box.SelectAll(); break;
+        default: break;
+        }
+    } catch (...) {
+        report("doing an Edit menu's entry to a field");
     }
 }
 

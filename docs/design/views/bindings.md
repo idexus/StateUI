@@ -13,7 +13,7 @@ What the host does with a carried state follows from the value and the
 member it is for:
 
 ```text
-  journey   a number, a colour, a thickness,     the host animates the property there under the
+  journey   a number, a color, a thickness,     the host animates the property there under the
             an inset, a point, for a member      element's motion; $x.journey is the animation,
             that travels
                                                  and .motion(.none) lands it at once. Reading the
@@ -40,7 +40,7 @@ and a scroller's offset stand apart. A picker's `isOpen($x)` goes both ways
 through its events: `opening(_:by:opened:closed:)` is the twin with the
 picker's `opened` and `closed` writing the state, which every host raises.
 A composed view's twins read the state in its content instead: a
-`PositionIndicator`'s row is built again as the state changes.
+`PositionDots`'s row is built again as the state changes.
 `twin` takes a `LaneValue` and `words` a `String`, so text cannot take the
 door for numbers ([what a host reads lanes as](../core/state.md#what-a-host-reads-lanes-as)).
 `testEveryValueModifierHasABindingTwin` holds the two forms together, file by
@@ -48,7 +48,7 @@ file - a twin stands beside its value form, so one control's twin never hides
 another's missing one: a value modifier added without its twin is named there. The few allowed out are listed
 with their reason - a value the host cannot be handed whole (a brush, a
 picture, a date, a shape, a transform, a law, a run of numbers), a name rather
-than a value (a style key, a font family, a radio group), a rectangle, and the
+than a value (a style key, a font family), a rectangle, and the
 tiers no view wears.
 
 ## The image never the value
@@ -65,10 +65,8 @@ written `$x.journey.value` is a jump and a `velocity` a kick. A value moving
 under a finger costs the arithmetic and nothing else.
 
 A part of a state (`$room.width`) has no image of its own for the host to write
-into, and a binding made from closures has none either. A driven property
-refuses both with a complaint naming the property, and so do a slider and a
-stepper; every other two-way control falls back to its described form
-instead.
+into. It is a `StatePart`, and a driven property takes `Binding` alone, so a
+part handed to one does not compile (core/state.md#parts-of-a-state).
 
 ## Element side only
 
@@ -113,7 +111,7 @@ following it, a label - for no render at all. What it costs is measuring the
 label again on the frame the words change, which any changed caption costs.
 
 There is no driven `text` on the `TextualElement` tier, though the value form sits
-there. A Text's, a Button's and a RadioButton's text is `.out`, written by the
+there. A Text's, a Button's, a CheckBox's and a Switch's text is `.out`, written by the
 host and reported by nobody. The text of a `TextField`, a `TextEditor` and a
 `SearchField` goes both ways: the user types into it, and the typed words land
 on the state whole as the host's own write. The two directions differ per
@@ -122,8 +120,8 @@ control, so the driven text is written per control.
 ## Two way controls
 
 A control the user changes - a switch, a check box, a radio button, a picker,
-the date and time pickers, the text fields - takes its binding in one of two
-ways, decided by the binding:
+a slider, a stepper, the date, time and color pickers, the text fields - takes
+its value one of two ways, each its own type:
 
 ```text
   $x of a @State or @Binding      handed over: the host sets the control from the state on
@@ -131,15 +129,29 @@ ways, decided by the binding:
                                   own write. The control is no reader of the state, and
                                   what a change costs is decided by who reads the state.
 
-  a part of a state, or a         described: the value read at build goes into the
-  binding made from closures      description, and each report is written back through the
-                                  binding. The closure that wrote the control is a reader
-                                  and renders on every report.
+  a value                         described: the value read at build goes into the
+                                  description, and the user's change comes as the control's
+                                  event, for the application to write. The closure that
+                                  wrote the control is a reader of what it read.
 ```
 
-A slider and a stepper carry their value as a journey and take only a whole
-state. A part of a state or a binding made from closures they refuse: the
-control says so once and sets nothing.
+Every selection, presentation and toggle that only reads and writes - a tab or
+a stack's path, a sheet or popover's `isPresented`, a menu or toolbar toggle,
+a list's selection, `isFocused` - takes a `Binding`. A slider and a stepper
+carry a whole state as a journey, so `$volume.journey.move(to:)` moves the
+thumb.
+
+A value the library works out itself takes the described road inside it, fed
+by the library alone: a picker's choice crosses as its place in the list,
+worked out again at each build, and a sheet is described - the view presenting
+it builds its page as it changes - as is a popover shown for an item. Nothing
+an application hands over takes that road but a value.
+
+A color picker carries its color as a journey too, as a fill, a background
+or a text color does: a state has one shape (core/state.md#a-state-has-one-shape),
+so one state both takes what the user chooses and paints whatever wears it -
+`ColorPicker($tint)` beside `Rectangle().fill($tint)`. A color given as a
+value is described, its user's choice coming as `onColorChanged`.
 
 The date and time pickers carry their value as three lanes: year, month and
 day, or hour, minute and second. A value the platform cannot show - a day
@@ -153,10 +165,9 @@ was written; the user's next choice lands the value shown.
 A two-way control whose bound value is its purpose takes its binding in the
 initializer - the short way to say what gives the control its purpose - and in
 a modifier of the same name, the way every other property is written:
-`TextField($name)` and `TextField().text($name)`. A radio button, whose
-initializer takes its caption, takes it in the modifier alone:
-`RadioButton("Medium").isOn($medium)`; a picker takes its values and the state
-holding the chosen one together, in its initializer alone:
+`TextField($name)` and `TextField().text($name)`: `Switch($wifi)` and
+`Switch().isOn($wifi)`. A picker takes its values and the state holding the
+chosen one together, in its initializer alone:
 `Picker(sizes, selection: $size)`. The initializer
 delegates to the modifier, so there is one body and neither is the real one. A
 value modifier written beside the initializer's binding wins for the value,
@@ -167,10 +178,10 @@ disagree.
 
 A control's report lands on a carried state before its event handlers run,
 wherever the binding is written in the chain, so a handler reads the value
-already in the state. Over a described binding, the binding is itself a
-handler and handlers run in writing order: one written after the binding sees
-the state updated, one written before it still sees the old value. The payload
-carries the new value either way.
+already in the state. A picker's choice, translated to a place in its list, is
+written back by a handler of its own, and handlers run in writing order: one
+written after the picker's state sees it updated, one written before still sees
+the old value. The payload carries the new value either way.
 
 ## Feeds
 

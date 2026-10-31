@@ -9,7 +9,7 @@ import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.Shader;
 
-/** A brush as StateUI says it - a colour, or a gradient's stops over a shape - put on a paint for the shape's bounds. */
+/** A brush as StateUI says it - a color, or a gradient's stops over a shape - put on a paint for the shape's bounds. */
 final class StateUIBrush {
     /** The brush's kinds, as StateUI numbers them. */
     // Swift: AndroidBrushKind
@@ -21,7 +21,7 @@ final class StateUIBrush {
     private float[] geometry = new float[0];
 
     /**
-     * The brush: its kind, its stops' colours and offsets, its points in fractions of the shape and a radial
+     * The brush: its kind, its stops' colors and offsets, its points in fractions of the shape and a radial
      * one's reach in pixels.
      */
     void set(int brush, int[] stopColors, float[] stopOffsets, float[] geometry) {
@@ -31,7 +31,7 @@ final class StateUIBrush {
         this.geometry = geometry;
     }
 
-    /** Whether the brush covers what it paints with no colour the page shows through; none covers nothing. */
+    /** Whether the brush covers what it paints with no color the page shows through; none covers nothing. */
     boolean isOpaque() {
         if (kind == NONE || colors.length == 0) return false;
         int stops = kind == SOLID ? 1 : colors.length;
@@ -42,7 +42,7 @@ final class StateUIBrush {
     }
 
     /**
-     * Puts the brush's colour or shader for `bounds` on `paint`; false when there is nothing to paint. The Swift
+     * Puts the brush's color or shader for `bounds` on `paint`; false when there is nothing to paint. The Swift
      * host gives a gradient two stops or more and its whole geometry.
      */
     boolean paint(Paint paint, Rect bounds) {

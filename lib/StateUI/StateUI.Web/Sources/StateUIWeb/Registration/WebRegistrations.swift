@@ -13,11 +13,13 @@ enum WebRegistrations {
         let registry = Registry<WebDOMView>()
 
         words(registry)
+        links(registry)
         toggles(registry)
         values(registry)
         indicators(registry)
         pickers(registry)
         dates(registry)
+        colors(registry)
         shapes(registry)
         canvas(registry)
         items(registry)

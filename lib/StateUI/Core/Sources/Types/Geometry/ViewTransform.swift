@@ -6,7 +6,7 @@
 import StateUIFoundation
 
 /// How a view is moved, turned and sized: one transform about the view's
-/// centre, its parts applied in the order written.
+/// center, its parts applied in the order written.
 ///
 ///     Card(item).transform(.rotate(45).scale(2).translate(100, 100))
 ///
@@ -43,10 +43,10 @@ public struct ViewTransform: Equatable, Sendable {
     /// What the down axis becomes: how much of it stays down.
     var d = 1.0
 
-    /// How far the centre is carried along.
+    /// How far the center is carried along.
     var tx = 0.0
 
-    /// How far the centre is carried down.
+    /// How far the center is carried down.
     var ty = 0.0
 
     /// A view as it was drawn. Every part written after it happens in order.
@@ -65,7 +65,7 @@ public struct ViewTransform: Equatable, Sendable {
     }
 
     /// A view turned in the plane of the screen, in degrees, clockwise about
-    /// its centre.
+    /// its center.
     ///
     /// - Parameter degrees: how far to turn.
     /// - Returns: a transform that turns the view.
@@ -73,7 +73,7 @@ public struct ViewTransform: Equatable, Sendable {
         identity.rotate(degrees)
     }
 
-    /// A view sized about its centre, as a fraction of what it was drawn at.
+    /// A view sized about its center, as a fraction of what it was drawn at.
     ///
     /// - Parameter factor: 1 is as drawn, a half is half as big.
     /// - Returns: a transform that sizes the view.
@@ -139,7 +139,7 @@ public struct ViewTransform: Equatable, Sendable {
     }
 
     /// Turns the view in the plane of the screen, in degrees, clockwise about
-    /// its centre - after everything written before it, which the turn swings
+    /// its center - after everything written before it, which the turn swings
     /// round with it.
     ///
     /// - Parameter degrees: how far to turn.
@@ -159,7 +159,7 @@ public struct ViewTransform: Equatable, Sendable {
         return copy
     }
 
-    /// Sizes the view about its centre, as a fraction of what it was drawn at
+    /// Sizes the view about its center, as a fraction of what it was drawn at
     /// - after everything written before it, which the sizing grows or
     /// shrinks with it, moves included.
     ///

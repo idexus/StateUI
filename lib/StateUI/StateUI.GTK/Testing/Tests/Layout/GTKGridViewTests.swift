@@ -58,7 +58,9 @@ final class GTKGridViewTests: XCTestCase {
             let host = GTKRenderer.running {
                 Grid {
                     Text("head").height(30)
-                    Rectangle().fill(.red).gridRow(1)
+                    Rectangle()
+                        .fill(.red)
+                        .gridRow(1)
                     Text("foot").height(20).gridRow(2)
                 }
                 .rows(.auto, .fill, .auto)
@@ -75,7 +77,9 @@ final class GTKGridViewTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running {
                 Grid {
-                    Rectangle().fill(.red).gridRowSpan(2)
+                    Rectangle()
+                        .fill(.red)
+                        .gridRowSpan(2)
                     Text("one").height(20).gridColumn(1)
                     Text("two").height(30).gridRow(1).gridColumn(1)
                 }

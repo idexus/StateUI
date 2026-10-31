@@ -2,85 +2,44 @@
 // SPDX-License-Identifier: Apache-2.0
 
 extension View {
-    /// A group of actions on the bar of the page this stands in, declared where
-    /// the state they follow lives.
+    /// The actions on the bar of the page this stands in - or, declared on a
+    /// stack or tabs, on the bar of every page they show, and on a split view,
+    /// on the parts of its bar they name - declared where the state they
+    /// follow lives.
     ///
     ///     VStack { … }
     ///         .toolbar {
-    ///             ToolbarItem("Add").onClicked { items.append(Item()) }
-    ///             ToolbarItem("Delete")
+    ///             ToolbarButton("Add").onClicked { items.append(Item()) }
+    ///             ToolbarButton("Delete")
     ///                 .isEnabled(selected != nil)
     ///                 .onClicked { remove(selected) }
     ///         }
     ///
-    /// The group is built with the body declaring it, so an item follows the
-    /// state it reads. It stands on the bar while the page it belongs to is
-    /// shown: declared on a view, the page holding the view; declared on a
-    /// `NavigationStack`, a `TabView`, a `SplitView` or a window's page,
-    /// every page shown in it. Groups declared further in join those declared
-    /// around them, nearer the title, so an action of the window keeps its
-    /// place from page to page; when a page goes, its groups go with it.
-    /// Declared on a disabled view, its items are disabled with it.
+    /// They are built with the body declaring them, so an item follows the
+    /// state it reads. A page's stand on its own bar while it is shown - a
+    /// split view's sidebar and its detail each on their own, a page pushed
+    /// onto a stack with none of the page under it - and go with it; a stack's
+    /// or tabs' stand over every page they show, a split view's over every
+    /// page of their part. Each item or `ToolbarGroup` says where it stands
+    /// with `.placement`. At an edge they stand by their order, then the
+    /// arrangements' and a page's views further out at the edge, those further
+    /// in nearer the title, then as declared. Declared on a disabled view, its
+    /// items are disabled with it.
     ///
-    /// One declaration is one group, drawn with one shared background where the
-    /// platform groups its bar's actions; a second group is a second
-    /// declaration.
-    ///
-    /// - Parameters:
-    ///   - side: the edge of the bar the group stands at.
-    ///   - order: where the group stands among the others at its edge, lower
-    ///     earlier in reading order; equal ones keep what is declared around
-    ///     them in place.
-    ///   - items: the group's actions, in reading order.
-    public func toolbar(
-        _ side: ToolbarSide = .trailing, order: Int = 0, @ToolbarBuilder _ items: () -> [ToolbarItem]
-    ) -> Modified {
-        toolbarGroup(side, id: nil, order: order, items())
-    }
-
-    /// Actions joining the group of the same `id` declared around this page -
-    /// sharing its background - or starting it, where no group has the id yet.
-    ///
-    ///     // the window's page
-    ///     SplitView($showsMenu) { … } detail: { … }
-    ///         .toolbar(id: "window") {
-    ///             ToolbarItem("Account").onClicked { showAccount() }
-    ///         }
-    ///
-    ///     // a page shown in it
-    ///     VStack { … }
-    ///         .toolbar(id: "window") {
-    ///             ToolbarItem("Help").onClicked { showHelp() }
-    ///         }
-    ///
-    /// A joined group stands where its outermost declaration puts it; the
-    /// items of the declarations further in join it nearer the title. An item
-    /// with the `.id()` of an item declared around it stands in that item's
-    /// place while this page is shown.
+    /// Given `.bottom`, the items stand on a bar at the page's foot instead -
+    /// a desktop's thin status bar, a phone's bottom toolbar - by the same
+    /// rules; a bottom bar's view stands above them.
     ///
     /// - Parameters:
-    ///   - side: the edge of the bar a group this declaration starts stands at.
-    ///   - id: the group's identity, the same across renders.
-    ///   - order: where these items stand among the others joining the group,
-    ///     and where a group this declaration starts stands at its edge.
-    ///   - items: the actions, in reading order.
-    public func toolbar(
-        _ side: ToolbarSide = .trailing, id: some Hashable, order: Int = 0,
-        @ToolbarBuilder _ items: () -> [ToolbarItem]
-    ) -> Modified {
-        toolbarGroup(side, id: AnyHashable(id), order: order, items())
-    }
-
-    private func toolbarGroup(_ side: ToolbarSide, id: AnyHashable?, order: Int, _ items: [ToolbarItem]) -> Modified {
-        modified {
-            var group = Node(contract: ToolbarItemGroupContract.self, children: items.map(\.node))
-            group.identity = id.map(ElementIdentity.init)
-            group.write(ToolbarItemGroupContract.side, side)
-            group.write(ToolbarItemGroupContract.order, order)
-
-            // After the element's own children; the host finds it by type.
-            // Design: docs/design/views/modifiers.md#slot-children
-            $0.children.append(group)
+    ///   - edge: the edge of the page whose bar the items stand on.
+    ///   - content: the items and groups, in reading order.
+    public func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Modified {
+        var groups = content().groups
+        if edge != .top {
+            for index in groups.indices { groups[index].write(ToolbarGroupContract.barEdge, edge) }
         }
+        // After the element's own children; the host finds them by type.
+        // Design: docs/design/views/modifiers.md#slot-children
+        return modified { $0.children.append(contentsOf: groups) }
     }
 }

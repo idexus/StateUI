@@ -58,7 +58,7 @@
 
     /// Runs the display's cycle at `now` and returns what it published.
     public func cycle(now: Double, reducesMotion: Bool) -> HostCycle {
-        HostBoundary.cycle(.display, now: now, reducesMotion: reducesMotion)
+        HostBoundary.cycle(now: now, reducesMotion: reducesMotion)
     }
 
     /// The complete image of an attached state.
@@ -182,8 +182,11 @@
         HostBoundary.setColorScheme(HostThemes.report(system: theme))
     }
 
-    /// Reports the accent the user chose for the system.
-    public func setAccentColor(_ color: Color) { HostBoundary.setAccentColor(color) }
+    /// Reports the accent the platform draws in: the user's, or its own where the user chooses none.
+    public func setAccentColor(_ color: Color) { HostBoundary.setAccentColor(HostAccents.report(system: color)) }
+
+    /// Takes the application's accent its platform took, nil for none.
+    public func holdAccentColor(_ accent: Color?) { HostBoundary.setAccentColor(HostAccents.hold(accent)) }
 
     /// Takes the theme the application holds; themed values resolve against the theme in force.
     public func holdColorScheme(_ theme: ColorScheme) {
@@ -207,6 +210,9 @@
     /// Reports the battery.
     public func setBatteryInfo(_ info: HostBatteryInfo) { HostBoundary.setBatteryInfo(info) }
 
+    /// Reports the user's accessibility settings.
+    public func setAccessibilityInfo(_ info: HostAccessibilityInfo) { HostBoundary.setAccessibilityInfo(info) }
+
     /// How many fields the host's reports have changed so far: a report repeating what stands leaves it.
     public var environmentChanges: Int { HostBoundary.environmentChanges }
 
@@ -221,6 +227,12 @@
     /// What a window's chrome says of its own controls, in the system's language.
     public var chromeWords: ChromeWords { HostBoundary.chromeWords }
 
+    /// What an Edit menu says of the entries a host keeps in it, in the system's language.
+    public var editWords: EditWords { HostBoundary.editWords }
+
+    /// What a control a host composes says of its own parts, in the system's language.
+    public var controlWords: ControlWords { HostBoundary.controlWords }
+
     /// Reports the application's lifecycle phase.
     public func setApplicationPhase(_ phase: ApplicationPhase) {
         HostBoundary.setApplicationPhase(phase)
@@ -234,11 +246,8 @@
         HostBoundary.connectWindow(kind: kind, value: value, restoring: values)
     }
 
-    /// The keys read from the platform's settings store before the first render.
-    public var persistentKeys: [PersistentKey] { HostBoundary.persistentKeys }
-
-    /// Hydrates the kept values found in the store.
-    public func restorePersistent(_ values: [String: HostValue]) {
-        HostBoundary.restorePersistent(values)
+    /// Gives the core the reader of the platform's store: a kept key's name and kind to its value, nil for none.
+    public func readsKept(_ reader: @escaping @MainActor (_ name: String, _ kind: PersistentKind) -> HostValue?) {
+        HostBoundary.readsKept(reader)
     }
 }

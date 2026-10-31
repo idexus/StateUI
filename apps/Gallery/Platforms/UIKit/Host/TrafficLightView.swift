@@ -101,11 +101,11 @@ final class TrafficLightView: UIView {
     }
 
     // listing: InteropControlSample.UIKit.swift
-    /// The lit lamp at full colour, the others dimmed to embers.
+    /// The lit lamp at full color, the others dimmed to embers.
     private func repaint() {
         for (index, lamp) in lamps.enumerated() {
-            let colour = Self.lampColors[index]
-            lamp.backgroundColor = Int32(index) == signal ? colour : colour.withAlphaComponent(0.18)
+            let color = Self.lampColors[index]
+            lamp.backgroundColor = Int32(index) == signal ? color : color.withAlphaComponent(0.18)
         }
     }
     // listing: end
@@ -115,7 +115,7 @@ final class TrafficLightView: UIView {
 
 // MARK: - Registration
 
-// listing: InteropControlSample.UIKit.swift
+// listing: InteropControlSample.UIKit.swift, uikit.md.control
 extension TrafficLightView {
     /// Adds the light for `TrafficLightContract`: `create` makes the view once
     /// per element and wires the tap it reports, and `property` puts the

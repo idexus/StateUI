@@ -8,9 +8,26 @@
 import StateUIConformance
 import XCTest
 
+/// Words in a stack as wide as they are, which travels on a 400 ms linear law as they change.
+private struct SaidPage: View {
+    let open: State<Bool>
+
+    var body: some View {
+        VStack {
+            VStack {
+                Text(open.wrappedValue ? "The popover shows" : "The popover is closed").fontSize(13).id("said")
+            }
+            .horizontalAlignment(.start)
+            .id("stack")
+        }
+        .motion(.eased(.milliseconds(400), .linear))
+        .verticalAlignment(.start)
+    }
+}
+
 /// A stack's children travel to the places a patch gives them; one that joins fades in, one hidden fades out first.
 final class WinUILayoutMotionTests: XCTestCase {
-    /// A vertical stack of 100 x 40 labels in `order`, travelling on a 200 ms linear law; `hidden` fade out in 100 ms.
+    /// A vertical stack of 100 x 40 labels in `order`, traveling on a 200 ms linear law; `hidden` fade out in 100 ms.
     private static func stack(_ order: [String], hidden: Set<String> = []) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
         stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
@@ -22,6 +39,34 @@ final class WinUILayoutMotionTests: XCTestCase {
             return row
         })
         return stack
+    }
+
+    /// A label filling a stack whose width travels lays its words out at the width the stack is bound for: the
+    /// stack lays its children out there, its own place traveling around them - measured at both widths in one
+    /// pass, the words broke onto a second line and back, and WinUI's layout never settled.
+    func testALabelInAStackThatTravelsKeepsItsWordsOnOneLine() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let open = State(wrappedValue: true)
+            let host = WinUIRenderer.running(clock: clock) { SaidPage(open: open) }
+            let said = try XCTUnwrap(host.view(id: .manual("said")))
+            let stack = try XCTUnwrap(host.view(id: .manual("stack")))
+            let line = said.laidOutFrame.height
+
+            open.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+            var (heights, widths) = ([said.laidOutFrame.height], [stack.laidOutFrame.width])
+            for now in stride(from: 50, through: 800, by: 50) {
+                clock.now = Double(now)
+                host.frame()
+                heights.append(said.laidOutFrame.height)
+                widths.append(stack.laidOutFrame.width)
+            }
+
+            XCTAssertTrue(widths.contains { $0 > widths[0] + 1 && $0 < widths[widths.count - 1] - 1 }, "\(widths)")
+            XCTAssertEqual(heights.max() ?? 0, line, accuracy: 0.5, "one line all the way: \(heights)")
+        }
     }
 
     func testAChildAPatchMovesTravelsToItsNewPlace() throws {
@@ -141,9 +186,37 @@ final class WinUILayoutMotionTests: XCTestCase {
         }
     }
 
-    /// A label whose width travels lays its words out at the width it is bound for: they keep the one line they fit
-    /// there, never breaking at the widths its place passes through, and show whole.
-    func testATextsWordsStandAtTheWidthItTravelsTo() throws {
+    /// A button whose new words need more than its box keeps showing its former words while the box grows, and
+    /// shows the new ones as it lands.
+    func testAButtonsGrownWordsShowOnceItsBoxHoldsThem() throws {
+        try onUIThread {
+            let clock = TestClock()
+            let on = State(wrappedValue: true)
+            let host = WinUIRenderer.running(clock: clock) { SwitchedPage(on: on) }
+            host.layOut()
+            let button = try XCTUnwrap(host.views(WinUIButtonView.self).first)
+            let start = button.placedFrame.width
+
+            on.wrappedValue = false
+            host.runtime.pump.turn()
+            host.layOut()
+            clock.now += 100
+            host.frame()
+            let (midway, saidMidway) = (button.placedFrame.width, button.text)
+            clock.now += 100
+            host.frame()
+            let end = button.placedFrame.width
+
+            XCTAssertEqual(saidMidway, "On", "midway, its former words")
+            XCTAssertEqual(midway, (start + end) / 2, accuracy: 1, "in a box halfway grown")
+            XCTAssertEqual(button.text, "Switched off", "and the new ones as it lands")
+            XCTAssertGreaterThan(end, start + 10)
+        }
+    }
+
+    /// A label whose words lengthen stands at the width they need from the start: they keep the one line they fit
+    /// where it is bound, never breaking at the widths its place passes through, and show whole.
+    func testATextsWordsStandAtTheWidthTheyNeed() throws {
         try onUIThread {
             let clock = TestClock()
             let host = WinUIRenderer.running(clock: clock) { LengtheningPage() }
@@ -161,11 +234,24 @@ final class WinUILayoutMotionTests: XCTestCase {
             clock.now += 200
             host.frame()
             let bound = label.laidOutFrame
-            XCTAssertLessThan(place.width, bound.width - 1, "its place on its way")
-            XCTAssertEqual(words.width, bound.width, accuracy: 0.5, "its words at the width it is bound for")
+            XCTAssertEqual(words.width, bound.width, accuracy: 0.5, "midway, its words at the width they need")
             XCTAssertEqual(words.height, bound.height, accuracy: 0.5, "on the one line they fit there")
             XCTAssertEqual(end, [0xFFFF_0000], "shown whole, to the end of its box")
         }
+    }
+}
+
+/// A button whose words a state lengthens, in the middle of a stack whose children travel for 200 ms.
+private struct SwitchedPage: View {
+    let on: State<Bool>
+
+    var body: some View {
+        VStack {
+            Button(on.wrappedValue ? "On" : "Switched off").horizontalAlignment(.center)
+        }
+        .motion(.eased(.milliseconds(200), .linear))
+        .width(300)
+        .verticalAlignment(.start)
     }
 }
 

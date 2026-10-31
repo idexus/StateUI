@@ -20,9 +20,13 @@ extension WebDriver {
             return try WebBrowser.truth("e.isConnected && e.checkVisibility({ visibilityProperty: true })", on: e).propValue
         case (.opacity, _): return try WebBrowser.number("Number(getComputedStyle(e).opacity)", on: e)?.propValue
         case (.tooltip, _): return try WebBrowser.evaluate("e.getAttribute('title')", on: e)?.propValue
+        case (.isPresented, is WebPopoverView): return try WebBrowser.truth("e.matches(':popover-open')", on: e).propValue
         case (.keyboardShortcut, _): return try shortcut(on: e)
         case (.showsMenuArrow, _):
             return try WebBrowser.truth("e.dataset.menu === 'opens' && !e.hasAttribute('data-bare')", on: e).propValue
+        case (.showsText, is WebButtonView):
+            let shown = "((s) => !!s && getComputedStyle(s).display !== 'none')(e.querySelector(':scope > span'))"
+            return try WebBrowser.truth(shown, on: e).propValue
         case (.role, _):
             let roles: [String: ButtonRole] = ["primary": .primary, "cancel": .cancel, "destructive": .destructive]
             return try WebBrowser.evaluate("e.dataset.role ?? null", on: e).flatMap { roles[$0] }?.propValue
@@ -35,7 +39,6 @@ extension WebDriver {
             let rightToLeft = try WebBrowser.truth("getComputedStyle(e).direction === 'rtl'", on: e)
             return (rightToLeft ? LayoutDirection.rightToLeft : .leftToRight).propValue
         case (.isOn, is WebSwitchView): return try WebBrowser.truth("e.querySelector('input').checked", on: e).propValue
-        case (.isOn, is WebRadioView): return try WebBrowser.truth("e.querySelector('input').checked", on: e).propValue
         case (.value, is WebSliderView): return try WebBrowser.number("Number(e.value)", on: e)?.propValue
         case (.minimum, is WebSliderView): return try WebBrowser.number("Number(e.min)", on: e)?.propValue
         case (.maximum, is WebSliderView): return try WebBrowser.number("Number(e.max)", on: e)?.propValue
@@ -46,6 +49,8 @@ extension WebDriver {
         case (.maximum, is WebStepperView):
             return try WebBrowser.number("Number(e.querySelector('input').getAttribute('aria-valuemax'))", on: e)?.propValue
         case (.date, is WebDatePickerView): return .some(try day("e.value", on: e)?.propValue)
+        case (.color, is WebColorPickerView):
+            return .some(try WebBrowser.evaluate("e.value", on: e).flatMap { Color(parsing: $0) }?.propValue)
         case (.minimumDate, is WebDatePickerView): return .some(try day("e.min", on: e)?.propValue)
         case (.maximumDate, is WebDatePickerView): return .some(try day("e.max", on: e)?.propValue)
         case (.time, is WebTimePickerView):
@@ -77,13 +82,17 @@ extension WebDriver {
              (.contentMode, is WebButtonView), (.lineBreak, is WebButtonView):
             return try buttonHolds(property, e)
         case (.showsSidebar, is WebSplitView): return try WebBrowser.truth("e.dataset.sidebar === 'shown'", on: e).propValue
+        case (.showsSidebarToggle, is WebSplitView):
+            // The bar's sidebar button, standing in no hidden part of it.
+            let shown = "!!e.querySelector('button:has(> [data-glyph=sidebar]):not([hidden] *, [hidden])')"
+            return try WebBrowser.truth(shown, on: try bar(over: element)).propValue
         case (.sidebarOverlays, is WebSplitView):
             // The sidebar out of the split's columns, over the detail, as the style sheet stands it.
             let over = "getComputedStyle(e.querySelector(':scope > .stateui-sidebar')).position === 'absolute'"
             return try WebBrowser.truth(over, on: e).propValue
-        case (.sidebarBackground, is WebSplitView), (.flyoutBackground, is WebSplitView):
+        case (.sidebarBackground, is WebSplitView), (.sidebarOverlayBackground, is WebSplitView):
             // The variable the style sheet reads in that place.
-            let place = property == .sidebarBackground ? "sidebar" : "flyout"
+            let place = property == .sidebarBackground ? "sidebar" : "sidebar-overlay"
             let painted = "getComputedStyle(e).getPropertyValue('--stateui-\(place)-ground').trim() || null"
             guard try WebBrowser.evaluate(painted, on: e) != nil else { return nil }
             return try color(painted, on: e).map { Material.color($0).propValue }
@@ -98,10 +107,14 @@ extension WebDriver {
         case (.scrollOffset, is WebScrollView):
             let offset = try numbers("[e.scrollLeft, e.scrollTop]", on: e)
             return offset.count == 2 ? Point(x: offset[0], y: offset[1]).propValue : nil
+        case (.edge, _):
+            let edge = try WebBrowser.evaluate("e.closest('.stateui-bottom-bar')?.dataset.edge ?? ''", on: e)
+            return (edge == "none" ? ScrollEdge.none : edge == "hard" ? .hard : .automatic).propValue
         default: break
         }
         if let shape = view as? WebShapeView, let held = try shapeHolds(property, shape) { return held }
         if let input = view as? WebTextInputView, let held = try fieldHolds(property, input) { return held }
+        if let toggle = view as? WebSwitchView, let held = try wordsHolds(property, toggle.caption.node) { return held }
         if let held = try wordsHolds(property, e) { return held }
         if let held = try boxHolds(property, view) { return held }
         return nil
@@ -116,16 +129,41 @@ extension WebDriver {
             guard let frame = renderer?.roster.controllers.first?.window.frame else { return nil }
             return .some(try color("getComputedStyle(e).backgroundColor", on: frame.node, unlessClear: true)
                 .map { StandIns.material(painted: $0).propValue })
-        case (_, .barTitle): return .some(try barWords(".stateui-bar-name"))
-        case (_, .barSubtitle): return .some(try barWords(".stateui-bar-subtitle"))
-        case (_, .barBackgroundColor): return .some(try barColor("--stateui-bar-background"))
-        case (_, .barForegroundColor): return .some(try barColor("--stateui-bar-foreground"))
+        case (.sheet, .background):
+            let page = element.children.first
+            guard let sheet = renderer?.roster.controllers.lazy.flatMap(\.sheets).first(where: { $0.element === page })
+            else { return nil }
+            return .some(try color("getComputedStyle(e).backgroundColor", on: sheet.sheet.dialogNode, unlessClear: true)
+                .map { Material.color($0).propValue })
+        case (_, .holdDuration):
+            guard let view = (element.native as? WebElement)?.view else { return nil }
+            return .some(try WebBrowser.evaluate("e.stateuiHold", on: view.node).flatMap(Double.init).map { .number($0) })
+        case (.page, .subtitle): return .some(try barWords(".stateui-bar-line", in: standingBar(over: element)))
+        case (_, .barBackground): return .some(try barMaterial(over: element))
+        case (_, .toolbarSpacing):
+            // The room between the groups at the bar's end.
+            return .some(try WebBrowser.number(
+                "parseFloat(getComputedStyle(e.querySelector('.stateui-bar-actions')).columnGap)",
+                on: standingBar(over: element).node)?.propValue)
+        case (_, .toolbarStyle):
+            // The bar's buttons on glass where it says no look of its own.
+            let look = try WebBrowser.evaluate("e.dataset.toolbarStyle ?? ''", on: standingBar(over: element).node) ?? ""
+            let style: ToolbarStyle = look == "plain" ? .plain : look == "rounded" ? .rounded : .glass
+            return .some(style.propValue)
+        case (_, .barForegroundColor): return .some(try barColor("--stateui-bar-foreground", over: element))
+        case (_, .barScrollEdge):
+            let edge = try WebBrowser.evaluate("e.dataset.edge ?? ''", on: standingBar(over: element).node) ?? ""
+            return .some((edge == "none" ? ScrollEdge.none : edge == "hard" ? .hard : .automatic).propValue)
         case (.page, .showsNavigationBar):
             guard let bar = try? bar(over: element) else { return nil }
             return try (!WebBrowser.truth("e.hidden", on: bar)).propValue
         case (.page, .showsTitle):
             guard let bar = try? bar(over: element) else { return nil }
             return try WebBrowser.truth("e.dataset.title !== 'none'", on: bar).propValue
+        case (.page, .showsCloseButton):
+            guard let bar = try? sheetBar(over: element) else { return nil }
+            return try WebBrowser.truth(
+                "!e.hidden && !e.querySelector('button:has(> [data-glyph=close])').hidden", on: bar).propValue
         case (.page, .showsBackButton):
             guard let bar = try? bar(over: element) else { return nil }
             return try WebBrowser.truth("!e.hidden && !e.querySelector('button:has(> [data-glyph=back])').hidden", on: bar).propValue
@@ -143,16 +181,70 @@ extension WebDriver {
         }
     }
 
-    /// The words of the window's bar's part `part`; nil where it shows none.
-    private func barWords(_ part: String) throws -> HostValue? {
-        guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("find the window's bar") }
-        return try WebBrowser.evaluate("((p) => p && !p.hidden && p.textContent ? p.textContent : null)(e.querySelector('\(part)'))", on: bar.node)?
+    /// The words of `bar`'s part `part`; nil where it shows none.
+    private func barWords(_ part: String, in bar: WebWindowBar) throws -> HostValue? {
+        try WebBrowser.evaluate("((p) => p && !p.hidden && p.textContent ? p.textContent : null)(e.querySelector('\(part)'))", on: bar.node)?
             .propValue
     }
 
-    /// The colour the window's bar is painted with by its variable `variable`; nil for the page's own.
-    private func barColor(_ variable: String) throws -> HostValue? {
-        guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("find the window's bar") }
+    /// The bar `element` stands under: the bar of the sheet it stands in, else the window's.
+    private func standingBar(over element: MountedElement) throws -> WebWindowBar {
+        guard let controller = renderer?.roster.controllers.first else { throw DriverCannot("find the window's bar") }
+        let sheet = controller.sheets.last { shown in
+            var each: MountedElement? = element
+            while let found = each, found !== shown.element { each = found.parent }
+            return each != nil
+        }
+        return sheet?.sheet.bar ?? controller.window.bar
+    }
+
+    /// The color the bar `element` stands under is painted with by its variable `variable`; nil for the page's own.
+    /// What the bar `element` stands under is made of: the blur its backdrop filter is, else its color.
+    private func barMaterial(over element: MountedElement) throws -> HostValue? {
+        let bar = try standingBar(over: element)
+        let filter = "getComputedStyle(e).getPropertyValue('--stateui-bar-filter').trim()"
+        let blur = try WebBrowser.number("parseFloat((\(filter).match(/blur\\(([0-9.]+)px\\)/) || [])[1])", on: bar.node)
+        if let blur, let thickness = Blur.Thickness.allCases.first(where: { WebBox.blur($0) == blur }) {
+            return Material.blur(Blur(thickness)).propValue
+        }
+        let painted = try WebBrowser.evaluate(
+            "getComputedStyle(e).getPropertyValue('--stateui-bar-background').trim()", on: bar.node) ?? ""
+        if painted.hasPrefix("linear-gradient(") {
+            let size = try numbers("[e.offsetWidth, e.offsetHeight].join(',')", on: bar.node, separator: ",")
+            guard size.count == 2 else { throw DriverCannot("read the size of the bar") }
+            return Self.gradient(painted, width: size[0], height: size[1])?.propValue
+        }
+        return try barColor("--stateui-bar-background", over: element)
+    }
+
+    /// A line's gradient as CSS writes it for a box `width` by `height` - its angle, then each stop's color at its
+    /// place on CSS's line - read back to its points in fractions of the box; nil for anything else.
+    static func gradient(_ written: String, width: Double, height: Double) -> Material? {
+        var parts = written.dropFirst("linear-gradient(".count).dropLast()
+            .split(separator: ",", omittingEmptySubsequences: false).map { $0.trimmingPrefix(" ") }
+        var angle: Double?
+        if let first = parts.first, first.hasSuffix("deg"), let degrees = Double(first.dropLast(3)) {
+            angle = degrees
+            parts.removeFirst()
+        }
+        // Each stop: `rgb(r g b / a) place%`.
+        let stops: [(color: Color, place: Double)] = parts.compactMap { part in
+            guard let open = part.firstIndex(of: "("), let close = part.firstIndex(of: ")"),
+                  let place = Double(part[part.index(after: close)...].trimmingPrefix(" ").dropLast())
+            else { return nil }
+            let channels = part[part.index(after: open)..<close].split { " /".contains($0) }.compactMap { Double($0) }
+            guard channels.count == 4 else { return nil }
+            let color = Color(
+                red: Int(channels[0]), green: Int(channels[1]), blue: Int(channels[2]),
+                alpha: Int((channels[3] * 255).rounded()))
+            return (color, place / 100)
+        }
+        guard stops.count == parts.count else { return nil }
+        return StandIns.material(cssAngle: angle, stops: stops, width: width, height: height)
+    }
+
+    private func barColor(_ variable: String, over element: MountedElement) throws -> HostValue? {
+        let bar = try standingBar(over: element)
         let painted = "getComputedStyle(e).getPropertyValue('\(variable)').trim() || null"
         guard try WebBrowser.evaluate(painted, on: bar.node) != nil else { return nil }
         return try color(painted, on: bar.node)?.propValue
@@ -177,13 +269,18 @@ extension WebDriver {
         switch property {
         case .accessibilityLabel: return .some(try WebBrowser.evaluate("e.getAttribute('aria-label')", on: named)?.propValue)
         case .accessibilityHint: return .some(try WebBrowser.evaluate("e.getAttribute('aria-description')", on: named)?.propValue)
+        case .accessibilityRole:
+            let role = try WebBrowser.evaluate("e.getAttribute('role') ?? ''", on: e) ?? ""
+            return AccessibilityRole.allCases.first { WebDOMView.role($0) == role }?.propValue
+        case .accessibilityValue:
+            return .some(try WebBrowser.evaluate("e.getAttribute('aria-valuetext')", on: e)?.propValue)
         case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier", on: e)?.propValue)
         case .accessibilityHeading:
             let level = try WebBrowser.number("e.getAttribute('role') === 'heading' ? Number(e.ariaLevel) : 0", on: e) ?? 0
             return AccessibilityHeadingLevel(rawValue: Int32(level))?.propValue ?? AccessibilityHeadingLevel.none.propValue
         case .isAccessibilityHidden:
             return try WebBrowser.truth("e.getAttribute('role') === 'none' || e.ariaHidden === 'true'", on: e).propValue
-        case .automationExcludedWithChildren: return try WebBrowser.truth("e.ariaHidden === 'true'", on: e).propValue
+        case .hidesChildrenFromAccessibility: return try WebBrowser.truth("e.ariaHidden === 'true'", on: e).propValue
         default: return nil
         }
     }
@@ -211,7 +308,7 @@ extension WebDriver {
     }
 
     /// The words of `e` and the look the browser's style resolves for them.
-    private func wordsHolds(_ property: Prop, _ e: Int32) throws -> HostValue?? {
+    func wordsHolds(_ property: Prop, _ e: Int32) throws -> HostValue?? {
         let style = "getComputedStyle(e)"
         switch property {
         case .text: return .some(try WebBrowser.evaluate("e.textContent", on: e)?.propValue)
@@ -235,8 +332,12 @@ extension WebDriver {
         case .fontWeight:
             return FontWeight(nearest: try WebBrowser.number("Number(\(style).fontWeight)", on: e) ?? 400).propValue
         case .fontAttributes:
-            let italic = try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e)
-            return (italic ? FontAttributes.italic : .none).propValue
+            var attributes = FontAttributes.none
+            if try WebBrowser.truth("\(style).fontStyle === 'italic'", on: e) { attributes.insert(.italic) }
+            if try WebBrowser.truth("\(style).fontVariantNumeric.includes('tabular-nums')", on: e) {
+                attributes.insert(.monospacedDigits)
+            }
+            return attributes.propValue
         case .textDecorations:
             var decorations: TextDecorations = []
             let lines = try WebBrowser.evaluate("\(style).textDecorationLine", on: e) ?? ""
@@ -276,8 +377,8 @@ extension WebDriver {
             let clamp = try WebBrowser.evaluate("\(style).webkitLineClamp", on: e) ?? "none"
             return .some(Int(clamp).map(\.propValue))
         case .padding:
-            let sides = try numbers("['Left', 'Top', 'Right', 'Bottom'].map((s) => parseFloat(\(style)['padding' + s]))", on: e)
-            return sides.count == 4 ? Insets(left: sides[0], top: sides[1], right: sides[2], bottom: sides[3]).propValue : nil
+            let sides = try numbers("['InlineStart', 'Top', 'InlineEnd', 'Bottom'].map((s) => parseFloat(\(style)['padding' + s]))", on: e)
+            return sides.count == 4 ? Insets(start: sides[0], top: sides[1], end: sides[2], bottom: sides[3]).propValue : nil
         default: return nil
         }
     }
@@ -287,6 +388,7 @@ extension WebDriver {
     private func fieldHolds(_ property: Prop, _ field: WebTextInputView) throws -> HostValue?? {
         let e = field.node
         switch property {
+        case .stroke, .lineWidth, .shape: return try boxHolds(property, field)
         case .text: return try WebBrowser.evaluate("e.value", on: e)?.propValue ?? "".propValue
         case .placeholder: return .some(try WebBrowser.evaluate("e.placeholder || null", on: e)?.propValue)
         case .isReadOnly: return try WebBrowser.truth("e.readOnly", on: e).propValue
@@ -307,6 +409,10 @@ extension WebDriver {
             }
             return label.propValue
         case .inputPurpose:
+            let filled: [String: InputPurpose] = [
+                "username": .username, "new-password": .newPassword, "one-time-code": .oneTimeCode,
+            ]
+            if let purpose = filled[try WebBrowser.evaluate("e.autocomplete", on: e) ?? ""] { return purpose.propValue }
             let mode = try WebBrowser.evaluate("e.inputMode", on: e) ?? ""
             let purpose: InputPurpose = switch mode {
             case "email": .email
@@ -318,7 +424,7 @@ extension WebDriver {
             return purpose.propValue
         case .growsWithText: return try WebBrowser.truth("e.hasAttribute('data-grows')", on: e).propValue
         case .placeholderColor:
-            // The browser resolves no style of `::placeholder`: the colour is the variable the page paints it with.
+            // The browser resolves no style of `::placeholder`: the color is the variable the page paints it with.
             let painted = "((s) => s.getPropertyValue('--stateui-placeholder').trim() || s.getPropertyValue('--stateui-muted').trim())"
             return .some(try color("\(painted)(getComputedStyle(e))", on: e)?.propValue)
         default: return nil
@@ -327,18 +433,28 @@ extension WebDriver {
 
     // MARK: - Shapes
 
-    /// How a shape's path is painted, as its attributes say: its brushes' colours, its outline's width, ends,
+    /// How a shape's path is painted, as its attributes say: its brushes' colors, its outline's width, ends,
     /// joins and dashes - the dashes measured in its width, as StateUI measures them.
     private func shapeHolds(_ property: Prop, _ shape: WebShapeView) throws -> HostValue?? {
         let path = "e.querySelector('path')"
         let attribute = { (name: String) in try WebBrowser.evaluate("\(path).getAttribute('\(name)')", on: shape.node) }
         let width = Double(try attribute("stroke-width") ?? "") ?? 1
         switch property {
-        case .fill, .stroke:
-            let painted = try attribute(property == .fill ? "fill" : "stroke") ?? "none"
+        case .fill:
+            // A figure made of a blur is the page's blur under its color, cut to it; a painted one, its path's fill.
+            let behind = "getComputedStyle(e.querySelector('.stateui-shape-backdrop') ?? e).backdropFilter"
+            let blur = try WebBrowser.number(
+                "parseFloat((\(behind).match(/blur\\(([\\d.]+)px\\)/) || [])[1]) || 0", on: shape.node) ?? 0
+            if let thickness = Blur.Thickness.allCases.first(where: { WebBox.blur($0) == blur }) {
+                return .some(Material.blur(Blur(thickness)).propValue)
+            }
+            let painted = try attribute("fill") ?? "none"
             guard !painted.hasPrefix("url(") else { throw DriverCannot("read a gradient a shape is painted with") }
-            return .some(try color("\(path).getAttribute('\(property == .fill ? "fill" : "stroke")')", on: shape.node)
-                .map { Brush.solidColor($0).propValue })
+            return .some(try color("\(path).getAttribute('fill')", on: shape.node).map { Material.color($0).propValue })
+        case .stroke:
+            let painted = try attribute("stroke") ?? "none"
+            guard !painted.hasPrefix("url(") else { throw DriverCannot("read a gradient a shape is painted with") }
+            return .some(try color("\(path).getAttribute('stroke')", on: shape.node).map { Brush.solidColor($0).propValue })
         case .lineWidth: return width.propValue
         case .miterLimit: return (Double(try attribute("stroke-miterlimit") ?? "") ?? 4).propValue
         case .lineCap:
@@ -370,7 +486,7 @@ extension WebDriver {
                 .map { .string($0) })
         case .iconPosition:
             let positions: [String: IconPosition] = [
-                "row": .leading, "row-reverse": .trailing, "column": .top, "column-reverse": .bottom,
+                "row": .start, "row-reverse": .end, "column": .top, "column-reverse": .bottom,
             ]
             return .some(positions[try WebBrowser.evaluate("getComputedStyle(e).flexDirection", on: e) ?? ""]?.propValue)
         case .iconSpacing: return .some(try WebBrowser.number("parseFloat(getComputedStyle(e).gap) || 0", on: e)?.propValue)
@@ -386,14 +502,14 @@ extension WebDriver {
     // MARK: - Boxes
 
     /// What a box StateUI draws holds: its fill, its outline and its shape, as the page draws them.
-    private func boxHolds(_ property: Prop, _ view: WebDOMView) throws -> HostValue?? {
+    func boxHolds(_ property: Prop, _ view: WebDOMView) throws -> HostValue?? {
         let e = view.node
         let style = "getComputedStyle(e)"
         switch property {
         case .clipsContent: return try WebBrowser.truth("\(style).overflow === 'hidden'", on: e).propValue
         case .letsInputThrough: return try WebBrowser.truth("e.hasAttribute('data-lets-through')", on: e).propValue
         case .background:
-            // A page has no glass: the filter's blur says the blur drawn; else the box's colour.
+            // A page has no glass: the filter's blur says the blur drawn; else the box's color.
             let blur = try WebBrowser.number(
                 "parseFloat((\(style).backdropFilter.match(/blur\\(([\\d.]+)px\\)/) || [])[1]) || 0", on: e) ?? 0
             if let thickness = Blur.Thickness.allCases.first(where: { WebBox.blur($0) == blur }) {
@@ -479,7 +595,7 @@ extension WebDriver {
         return .some(mode?.propValue)
     }
 
-    /// `script`'s colour on `e`; nil for none - and, `unlessClear`, for one wholly clear.
+    /// `script`'s color on `e`; nil for none - and, `unlessClear`, for one wholly clear.
     func color(_ script: String, on e: Int32, unlessClear: Bool = false) throws -> Color? {
         let channels = try numbers("stateui.channels(\(script))", on: e, separator: ",")
         guard channels.count == 4, !(unlessClear && channels[3] == 0) else { return nil }

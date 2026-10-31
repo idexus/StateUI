@@ -16,13 +16,13 @@ final class MaterialChannelTests: XCTestCase {
     /// Every kind of material comes back from its lanes as it was laid.
     func testAMaterialIsLaidAndReadBackWhole() {
         let materials: [Material] = [
-            .color(Color("#512BD4")),
+            .color(Color(hex: 0x512BD4)),
             .gradient(.linearGradient(
-                [GradientStop(Color("#7C5CFC"), 0), GradientStop(Color("#E879A9"), 1)],
+                [GradientStop(Color(hex: 0x7C5CFC), 0), GradientStop(Color(hex: 0xE879A9), 1)],
                 startPoint: Point(0, 0), endPoint: Point(1, 1))),
             .blur(.thin),
-            .blur(.thick.tint(Color("#512BD4").opacity(0.15))),
-            .glass(Glass.clear.tint(Color("#0F766E")).isInteractive(true)),
+            .blur(.thick.tint(Color(hex: 0x512BD4).opacity(0.15))),
+            .glass(Glass.clear.tint(Color(hex: 0x0F766E)).isInteractive(true)),
         ]
         withTheme(.light) {
             for material in materials {
@@ -34,14 +34,14 @@ final class MaterialChannelTests: XCTestCase {
     /// A pair lies, in the theme in force, as its half in force, and a half that is none as nothing; the host
     /// reads a blur with its stand-in for the theme in force.
     func testAPairLiesAsTheHalfInForce() {
-        let pair = Material(light: .color(Color("#512BD4")), dark: nil)
+        let pair = Material(light: .color(Color(hex: 0x512BD4)), dark: nil)
         withTheme(.light) {
-            XCTAssertEqual(Material.propValue(lanes: lanes(of: pair)), Color("#512BD4").propValue)
+            XCTAssertEqual(Material.propValue(lanes: lanes(of: pair)), Color(hex: 0x512BD4).propValue)
         }
         withTheme(.dark) {
             XCTAssertEqual(Material.propValue(lanes: lanes(of: pair)), PropValue.nothing)
             let standIn = Material.propValue(lanes: lanes(of: .blur(.thick)))?.values?.last
-            XCTAssertEqual(standIn, Color("#1C1C1E").opacity(0.88).propValue, "the dark theme's stand-in")
+            XCTAssertEqual(standIn, Color(hex: 0x1C1C1E).opacity(0.88).propValue, "the dark theme's stand-in")
         }
     }
 

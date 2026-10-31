@@ -1,0 +1,13 @@
+# revision 1.1
+ToolbarButton.background: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.pointerEntered: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.pointerExited: – The title bar's commands stand in WinUI's own look.
+ToolbarButton.style: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.background: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.pointerEntered: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.pointerExited: – The title bar's commands stand in WinUI's own look.
+ToolbarGroup.style: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.background: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.pointerEntered: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.pointerExited: – The title bar's commands stand in WinUI's own look.
+ToolbarToggle.style: – The title bar's commands stand in WinUI's own look.

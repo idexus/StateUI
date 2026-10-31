@@ -52,7 +52,7 @@ final class DrawnChildrenTests: XCTestCase {
     static let registry: Registry<ShelfView> = {
         let registry = Registry<ShelfView>()
         registry.add(ShelfContract.self, create: { _ in ShelfView() }) { shelf in
-            shelf.children(BookContract.self, members: [BookContract.title]) { view, books in
+            shelf.children(BookContract.self, properties: BookContract.title) { view, books in
                 view.handed.append(books.map { (child: $0, title: $0.value(BookContract.title) ?? "") })
             }
         }
@@ -114,6 +114,8 @@ private final class Drawing: NativeElement {
     }
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func leave() {}
 }
 

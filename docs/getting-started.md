@@ -161,8 +161,9 @@ Build the signed Gallery bundle with its resources and icon:
 ```
 
 A new application is HelloWorld under another name, with every head
-HelloWorld has and its example test in `Tests/`, which `swift test` and
-**StateUI: Run Tests** run. This makes `apps/Notes`
+HelloWorld has and its example test in `Tests/` - its page shown in a test
+window, its button clicked ([Testing an application](interface/testing.md)) -
+which `swift test` and **StateUI: Run Tests** run. This makes `apps/Notes`
 (`.scripts/new-app.ps1 -Name Notes` on Windows):
 
 ```bash
@@ -234,11 +235,12 @@ from its first window to its last. A scene's body declares its windows:
   *File ▸ New Window* make a window of;
 - `WindowGroup(.kind) { ... }` makes as many windows of a kind as are opened,
   and `Window(.kind) { ... }` makes one;
-- `WindowGroup(.kind, for: ID.self) { $id in ... }` makes one window per
+- `WindowGroup(.kind) { $id in ... }`, a kind with a value, makes one window per
   value.
 
-A kind is a `WindowType` the application names in an extension of it:
-`static let editor = WindowType("editor")`. A view reads the application's session with `@Environment(\.application)`,
+A kind is a `WindowType` the application names in an extension of it, for the
+value its windows stand for - `Void` where they stand for none:
+`extension WindowType where Value == Void { static let editor = WindowType("editor") }`. A view reads the application's session with `@Environment(\.application)`,
 and `application.openWindow(.kind)` opens a window of that kind in the scene
 declaring it, opening the scene with it where it is not open.
 
@@ -280,30 +282,31 @@ struct RegisteredPage: View {
     var body: some View { Text("Hello, StateUI") }
 }
 
-@_cdecl("stateui_app_register")
 @MainActor
-public func stateui_app_register() {
+public func registerApplication() {
     stateUIUseApp(RegisteredApp())
 }
 ```
 
-The AppKit executable registers the module and starts the host:
+The AppKit executable registers the module and starts the host - the
+starter's `Platforms/AppKit/main.swift` does that and finds its artwork; the
+Gallery's head, which also registers its own controls, reads:
 
-```swift quote
-import Foundation
-import NotesUI
+```swift listing appkit.md.head
+// Platforms/AppKit/main.swift
+import GalleryUI
 import StateUIAppKit
 
-stateui_app_register()
+registerApplication()
 
-let beside = Bundle.main.executableURL!.deletingLastPathComponent()
-let application = FileManager.default.fileExists(atPath: beside.appendingPathComponent("Resources").path)
-    ? beside
-    : URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
+// What this host answers for the application, said before it runs: the
+// controls it realizes, the acts it performs, and the pushes it reports. Each
+// lives in Host/ beside this file.
+GalleryControls.register()
+GalleryActs.register()
+GalleryEventSources.start()
 
-StateUIAppKit.run(
-    resourceDirectory: application.appendingPathComponent("Resources/Images", isDirectory: true),
-    applicationIcon: application.appendingPathComponent("Resources/AppIcon/appicon_macos.svg"))
+StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
 ```
 
 The head finds its artwork beside itself where a deployed copy carries it -
@@ -316,13 +319,13 @@ belong to one application tree, renderer generation, and native host. Opening a
 new scene does not start another host; it asks that host to materialize another
 native scene session.
 
-The UIKit, WinUI, GTK and Web heads call the same `stateui_app_register`
+The UIKit, WinUI, GTK and Web heads call the same `registerApplication()`
 before their host's `run`, and the Android head when Android loads its
 library; each host's page describes its head: [UIKit](hosts/uikit.md),
 [Android Views](hosts/android.md), [WinUI](hosts/winui.md),
 [GTK](hosts/gtk.md), [Web](hosts/web.md).
 
-Between `stateui_app_register()` and `run`, a head registers what this host
+Between `registerApplication()` and `run`, a head registers what this host
 answers for the application beyond the library:
 
 - the application's own controls, acts and event sources, through the host's
@@ -337,18 +340,23 @@ answers for the application beyond the library:
 
 The Gallery's GTK head registers both:
 
-```swift quote
+```swift listing gtk.md.head
+// Platforms/GTK/main.swift
 import GalleryUI
-import StateUIFoundation
 import StateUIGTK
 import StateUIWebViewGTK
 
-stateui_app_register()
+// Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+// the acts it performs, and the pushes it reports - each in Host/ beside this file.
+registerApplication()
+// Each control's own register(), at the end of its file: its widget, and any act aimed at it.
 GalleryControls.register()
 GalleryActs.register()
 GalleryEventSources.start()
+// The backends the Gallery shows a library element through: the web view, over WebKitGTK.
 StateUIWebViewGTK.register()
-exit(StateUIGTK.run(applicationID: "com.stateui.gallery"))
+// Then GTK holds this thread until the last window closes.
+StateUIGTK.run(applicationID: "com.stateui.gallery")
 ```
 
 `GalleryControls`, `GalleryActs` and `GalleryEventSources` are the Gallery's
@@ -399,7 +407,8 @@ apps/Notes/
     MainPageTests.swift
 ```
 
-The application target depends only on the `StateUI` product. The executable
+The application target depends only on the `StateUI` product, its tests on
+`StateUITesting` too. The executable
 target depends on the application target and `StateUIHead`
 (`lib/StateUI.Head`), which brings it the host the build is for -
 `StateUIAppKit` on an AppKit build - and on a backend's product where it

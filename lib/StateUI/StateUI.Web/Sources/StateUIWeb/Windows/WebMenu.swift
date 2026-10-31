@@ -61,6 +61,7 @@ final class WebMenu {
             button.listen("click") { [weak self] in
                 guard let self, entry.isEnabled else { return }
                 takeDown()
+                if let command = entry.edit { return WebRelay.edit(command) }
                 (entry.element?.native as? WebElement)?.choose()
             }
         case .submenu:

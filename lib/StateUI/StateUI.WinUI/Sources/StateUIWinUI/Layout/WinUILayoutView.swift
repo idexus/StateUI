@@ -67,20 +67,24 @@ class WinUILayoutView: WinUIView {
 
     /// Holds the views this layout shows now, under the title heading it where a page or a tab view is headed.
     func holdChildren() {
-        setChildren((heading.map { [$0.view] } ?? []) + heldViews())
+        setChildren((heading?.views ?? []) + heldViews())
     }
 
     /// The title heading the page or tab view this layout is; nil for none.
     private(set) var heading: WinUIPageHeading?
 
-    /// Heads the page or tab view with `title`, its content under it; nil takes the heading away.
+    /// Heads the page or tab view with `title` and the `line` under it, its content under them; nil takes the
+    /// heading away.
     /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
-    func setHeading(_ title: String?) {
-        guard title != heading?.view.text else { return }
+    func setHeading(_ title: String?, line: String?) {
+        guard title != heading?.view.text || line ?? "" != heading?.line.text ?? "" else { return }
         if let title, let heading {
+            let shown = heading.views.count
             heading.view.setText(title)
+            heading.line.setText(line ?? "")
+            if heading.views.count != shown { holdChildren() }
         } else {
-            heading = title.map(WinUIPageHeading.init)
+            heading = title.map { WinUIPageHeading($0, line: line) }
             holdChildren()
         }
         invalidateMeasurements()
@@ -97,7 +101,7 @@ class WinUILayoutView: WinUIView {
         heldBox = boxView
     }
 
-    /// What fills the box: a colour or a brush; nil for nothing.
+    /// What fills the box: a color or a brush; nil for nothing.
     override func setBackground(_ value: HostValue?) {
         box.fill = value
         paintBox()
@@ -195,19 +199,44 @@ class WinUILayoutView: WinUIView {
     /// How many times a layout has sized its children - what a test counts.
     static var sizings = 0
 
-    /// Answers WinUI's arrange: places the box and every child in `width` by `height` DIPs, inside the pass.
+    /// Answers WinUI's arrange: places the box in `width` by `height` DIPs and every child in the room it is
+    /// bound for, inside the pass.
     func arrange(width: Double, height: Double) {
         WinUIView.arranging += 1
         defer { WinUIView.arranging -= 1 }
         boxView?.layout(Rect(x: 0, y: 0, width: width, height: height))
         writeCut(width: width, height: height)
-        arrange(in: Rect(x: 0, y: 0, width: width, height: height))
+        let room = arrangementRoom ?? LayoutSize(width: width, height: height)
+        arrange(in: Rect(x: 0, y: 0, width: room.width, height: room.height))
     }
 
-    /// A layout skipped with its children hides from assistive technology all that stands in it.
+    /// The size the layout is bound for while its place travels: its children stand there meanwhile, as they will
+    /// once it lands, its own box traveling around them. Design: docs/design/host/motion.md#a-layout-bound-for-a-size
+    private(set) var arrangementRoom: LayoutSize?
+
+    override func travels(to destination: Rect?) {
+        arrangementRoom = destination.map { LayoutSize(width: $0.width, height: $0.height) }
+    }
+
+    /// A layout skipped with its children hides from assistive technology all that stands in it; the kind and the
+    /// value its element says, its panel's peer tells.
     override func setAccessibility(_ words: AccessibilityWords) {
         super.setAccessibility(words)
         stateui_winui_panel_hide_children(handle, words.presence == .hiddenWithChildren)
+        stateui_winui_panel_set_kind(handle, words.role.map(Self.controlType) ?? -1, words.value)
+    }
+
+    /// WinUI's `AutomationControlType` for a kind: a button, a check box for a toggle, a slider for something
+    /// adjustable, a hyperlink, an image, text.
+    static func controlType(_ role: AccessibilityRole) -> Int32 {
+        switch role {
+        case .button: 0
+        case .toggle: 2
+        case .adjustable: 15
+        case .link: 5
+        case .image: 6
+        case .text: 20
+        }
     }
 
     /// Cuts what the layout shows to its outline at its size, written only where it differs.
@@ -224,6 +253,13 @@ class WinUILayoutView: WinUIView {
     /// The room the children take for the width offered, in DIPs.
     func contentSize(width: Double?) -> LayoutSize {
         .zero
+    }
+
+    /// How far below its top its first line of words rests, laid out `width` wide, in DIPs; nil for a layout that
+    /// answers none.
+    /// Design: docs/design/host/layout.md#a-first-baseline
+    func firstBaseline(width: Double?) -> Double? {
+        nil
     }
 
     /// Places the children in `bounds`, in DIPs.

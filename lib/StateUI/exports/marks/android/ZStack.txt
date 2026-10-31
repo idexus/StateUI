@@ -1,2 +1,2 @@
 # revision 2.1
-ZStack: ◐ cannot read what reaches Rectangle - Android's driver has no path for it yet
+ZStack: ✅

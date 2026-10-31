@@ -5,24 +5,25 @@
 @_spi(Host) import StateUIHost
 import CStateUIWinUI
 
-/// How words look on any element showing them - a text block or a control: their font, their colour and the room
+/// How words look on any element showing them - a text block or a control: their font, their color and the room
 /// around them.
 /// Design: docs/design/platforms/winui/controls.md#words
 extension WinUIView {
     /// The font a look gives (`TextMembers.look`): its style's size and weight on WinUI's type ramp under the size
-    /// and weight it gives, its slant and its family - the platform's where it says nothing. Answers the size the
+    /// and weight it gives, its slant, its digits and its family - the platform's where it says nothing. Answers the size the
     /// words stand at, nil for the platform's.
     /// Design: docs/design/platforms/winui/controls.md#a-text-style
     @discardableResult
     func setFont(_ look: TextLook) -> Double? {
         let (size, weight) = look.standing(styleSize: look.style?.winUISize, styleWeight: look.style?.winUIWeight)
         stateui_winui_set_font(
-            handle, size ?? 0, Int32(weight?.number ?? 0), look.attributes.contains(.italic), look.family ?? "")
+            handle, size ?? 0, Int32(weight?.number ?? 0), look.attributes.contains(.italic),
+            look.attributes.contains(.monospacedDigits), look.family ?? "")
         return size
     }
 
     /// How the words look (`TextMembers.look`): their font, whether it grows with the user's text size, and their
-    /// colour - each the platform's where the look says nothing.
+    /// color - each the platform's where the look says nothing.
     func setLook(_ look: TextLook) {
         setFont(look)
         setTextScales(look.scales)
@@ -47,16 +48,18 @@ extension WinUIView {
         stateui_winui_set_character_spacing(handle, Int32((ems * 1000).rounded()))
     }
 
-    /// The words' colour; nil puts back the platform's.
+    /// The words' color; nil puts back the platform's.
     func setForeground(_ color: HostValue?) {
         let argb = color?.argb
         stateui_winui_set_foreground(handle, argb != nil, argb ?? 0)
     }
 
-    /// The room kept around the words, in DIPs; nil puts back the platform's.
+    /// The room kept around the words, in DIPs; nil puts back the platform's. Its start is the control's left, which
+    /// WinUI turns with the whole control right to left.
+    /// Design: docs/design/host/layout.md#right-to-left
     func setPadding(_ padding: Insets?) {
         let room = padding ?? Insets(0)
-        stateui_winui_set_padding(handle, padding != nil, room.left, room.top, room.right, room.bottom)
+        stateui_winui_set_padding(handle, padding != nil, room.start, room.top, room.end, room.bottom)
     }
 
     /// How the words look, as WinUI holds it.

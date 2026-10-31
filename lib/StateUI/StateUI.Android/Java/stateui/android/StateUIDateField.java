@@ -63,7 +63,7 @@ final class StateUIDateField extends TextView
         latest = to;
     }
 
-    /** "D" or "d" for the long or short day, "T" or "t" for the long or short time, else a pattern. */
+    /** "D", "M" or "d" for the long, medium or short day, "T" or "t" for the long or short time, else a pattern. */
     void setFormat(String pattern) {
         format = pattern;
         show();
@@ -135,6 +135,7 @@ final class StateUIDateField extends TextView
         Locale locale = Locale.getDefault();
         switch (format) {
             case "D": return DateFormat.getDateInstance(DateFormat.LONG, locale);
+            case "M": return DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
             case "d": return DateFormat.getDateInstance(DateFormat.SHORT, locale);
             case "T": return DateFormat.getTimeInstance(DateFormat.MEDIUM, locale);
             case "t": return android.text.format.DateFormat.getTimeFormat(getContext());

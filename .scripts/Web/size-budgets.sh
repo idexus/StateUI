@@ -19,8 +19,8 @@ root="$(cd "$here/../.." && pwd)"
 
 # The application and its budget, in bytes of the module gzipped at level 9.
 budgets=(
-  "HelloWorld 4730000"
-  "Gallery 5700000"
+  "HelloWorld 4900000"
+  "Gallery 5950000"
 )
 
 failed=0

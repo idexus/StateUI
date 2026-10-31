@@ -1,0 +1,5 @@
+# revision 1.1
+Button.menuKind: ✅
+Button.showsMenuArrow: ✅
+ToolbarButton.menuKind: ✅
+ToolbarButton.showsMenuArrow: ✅

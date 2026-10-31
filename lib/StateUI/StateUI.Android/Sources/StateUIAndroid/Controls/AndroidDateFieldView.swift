@@ -11,6 +11,9 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/controls.md#a-day-and-a-time
 @MainActor
 final class AndroidDateFieldView: AndroidTextualView {
+    /// The view's click is its own - its calendar's opening - which a press on it leaves be.
+    override var ownsClick: Bool { true }
+
     /// What the field holds.
     enum Kind {
         case date
@@ -81,6 +84,20 @@ final class AndroidDateFieldView: AndroidTextualView {
     /// How the day or time is written; nil for the platform's.
     func setFormat(_ format: String?) {
         Java.frame { Java.call(reference, JavaAPI.setFieldFormat, .object(Java.string(format ?? ""))) }
+    }
+
+    /// How much of the day is written out, as the relay's letter for it; nil for the platform's.
+    func setFormat(_ style: DateStyle?) {
+        setFormat(style.map(Self.letter(of:)))
+    }
+
+    /// The relay's letter for each form of a day: "d" the short, "M" the medium, "D" the long.
+    static func letter(of style: DateStyle) -> String {
+        switch style {
+        case .short: "d"
+        case .medium: "M"
+        case .long: "D"
+        }
     }
 
     /// Opens the calendar or clock, or closes it; the program's own change is heard by nobody.

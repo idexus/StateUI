@@ -11,6 +11,18 @@ public enum VisualElementContract: Contract {
     /// Every drawn element is found by automation.
     public static let tiers: [any Contract.Type] = [AutomationElementContract.self]
 
+    /// A screen reader performed one of the element's actions (`accessibilityActions`), named by its words.
+    public static let accessibilityActionPerformed = ElementEvent<Self, String>(
+        "accessibilityActionPerformed", layer: .native)
+
+    /// The words of the actions a screen reader offers on the element, in the order it offers them.
+    public static let accessibilityActions = ElementProperty<Self, [String]>(
+        "accessibilityActions", layer: .structure, travels: false)
+
+    /// A screen reader stepped the element up or down.
+    public static let accessibilityAdjusted = ElementEvent<Self, AccessibilityAdjustment>(
+        "accessibilityAdjusted", layer: .native)
+
     /// How deep a heading the element is, for a user moving by headings.
     public static let accessibilityHeading = ElementProperty<Self, AccessibilityHeadingLevel>(
         "accessibilityHeading", layer: .native)
@@ -23,12 +35,20 @@ public enum VisualElementContract: Contract {
     public static let accessibilityLabel = ElementProperty<Self, String>(
         "accessibilityLabel", layer: .native)
 
+    /// What kind of thing a screen reader says the element is, where its own kind does not say it.
+    public static let accessibilityRole = ElementProperty<Self, AccessibilityRole>(
+        "accessibilityRole", layer: .native)
+
+    /// What the element holds, said after its label, where it holds a value its own kind does not say.
+    public static let accessibilityValue = ElementProperty<Self, String>(
+        "accessibilityValue", layer: .native)
+
     /// Whether the element and everything in it are left out of what a screen
     /// reader reads.
-    public static let automationExcludedWithChildren = ElementProperty<Self, Bool>(
-        "automationExcludedWithChildren", layer: .native)
+    public static let hidesChildrenFromAccessibility = ElementProperty<Self, Bool>(
+        "hidesChildrenFromAccessibility", layer: .native)
 
-    /// What the element's surface is made of: a colour, a gradient, a blur of
+    /// What the element's surface is made of: a color, a gradient, a blur of
     /// what lies behind it, or the platform's glass.
     public static let background = ElementProperty<Self, Material>(
         "background", layer: .adaptive)
@@ -132,8 +152,9 @@ public enum VisualElementContract: Contract {
 
     /// The tier's own members.
     public static let members: [any ContractMember] = [
-        accessibilityHeading, accessibilityHint, accessibilityLabel,
-        automationExcludedWithChildren, background, frame, height, ignoresInput,
+        accessibilityActionPerformed, accessibilityActions, accessibilityAdjusted,
+        accessibilityHeading, accessibilityHint, accessibilityLabel, accessibilityRole, accessibilityValue,
+        background, frame, height, hidesChildrenFromAccessibility, ignoresInput,
         isAccessibilityHidden, isEnabled, isVisible, layoutDirection,
         maximumHeight, maximumWidth, minimumHeight, minimumWidth, opacity, pivotX, pivotY,
         rotation, rotationX, rotationY, scale, scaleX, scaleY, style, tooltip, translationX,

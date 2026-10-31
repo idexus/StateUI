@@ -140,6 +140,28 @@
         return try driven { try driver.held(property.token, on: element).flatMap { Value(propValue: $0) } }
     }
 
+    /// What `element`'s words are for, as its platform fills them in - a name it keeps, a new password, a code it
+    /// received; on a platform that fills nothing in, a read it holds none of.
+    public func filledIn(_ element: MountedElement) throws -> InputPurpose? {
+        let ability = "read what the platform fills in of \(element.type.name)"
+        if driver.platformHasNone[ability] != nil { throw DriverCannot(ability) }
+        note(ability, element: element.type.name, member: TextInputContract.inputPurpose.name)
+        return try driven {
+            try driver.held(TextInputContract.inputPurpose.token, on: element).flatMap { InputPurpose(propValue: $0) }
+        }
+    }
+
+    /// What a surface laid over the page stands on as its platform shows it - a sheet's - as a material; on a
+    /// platform whose driver reads none, a read it holds none of. The read bears on the background it shows.
+    public func ground(of element: MountedElement) throws -> Material? {
+        let ability = "read the ground of \(element.type.name)"
+        if driver.platformHasNone[ability] != nil { throw DriverCannot(ability) }
+        note(ability, member: VisualElementContract.background.name)
+        return try driven {
+            try driver.held(VisualElementContract.background.token, on: element).flatMap { Material(propValue: $0) }
+        }
+    }
+
     /// The menu `element` offers as the user meets it (`HostDriver.menu(of:)`).
     public func menu(of element: MountedElement) throws -> String {
         note("read the menu of \(element.type.name)")
@@ -152,10 +174,10 @@
         return try driven { try driver.buttonMenu(of: button) }
     }
 
-    /// The bar `page` shows as the user meets it (`HostDriver.bar(of:)`).
-    public func bar(of page: MountedElement) throws -> String {
-        note("read the bar of \(page.type.name)")
-        return try driven { try driver.bar(of: page) }
+    /// The bar at `edge` of `page` as the user meets it (`HostDriver.bar(of:at:)`): its title's, unsaid.
+    public func bar(of page: MountedElement, at edge: ToolbarEdge = .top) throws -> String {
+        note(edge == .top ? "read the bar of \(page.type.name)" : "read the bar at the foot of \(page.type.name)")
+        return try driven { try driver.bar(of: page, at: edge) }
     }
 
     /// Whether `element` holds the keyboard.
@@ -197,10 +219,35 @@
         return try driven { try driver.announced() }
     }
 
+    /// The platform's bars over the window's edges, as a phone's stand, where the host's test window stands under
+    /// none (`HostDriver.standUnderSystemBars`).
+    public func standUnderSystemBars(top: Double, bottom: Double) {
+        driver.standUnderSystemBars(top: top, bottom: bottom)
+        driver.step()
+    }
+
     /// The theme the platform shows the application in now.
     public func theme() throws -> ColorScheme {
         note("read the theme the application shows in")
         return try driven { try driver.theme() }
+    }
+
+    /// The accent the platform draws the application's controls in now.
+    public func accent() throws -> Color {
+        note("read the accent the application draws in")
+        return try driven { try driver.accent() }
+    }
+
+    /// The address of the driver's HTTP server (`HostDriver.served()`).
+    public func served() throws -> String {
+        note("serve a request")
+        return try driven { try driver.served() }
+    }
+
+    /// The requests for `/held` the driver's server took, and those stopped (`HostDriver.held()`).
+    public func held() throws -> (taken: Int, stopped: Int) {
+        note("count the requests held")
+        return try driven { try driver.held() }
     }
 
     /// The file dialog the window shows now; nil where it shows none.
@@ -210,33 +257,41 @@
         return try driven { try driver.fileDialog(over: root) }
     }
 
+    /// What the share sheet over the window offers now - its words, then its link on a line of its own; nil where
+    /// none shows.
+    public func shared() throws -> String? {
+        guard let root = tree?.root else { return nil }
+        note("read a share sheet")
+        return try driven { try driver.shared(over: root) }
+    }
+
     /// What the host handed the system to launch, in order: an address as written, a file by its name.
     public func launched() throws -> [String] {
         note("read what was launched")
         return try driven { try driver.launched() }
     }
 
-    /// The colour `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.
+    /// The color `element` shows at `point` of its own, where StateUI draws it; nil where it shows nothing.
     public func color(of element: MountedElement, at point: Point) throws -> ShownColor? {
-        note("read the colour of \(element.type.name)", element: element.type.name)
+        note("read the color of \(element.type.name)", element: element.type.name)
         return try driven { try driver.color(of: element, at: point).map(ShownColor.init) }
     }
 
-    /// Whether `element` shows `color` at `point` of its own, as a screen shows a colour StateUI draws.
-    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    /// Whether `element` shows `color` at `point` of its own, as a screen shows a color StateUI draws.
+    /// Design: docs/design/host/conformance.md#a-color-drawn
     public func shows(_ color: Color, on element: MountedElement, at point: Point) throws -> Bool {
         Self.shows(try self.color(of: element, at: point), color)
     }
 
-    /// The colours `element` shows at each of `points` of its own, read at once; nil where it shows nothing.
-    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    /// The colors `element` shows at each of `points` of its own, read at once; nil where it shows nothing.
+    /// Design: docs/design/host/conformance.md#a-color-drawn
     public func colors(of element: MountedElement, at points: [Point]) throws -> [ShownColor?] {
-        note("read the colour of \(element.type.name)", element: element.type.name)
+        note("read the color of \(element.type.name)", element: element.type.name)
         return try driven { try driver.colors(of: element, at: points).map { $0.map(ShownColor.init) } }
     }
 
     /// Whether `element` shows `color` at each of `points` of its own, read at once.
-    /// Design: docs/design/host/conformance.md#a-colour-drawn
+    /// Design: docs/design/host/conformance.md#a-color-drawn
     public func shows(_ color: Color, on element: MountedElement, at points: [Point]) throws -> [Bool] {
         try colors(of: element, at: points).map { Self.shows($0, color) }
     }
@@ -253,9 +308,9 @@
         return try driven { try driver.logged() }
     }
 
-    /// What the host's store keeps under `key` - of the scene the page is in where `inScene` - as the next launch
-    /// reads it.
-    public func kept(_ key: String, inScene: Bool = false) throws -> HostValue? {
+    /// The words the host's store keeps under `key` - of the scene the page is in where `inScene` - as the next
+    /// launch reads them.
+    public func kept(_ key: String, inScene: Bool = false) throws -> String? {
         note("read what is kept")
         return try driven { try driver.kept(key, inScene: inScene) }
     }
@@ -362,7 +417,7 @@
             + (message.isEmpty ? "" : " - \(message)"), file: file, line: line)
     }
 
-    /// Expects `actual` to show `expected`, as a screen shows a colour StateUI draws.
+    /// Expects `actual` to show `expected`, as a screen shows a color StateUI draws.
     public func expect(
         _ actual: ShownColor?, shows expected: Color, _ message: String = "", file: StaticString = #filePath,
         line: UInt = #line
@@ -372,7 +427,7 @@
             + (message.isEmpty ? "" : " - \(message)"), file: file, line: line)
     }
 
-    /// Whether `actual` shows `expected`; nothing shown shows no colour.
+    /// Whether `actual` shows `expected`; nothing shown shows no color.
     static func shows(_ actual: ShownColor?, _ expected: Color) -> Bool {
         actual?.shows(expected) ?? false
     }

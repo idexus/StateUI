@@ -46,8 +46,8 @@ extension HostPatch {
         events.map { $0.keys.map(\.name).sorted() } ?? []
     }
 
-    /// The five reports every page hears, by name.
-    static let pageEvents = ["appearing", "disappearing", "navigatedFrom", "navigatedTo", "navigatingFrom"]
+    /// The six reports every page hears, by name.
+    static let pageEvents = ["appearing", "disappearing", "linkOpened", "navigatedFrom", "navigatedTo", "navigatingFrom"]
 
     /// The six reports every window hears, by name.
     static let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]
@@ -105,7 +105,7 @@ private struct Reading: View {
 
     var body: some View {
         read()
-        return ModifiedContent(node: label("reader"))
+        return AnyView(node: label("reader"))
     }
 }
 
@@ -508,7 +508,7 @@ enum SourceTree {
                            after: #"\b(?:setValue|set|write|describe)\(\s*|props\[\s*"#))
     }
 
-    /// Every EVENT a source file subscribes - `addHandler(.scrollYChanged)`,
+    /// Every EVENT a source file subscribes - `addHandler(.scrollStopped)`,
     /// or the member with its contract, `onEvent(ViewContract.tapped, …)` and
     /// `addHandler(ViewContract.tapped.token, …)`, resolved as `propertyKeys`
     /// resolves one.
@@ -772,7 +772,7 @@ enum SourceTree {
 
     /// Node types described under Views/ that are not VIEWS.
     ///
-    /// A ToolbarItem and the menu types are items - a caption, a picture and
+    /// A ToolbarButton and the menu types are items - a caption, a picture and
     /// something to run - and they belong to a PAGE rather than sitting in
     /// one, so they have no case and no style. Their modifiers are exercised
     /// by `PageBarTests`, which is where a page is described.
@@ -786,15 +786,17 @@ enum SourceTree {
     /// `.contextMenu` on any view appends it. It is a menu, not a view - and
     /// the entries in it are the menu bar's, already here. Covered by
     /// ContextMenuTests rather than by a control case, for the reason the
-    /// toolbar's are: there is no control to build one on.
+    /// toolbar's are: there is no control to build one on. A Sheet is written
+    /// by a modifier too, and stands over the window rather than in a view:
+    /// SheetTests covers it.
     /// A Marker is a map's marker - a label, an address and a point - so it
     /// cannot be built alone or styled, and its modifiers are exercised by the
     /// Map case, which builds both.
     static let notViews: Set<String> = [
         "TextSpans", "TextSpan",
-        "ToolbarItemGroup", "ToolbarItem", "TitleView", "MenuBar", "Menu", "Overlay",
-        "MenuItem", "MenuSeparator", "ButtonMenu",
-        "ContextMenu",
+        "ToolbarGroup", "ToolbarButton", "ToolbarLabel", "ToolbarToggle", "TitleView", "BottomBar", "MenuBar", "Menu", "Overlay",
+        "MenuItem", "MenuToggle", "MenuSeparator", "ButtonMenu",
+        "ContextMenu", "Popover", "Sheet",
         "Marker",
     ]
 
@@ -821,8 +823,7 @@ enum SourceTree {
     /// PAGE arranges other pages, so there is no control to build one on and
     /// nothing about it can be styled - what they do is a stack and a set of
     /// tabs, and NavigationStackTests and TabViewTests are where those are
-    /// checked. ModalStack.swift arranges pages too, over the
-    /// window rather than inside it.
+    /// checked.
     ///
     /// The shared tier's files STAY IN, describing no type of their own: their
     /// property keys are the shared tier, which `testEveryModifierIsExercised`
@@ -840,7 +841,6 @@ enum SourceTree {
             "StyleTarget.swift", "VisualState.swift", "VisualStateList.swift",
             "VisualElement+VisualStates.swift",
             "NavigationStack.swift", "TabView.swift", "SplitView.swift",
-            "ModalStack.swift",
         ]
 
         guard let walk = FileManager.default.enumerator(atPath: views.path) else {

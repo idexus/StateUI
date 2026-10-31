@@ -1,15 +1,17 @@
 import StateUI
 
-/// Two buttons whose content is an icon, each drawn once per theme, and one whose picture stands beside its words.
+/// Two buttons standing for their picture alone, each drawn once per theme, and one whose picture stands beside its
+/// words.
 struct IconButtonSample: SampleContent, ExampleContent {
     // listing: IconButtonSample
     @State private var taps = 0
     @State private var pressed = false
-    @State private var side = IconPosition.leading
+    @State private var side = IconPosition.start
     @State private var gap = 8.0
     @State private var wide = false
+    @State private var words = true
 
-    static let sides: [IconPosition] = [.leading, .top, .trailing, .bottom]
+    static let sides: [IconPosition] = [.start, .top, .end, .bottom]
     // listing: end
 
     static let id = "iconButton"
@@ -23,7 +25,10 @@ struct IconButtonSample: SampleContent, ExampleContent {
             DebugInfoLabel()
 
             HStack {
-                Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                // Its words name it to a screen reader; the picture stands alone.
+                Button("Media")
+                    .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    .showsText(false)
                     .style(.iconButton)
                     .contentMode(.fit)
                     .width(64)
@@ -36,7 +41,9 @@ struct IconButtonSample: SampleContent, ExampleContent {
                     .onPressed { pressed = true }
                     .onReleased { pressed = false }
 
-                Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                Button("Layout")
+                    .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                    .showsText(false)
                     .style(.iconButton)
                     .contentMode(.fit)
                     .width(64)
@@ -57,6 +64,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
             // between them as the slider says - together, however wide.
             Button("Media")
                 .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                .showsText($words)
                 .iconPosition(side)
                 .iconSpacing(gap)
                 .horizontalAlignment(wide ? .fill : .center)
@@ -71,6 +79,7 @@ struct IconButtonSample: SampleContent, ExampleContent {
                 .maximum(24)
 
             SwitchRow("Full width", $wide)
+            SwitchRow("Its words", $words)
         }
         .spacing(12)
     }
@@ -78,9 +87,9 @@ struct IconButtonSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The picture is what gives it its purpose, so it goes in the initializer - "
-                + "and it can be drawn once per theme, like any other, which is what these "
-                + "two are.")
+            Text("A button standing for its picture keeps its words: `.showsText(false)` leaves "
+                + "them out of sight, and they still name it to a screen reader. Its picture can "
+                + "be drawn once per theme, like any other, which is what these two are.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

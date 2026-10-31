@@ -19,8 +19,10 @@ final class WinUIWindowController {
     /// What the window shows, by the host layer's rule.
     private let presentation = WindowPresentation()
 
-    /// The sheets the window shows, one for each page its modal stack presents, the last on top.
+    /// The sheets the window shows, one for each page its views present, the last shown on top.
     private var sheets: [(element: MountedElement, sheet: WinUISheetView)] = []
+    var sheetsForTesting: [WinUISheetView] { sheets.map(\.sheet) }
+    func sheetForTesting(presenting page: MountedElement) -> WinUISheetView? { sheets.first { $0.element === page }?.sheet }
 
     /// The page or tab view heading its content with its title, while the chrome names the application in its
     /// place.
@@ -30,9 +32,9 @@ final class WinUIWindowController {
     /// Design: docs/design/platforms/winui/pages.md#a-pages-heading
     private func head(_ page: MountedElement?) {
         let view = page?.winUI.view as? WinUILayoutView
-        if headed !== view { headed?.setHeading(nil) }
+        if headed !== view { headed?.setHeading(nil, line: nil) }
         headed = view
-        view?.setHeading(page?.value(.title)?.string.flatMap { $0.isEmpty ? nil : $0 })
+        view?.setHeading(page?.value(.title)?.string.flatMap { $0.isEmpty ? nil : $0 }, line: page?.barSubtitle)
     }
 
     init(_ element: MountedElement) {
@@ -46,9 +48,20 @@ final class WinUIWindowController {
         self.element = element
         let changes = presentation.show(element, in: runtime.lifecycle)
         stand(changes)
+        // The sidebars over the detail stand on the window's background too; the sheets do as they are shown.
+        if changes.traits != nil { for split in element.splitViews { split.winUI.groundSidebar() } }
         if let (_, arrangement) = changes.arrangement { window.show(arrangement?.winUI.view) }
-        showSheets(presentation.sheets)
+        showSheets(presentation.sheets, in: runtime)
         if let overlays = changes.overlays { window.showOverlays(overlays.compactMap(\.winUI.view)) }
+        // The pages losing their bottom bar let go of it before the one shown takes it: one view stands in one place.
+        for page in element.pages.sorted(by: { $0.chromeBottomBar == nil && $1.chromeBottomBar != nil }) {
+            let holder = page.winUI.view as? WinUISingleChildView
+            holder?.showBottomBar(
+                page.chromeBottomBar?.winUI.layoutItem, edge: page.chromeBottomBarEdge,
+                scroller: page.pageScroller?.winUI.view as? WinUIPageScroller)
+            holder?.showToolbar(page.chromeBottomActions)
+            holder?.showTopEdge(page.barScrollEdge, scroller: page.pageScroller?.winUI.view as? WinUIPageScroller)
+        }
     }
 
     /// Stands the window as the element asks: the place, the size, the bounds and the traits the tree changed, and
@@ -64,29 +77,53 @@ final class WinUIWindowController {
     /// Keeps a sheet for each page presented, in its order, by the host layer's rule (`SheetChange`): a sheet gone
     /// leaves, the top first, and one new comes over those before it - each under its page's title, written again on
     /// every presentation.
-    /// Design: docs/design/platforms/winui/pages.md#the-modal-stack
-    private func showSheets(_ pages: [MountedElement]) {
+    /// Design: docs/design/platforms/winui/pages.md#sheets
+    private func showSheets(_ pages: [MountedElement], in runtime: HostRuntime) {
         let change = SheetChange(from: sheets, to: pages) { $0.element === $1 }
         for _ in change.leaving { window.popSheet() }
         sheets.removeLast(sheets.count - change.kept)
-        for (page, sheet) in sheets { show(page, on: sheet) }
+        for (page, sheet) in sheets { show(page, on: sheet, in: runtime) }
         for page in change.coming {
             let sheet = WinUISheetView()
-            show(page, on: sheet)
+            show(page, on: sheet, in: runtime)
             window.pushSheet(sheet)
             sheets.append((page, sheet))
         }
     }
 
-    private func show(_ page: MountedElement, on sheet: WinUISheetView) {
-        sheet.show(title: page.visiblePage?.value(.title)?.string ?? "", page: page.winUI.view)
+    /// A sheet has no bar of its own: the card shows the head of the one a stack in it brings - the title, the way
+    /// back, the page's actions and, where the page offers it, the close button.
+    private func show(_ page: MountedElement, on sheet: WinUISheetView, in runtime: HostRuntime) {
+        sheet.stand(on: page.overlaidGround)
+        let fits = SheetSize.asks(page)
+        guard let element, page.bringsABar else {
+            return sheet.show(
+                title: "", page: page.winUI.view, back: nil, close: nil, words: CoreLink().chromeWords, fits: fits)
+        }
+        let chrome = WindowChrome(window: element, arrangement: page)
+        sheet.show(
+            title: chrome.showsTitle ? chrome.title ?? "" : "", page: page.winUI.view,
+            back: chrome.back.map { back in
+                { [weak element, weak stack = back.stack] in
+                    if let element, let stack { runtime.goBack(.pop(stack), in: element) }
+                }
+            },
+            leading: chrome.actions.start.map { $0.map(Self.action) },
+            trailing: chrome.actions.end.map { $0.map(Self.action) },
+            overflow: chrome.actions.overflow.map(Self.action),
+            close: page.offersClose
+                ? { [weak element, weak page] in
+                    if let element, let page { runtime.goBack(.dismissSheets([page]), in: element) }
+                }
+                : nil,
+            material: chrome.material, foreground: chrome.foreground, words: CoreLink().chromeWords, fits: fits)
     }
 
     /// The user took the top sheet away - Escape, its dismissing: the window is told how many remain.
     func dismissTopSheet(in runtime: HostRuntime) {
         guard let element, !presentation.sheets.isEmpty else { return }
 
-        runtime.goBack(.dismissSheet(remaining: presentation.sheets.count - 1), in: element)
+        runtime.goBack(.dismissSheets(Array(presentation.sheets.suffix(1))), in: element)
     }
 
     /// Goes the way back the window offers: the top sheet's, else the arrangement's.
@@ -98,7 +135,7 @@ final class WinUIWindowController {
     }
 
     /// Lays the chrome the host layer composes from what the window shows in WinUI's: the title or the title area, the
-    /// way back, the page's actions, the title view, the colours, the menus, the sidebar's toggle, a sheet's buttons
+    /// way back, the page's actions, the title view, the colors, the menus, the sidebar's toggle, a sheet's buttons
     /// and the tabs.
     /// Design: docs/design/platforms/winui/pages.md#the-windows-chrome
     func refreshChrome(in runtime: HostRuntime) {
@@ -109,24 +146,34 @@ final class WinUIWindowController {
         chrome.title = composed.title ?? ""
         chrome.titleArea = composed.titleArea
         chrome.showsTitle = composed.showsTitle
+        chrome.subtitle = composed.subtitle
         chrome.back = composed.back.map { back in
             WinUIToolbarAction(title: back.title, isEnabled: true, perform: { [weak element, weak stack = back.stack] in
                 if let element, let stack { runtime.goBack(.pop(stack), in: element) }
             })
         }
-        chrome.sidebarToggle = composed.sidebarToggle.map { split in
-            { [weak split] in
+        if composed.showsSidebarToggle, let split = composed.splitView {
+            chrome.sidebarToggle = { [weak split] in
                 guard let split else { return }
                 split.winUI.changeSidebarVisibility(to: !split.sidebarIsVisible)
             }
         }
         chrome.center = composed.center?.winUI.view
-        chrome.leading = composed.actions.leading.map { $0.map(Self.action) }
-        chrome.trailing = composed.actions.trailing.map { $0.map(Self.action) }
+        chrome.leading = composed.actions.start.map { $0.map(Self.action) }
+        chrome.trailing = composed.actions.end.map { $0.map(Self.action) }
         chrome.overflow = composed.actions.overflow.map(Self.action)
+        // The sidebar's part stands on the head of its pane, as a Windows application's navigation pane holds its
+        // commands.
+        (composed.splitView?.winUI.view as? WinUISplitView)?.sidebar.showActions(
+            leading: composed.sidebarActions.start.map { $0.map(Self.action) },
+            trailing: composed.sidebarActions.end.map { $0.map(Self.action) },
+            overflow: composed.sidebarActions.overflow.map(Self.action))
         chrome.background = composed.background
+        chrome.material = composed.material
         chrome.foreground = composed.foreground
-        chrome.menuBar = WinUIMenu(menus: composed.menus.menus)
+        // WinUI keeps no Edit menu of its own: one the page joins holds the field's undoing, clipboard and selection.
+        chrome.menuBar = WinUIMenu(
+            menus: composed.menus.editing(CoreLink().editWords, redo: KeyboardShortcut("y")).menus)
         chrome.takeKey = { [weak self, weak element] pressed in
             guard let self, let element else { return false }
             let holder = KeyPresses.holder(under: element) { held in
@@ -149,13 +196,24 @@ final class WinUIWindowController {
     }
 
     /// A page's action as a button of the chrome, read as a menu's entry is (`MenuEntry`).
-    private static func action(_ item: MountedElement) -> WinUIToolbarAction {
+    static func action(_ item: MountedElement) -> WinUIToolbarAction {
         let entry = MenuEntry.entry(of: item)
         return WinUIToolbarAction(
             title: entry.title, isEnabled: entry.isEnabled, identifier: entry.identifier,
             icon: WinUIPictures.lines(entry.icon), isDestructive: entry.isDestructive,
             showsWords: item.showsActionWords, shortcut: entry.keyboardShortcut, mount: item.mount,
-            perform: { [weak item] in item?.winUI.choose() })
+            perform: { [weak item] in item?.winUI.choose() },
+            isOn: item.type == .toolbarToggle ? entry.isOn == true : nil, menu: menu(of: item),
+            standsAlone: item.parent?.value(.standsAlone)?.bool == true, isLabel: item.type == .toolbarLabel)
+    }
+
+    /// The menu a bar's button opens, read as a button's is (`ButtonMenu`); nil for one holding none.
+    private static func menu(of item: MountedElement) -> WinUIToolbarMenu? {
+        let opening = ButtonMenu.opening(of: item)
+        guard opening != .none else { return nil }
+        return WinUIToolbarMenu(
+            opening: opening, showsArrow: ButtonMenu.showsArrow(item), entries: ButtonMenu.entries(of: item),
+            inOverflow: ButtonMenu.inOverflow(item))
     }
 
     /// The tabs the window shows - the visible tabbed view's, where its tabs stand in the window and no heading

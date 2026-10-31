@@ -84,11 +84,8 @@
         guard let source,
               let target,
               let motion,
-              !motion.isInherited,
-              !motion.isCustom,
-              motion.factor.isFinite,
+              motion.animates,
               !reducesMotion,
-              !(motion.law == .eased && motion.milliseconds == 0),
               let plan = MotionValuePlan(
                 from: source,
                 destination: target,
@@ -316,7 +313,7 @@ private struct MotionValuePlan {
         }
     }
 
-    /// Whether a brush property holds a colour or a well-formed brush.
+    /// Whether a brush property holds a color or a well-formed brush.
     private static func isPaint(_ value: HostValue) -> Bool {
         value.color != nil || isValidBrush(value)
     }

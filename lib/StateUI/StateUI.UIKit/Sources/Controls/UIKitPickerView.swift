@@ -71,7 +71,7 @@ final class UIKitPickerView: UIButton {
         }
     }
 
-    /// The colour of the arrow beside the words; nil for the button's own.
+    /// The color of the arrow beside the words; nil for the button's own.
     func setTint(_ tint: UIColor?) {
         configuration?.indicatorColorTransformer = tint.map { tint in UIConfigurationColorTransformer { _ in tint } }
     }

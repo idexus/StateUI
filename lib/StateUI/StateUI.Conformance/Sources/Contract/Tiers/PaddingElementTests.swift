@@ -12,7 +12,7 @@
     public static var cases: [ConformanceCase] {
         Specimens.wearing(PaddingElementContract.self).flatMap { element in
             (holdsChildren(element) ? [keepsItsChildIn(element)] : [])
-                + [Aspects.holds(PaddingElementContract.padding, on: element, Insets(4), then: Insets(left: 8, top: 2, right: 8, bottom: 2),
+                + [Aspects.holds(PaddingElementContract.padding, on: element, Insets(4), then: Insets(start: 8, top: 2, end: 8, bottom: 2),
                                  with: Words.on(element))]
         }
     }
@@ -32,8 +32,13 @@
             let frames = Received<[Double]>()
             s.start {
                 VStack {
-                    Padded.layout(element, padding: wide.wrappedValue ? Insets(left: 20, top: 12, right: 0, bottom: 0) : Insets(left: 10, top: 6, right: 0, bottom: 0)) {
-                        Rectangle().fill(.red).width(20).height(20).horizontalAlignment(.start).verticalAlignment(.start)
+                    Padded.layout(element, padding: wide.wrappedValue ? Insets(start: 20, top: 12, end: 0, bottom: 0) : Insets(start: 10, top: 6, end: 0, bottom: 0)) {
+                        Rectangle()
+                            .fill(.red)
+                            .width(20)
+                            .height(20)
+                            .horizontalAlignment(.start)
+                            .verticalAlignment(.start)
                             .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
                     }
                     Button("Wider").onClicked { wide.wrappedValue = true }.id("change")
@@ -55,8 +60,8 @@
 @MainActor
 enum Padded {
     /// A layout of `element`'s kind holding `content`, `padding` in.
-    static func layout(_ element: String, padding: Insets, _ content: () -> any View) -> ModifiedContent {
-        let held = ModifiedContent(node: content().node)
+    static func layout(_ element: String, padding: Insets, _ content: () -> any View) -> AnyView {
+        let held = AnyView(content())
         let dressing = Dressing([Write(PaddingElementContract.padding, padding)], id: "layout")
         let layout: any View = switch element {
         case "Grid": dressing.dress(Grid { held })
@@ -65,6 +70,6 @@ enum Padded {
         case "ScrollView": dressing.dress(ScrollView { held }.height(100))
         default: dressing.dress(VStack { held })
         }
-        return ModifiedContent(node: layout.node)
+        return AnyView(layout)
     }
 }

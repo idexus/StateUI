@@ -31,7 +31,7 @@ namespace backdrops = winrt::Microsoft::UI::Composition::SystemBackdrops;
 using winrt::Microsoft::UI::Composition::ICompositionSupportsSystemBackdrop;
 
 namespace {
-    /// The desktop acrylic of the thin kind or the base one in the theme's colour, its luminosity hiding `opacity`
+    /// The desktop acrylic of the thin kind or the base one in the theme's color, its luminosity hiding `opacity`
     /// of the desktop and its tint `tintOpacity`; XAML's own configuration has it follow the window's activation.
     /// Design: docs/design/platforms/winui/runtime.md#a-windows-backdrop
     struct StateUIAcrylic : xaml::Media::SystemBackdropT<StateUIAcrylic> {
@@ -43,13 +43,13 @@ namespace {
                 SystemBackdropT::OnTargetConnected(target, root);
                 controller = backdrops::DesktopAcrylicController();
                 controller.Kind(thin ? backdrops::DesktopAcrylicKind::Thin : backdrops::DesktopAcrylicKind::Base);
-                // Every colour written: a controller given one value keeps none of the theme's own.
-                auto colour = winrt::Windows::UI::Color{255, static_cast<uint8_t>(argb >> 16),
+                // Every color written: a controller given one value keeps none of the theme's own.
+                auto color = winrt::Windows::UI::Color{255, static_cast<uint8_t>(argb >> 16),
                     static_cast<uint8_t>(argb >> 8), static_cast<uint8_t>(argb)};
-                controller.TintColor(colour);
+                controller.TintColor(color);
                 controller.TintOpacity(tintOpacity);
                 controller.LuminosityOpacity(opacity);
-                controller.FallbackColor(colour);
+                controller.FallbackColor(color);
                 controller.SetSystemBackdropConfiguration(GetDefaultSystemBackdropConfiguration(target, root));
                 controller.AddSystemBackdropTarget(target);
             } catch (...) {
@@ -476,8 +476,8 @@ extern "C" bool stateui_winui_window_background(StateUIObjectRef handle, uint32_
         auto root = borrow<xaml::Window>(handle).Content().try_as<xaml::Controls::Panel>();
         auto brush = root ? root.Background().try_as<xaml::Media::SolidColorBrush>() : nullptr;
         if (!brush) return false;
-        auto colour = brush.Color();
-        *argb = uint32_t(colour.A) << 24 | uint32_t(colour.R) << 16 | uint32_t(colour.G) << 8 | colour.B;
+        auto color = brush.Color();
+        *argb = uint32_t(color.A) << 24 | uint32_t(color.R) << 16 | uint32_t(color.G) << 8 | color.B;
         return true;
     } catch (...) {
         report("reading a window's background");

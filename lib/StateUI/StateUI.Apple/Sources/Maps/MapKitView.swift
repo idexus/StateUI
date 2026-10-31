@@ -8,7 +8,7 @@ import MapKit
 /// A Map on Apple's platforms: MapKit's own map. It shows the region the tree gives it or an act slides it to, the
 /// kind of map and what the user may do with it, and its markers as MapKit's markers; a click on the map itself is
 /// heard where it fell, one on a marker on the marker. Each host's own map hears the user's click or tap, dresses a
-/// marker in its platform's colours and gives its callout the details button the platform shows.
+/// marker in its platform's colors and gives its callout the details button the platform shows.
 /// Design: docs/design/platforms/apple/maps.md#a-map
 @_spi(Host) @MainActor
 open class MapKitView: MKMapView, MKMapViewDelegate {
@@ -41,11 +41,11 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
     /// Shows `region`, sliding to it where `sliding`: the circle its shorter side spans.
     public func show(_ region: MapRegion, sliding: Bool) {
         let side = MapFraming.side(of: region)
-        let center = CLLocationCoordinate2D(latitude: region.latitude, longitude: region.longitude)
+        let center = CLLocationCoordinate2D(latitude: region.center.latitude, longitude: region.center.longitude)
         setRegion(MKCoordinateRegion(center: center, latitudinalMeters: side, longitudinalMeters: side), animated: sliding)
     }
 
-    /// Draws the world as `type` says, the roads coloured by traffic where `traffic` and the map has roads.
+    /// Draws the world as `type` says, the roads colored by traffic where `traffic` and the map has roads.
     public func style(_ type: MapType, traffic: Bool) {
         switch type {
         case .standard:
@@ -95,7 +95,8 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
         let width = MKMapPoint(x: rect.minX, y: rect.midY).distance(to: MKMapPoint(x: rect.maxX, y: rect.midY))
         let height = MKMapPoint(x: rect.midX, y: rect.minY).distance(to: MKMapPoint(x: rect.midX, y: rect.maxY))
         return MapFraming.region(
-            latitude: centerCoordinate.latitude, longitude: centerCoordinate.longitude, width: width, height: height)
+            center: Location(latitude: centerCoordinate.latitude, longitude: centerCoordinate.longitude),
+            width: width, height: height)
     }
 
     /// The kind of map drawn.
@@ -107,7 +108,7 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
         }
     }
 
-    /// Whether the roads are coloured by traffic.
+    /// Whether the roads are colored by traffic.
     public var showsTrafficNow: Bool {
         switch preferredConfiguration {
         case let standard as MKStandardMapConfiguration: standard.showsTraffic
@@ -146,7 +147,7 @@ open class MapKitView: MKMapView, MKMapViewDelegate {
         (view.annotation as? MapKitMarker)?.child.reports.raise(MarkerContract.selected)
     }
 
-    /// Gives `marker` the colour and symbol of a marker's kind (`MarkerLook`), as the platform draws them.
+    /// Gives `marker` the color and symbol of a marker's kind (`MarkerLook`), as the platform draws them.
     open func dress(_ marker: MKMarkerAnnotationView, as type: MarkerType) {}
 
     /// Gives `marker`'s callout the details button the platform shows, whose click is heard on `pin`.

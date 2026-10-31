@@ -9,7 +9,7 @@ import XCTest
 /// where an animation of the property starts.
 @MainActor
 final class PropertyValuesTests: XCTestCase {
-    /// A bound state's lanes become the value its property carries: a colour's four lanes each held between 0 and
+    /// A bound state's lanes become the value its property carries: a color's four lanes each held between 0 and
     /// 255, a Boolean true where its lane is not zero, an enumeration at its nearest case, and a number or numbers
     /// as they are.
     func testABoundStatesLanesAreTheValueItsPropertyCarries() throws {
@@ -73,6 +73,32 @@ final class PropertyValuesTests: XCTestCase {
         XCTAssertEqual(box.value(.margin), .numbers([4, 4, 4, 4]), "and moves from there")
         XCTAssertEqual(box.value(.scale), .number(2))
     }
+
+    /// A TRANSFORM TAKEN AWAY TRAVELS BACK TO ITS REST: a scale, a turn and a shift the tree no longer states - a
+    /// pressed state left - move back to the identity under their motion, as they moved out from it.
+    func testATransformTakenAwayTravelsBackToItsRest() throws {
+        let runtime = HostRuntime(
+            clock: StillClock(), reducesMotion: { false }, makeNative: { _ in AnimatingView() }, log: { _ in })
+        runtime.tree.apply(HostPatch(id: .manual("box"), type: .rectangle), complete: true)
+        let turned: [Prop: HostValue] = [.scale: .number(1.5), .rotation: .number(90), .translationX: .number(10)]
+        var standing = HostPatch(id: .manual("box"), type: .rectangle)
+        standing.properties = turned
+        runtime.tree.apply(standing, complete: false)
+
+        var takenAway = HostPatch(id: .manual("box"), type: .rectangle)
+        takenAway.clearedProperties = turned.keys.sorted()
+        takenAway.transitions = turned.mapValues { _ in HostTransition(motion: .eased(.milliseconds(200), .linear)) }
+        runtime.tree.apply(takenAway, complete: false)
+
+        let box = try XCTUnwrap(runtime.tree.root)
+        XCTAssertEqual(box.value(.scale), .number(1.5), "from where it stood")
+        runtime.describedMotion.follow(runtime.animator.advance(to: 100))
+        XCTAssertEqual(box.value(.scale), .number(1.25), "on its way back")
+        XCTAssertEqual(box.value(.rotation), .number(45))
+        XCTAssertEqual(box.value(.translationX), .number(5))
+        runtime.describedMotion.follow(runtime.animator.advance(to: 200))
+        XCTAssertNil(box.value(.scale), "and untold once there")
+    }
 }
 
 /// A native half that animates every property and reads none off a control.
@@ -84,5 +110,7 @@ private final class AnimatingView: NativeElement {
     func applied(changed: Set<Prop>, wasDescribed: Bool) {}
     func presentFrame(_ changed: Set<Prop>) {}
     func arrangeChildren() {}
+    func invalidateMeasurements() {}
+    func configureLayoutMotion() {}
     func leave() {}
 }

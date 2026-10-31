@@ -10,7 +10,7 @@ import CStateUIWinUI
 /// tells Narrator; StateUI builds what a cell holds. The list is a room: it asks for none, and stands where it is put.
 /// Design: docs/design/platforms/winui/items.md
 @MainActor
-final class WinUIItemsView: WinUILayoutView {
+final class WinUIItemsView: WinUILayoutView, WinUIPageScroller {
     let cells: ItemsCells
 
     /// WinUI's own list, which the relay's callbacks name.
@@ -125,9 +125,34 @@ final class WinUIItemsView: WinUILayoutView {
         return super.measure(width: width, height: height)
     }
 
+    /// Stands WinUI's list in the room; at its end, it stays at its end as its room changes - a bottom bar growing
+    /// beside it - its reach grown by what the room lost, an item come meanwhile left to the scroll the program asks
+    /// for (`ScrollArithmetic.keptAtEnd`).
+    /// Design: docs/design/platforms/winui/items.md#its-room
     override func arrange(in bounds: Rect) {
+        let (before, was) = (standing, laidOutIn)
+        laidOutIn = bounds
         _ = list.measure(width: bounds.width, height: bounds.height)
         list.layout(bounds)
+        guard let was, was.width != bounds.width || was.height != bounds.height else { return }
+        let now = Point(
+            x: max(0, before.reach.x + was.width - bounds.width), y: max(0, before.reach.y + was.height - bounds.height))
+        guard let end = ScrollArithmetic.keptAtEnd(before.offset, reach: before.reach, now: now) else { return }
+        stateui_winui_items_move_to(list.handle, end.x, end.y)
+    }
+
+    /// The room the list last stood in; nil before its first arrangement.
+    private var laidOutIn: Rect?
+
+    // MARK: - A page's scroller
+
+    var standingChanged: (() -> Void)?
+
+    /// Where the list's view stands, and the farthest it reaches, in DIPs.
+    var standing: (offset: Point, reach: Point) {
+        var values = [0.0, 0.0, 0.0, 0.0]
+        stateui_winui_items_offset(list.handle, &values)
+        return (Point(x: values[0], y: values[1]), Point(x: values[2], y: values[3]))
     }
 
     // MARK: - What the list says
@@ -169,8 +194,10 @@ final class WinUIItemsView: WinUILayoutView {
         cells.userActivated(identity)
     }
 
+    /// The entries in view, told as the view or its extent changes: a bottom bar beside the page follows them.
     func showing(_ places: ClosedRange<Int>) {
         guard !released else { return }
+        standingChanged?()
         let identities = cells.identities
         cells.showing(places.clamped(to: 0...max(identities.count - 1, 0)).compactMap {
             identities.indices.contains($0) ? identities[$0] : nil
@@ -223,14 +250,7 @@ final class WinUIItemsView: WinUILayoutView {
 
     /// Scrolls to `target`, as far as the list reaches: WinUI's compositor moves the view a moment later.
     func scrollForTesting(to target: Point) {
-        stateui_winui_items_scroll_as_user(list.handle, target.x, target.y)
-    }
-
-    /// Where the list's view stands, and the farthest it reaches, in DIPs.
-    var standingForTesting: (offset: Point, reach: Point) {
-        var values = [0.0, 0.0, 0.0, 0.0]
-        stateui_winui_items_offset(list.handle, &values)
-        return (Point(x: values[0], y: values[1]), Point(x: values[2], y: values[3]))
+        stateui_winui_items_move_to(list.handle, target.x, target.y)
     }
 }
 

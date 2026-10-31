@@ -7,7 +7,7 @@
 @testable import StateUIWeb
 
 /// The facts the Web driver reads besides a member - the keyboard's focus, what a press reaches, the drawing order,
-/// where a view stands, the colour shown, the question and the file dialog showing, what was launched, the theme,
+/// where a view stands, the color shown, the question and the file dialog showing, what was launched, the theme,
 /// what assistive technology was told, what is kept, the bar - and the bar's actions chosen, a question answered and
 /// files chosen, as the user does.
 /// Design: docs/design/host/conformance.md#the-driver
@@ -52,11 +52,11 @@ extension WebDriver {
         return view.frame(laidOut: laid) ?? laid
     }
 
-    /// The colour the window shows at `point` of `element`, where it differs from what shows there without the
+    /// The color the window shows at `point` of `element`, where it differs from what shows there without the
     /// element: the page's own picture, a pixel of it read with the element and again with it unseen - which lays
     /// nothing out anew.
     func color(of element: MountedElement, at point: Point) throws -> Color? {
-        guard let view = (element.native as? WebElement)?.view else { throw DriverCannot("read the colour of \(element.type.name)") }
+        guard let view = (element.native as? WebElement)?.view else { throw DriverCannot("read the color of \(element.type.name)") }
         let box = try box(of: view.node)
         // The point of the view's frame, which a picture filling its room reaches past.
         let at = Point(x: box.x + view.reach + point.x, y: box.y + view.reach + point.y)
@@ -67,7 +67,7 @@ extension WebDriver {
         return shown == behind ? nil : shown
     }
 
-    /// The colour of the window's picture at `point` in it.
+    /// The color of the window's picture at `point` in it.
     private func pixel(_ point: Point) throws -> Color {
         let channels = (WebBrowser.ask([("pixel", .points([point]))]) ?? "").split(separator: ",").compactMap { Int($0) }
         guard channels.count == 4 else { throw DriverCannot("read the window's picture") }
@@ -84,20 +84,18 @@ extension WebDriver {
         return Question(title: title, message: message, buttons: buttons, field: field)
     }
 
-    /// The question showing answered by its button of `caption`, its field first holding `typing`.
-    func answer(_ caption: String, typing: String?, on element: MountedElement) throws {
+    /// The question showing answered by its button doing `button`, its field first holding `typing`.
+    func answer(_ button: QuestionButton, typing: String?, on element: MountedElement) throws {
         let shown = "document.querySelector('dialog.stateui-question[open]')"
-        guard try WebBrowser.truth("!!\(shown)", on: 0) else { throw DriverCannot(.answer(caption, typing: typing), on: element) }
+        guard try WebBrowser.truth("!!\(shown)", on: 0) else { throw DriverCannot(.answer(button, typing: typing), on: element) }
         if let typing {
             try WebBrowser.run("\(shown).querySelector('input').focus(); \(shown).querySelector('input').select()")
             if typing.isEmpty { press("Backspace") } else { WebBrowser.ask([("insertText", .words(typing))]) }
         }
-        let place = try WebBrowser.number(
-            "[...\(shown).querySelectorAll('button')].findIndex((b) => b.textContent === \(WebBrowser.quoted(caption)))",
-            on: 0) ?? -1
-        guard place >= 0 else { throw DriverCannot("find the answer \(caption)") }
-        let numbers = try numbers("stateui.box(\(shown).querySelectorAll('button')[\(Int(place))])", on: 0)
-        guard numbers.count == 4 else { throw DriverCannot("find the answer \(caption)") }
+        let named = "\(shown).querySelector('button[data-answer=\"\(WebQuestion.answer(of: button))\"]')"
+        guard try WebBrowser.truth("!!\(named)", on: 0) else { throw DriverCannot("find the answer \(button)") }
+        let numbers = try numbers("stateui.box(\(named))", on: 0)
+        guard numbers.count == 4 else { throw DriverCannot("find the answer \(button)") }
         let box = Rect(x: numbers[0], y: numbers[1], width: numbers[2], height: numbers[3])
         mouse("mousePressed", at: Point(x: box.width / 2, y: box.height / 2), in: box)
         mouse("mouseReleased", at: Point(x: box.width / 2, y: box.height / 2), in: box)
@@ -114,6 +112,20 @@ extension WebDriver {
 
     /// The file dialog the relay holds answered as the user does, by the driver's files of `names` - none cancels it -
     /// in a turn of the page's own.
+    /// What the share sheet the relay holds offers: its words, then its link on a line of its own.
+    func shared(over element: MountedElement) throws -> String? {
+        let offered = try WebBrowser.evaluate("stateui.share?.offered ?? ''", on: 0) ?? ""
+        return offered.isEmpty ? nil : offered
+    }
+
+    /// Answers the share sheet the relay holds as the user would: shared, or cancelled.
+    func answerShare(_ shared: Bool, on element: MountedElement) throws {
+        let answering = "(s) => !!s && (stateui.share = null, setTimeout(() => s.answer(\(shared)), 0), true)"
+        guard try WebBrowser.truth("(\(answering))(stateui.share)", on: 0) else {
+            throw DriverCannot(.answerShare(shared: shared), on: element)
+        }
+    }
+
     func answerFiles(_ names: [String], on element: MountedElement) throws {
         let chosen = names.map(WebBrowser.quoted).joined(separator: ",")
         let answering = "(d) => !!d && (stateui.fileDialog = null, setTimeout(() => d.answer([\(chosen)]), 0), true)"
@@ -132,12 +144,36 @@ extension WebDriver {
         try? WebBrowser.run("stateui.files = new Map(); stateui.fileDialog = null; stateui.launched = []")
     }
 
-    /// The colour scheme the page's root stands in: the one it holds, else the system's.
+    /// The color scheme the page's root stands in: the one it holds, else the system's.
     func theme() throws -> ColorScheme {
         let held = try WebBrowser.evaluate("getComputedStyle(document.documentElement).colorScheme", on: 0) ?? ""
         if held == "dark" { return .dark }
         if held == "light" { return .light }
         return try WebBrowser.truth("matchMedia('(prefers-color-scheme: dark)').matches", on: 0) ? .dark : .light
+    }
+
+    /// The accent the page draws its controls in: its accent's color, as a probe on the page shows it.
+    func accent() throws -> Color {
+        let shown = "(() => { const p = document.createElement('span'); p.style.color = 'var(--stateui-accent)'; "
+            + "document.body.append(p); const c = getComputedStyle(p).color; p.remove(); return c; })()"
+        guard let accent = try color(shown, on: 0) else { throw DriverCannot("read the accent the application draws in") }
+        return accent
+    }
+
+    /// The request cases' server: the page's own, which `run-in-browser.mjs` answers under this address - a page
+    /// stands, so the address names no scheme.
+    func served() throws -> String {
+        "/stateui-served"
+    }
+
+    /// The requests for `/held` the page's server took and those stopped, asked of it as the page asks.
+    func held() throws -> (taken: Int, stopped: Int) {
+        let said = try WebBrowser.evaluate(
+            "(() => { const asked = new XMLHttpRequest(); asked.open('GET', '/stateui-held', false); asked.send(); "
+                + "return asked.responseText; })()", on: 0) ?? ""
+        let counts = said.split(separator: " ").compactMap { Int($0) }
+        guard counts.count == 2 else { throw DriverCannot("count the requests held") }
+        return (counts[0], counts[1])
     }
 
     /// What assistive technology was told, a few frames given for the page's live region to say it.
@@ -149,18 +185,13 @@ extension WebDriver {
         return try words("stateui.announced", on: 0)
     }
 
-    func kept(_ key: String, inScene: Bool) throws -> HostValue? {
+    func kept(_ key: String, inScene: Bool) throws -> String? {
         if inScene {
             let scenes = try WebBrowser.evaluate("localStorage.getItem('StateUI kept scenes: Conformance')", on: 0)
-            return KeptScenes(scenes ?? "").scenes.first?.values[key]
+            return KeptScenes(scenes ?? "").scenes.first?.values[key]?.string
         }
         let words = try WebBrowser.evaluate("localStorage.getItem('StateUI kept values: Conformance')", on: 0) ?? ""
-        let kept = KeptValuesText(words)
-        let kinds = [
-            PersistentKey(key, of: String.self), PersistentKey(key, of: Double.self), PersistentKey(key, of: Int.self),
-            PersistentKey(key, of: Bool.self),
-        ]
-        return kinds.lazy.compactMap { kept.restored(for: [$0])[key] }.first
+        return KeptValuesText(words).words[key]
     }
 
     /// The bar's action of the toolbar item `element` chosen, as the user's click does - one behind the bar chosen
@@ -174,47 +205,104 @@ extension WebDriver {
     /// The button of the toolbar item `element` in the menu behind the bar, opened; nil where it stands there not.
     func behindTheBar(_ element: MountedElement) throws -> Int32? {
         let caption = element.value(.text)?.string ?? ""
-        try click(try bar(over: element), part: "button:has(> [data-glyph=more])")
+        let bar = try bar(over: element)
         let script = "((m) => ((b) => b ? stateui.numberOf(b) : null)(m && [...m.children].find((c) => "
             + "[...c.querySelectorAll('span')].pop()?.textContent === \(WebBrowser.quoted(caption)))))"
             + "([...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open')))"
-        guard let node = try WebBrowser.number(script, on: 0) else {
+        // The detail's More, then the sidebar's part's.
+        for more in [Self.more, Self.sidebarMore] {
+            guard try WebBrowser.truth("((b) => b && !b.hidden)(e.querySelector('\(more)'))", on: bar) else { continue }
+            try click(bar, part: more)
+            if let node = try WebBrowser.number(script, on: 0) { return Int32(node) }
             press("Escape")
-            return nil
         }
-        return Int32(node)
+        return nil
     }
+
+    /// The bar's own More, at its end, and the one of its part over the sidebar.
+    static let more = ":scope > .stateui-bar-actions > button:has(> [data-glyph=more])"
+    static let sidebarMore = ".stateui-bar-side button:has(> [data-glyph=more])"
 
     /// What the toolbar item `element` holds, as its button on the bar - or in the menu behind it - shows it.
     func toolbarItemHolds(_ property: Prop, on element: MountedElement) throws -> HostValue?? {
         if let button = try barButtons().first(where: { $0.item === element }) {
             let e = button.node
             switch property {
-            case .placement: return ToolbarItemPlacement.bar.propValue
             case .showsText: return try WebBrowser.truth("!e.querySelector('span').hidden", on: e).propValue
-            case .text: return try WebBrowser.evaluate("e.getAttribute('aria-label')", on: e)?.propValue
+            case .isOn: return try WebBrowser.truth("e.getAttribute('aria-pressed') === 'true'", on: e).propValue
+            case .showsMenuArrow:
+                let shows = "e.dataset.menu === 'opens' && !e.hasAttribute('data-bare')"
+                return try WebBrowser.truth(shows, on: e).propValue
+            // An action names itself; words on the bar show theirs.
+            case .text:
+                return try WebBrowser.evaluate("e.getAttribute('aria-label') ?? e.querySelector('span').textContent", on: e)?
+                    .propValue
             case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: e)).propValue
-            case .isDestructive: return try WebBrowser.truth("e.hasAttribute('data-destructive')", on: e).propValue
+            case .role:
+                let destructive = try WebBrowser.truth("e.hasAttribute('data-destructive')", on: e)
+                return (destructive ? ActionRole.destructive : .normal).propValue
             case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier ?? null", on: e)?.propValue)
             case .icon: return .some(try picture("e.querySelector('img')", on: e))
             case .keyboardShortcut: return .some(try shortcut(on: e))
+            // The look the application gives it: its box, and its words.
+            case .background, .stroke, .lineWidth, .shape: return try boxHolds(property, button)
+            case .textColor, .fontSize, .fontWeight, .fontFamily, .fontAttributes, .textStyle, .isFontAutoScalingEnabled,
+                 .padding:
+                return try wordsHolds(property, e)
             default: return nil
             }
         }
-        guard property == .placement else { return nil }
-        guard try behindTheBar(element) != nil else { return nil }
-        press("Escape")
-        return ToolbarItemPlacement.overflow.propValue
+        return nil
     }
 
-    /// The bar as the user meets it: each edge's groups of actions, then those behind the bar's More.
-    func bar(of page: MountedElement) throws -> String {
+    /// The button standing for the bar's item `element`, or the group for its group; nil for any other element.
+    func barView(of element: MountedElement) throws -> WebDOMView? {
+        switch element.type {
+        case .toolbarButton, .toolbarToggle, .toolbarLabel: return try barButtons().first { $0.item === element }
+        case .toolbarGroup: return renderer?.roster.controllers.first?.window.bar.shownGroups.first { $0.group === element }
+        default: return nil
+        }
+    }
+
+    /// The bar at `edge` of `page` as the user meets it: each edge's groups of actions, then those behind the bar's
+    /// More - at its top the window's bar, at its foot the page's own.
+    func bar(of page: MountedElement, at edge: ToolbarEdge) throws -> String {
+        guard edge == .top else { return try toolbar(of: page) }
         guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("read the bar of \(page.type.name)") }
-        let buttons = bar.buttons.values
-        let groups = { (edge: String) throws -> [[String]] in
+        let groups = { (edge: String) throws -> [[String]] in try Self.groups(edge, on: bar.node, buttons: Array(bar.buttons.values)) }
+        // A split view's page reads its part: the sidebar's over the sidebar, the detail's beside it.
+        guard page.splitBarPart?.part == .sidebar else {
+            let leading = try groups(".stateui-bar-start > .stateui-bar-actions")
+            let trailing = try groups(":scope > .stateui-bar-actions")
+            return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page, behind: Self.more))
+        }
+        let leading = try groups(".stateui-bar-side > .stateui-bar-actions[data-edge=start]")
+        let trailing = try groups(".stateui-bar-side > .stateui-bar-actions:not([data-edge])")
+        return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page, behind: Self.sidebarMore))
+    }
+
+    /// The bar at `page`'s foot: its groups at either edge, then those behind its More; nothing while it shows none.
+    private func toolbar(of page: MountedElement) throws -> String {
+        guard let toolbar = (page.native as? WebElement)?.bottomBar?.toolbar,
+              try WebBrowser.truth("!e.hidden && !e.closest('[hidden]')", on: toolbar.node)
+        else { return BarWords.said(leading: [], trailing: [], overflow: []) }
+        let buttons = Array(toolbar.buttons.values)
+        let leading = try Self.groups(":scope > .stateui-bar-actions[data-edge=start]", on: toolbar.node, buttons: buttons)
+        let trailing = try Self.groups(":scope > .stateui-bar-actions:not([data-edge])", on: toolbar.node, buttons: buttons)
+        var overflow: [String] = []
+        if try WebBrowser.truth("!e.hidden", on: toolbar.more.node) {
+            try click(toolbar.more)
+            defer { press("Escape") }
+            overflow = try openMenu()
+        }
+        return BarWords.said(leading: leading, trailing: trailing, overflow: overflow)
+    }
+
+    /// The groups standing in `edge` under the bar `node`, each its shown items said by the elements of `buttons`.
+    private static func groups(_ edge: String, on node: Int32, buttons: [WebBarButton]) throws -> [[String]] {
             let script = "[...e.querySelectorAll('\(edge) > .stateui-bar-group')].map((g) => [...g.children]"
                 + ".filter((b) => !b.hidden).map((b) => stateui.numberOf(b) + (b.disabled ? '!' : '')).join(',')).join(';')"
-            let said = try WebBrowser.evaluate(script, on: bar.node) ?? ""
+            let said = try WebBrowser.evaluate(script, on: node) ?? ""
             return said.split(separator: ";").map { group in
                 group.split(separator: ",").compactMap { word in
                     let enabled = !word.hasSuffix("!")
@@ -223,18 +311,19 @@ extension WebDriver {
                     return BarWords.word(item, enabled: enabled)
                 }
             }.filter { !$0.isEmpty }
-        }
-        let leading = try groups(".stateui-bar-start > .stateui-bar-actions")
-        let trailing = try groups(":scope > .stateui-bar-actions")
-        return BarWords.said(leading: leading, trailing: trailing, overflow: try overflow(of: page))
     }
 
-    /// The actions behind the bar's More, as its menu shows them before the page's menus.
-    private func overflow(of page: MountedElement) throws -> [String] {
+    /// The actions behind the bar's More found by `more`, as its menu shows them before the page's menus.
+    private func overflow(of page: MountedElement, behind more: String) throws -> [String] {
         let bar = try self.bar(over: page)
-        guard try WebBrowser.truth("!e.querySelector('button:has(> [data-glyph=more])').hidden", on: bar) else { return [] }
-        try click(bar, part: "button:has(> [data-glyph=more])")
+        guard try WebBrowser.truth("!e.querySelector('\(more)').hidden", on: bar) else { return [] }
+        try click(bar, part: more)
         defer { press("Escape") }
+        return try openMenu()
+    }
+
+    /// The actions the menu open now shows, before the page's menus, each said by its element.
+    private func openMenu() throws -> [String] {
         let open = "[...document.querySelectorAll('.stateui-menu')].find((m) => m.matches(':popover-open'))"
         let script = "((m) => { const out = []; for (const c of m ? m.children : []) {"
             + " if (c.getAttribute('role') === 'separator') break; if (c.classList.contains('stateui-menu')) continue;"
@@ -253,15 +342,23 @@ extension WebDriver {
     /// Every toolbar item under `element`, its slots included.
     private func toolbarItems(in element: MountedElement?) -> [MountedElement] {
         guard let element else { return [] }
-        let own = element.type == .toolbarItem ? [element] : []
+        let own = NodeType.toolbarItemTypes.contains(element.type) ? [element] : []
         return own + (element.children + element.slots).flatMap { toolbarItems(in: $0) }
     }
 
-    /// The bar's actions, in their order on the page.
+    /// The bar's items, in their order on the page, then those of the bars at the pages' feet.
     func barButtons() throws -> [WebBarButton] {
         guard let bar = renderer?.roster.controllers.first?.window.bar else { return [] }
-        let order = try numbers("[...e.querySelectorAll('.stateui-bar-group > button')].map(stateui.numberOf)", on: bar.node)
+        let order = try numbers("[...e.querySelectorAll('.stateui-bar-group > *')].map(stateui.numberOf)", on: bar.node)
         let buttons = bar.buttons.values
-        return order.compactMap { node in buttons.first { Double($0.node) == node } }
+        let feet = footToolbars(in: renderer?.runtime.tree.root).flatMap(\.buttons.values)
+        return order.compactMap { node in buttons.first { Double($0.node) == node } } + feet
+    }
+
+    /// The bars at the feet of the pages under `element`.
+    private func footToolbars(in element: MountedElement?) -> [WebBottomToolbar] {
+        guard let element else { return [] }
+        let own = element.type == .page ? [(element.native as? WebElement)?.bottomBar?.toolbar].compactMap { $0 } : []
+        return own + element.children.flatMap { footToolbars(in: $0) }
     }
 }

@@ -1,20 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The curve a layout engine's views follow between the poses its arithmetic answers at an axis's keyframes, one
+/// The curve a motion layout's views follow between the poses its arithmetic answers at an axis's keyframes, one
 /// number at a time: each view's place, size, turn, opacity and shade.
 ///
-///     LayoutEngine(cards, id: \.name) { … } placements: { room, phase in … }
-///         .phase($arrangement)
+///     MotionLayout(cards, id: \.name, parameters: $arrangement) { … } placements: { room, parameters in … }
 ///         .axis(\.self, input: .scroll(.horizontal), range: 0...2, keyframes: .every(1))
 ///         .interpolation(.catmullRom)
 ///
 /// The library's curves are `.linear`, `.catmullRom` and `.monotone`; a curve of your own is a type conforming to
 /// this protocol. Every curve passes through each keyframe, so a pose at a keyframe is the arithmetic's own.
-/// Design: docs/design/views/layout-engine.md#keyframes
+/// Design: docs/design/views/motion-layout.md#keyframes
 public protocol LayoutInterpolation: Sendable {
     /// How many keyframes either side of the two around a place the curve reads: none for straight lines between
-    /// them, one for a curve their neighbours shape.
+    /// them, one for a curve their neighbors shape.
     var reach: Int { get }
 
     /// The number at `place`, which stands between `knots[segment]` and `knots[segment + 1]`, on the curve through
@@ -32,7 +31,7 @@ public protocol LayoutInterpolation: Sendable {
 
 /// The curves this library draws through a layout's keyframes: `.linear`, `.catmullRom` and `.monotone`.
 public struct LayoutCurve: LayoutInterpolation, Equatable {
-    /// Straight, a cubic shaped by the neighbours' slopes, or a cubic that never passes its neighbours.
+    /// Straight, a cubic shaped by the neighbors' slopes, or a cubic that never passes its neighbors.
     fileprivate enum Kind: Equatable, Sendable {
         case linear
         case catmullRom(tension: Double)
@@ -45,7 +44,7 @@ public struct LayoutCurve: LayoutInterpolation, Equatable {
         self.kind = kind
     }
 
-    /// None for straight lines; one for a cubic, its slopes shaped by the neighbours.
+    /// None for straight lines; one for a cubic, its slopes shaped by the neighbors.
     public var reach: Int { kind == .linear ? 0 : 1 }
 
     /// The number at `place` on this curve through `values` at `knots`.
@@ -67,16 +66,16 @@ public struct LayoutCurve: LayoutInterpolation, Equatable {
         }
     }
 
-    /// The slope through a keyframe's neighbours, the straight line's to its one neighbour at an end.
+    /// The slope through a keyframe's neighbors, the straight line's to its one neighbor at an end.
     private static func slope(at index: Int, _ knots: [Double], _ values: [Double]) -> Double {
         let before = max(index - 1, 0)
         let after = min(index + 1, knots.count - 1)
         return (values[after] - values[before]) / (knots[after] - knots[before])
     }
 
-    /// The slope at a keyframe that keeps the curve between its neighbours: none where the values turn back there,
+    /// The slope at a keyframe that keeps the curve between its neighbors: none where the values turn back there,
     /// at most twice the gentler side's.
-    /// Design: docs/design/views/layout-engine.md#the-curves
+    /// Design: docs/design/views/motion-layout.md#the-curves
     private static func steffen(at index: Int, _ knots: [Double], _ values: [Double]) -> Double {
         guard index > 0, index < knots.count - 1 else { return slope(at: index, knots, values) }
 

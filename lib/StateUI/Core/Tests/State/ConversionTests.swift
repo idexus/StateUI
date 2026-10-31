@@ -23,7 +23,7 @@ private struct Percent: View {
     var body: some View {
         builds.count += 1
 
-        return ModifiedContent(node: label("\(Int(volume.projectedValue.convert { $0 * 100 }.wrappedValue))%"))
+        return AnyView(node: label("\(Int(volume.projectedValue.convert { $0 * 100 }.wrappedValue))%"))
     }
 }
 
@@ -51,7 +51,7 @@ private struct Readout: View {
 
     var body: some View {
         let shown = volume.projectedValue.convert { "\($0) \(unit)" }
-        if let storage = shown.described { seen.storages.append(ObjectIdentifier(storage)) }
+        seen.storages.append(ObjectIdentifier(shown.storage))
 
         return Slider(volume.projectedValue).accessibilityLabel(shown.wrappedValue)
     }
@@ -94,7 +94,7 @@ final class ConversionTests: XCTestCase {
     private func destination(of number: Int32) -> Double? {
         guard let image = Renderer.shared.storage(of: number) else { return nil }
 
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         return JourneyLanes<Double>(carried: board.read(image, lanes: JourneyLanes<Double>.lanes))?.destination
     }
@@ -113,7 +113,8 @@ final class ConversionTests: XCTestCase {
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.value]?.state)
-        let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
+        XCTAssertNotNil(Renderer.shared.storage(of: number), "a state rides that number")
+        let board = Renderer.shared.board
 
         XCTAssertNotEqual(number, volume.number, "the control is tied to the derived state, not the source")
         XCTAssertEqual(destination(of: number), 20, "worked out from 0.2 as the conversion was made")
@@ -172,12 +173,12 @@ final class ConversionTests: XCTestCase {
 
         let patch = renders.render(
             Text()
-                .text(width.projectedValue.convert(with: height.projectedValue) { "\(Int($0 + $1))" })
+                .text(.multi(width.projectedValue, height.projectedValue).convert { "\(Int($0 + $1))" })
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         func words() -> String? {
             String(carried: board.read(image, lanes: 0))
@@ -205,7 +206,7 @@ final class ConversionTests: XCTestCase {
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         func words() -> String? {
             String(carried: board.read(image, lanes: 0))
@@ -249,7 +250,7 @@ final class ConversionTests: XCTestCase {
 
         let number = try XCTUnwrap(patch.driven?[.text]?.state)
         let image = try XCTUnwrap(Renderer.shared.storage(of: number))
-        let board = Renderer.shared.board(of: image)
+        let board = Renderer.shared.board
 
         XCTAssertEqual(String(carried: board.read(image, lanes: 0)), "10")
 
@@ -289,7 +290,8 @@ final class ConversionTests: XCTestCase {
                 .node)
 
         let number = try XCTUnwrap(patch.driven?[.value]?.state)
-        let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
+        XCTAssertNotNil(Renderer.shared.storage(of: number), "a state rides that number")
+        let board = Renderer.shared.board
         board.cycle(now: 0, reducesMotion: false)
 
         volume.wrappedValue = 0.123
@@ -314,14 +316,15 @@ final class ConversionTests: XCTestCase {
 
         let patch = renders.render(
             Slider(
-                hours.projectedValue
-                    .convert(with: minutes.projectedValue) { h, m in h * 60 + m }
+                Binding<Double>.multi(hours.projectedValue, minutes.projectedValue)
+                    .convert { h, m in h * 60 + m }
                     .convertBack { total in ((total / 60).rounded(.down), total.truncatingRemainder(dividingBy: 60)) })
             .maximum(600)
             .node)
 
         let number = try XCTUnwrap(patch.driven?[.value]?.state)
-        let board = Renderer.shared.board(of: try XCTUnwrap(Renderer.shared.storage(of: number)))
+        XCTAssertNotNil(Renderer.shared.storage(of: number), "a state rides that number")
+        let board = Renderer.shared.board
 
         XCTAssertEqual(destination(of: number), 90)
 
@@ -351,16 +354,5 @@ final class ConversionTests: XCTestCase {
 
         XCTAssertEqual(builds.count, 2, "the body read the source through the conversion")
         XCTAssertEqual(patch.props[.text], .string("75%"), "and read the converted value afresh")
-    }
-
-    /// A conversion of a part of a state, or of a binding made from closures,
-    /// is worked out at build and reports nothing back - said out loud, and
-    /// still a value.
-    func testAConversionOfAPartIsWorkedOutAtBuild() {
-        let room = State(wrappedValue: Rect(0, 0, 200, 100))
-        let half = room.projectedValue.width.convert { $0 / 2 }
-
-        XCTAssertEqual(half.wrappedValue, 100)
-        XCTAssertNil(half.conversion, "nothing the host could carry, so nothing to arm")
     }
 }

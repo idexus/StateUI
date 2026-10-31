@@ -6,21 +6,20 @@
 import StateUIFoundation
 
 /// How far a view stands from where its arithmetic puts it, channel by channel: what a change of a layout's
-/// description at the current phase leaves, laid over the view's pose and decaying to nothing under the layout's
-/// motion.
-/// Design: docs/design/views/layout-engine.md#a-change-at-the-current-phase
+/// description at the current parameters leaves, laid over the view's pose - a body's lanes (`LayoutBodies`).
+/// Design: docs/design/views/motion-layout.md#a-change-where-the-parameters-stand
 struct LayoutShift: Equatable, Sendable {
-    /// The numbers, lane by lane: the bounds' place and size; the transform's correction - a move across and down,
-    /// a turn in degrees, a slant and a scale across and down less one; the opacity; the shade.
+    /// The numbers, lane by lane: the bounds' place and size; the transform's five drawn numbers apart - its move
+    /// across and down, its turn in degrees, its width and height; the opacity; the shade.
     var lanes: [Double]
 
     /// Where each part stands among the lanes.
     static let x = 0, y = 1, width = 2, height = 3
-    static let moveX = 4, moveY = 5, turn = 6, slant = 7, scaleX = 8, scaleY = 9
-    static let opacity = 10, shade = 11
+    static let moveX = 4, moveY = 5, turn = 6, scaleX = 7, scaleY = 8
+    static let opacity = 9, shade = 10
 
     /// How many lanes a shift has.
-    static let count = 12
+    static let count = 11
 
     /// No shift: the view where its arithmetic puts it.
     static let none = LayoutShift(lanes: Array(repeating: 0, count: count))
@@ -29,9 +28,9 @@ struct LayoutShift: Equatable, Sendable {
         self.lanes = lanes
     }
 
-    /// The shift that shows `pose` where `shown` stood: the bounds and the opacity apart, the transform as the
-    /// correction that takes the pose's to the one shown - the turn the short way - and the shade only where both
-    /// draw one.
+    /// The shift that shows `pose` where `shown` stood: the bounds, the opacity and the transform's five drawn numbers
+    /// apart - the turn the short way, as a view's own transform travels - and the shade only where both draw one.
+    /// Design: docs/design/types/transforms.md#the-shear-limit
     init(from shown: Placement, to pose: Placement) {
         var lanes = LayoutShift.none.lanes
         lanes[Self.x] = shown.bounds.x - pose.bounds.x
@@ -39,18 +38,16 @@ struct LayoutShift: Equatable, Sendable {
         lanes[Self.width] = shown.bounds.width - pose.bounds.width
         lanes[Self.height] = shown.bounds.height - pose.bounds.height
 
-        if let correction = pose.transform.inverted.map({ $0.then(shown.transform) }) {
-            let parts = correction.parts
-            lanes[Self.moveX] = parts.moveX
-            lanes[Self.moveY] = parts.moveY
-            lanes[Self.turn] = parts.turn
-            lanes[Self.slant] = parts.slant
-            lanes[Self.scaleX] = parts.scaleX - 1
-            lanes[Self.scaleY] = parts.scaleY - 1
-        }
+        let (from, to) = (shown.transform, pose.transform)
+        let turn = from.rotation - to.rotation
+        lanes[Self.moveX] = from.x - to.x
+        lanes[Self.moveY] = from.y - to.y
+        lanes[Self.turn] = turn - (turn / 360).rounded() * 360
+        lanes[Self.scaleX] = from.width - to.width
+        lanes[Self.scaleY] = from.height - to.height
 
         lanes[Self.opacity] = shown.opacity - pose.opacity
-        if shown.shade != PackedPlacement.unshaded, pose.shade != PackedPlacement.unshaded {
+        if shown.shade != Placement.unshaded, pose.shade != Placement.unshaded {
             lanes[Self.shade] = shown.shade - pose.shade
         }
         self.lanes = lanes
@@ -63,7 +60,7 @@ struct LayoutShift: Equatable, Sendable {
         return joining
     }
 
-    /// `pose` shifted: its bounds and opacity moved by the lanes, its transform corrected after it, its order its
+    /// `pose` shifted: its bounds, opacity and the transform's five drawn numbers moved by the lanes, its order its
     /// own.
     func applied(to pose: Placement) -> Placement {
         guard self != .none else { return pose }
@@ -72,33 +69,20 @@ struct LayoutShift: Equatable, Sendable {
         shifted.bounds = Rect(
             pose.bounds.x + lanes[Self.x], pose.bounds.y + lanes[Self.y],
             pose.bounds.width + lanes[Self.width], pose.bounds.height + lanes[Self.height])
-        shifted.transform = pose.transform.then(ViewTransform(parts: (
-            lanes[Self.moveX], lanes[Self.moveY], lanes[Self.turn], lanes[Self.slant],
-            lanes[Self.scaleX] + 1, lanes[Self.scaleY] + 1)))
+        let transform = pose.transform
+        shifted.transform = ViewTransform(
+            x: transform.x + lanes[Self.moveX], y: transform.y + lanes[Self.moveY],
+            rotation: transform.rotation + lanes[Self.turn], width: transform.width + lanes[Self.scaleX],
+            height: transform.height + lanes[Self.scaleY])
         shifted.opacity = min(max(pose.opacity + lanes[Self.opacity], 0), 1)
-        if pose.shade != PackedPlacement.unshaded {
+        if pose.shade != Placement.unshaded {
             shifted.shade = min(max(pose.shade + lanes[Self.shade], 0), 1)
         }
         return shifted
     }
 }
 
-/// A shift on its way to nothing: where its lanes stood and how fast they went as it set out, and when.
-struct LayoutTravel: Equatable, Sendable {
-    var from: [Double]
-    var velocity: [Double]
-    var began: Double
-
-    /// Where the shift stands at `now` under `law`, how fast it goes, per millisecond, and whether it has come to
-    /// nothing.
-    func at(_ now: Double, under law: Motion) -> HostMotionSample {
-        HostMotionLaw.sample(
-            law, elapsed: max(now - began, 0), from: from, destination: Array(repeating: 0, count: from.count),
-            velocity: velocity)
-    }
-}
-
-/// A transform as parts the way back can be measured in.
+/// A transform as a view draws it.
 extension ViewTransform {
     /// The transform that undoes this one; nil for one that flattens a view to nothing.
     var inverted: ViewTransform? {
@@ -115,39 +99,9 @@ extension ViewTransform {
         return inverse
     }
 
-    /// This transform, then `next` after it.
-    func then(_ next: ViewTransform) -> ViewTransform {
-        var both = ViewTransform()
-        both.a = next.a * a + next.c * b
-        both.b = next.b * a + next.d * b
-        both.c = next.a * c + next.c * d
-        both.d = next.b * c + next.d * d
-        both.tx = next.a * tx + next.c * ty + next.tx
-        both.ty = next.b * tx + next.d * ty + next.ty
-        return both
-    }
-
-    /// The transform as a scale, then a slant along, then a turn in degrees - the short way, at most half a turn -
-    /// then a move: each part a number the way back can be measured in.
-    var parts: (moveX: Double, moveY: Double, turn: Double, slant: Double, scaleX: Double, scaleY: Double) {
-        let scaleX = (a * a + b * b).squareRoot()
-        let turned = atan2(b, a)
-        let along = cos(turned) * c + sin(turned) * d
-        let scaleY = -sin(turned) * c + cos(turned) * d
-        return (tx, ty, turned * 180 / Double.pi, scaleY == 0 ? 0 : along / scaleY, scaleX, scaleY)
-    }
-
-    /// The transform the parts make: scaled, slanted, turned, then moved.
-    init(parts: (moveX: Double, moveY: Double, turn: Double, slant: Double, scaleX: Double, scaleY: Double)) {
-        let turned = parts.turn * Double.pi / 180
-        let (run, rise) = (cos(turned), sin(turned))
-
-        self.init()
-        a = run * parts.scaleX
-        b = rise * parts.scaleX
-        c = run * parts.slant * parts.scaleY - rise * parts.scaleY
-        d = rise * parts.slant * parts.scaleY + run * parts.scaleY
-        tx = parts.moveX
-        ty = parts.moveY
+    /// The transform as a view draws it: its five numbers - the move, the turn and the sizes - its slant dropped.
+    /// Design: docs/design/types/transforms.md#the-shear-limit
+    var drawn: ViewTransform {
+        ViewTransform(x: x, y: y, rotation: rotation, width: width, height: height)
     }
 }

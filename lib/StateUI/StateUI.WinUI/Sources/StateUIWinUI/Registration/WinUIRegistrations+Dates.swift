@@ -16,7 +16,7 @@ extension WinUIRegistrations {
             return picker
         }, members: { picker in
             picker.property(DatePickerContract.date) { view, date in view.setDate(date) }
-            picker.applies([DatePickerContract.minimumDate, DatePickerContract.maximumDate]) { view, values in
+            picker.applies(DatePickerContract.minimumDate, DatePickerContract.maximumDate) { view, values in
                 view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
             }
             picker.property(DatePickerContract.format) { view, format in view.setFormat(format) }

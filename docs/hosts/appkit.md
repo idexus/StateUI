@@ -34,27 +34,33 @@ names the versions the host's suite passes on.
 ## The head
 
 An application's AppKit head is `Platforms/AppKit/main.swift`. It registers the
-application, says what this host answers for it, then starts the host:
+application, says what this host answers for it, then starts the host - here
+the Gallery's:
 
-```swift quote
-import NotesUI
+```swift listing appkit.md.head
+// Platforms/AppKit/main.swift
+import GalleryUI
 import StateUIAppKit
 
-stateui_app_register()
+registerApplication()
 
-// The controls this host realizes, the acts it performs, and the pushes it
-// reports. Each lives in Host/ beside this file.
-NotesControls.register()
-NotesActs.register()
-NotesEventSources.start()
+// What this host answers for the application, said before it runs: the
+// controls it realizes, the acts it performs, and the pushes it reports. Each
+// lives in Host/ beside this file.
+GalleryControls.register()
+GalleryActs.register()
+GalleryEventSources.start()
 
 StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
 ```
 
-The head finds its artwork from its own source file, `#filePath`, so it runs
-the same whether a debugger, a task or a terminal starts it. The Gallery's
-head, run from the bundle its build makes, reads the bundle's `Images` and
-`StateUI.icns` first. The icon a head hands the host is
+`run` shows the artwork the program carries - the `Images` in its bundle, or
+in the `Resources` that `.scripts/AppKit/deploy.sh` lays beside it, with the
+icon there - and ends the process as the application ends. A head run from
+the build carries nothing, so it hands the host the artwork the application
+keeps, found from its own source file, `#filePath`
+(`run(resourceDirectory:applicationIcon:)`): it runs the same whether a
+debugger, a task or a terminal starts it. The icon a head hands the host is
 `Resources/AppIcon/appicon_macos.svg`, drawn on macOS's icon grid: a
 1024-point canvas whose body is an 824-point rounded square 100 points in.
 Artwork drawn edge to edge stands larger in the Dock than every icon beside
@@ -94,7 +100,7 @@ public static func add<Realized: ElementContract, Made: NSView>(
 
 - **`create`** makes the view once per element, and wires what the view
   reports: `reports.raise(Contract.member, values)` for an event of the
-  element's own, and `reports.report(property, value, as: event)` for a value
+  element's own or of a tier it wears, and `reports.report(property, value, as: event)` for a value
   the USER changed - which lands on the state the value is carried in and
   raises the event with it.
 - **`members`** registers what the view takes: `property(_:_:)` hands a value
@@ -103,46 +109,54 @@ public static func add<Realized: ElementContract, Made: NSView>(
 
 Name the view's own class where the closure makes it - `create: { reports ->
 TrafficLightView in … }` - so every applier is handed that class rather than a
-bare `NSView`.
+bare `NSView`. Write a control's registration beside the view it registers: a
+`static func register()` in an extension at the end of the view's own file, as
+the Gallery's traffic light does:
 
-```swift quote
-StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
-    let light = TrafficLightView()
-    light.onLampTapped = { index in
-        reports.raise(TrafficLightContract.lampTapped, index)
-    }
-    return light
-}) { light in
-    light.property(TrafficLightContract.signal) { view, signal in
-        view.signal = (signal ?? .stop).rawValue
-    }
-    light.raises(TrafficLightContract.lampTapped)
-}
-```
-
-Write a control's registration beside the view it registers: a `static func
-register()` in an extension at the end of the view's own file. Everything
-about the control - the view, what it reports, what it takes and the acts aimed
-at it - is then read in one place, and the application's list of its controls
-is only a list:
-
-```swift quote
+```swift listing appkit.md.control
+// Platforms/AppKit/Host/TrafficLightView.swift
 extension TrafficLightView {
+    /// Adds the light for `TrafficLightContract`: `create` makes the view once
+    /// per element and wires the tap it reports, and `property` puts the
+    /// described signal on it. Said once, before the application runs.
     @MainActor
     static func register() {
         StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
-            …
+            let light = TrafficLightView()
+            light.onLampTapped = { index in
+                reports.raise(TrafficLightContract.lampTapped, index)
+            }
+            return light
         }) { light in
-            …
+            light.property(TrafficLightContract.signal) { view, signal in
+                view.signal = (signal ?? .stop).rawValue
+            }
+            light.raises(TrafficLightContract.lampTapped)
         }
     }
 }
+```
 
-enum NotesControls {
+Everything about the control - the view, what it reports, what it takes and
+the acts aimed at it - is then read in one place, and the application's list
+of its controls is only a list:
+
+```swift listing appkit.md.controls
+// Platforms/AppKit/Host/GalleryControls.swift
+/// The gallery's own controls, as this host realizes them.
+///
+/// The contracts and the Swift halves are shared by every host - see
+/// Sources/Samples/Interop. What each control IS on screen is its view's, and
+/// so is its registration: `register()` at the end of the view's own file.
+/// This is the list of them, and nothing else.
+enum GalleryControls {
+    /// Registers every control this host realizes. Said once, before the
+    /// application runs.
     @MainActor
     static func register() {
         TrafficLightView.register()
         RatingBarView.register()
+        MetalCube3DView.register()
     }
 }
 ```
@@ -157,11 +171,15 @@ A Swift `Style` can target the control once its Swift struct conforms to
 the style's values already among its own; the registration needs nothing for
 it. A value handed over as a state - `.rating($stars)` over
 `setValue(_:on:mode:kind:)` - reaches the same applier on the host's own
-frames; see [Motion and journeys](../concepts/motion-and-journeys.md).
+frames; see [Motion and journeys](../concepts/motion-and-journeys.md). A state
+the host cannot carry, or one the control translates - an enumeration, a choice
+by its place - is read by the element as it is described: `.signal($signal)`
+over `setValue(_:whenDescribed:)`, and the body that handed it over is not its
+reader.
 
 **A registered view draws however it likes, the GPU included.** An `MTKView` is
 an `NSView`, so its registration says no more than any other one: the Gallery's
-`Cube3D`, drawn here with Metal, takes a size, a colour and whether it turns, and the corners, the
+`Cube3D`, drawn here with Metal, takes a size, a color and whether it turns, and the corners, the
 matrix and the frames stay the host's. Two things belong to a view that runs a
 loop of its own. It stops that loop when the tree drops it - the Gallery's
 pauses in `viewDidMoveToWindow`, so nothing turns behind a page the user has
@@ -184,18 +202,36 @@ itself, as the next section says, and no other child is shown.
 
 ### Properties taken together
 
-A view that must take one property before another - a web view its agent
-before its page - names them with `applies`, and is handed them whole
-whenever any of them changes: each as the type its contract declares, and
-whether it changed (`ControlValues`). Each `property` alone comes in no
-promised order.
+A view that must take properties together - a rating bar its stars and its
+rating, a web view its agent before its page - names them with `applies`, and
+is handed them whole whenever any of them changes: each as the type its
+contract declares, and whether it changed (`ControlValues`). Each `property`
+alone comes in no promised order. The Gallery's rating bar also reports the
+rating the user taps, with `reports.report`:
 
-```swift quote
-StateUIControls.add(WebViewContract.self, create: { reports -> MyWebView in … }) { web in
-    web.applies([WebViewContract.userAgent, WebViewContract.source]) { view, values in
-        if values.changed(WebViewContract.userAgent) { view.userAgent = values[WebViewContract.userAgent] }
-        if values.changed(WebViewContract.source) { view.show(values[WebViewContract.source]) }
+```swift listing appkit.md.applies
+// Platforms/AppKit/Host/RatingBarView.swift
+StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
+    let bar = RatingBarView()
+
+    // A tapped star is the USER's change: it lands on the state the
+    // value is carried in, and raises the event with it - so an
+    // application hears it once, whether it holds the rating in a
+    // state or in a handler.
+    bar.onRatingChanged = { rating in
+        reports.report(
+            RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
     }
+    return bar
+}) { bar in
+    // The stars and the rating come together: a rating stands within
+    // the stars, whichever of the two changed.
+    bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { view, values in
+        view.show(
+            rating: values[RatingBarContract.rating] ?? 0,
+            of: Int(values[RatingBarContract.maximum] ?? 5))
+    }
+    bar.raises(RatingBarContract.ratingChanged)
 }
 ```
 
@@ -208,17 +244,8 @@ change: one added, moved, taken away, or given another value. A child is a
 `AppKitChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the view keeps what it drew for one by it. Such a child has no
-view of its own.
-
-```swift quote
-StateUIControls.add(MapContract.self, create: { reports -> MyMap in … }) { map in
-    map.property(MapContract.region) { view, region in … }
-    map.children(MarkerContract.self, members: [MarkerContract.location, MarkerContract.selected]) { view, markers in
-        view.show(markers.map { marker in (marker, marker.value(MarkerContract.location)) })
-        // the user taps one: marker.reports.raise(MarkerContract.selected)
-    }
-}
-```
+view of its own. The Gallery's [Web](web.md#children-a-control-draws) and
+[Android](android.md#children-a-control-draws) heads register a map this way.
 
 This host draws a `Map` with MapKit itself. A library element a host does
 not realize - a `Map` on a platform with no map of its own - is registered
@@ -237,13 +264,15 @@ public static func add<
 )
 ```
 
-```swift quote
-StateUIActs.add(NotesContract.setClipboard) { text in
-    NSPasteboard.general.clearContents()
-    NSPasteboard.general.setString(text, forType: .string)
+```swift listing appkit.md.acts
+// Platforms/AppKit/Host/GalleryActs.swift
+// A performer is handed the arguments its act declares and answers
+// the values it declares.
+StateUIActs.add(GalleryContract.log) { line in
+    Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
 }
 
-StateUIActs.add(NotesContract.batteryLevel) {
+StateUIActs.add(GalleryContract.batteryLevel) {
     battery()
 }
 ```
@@ -252,7 +281,10 @@ An act AIMED at one of the application's own elements takes the view instead:
 the aim puts the element's identity in argument 0, and this host turns it back
 into the view its registration made.
 
-```swift quote
+```swift listing appkit.md.aimedAct
+// Platforms/AppKit/Host/RatingBarView.swift
+// Aimed at one bar: the identity the aim sent is turned back into the
+// view this host made, and the performer is handed that view.
 StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
     bar.flash()
 }
@@ -273,7 +305,7 @@ The Swift half is under
 ### An event without a control
 
 `StateUIEvents.raise` pushes an event of the application's that belongs to no
-element, such as a power or network change:
+element, such as a power or network change - here the Gallery's battery:
 
 ```swift quote
 public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRepresentable>(
@@ -281,12 +313,26 @@ public nonisolated static func raise<Owner: ApplicationTier, each Value: HostRep
     _ value: repeat each Value)
 ```
 
-```swift quote
-NotificationCenter.default.addObserver(
-    forName: .NSProcessInfoPowerStateDidChange, object: nil, queue: nil
-) { _ in
-    StateUIEvents.raise(
-        NotesContract.lowPowerChanged, ProcessInfo.processInfo.isLowPowerModeEnabled)
+```swift listing appkit.md.event
+// Platforms/AppKit/Host/GalleryEventSources.swift
+let notify: IOPowerSourceCallbackType = { _ in
+    MainActor.assumeIsolated { GalleryEventSources.report() }
+}
+
+guard let source = IOPSNotificationCreateRunLoopSource(notify, nil)?.takeRetainedValue()
+else { return }
+
+CFRunLoopAddSource(CFRunLoopGetMain(), source, .defaultMode)
+
+/// Raises the battery's reading, where it has changed and there is one.
+private static func report() {
+    let (level, charging) = GalleryActs.battery()
+
+    guard level > 0 else { return }
+    guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+    lastSaid = (level, charging)
+    StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
 }
 ```
 
@@ -299,14 +345,17 @@ than a failure, so an application wires its sources unconditionally. The Swift s
 The head declares each event it raises where it wires the source, before
 `StateUIAppKit.run(resourceDirectory:applicationIcon:)`:
 
-```swift quote
-StateUIEvents.raises(NotesContract.lowPowerChanged)
+```swift listing appkit.md.raises
+// Platforms/AppKit/Host/GalleryEventSources.swift
+// Declared where the source is wired: a handler listening for an
+// event nothing declared is told, once, that it will not hear it.
+StateUIEvents.raises(GalleryContract.batteryChanged)
 ```
 
 The host tells the core what it realizes when it starts: every element of the
 library's it shows, the controls the application added, and the events
 declared. A `HostEvents.on` for an event nothing declared is then said once -
-*the host raises no `Notes.LowPowerChanged`: the handler will not hear it* -
+*the host raises no `Gallery.BatteryChanged`: the handler will not hear it* -
 with the declared names nearest to it; so is an element the host shows none
 of, the first time it is described.
 

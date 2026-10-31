@@ -70,7 +70,9 @@ extension WebDriver {
         switch property {
         case .text: return try WebBrowser.evaluate("[...e.querySelectorAll('span')].pop()?.textContent ?? null", on: item)?.propValue
         case .isEnabled: return try (!WebBrowser.truth("e.disabled", on: item)).propValue
-        case .isDestructive: return try WebBrowser.truth("e.hasAttribute('data-destructive')", on: item).propValue
+        case .role:
+            let destructive = try WebBrowser.truth("e.hasAttribute('data-destructive')", on: item)
+            return (destructive ? ActionRole.destructive : .normal).propValue
         case .isOn: return try WebBrowser.truth("e.getAttribute('aria-checked') === 'true'", on: item).propValue
         case .keyboardShortcut: return .some(try shortcut(on: item))
         case .accessibilityIdentifier: return .some(try WebBrowser.evaluate("e.dataset.identifier ?? null", on: item)?.propValue)
@@ -83,13 +85,22 @@ extension WebDriver {
     /// a button's - where `button` - with a click where its click opens it, a split button's with a click on its arrow.
     private func open(menuOf element: MountedElement, button: Bool = false) throws {
         if element.type == .window {
-            return try click(try bar(over: element), part: "button:has(> [data-glyph=more])")
+            return try click(try bar(over: element), part: Self.more)
+        }
+        // A bar's button stands on the bar, a button among views as its own view.
+        let node: Int32
+        if element.type == .toolbarButton {
+            guard let shown = try barButtons().first(where: { $0.item === element }) else {
+                throw DriverCannot("open the menu \(element.type.name) opens: no button stands for it on the bar")
+            }
+            node = shown.node
+        } else {
+            node = try self.view(of: element, reading: .frame).node
         }
         if button, ButtonMenu.opening(of: element) == .arrow {
-            return try click(try self.view(of: element, reading: .frame).node, part: ".stateui-split-arrow")
+            return try click(node, part: ".stateui-split-arrow")
         }
-        let view = try self.view(of: element, reading: .frame)
-        let box = try box(of: view.node)
+        let box = try box(of: node)
         let middle = Point(x: box.width / 2, y: box.height / 2)
         let pressed = button && ButtonMenu.opening(of: element) == .click ? "left" : "right"
         mouse("mousePressed", at: middle, in: box, button: pressed)
@@ -111,7 +122,7 @@ extension WebDriver {
     private func captions(to element: MountedElement) -> [String] {
         var path: [String] = []
         var current: MountedElement? = element
-        while let each = current, each.type == .menuItem || each.type == .menu {
+        while let each = current, [.menuItem, .menuToggle, .menu].contains(each.type) {
             path.insert(each.value(.text)?.string ?? "", at: 0)
             current = each.parent
         }

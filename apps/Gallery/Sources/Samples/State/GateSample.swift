@@ -7,7 +7,7 @@ import StateUI
 struct GateSample: SampleContent {
     static let id = "gates"
     static let title = "Gates"
-    static let summary = "A press while the last still runs - let go, cancelled, queued or run beside it - and a gatekeeper."
+    static let summary = "A press while the last still runs - let go, cancelled, queued or run beside it - and a gate shared."
 
     var examples: [Example] {
         [
@@ -37,7 +37,7 @@ private struct OwnGates: ExampleContent {
                 .textColor(Palette.subtle)
 
             row("Ignore while running", ignored)
-                .onClicked(gate: .ignoreWhileRunning) {
+                .onClicked(.ignoreWhileRunning) {
                     ignored.started += 1
                     try await Task.sleep(for: .milliseconds(1500))
                     ignored.finished += 1
@@ -47,7 +47,7 @@ private struct OwnGates: ExampleContent {
             // The run a press cancels ends at its sleep: what it would write
             // after is never written.
             row("Cancel previous", cancelled)
-                .onClicked(gate: .cancelPrevious) {
+                .onClicked(.cancelPrevious) {
                     cancelled.started += 1
                     try await Task.sleep(for: .milliseconds(1500))
                     cancelled.finished += 1
@@ -55,20 +55,20 @@ private struct OwnGates: ExampleContent {
                 .accessibilityIdentifier("gate.cancel")
 
             row("Wait for previous", waited)
-                .onClicked(gate: .waitForPrevious) {
+                .onClicked(.waitForPrevious) {
                     waited.started += 1
                     try await Task.sleep(for: .milliseconds(1500))
                     waited.finished += 1
                 }
                 .accessibilityIdentifier("gate.wait")
 
-            row("None", unheld)
-                .onClicked(gate: .none) {
+            row("Run concurrently", unheld)
+                .onClicked(.runConcurrently) {
                     unheld.started += 1
                     try await Task.sleep(for: .milliseconds(1500))
                     unheld.finished += 1
                 }
-                .accessibilityIdentifier("gate.none")
+                .accessibilityIdentifier("gate.concurrent")
         }
         .spacing(12)
     }
@@ -81,21 +81,21 @@ private struct OwnGates: ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("A handler that awaits passes through a gate, which says what an event "
+            Text("A handler that awaits passes through a gate, whose policy says what an event "
                 + "does while a run is under way. Ignore lets a press go while a run is under "
                 + "way: one run, however often it is pressed meanwhile. Cancel ends the run "
                 + "under way and starts its own: "
                 + "every press starts, only the last finishes. Wait keeps the presses in "
-                + "a queue: each runs after the one before. None runs every press beside "
-                + "the others: every one of them finishes. Each of these gates is the "
-                + "button's own: a policy given as the gate.")
+                + "a queue: each runs after the one before. Run concurrently runs every press "
+                + "beside the others: every one of them finishes. Each of these gates is the "
+                + "button's own: a policy given alone.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
             Text("A cancelled run changes nothing afterwards: its task is cancelled, so "
                 + "the sleep ends it, and anything it wrote, posted or asked of the host "
                 + "after it was cancelled would be refused. A handler with no `await` "
-                + "runs whole inside the press and needs no gate.")
+                + "runs whole inside the press and needs no policy.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
         }
@@ -107,7 +107,7 @@ private struct OwnGates: ExampleContent {
 private struct SaveAndDelete: ExampleContent {
     // listing: SaveAndDelete
     /// One gate for both of the document's actions.
-    @State private var document = Gatekeeper(.ignoreWhileRunning)
+    @State private var document = Gate(.ignoreWhileRunning)
     @State private var said = "Saved nothing yet."
 
     var body: some View {
@@ -138,7 +138,7 @@ private struct SaveAndDelete: ExampleContent {
 
             HStack {
                 if document.isBusy {
-                    ActivityIndicator(true)
+                    Spinner(true)
                 }
                 Text(said)
                     .textColor(Palette.accent)
@@ -150,7 +150,7 @@ private struct SaveAndDelete: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("A Gatekeeper kept in a state is shared by every handler written with it: Save "
+        Text("A Gate kept in a state is shared by every handler written with it: Save "
             + "and Delete pass through one, so neither runs while the other does, and "
             + "its isBusy dims both and turns the indicator meanwhile.")
             .fontSize(12)
@@ -164,7 +164,7 @@ private struct WorkFromCode: ExampleContent {
     /// A draft that saves through its own gate, whoever asks.
     @MainActor
     final class Draft {
-        let saving = Gatekeeper(.ignoreWhileRunning)
+        let saving = Gate(.ignoreWhileRunning)
         @State var saves = 0
 
         /// Saves, unless a save is under way: the gate lets this one go.
@@ -227,13 +227,13 @@ private struct AwaitingEvents: ExampleContent {
 
     var body: some View {
         VStack {
-            // No await: the handler runs whole inside the press and names no gate.
+            // No await: the handler runs whole inside the press and names no policy.
             Button("+1 - \(count)")
                 .onClicked { count += 1 }
 
             // Every letter cancels the search under way: only the last one finishes.
             SearchField($query)
-                .onTextChanged(gate: .cancelPrevious) { text in
+                .onTextChanged(.cancelPrevious) { text in
                     try await Task.sleep(for: .milliseconds(600))
                     found = text.isEmpty ? "Nothing searched yet." : "Found 3 for \"\(text)\"."
                 }
@@ -244,7 +244,7 @@ private struct AwaitingEvents: ExampleContent {
             Text("Changes logged: \(logged)")
                 .textColor(Palette.subtle)
                 // Each change logged beside the others: nothing held back.
-                .onChanged(logging, gate: .none) {
+                .onChanged(logging, policy: .runConcurrently) {
                     try await Task.sleep(for: .milliseconds(800))
                     logged += 1
                 }
@@ -254,7 +254,7 @@ private struct AwaitingEvents: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("A handler with no await needs no gate. Every handler that awaits names one - "
+        Text("A handler with no await needs no policy. Every handler that awaits names one - "
             + "a click, the words typed, a change - on every event but `.onCreated` and "
             + "`.onDestroying`, which come once: a handler that awaits without one does not "
             + "compile, and the compiler says what to write.")
@@ -267,7 +267,7 @@ private struct AwaitingEvents: ExampleContent {
 private struct Uploads: ExampleContent {
     // listing: Uploads
     /// Nothing held back, and busy while any upload runs.
-    @State private var uploads = Gatekeeper(.none)
+    @State private var uploads = Gate(.runConcurrently)
     @State private var sent: [String] = []
 
     private let files = ["notes.txt", "photo.png", "song.mp3"]
@@ -293,7 +293,7 @@ private struct Uploads: ExampleContent {
     // listing: end
 
     var notes: (any View)? {
-        Text("A gatekeeper that holds nothing back still says when it is busy: "
+        Text("A shared gate that holds nothing back still says when it is busy: "
             + "the uploads run side by side, and the line under them waits for the last.")
             .fontSize(12)
             .textColor(Palette.subtle)

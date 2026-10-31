@@ -1,0 +1,10 @@
+# revision 9.1
+ToolbarGroup: ✅
+ToolbarGroup.barEdge: ✅
+ToolbarGroup.hidesWithSidebar: ✅
+ToolbarGroup.isEnabled: ✅
+ToolbarGroup.order: ✅
+ToolbarGroup.part: ✅
+ToolbarGroup.position: ✅
+ToolbarGroup.spacing: ✅
+ToolbarGroup.standsAlone: – The bar draws every group on a glass of its own, a lone item's too.

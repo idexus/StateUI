@@ -32,13 +32,14 @@ private struct EveryPropertyPage: View {
             // being no control case for one.
             .titleView { Text("stack title") }
             .toolbar {
-                ToolbarItem("Save")
+                ToolbarButton("Save")
                     .accessibilityIdentifier("bar.save")
                     .icon(ImageSource("mark.png"))
-                    .placement(.overflow)
                     .showsText(true)
-                    .isDestructive(true)
+                    .role(.destructive)
                     .isEnabled(false)
+                    .placement(.sidebar, at: .overflow, order: 2)
+                    .hidesWithSidebar(true)
                     .onClicked {}
             }
             // Its menus, every entry saying all it can.
@@ -46,11 +47,14 @@ private struct EveryPropertyPage: View {
                 Menu("File") {
                     MenuItem("Open")
                         .icon(ImageSource("mark.png"))
-                        .isDestructive(true)
+                        .role(.destructive)
                         .isEnabled(false)
-                        .isOn(true)
                         .keyboardShortcut("o")
                         .onClicked {}
+
+                    MenuToggle("Ruler", isOn: true)
+                        .keyboardShortcut("r")
+                        .onToggled { _ in }
 
                     Menu("Recent") {
                         MenuItem("Notes.txt")
@@ -63,6 +67,7 @@ private struct EveryPropertyPage: View {
             }
             // The page's own.
             .title("Everything")
+            .subtitle("All of it")
             .showsTitle(false)
             .icon(ImageSource("tab.png"))
             .pageBackground(.whiteSmoke)
@@ -70,8 +75,11 @@ private struct EveryPropertyPage: View {
             .showsNavigationBar(false)
             .showsBackButton(false)
             .backButtonTitle("Back")
+            // And of the sheet the stack stands in.
+            .showsCloseButton(false)
             // And every phase it hears.
             .onAppearing {}
+            .onLinkOpened { _ in }
             .onDisappearing {}
             .onNavigatedTo {}
             .onNavigatingFrom {}
@@ -94,7 +102,7 @@ private func everyPropertyWindow() -> Node {
     session.maximumHeight = 1200
     session.isMaximizable = false
     session.isMinimizable = true
-    session.background = .blur(.thin.tint(Color("#26512BD4")))
+    session.background = .blur(.thin.tint(Color(hex: 0x512BD4, opacity: 0.15)))
 
     return Node.window(showing: { Node.page(EveryPropertyPage()) }, session: session).built
 }
@@ -107,11 +115,13 @@ private struct KnobPage: View {
     var body: some View {
         VStack { Button("dress").onClicked { on = true } }
             .title(on ? "On" : "Off")
+            .subtitle(on ? "Lit" : "Dark")
             .showsTitle(on)
             .icon(ImageSource(on ? "on.png" : "off.png"))
             .pageBackground(on ? .red : .whiteSmoke)
             .showsNavigationBar(on)
             .showsBackButton(on)
+            .showsCloseButton(on)
             .backButtonTitle(on ? "Back" : "Return")
     }
 }
@@ -142,6 +152,29 @@ private struct Choosing: View {
             Plain()
         }
     }
+}
+
+/// A view whose body is a group of an arrangement on either branch, watching what chooses between them.
+private struct Watched: View {
+    let signedIn: Bool
+    @State private var path: [Int] = []
+    @State private var changes = 0
+
+    var body: some View {
+        Group {
+            if signedIn {
+                NavigationStack($path) { Plain() } destination: { _ in Plain() }
+            } else {
+                NavigationStack($path) { Text("signed out") } destination: { _ in Plain() }
+            }
+        }
+        .onChanged(signedIn) { changes += 1 }
+    }
+}
+
+/// A view whose body holds an arrangement as a view of any type.
+private struct Erased: View {
+    var body: some View { AnyView(Stacked()) }
 }
 
 /// What a view is offered.
@@ -322,7 +355,7 @@ final class PageTests: XCTestCase {
         ]
 
         for view in written {
-            let page = Renders().render(Node.page(ModifiedContent(node: view.node)))
+            let page = Renders().render(Node.page(AnyView(view)))
 
             XCTAssertEqual(page.type, .page)
             XCTAssertEqual(page.props[.background], Color.blue.propValue, "the page's own")
@@ -338,13 +371,12 @@ final class PageTests: XCTestCase {
         let arrangements: [(view: any View, type: NodeType)] = [
             (stack, .navigationStack),
             (TabView([0, 1]) { _ in Plain() }, .tabView),
-            (SplitView(sidebar.projectedValue) { Plain() } detail: { Plain() }, .splitView),
-            (ModalStack(path.projectedValue) { Plain() } destination: { _ in Plain() }, .modalStack),
+            (SplitView { Plain() } detail: { Plain() }.showsSidebar(sidebar.projectedValue), .splitView),
         ]
 
         XCTAssertEqual(Set(arrangements.map(\.type)), NodeType.arrangements, "every arrangement is shown")
         for (view, type) in arrangements {
-            XCTAssertEqual(Node.page(ModifiedContent(node: view.node)).built.type, type)
+            XCTAssertEqual(Node.page(AnyView(view)).built.type, type)
         }
         XCTAssertEqual(Node.page(stack).built.children.first?.type, .page)
     }
@@ -374,10 +406,29 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(Node.page(Plain()).built.type, .page)
     }
 
+    /// A view whose body is a group holding arrangements on either branch, a watch written on the group, stands as
+    /// an arrangement its anchor holds: what a modifier gives back says by its type what it holds.
+    func testAModifiedGroupOfArrangementsStandsAsAnArrangement() {
+        for signedIn in [true, false] {
+            let built = Node.page(Watched(signedIn: signedIn)).built
+            XCTAssertEqual(built.type, .anchor)
+            XCTAssertEqual(built.children.map(\.type), [.navigationStack])
+        }
+    }
+
     /// A body choosing between an arrangement and a view stands as a view, as its type cannot tell which it builds;
     /// the arrangement it chose, standing inside a page, is left out.
     func testABodyChoosingAnArrangementStandsAsAView() {
         let patch = Renders().render(Node.page(Choosing(stack: true)))
+
+        XCTAssertEqual(patch.type, .page)
+        XCTAssertFalse(patch.subtree.contains { $0.type == .navigationStack })
+    }
+
+    /// A body of an `AnyView` stands as a view, as its type cannot tell what it holds; the arrangement it holds,
+    /// standing inside a page, is left out.
+    func testABodyOfAnyViewStandsAsAView() {
+        let patch = Renders().render(Node.page(Erased()))
 
         XCTAssertEqual(patch.type, .page)
         XCTAssertFalse(patch.subtree.contains { $0.type == .navigationStack })
@@ -402,13 +453,34 @@ final class PageTests: XCTestCase {
         let stack = NavigationStack(path.projectedValue) { Plain() } destination: { _ in Plain() }
             .width(120)
             .onTapped {}
-            .barBackgroundColor(.red)
+            .barBackground(.red)
 
         let patch = Renders().render(Node.page(stack))
 
         XCTAssertNil(patch.props["width"])
         XCTAssertFalse(patch.eventNames.contains("tapped"))
-        XCTAssertNotNil(patch.props["barBackgroundColor"])
+        XCTAssertNotNil(patch.props["barBackground"])
+    }
+
+    /// A toolbar reaching a stack through a composed view's body stands on the stack, for every page it shows, and
+    /// the stack's pages keep their own.
+    func testAToolbarOnAStackStandsOnTheStack() {
+        struct Arranged: View {
+            let path: State<[Int]>
+            var body: some View {
+                NavigationStack(path.projectedValue) {
+                    Text("root").toolbar { ToolbarButton("Own") }
+                } destination: { _ in Plain() }
+            }
+        }
+        let group = ToolbarGroupContract.nodeType
+
+        let patch = Renders().render(Node.page(Arranged(path: State<[Int]>([])).toolbar { ToolbarButton("Shared") }))
+
+        XCTAssertEqual(patch.type, .navigationStack)
+        XCTAssertTrue(patch.children.contains { $0.type == group }, "the stack's own")
+        XCTAssertEqual(patch.subtree.filter { $0.type == group }.count, 2, "and the root page's")
+        XCTAssertFalse(hasComplained("NavigationStack takes no toolbar"))
     }
 
     // MARK: - The guards
@@ -462,7 +534,7 @@ final class PageTests: XCTestCase {
     func testEveryPropertyAPagesItemsDeclareIsCarried() throws {
         let sent = Self.keys(in: Self.arrived(EveryPropertyPage()))
 
-        for source in ["ToolbarItem.swift", "Menu.swift", "MenuItem.swift", "MenuItemElement.swift"] {
+        for source in ["ToolbarButton.swift", "Menu.swift", "MenuItem.swift", "MenuItemElement.swift"] {
             let declared = try SourceTree.propertyKeys(in: source)
 
             XCTAssertFalse(declared.isEmpty, "the scan found nothing \(source) writes")
@@ -490,18 +562,18 @@ final class PageTests: XCTestCase {
         let page = Self.arrived(EveryPropertyPage())
 
         XCTAssertEqual(page.children.map { $0.type.name }, ["Text"], "the content alone")
-        XCTAssertEqual(page.children[0].children.map { $0.type.name }, ["TitleView", "ToolbarItemGroup", "MenuBar"])
+        XCTAssertEqual(page.children[0].children.map { $0.type.name }, ["TitleView", "ToolbarGroup", "MenuBar"])
     }
 
     // MARK: - What the values look like
 
     /// A page's own values are its own: `background` is the PAGE's, where the bar above it takes
-    /// `barBackgroundColor` on the arrangement.
+    /// `barBackground` on the arrangement.
     func testAPageCarriesItsOwnValues() {
         let page = Self.arrived(EveryPropertyPage())
 
         XCTAssertEqual(page.props["title"], .string("Everything"))
-        XCTAssertEqual(page.props["background"], Color("#F5F5F5").propValue)
+        XCTAssertEqual(page.props["background"], Color(hex: 0xF5F5F5).propValue)
         XCTAssertNil(page.props["padding"], "a page keeps no room of its own: its view does")
     }
 
@@ -512,6 +584,7 @@ final class PageTests: XCTestCase {
         XCTAssertEqual(page.props["showsNavigationBar"], .bool(false))
         XCTAssertEqual(page.props["showsBackButton"], .bool(false))
         XCTAssertEqual(page.props["backButtonTitle"], .string("Back"))
+        XCTAssertEqual(page.props["showsCloseButton"], .bool(false))
     }
 
     /// A page whose view says nothing sends nothing - no value, no event - leaving the native defaults intact.
@@ -585,28 +658,33 @@ final class PageTests: XCTestCase {
         let page = Self.arrived(EveryPropertyPage())
 
         XCTAssertEqual(page.props, [
-            "backButtonTitle": .string("Back"), "background": Color("#F5F5F5").propValue,
+            "backButtonTitle": .string("Back"), "background": Color(hex: 0xF5F5F5).propValue,
             "showsBackButton": .bool(false), "showsNavigationBar": .bool(false), "icon": .string("tab.png"),
-            "title": .string("Everything"), "showsTitle": .bool(false),
+            "title": .string("Everything"), "subtitle": .string("All of it"), "showsTitle": .bool(false),
+            "showsCloseButton": .bool(false),
         ])
         XCTAssertEqual(page.eventNames, HostPatch.pageEvents)
         XCTAssertEqual(page.children.map(\.type), [.text])
         let content = page.children[0]
-        XCTAssertEqual(content.children.map(\.type), [.titleView, .toolbarItemGroup, .menuBar])
+        XCTAssertEqual(content.children.map(\.type), [.titleView, .toolbarGroup, .menuBar])
 
-        let item = try XCTUnwrap(content.children[1].children.first)
+        let group = content.children[1]
+        XCTAssertEqual(group.props, [
+            "hidesWithSidebar": .bool(true), "order": .number(2), "part": ToolbarPart.sidebar.propValue,
+            "position": ToolbarPosition.overflow.propValue, "standsAlone": .bool(true),
+        ])
+        let item = try XCTUnwrap(group.children.first)
         XCTAssertEqual(item.props, [
             "accessibilityIdentifier": .string("bar.save"), "icon": .string("mark.png"),
-            "isDestructive": .bool(true), "isEnabled": .bool(false),
-            "placement": ToolbarItemPlacement.overflow.propValue,
+            "isEnabled": .bool(false), "role": ActionRole.destructive.propValue,
             "showsText": .bool(true), "text": .string("Save"),
         ])
         XCTAssertEqual(item.eventNames, ["clicked"])
 
-        // A menu at any depth: the bar's File holds an entry, a menu of its own and a line.
+        // A menu at any depth: the bar's File holds an entry, a setting's entry, a menu of its own and a line.
         let file = try XCTUnwrap(content.children.last?.children.first)
-        XCTAssertEqual(file.children.map(\.type), [.menuItem, .menu, .menuSeparator])
-        XCTAssertEqual(file.children[1].children.first?.props, ["text": .string("Notes.txt")])
+        XCTAssertEqual(file.children.map(\.type), [.menuItem, .menuToggle, .menu, .menuSeparator])
+        XCTAssertEqual(file.children[2].children.first?.props, ["text": .string("Notes.txt")])
     }
 
     /// The window arrives whole too: every property its session can say, its handlers and the page it holds.
@@ -614,7 +692,7 @@ final class PageTests: XCTestCase {
         let window = Renders().settled(everyPropertyWindow())
 
         XCTAssertEqual(window.props, [
-            "background": Material.blur(.thin.tint(Color("#26512BD4"))).propValue.resolvingTheme(),
+            "background": Material.blur(.thin.tint(Color(hex: 0x512BD4, opacity: 0.15))).propValue.resolvingTheme(),
             "height": .number(800), "isMaximizable": .bool(false), "isMinimizable": .bool(true),
             "maximumHeight": .number(1200), "maximumWidth": .number(1600),
             "minimumHeight": .number(400), "minimumWidth": .number(600), "title": .string("Everything"),

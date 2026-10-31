@@ -47,14 +47,20 @@ final class WinUIDirectionTests: XCTestCase {
     /// A row right to left fills from the right by the host layer's arithmetic alone: WinUI mirrors none of its
     /// places a second time.
     func testARowRightToLeftFillsFromTheRight() throws {
-        let colours = try drawnRightToLeft(at: [(90, 10), (70, 10), (10, 10)]) {
+        let colors = try drawnRightToLeft(at: [(90, 10), (70, 10), (10, 10)]) {
             HStack {
-                Rectangle().fill(Color("#FF0000")).width(20).height(20)
-                Rectangle().fill(Color("#0000FF")).width(20).height(20)
+                Rectangle()
+                    .fill(Color(hex: 0xFF0000))
+                    .width(20)
+                    .height(20)
+                Rectangle()
+                    .fill(Color(hex: 0x0000FF))
+                    .width(20)
+                    .height(20)
             }
             .spacing(0)
         }
-        XCTAssertEqual(colours, [Self.red, Self.blue, 0])
+        XCTAssertEqual(colors, [Self.red, Self.blue, 0])
     }
 
     /// A picture and a figure in a row right to left are drawn as they are, not mirrored.
@@ -65,7 +71,7 @@ final class WinUIDirectionTests: XCTestCase {
         XCTAssertEqual(picture, [Self.red, Self.blue], "the picture's red half still at its left")
 
         let figure = try drawnRightToLeft(at: [(95, 15), (65, 15)]) {
-            HStack { Path("M 0 0 L 10 0 L 10 10 Z").fill(Color("#FF0000")).width(40).height(40) }
+            HStack { Path("M 0 0 L 10 0 L 10 10 Z").fill(Color(hex: 0xFF0000)).width(40).height(40) }
         }
         XCTAssertEqual(figure, [Self.red, 0], "the triangle's corner still at its right")
     }
@@ -85,13 +91,13 @@ final class WinUIDirectionTests: XCTestCase {
         }
     }
 
-    /// The colours at `points` of `content` laid out right to left in a room 100 wide, read off the layout holding it.
+    /// The colors at `points` of `content` laid out right to left in a room 100 wide, read off the layout holding it.
     private func drawnRightToLeft(
         at points: [(Double, Double)], _ content: @escaping @MainActor () -> any View
     ) throws -> [UInt32] {
         try onUIThread {
             let host = WinUIRenderer.running {
-                VStack { ModifiedContent(node: content().node).width(100).layoutDirection(.rightToLeft) }
+                VStack { AnyView(content()).width(100).layoutDirection(.rightToLeft) }
                     .horizontalAlignment(.start)
                     .verticalAlignment(.start)
             }

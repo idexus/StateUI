@@ -65,10 +65,10 @@ seek bar's progress, a text view's words, a view's visibility, alpha and
 enabled state, its translation back in points, its rotation, scale and pivot,
 the words its accessibility node carries as TalkBack reads them, a text
 view's size in the scaled points the host sets it in, its bold and italic and
-its colour - never from what the host last wrote. A colour is read from the
+its color - never from what the host last wrote. A color is read from the
 window as the user sees it, the render thread's clips and outlines included
 (`PixelCopy`, once the window has drawn): a software drawing of the view
-leaves an outline's cut out. The test window stands on a colour of its own,
+leaves an outline's cut out. The test window stands on a color of its own,
 which reads as nothing. What Android does not hold
 stays unread, with why: a heading's level, where Android marks a heading, a
 typeface's family, which keeps no name, and a stepper's range, which its
@@ -102,7 +102,7 @@ empty menu, as a long press opens it. An entry or an action is chosen and read
 by its item's id - its element's place (`menuPlace`) - never by its words:
 `performIdentifierAction`, which runs nothing for one that cannot be chosen,
 and the item's words, whether it can be chosen, whether its words are in the
-error colour. What the item keeps no trace of stays unread: a picture's name.
+error color. What the item keeps no trace of stays unread: a picture's name.
 Whether an action stands on the bar or behind the overflow, and whether its
 words show beside its picture, are read from the bar as Android lays it out
 (`TestMenus.laidOut`); on a screen narrower than 480 points Android shows no
@@ -125,9 +125,12 @@ documents dropped to the drag listeners' reports, as a test can make no drag
 event. A few reads are the host's or its relay's own: a slider's range,
 which the SeekBar keeps only as steps, a stepper's value, which its two
 buttons do not hold, a picker's rows, a split view's
-showing sidebar and its colour, an ItemsView's selection mode, a date
-picker's bounds and a date or time picker's format, what the relay keeps of
-a dialog, the document picker it holds and what it launched. The driver
+showing sidebar and its color, a date picker's bounds and a date or time
+picker's format, what the relay keeps of a dialog, the document picker it
+holds, what it launched and what the host handed Android to announce - no
+announcement reaches a test where TalkBack does not run. An ItemsView's
+selection mode is read as the list's node tells TalkBack, its collection's
+own. The driver
 names each (`byHost`), and a member a case proves only through them is
 the host's own - ✓ - never ✅. A frame report reads where Android holds the
 view, not where the host placed it last.

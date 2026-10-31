@@ -4,7 +4,7 @@ A state is discrete, and its journey is part of it. Reading `fade` answers the
 destination at once; `$fade.journey` is what happens between two destinations:
 where the value is this frame, how fast it goes, and under what law. A value
 that can have one conforms to `Walked`: a number, a point, a rectangle, insets,
-a colour. Text has no half way, a whole number animated through rounding
+a color. Text has no half way, a whole number animated through rounding
 stutters, and a truth value has two places and no distance, so none of them is
 `Walked`; a placement run already carries a law for the whole run.
 
@@ -98,8 +98,12 @@ lanes change, only they are laid: the host sends those lanes on as one run
 under the waiter, and a lane the move leaves alone travels on as it was
 (host/motion.md, a channel lane by lane). The write and the booking land before `move` returns, so moves sent one after
 another and awaited after are in the air together, booked in the order
-written. A given law stays on the value: a plain assignment after
-`move(to: 0, .eased(.milliseconds(2000)))` animates for two seconds too.
+written. A given law is that move's alone: the value keeps its own
+(`@State(motion:)`, `journey.motion`) in its storage, the move lays the law it
+was given on the lanes for its travel, and the next write that names none - an
+assignment, or a move without a law - lays the value's own back with its
+destination, so a plain assignment after `move(to: 0,
+.eased(.milliseconds(2000)))` travels on the value's own law.
 
 A state nothing wears lands at once and answers true: nobody would ever answer a
 waiter booked on it. Under `.custom` the destination is written and the answer
@@ -109,8 +113,8 @@ is true at once, because the engine alone knows when it is done.
 
 `stop()` raises the stop counter, leaving the value where the animation stood;
 the host ends the animation and answers the waiter false. The waiter's id stays on
-the image, because the host needs it to answer. The colour pair the state kept
-is let go: the value stands at a colour between two, which no pair names, and
+the image, because the host needs it to answer. The color pair the state kept
+is let go: the value stands at a color between two, which no pair names, and
 a render laying the pair again would send the host on to it.
 
 ## Writing the parts
@@ -132,19 +136,19 @@ write. It is synchronous: nothing is booked and nobody waits.
 
 Each write lays the lanes of its own parts and leaves every other lane as it
 lies, bit for bit. A value read back through its type is not always the lanes
-it came from - a colour is eight bits a channel, and the host reports the
+it came from - a color is eight bits a channel, and the host reports the
 frames between them - so a stop or a move laying the whole journey again would
 say the value and its speed moved, and the host would start over from them
 (`JourneyTests.testAJourneyWriteLaysOnlyItsPart`).
 
 ## One part at once
 
-A layout engine names the target its hand passes on one axis of its phase,
+A motion layout names the target its hand passes on one axis of its parameters,
 which another hand or the program may be moving: `Journey.snap(_:to:)`, the
 library's own, puts one part of the value - a key path to one of its numbers -
 where it is at once, as `snap(to:)` does the whole. Its lanes of value,
 destination and speed are laid and no other, so the host takes that lane out
-of the run it travelled in and leaves the rest going.
+of the run it traveled in and leaves the rest going.
 
 ## Two reader sets
 
@@ -158,13 +162,13 @@ state's.
 
 ## Where a run shows it
 
-A layout's run moves its phase under the hand, a throw or an approach in the
+A layout's run moves its parameters under the hand, a throw or an approach in the
 core, not as a walk of the host's: the hand names each target it passes, and
 the state's own value stays that target, so a body reading it rebuilds only
 as a target passes. Where the run is shown meanwhile is the journey's value:
 the run tells the storage (`show(_:by:)`) each frame it moves, and once it
 rests lets go of it. That moves the state's stamp and asks the journey's
-readers - an engine following the phase, another layout wearing it, a body
+readers - an engine following the parameters, another layout wearing them, a body
 reading `journey.value` - and not the state's own readers. Nothing of it
 reaches the host, which walks the target; what the run shows is the core's,
 told under the run's own name, so only the run that showed it lets go of it.
@@ -275,19 +279,22 @@ every animation of its table to where it starts and where it lands.
                                     the speed the old one reached, so a new
                                     destination bends the value
   eased, from standstill            the curve itself
-  eased, already moving             the cubic Hermite of the same length, from
-                                    the value and speed to the destination at rest
+  eased, already moving             the curve bent by p(1 - p)²: it sets out at
+                                    the speed it had and lands where the curve
+                                    does - at the curve's own starting speed the
+                                    curve itself, overshoot and all
   spring                            about the distance left, so the three
                                     damping cases are the textbook ones
-  still                             0.001 in the value's units and per ms: below
-                                    any display's resolution for a colour
-                                    channel (0 to 1) or a point
+  still                             0.001 in the value's units, and 1 a second
+                                    for a speed: below any display's resolution
+                                    for a color channel (0 to 1) or a point
   longest                           a spring is over after 10 s, so no animation
                                     holds a display clock awake for ever
 ```
 
-Time is in milliseconds, the unit a `Motion` keeps its length in, so the law's velocity
-is per millisecond; a journey reports per second, and an animator converts
-where it reports. The slope of an eased curve is a central difference on the
+Time is in milliseconds, the unit a `Motion` keeps its length in, and a speed
+is per second everywhere - told to the law, answered by it, carried by an
+animation and reported by a journey - the law alone working in milliseconds
+inside, so no animator converts. The slope of an eased curve is a central difference on the
 curve, a function of progress alone, so it answers the same number in every
 run.

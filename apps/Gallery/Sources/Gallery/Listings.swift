@@ -10,7 +10,7 @@ enum Listings {
     private static let shared: [String: String] = [
         "AboutScene": #"""
         // Sources/Samples/Windows/AboutScene.swift
-        extension WindowType {
+        extension WindowType where Value == Void {
             /// About the gallery: one window for the whole application.
             static let about = WindowType("gallery.about")
         }
@@ -22,6 +22,32 @@ enum Listings {
         struct AboutScene: Scene {
             var body: some Scene {
                 Window(.about) { AboutPage() }
+            }
+        }
+        """#,
+        "AccessibilitySettingsSample": #"""
+        // Sources/Samples/Environment/AccessibilitySettingsSample.swift
+        /// The settings, as the host last reported them.
+        @Environment(\.device) var device
+
+        var body: some View {
+            let settings = device.accessibility
+
+            return VStack {
+                // Each setting is read here, so a change to one builds this
+                // closure.
+                DebugInfoLabel()
+
+                Text("less motion · \(settings.reducesMotion ? "on" : "off")")
+                Text("more contrast · \(settings.prefersHigherContrast ? "on" : "off")")
+                Text("screen reader · \(settings.isScreenReaderOn ? "on" : "off")")
+                Text("words · \(Int((settings.textScale * 100).rounded())) %")
+
+                // A rule drawn stronger where the user asked for more contrast.
+                Rectangle()
+                    .fill(settings.prefersHigherContrast ? Palette.accent : Palette.outline)
+                    .height(settings.prefersHigherContrast ? 3 : 1)
+                    .isAccessibilityHidden(true)
             }
         }
         """#,
@@ -51,30 +77,6 @@ enum Listings {
                 }
                 .itemsLayout(.row(spacing: 8))
                 .height(40)
-            }
-        }
-        """#,
-        "ActivityIndicatorSample": #"""
-        // Sources/Samples/BasicInput/ActivityIndicatorSample.swift
-        @State private var loading = true
-
-        var body: some View {
-            VStack {
-                // The flag is read here, so starting and stopping builds this
-                // closure - the spinner itself costs nothing to keep running.
-                DebugInfoLabel()
-
-                ActivityIndicator(loading)
-                    .height(48)
-
-                HStack {
-                    Text("Working")
-                        .verticalAlignment(.center)
-
-                    Switch($loading)
-                }
-                .horizontalAlignment(.center)
-
             }
         }
         """#,
@@ -116,23 +118,25 @@ enum Listings {
                     // in the HANDLER, because the walk fills it after the body
                     // that describes the view was built.
                     Button("Focus the first")
-                        .onClicked(gate: .ignoreWhileRunning) {
+                        .onClicked(.ignoreWhileRunning) {
                             try await field.focus()
                             says = "focused \(field)"
                         }
 
                     Button("Focus the second")
-                        .onClicked(gate: .ignoreWhileRunning) {
+                        .onClicked(.ignoreWhileRunning) {
                             try await note.focus()
                             says = "focused \(note)"
                         }
-
-                    Button("Let go")
-                        .onClicked(gate: .ignoreWhileRunning) {
-                            try await field.unfocus()
-                            says = "let go of \(field)"
-                        }
                 }
+
+                // Each aim reaches its own field: letting go of both is two acts.
+                Button("Let go")
+                    .onClicked(.ignoreWhileRunning) {
+                        try await field.unfocus()
+                        try await note.unfocus()
+                        says = "let go of \(field) and \(note)"
+                    }
 
                 Text(says)
             }
@@ -142,7 +146,7 @@ enum Listings {
         // Sources/Samples/Animation/AnalogClockSample.swift
         @State private var ticking = false
 
-        /// Whether the first reading of this visit has SET the clock. Travelling
+        /// Whether the first reading of this visit has SET the clock. Traveling
         /// there from where the hands stand - noon, on the first visit - would
         /// sweep them round in a blur.
         @State private var started = false
@@ -165,9 +169,9 @@ enum Listings {
         @State private var hAngle = 0.0
 
         /// Where each mark sits and how it is shaped: a bar on the quarters, a
-        /// dot on the other hours, at radius 94 from the centre. Written out
+        /// dot on the other hours, at radius 94 from the center. Written out
         /// because they are layout, not drawing - each is a small box pushed off
-        /// centre by margins, with no rotation anywhere.
+        /// center by margins, with no rotation anywhere.
         static let marks: [(x: Double, y: Double, wide: Double, tall: Double)] = [
             (0, -94, 4, 14), (47, -81.4, 5, 5), (81.4, -47, 5, 5),
             (94, 0, 14, 4), (81.4, 47, 5, 5), (47, 81.4, 5, 5),
@@ -182,19 +186,21 @@ enum Listings {
                 DebugInfoLabel()
 
                 ZStack().style(.card)
-                    .stroke(Palette.outline)
-                    .lineWidth(2)
+                    .stroke(Palette.accent)
+                    .lineWidth(3)
                     .width(220)
                     .height(220)
                     .horizontalAlignment(.center)
                     .verticalAlignment(.center)
 
                 // The marks are laid out, not rotated: a quarter gets a bar,
-                // the other hours a dot, each pushed off centre by margins -
-                // margin(2x, 2y, 0, 0) shifts a centred view by (x, y).
+                // the other hours a dot, each pushed off center by margins -
+                // margin(2x, 2y, 0, 0) shifts a centered view by (x, y).
                 ForEach(Array(Self.marks.enumerated()), id: \.offset) { pair in
                     let (x, y, wide, tall) = pair.element
-                    return Rectangle(Palette.outline)
+                    return Rectangle()
+                        .fill(Palette.accent)
+                        .opacity(wide == tall ? 0.5 : 1)
                         .width(wide)
                         .height(tall)
                         .horizontalAlignment(.center)
@@ -203,7 +209,7 @@ enum Listings {
 
                 hand($hAngle, length: 56, width: 6, color: Palette.text)
                 hand($mAngle, length: 84, width: 4, color: Palette.text)
-                hand($sAngle, length: 96, width: 2, color: Palette.accent)
+                hand($sAngle, length: 96, width: 2, color: Palette.brand)
 
                 ZStack().style(.card)
                     .stroke(.transparent)
@@ -284,8 +290,8 @@ enum Listings {
             }
         }
 
-        /// One hand: bottom at the face's centre, rotating about that bottom.
-        /// The bottom margin equals the length, so centring the margin box puts
+        /// One hand: bottom at the face's center, rotating about that bottom.
+        /// The bottom margin equals the length, so centering the margin box puts
         /// the hand's foot exactly on the middle - plain layout, no transforms.
         /// `.rotation(angle)` DRIVES the rotation from the state handed in, which
         /// is what makes a movement on that state turn this hand - on the host's
@@ -294,7 +300,8 @@ enum Listings {
             _ angle: Binding<Double>,
             length: Double, width: Double, color: Color
         ) -> some View {
-            Rectangle(color)
+            Rectangle()
+                .fill(color)
                 .rotation(angle)
                 .width(width)
                 .height(length)
@@ -413,7 +420,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(gate: .cancelPrevious, act)
+                .onClicked(.cancelPrevious, act)
         }
         """#,
         "AnimatedPropertySample": #"""
@@ -445,12 +452,12 @@ enum Listings {
                 .stroke(.transparent)
 
                 HStack {
-                    button("Colour") {
+                    button("Color") {
                         try await $panelColor.journey.move(to: AppColors.swiftOrangeDeep, .eased(.milliseconds(500))).arrived()
 
                         // The caption sits on the violet field inside the panel
                         // rather than on the panel itself, so what it goes to is
-                        // white, the colour that reads on that field.
+                        // white, the color that reads on that field.
                         try await $captionColor.journey.move(to: AppColors.white, .eased(.milliseconds(500))).arrived()
                     }
 
@@ -475,7 +482,7 @@ enum Listings {
 
                     button("Back") {
                         // EVERYTHING THE OTHER BUTTONS LEAVE CHANGED - the height
-                        // and the two colours. The padding and the text size send
+                        // and the two colors. The padding and the text size send
                         // themselves back, so there is nothing here for them; and
                         // `wide` is put right with the height, or the next press
                         // of Size would ask for the value it already has.
@@ -493,7 +500,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(gate: .cancelPrevious, act)
+                .onClicked(.cancelPrevious, act)
         }
         """#,
         "AnimationSample": #"""
@@ -586,7 +593,7 @@ enum Listings {
         /// One of the buttons, all of which look the same.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(gate: .cancelPrevious, act)
+                .onClicked(.cancelPrevious, act)
         }
 
         /// What the picker calls a curve.
@@ -598,6 +605,27 @@ enum Listings {
             default: "Linear"
             }
         }
+        """#,
+        "AppStyles.bars": #"""
+        // Sources/Styles/AppStyles.swift
+        // Where the host draws the bars' buttons itself - the Web - each
+        // group stands in a light rounded box in a fine outline, its buttons
+        // inset from it, a button standing alone in one of its own; its
+        // buttons' words semibold, each a shade darker under the pointer and
+        // pressed.
+        Style<ToolbarGroup>()
+            .stroke(Color(light: Color(hex: 0xB8BEC6), dark: Color(hex: 0x4A515C)))
+            .lineWidth(1)
+            .visualState(.pointerOver) { $0.stroke(Color(light: Color(hex: 0x8E96A0), dark: Color(hex: 0x6B7380))) }
+
+        Style<ToolbarButton>()
+            .fontWeight(.semibold)
+            .visualState(.pointerOver) { $0.background(Color(light: .black, dark: .white).opacity(0.06)) }
+            .visualState(.pressed) { $0.background(Color(light: .black, dark: .white).opacity(0.12)) }
+
+        Style<ToolbarToggle>()
+            .fontWeight(.semibold)
+            .visualState(.pointerOver) { $0.background(Color(light: .black, dark: .white).opacity(0.06)) }
         """#,
         "AppStyles.sample": #"""
         // Sources/Styles/AppStyles.swift
@@ -628,7 +656,10 @@ enum Listings {
         // Every button the gallery shows wears its violet - a style with no
         // key is every button's - in its platform's shape: a capsule on
         // Apple's platforms and the Web, rounded everywhere else; and
-        // lower on the native desktops, where a pointer presses it.
+        // lower on the desktops and the Web, where a pointer presses it.
+        // Held down on a phone or a tablet, it grows a breath and lights
+        // up, under its own motion; elsewhere it presses as the
+        // platform's own button does.
         Style<Button>()
             .textColor(Palette.onAccent)
             .background(Palette.accent)
@@ -638,12 +669,18 @@ enum Listings {
             #else
             .shape(.roundedRectangle(10))
             #endif
-            #if APPKIT || WINUI || GTK
+            #if APPKIT || WINUI || GTK || WEB
             .padding(horizontal: 16, vertical: 6)
-            #elseif UIKIT || WEB
+            #elseif UIKIT
             .padding(horizontal: 22, vertical: 10)
             #else
             .padding(horizontal: 16, vertical: 11)
+            #endif
+            #if UIKIT || ANDROID
+            .visualState(.pressed) { $0
+                .scale(1.05)
+                .background(Palette.accentLit)
+            }
             #endif
             .visualState(.disabled) { $0
                 .textColor(Palette.disabled)
@@ -652,16 +689,29 @@ enum Listings {
 
         // A button's role chooses a style over the one above: it says
         // only what the role changes. The main action keeps the violet;
-        // the way out steps back, and what destroys something is red.
+        // the way out steps back, and what destroys something is red -
+        // each lit in its own color while held down on a phone or a
+        // tablet.
         Style<Button>(role: .cancel)
             .textColor(Palette.text)
             .background(Palette.selected)
+            #if UIKIT || ANDROID
+            .visualState(.pressed) { $0.background(Palette.selectedLit) }
+            #endif
         Style<Button>(role: .destructive)
             .textColor(Palette.danger)
             .background(Palette.dangerWash)
+            #if UIKIT || ANDROID
+            .visualState(.pressed) { $0.background(Palette.dangerWashLit) }
+            #endif
+
+        // A picker's presentation chooses a style as a button's role
+        // does: the chosen segment in the gallery's violet.
+        Style<Picker>(presentation: .segmented)
+            .tint(Palette.accent)
         """#,
         "AppSwitcherSample": #"""
-        // Sources/Samples/LayoutEngine/AppSwitcherSample.swift
+        // Sources/Samples/MotionLayout/AppSwitcherSample.swift
         import StateUIFoundation
 
         /// One running app: its name, which is its identity, and its picture -
@@ -697,22 +747,19 @@ enum Listings {
 
             return Grid {
                 Grid {
-                    LayoutEngine(running, id: \.name) { app in
+                    MotionLayout(running, id: \.name, parameters: $turn) { app in
                         AppCard(app: app, index: running.firstIndex(of: app) ?? 0, turn: $turn)
                     } placements: { room, turn in
                         (0..<count).map { place($0, turn, room) }
                     }
-                    .phase($turn)
                     // Thrown as the gallery's home turns its cards: a spring that
                     // carries the hand on and settles.
-                    .axis(
-                        \.self,
-                        input: .scroll(.horizontal, throwing: .spring(response: .milliseconds(500), damping: 0.8)),
-                        range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+                    .axis(\.self, input: .scroll(.horizontal), range: 0...Double(max(count - 1, 0)), snaps: .every(1))
+                    .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
                     // A FIRST MOVE UP is the card's: it follows the hand; let go
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
-                    .itemDrag(begins: .across)
+                    .itemDrag(begins: .perpendicular)
                     .onItemDismissed(.up, beyond: 120) { app in close(app) }
                 }
                 .gridRow(0)
@@ -729,8 +776,8 @@ enum Listings {
         }
 
         /// `app` closed: the others close up; one before the card in front keeps
-        /// that card in front, and where the last closes, the phase travels to
-        /// the one before.
+        /// that card in front, and where the last closes, the parameters travel
+        /// to the one before.
         private func close(_ app: RunningApp) {
             guard let leaving = apps.firstIndex(of: app) else { return }
             let front = min(max(Int(turn.rounded()), 0), apps.count - 1)
@@ -776,7 +823,7 @@ enum Listings {
         /// One card: its icon and name over its window - its picture, cut to the
         /// card's corners; the icon is the same picture, small. Its name fades
         /// as the card goes under the one in front: a state of the card's own,
-        /// which an engine following the phase writes where the run is shown -
+        /// which an engine following the parameters writes where the run is shown -
         /// the hand's place too - and the name's opacity wears.
         struct AppCard: View {
             let app: RunningApp
@@ -824,8 +871,8 @@ enum Listings {
                 Text("\(app.info.colorScheme)")
                     .fontWeight(.bold)
 
-                // LOGIC on the theme - a different WORD, not a colour.
-                // A colour that differs by theme is Color(light:dark:),
+                // LOGIC on the theme - a different WORD, not a color.
+                // A color that differs by theme is Color(light:dark:),
                 // which follows by itself.
                 Text(app.info.colorScheme == .dark
                     ? "lights off - a view can choose calmer artwork"
@@ -849,31 +896,60 @@ enum Listings {
             ("The system's", .system), ("Light", .light), ("Dark", .dark),
         ]
 
+        /// How the bars' buttons may stand, in the order they are offered.
+        private static let toolbarStyles: [(name: String, style: ToolbarStyle)] = [
+            ("The Web's own", .system), ("Glass", .glass), ("Plain", .plain), ("Rounded", .rounded),
+        ]
+
+        /// The accents the application may hold, the platform's first.
+        private static let accents: [(name: String, color: Color?)] =
+            [("The platform's", nil)] + AccentChoice.own.map { ($0.name, $0.color(system: .accent, for: .bar)) }
+
         var body: some View {
             // Read here, so a theme held anywhere builds the picker again at its
             // new place.
             let application = self.application
             let themes = Self.themes
+            let accents = Self.accents
 
             return VStack {
                 // The theme first: which of the two looks below the gallery wears.
                 SectionTitle("The theme")
-                Picker(themes.map(\.scheme),
-                       selection: Binding(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
+                Picker(themes.map(\.scheme), selection: application.$colorScheme) { scheme in
                     themes.first { $0.scheme == scheme }?.name ?? ""
                 }
+
+                // The accent the platform draws its controls in, where the user
+                // chooses none for the system.
+                SectionTitle("The accent")
+                Picker(accents.map(\.color), selection: application.$accentColor) { color in
+                    accents.first { $0.color == color }?.name ?? ""
+                }
+
+                #if WEB
+                // The bars' buttons, which the Web draws itself.
+                SectionTitle("The bars' buttons")
+                Picker(Self.toolbarStyles.map(\.style), selection: style.$toolbarStyle) { chosen in
+                    Self.toolbarStyles.first { $0.style == chosen }?.name ?? ""
+                }
+                // The application's own look for them: a style for every group and
+                // every button on a bar, its states included (AppStyles.bars).
+                Switch(style.$barsInOwnLook)
+                    .text("In the gallery's own look")
+                    .onToggled { owns in application.styles = AppStyles.sheet(barsInOwnLook: owns) }
+                #endif
 
                 // A look for each theme: the gallery wears the one of the theme in
                 // force, and changes with it. Side by side where there is room,
                 // one under the other on a phone.
                 if device.info.formFactor == .phone {
-                    LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
-                    LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
+                    LookColumn(title: "Light", dark: false, style: style)
+                    LookColumn(title: "Dark", dark: true, style: style)
                 } else {
                     Grid {
-                        LookColumn(title: "Light", style: style, look: \.lightLook, choice: \.lightChoice)
+                        LookColumn(title: "Light", dark: false, style: style)
                             .gridColumn(0)
-                        LookColumn(title: "Dark", style: style, look: \.darkLook, choice: \.darkChoice)
+                        LookColumn(title: "Dark", dark: true, style: style)
                             .gridColumn(1)
                     }
                     .columns(.fill, .fill)
@@ -882,30 +958,17 @@ enum Listings {
         }
 
         /// One theme's look: its bars, and what its window, its sidebar and its
-        /// sidebar over the page are made of - written where `look` says, which makes
-        /// it the user's own; the gallery's own again where `choice` says.
+        /// sidebar over the page are made of - each field a state the scene keeps,
+        /// written by its picker, which makes the look the user's own.
         private struct LookColumn: View {
             let title: String
+            let dark: Bool
             let style: SessionStyle
-            let look: ReferenceWritableKeyPath<SessionStyle, ThemeLook>
-            let choice: ReferenceWritableKeyPath<SessionStyle, LookChoice>
 
             var body: some View {
-                // Read here, so a choice made anywhere builds each picker again at its
-                // new place.
-                let style = self.style
-                let key = self.look
-                let look = style[keyPath: key]
-                let bars = BarLook.allCases
-                let accents = AccentChoice.allCases
+                let (style, dark) = (self.style, self.dark)
                 let name = title.lowercased()
-                // Each surface's choices write that part of the theme's look.
-                let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in
-                    Binding(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
-                }
-
-                let choice = self.choice
-                let composed = style[keyPath: choice] != .own
+                let composed = dark ? style.$darkComposed : style.$lightComposed
 
                 return VStack {
                     SectionTitle(title)
@@ -913,52 +976,67 @@ enum Listings {
                     // Back to the look this gallery draws on this platform, whatever
                     // it was when the user composed another.
                     Button("The gallery's own")
-                        .isEnabled(composed)
-                        .onClicked { style[keyPath: choice] = .own }
+                        .isEnabled(composed.wrappedValue)
+                        .onClicked { style.wearOwnLook(dark: dark) }
 
-                    Text("The bars")
-                    Picker(bars, selection: Binding(get: { look.bars }, set: { style[keyPath: key].bars = $0 })) { $0.name }
-                    Picker(accents, selection: Binding(get: { look.barColour }, set: { style[keyPath: key].barColour = $0 })) {
-                        $0.name
-                    }
-                        .isEnabled(look.bars == .tinted || look.bars == .colour)
-
-                    SurfacePickers(title: "The window", label: "Window", theme: name, surface: surface(\.window))
-                    SurfacePickers(title: "The sidebar", label: "Sidebar", theme: name, surface: surface(\.sidebar))
-                    SurfacePickers(title: "The sidebar over the page", label: "Flyout", theme: name, surface: surface(\.flyout))
+                    SurfacePickers(
+                        title: "The bars", label: "Bars", theme: name, part: .bar, composed: composed,
+                        material: dark ? style.$darkBarsMaterial : style.$lightBarsMaterial,
+                        color: dark ? style.$darkBarsColor : style.$lightBarsColor,
+                        blur: dark ? style.$darkBarsBlur : style.$lightBarsBlur)
+                    SurfacePickers(
+                        title: "The window", label: "Window", theme: name, part: .window, composed: composed,
+                        material: dark ? style.$darkWindowMaterial : style.$lightWindowMaterial,
+                        color: dark ? style.$darkWindowColor : style.$lightWindowColor,
+                        blur: dark ? style.$darkWindowBlur : style.$lightWindowBlur)
+                    SurfacePickers(
+                        title: "The sidebar", label: "Sidebar", theme: name, part: .sidebar, composed: composed,
+                        material: dark ? style.$darkSidebarMaterial : style.$lightSidebarMaterial,
+                        color: dark ? style.$darkSidebarColor : style.$lightSidebarColor,
+                        blur: dark ? style.$darkSidebarBlur : style.$lightSidebarBlur)
+                    SurfacePickers(
+                        title: "The sidebar over the page", label: "Overlay", theme: name, part: .sidebarOverlay,
+                        composed: composed,
+                        material: dark ? style.$darkSidebarOverlayMaterial : style.$lightSidebarOverlayMaterial,
+                        color: dark ? style.$darkSidebarOverlayColor : style.$lightSidebarOverlayColor,
+                        blur: dark ? style.$darkSidebarOverlayBlur : style.$lightSidebarOverlayBlur)
                 }
             }
         }
 
-        /// One surface's choices: what it is made of, in which colour, and how thick
-        /// a blur.
+        /// One surface's choices: what it is made of, in which color, and how thick
+        /// a blur - each a state of its own; a choice makes the theme's look the
+        /// user's composition.
         private struct SurfacePickers: View {
             let title: String
             let label: String
             let theme: String
-            let surface: Binding<SurfaceLook>
+            let part: GallerySurface
+            let composed: Binding<Bool>
+            let material: Binding<SurfaceMaterial>
+            let color: Binding<AccentChoice>
+            let blur: Binding<Int>
 
             var body: some View {
-                let surface = self.surface
-                let look = surface.wrappedValue
-                let materials = SurfaceMaterial.allCases
-                let accents = AccentChoice.allCases
-                let blurs = SurfaceLook.blurs
+                let composed = self.composed
+                let made = material.wrappedValue
+                let blurs = ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"]
                 let id = "appearance.\(theme).\(label.lowercased())"
 
                 return VStack {
                     Text(title)
-                    Picker(materials, selection: Binding(get: { look.material }, set: { surface.wrappedValue.material = $0 })) {
+                    Picker(SurfaceMaterial.offered(on: part), selection: material) {
                         $0.name
                     }
-                    Picker(accents, selection: Binding(get: { look.colour }, set: { surface.wrappedValue.colour = $0 })) {
+                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                    Picker(AccentChoice.allCases, selection: color) {
                         $0.name
                     }
-                        .isEnabled(look.material.showsColour)
-                    Picker(blurs, selection: Binding(get: { look.blur }, set: { surface.wrappedValue.blur = $0 })) { blur in
-                        ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
-                    }
-                        .isEnabled(look.material.showsBlur)
+                        .isEnabled(made.showsColor)
+                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
+                    Picker(Array(SurfaceLook.blurs.indices), selection: blur) { blurs[$0] }
+                        .isEnabled(made.showsBlur)
+                        .onSelectedIndexChanged { _ in composed.wrappedValue = true }
                 }
             }
         }
@@ -991,12 +1069,12 @@ enum Listings {
 
                 // One write for the whole application: every value without a
                 // motion of its own takes it.
-                Picker(Self.laws, selection: Binding(get: { application.motion }, set: { application.motion = $0 }),
-                       caption: Self.name)
+                Picker(Self.laws, selection: application.$motion, caption: Self.name)
                     .horizontalAlignment(.center)
 
                 // No `.motion` here: the panel takes the application's.
-                Rectangle(wide ? Palette.accent : Palette.brand)
+                Rectangle()
+                    .fill(wide ? Palette.accent : Palette.brand)
                     .width(wide ? 300 : 120)
                     .height(60)
                     .horizontalAlignment(.center)
@@ -1018,19 +1096,19 @@ enum Listings {
                 // differ asks, so the only closure this switch rebuilds is that one.
                 ZStack {
                     // No area: the whole room, filled.
-                    Rectangle(Palette.outline)
+                    Fill(Palette.outline)
 
                     // The panel fills the area it names: the right half of the
                     // room, or 120 by 60 at 16, 16 whatever the room's size.
-                    Rectangle(Color("#1E88E5"))
+                    Fill(Color(hex: 0x1E88E5))
                         .area(proportional ? .proportional(0.5, 0, 0.5, 1) : .absolute(16, 16, 120, 60))
 
                     // Its natural size, where its alignments put it.
-                    Badge(text: "start", color: "#E53935")
+                    Badge(text: "start", color: Color(hex: 0xE53935))
                         .horizontalAlignment(.start)
                         .verticalAlignment(.start)
 
-                    Badge(text: "end", color: "#00897B")
+                    Badge(text: "end", color: Color(hex: 0x00897B))
                         .horizontalAlignment(.end)
                         .verticalAlignment(.end)
                 }
@@ -1041,11 +1119,11 @@ enum Listings {
             }
         }
 
-        /// One labelled badge, so the sample says what is being positioned rather than
+        /// One labeled badge, so the sample says what is being positioned rather than
         /// how it is drawn.
         private struct Badge: View {
             let text: String
-            let color: String
+            let color: Color
 
             var body: some View {
                 Text(text)
@@ -1062,13 +1140,13 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // No await: the handler runs whole inside the press and names no gate.
+                // No await: the handler runs whole inside the press and names no policy.
                 Button("+1 - \(count)")
                     .onClicked { count += 1 }
 
                 // Every letter cancels the search under way: only the last one finishes.
                 SearchField($query)
-                    .onTextChanged(gate: .cancelPrevious) { text in
+                    .onTextChanged(.cancelPrevious) { text in
                         try await Task.sleep(for: .milliseconds(600))
                         found = text.isEmpty ? "Nothing searched yet." : "Found 3 for \"\(text)\"."
                     }
@@ -1077,7 +1155,7 @@ enum Listings {
                 SwitchRow("Log each change", $logging)
                 Text("Changes logged: \(logged)")
                     // Each change logged beside the others: nothing held back.
-                    .onChanged(logging, gate: .none) {
+                    .onChanged(logging, policy: .runConcurrently) {
                         try await Task.sleep(for: .milliseconds(800))
                         logged += 1
                     }
@@ -1222,14 +1300,121 @@ enum Listings {
             }
         }
         """#,
+        "BottomBarSample": #"""
+        // Sources/Samples/Navigation/BottomBarSample.swift
+        @State private var presented = false
+        @State private var path: [Int] = []
+        @State private var messages = Self.talk
+        @State private var draft = ""
+        /// The list of messages, which opening and Send scroll.
+        @Aim(ItemsView<Int>.self) private var list
+        /// How tall the field stands at one line: the least it has stood at.
+        @State private var oneLine = 0.0
+        @State private var edge = ScrollEdge.automatic
+        static let edges: [ScrollEdge] = [.automatic, .hard, .none]
+
+        /// One message: what it says, and whether it is ours.
+        struct Message: Hashable {
+            let text: String
+            let mine: Bool
+        }
+
+        /// A conversation long enough to scroll under the bar.
+        static let talk: [Message] = [
+            ("Are we still on for Saturday?", false), ("Yes! Ten o'clock at the station?", true),
+            ("Perfect. Should I bring anything?", false), ("Just good shoes - the trail is muddy after the rain.", true),
+            ("Noted. How long is the walk?", false), ("About four hours there and back, with a stop for lunch.", true),
+            ("Lunch where?", false), ("There's a hut at the top. They make the best soup.", true),
+            ("Sold. Is Anna coming too?", false), ("She said she'd try, but she has a deadline.", true),
+            ("Tell her the soup is non-negotiable.", false), ("Ha, I will.", true),
+            ("What if it rains again?", false), ("Then we take the lower path through the forest.", true),
+            ("You've thought of everything.", false), ("I've done this walk a few times.", true),
+            ("Can you send me the map?", false), ("I'll send it tonight.", true),
+            ("Thanks! See you Saturday.", false), ("See you - don't forget the shoes!", true),
+        ].map { Message(text: $0.0, mine: $0.1) }
+
+
+        var body: some View {
+            VStack {
+                // How the rows show at the bars' edges as they pass under them.
+                Picker(Self.edges, selection: $edge) { "\($0)".titled }
+                    .presentation(.segmented)
+
+                Button("Open the conversation")
+                    .onClicked { presented = true }
+                    .sheet(isPresented: $presented) { conversation }
+            }
+        }
+
+        private var conversation: some View {
+            NavigationStack($path) {
+                Grid {
+                    // Theirs on the left, ours on the right; the list opens at
+                    // its end, and a message sent scrolls there.
+                    ItemsView(Array(messages.indices)) { index in
+                        VStack { bubble(messages[index]) }
+                    }
+                    .itemsLayout(.list())
+                    .aim(list)
+                    .onCreated { try await list.scrollTo(messages.count - 1, anchor: .end) }
+                    .onChanged(messages.count, policy: .cancelPrevious) {
+                        try await list.scrollTo(messages.count - 1, anchor: .end)
+                    }
+                }
+                .ignoresSafeArea(.all)
+                .galleryPage("Conversation")
+                // The field grows with its lines, and the bar with it; the rows
+                // pass under the bar, and under the field's glass.
+                .bottomBar(edge: edge) {
+                    Grid {
+                        ZStack {
+                            TextEditor($draft)
+                                .placeholder("Message")
+                                .growsWithText(true)
+                        }
+                        // The field's own ground is glass, its words clear of the
+                        // round ends: a capsule at one line, its corners rounding
+                        // alike as more lines grow it.
+                        .onFrameChanged { frame in
+                            if oneLine == 0 || frame.height < oneLine { oneLine = frame.height }
+                        }
+                        Button("Send")
+                            .onClicked {
+                                guard !draft.isEmpty else { return }
+                                messages.append(Message(text: draft, mine: true))
+                                draft = ""
+                            }
+                            .verticalAlignment(.end)
+                            .gridColumn(1)
+                    }
+                    .columns(.fill, .auto)
+                }
+            } destination: { _ in
+                Text("")
+            }
+            // The bar at the top shows the same edge as the bar at the foot.
+            .barScrollEdge(edge)
+        }
+
+        /// A message in its bubble, at its side of the conversation.
+        private func bubble(_ message: Message) -> some View {
+            ZStack {
+                Text(message.text)
+            }
+            // A capsule at one line - a corner never rounds past half the
+            // height - and round corners on more.
+            .maximumWidth(300)
+            .horizontalAlignment(message.mine ? .end : .start)
+        }
+        """#,
         "BoundPropertiesSample": #"""
         // Sources/Samples/Driven/BoundPropertiesSample.swift
         /// A number the host WALKS: handed to `fontSize`, an assignment travels
         /// there under the label's law.
         @State private var size = 18.0   // a number: the host walks it
 
-        /// A colour the host walks the same way.
-        @State private var tint = Palette.accent   // a colour: the same
+        /// A color the host walks the same way.
+        @State private var tint = Palette.accent   // a color: the same
 
         /// Which of the two tints is worn - read by handlers alone.
         @State private var warm = true   // which tint: read by a handler alone
@@ -1267,7 +1452,7 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
 
-                row("2 · a colour the host walks - textColor($tint)") {
+                row("2 · a color the host walks - textColor($tint)") {
                     Text("Tinted words")
                     DebugInfoLabel()   // stays at one
                 }
@@ -1363,7 +1548,8 @@ enum Listings {
 
                 SectionTitle("Along a line")
 
-                Rectangle(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Self.ends[end].point))
+                Rectangle()
+                    .fill(.linearGradient(Self.stops, startPoint: Point(0, 0), endPoint: Self.ends[end].point))
                     .contentMode(.stretch)   // fills the room, proportions and all
                     .height(80)
 
@@ -1373,7 +1559,8 @@ enum Listings {
 
                 SectionTitle("Out from a point")
 
-                Ellipse(.radialGradient(
+                Ellipse()
+                    .fill(.radialGradient(
                         [GradientStop(.white, 0), GradientStop(.steelBlue, 1)],
                         center: Point(0.35, 0.3),
                         radius: 0.75))
@@ -1411,12 +1598,8 @@ enum Listings {
                 // the closure a flip or a pick builds again.
                 DebugInfoLabel()
 
-                HStack {
-                    Switch($signedIn)
-
-                    Text("Signed in")
-                        .verticalAlignment(.center)
-                }
+                Switch($signedIn)
+                    .text("Signed in")
 
                 // An `if` with no `else`. The TextField below it is child 2 in one
                 // state and child 3 in the other - and it is the same control
@@ -1500,7 +1683,9 @@ enum Listings {
                 }
 
                 HStack {
-                    Button(icon: .icon(.more))
+                    Button("More")
+                        .icon(.icon(.more))
+                        .showsText(false)
                         .style(look)
                         .menu {
                             MenuItem("Rename").onClicked { last = "Renamed" }
@@ -1515,12 +1700,8 @@ enum Listings {
                         .verticalAlignment(.center)
                 }
 
-                HStack {
-                    Switch($platformLook)
-
-                    Text("Platform look")
-                        .verticalAlignment(.center)
-                }
+                Switch($platformLook)
+                    .text("Platform look")
 
                 Text("Last: \(last)")
             }
@@ -1563,14 +1744,34 @@ enum Listings {
                         .onClicked { last = "Save" }
                 }
 
-                HStack {
-                    Switch($platformLook)
-
-                    Text("Platform look")
-                        .verticalAlignment(.center)
-                }
+                Switch($platformLook)
+                    .text("Platform look")
 
                 Text("Last: \(last)")
+            }
+        }
+        """#,
+        "ButtonRow": #"""
+        // Sources/Samples/Layout/GridSample.swift
+        @State private var second = true
+
+        var body: some View {
+            VStack {
+                // Two columns of one share each. Alone, the first button spans
+                // both and asks its width of them, so its row stays a button tall.
+                Grid {
+                    Button("Details")
+                        .gridColumnSpan(second ? 1 : 2)
+
+                    if second {
+                        Button("Undo")
+                            .gridColumn(1)
+                    }
+                }
+                .columns(.fill, .fill)
+
+                SwitchRow("Second button", $second)
+                    .horizontalAlignment(.center)
             }
         }
         """#,
@@ -1602,21 +1803,53 @@ enum Listings {
             }
         }
         """#,
+        "ChangesAcrossBranches": #"""
+        // Sources/Samples/State/OnChangedSample.swift
+        @State private var signedIn = false
+        @State private var changes = 0
+
+        var body: some View {
+            VStack {
+                Switch($signedIn)
+                    .text("Signed in")
+
+                // Written on the group holding the `if/else`: it watches whichever
+                // branch shows. The group adds no view of its own.
+                Group {
+                    if signedIn {
+                        Text("Signed in")
+                            .fontWeight(.bold)
+                    } else {
+                        Button("Sign in")
+                            .onClicked { signedIn = true }
+                    }
+                }
+                .horizontalAlignment(.center)
+                .onChanged(signedIn) { changes += 1 }
+
+                Text("Changed \(changes) times")
+            }
+        }
+        """#,
         "ChangingDeckSample": #"""
-        // Sources/Samples/LayoutEngine/ChangingDeckSample.swift
-        /// One card: its name, which is its identity, its colour and its icon.
+        // Sources/Samples/MotionLayout/ChangingDeckSample.swift
+        /// One card: its name, which is its identity, its color and its icon.
         struct Card: Hashable {
             let name: String
-            let colour: String
+            let color: Color
             let icon: Icon
         }
 
         /// Every card the deck can hold, dealt in this order.
         static let all = [
-            Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
-            Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
-            Card(name: "Tide", colour: "#DB2777", icon: .mail), Card(name: "Prism", colour: "#4F46E5", icon: .settings),
-            Card(name: "Grove", colour: "#16A34A", icon: .person), Card(name: "Ember", colour: "#DC2626", icon: .play),
+            Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
+            Card(name: "Prism", color: Color(hex: 0x4F46E5), icon: .settings),
+            Card(name: "Grove", color: Color(hex: 0x16A34A), icon: .person),
+            Card(name: "Ember", color: Color(hex: 0xDC2626), icon: .play),
         ]
 
         /// The cards in the deck, in order.
@@ -1645,8 +1878,8 @@ enum Listings {
                     }
 
                     // A CARD COMES IN AT THE FRONT: it fades in where the front
-                    // card stood, and the others move aside - the phase is where
-                    // it was, so the new card is the one at the front.
+                    // card stood, and the others move aside - the parameters stay
+                    // where they were, so the new card is the one at the front.
                     Button("Insert").onClicked {
                         if let next { cards.insert(next, at: min(front, cards.count)) }
                     }
@@ -1682,7 +1915,7 @@ enum Listings {
 
         /// `card` leaves the deck, the others closing up: one before the front
         /// card keeps that card in front; the front card's place goes to the one
-        /// behind it - where it was the last, the phase travels to the one before.
+        /// behind it - where it was the last, the parameters travel to the one before.
         private func remove(_ card: Card) {
             guard cards.count > 1, let leaving = cards.firstIndex(of: card) else { return }
             let shown = front
@@ -1701,22 +1934,24 @@ enum Listings {
             let fanned = spread
             let count = cards.count
 
-            return LayoutEngine(cards, id: \.name) { card in
+            return MotionLayout(cards, id: \.name, parameters: $turn) { card in
                 face(card, large: !fanned)
-            } placements: { room, turn, from in
-                (0..<count).map { fanned ? fan($0, turn, room) : pile($0, turn, from, room) }
+            } placements: { room, turn, segmentStart in
+                (0..<count).map { fanned ? fan($0, turn, room) : pile($0, turn, segmentStart, room) }
             }
-            .phase($turn)
             // The pile is swiped a card at a time, the fan scrolled through.
             .axis(
                 \.self, input: fanned ? .scroll(.horizontal) : .swipe(.horizontal),
                 range: 0...Double(max(count - 1, 0)), snaps: .every(1))
             // A CARD PULLED UP is the hand's alone: let go far enough, it flies
             // out of the deck and leaves it; short of that, it goes back.
-            .itemDrag(begins: .across)
+            .itemDrag(begins: .perpendicular)
             .onItemDismissed(.up, beyond: 120) { card in remove(card) }
-            // ONE MOTION for the turn and for every change at the phase.
-            .motion(.spring(response: .milliseconds(380), damping: 0.82))
+            // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
+            // where the parameters stand; `.dynamics` THE CARDS reaching their new
+            // places after a card joins, leaves or the order changes.
+            .motion(.eased(.milliseconds(400), .cubicOut))
+            .dynamics(.spring(response: .milliseconds(300), damping: 1))
         }
 
         /// Where one card stands in the fan: along an arc and turned with it, the
@@ -1739,7 +1974,7 @@ enum Listings {
         /// are. The card the run set out from goes out the way it goes, under the
         /// finger, until it stands beside the pile, then tucks under the new front
         /// card.
-        private func pile(_ index: Int, _ turn: Double, _ from: Double, _ room: Rect) -> Placement {
+        private func pile(_ index: Int, _ turn: Double, _ segmentStart: Double, _ room: Rect) -> Placement {
             let step = Double(index) - turn
             let width = min(room.width * 0.62, room.height * 0.75 / 1.33, 320)
             let height = width * 1.33
@@ -1747,7 +1982,7 @@ enum Listings {
             let behind = min(abs(step), 4)
 
             // Out over most of a card - nought to one - then back under at once.
-            let leaving = Double(index) == from && abs(step) < 1
+            let leaving = Double(index) == segmentStart && abs(step) < 1
             let outward = abs(step) < 0.8
             let out = leaving ? (outward ? abs(step) / 0.8 : (1 - abs(step)) / 0.2) : 0
 
@@ -1759,17 +1994,19 @@ enum Listings {
                 zIndex: leaving && outward ? 200 : Int(100 - behind * 10))
         }
 
-        /// One card's face: its colour, its icon on a light disc and its name -
-        /// the icon in the platform's own colour, which shows on the disc in a
+        /// One card's face: its color, its icon on a light disc and its name -
+        /// the icon in the platform's own color, which shows on the disc in a
         /// light theme and a dark one alike - larger on the pile's larger cards.
         private func face(_ card: Card, large: Bool) -> some View {
             let disc = large ? 88.0 : 56.0
             return ZStack {
-                Rectangle(Color(card.colour))
+                Rectangle()
+                    .fill(card.color)
 
                 VStack {
                     ZStack {
-                        Rectangle(.white)
+                        Rectangle()
+                            .fill(.white)
                             .opacity(0.3)
 
                         Image(.icon(card.icon))
@@ -1800,12 +2037,8 @@ enum Listings {
                 // The ticks are read here, so every box builds this closure.
                 DebugInfoLabel()
 
-                HStack {
-                    CheckBox($agreed)
-
-                    Text("I have read the terms")
-                        .verticalAlignment(.center)
-                }
+                CheckBox($agreed)
+                    .text("I have read the terms")
 
                 Text(agreed ? "Ticked" : "Not ticked")
 
@@ -1813,14 +2046,10 @@ enum Listings {
 
                 ForEach(Array(["Cheese", "Bacon", "Egg"].enumerated()), id: \.offset) { pair in
                     let (index, name) = pair
-                    return HStack {
-                        CheckBox(extras[index])
-                            .onToggled { ticked in extras[index] = ticked }
-
-                        Text(name)
-                            .verticalAlignment(.center)
-                    }
-                    .id(name)
+                    return CheckBox(extras[index])
+                        .text(name)
+                        .onToggled { ticked in extras[index] = ticked }
+                        .id(name)
                 }
 
                 Text(chosen.isEmpty ? "Nothing extra" : "With \(chosen.joined(separator: ", "))")
@@ -1830,6 +2059,65 @@ enum Listings {
         /// What is ticked, in the order the boxes are drawn.
         private var chosen: [String] {
             ["Cheese", "Bacon", "Egg"].enumerated().filter { extras[$0.offset] }.map { $0.element }
+        }
+        """#,
+        "ClipboardSample": #"""
+        // Sources/Samples/Navigation/ClipboardSample.swift
+        @Environment(\.application) private var application
+        @State private var words = "Copy me somewhere"
+        @State private var answer = "nothing copied or pasted yet"
+
+        var body: some View {
+            VStack {
+                TextField($words)
+
+                Button("Copy")
+                    .onClicked(.ignoreWhileRunning) {
+                        try await application.clipboard.write(text: words)
+                        answer = "copied"
+                    }
+
+                // What another application copied pastes here too; nil is an empty clipboard.
+                Button("Paste")
+                    .onClicked(.ignoreWhileRunning) {
+                        guard let pasted = try await application.clipboard.text() else { return answer = "the clipboard is empty" }
+                        words = pasted
+                        answer = "pasted"
+                    }
+
+                Text(answer)
+            }
+        }
+        """#,
+        "ColorPickerSample": #"""
+        // Sources/Samples/BasicInput/ColorPickerSample.swift
+        @State private var tint = Color.steelBlue
+        @State private var seeThrough = false
+        @State private var changes = 0
+
+        var body: some View {
+            VStack {
+                ColorPicker($tint)
+                    .choosesOpacity(seeThrough)
+                    .horizontalAlignment(.center)
+                    .onColorChanged { _ in changes += 1 }
+
+                // The swatch wears the same state: the color chosen reaches it
+                // with no render of this view.
+                Rectangle()
+                    .fill($tint)
+                    .height(80)
+
+                Text("Changed \(changes) time\(changes == 1 ? "" : "s")")
+
+                SwitchRow("Chooses opacity", $seeThrough)
+
+                // A color the program writes is shown, and heard by nobody: the
+                // count stays where it is.
+                Button("Back to steel blue")
+                    .horizontalAlignment(.center)
+                    .onClicked { tint = .steelBlue }
+            }
         }
         """#,
         "ComplaintsSample": #"""
@@ -1856,7 +2144,7 @@ enum Listings {
                 // The second press supersedes the first, whose write is refused.
                 Button("Press twice, quickly")
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .cancelPrevious) {
+                    .onClicked(.cancelPrevious) {
                         try? await Task.sleep(for: .seconds(1))
                         presses += 1
                     }
@@ -1907,7 +2195,8 @@ enum Listings {
                     VStack {
                         HStack {
                             ForEach(Array(bars.enumerated()), id: \.offset) { bar in
-                                Rectangle(Palette.onAccent)
+                                Rectangle()
+                                    .fill(Palette.onAccent)
                                     .translationY(bar.element)
                                     .width(14)
                                     .height(46)
@@ -1969,7 +2258,7 @@ enum Listings {
 
         /// One beat: two long movements spanning it, the bars hopping inside them.
         ///
-        /// - Parameter n: which beat this is, which decides the colour it washes to.
+        /// - Parameter n: which beat this is, which decides the color it washes to.
         /// - Returns: whether everything in it ran to the end. False is what Stop
         ///   produces, through `stop()` on each of the states.
         private func beat(_ n: Int) async throws -> Bool {
@@ -1983,7 +2272,7 @@ enum Listings {
             let breathing = $breath.journey.move(to: 0.25, .eased(.milliseconds(600), .cubicInOut))
 
             // 4 bars x 300ms = the 1200ms the wash takes, so the wave crosses the
-            // stage exactly once per colour. A hop that did not run to the end is
+            // stage exactly once per color. A hop that did not run to the end is
             // Stop, and the bars after it must not start: each would be a fresh
             // movement over the one being stopped.
             var hopped = true
@@ -2010,7 +2299,7 @@ enum Listings {
         /// is under way is let go.
         private func button(_ caption: String, _ act: @escaping EventHandler) -> Button {
             Button(caption)
-                .onClicked(gate: .ignoreWhileRunning, act)
+                .onClicked(.ignoreWhileRunning, act)
         }
         """#,
         "ConcurrentStateSample": #"""
@@ -2043,7 +2332,7 @@ enum Listings {
                 Button(running ? "Counting…" : "Count from 200 tasks at once")
                     .isEnabled(!running)
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         running = true
                         total = 0
                         expected = 200 * 100
@@ -2071,12 +2360,8 @@ enum Listings {
             }
         }
 
-        // WRONG - never do this to "reach the UI thread":
-        //
-        //     DispatchQueue.main.async { total = value }   // never runs on Android/Windows
-        //
-        // RIGHT - in a handler, just write it: it runs on MainActor, the UI thread.
-        // From a task, post it:
+        // In a handler, just write it: it runs on MainActor, the UI thread.
+        // From a task, post it - on every host, the Web included:
         //
         //     total = value
         //     $total.post(value)
@@ -2148,13 +2433,13 @@ enum Listings {
 
                                 // A setting: its check follows the state, and
                                 // choosing it turns the state over.
-                                MenuItem("Large text").isOn($large)
+                                MenuToggle("Large text", isOn: $large)
 
                                 MenuSeparator()
 
                                 MenuItem("Remove")
                                     .icon(ImageSource(light: "menu_remove.png", dark: "menu_remove_dark.png"))
-                                    .isDestructive(true)
+                                    .role(.destructive)
                                     .onClicked {
                                         items.remove(at: index)
                                         chosen = "removed \(item)"
@@ -2259,7 +2544,7 @@ enum Listings {
                     Text()
                         // The sides as they are shown, whole, and their product - not the product of what
                         // the sliders hold, which would disagree with the sides it names.
-                        .text($width.convert(with: $height) { w, h in
+                        .text(.multi($width, $height).convert { w, h in
                             let (across, down) = (Int(w.rounded()), Int(h.rounded()))
                             return "\(across) × \(down) = \(across * down)"
                         })
@@ -2305,7 +2590,7 @@ enum Listings {
         """#,
         "Cube3D": #"""
         // Sources/Samples/Interop/Cube3D.swift
-        /// What colour the cube is painted.
+        /// What color the cube is painted.
         ///
         /// A closed vocabulary, so it crosses as its member's number, and the host's
         /// registration is handed it back as a `CubeColor` rather than as that number.
@@ -2331,7 +2616,7 @@ enum Listings {
             /// it is a cube that grows.
             public static let size = ElementProperty<Self, Double>("size")
 
-            /// Which colour the cube is painted. A vocabulary has no half way, so a
+            /// Which color the cube is painted. A vocabulary has no half way, so a
             /// change does not travel.
             public static let color = ElementProperty<Self, CubeColor>("color", travels: false)
 
@@ -2350,7 +2635,7 @@ enum Listings {
         public struct Cube3D: ElementView {
             public var node = Node(contract: Cube3DContract.self)
 
-            /// A cube at whatever size, colour and motion its modifiers say.
+            /// A cube at whatever size, color and motion its modifiers say.
             public init() {}
 
             /// How long the cube's edge is, as a share of the room the view is given,
@@ -2379,7 +2664,7 @@ enum Listings {
                 setValue(Cube3DContract.size, on: state, mode: .inOut, kind: .property)
             }
 
-            /// Which colour the cube is painted.
+            /// Which color the cube is painted.
             public func color(_ value: CubeColor) -> Self {
                 setValue(Cube3DContract.color, value)
             }
@@ -2422,13 +2707,9 @@ enum Listings {
                 Picker(CubeColor.allCases, selection: $color) { "\($0)".titled }
                     .placeholder("Color")
 
-                HStack {
-                    Text("Spin")
-                        .verticalAlignment(.center)
-
-                    Switch($spinning)
-                }
-                .horizontalAlignment(.center)
+                Switch($spinning)
+                    .text("Spin")
+                    .horizontalAlignment(.center)
             }
         }
         """#,
@@ -2447,7 +2728,7 @@ enum Listings {
                 DatePicker($due)
                     .minimumDate(CalendarDate(year: 2020, month: 1, day: 1))
                     .maximumDate(CalendarDate(year: 2030, month: 12, day: 31))
-                    .format("D")
+                    .format(.long)
                     .onDateChanged { date in
                         chosen = date.text
                         picks += 1
@@ -2516,15 +2797,31 @@ enum Listings {
 
                 Text("device · \(device.info.manufacturer) \(device.info.model)")
                 Text("system · \(device.info.platform) \(device.info.versionString)")
-                Text("formFactor · \(device.info.formFactor), \(device.info.deviceType)")
+                Text("formFactor · \(device.info.formFactor)")
+                Text("virtual · \(device.info.isVirtual.map { $0 ? "yes" : "no" } ?? "not said")")
                 Text("name · \(device.info.name.isEmpty ? "not said" : device.info.name)")
             }
         }
         """#,
         "DialogsSample": #"""
         // Sources/Samples/Navigation/DialogsSample.swift
+        @Environment(\.window) private var window
         @State private var answer = "nothing asked yet"
         @State private var name = "Draft 1"
+
+        /// What the draft can be done with.
+        enum Share: CaseIterable {
+            case mail, message, delete
+
+            /// What each says on its button.
+            var title: String {
+                switch self {
+                case .mail: "Mail"
+                case .message: "Message"
+                case .delete: "Delete"
+                }
+            }
+        }
 
         var body: some View {
             VStack {
@@ -2535,38 +2832,35 @@ enum Listings {
                 // One button, nothing to answer: the handler resumes when it is
                 // dismissed, so the next line runs with the alert already gone.
                 Button("Tell me something")
-                    .onClicked(gate: .ignoreWhileRunning) {
-                        try await Dialogs.alert(
+                    .onClicked(.ignoreWhileRunning) {
+                        try await window.alert(
                             "Saved", message: "The draft is safe")
                         answer = "the alert was dismissed"
                     }
 
                 // Ask, await, branch - in one place, which is what an act is for.
+                // The cancel says the system's own word.
                 Button("Ask me a question")
-                    .onClicked(gate: .ignoreWhileRunning) {
-                        let ok = try await Dialogs.confirm(
-                            "Delete draft?", message: "This cannot be undone",
-                            accept: "Delete", cancel: "Keep")
-                        answer = ok ? "Delete pressed" : "Keep pressed"
+                    .onClicked(.ignoreWhileRunning) {
+                        let ok = try await window.confirm(
+                            "Delete draft?", message: "This cannot be undone", accept: "Delete")
+                        answer = ok ? "Delete pressed" : "cancelled"
                     }
 
-                // The answer is the pressed CAPTION, cancel and destruction
-                // included - nil only when the sheet was dismissed with nothing
-                // chosen, tapping beside it where the platform allows that.
+                // The answer is the action chosen, as a value - nil for the
+                // cancel, or a sheet tapped away where the platform allows that.
                 Button("Offer me choices")
-                    .onClicked(gate: .ignoreWhileRunning) {
-                        let choice = try await Dialogs.chooseAction(
-                            "Share via", cancel: "Cancel", destruction: "Delete",
-                            buttons: ["Mail", "Message"])
-                        answer = choice.map { "\($0) pressed" }
-                            ?? "dismissed with nothing chosen"
+                    .onClicked(.ignoreWhileRunning) {
+                        let choice = try await window.chooseAction(
+                            "Share via", among: Share.allCases, caption: \.title, destructive: .delete)
+                        answer = choice.map { "\($0.title) chosen" } ?? "nothing chosen"
                     }
 
                 // nil is CANCELLED; an accepted prompt with nothing typed comes
                 // back as "" - an empty answer, which is still an answer.
                 Button("Ask me to type")
-                    .onClicked(gate: .ignoreWhileRunning) {
-                        let typed = try await Dialogs.prompt(
+                    .onClicked(.ignoreWhileRunning) {
+                        let typed = try await window.prompt(
                             "Rename", message: "A new name for the draft",
                             placeholder: "Name", initialValue: name, maximumLength: 40)
                         if let typed { name = typed }
@@ -2722,7 +3016,7 @@ enum Listings {
         /// Where the marker sits - the value the HOST carries.
         @State private var offset = 0.0
 
-        /// The rail's colour, which the HOST carries with no engine at all.
+        /// The rail's color, which the HOST carries with no engine at all.
         @State private var tint = Palette.outline
 
         /// How far the marker may travel - the rail's width less its own.
@@ -2740,11 +3034,13 @@ enum Listings {
 
                 ZStack {
                     Grid {
-                        Rectangle($tint)
+                        Rectangle()
+                            .fill($tint)
                             .height(6)
                             .verticalAlignment(.center)
 
-                        Rectangle(Palette.brand)
+                        Rectangle()
+                            .fill(Palette.brand)
                             .width(20)
                             .height(20)
                             .horizontalAlignment(.start)
@@ -2947,8 +3243,24 @@ enum Listings {
             }
         }
         """#,
+        "Explanations": #"""
+        // Sources/Samples/Navigation/PopoverSample.swift
+        @State private var explained: String?
+
+        var body: some View {
+            HStack {
+                Button("Sync").onClicked { explained = "Sync keeps your mail the same on every device." }
+                Button("Backup").onClicked { explained = "Backup saves a copy of your mail every night." }
+            }
+            .popover(item: $explained) { words in
+                Text(words).width(220).padding(16)
+            }
+        }
+        """#,
         "FilesSample": #"""
         // Sources/Samples/Navigation/FilesSample.swift
+        @Environment(\.window) private var window
+        @Environment(\.application) private var application
         @State private var words = "Words to keep"
         @State private var saved: ChosenFile?
         @State private var answer = "nothing opened or saved yet"
@@ -2961,17 +3273,17 @@ enum Listings {
 
                 // The contents go first; nil is a cancel.
                 Button("Save…")
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt"])
-                        saved = try await Dialogs.saveFile(Array(words.utf8), name: "Note", types: [text])
+                        saved = try await window.saveFile(Array(words.utf8), name: "Note", types: [text])
                         answer = saved.map { "saved as \($0.name)" } ?? "cancelled"
                     }
 
                 // No file longer than 1 KB is read whole: one byte past it says it is longer.
                 Button("Open…")
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         let text = FileType("Text", extensions: ["txt", "md"])
-                        guard let file = try await Dialogs.openFile(types: [text]) else {
+                        guard let file = try await window.openFile(types: [text]) else {
                             return answer = "cancelled"
                         }
                         let start = try await file.read(atMost: 1025)
@@ -2983,12 +3295,12 @@ enum Listings {
                 // The system opens it in the application it gives its kind.
                 Button("Launch the saved file")
                     .isEnabled(saved != nil)
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         if let saved { try await saved.launch() }
                     }
 
                 Button("Launch swift.org")
-                    .onClicked(gate: .ignoreWhileRunning) { try await Links.launch("https://www.swift.org") }
+                    .onClicked(.ignoreWhileRunning) { try await application.launch("https://www.swift.org") }
 
                 // A text file dragged from the system onto it is read into the editor.
                 ZStack {
@@ -2998,7 +3310,7 @@ enum Listings {
                 .lineWidth(dropping ? 2 : 1)
                 .onDragOver { dropping = true }
                 .onDragLeave { dropping = false }
-                .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], gate: .waitForPrevious) { files in
+                .onDrop(files: [FileType("Text", extensions: ["txt", "md"])], policy: .waitForPrevious) { files in
                     dropping = false
                     let start = try await files[0].read(atMost: 1025)
                     guard start.count <= 1024 else { return answer = "\(files[0].name) is longer than 1 KB" }
@@ -3007,6 +3319,100 @@ enum Listings {
                 }
 
                 Text(answer)
+            }
+        }
+        """#,
+        "FillSample": #"""
+        // Sources/Samples/Layout/FillSample.swift
+        /// Whether the room between the words is a space rather than a fill.
+        @State private var spaced = false
+
+        /// How many taps the clear fill heard.
+        @State private var taps = 0
+
+        var body: some View {
+            VStack {
+                SectionTitle("Offered or left")
+
+                // Along a stack a fill is as long as it says: the one between the words says nothing, so it gets no
+                // room and is gone; the one at the foot says 24 and stands 24 tall. A space pushes, taking the rest.
+                VStack {
+                    Text("Top")
+                    if spaced {
+                        Space()
+                            .background(Palette.accent)
+                            .shape(.roundedRectangle(10))
+                    } else {
+                        Fill(Palette.accent)
+                            .shape(.roundedRectangle(10))
+                    }
+                    Text("Bottom")
+                    Fill(Palette.brand)
+                        .height(24)
+                        .shape(.roundedRectangle(6))
+                }
+                .spacing(8)
+                .height(160)
+
+                Switch($spaced)
+                    .text("A space, not a fill")
+
+                SectionTitle("Across")
+
+                // As wide as it says, as tall as its row offers.
+                HStack {
+                    Fill(Palette.accent)
+                        .width(4)
+                    Text("Take the room you are given.")
+                        .fontAttributes(.italic)
+                        .padding(horizontal: 0, vertical: 8)
+                }
+                .spacing(10)
+
+                SectionTitle("Made of")
+
+                // Each over a stripe of color, so what it lets through shows.
+                Grid {
+                    tile("Color", Fill(Palette.accent), over: .tomato).gridColumn(0)
+                    tile("Gradient", Fill(Palette.identity), over: .gold).gridColumn(1)
+                    tile("Blur", Fill(.blur(.regular)), over: .steelBlue).gridColumn(2)
+                    tile("Glass", Fill(.glass(.regular)), over: .white).gridColumn(3)
+                }
+                .columns(.fill, .fill, .fill, .fill)
+                .height(110)
+                .shape(.roundedRectangle(14))
+                .clipsContent(true)
+
+                SectionTitle("For the hand")
+
+                // Clear, only outlined, it still hears a tap anywhere on it.
+                ZStack {
+                    Text(taps == 0 ? "Tap anywhere here" : taps == 1 ? "Tapped once" : "Tapped \(taps) times")
+                        .horizontalAlignment(.center)
+                        .verticalAlignment(.center)
+                    Fill()
+                        .shape(.roundedRectangle(14))
+                        .stroke(Palette.outline)
+                        .lineWidth(1)
+                        .onTapped { taps += 1 }
+                }
+                .height(80)
+            }
+            .spacing(12)
+        }
+
+        /// A rounded fill with its name in its middle, standing alike on every side in a stripe of `stripe`.
+        private func tile(_ name: String, _ fill: Fill, over stripe: Color) -> ZStack {
+            ZStack {
+                Fill(stripe)
+                fill
+                    .shape(.roundedRectangle(10))
+                    .margin(12)
+                Text(name)
+                    .fontSize(12)
+                    .fontWeight(.bold)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
             }
         }
         """#,
@@ -3187,34 +3593,9 @@ enum Listings {
         """#,
         "Gallery.Looks": #"""
         // Sources/Gallery/Looks.swift
-        /// What a gallery's bars are.
-        enum BarLook: String, CaseIterable, PersistentValue {
-            /// The platform's own bars, in its material and the user's accent.
-            case platform
-
-            /// Bars that paint nothing: what stands behind them shows.
-            case clear
-
-            /// The gallery's colour let through over the platform's material.
-            case tinted
-
-            /// The gallery's colour.
-            case colour
-
-            /// What the Appearance sample calls it.
-            var name: String {
-                switch self {
-                case .platform: return "The platform's own"
-                case .clear: return "Clear"
-                case .tinted: return "Tinted"
-                case .colour: return "Colour"
-                }
-            }
-        }
-
-        /// What one surface of the gallery is made of - its window, its sidebar, its
-        /// sidebar sliding over the page.
-        enum SurfaceMaterial: String, CaseIterable, PersistentValue {
+        /// What one surface of the gallery is made of - its bars, its window, its
+        /// sidebar, its sidebar sliding over the page.
+        enum SurfaceMaterial: String, CaseIterable, Codable {
             /// The platform's own.
             case platform
 
@@ -3224,17 +3605,20 @@ enum Listings {
             /// A blur: what stands behind shows through, blurred.
             case blur
 
-            /// A blur in a light tint of the gallery's colour.
+            /// A blur in a light tint of the gallery's color.
             case tintedBlur
 
             /// The platform's glass: what stands behind bent and lit through it.
             case glass
 
-            /// The platform's glass in a tint of the gallery's colour.
+            /// The platform's glass in a tint of the gallery's color.
             case tintedGlass
 
-            /// The gallery's colour.
-            case colour
+            /// The gallery's color.
+            case color
+
+            /// The gallery's gradient, violet into orange - offered for the bars.
+            case gradient
 
             /// What the Appearance sample calls it.
             var name: String {
@@ -3245,8 +3629,14 @@ enum Listings {
                 case .tintedBlur: return "Blur, tinted"
                 case .glass: return "Glass"
                 case .tintedGlass: return "Glass, tinted"
-                case .colour: return "Colour"
+                case .color: return "Color"
+                case .gradient: return "Gradient"
                 }
+            }
+
+            /// The materials `surface` offers: the gradient on the bars alone.
+            static func offered(on surface: GallerySurface) -> [SurfaceMaterial] {
+                surface == .bar ? allCases : allCases.filter { $0 != .gradient }
             }
 
             /// Whether the surface shows a blur.
@@ -3254,56 +3644,76 @@ enum Listings {
                 self == .blur || self == .tintedBlur
             }
 
-            /// Whether the surface shows a colour.
-            var showsColour: Bool {
-                self == .tintedBlur || self == .tintedGlass || self == .colour
+            /// Whether the surface shows a color.
+            var showsColor: Bool {
+                self == .tintedBlur || self == .tintedGlass || self == .color
             }
         }
 
-        /// One surface's look: what it is made of, in which colour, how thick a blur.
+        /// One surface's look: what it is made of, in which color, how thick a blur.
         struct SurfaceLook: Equatable {
             var material: SurfaceMaterial
-            var colour: AccentChoice
+            var color: AccentChoice
             var blur: Blur
 
             /// The blurs offered, thinnest first.
             static let blurs: [Blur] = [.ultraThin, .thin, .regular, .thick, .ultraThick]
 
-            /// The platform's own surface - the gallery's own colour, or a thick
-            /// blur, once one is chosen.
-            static let platform = SurfaceLook(material: .platform, colour: .gallery, blur: .thick)
+            /// Where `blur` stands among the blurs offered - a thick one where it is none of them.
+            static func place(of blur: Blur) -> Int {
+                blurs.firstIndex(of: blur) ?? 3
+            }
 
-            /// The gallery's own colour for the part it paints.
-            static let galleryOwn = SurfaceLook(material: .colour, colour: .gallery, blur: .thick)
+            /// The platform's own surface - the gallery's own color, or a thick
+            /// blur, once one is chosen.
+            static let platform = SurfaceLook(material: .platform, color: .gallery, blur: .thick)
+
+            /// The gallery's own color for the part it paints.
+            static let galleryOwn = SurfaceLook(material: .color, color: .gallery, blur: .thick)
+
+            /// Bars that paint nothing: what stands behind them shows.
+            static let clear = SurfaceLook(material: .clear, color: .gallery, blur: .thick)
+
+            /// The words on a bar of this look: the brand's on the gallery's color
+            /// where it carries none of the theme's, the theme's on anything else it
+            /// paints or lets through; nil on the platform's own.
+            var barWords: Color? {
+                switch material {
+                case .platform: return nil
+                case .color: return color.carriesThemesWords ? Palette.text : Palette.onBrand
+                case .gradient: return Palette.onBrand
+                default: return Palette.text
+                }
+            }
 
             /// The material `surface` is: its blur where it is one, tinted in its
-            /// colour - the system's accent being `system` - where it is tinted, the
-            /// colour where it is one; nil for the platform's own.
+            /// color - the system's accent being `system` - where it is tinted, the
+            /// color where it is one; nil for the platform's own.
             func material(system: Color, for surface: GallerySurface) -> Material? {
                 switch material {
                 case .platform: return nil
                 case .clear: return .color(.transparent)
                 case .blur: return .blur(blur)
-                case .tintedBlur: return .blur(blur.tint(colour.tint(system: system, for: surface)))
+                case .tintedBlur: return .blur(blur.tint(color.tint(system: system, for: surface)))
                 case .glass: return .glass(.regular)
-                case .tintedGlass: return .glass(.regular.tint(colour.tint(system: system, for: surface)))
-                case .colour: return .color(colour.color(system: system, for: surface))
+                case .tintedGlass: return .glass(.regular.tint(color.tint(system: system, for: surface)))
+                case .color: return .color(color.color(system: system, for: surface))
+                case .gradient: return .gradient(Palette.identity)
                 }
             }
         }
 
         /// The look the gallery wears in one theme: its bars, and what its window, its
-        /// sidebar and its sidebar sliding over the page are made of. Kept as one line
-        /// of words, so a scene keeps a theme's whole look under one key.
-        struct ThemeLook: Equatable, RawRepresentable, PersistentValue {
-            var bars: BarLook
-            var barColour: AccentChoice
+        /// sidebar and its sidebar sliding over the page are made of. A scene keeps
+        /// each of its fields under a key of its own (SessionStyle).
+        struct ThemeLook: Equatable {
+            var bars: SurfaceLook
             var window: SurfaceLook
             var sidebar: SurfaceLook
-            var flyout: SurfaceLook
+            var sidebarOverlay: SurfaceLook
 
-            init(bars: BarLook, barColour: AccentChoice, window: SurfaceLook, sidebar: SurfaceLook, flyout: SurfaceLook) {
-                (self.bars, self.barColour, self.window, self.sidebar, self.flyout) = (bars, barColour, window, sidebar, flyout)
+            init(bars: SurfaceLook, window: SurfaceLook, sidebar: SurfaceLook, sidebarOverlay: SurfaceLook) {
+                (self.bars, self.window, self.sidebar, self.sidebarOverlay) = (bars, window, sidebar, sidebarOverlay)
             }
 
             /// The light theme's look the gallery opens in: clear bars, and the
@@ -3311,122 +3721,59 @@ enum Listings {
             /// platform's glass.
             static var light: ThemeLook {
                 #if APPKIT
-                let sidebar = SurfaceLook(material: .glass, colour: .gallery, blur: .thick)
+                let sidebar = SurfaceLook(material: .glass, color: .gallery, blur: .thick)
                 #else
                 let sidebar = SurfaceLook.platform
                 #endif
-                return ThemeLook(bars: .clear, barColour: .gallery, window: .platform, sidebar: sidebar, flyout: .platform)
+                return ThemeLook(bars: .clear, window: .platform, sidebar: sidebar, sidebarOverlay: .platform)
             }
 
             /// The dark theme's look the gallery opens in: on Windows a window of the
             /// desktop blurred in the gallery's violet, its sidebar letting it
             /// through, and over the page the page blurred in the same violet; on
-            /// the Mac a thick blur of the desktop in the gallery's own colour, made
+            /// the Mac a thick blur of the desktop in the gallery's own color, made
             /// from that window, its sidebar the platform's glass in it; on the iPad
-            /// and the iPhone those colours, the sidebar the same glass beside the
+            /// and the iPhone those colors, the sidebar the same glass beside the
             /// page and over it; on the Web, GNOME and Android - which blur nothing
-            /// behind a window - those colours, whole.
+            /// behind a window - those colors, whole.
             static var dark: ThemeLook {
                 #if WINUI
-                let violet = SurfaceLook(material: .tintedBlur, colour: .violet, blur: .thick)
+                let violet = SurfaceLook(material: .tintedBlur, color: .violet, blur: .thick)
                 return ThemeLook(
-                    bars: .platform, barColour: .violet, window: violet, sidebar: .platform, flyout: violet)
+                    bars: SurfaceLook(material: .platform, color: .violet, blur: .thick), window: violet, sidebar: .platform,
+                    sidebarOverlay: violet)
                 #elseif APPKIT
-                let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
+                let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
                 return ThemeLook(
-                    bars: .clear, barColour: .gallery,
-                    window: SurfaceLook(material: .tintedBlur, colour: .gallery, blur: .thick), sidebar: glass, flyout: glass)
+                    bars: .clear, window: SurfaceLook(material: .tintedBlur, color: .gallery, blur: .thick), sidebar: glass,
+                    sidebarOverlay: glass)
                 #elseif UIKIT
-                let glass = SurfaceLook(material: .tintedGlass, colour: .gallery, blur: .thick)
-                return ThemeLook(bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: glass, flyout: glass)
+                let glass = SurfaceLook(material: .tintedGlass, color: .gallery, blur: .thick)
+                return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: glass, sidebarOverlay: glass)
                 #else
-                return ThemeLook(
-                    bars: .clear, barColour: .gallery, window: .galleryOwn, sidebar: .galleryOwn, flyout: .galleryOwn)
+                return ThemeLook(bars: .clear, window: .galleryOwn, sidebar: .galleryOwn, sidebarOverlay: .galleryOwn)
                 #endif
             }
 
-            /// The look as words: the bars and their colour, then each surface's
-            /// material, colour and blur.
-            var rawValue: String {
-                ([bars.rawValue, barColour.rawValue] + [window, sidebar, flyout].flatMap { surface in
-                    [surface.material.rawValue, surface.colour.rawValue,
-                     String(SurfaceLook.blurs.firstIndex(of: surface.blur) ?? 0)]
-                }).joined(separator: " ")
-            }
-
-            /// The look its words say; nil for words another version wrote.
-            init?(rawValue: String) {
-                let words = rawValue.split(separator: " ").map(String.init)
-                guard words.count == 11, let bars = BarLook(rawValue: words[0]),
-                      let barColour = AccentChoice(rawValue: words[1])
-                else { return nil }
-                var surfaces: [SurfaceLook] = []
-                for at in stride(from: 2, to: 11, by: 3) {
-                    guard let material = SurfaceMaterial(rawValue: words[at]), let colour = AccentChoice(rawValue: words[at + 1]),
-                          let blur = Int(words[at + 2]), SurfaceLook.blurs.indices.contains(blur)
-                    else { return nil }
-                    surfaces.append(SurfaceLook(material: material, colour: colour, blur: SurfaceLook.blurs[blur]))
-                }
-                self.init(bars: bars, barColour: barColour, window: surfaces[0], sidebar: surfaces[1], flyout: surfaces[2])
-            }
         }
 
-        /// A theme's look as the user chose it: the gallery's own, or one composed in
-        /// the Appearance sample. A scene keeps the CHOICE - the gallery's own is drawn
-        /// afresh at every start, as this version of the gallery makes it, never kept
-        /// as what it was when the scene was.
-        enum LookChoice: Equatable, RawRepresentable, PersistentValue {
-            /// The look that suits the platform best: `ThemeLook.light` or `.dark`.
-            case own
 
-            /// A look the user put together.
-            case composed(ThemeLook)
-
-            /// The look the choice wears in a theme, `dark` or not.
-            func look(dark: Bool) -> ThemeLook {
-                switch self {
-                case .own: return dark ? .dark : .light
-                case .composed(let look): return look
-                }
-            }
-
-            /// "own", or "composed" and the look's words.
-            var rawValue: String {
-                switch self {
-                case .own: return "own"
-                case .composed(let look): return "composed " + look.rawValue
-                }
-            }
-
-            /// The choice its words say; nil for words another version wrote - a look
-            /// kept whole - so the gallery starts in its own.
-            init?(rawValue: String) {
-                if rawValue == "own" {
-                    self = .own
-                } else if rawValue.hasPrefix("composed "), let look = ThemeLook(rawValue: String(rawValue.dropFirst(9))) {
-                    self = .composed(look)
-                } else {
-                    return nil
-                }
-            }
-        }
-
-        // Sources/Styles/GalleryColours.swift
-        /// A part of the gallery a colour paints - each has a colour of the gallery's
+        // Sources/Styles/GalleryColors.swift
+        /// A part of the gallery a color paints - each has a color of the gallery's
         /// own, made to sit with the platform's look.
         enum GallerySurface {
-            case bar, window, sidebar, flyout
+            case bar, window, sidebar, sidebarOverlay
 
-            /// The gallery's own colour for this part, in each theme: in the dark,
-            /// the colours its Windows window wears in the gallery's violet acrylic -
+            /// The gallery's own color for this part, in each theme: in the dark,
+            /// the colors its Windows window wears in the gallery's violet acrylic -
             /// the window, the bar a breath lighter, the sidebar and the menu over the
             /// page as dark as a list of samples on it (`Palette.shade`).
             var own: Color {
                 switch self {
-                case .bar: Color(light: Color("#EFEBFA"), dark: Color("#2E255A"))
-                case .window: Color(light: Color("#F7F5FC"), dark: Color("#2A2154"))
-                case .sidebar: Color(light: Color("#EEEBF6"), dark: Color("#221A43"))
-                case .flyout: Color(light: Color("#F7F5FC"), dark: Color("#221A43"))
+                case .bar: Color(light: Color(hex: 0xEFEBFA), dark: Color(hex: 0x2E255A))
+                case .window: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x2A2154))
+                case .sidebar: Color(light: Color(hex: 0xEEEBF6), dark: Color(hex: 0x221A43))
+                case .sidebarOverlay: Color(light: Color(hex: 0xF7F5FC), dark: Color(hex: 0x221A43))
                 }
             }
         }
@@ -3435,33 +3782,72 @@ enum Listings {
         // Sources/Gallery/SessionStyle.swift
         /// The kinds of window the galleries' scene opens beside its gallery windows -
         /// each a window of that scene. See `GalleryScene`.
-        extension WindowType {
+        extension WindowType where Value == Void {
             /// The window that chooses the gallery's font.
             static let fonts = WindowType("gallery.fonts")
 
             /// The window that chooses the gallery's accent.
-            static let colours = WindowType("gallery.colours")
+            static let colors = WindowType("gallery.colors")
+        }
 
+        extension WindowType where Value == Int {
             /// A window per swatch number - one kind, a window for each value.
             static let swatch = WindowType("gallery.swatch")
         }
 
         /// What the galleries' scene KEEPS with itself - handed back with it when the
         /// system restores the application's windows, so the galleries come back in the
-        /// font and the colour they were left in.
-        extension SceneKey {
+        /// font and the color they were left in.
+        extension SceneKey where Value == String {
             /// The font the gallery's preview is set in.
-            static let font = SceneKey("gallery.font", of: String.self)
-
-            /// The look chosen for the light theme and for the dark: the gallery's own,
-            /// or one the user composed.
-            static let lightLook = SceneKey("gallery.look.light", of: LookChoice.self)
-            static let darkLook = SceneKey("gallery.look.dark", of: LookChoice.self)
+            static let font = SceneKey("gallery.font")
         }
 
-        /// A colour a gallery wears - on its bars, or behind its pages, where its look
+        extension SceneKey where Value == Bool {
+            /// Whether the light theme's look is the user's own composition, and the dark's.
+            static let lightComposed = SceneKey("gallery.look.light.composed")
+            static let darkComposed = SceneKey("gallery.look.dark.composed")
+        }
+
+        extension SceneKey where Value == SurfaceMaterial {
+            /// What each surface of each theme is made of.
+            static let lightBarsMaterial = SceneKey("gallery.look.light.bars.material")
+            static let lightWindowMaterial = SceneKey("gallery.look.light.window.material")
+            static let lightSidebarMaterial = SceneKey("gallery.look.light.sidebar.material")
+            static let lightSidebarOverlayMaterial = SceneKey("gallery.look.light.sidebarOverlay.material")
+            static let darkBarsMaterial = SceneKey("gallery.look.dark.bars.material")
+            static let darkWindowMaterial = SceneKey("gallery.look.dark.window.material")
+            static let darkSidebarMaterial = SceneKey("gallery.look.dark.sidebar.material")
+            static let darkSidebarOverlayMaterial = SceneKey("gallery.look.dark.sidebarOverlay.material")
+        }
+
+        extension SceneKey where Value == AccentChoice {
+            /// The color each surface of each theme wears.
+            static let lightBarsColor = SceneKey("gallery.look.light.bars.color")
+            static let lightWindowColor = SceneKey("gallery.look.light.window.color")
+            static let lightSidebarColor = SceneKey("gallery.look.light.sidebar.color")
+            static let lightSidebarOverlayColor = SceneKey("gallery.look.light.sidebarOverlay.color")
+            static let darkBarsColor = SceneKey("gallery.look.dark.bars.color")
+            static let darkWindowColor = SceneKey("gallery.look.dark.window.color")
+            static let darkSidebarColor = SceneKey("gallery.look.dark.sidebar.color")
+            static let darkSidebarOverlayColor = SceneKey("gallery.look.dark.sidebarOverlay.color")
+        }
+
+        extension SceneKey where Value == Int {
+            /// How thick a blur each surface of each theme is - its place in `SurfaceLook.blurs`.
+            static let lightBarsBlur = SceneKey("gallery.look.light.bars.blur")
+            static let lightWindowBlur = SceneKey("gallery.look.light.window.blur")
+            static let lightSidebarBlur = SceneKey("gallery.look.light.sidebar.blur")
+            static let lightSidebarOverlayBlur = SceneKey("gallery.look.light.sidebarOverlay.blur")
+            static let darkBarsBlur = SceneKey("gallery.look.dark.bars.blur")
+            static let darkWindowBlur = SceneKey("gallery.look.dark.window.blur")
+            static let darkSidebarBlur = SceneKey("gallery.look.dark.sidebar.blur")
+            static let darkSidebarOverlayBlur = SceneKey("gallery.look.dark.sidebarOverlay.blur")
+        }
+
+        /// A color a gallery wears - on its bars, or behind its pages, where its look
         /// asks for one.
-        enum AccentChoice: String, CaseIterable, PersistentValue {
+        enum AccentChoice: String, CaseIterable, Codable {
             case gallery
             case system
             case violet
@@ -3469,10 +3855,10 @@ enum Listings {
             case coral
             case graphite
 
-            /// The gallery's own colours, without the system's accent.
+            /// The gallery's own colors, without the system's accent.
             static let own: [AccentChoice] = [.violet, .teal, .coral, .graphite]
 
-            /// What the Colours window calls it.
+            /// What the Colors window calls it.
             var name: String {
                 switch self {
                 case .gallery: return "The gallery's own"
@@ -3484,7 +3870,7 @@ enum Listings {
                 }
             }
 
-            /// The colour on `surface`, the system's accent being `system` - one in
+            /// The color on `surface`, the system's accent being `system` - one in
             /// both themes but the gallery's own, which is made for each part and
             /// theme.
             func color(system: Color, for surface: GallerySurface) -> Color {
@@ -3492,31 +3878,25 @@ enum Listings {
                 case .gallery: return surface.own
                 case .system: return system
                 case .violet: return AppColors.violet
-                case .teal: return Color("#0F766E")
-                case .coral: return Color("#C2410C")
-                case .graphite: return Color("#374151")
+                case .teal: return Color(hex: 0x0F766E)
+                case .coral: return Color(hex: 0xC2410C)
+                case .graphite: return Color(hex: 0x374151)
                 }
             }
 
-            /// Whether words on the colour are the theme's own rather than white: the
-            /// gallery's own colours are as light as the theme.
+            /// Whether words on the color are the theme's own rather than white: the
+            /// gallery's own colors are as light as the theme.
             var carriesThemesWords: Bool { self == .gallery }
 
-            /// The colour with three fifths let through - a bar tinted over the
-            /// platform's material.
-            func translucentColor(system: Color, for surface: GallerySurface) -> Color {
-                color(system: system, for: surface).opacity(0.4)
-            }
-
-            /// The colour laid over a blur - a seventh of an accent, the blur showing
-            /// through it; most of the gallery's own, whose blur is its colour.
+            /// The color laid over a blur - a seventh of an accent, the blur showing
+            /// through it; most of the gallery's own, whose blur is its color.
             func tint(system: Color, for surface: GallerySurface) -> Color {
                 color(system: system, for: surface).opacity(self == .gallery ? Self.ownTint : 0.15)
             }
 
-            /// How much of the gallery's own colour lies over a blur or glass: more on
-            /// the iPad and the iPhone, whose glass is greyer, so that their sidebar
-            /// wears the Mac's colour.
+            /// How much of the gallery's own color lies over a blur or glass: more on
+            /// the iPad and the iPhone, whose glass is grayer, so that their sidebar
+            /// wears the Mac's color.
             private static var ownTint: Double {
                 #if UIKIT
                 0.85
@@ -3530,30 +3910,150 @@ enum Listings {
         /// aside for another scene, floating on top.
         ///
         /// Held by the galleries' scene and handed to its gallery windows and to its
-        /// Fonts and Colours windows, so the Fonts and Colours windows change every
+        /// Fonts and Colors windows, so the Fonts and Colors windows change every
         /// gallery window at once, with nothing passed between them.
         @MainActor
         final class SessionStyle {
             /// The font the preview is set in - empty for the platform's own.
             @State(sceneKey: .font) var font = ""
 
-            /// The look chosen for each theme - the gallery's own, until the
-            /// Appearance sample composes another.
-            @State(sceneKey: .lightLook) var lightChoice = LookChoice.own
-            @State(sceneKey: .darkLook) var darkChoice = LookChoice.own
+            /// Whether the light theme wears the user's composition, field by field, or the gallery's own look.
+            @State(sceneKey: .lightComposed) var lightComposed = false
 
-            /// The look the gallery wears in the light theme; a look written here is
-            /// the user's own composition.
+            /// What each surface of the light theme is made of, in which color, and how thick a blur.
+            @State(sceneKey: .lightBarsMaterial)
+            var lightBarsMaterial = ThemeLook.light.bars.material
+            @State(sceneKey: .lightBarsColor)
+            var lightBarsColor = ThemeLook.light.bars.color
+            @State(sceneKey: .lightBarsBlur)
+            var lightBarsBlur = SurfaceLook.place(of: ThemeLook.light.bars.blur)
+            @State(sceneKey: .lightWindowMaterial)
+            var lightWindowMaterial = ThemeLook.light.window.material
+            @State(sceneKey: .lightWindowColor)
+            var lightWindowColor = ThemeLook.light.window.color
+            @State(sceneKey: .lightWindowBlur)
+            var lightWindowBlur = SurfaceLook.place(of: ThemeLook.light.window.blur)
+            @State(sceneKey: .lightSidebarMaterial)
+            var lightSidebarMaterial = ThemeLook.light.sidebar.material
+            @State(sceneKey: .lightSidebarColor)
+            var lightSidebarColor = ThemeLook.light.sidebar.color
+            @State(sceneKey: .lightSidebarBlur)
+            var lightSidebarBlur = SurfaceLook.place(of: ThemeLook.light.sidebar.blur)
+            @State(sceneKey: .lightSidebarOverlayMaterial)
+            var lightSidebarOverlayMaterial = ThemeLook.light.sidebarOverlay.material
+            @State(sceneKey: .lightSidebarOverlayColor)
+            var lightSidebarOverlayColor = ThemeLook.light.sidebarOverlay.color
+            @State(sceneKey: .lightSidebarOverlayBlur)
+            var lightSidebarOverlayBlur = SurfaceLook.place(of: ThemeLook.light.sidebarOverlay.blur)
+
+            /// Whether the dark theme wears the user's composition, field by field, or the gallery's own look.
+            @State(sceneKey: .darkComposed) var darkComposed = false
+
+            /// What each surface of the dark theme is made of, in which color, and how thick a blur.
+            @State(sceneKey: .darkBarsMaterial)
+            var darkBarsMaterial = ThemeLook.dark.bars.material
+            @State(sceneKey: .darkBarsColor)
+            var darkBarsColor = ThemeLook.dark.bars.color
+            @State(sceneKey: .darkBarsBlur)
+            var darkBarsBlur = SurfaceLook.place(of: ThemeLook.dark.bars.blur)
+            @State(sceneKey: .darkWindowMaterial)
+            var darkWindowMaterial = ThemeLook.dark.window.material
+            @State(sceneKey: .darkWindowColor)
+            var darkWindowColor = ThemeLook.dark.window.color
+            @State(sceneKey: .darkWindowBlur)
+            var darkWindowBlur = SurfaceLook.place(of: ThemeLook.dark.window.blur)
+            @State(sceneKey: .darkSidebarMaterial)
+            var darkSidebarMaterial = ThemeLook.dark.sidebar.material
+            @State(sceneKey: .darkSidebarColor)
+            var darkSidebarColor = ThemeLook.dark.sidebar.color
+            @State(sceneKey: .darkSidebarBlur)
+            var darkSidebarBlur = SurfaceLook.place(of: ThemeLook.dark.sidebar.blur)
+            @State(sceneKey: .darkSidebarOverlayMaterial)
+            var darkSidebarOverlayMaterial = ThemeLook.dark.sidebarOverlay.material
+            @State(sceneKey: .darkSidebarOverlayColor)
+            var darkSidebarOverlayColor = ThemeLook.dark.sidebarOverlay.color
+            @State(sceneKey: .darkSidebarOverlayBlur)
+            var darkSidebarOverlayBlur = SurfaceLook.place(of: ThemeLook.dark.sidebarOverlay.blur)
+
+            /// The look the gallery wears in the light theme: the user's composition, or the gallery's own.
             var lightLook: ThemeLook {
-                get { lightChoice.look(dark: false) }
-                set { lightChoice = .composed(newValue) }
+                guard lightComposed else { return .light }
+
+                return ThemeLook(
+                    bars: SurfaceLook(
+                        material: lightBarsMaterial, color: lightBarsColor, blur: SurfaceLook.blurs[lightBarsBlur]),
+                    window: SurfaceLook(
+                        material: lightWindowMaterial, color: lightWindowColor, blur: SurfaceLook.blurs[lightWindowBlur]),
+                    sidebar: SurfaceLook(
+                        material: lightSidebarMaterial, color: lightSidebarColor, blur: SurfaceLook.blurs[lightSidebarBlur]),
+                    sidebarOverlay: SurfaceLook(
+                        material: lightSidebarOverlayMaterial, color: lightSidebarOverlayColor,
+                        blur: SurfaceLook.blurs[lightSidebarOverlayBlur]))
             }
 
-            /// The look the gallery wears in the dark theme; a look written here is
-            /// the user's own composition.
+            /// The look the gallery wears in the dark theme: the user's composition, or the gallery's own.
             var darkLook: ThemeLook {
-                get { darkChoice.look(dark: true) }
-                set { darkChoice = .composed(newValue) }
+                guard darkComposed else { return .dark }
+
+                return ThemeLook(
+                    bars: SurfaceLook(
+                        material: darkBarsMaterial, color: darkBarsColor, blur: SurfaceLook.blurs[darkBarsBlur]),
+                    window: SurfaceLook(
+                        material: darkWindowMaterial, color: darkWindowColor, blur: SurfaceLook.blurs[darkWindowBlur]),
+                    sidebar: SurfaceLook(
+                        material: darkSidebarMaterial, color: darkSidebarColor, blur: SurfaceLook.blurs[darkSidebarBlur]),
+                    sidebarOverlay: SurfaceLook(
+                        material: darkSidebarOverlayMaterial, color: darkSidebarOverlayColor,
+                        blur: SurfaceLook.blurs[darkSidebarOverlayBlur]))
+            }
+
+            /// One color on every surface of both themes, which makes both looks the user's composition.
+            func wearColor(_ accent: AccentChoice) {
+                lightBarsColor = accent
+                lightWindowColor = accent
+                lightSidebarColor = accent
+                lightSidebarOverlayColor = accent
+                darkBarsColor = accent
+                darkWindowColor = accent
+                darkSidebarColor = accent
+                darkSidebarOverlayColor = accent
+                lightComposed = true
+                darkComposed = true
+            }
+
+            /// Back to the gallery's own look in a theme, `dark` or not: the next composition starts from it.
+            func wearOwnLook(dark: Bool) {
+                let own = dark ? ThemeLook.dark : ThemeLook.light
+                if !dark {
+                    lightComposed = false
+                    lightBarsMaterial = own.bars.material
+                    lightBarsColor = own.bars.color
+                    lightBarsBlur = SurfaceLook.place(of: own.bars.blur)
+                    lightWindowMaterial = own.window.material
+                    lightWindowColor = own.window.color
+                    lightWindowBlur = SurfaceLook.place(of: own.window.blur)
+                    lightSidebarMaterial = own.sidebar.material
+                    lightSidebarColor = own.sidebar.color
+                    lightSidebarBlur = SurfaceLook.place(of: own.sidebar.blur)
+                    lightSidebarOverlayMaterial = own.sidebarOverlay.material
+                    lightSidebarOverlayColor = own.sidebarOverlay.color
+                    lightSidebarOverlayBlur = SurfaceLook.place(of: own.sidebarOverlay.blur)
+                }
+                if dark {
+                    darkComposed = false
+                    darkBarsMaterial = own.bars.material
+                    darkBarsColor = own.bars.color
+                    darkBarsBlur = SurfaceLook.place(of: own.bars.blur)
+                    darkWindowMaterial = own.window.material
+                    darkWindowColor = own.window.color
+                    darkWindowBlur = SurfaceLook.place(of: own.window.blur)
+                    darkSidebarMaterial = own.sidebar.material
+                    darkSidebarColor = own.sidebar.color
+                    darkSidebarBlur = SurfaceLook.place(of: own.sidebar.blur)
+                    darkSidebarOverlayMaterial = own.sidebarOverlay.material
+                    darkSidebarOverlayColor = own.sidebarOverlay.color
+                    darkSidebarOverlayBlur = SurfaceLook.place(of: own.sidebarOverlay.blur)
+                }
             }
 
             /// The look the gallery wears in a theme, `dark` or not.
@@ -3561,11 +4061,29 @@ enum Listings {
                 dark ? darkLook : lightLook
             }
 
-            /// Whether the Fonts and Colours windows hide while another scene is the
+            /// How the bars' buttons stand where the host draws them itself: on glass
+            /// on the Web, the gallery's own look for them.
+            @State var toolbarStyle = SessionStyle.ownToolbarStyle
+
+            /// Whether the bars' buttons stand in the gallery's own look, where the
+            /// host draws them itself (`AppStyles.sheet(barsInOwnLook:)`).
+            @State var barsInOwnLook = false
+
+            /// The gallery's own look for the bars' buttons: glass on the Web, the
+            /// platform's own elsewhere.
+            static var ownToolbarStyle: ToolbarStyle {
+                #if WEB
+                .glass
+                #else
+                .system
+                #endif
+            }
+
+            /// Whether the Fonts and Colors windows hide while another scene is the
             /// one in front.
             @State var hidesTools = false
 
-            /// Whether the Fonts and Colours windows float above the application's
+            /// Whether the Fonts and Colors windows float above the application's
             /// other windows rather than going under them.
             @State var floatsTools = false
         }
@@ -3574,28 +4092,18 @@ enum Listings {
         // Sources/GalleryApp.swift
         /// The gallery application.
         ///
-        /// An application is what every scene SHARES - its styles, and the settings
-        /// it keeps between launches. The galleries are one scene, its windows as many
-        /// as the user opens: see Gallery/GalleryScene.swift.
+        /// An application is what every scene SHARES - here its styles. The galleries
+        /// are one scene, its windows as many as the user opens: see
+        /// Gallery/GalleryScene.swift.
         struct GalleryApp: Application {
-            /// The application as it runs - where its styles and its kept keys go.
+            /// The application as it runs - where its styles go.
             @Environment(\.application) private var application
 
             /// What every gallery shares, written as the application is made.
             init() {
-                // The styles a control of the gallery asks for by name. A colour in a
+                // The styles a control of the gallery asks for by name. A color in a
                 // style follows the theme by itself. See Styles/AppStyles.swift.
                 application.styles = AppStyles.sheet
-
-                // What the gallery keeps under its own keys between launches -
-                // `PersistentStateSample`'s three settings; what its scenes keep comes
-                // back with them. Listed because a settings store is read one key at a
-                // time and offers no list of what it holds, so this is the only way
-                // the host can have the values in memory before the first view asks
-                // for one - which is why it is written HERE, as the application is
-                // made. Each host keeps them in the platform's settings store, or in a
-                // file of its own where the platform offers an application none.
-                application.persistentKeys = [.visits, .who, .shade]
 
                 // On GNOME the gallery opens in the dark theme, the look it wears
                 // best there; the Appearance sample turns it back.
@@ -3624,11 +4132,8 @@ enum Listings {
         public enum GalleryContract: ApplicationTier {
             public static let name = "Gallery"
 
-            /// Puts text on the system clipboard.
-            public static let setClipboard = ElementAct<Self, String, Void>("Gallery.SetClipboard")
-
-            /// Reads the system clipboard - empty text when it holds none.
-            public static let readClipboard = ElementAct<Self, Void, String>("Gallery.ReadClipboard")
+            /// Writes a line to the platform's own log, where its tools read it.
+            public static let log = ElementAct<Self, String, Void>("Gallery.Log")
 
             /// The battery's level, 0 through 1, and whether it is charging.
             public static let batteryLevel = ElementAct<Self, Void, (Double, Bool)>("Gallery.BatteryLevel")
@@ -3646,8 +4151,33 @@ enum Listings {
                 ElementEvent<Self, Bool>("Gallery.ConnectivityChanged")
 
             public static let members: [any ContractMember] = [
-                setClipboard, readClipboard, batteryLevel, nobody, batteryChanged, connectivityChanged,
+                log, batteryLevel, nobody, batteryChanged, connectivityChanged,
             ]
+        }
+        """#,
+        "GalleryLink": #"""
+        // Sources/Gallery/GalleryLink.swift
+        /// What a gallery link names: `stateui-gallery://sample/tap` - or, on the Web,
+        /// the page's address ending `#sample/tap` - is the Tap sample.
+        enum GalleryLink {
+            /// The sample a link names; nil for a link of anything else.
+            static func sample(in address: String) -> String? {
+                let parts = address.split(separator: "/", omittingEmptySubsequences: false)
+                guard let place = parts.lastIndex(where: { $0 == "sample" || $0.hasSuffix("#sample") }),
+                      place + 1 < parts.count
+                else { return nil }
+                let id = parts[place + 1].prefix { $0.isLetter || $0.isNumber }
+                return id.isEmpty ? nil : String(id)
+            }
+
+            /// The link to the sample `id`: the Gallery's own scheme, or a fragment of the page on the Web.
+            static func sample(_ id: String) -> String {
+                #if WEB
+                "#sample/\(id)"
+                #else
+                "stateui-gallery://sample/\(id)"
+                #endif
+            }
         }
         """#,
         "GalleryScene": #"""
@@ -3656,9 +4186,9 @@ enum Listings {
         /// the windows they open beside them, all sharing what the scene holds.
         ///
         /// What the scene holds is the gallery's LOOK (`SessionStyle` - the font and
-        /// the accent its Fonts and Colours windows choose), handed to the gallery
-        /// windows and to the Fonts and Colours windows: nothing is passed between the
-        /// Colours window and the bars it paints.
+        /// the accent its Fonts and Colors windows choose), handed to the gallery
+        /// windows and to the Fonts and Colors windows: nothing is passed between the
+        /// Colors window and the bars it paints.
         /// What one gallery window is doing - where it is, its bar, its log, its
         /// catalog - is that window's own: see Gallery/GalleryWindow.swift.
         struct GalleryScene: Scene {
@@ -3667,7 +4197,7 @@ enum Listings {
             @State private var style = SessionStyle()
 
             /// The scene's windows: the gallery windows, which launch and *File ▸ New
-            /// Window* open; its Fonts and Colours windows, which read the scene's
+            /// Window* open; its Fonts and Colors windows, which read the scene's
             /// look and may step aside while another scene is in front or float above
             /// the application's other windows; its inspector; and a swatch per number.
             var body: some Scene {
@@ -3680,14 +4210,14 @@ enum Listings {
                     .floatsOnTop(style.floatsTools)
                     .environment(style)
 
-                Window(.colours) { ColoursPage() }
+                Window(.colors) { ColorsPage() }
                     .hidesWhenInactive(style.hidesTools)
                     .floatsOnTop(style.floatsTools)
                     .environment(style)
 
                 Window(.debugInspector) { DebugInspector() }
 
-                WindowGroup(.swatch, for: Int.self) { number in SwatchPage(number: number) }
+                WindowGroup(.swatch) { number in SwatchPage(number: number) }
             }
         }
         """#,
@@ -3743,6 +4273,7 @@ enum Listings {
         @State private var shape = Shape.wheel
         @State private var shown = 0
         @State private var shaded = true
+        @State private var rightToLeft = false
         @State private var opened = "tap one"
         @State private var moves = 0
 
@@ -3751,17 +4282,21 @@ enum Listings {
             // over, which a stack cannot give a child - and a gallery wants it all.
             Grid {
                 Grid {
-                    Rectangle(Palette.raised)
+                    Rectangle()
+                        .fill(Palette.raised)
 
                     // THE WHOLE CONTROL: the run made below - one card per item, each
                     // named by its name - and one word for the shape they stand in.
                     gallery
                         .arrangement(shape.arrangement)
                         .position($shown)
-                        .onItemTapped { card in opened = "tapped \(card.name)" }
+                        .onItemActivated { name in opened = "opened \(name)" }
                         // Another card in the middle, swiped or assigned.
                         .onPositionChanged { _ in moves += 1 }
                 }
+                // RIGHT TO LEFT the cards stand in the mirror, as a row of views
+                // does, and the swipe that moves them on goes the other way.
+                .layoutDirection(rightToLeft ? .rightToLeft : .inherited)
                 .gridRow(0)
                 // The cards stay ON the board: one mid-crossing between two shapes,
                 // or turned far out in a small room, is cut at the board's edge
@@ -3778,11 +4313,11 @@ enum Listings {
                     // to the middle, not on every frame of the movement.
                     DebugInfoLabel()
 
-                    PositionIndicator()
+                    PositionDots()
                         .count(cards.count)
                         .position(shown)
-                        .indicatorColor(Palette.outline)
-                        .currentIndicatorColor(Palette.accent)
+                        .dotColor(Palette.outline)
+                        .currentDotColor(Palette.accent)
                         .horizontalAlignment(.center)
 
                     Text("\(cards[front].name) · card \(shown + 1) of \(cards.count) · \(opened) · moved \(moves)")
@@ -3828,6 +4363,8 @@ enum Listings {
                     Picker(Shape.allCases, selection: $shape) { $0.title }
 
                     SwitchRow("Shaded", $shaded)
+
+                    SwitchRow("Right to left", $rightToLeft)
                 }
                 .horizontalAlignment(.center)
                 .gridRow(4)
@@ -3870,7 +4407,9 @@ enum Listings {
             // corners, which is why the view is the application's to give.
             // A quarter of the fade is left beside it, unless `.fade(_:)` says
             // otherwise.
-            return run.shade(Rectangle(Color("#000000")).cornerRadius(16))
+            return run.shade(
+                Rectangle()
+                    .fill(Color(hex: 0x000000)))
         }
 
         /// One card's face - a picture and its name, and nothing at all about where
@@ -3900,7 +4439,7 @@ enum Listings {
         /// section, what is pushed and presented, whether the menu is open), what its
         /// bar says (`WindowBarState`), what it has said about its life (`WindowLog`)
         /// and the catalog of samples it shows. What it looks like is its scene's,
-        /// handed to it: every gallery window wears the one look the Fonts and Colours
+        /// handed to it: every gallery window wears the one look the Fonts and Colors
         /// windows choose.
         ///
         /// Each sample owns its own `@State`, declared on the sample itself - and since
@@ -4055,17 +4594,17 @@ enum Listings {
                 Grid {
                     // One cell down the whole left side, beside two that stay in
                     // a row each.
-                    GridCell(text: "Column 0, Rows 0 and 1", color: "#E53935")
+                    GridCell(text: "Column 0, Rows 0 and 1", color: Color(hex: 0xE53935))
                         .gridRowSpan(2)
 
-                    GridCell(text: "Column 1, Row 0", color: "#1E88E5")
+                    GridCell(text: "Column 1, Row 0", color: Color(hex: 0x1E88E5))
                         .gridColumn(1)
 
-                    GridCell(text: "Column 1, Row 1", color: "#8E24AA")
+                    GridCell(text: "Column 1, Row 1", color: Color(hex: 0x8E24AA))
                         .gridRow(1)
                         .gridColumn(1)
 
-                    GridCell(text: "Row 2, spanning both columns", color: "#F4511E")
+                    GridCell(text: "Row 2, spanning both columns", color: Color(hex: 0xF4511E))
                         .gridRow(2)
                         .gridColumnSpan(2)
                 }
@@ -4079,11 +4618,11 @@ enum Listings {
             }
         }
 
-        /// One coloured cell, composed rather than built inline - and placed with
+        /// One colored cell, composed rather than built inline - and placed with
         /// `.gridRow`, `.gridColumn` and the spans like any other view.
         private struct GridCell: View {
             let text: String
-            let color: String
+            let color: Color
 
             var body: some View {
                 Text(text)
@@ -4113,9 +4652,6 @@ enum Listings {
                 SwitchRow("Counts", $counts)
                     .gridRow(0)
 
-                DebugInfoLabel()
-                    .gridRow(0)
-
                 // A group per shelf, named so two shelves may hold the same item.
                 ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<String> in
                     let group = Section(shelf.items) { item in
@@ -4130,17 +4666,111 @@ enum Listings {
                         : group
                 })
                 .gridRow(1)
+
+                DebugInfoLabel()
+                    .gridRow(2)
+                    .horizontalAlignment(.end)
             }
-            .rows(.auto, .fill)
+            .rows(.auto, .fill, .auto)
+        }
+        """#,
+        "GrowingWords": #"""
+        // Sources/Samples/Layout/LivingLayoutSample.swift
+        @State private var long = false
+
+        var body: some View {
+            VStack {
+                // The box travels to the width the new words take; they show as
+                // it arrives, never broken on the way. Shorter words show at once.
+                Button(long ? "Show every detail" : "Details")
+                    .horizontalAlignment(.center)
+
+                SwitchRow("Longer words", $long)
+                    .horizontalAlignment(.center)
+            }
+        }
+        """#,
+        "HTTPRequestSample": #"""
+        // Sources/Samples/Environment/HTTPRequestSample.swift
+        @Environment(\.application) private var application
+        @State private var said = "Ask for the weather"
+
+        var body: some View {
+            VStack {
+                // What came back is read here, so an answer builds this closure.
+                DebugInfoLabel()
+
+                Button("Weather in Kraków")
+                    .onClicked(.cancelPrevious) {
+                        said = "Asking…"
+                        do {
+                            let response = try await application.send(HTTPRequest(
+                                "https://api.open-meteo.com/v1/forecast?latitude=50.06&longitude=19.94"
+                                    + "&current=temperature_2m,wind_speed_10m"))
+                            // Any status is an answer: only no answer at all throws.
+                            guard response.status == 200 else {
+                                said = "The server answered \(response.status)"
+                                return
+                            }
+                            let temperature = Self.number("temperature_2m", in: response.text)
+                            let wind = Self.number("wind_speed_10m", in: response.text)
+                            said = "\(temperature) °C, wind \(wind) km/h"
+                        } catch let failure as StateUIError {
+                            said = "No answer: \(failure.message)"
+                        }
+                    }
+                    .horizontalAlignment(.center)
+
+                Text(said)
+            }
+        }
+
+        /// The number after `"name":` in the answer's `current` part - as much of JSON as two numbers need.
+        private static func number(_ name: String, in json: String) -> String {
+            let current = json.split(separator: "\"current\":").last ?? ""
+            guard let found = current.firstRange(of: "\"\(name)\":") else { return "?" }
+            return String(current[found.upperBound...].prefix { "-.0123456789".contains($0) })
+        }
+        """#,
+        "HoldSample": #"""
+        // Sources/Samples/Gestures/HoldSample.swift
+        @State private var taps = 0
+        @State private var holds = 0
+        @State private var longHolds = 0
+
+        var body: some View {
+            VStack {
+                // The counts are read here, so every tap and hold builds this closure.
+                DebugInfoLabel()
+
+                ZStack {
+                    Text("Tap or hold this box")
+                }
+                .style(.card)
+                .stroke(Palette.outline)
+                .lineWidth(1)
+                .onTapped { taps += 1 }
+                .onHeld { holds += 1 }
+
+                ZStack {
+                    Text("Hold this one a second")
+                }
+                .style(.card)
+                .stroke(Palette.outline)
+                .lineWidth(1)
+                .onHeld(minimum: .seconds(1)) { longHolds += 1 }
+
+                Text("Tapped \(taps), held \(holds), held a second \(longHolds)")
+            }
         }
         """#,
         "HomeScreenSample": #"""
-        // Sources/Samples/LayoutEngine/HomeScreenSample.swift
-        /// One icon: its name, which is its identity, its glyph and its colour.
+        // Sources/Samples/MotionLayout/HomeScreenSample.swift
+        /// One icon: its name, which is its identity, its glyph and its color.
         struct HomeIcon: Hashable {
             let name: String
             let glyph: Icon
-            let colour: String
+            let color: Color
         }
 
         /// Every icon, board after board: where one stands in the order is where
@@ -4155,14 +4785,17 @@ enum Listings {
                 ("Sync", .refresh), ("Tasks", .checkmark), ("Menu", .menu), ("More", .more),
                 ("Map", .forward), ("News", .add), ("Books", .back), ("Weather", .up),
                 ("Trash", .delete), ("Inbox", .down), ("Focus", .close), ("Budget", .remove),
-                ("Friends", .person), ("Journal", .edit), ("Timer", .clock), ("Favourites", .star),
+                ("Friends", .person), ("Journal", .edit), ("Timer", .clock), ("Favorites", .star),
                 ("Fitness", .heart), ("Videos", .play), ("Wallet", .lock), ("Backup", .upload),
                 ("Reader", .info), ("Garden", .home), ("Chat", .mail), ("Agenda", .calendar),
                 ("Remote", .settings), ("Shortcuts", .link), ("Albums", .copy), ("Compass", .forward),
             ]
-            let colours = ["#7C3AED", "#2563EB", "#0D9488", "#D97706", "#DB2777", "#4F46E5", "#16A34A", "#DC2626"]
+            let colors: [Color] = [
+                Color(hex: 0x7C3AED), Color(hex: 0x2563EB), Color(hex: 0x0D9488), Color(hex: 0xD97706),
+                Color(hex: 0xDB2777), Color(hex: 0x4F46E5), Color(hex: 0x16A34A), Color(hex: 0xDC2626),
+            ]
             return glyphs.enumerated().map { index, glyph in
-                HomeIcon(name: glyph.0, glyph: glyph.1, colour: colours[index % colours.count])
+                HomeIcon(name: glyph.0, glyph: glyph.1, color: colors[index % colors.count])
             }
         }()
 
@@ -4220,18 +4853,17 @@ enum Listings {
 
             return Grid {
                 Grid {
-                    // THE BOARDS: a unit of the phase is the room's width, so a
+                    // THE BOARDS: a unit of the parameters is the room's width, so a
                     // board is the room however wide it grows. Each board is a
                     // keyframe: the icons are placed once a board, and between
                     // two they go straight - as the arithmetic says they do.
-                    LayoutEngine(icons, id: \.name) { icon in
+                    MotionLayout(icons, id: \.name, parameters: $board) { icon in
                         // A VIEW OF ITS OWN: a new order builds no icon again,
                         // only the one lifted or let go.
                         HomeTile(icon: icon, lifted: lifted == icon.name)
                     } placements: { room, board in
                         (0..<count).map { Self.place($0, board, room, fit) }
                     }
-                    .phase($board)
                     .axis(
                         \.self, input: .pages(.horizontal), range: 0...Double(boards - 1), keyframes: .every(1),
                         snaps: .every(1))
@@ -4240,7 +4872,7 @@ enum Listings {
                     // make room; held still at an edge, the boards turn under it.
                     // Taken, it lifts, so the hand knows it has it; let go, it
                     // settles back.
-                    .itemDrag(begins: .held)
+                    .itemDrag(begins: .longPress)
                     .onItemDragged { drag in
                         switch drag.phase {
                         case .began:
@@ -4248,8 +4880,12 @@ enum Listings {
                         case .ended, .cancelled:
                             lifted = nil
                         default:
-                            move(drag.item, to: slot(at: drag.at, in: drag.room, fit: fit, of: boards))
-                            if drag.still >= .milliseconds(500) { turn(at: drag.at, in: drag.room, of: boards) }
+                            // The icon under the hand gives the held one its place.
+                            if let over = drag.over, let place = icons.firstIndex(of: over) { move(drag.item, to: place) }
+                            // At an edge, standing there or pushed against it fast, the board turns.
+                            if drag.still >= .milliseconds(500) || Self.pushes(drag) {
+                                turn(at: drag.at, in: drag.room, of: boards)
+                            }
                         }
                     }
                     .motion(Self.turning)
@@ -4261,14 +4897,14 @@ enum Listings {
                 .frame($room)
                 .engine(following: $room) { _ in fitted() }
 
-                // THE DOTS wear the same phase - one state, so one motion: they go
+                // THE DOTS wear the same parameters - one state, so one motion: they go
                 // with the hand and with every throw, no body read of it.
-                LayoutEngine(Array(0..<boards)) { _ in
-                    Rectangle(Palette.text)
+                MotionLayout(Array(0..<boards), parameters: $board) { _ in
+                    Rectangle()
+                        .fill(Palette.text)
                 } placements: { room, board in
                     (0..<boards).map { dot($0, of: boards, board, room) }
                 }
-                .phase($board)
                 .motion(Self.turning)
                 .height(16)
                 .gridRow(1)
@@ -4287,20 +4923,18 @@ enum Listings {
             if Double(showing) != board { $board.journey.snap(to: Double(showing)) }
         }
 
-        /// The slot under `point` of the board in front, of `boards` in `fit`.
-        private func slot(at point: Point, in room: Rect, fit: Fit, of boards: Int) -> Int {
-            let page = min(max(Int(board.rounded()), 0), boards - 1)
-            let column = min(max(Int((point.x - 8) / ((room.width - 16) / Double(fit.columns))), 0), fit.columns - 1)
-            let row = min(max(Int((point.y - 8) / ((room.height - 16) / Double(fit.rows))), 0), fit.rows - 1)
-            return min(page * fit.perBoard + row * fit.columns + column, icons.count - 1)
-        }
-
         /// `icon` taken out of its place and put at `slot`: a new order, which
         /// the others travel to.
         private func move(_ icon: HomeIcon, to slot: Int) {
             guard let from = icons.firstIndex(of: icon), from != slot else { return }
             icons.remove(at: from)
             icons.insert(icon, at: slot)
+        }
+
+        /// Whether the hand reached the edge it stands at going that way faster
+        /// than 600 points a second.
+        private static func pushes(_ drag: ItemDrag<HomeIcon>) -> Bool {
+            drag.at.x > drag.room.width - 24 && drag.speed.x > 600 || drag.at.x < 24 && drag.speed.x < -600
         }
 
         /// The board on the side of the room `point` stands at the edge of, if
@@ -4339,8 +4973,8 @@ enum Listings {
                 opacity: 0.25 + 0.75 * max(1 - abs(board - Double(page)), 0))
         }
 
-        /// One icon: its glyph on a light disc on a rounded square of its colour -
-        /// the glyph in the platform's own colour, which shows on the disc in a
+        /// One icon: its glyph on a light disc on a rounded square of its color -
+        /// the glyph in the platform's own color, which shows on the disc in a
         /// light theme and a dark one alike - and its name under it; larger while
         /// the hand holds it.
         struct HomeTile: View {
@@ -4350,9 +4984,11 @@ enum Listings {
             var body: some View {
                 VStack {
                     ZStack {
-                        Rectangle(Color(icon.colour))
+                        Rectangle()
+                            .fill(icon.color)
 
-                        Rectangle(.white)
+                        Rectangle()
+                            .fill(.white)
                             .opacity(0.3)
                             .width(42)
                             .height(42)
@@ -4416,7 +5052,7 @@ enum Listings {
 
                 Button("Read again")
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .ignoreWhileRunning) { try await read() }
+                    .onClicked(.ignoreWhileRunning) { try await read() }
             }
             .onCreated { try await read() }
         }
@@ -4466,11 +5102,12 @@ enum Listings {
         // Sources/Samples/BasicInput/IconButtonSample.swift
         @State private var taps = 0
         @State private var pressed = false
-        @State private var side = IconPosition.leading
+        @State private var side = IconPosition.start
         @State private var gap = 8.0
         @State private var wide = false
+        @State private var words = true
 
-        static let sides: [IconPosition] = [.leading, .top, .trailing, .bottom]
+        static let sides: [IconPosition] = [.start, .top, .end, .bottom]
 
         var body: some View {
             VStack {
@@ -4478,7 +5115,10 @@ enum Listings {
                 DebugInfoLabel()
 
                 HStack {
-                    Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    // Its words name it to a screen reader; the picture stands alone.
+                    Button("Media")
+                        .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                        .showsText(false)
                         .style(.iconButton)
                         .contentMode(.fit)
                         .width(64)
@@ -4489,7 +5129,9 @@ enum Listings {
                         .onPressed { pressed = true }
                         .onReleased { pressed = false }
 
-                    Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                    Button("Layout")
+                        .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                        .showsText(false)
                         .style(.iconButton)
                         .contentMode(.fit)
                         .width(64)
@@ -4505,6 +5147,7 @@ enum Listings {
                 // between them as the slider says - together, however wide.
                 Button("Media")
                     .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    .showsText($words)
                     .iconPosition(side)
                     .iconSpacing(gap)
                     .horizontalAlignment(wide ? .fill : .center)
@@ -4519,6 +5162,7 @@ enum Listings {
                     .maximum(24)
 
                 SwitchRow("Full width", $wide)
+                SwitchRow("Its words", $words)
             }
         }
         """#,
@@ -4547,7 +5191,7 @@ enum Listings {
                 .columns(.fill(count: 4))
                 .rows(.auto(count: 8))
 
-                SectionTitle("In the button's colour")
+                SectionTitle("In the button's color")
 
                 HStack {
                     Button("Share")
@@ -4557,7 +5201,9 @@ enum Listings {
                         .icon(.icon(.delete))
                         .role(.destructive)
 
-                    Button(icon: .icon(.settings))
+                    Button("Settings")
+                        .icon(.icon(.settings))
+                        .showsText(false)
                 }
 
                 SectionTitle("Made as bytes")
@@ -4626,20 +5272,22 @@ enum Listings {
             @Binding var items: [String]
 
             var body: some View {
-                HStack {
+                // The field takes what the name and the button leave.
+                Grid {
                     Text(item)
-                        .width(90)
                         .verticalAlignment(.center)
 
                     TextField()
                         .placeholder("type here")
-                        .horizontalAlignment(.fill)
+                        .gridColumn(1)
 
                     Button("Remove")
                         .onClicked {
                             items = items.filter { $0 != item }
                         }
+                        .gridColumn(2)
                 }
+                .columns(.fixed(90), .fill, .auto)
             }
         }
         """#,
@@ -4648,19 +5296,19 @@ enum Listings {
         var body: some View {
             VStack {
                 HStack {
-                    Image(light: "nav_home.png", dark: "nav_home_dark.png")
+                    Image(ImageSource(light: "nav_home.png", dark: "nav_home_dark.png"))
                         .width(48)
                         .height(48)
 
-                    Image(light: "nav_layout.png", dark: "nav_layout_dark.png")
+                    Image(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
                         .width(48)
                         .height(48)
 
-                    Image(light: "nav_input.png", dark: "nav_input_dark.png")
+                    Image(ImageSource(light: "nav_input.png", dark: "nav_input_dark.png"))
                         .width(48)
                         .height(48)
 
-                    Image(light: "nav_shell.png", dark: "nav_shell_dark.png")
+                    Image(ImageSource(light: "nav_shell.png", dark: "nav_shell_dark.png"))
                         .width(48)
                         .height(48)
                 }
@@ -4672,7 +5320,7 @@ enum Listings {
                 // difference between the three is the content mode.
                 HStack {
                     VStack {
-                        Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        Image(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                             .contentMode(.fit)
                             .width(96)
                             .height(60)
@@ -4681,7 +5329,7 @@ enum Listings {
                     }
 
                     VStack {
-                        Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        Image(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                             .contentMode(.fill)
                             .width(96)
                             .height(60)
@@ -4690,7 +5338,7 @@ enum Listings {
                     }
 
                     VStack {
-                        Image(light: "nav_media.png", dark: "nav_media_dark.png")
+                        Image(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                             .contentMode(.stretch)
                             .width(96)
                             .height(60)
@@ -4716,7 +5364,7 @@ enum Listings {
                 }
 
                 HStack {
-                    Image(light: "nav_gestures.png", dark: "nav_gestures_dark.png")
+                    Image(ImageSource(light: "nav_gestures.png", dark: "nav_gestures_dark.png"))
                         .width(32)
                         .height(32)
 
@@ -4728,7 +5376,7 @@ enum Listings {
         """#,
         "InteropActsSample": #"""
         // Sources/Samples/Interop/InteropActsSample.swift
-        @State private var draft = "Copy me somewhere"
+        @State private var line = "Hello from StateUI"
         @State private var status = "nothing asked yet"
         @State private var tenStars = false
         @Aim(RatingBar.self) private var stars
@@ -4737,23 +5385,16 @@ enum Listings {
             VStack {
                 DebugInfoLabel()
 
-                TextField($draft)
+                TextField($line)
 
-                Button("Copy to the clipboard")
-                    .onClicked(gate: .ignoreWhileRunning) {
-                        try await stateUICall(GalleryContract.setClipboard, draft)
-                        status = "copied"
-                    }
-
-                Button("Paste from the clipboard")
-                    .onClicked(gate: .ignoreWhileRunning) {
-                        let text = try await stateUICall(GalleryContract.readClipboard)
-                        draft = text
-                        status = text.isEmpty ? "the clipboard is empty" : "pasted"
+                Button("Write it to the system's log")
+                    .onClicked(.ignoreWhileRunning) {
+                        try await stateUICall(GalleryContract.log, line)
+                        status = "logged"
                     }
 
                 Button("Ask about the battery")
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
 
                         // A desktop without a battery answers 0, so only a level
@@ -4764,7 +5405,7 @@ enum Listings {
                     }
 
                 Button("Call something nobody registered")
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         do {
                             try await stateUICall(GalleryContract.nobody)
                             status = "that should have thrown"
@@ -4782,7 +5423,7 @@ enum Listings {
                 SwitchRow("Ten stars", $tenStars)
 
                 Button("Flash the bar")
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         try await stars.flash()
                         status = "flashed \(stars)"
                     }
@@ -4799,11 +5440,9 @@ enum Listings {
             VStack {
                 DebugInfoLabel()
 
+                // The light reads the state itself; a lamp tapped lands on it.
                 TrafficLight()
-                    .signal(signal)
-                    .onLampTapped { index in
-                        signal = TrafficSignal(rawValue: Int32(index)) ?? signal
-                    }
+                    .signal($signal)
                     .horizontalAlignment(.center)
 
                 Text("signal: \(signal)")
@@ -4820,7 +5459,6 @@ enum Listings {
         // Sources/Samples/Interop/InteropEventsSample.swift
         @State private var battery = "not heard yet"
         @State private var log: [String] = []
-        @State private var heard: [HostEventSubscription] = []
 
         var body: some View {
             VStack {
@@ -4832,18 +5470,10 @@ enum Listings {
                     ? "Plug or unplug the power."
                     : log.suffix(4).joined(separator: "\n"))
             }
-            .onCreated {
-                heard.forEach { $0.cancel() }
-                heard = [
-                    HostEvents.on(GalleryContract.batteryChanged) { level, charging in
-                        battery = "\(Int((level * 100).rounded()))%" + (charging ? ", charging" : "")
-                        log.append("\(log.count + 1). battery: \(battery)")
-                    },
-                ]
-            }
-            .onDestroying {
-                heard.forEach { $0.cancel() }
-                heard = []
+            // Heard while the page stands: subscribed as it is made, cancelled as it leaves.
+            .onHostEvent(GalleryContract.batteryChanged) { level, charging in
+                battery = "\(Int((level * 100).rounded()))%" + (charging ? ", charging" : "")
+                log.append("\(log.count + 1). battery: \(battery)")
             }
         }
         """#,
@@ -4864,12 +5494,15 @@ enum Listings {
                     Text(row == 1 ? "▸ Bread" : "Bread")
                     Text(row == 2 ? "▸ Cheese" : "Cheese")
                 }
-                // The stack holds the field, so these keys are its while the field holds the keyboard.
-                .onKeyPressed(.upArrow, .downArrow, .escape) { key in
-                    if key == .escape {
-                        query = ""
-                    } else {
-                        row = min(2, max(0, row + (key == .upArrow ? -1 : 1)))
+                // The stack holds the field, so these keys are its while the field holds the keyboard. Page Up and
+                // Page Down go to the ends; Tab goes down a row, and back up with Shift held.
+                .onKeyPressed(.upArrow, .downArrow, .pageUp, .pageDown, .tab, .escape) { press in
+                    switch press.key {
+                    case .escape: query = ""
+                    case .pageUp: row = 0
+                    case .pageDown: row = 2
+                    case .tab: row = min(2, max(0, row + (press.modifiers.contains(.shift) ? -1 : 1)))
+                    default: row = min(2, max(0, row + (press.key == .upArrow ? -1 : 1)))
                     }
                 }
             }
@@ -4877,6 +5510,7 @@ enum Listings {
         """#,
         "KeyboardSample": #"""
         // Sources/Samples/Text/KeyboardSample.swift
+        @Environment(\.window) private var window
         @State private var name = ""
         @State private var note = ""
         @State private var said = ""
@@ -4898,16 +5532,16 @@ enum Listings {
                 HStack {
                     Button("Focus first")
                         .horizontalAlignment(.fill)
-                        .onClicked(gate: .ignoreWhileRunning) { try await first.focus() }
+                        .onClicked(.ignoreWhileRunning) { try await first.focus() }
 
                     Button("Unfocus first")
                         .horizontalAlignment(.fill)
-                        .onClicked(gate: .ignoreWhileRunning) { try await first.unfocus() }
+                        .onClicked(.ignoreWhileRunning) { try await first.unfocus() }
                 }
 
                 Button("Close keyboard")
-                    .onClicked(gate: .ignoreWhileRunning) {
-                        said = try await OnScreenKeyboard.hide()
+                    .onClicked(.ignoreWhileRunning) {
+                        said = try await window.hideOnScreenKeyboard()
                             ? "Focus released"
                             : "Nothing was focused"
                     }
@@ -4970,7 +5604,8 @@ enum Listings {
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                         HStack {
                             ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                                Rectangle(Palette.outline)
+                                Rectangle()
+                                    .fill(Palette.outline)
                                     .width(7)
                                     .height(14)
                                     .id(index)
@@ -5007,7 +5642,8 @@ enum Listings {
                     ForEach(Array(stride(from: 0, to: leaves, by: 25)), id: \.self) { row in
                         HStack {
                             ForEach(Array(row ..< min(row + 25, leaves)), id: \.self) { index in
-                                Rectangle(Palette.outline)
+                                Rectangle()
+                                    .fill(Palette.outline)
                                     .width(7)
                                     .height(14)
                                     .id(index)
@@ -5112,13 +5748,15 @@ enum Listings {
                 // Left alone, the child written last is drawn on top; the higher
                 // zIndex is nearer the front, and nothing moves.
                 ZStack {
-                    Rectangle(Color("#E53935"))
+                    Rectangle()
+                        .fill(Color(hex: 0xE53935))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.start)
                         .zIndex(redInFront ? 1 : 0)
 
-                    Rectangle(Color("#1E88E5"))
+                    Rectangle()
+                        .fill(Color(hex: 0x1E88E5))
                         .width(150)
                         .height(70)
                         .horizontalAlignment(.end)
@@ -5134,18 +5772,18 @@ enum Listings {
         }
         """#,
         "LayoutAxesSample": #"""
-        // Sources/Samples/LayoutEngine/LayoutAxesSample.swift
-        /// THE PHASE: five strips, each an axis of its own - which card stands in
+        // Sources/Samples/MotionLayout/LayoutAxesSample.swift
+        /// THE PARAMETERS: five strips, each an axis of its own - which card stands in
         /// the middle of the strip.
-        struct Strips: LayoutPhase {
+        struct Strips: LayoutParameters {
             var free = 1.5
             var snapping = 1.0
-            var limits = 0.0
+            var endpoints = 0.0
             var round = 0.0
             var stepping = 0.0
 
             static var axes: [WritableKeyPath<Strips, Double>] {
-                [\.free, \.snapping, \.limits, \.round, \.stepping]
+                [\.free, \.snapping, \.endpoints, \.round, \.stepping]
             }
         }
 
@@ -5153,9 +5791,9 @@ enum Listings {
         static let declarations = [
             "range: 0...3",
             "range: 0...3, snaps: [1, 2]",
-            "range: 0...3, snaps: .limits",
-            "range: 0...4, wraps: true",
-            "range: 0...4, snaps: .every(1), wraps: true",
+            "range: 0...3, snaps: .endpoints",
+            "range: 0...4, periodic: true",
+            "range: 0...4, snaps: .every(1), periodic: true",
         ]
 
         /// The pictures on the cards: the gallery's groups'.
@@ -5182,23 +5820,22 @@ enum Listings {
             let hand = LayoutInput.scroll(.horizontal)
 
             return Grid {
-                LayoutEngine(Self.parts) { part in
+                MotionLayout(Self.parts, parameters: $strips) { part in
                     view(part)
                 } placements: { room, strips in
                     Self.parts.map { place($0, strips, room) }
                 }
-                .phase($strips)
                 // ...MOVES FIVE STRIPS, each resting its own way: anywhere between
                 // its ends, coming back only from past one...
                 .axis(\.free, input: hand, range: 0...3)
                 // ...on a card - 1 or 2 - or on an end...
                 .axis(\.snapping, input: hand, range: 0...3, snaps: [1, 2])
                 // ...on an end alone: the first card or the last...
-                .axis(\.limits, input: hand, range: 0...3, snaps: .limits)
+                .axis(\.endpoints, input: hand, range: 0...3, snaps: .endpoints)
                 // ...round and round, anywhere - 4 is 0 a turn on...
-                .axis(\.round, input: hand, range: 0...4, wraps: true)
+                .axis(\.round, input: hand, range: 0...4, periodic: true)
                 // ...and round and round, a card at a time.
-                .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), wraps: true)
+                .axis(\.stepping, input: hand, range: 0...4, snaps: .every(1), periodic: true)
                 .motion(.spring(response: .milliseconds(360), damping: 0.8))
             }
             .clipsContent(true)
@@ -5211,7 +5848,8 @@ enum Listings {
             case .words(let strip):
                 Text(Self.declarations[strip])
             case .frame:
-                Rectangle(Palette.field)
+                Rectangle()
+                    .fill(Palette.field)
             case .card(let strip, let index):
                 ZStack { Image(ImageSource(Self.pictures[(strip + index) % Self.pictures.count])).contentMode(.fill) }
                     .clipsContent(true)
@@ -5264,7 +5902,8 @@ enum Listings {
                 // Laid out the way `direction` says - at `.inherited`, the way the
                 // view above it is.
                 HStack {
-                    Rectangle(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(60)
                         .height(20)
 
@@ -5275,321 +5914,40 @@ enum Listings {
             }
         }
         """#,
-        "LayoutEngineSample": #"""
-        // Sources/Samples/LayoutEngine/LayoutEngineSample.swift
-        import StateUIFoundation
-
-        /// The cards: the gallery's groups, each its name and its picture as the
-        /// home page shows it.
-        static let cards: [Card] = [
-            Card(name: "Layout", art: "cat_layout.png"),
-            Card(name: "Layout Engine", art: "cat_layoutengine.png"),
-            Card(name: "Styles", art: "cat_styles.png"),
-            Card(name: "Shapes", art: "cat_shapes.png"),
-            Card(name: "Media", art: "cat_media.png"),
-            Card(name: "Navigation", art: "cat_navigation.png"),
-            Card(name: "Date & time", art: "cat_datetime.png"),
-            Card(name: "Fundamentals", art: "cat_fundamentals.png"),
-            Card(name: "Animation", art: "cat_animation.png"),
-            Card(name: "Gestures", art: "cat_gestures.png"),
-        ]
-
-        /// One card's face.
-        struct Card {
-            let name: String
-            let art: String
-        }
-
-        /// What the ring places: every card, and a dot for each at the board's
-        /// foot - one arithmetic for both, so the dots move with the cards.
-        enum Piece: Hashable {
-            case card(Int)
-            case dot(Int)
-        }
-
-        static let pieces = cards.indices.map(Piece.card) + cards.indices.map(Piece.dot)
-
-        /// How big the place a card stands in is - what the ring is worked out
-        /// from - and how big the card is drawn in it.
-        static let width = 176.0
-        static let height = 248.0
-        static let card = 0.8
-
-        /// How far the eye stands from the ring's front, in radii: the nearer it
-        /// stands, the smaller a card at the back is drawn.
-        static let eye = 1.6
-
-        /// How far below the horizon the front card stands, in card heights: the
-        /// higher the eye above the ring, the more of the far cards it sees.
-        static let above = 1.9
-
-        /// How tall the whole ring stands, in card heights: the back card's top to
-        /// the front card's foot.
-        static var ringHeight: Double { above - back * (above - 1) }
-
-        /// How big the card at the back is drawn, against the one at the front.
-        static var back: Double { eye / (eye + 2) }
-
-        /// HOW A THROW GOES ON - any motion: how far a throw carries, and the
-        /// curve it slows on.
-        enum Throwing: CaseIterable, Hashable {
-            case easeOut, glide, spring, bounce, short
-
-            var motion: Motion {
-                switch self {
-                case .easeOut: .eased(.milliseconds(400), .cubicOut)
-                case .glide: .eased(.milliseconds(300), .sineOut)
-                case .spring: .spring(response: .milliseconds(400), damping: 0.8)
-                case .bounce: .eased(.milliseconds(600), .backOut)
-                case .short: .eased(.milliseconds(200), .cubicOut)
-                }
-            }
-
-            var title: String {
-                switch self {
-                case .easeOut: "Ease out"
-                case .glide: "Glide"
-                case .spring: "Spring"
-                case .bounce: "Bounce"
-                case .short: "Short"
-                }
-            }
-        }
-
-        /// Which of them the ring is thrown by.
-        @State private var throwing = Throwing.easeOut
-
-        /// WHICH CARD IS AT THE FRONT - the phase, two-way: `Back` and `Next`
-        /// write it and the ring travels there; the hand names the card it passes
-        /// and the one it comes to rest on. It starts on the middle card, and it
-        /// has no end: a turn on, it is the same card again.
-        @State private var turn = Double(LayoutEngineSample.cards.count / 2)
-
-        /// The device - a phone's cards carry their names alone, smaller.
-        @Environment(\.device) private var device
-
-        var body: some View {
-            // A GRID rather than a stack: the board takes whatever room is left
-            // over, which a stack cannot give a child - and a ring wants it all.
-            Grid {
-                Grid {
-                    // THE CARDS, and what moves them - the whole of the example.
-                    ring
-                }
-                .gridRow(0)
-                // The cards stay ON the board: one turned far out in a small room
-                // is cut at the board's edge rather than painted over the page.
-                .clipsContent(true)
-
-                HStack {
-                    // The ring turns for no build at all: the label says so.
-                    DebugInfoLabel()
-
-                    Button("Back")
-                        .onClicked { move(-1) }
-
-                    Button("Next")
-                        .onClicked { move(1) }
-
-                }
-                .horizontalAlignment(.center)
-                .gridRow(1)
-
-                Picker(Throwing.allCases, selection: $throwing) { $0.title }
-                    .horizontalAlignment(.center)
-                    .gridRow(2)
-            }
-            .rows(.fill, .auto, .auto)
-        }
-
-        /// The ring of cards and its dots, placed by the arithmetic below.
-        private var ring: some View {
-            LayoutEngine(Self.pieces) { piece in
-                switch piece {
-                case .card(let index):
-                    face(Self.cards[index])
-                case .dot:
-                    Rectangle(Palette.text)
-                }
-            } placements: { room, phase in
-                // THE WHOLE LAYOUT, run on the display's own frames whenever the
-                // room or the phase has moved, with no view built.
-                Self.cards.indices.map { place($0, phase, room) }
-                    + Self.cards.indices.map { dot($0, phase, room) }
-            }
-            .phase($turn)
-            // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
-            // two fingers and a wheel all turn the ring, carrying the card in
-            // front with them, and let go with speed it goes on to the card
-            // nearest where the throw would end. It rests on a card, never
-            // between two - and comes round, a turn of the range bringing every
-            // card back.
-            .axis(
-                \.self, input: .scroll(.horizontal, throwing: throwing.motion),
-                range: 0...Double(Self.cards.count), snaps: .every(1), wraps: true)
-            // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
-            // over every card, wearing the card's own corners - which is why it is
-            // the application's to give and not the library's to draw.
-            .shade(Rectangle(Color("#000000")).cornerRadius(16))
-            .motion(.eased(.milliseconds(300), .cubicOut))
-        }
-
-        /// A card either way, from a button: the ring travels there, and the
-        /// arithmetic follows it frame by frame - past the last card to the first.
-        private func move(_ by: Int) {
-            turn += Double(by)
-        }
-
-        /// One card's face - a picture and its name, and nothing at all about where
-        /// the card is or which way it faces. That is the placement's, and keeping
-        /// the two apart is what lets one run of cards be turned into any shape.
-        private func face(_ card: Card) -> some View {
-            let phone = device.info.formFactor == .phone
-
-            return ZStack {
-                Grid {
-                    Image(ImageSource(card.art))
-                        .contentMode(.fill)
-
-                    VStack {
-                        // ONE LINE, whatever the card's width: a caption that
-                        // wrapped would change the picture's height with it.
-                        Text(card.name)
-                            .fontWeight(.bold)
-                            .lineBreak(.tailTruncation)
-
-                        // A phone's small card carries its name alone.
-                        if !phone {
-                            Text("Placed by arithmetic")
-                                .opacity(0.8)
-                                .lineBreak(.tailTruncation)
-                        }
-                    }
-                    // A dark strip under the words, so a caption reads over a
-                    // picture of any colour.
-                    .verticalAlignment(.end)
-                }
-                // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
-                // the card is cut at its own room - the Web's reaches two points
-                // past it - so the grid holding it - a layout, with edges to cut
-                // at - cuts it there.
-                .clipsContent(true)
-            }
-            .style(.card)
-            .lineWidth(0)
-        }
-
-        /// How big the cards are in THIS room, as a multiple of the size above -
-        /// what every distance below scales with.
-        ///
-        /// BOTH AXES: the ring spread to either side takes the room's width, and
-        /// the ring seen from above - the back card's top to the front card's foot
-        /// - its height above the dots; the smaller of the two answers, so a
-        /// window grown taller draws a bigger ring and a phone on its side -
-        /// plenty of width, almost no height - is answered by the height.
-        private func fit(in room: Rect) -> Double {
-            max(
-                min(
-                    1.375,
-                    (room.width * 0.4 - 6) / Self.width,
-                    (room.height - 46) / (Self.height * Self.ringHeight)),
-                0.1)
-        }
-
-        /// A RING IN SPACE, turned to `at` - the cards standing upright on a
-        /// circle that lies flat, seen from in front and above, the chosen card
-        /// nearest the eye. The whole of the layout.
-        private func place(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
-            let count = Self.cards.count
-            let fit = fit(in: room)
-            let step = Double(index) - at
-            let angle = step / Double(max(count, 1)) * 2 * .pi
-            let wide = Self.width * fit
-            let tall = Self.height * fit
-
-            // PERSPECTIVE: how big a card is drawn - 1 at the front, under half at
-            // the back - which also says how near the middle it stands and how far
-            // below the horizon its foot is.
-            let drawn = Self.eye / (Self.eye + 1 - cos(angle))
-
-            // The circle as wide as the room lets the cards spread, and the horizon
-            // where the whole ring - the back card's top to the front card's foot -
-            // stands in the middle of the room above the dots.
-            let radius = min(wide * 1.75, (room.width / 2 - 8 - wide * 0.33) / 0.65)
-            let horizon = (room.height - 30 - tall * Self.ringHeight) / 2 - tall * Self.back * (Self.above - 1)
-            let across = room.width / 2 + sin(angle) * radius * drawn
-            let foot = horizon + tall * Self.above * drawn
-
-            // THE CARD AT ITS OWN SIZE, a little smaller than its place, standing
-            // on the ring where its place does.
-            let (cardWide, cardTall) = (wide * Self.card, tall * Self.card)
-
-            return Placement(
-                // Scaled about its middle to how big it is drawn - its words scale
-                // with it rather than wrapping anew.
-                Rect(across - cardWide / 2, foot - cardTall * drawn / 2 - cardTall / 2, cardWide, cardTall),
-                transform: .scale(drawn),
-                // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
-                // layout was given by `.shade(_:)` - nothing at all without one -
-                // and here it is how far back the card stands. A FADE would show
-                // the card behind it, which on a ring is every other card.
-                shade: min((1 - drawn) * 1.1, 0.55),
-                // The nearer card is drawn over the farther one.
-                zIndex: Int(cos(angle) * 1000))
-        }
-
-        /// One dot at the board's foot, saying which card is at the front by a
-        /// fade - over every card.
-        private func dot(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
-            let count = Self.cards.count
-
-            return Placement(
-                Rect(
-                    room.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
-                    room.height - 16,
-                    6,
-                    6),
-                // THE RING COMES ROUND: how far a card is from the front is taken
-                // the short way, a turn on or back.
-                opacity: 0.25 + 0.75 * chosen((Double(index) - at).remainder(dividingBy: Double(count))),
-                zIndex: 2000)
-        }
-
-        /// How much of "the chosen one" a card is: 1 at the front, nothing a card
-        /// away, and part way between while the ring is moving - which is what
-        /// makes the emphasis cross over rather than jump.
-        private func chosen(_ step: Double) -> Double {
-            max(0, 1 - abs(step))
-        }
-
-        """#,
         "LayoutKeyframesSample": #"""
-        // Sources/Samples/LayoutEngine/LayoutKeyframesSample.swift
+        // Sources/Samples/MotionLayout/LayoutKeyframesSample.swift
         import StateUIFoundation
 
-        /// One card: its name, which is its identity, its colour and its icon.
+        /// One card: its name, which is its identity, its color and its icon.
         struct Card {
             let name: String
-            let colour: String
+            let color: Color
             let icon: Icon
         }
 
         /// The cards, dealt in this order.
         static let cards = [
-            Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
-            Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
-            Card(name: "Tide", colour: "#DB2777", icon: .mail), Card(name: "Prism", colour: "#4F46E5", icon: .settings),
-            Card(name: "Grove", colour: "#16A34A", icon: .person), Card(name: "Ember", colour: "#DC2626", icon: .play),
-            Card(name: "Dune", colour: "#CA8A04", icon: .clock),
+            Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
+            Card(name: "Prism", color: Color(hex: 0x4F46E5), icon: .settings),
+            Card(name: "Grove", color: Color(hex: 0x16A34A), icon: .person),
+            Card(name: "Ember", color: Color(hex: 0xDC2626), icon: .play),
+            Card(name: "Dune", color: Color(hex: 0xCA8A04), icon: .clock),
         ]
 
-        /// Which layout stands: 0 the ring, 1 the grid, 2 the pile - handed on
-        /// with `$`, never read in the body.
-        @State private var arrangement = 0.0
+        /// Which layout stands: 0 the ring, 1 the grid - the one it opens on, in
+        /// the middle - 2 the pile; handed on with `$`, never read in the body.
+        @State private var arrangement = 1.0
 
         /// Whether the cards go between the layouts by a smooth curve rather than
         /// straight: read in the body.
         @State private var smooth = false
+
+        /// Whether the hand moves through the layouts too, or the buttons alone.
+        @State private var byHand = true
 
         var body: some View {
             Grid {
@@ -5611,24 +5969,28 @@ enum Listings {
                 SwitchRow("Smooth curve", $smooth)
                     .horizontalAlignment(.center)
                     .gridRow(2)
+
+                SwitchRow("The hand moves it", $byHand)
+                    .horizontalAlignment(.center)
+                    .gridRow(3)
             }
-            .rows(.fill, .auto, .auto)
+            .rows(.fill, .auto, .auto, .auto)
         }
 
         /// The cards: one arithmetic, asked at the keyframes alone.
         private var cards: some View {
-            LayoutEngine(Self.cards, id: \.name) { card in
+            MotionLayout(Self.cards, id: \.name, parameters: $arrangement) { card in
                 face(card)
-            } placements: { room, phase in
+            } placements: { room, arrangement in
                 // ASKED AT 0, 1 AND 2 ALONE, each answering a whole layout.
-                [ring(room), grid(room), pile(room)][Int(phase)]
+                [ring(room), grid(room), pile(room)][Int(arrangement)]
             }
-            .phase($arrangement)
-            // THE HAND MOVES THROUGH THE THREE, resting on each.
+            // THE HAND MOVES THROUGH THE THREE, resting on each - or, with no
+            // input, the axis is keyframes alone and the buttons move it.
             .axis(
-                \.self, input: .scroll(.horizontal, pointsPerUnit: 260), range: 0...2, keyframes: .every(1),
-                snaps: .every(1))
-            // BETWEEN THEM each card goes straight, or by a curve its neighbours
+                \.self, input: byHand ? .scroll(.horizontal, pointsPerUnit: 260) : nil, range: 0...2,
+                keyframes: .every(1), snaps: byHand ? .every(1) : nil)
+            // BETWEEN THEM each card goes straight, or by a curve its neighbors
             // shape.
             .interpolation(smooth ? LayoutCurve.catmullRom : .linear)
             .motion(.eased(.milliseconds(700), .cubicInOut))
@@ -5683,14 +6045,16 @@ enum Listings {
             }
         }
 
-        /// One card's face: its colour, its icon on a disc, and its name.
+        /// One card's face: its color, its icon on a disc, and its name.
         private func face(_ card: Card) -> some View {
             ZStack {
-                Rectangle(Color(card.colour))
+                Rectangle()
+                    .fill(card.color)
 
                 VStack {
                     ZStack {
-                        Rectangle(.white)
+                        Rectangle()
+                            .fill(.white)
                             .opacity(0.3)
 
                         Image(.icon(card.icon))
@@ -5711,11 +6075,11 @@ enum Listings {
             }
         }
         """#,
-        "LayoutPhaseSample": #"""
-        // Sources/Samples/LayoutEngine/LayoutPhaseSample.swift
-        /// THE PHASE: two numbers, each moved on its own - the turn by the hand,
+        "LayoutParametersSample": #"""
+        // Sources/Samples/MotionLayout/LayoutParametersSample.swift
+        /// THE PARAMETERS: two numbers, each moved on its own - the turn by the hand,
         /// the spread by the switch.
-        struct Deal: LayoutPhase {
+        struct Deal: LayoutParameters {
             /// Which card is at the front.
             var turn = 2.0
 
@@ -5725,18 +6089,20 @@ enum Listings {
             static var axes: [WritableKeyPath<Deal, Double>] { [\.turn, \.spread] }
         }
 
-        /// One card: its name, its colour and its icon.
+        /// One card: its name, its color and its icon.
         struct Card {
             let name: String
-            let colour: String
+            let color: Color
             let icon: Icon
         }
 
         /// The cards, dealt in this order.
         static let cards = [
-            Card(name: "Mural", colour: "#7C3AED", icon: .star), Card(name: "Nebula", colour: "#2563EB", icon: .heart),
-            Card(name: "Ridge", colour: "#0D9488", icon: .home), Card(name: "Bloom", colour: "#D97706", icon: .calendar),
-            Card(name: "Tide", colour: "#DB2777", icon: .mail),
+            Card(name: "Mural", color: Color(hex: 0x7C3AED), icon: .star),
+            Card(name: "Nebula", color: Color(hex: 0x2563EB), icon: .heart),
+            Card(name: "Ridge", color: Color(hex: 0x0D9488), icon: .home),
+            Card(name: "Bloom", color: Color(hex: 0xD97706), icon: .calendar),
+            Card(name: "Tide", color: Color(hex: 0xDB2777), icon: .mail),
         ]
 
         /// Where the run stands on both axes - handed on with `$`, never read in
@@ -5754,30 +6120,25 @@ enum Listings {
                 .gridRow(0)
                 .clipsContent(true)
 
-                SwitchRow(
-                    "Fan out",
-                    Binding(
-                        get: { fanned },
-                        set: { fanning in
-                            fanned = fanning
-                            // ONE AXIS WRITTEN: the spread travels there, and a
-                            // turn under way goes on as it was.
-                            deal.spread = fanning ? 1 : 0
-                        }))
+                SwitchRow("Fan out", $fanned)
+                    .onToggled { fanning in
+                        // ONE AXIS WRITTEN: the spread travels there, and a turn
+                        // under way goes on as it was.
+                        deal.spread = fanning ? 1 : 0
+                    }
                 .horizontalAlignment(.center)
                 .gridRow(1)
             }
             .rows(.fill, .auto)
         }
 
-        /// The cards, placed from both axes of the phase.
+        /// The cards, placed from both axes of the parameters.
         private var cards: some View {
-            LayoutEngine(Array(Self.cards.indices)) { index in
+            MotionLayout(Array(Self.cards.indices), parameters: $deal) { index in
                 face(index)
             } placements: { room, deal in
                 Self.cards.indices.map { place($0, deal, room) }
             }
-            .phase($deal)
             // THE HAND MOVES THE TURN ALONE, resting on a card; the spread has
             // no hand, so it is declared no axis.
             .axis(
@@ -5805,16 +6166,18 @@ enum Listings {
                 zIndex: 100 - Int(min(abs(step), 9) * 10))
         }
 
-        /// One card's face: its colour, its icon on a disc, and its name.
+        /// One card's face: its color, its icon on a disc, and its name.
         private func face(_ index: Int) -> some View {
             let card = Self.cards[index]
 
             return ZStack {
-                Rectangle(Color(card.colour))
+                Rectangle()
+                    .fill(card.color)
 
                 VStack {
                     ZStack {
-                        Rectangle(.white)
+                        Rectangle()
+                            .fill(.white)
                             .opacity(0.3)
 
                         Image(.icon(card.icon))
@@ -5938,10 +6301,10 @@ enum Listings {
         }
         """#,
         "LightTableSample": #"""
-        // Sources/Samples/LayoutEngine/LightTableSample.swift
-        /// THE PHASE: which photo the table is centred on, across and down, how
+        // Sources/Samples/MotionLayout/LightTableSample.swift
+        /// THE PARAMETERS: which photo the table is centered on, across and down, how
         /// near it stands, and how far the photos are turned - a turn a unit.
-        struct Table: LayoutPhase {
+        struct Table: LayoutParameters {
             var x = 1.0
             var y = 1.0
             var zoom = 0.45
@@ -5973,35 +6336,36 @@ enum Listings {
                 .gridRow(0)
                 .clipsContent(true)
 
-                SwitchRow(
-                    "Snap",
-                    Binding(
-                        get: { snaps },
-                        set: { snapping in
-                            snaps = snapping
-                            // SNAPPING AGAIN, the table travels to the photo and
-                            // the quarter turn nearest where it was left.
-                            if snapping {
-                                table.x = table.x.rounded()
-                                table.y = table.y.rounded()
-                                table.turn = (table.turn * 4).rounded() / 4
-                            }
-                        }))
+                SwitchRow("Snap", $snaps)
+                    .onToggled { snapping in
+                        // SNAPPING AGAIN, the table travels to the photo and the
+                        // quarter turn nearest where it was left.
+                        if snapping {
+                            table.x = table.x.rounded()
+                            table.y = table.y.rounded()
+                            table.turn = (table.turn * 4).rounded() / 4
+                        }
+                    }
                 .horizontalAlignment(.center)
                 .gridRow(1)
+
+                // THE PROGRAM MOVES ONE COORDINATE: the zoom travels, the pan and
+                // the turn stay as they stand - no model of its own for each.
+                Button("Closer").onClicked { table.zoom = 1 }
+                    .horizontalAlignment(.center)
+                    .gridRow(2)
             }
-            .rows(.fill, .auto)
+            .rows(.fill, .auto, .auto)
         }
 
         /// The photos, placed from every axis of the table.
         private var photosOnTheTable: some View {
-            LayoutEngine(Self.photos) { photo in
+            MotionLayout(Self.photos, parameters: $table) { photo in
                 ZStack { Image(ImageSource(photo)).contentMode(.fill) }
                     .clipsContent(true)
             } placements: { room, table in
                 Self.photos.indices.map { place($0, table, room) }
             }
-            .phase($table)
             // ONE FINGER OR TWO MOVE THE TABLE every way - one axis scrolled
             // across, one down - resting on a photo, or, not snapping, anywhere...
             .axis(\.x, input: .scroll(.horizontal), range: 0...2, snaps: snaps ? .every(1) : nil)
@@ -6013,12 +6377,12 @@ enum Listings {
             // round.
             .axis(
                 \.turn, input: .rotation(degreesPerUnit: 360), range: 0...1, snaps: snaps ? .every(0.25) : nil,
-                wraps: true)
+                periodic: true)
             .motion(.spring(response: .milliseconds(420), damping: 0.82))
         }
 
         /// Where the photo at `index` lies: its square of the table, a photo's
-        /// width and a gap apart, the photo the table is centred on in the middle
+        /// width and a gap apart, the photo the table is centered on in the middle
         /// of the room - all as near as the table stands, the whole table in the
         /// room at its farthest - turned in its place.
         private func place(_ index: Int, _ table: Table, _ room: Rect) -> Placement {
@@ -6031,6 +6395,64 @@ enum Listings {
             return Placement(
                 Rect(x - side / 2, y - side / 2, side, side),
                 transform: .rotate(table.turn * 360))
+        }
+        """#,
+        "LinkSample": #"""
+        // Sources/Samples/BasicInput/LinkSample.swift
+        @State private var page = "https://www.swift.org"
+        @State private var opened = 0
+        @State private var enabled = true
+
+        static let pages = ["https://www.swift.org", "https://developer.apple.com", "https://developer.android.com"]
+
+        var body: some View {
+            VStack {
+                Link("Swift's home page", destination: "https://www.swift.org")
+                    .isEnabled(enabled)
+                    .onClicked { opened += 1 }
+
+                Link("Write to us", destination: "mailto:hello@example.com")
+                    .isEnabled(enabled)
+                    .onClicked { opened += 1 }
+
+                // The address is carried from the state: choosing another page
+                // changes where the link leads, with no render of this view.
+                Link("The page chosen below", destination: $page)
+                    .isEnabled(enabled)
+                    .onClicked { opened += 1 }
+
+                Picker(Self.pages, selection: $page) { $0 }
+                    .placeholder("Page")
+
+                Text("Opened \(opened) time\(opened == 1 ? "" : "s")")
+
+                SwitchRow("Enabled", $enabled)
+            }
+        }
+        """#,
+        "LinksSample": #"""
+        // Sources/Samples/Windows/LinksSample.swift
+        /// Where this window is, and the links it was given.
+        let nav: Navigation
+
+        var body: some View {
+            // Read here, so every link this window is given builds this page again.
+            let given = nav.links
+
+            return VStack {
+                DebugInfoLabel()
+
+                Link("Open the Tap sample", destination: GalleryLink.sample("tap"))
+                    .horizontalAlignment(.center)
+
+                SectionTitle("Given to this window")
+                if given.isEmpty {
+                    Text("No link yet.")
+                }
+                ForEach(Array(given.suffix(5).enumerated()), id: \.offset) { item in
+                    Text(item.element)
+                }
+            }
         }
         """#,
         "LivingLayoutSample": #"""
@@ -6106,7 +6528,7 @@ enum Listings {
         }
 
         private func cell(
-            _ text: String, _ colour: Color, at column: Int, faded: Bool = false
+            _ text: String, _ color: Color, at column: Int, faded: Bool = false
         ) -> some View {
             ZStack {
                 Text(text)
@@ -6144,7 +6566,7 @@ enum Listings {
                 }
                 // Within five items of the end, thirty more - one load at a time:
                 // reaching the end again while one runs lets that go.
-                .onEndReached(within: 5, gate: .ignoreWhileRunning) {
+                .onEndReached(within: 5, policy: .ignoreWhileRunning) {
                     guard count < 300 else { return }
 
                     loading = true
@@ -6232,7 +6654,7 @@ enum Listings {
 
         // Sources/Samples/Environment/Localization/ReportCatalog.swift
         /// The languages the folder report is written in.
-        enum ReportLanguage: String, CaseIterable, Sendable {
+        enum ReportLanguage: LocaleTag, CaseIterable {
             case english = "en"
             case polish = "pl"
         }
@@ -6392,33 +6814,84 @@ enum Listings {
             .rows(.auto, .fill, .auto)
         }
         """#,
+        "MailFilters": #"""
+        // Sources/Samples/Navigation/PopoverSample.swift
+        @State private var filtering = false
+        @State private var unreadOnly = false
+        @State private var flaggedOnly = false
+
+        var body: some View {
+            VStack {
+                Button("Filters")
+                    .horizontalAlignment(.start)
+                    .onClicked { filtering = true }
+                    .popover(isPresented: $filtering) {
+                        VStack {
+                            Switch($unreadOnly).text("Unread only")
+                            Switch($flaggedOnly).text("Flagged only")
+                            Button("Done").onClicked { filtering = false }
+                        }
+                    }
+
+                Text(filtering ? "The popover shows" : "The popover is closed")
+            }
+            .horizontalAlignment(.start)
+        }
+        """#,
+        "MailList": #"""
+        // Sources/Samples/Collections/ItemActionsSample.swift
+        @State private var mail = ["Lunch on Friday?", "Your order shipped", "Weekly notes", "Old news"]
+        @State private var archived = 0
+
+        var body: some View {
+            Grid {
+                Text("\(archived) archived")
+                    .gridRow(0)
+
+                ItemsView(mail, id: \.self) { message in
+                    Text(message)
+                        // The item's actions, written once: a swipe where the platform swipes a list's items.
+                        .contextMenu {
+                            MenuItem("Archive").onClicked {
+                                mail.removeAll { $0 == message }
+                                archived += 1
+                            }
+                            MenuItem("Delete").role(.destructive).onClicked { mail.removeAll { $0 == message } }
+                        }
+                }
+                .gridRow(1)
+            }
+            .rows(.auto, .fill)
+        }
+        """#,
         "MainPage.bar": #"""
         // Sources/Gallery/MainPage.swift
-        // The gallery's own actions, declared once around every page: a page's
-        // own stand nearer the title, and these keep their place at the edge.
-        // Each wears an icon, which keeps its size on the bar steady; its
-        // caption stays for accessibility and for bars that show words.
-        .toolbar(id: "gallery") {
-            ToolbarItem.inspector(window)
-                .text("Inspector")
-                .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
+        // The gallery's own actions, declared once over every page of the
+        // detail - the part a split view's own stand in unless they say
+        // another - together on one background: a page's own stand nearer
+        // the title, and these keep their place at the edge. Each wears an
+        // icon, which keeps its size on the bar steady; its caption stays
+        // for accessibility and for bars that show words.
+        .toolbar {
+            ToolbarGroup {
+                ToolbarButton.inspector(window)
+                    .text("Inspector")
+                    .icon(ImageSource(light: "nav_inspect.png", dark: "nav_inspect_dark.png"))
 
-            if !nav.showing(.home) {
-                ToolbarItem.home(nav)
+                if !nav.showing(.home) {
+                    ToolbarButton.home(nav)
+                }
             }
 
+            // The menu's own: over the sidebar, and at the detail's start
+            // while the sidebar is hidden.
             if bar.showsSurprise {
-                ToolbarItem("Surprise me")
+                ToolbarButton("Surprise me")
                     .icon(ImageSource(light: "nav_surprise.png", dark: "nav_surprise_dark.png"))
+                    .placement(.sidebar)
                     .onClicked { nav.surprise(from: catalog, on: device) }
             }
         }
-        // What the window's bar says of the gallery: its name and mark,
-        // where the platform's chrome names the application, and under the
-        // title the line the Window bar sample types.
-        .barTitle("StateUI")
-        .barSubtitle(bar.subtitle)
-        .barIcon(Self.mark)
         """#,
         "MainPage.created": #"""
         // Sources/Gallery/MainPage.swift
@@ -6470,14 +6943,15 @@ enum Listings {
             }
         }
         """#,
+        "MainPage.links": #"""
+        // Sources/Gallery/MainPage.swift
+        // A link the application is asked to open, given to this window: the
+        // window shows the sample it names - its own navigation, as every
+        // gallery window moves on its own.
+        .onLinkOpened { nav.follow(link: $0, in: catalog) }
+        """#,
         "MainPage.look": #"""
         // Sources/Gallery/MainPage.swift
-        /// The look the gallery wears in the theme in force: a change of theme,
-        /// the system's or the application's, builds the page again in the other.
-        private var look: ThemeLook {
-            style.look(dark: application.info.colorScheme == .dark)
-        }
-
         /// What a surface of the gallery is made of, a material for each theme as
         /// its looks say - the platform's own in a theme whose look leaves it.
         private func surface(_ part: KeyPath<ThemeLook, SurfaceLook>, _ painted: GallerySurface) -> Material {
@@ -6497,17 +6971,11 @@ enum Listings {
         """#,
         "MainPage.modal": #"""
         // Sources/Gallery/MainPage.swift
-        // What is over all of it: the pages presented over the split view, the
-        // stack and the bars alike - empty almost always: presenting is
-        // `sheets.append`, and a sheet the user dismisses shortens the array
-        // itself.
-        ModalStack(nav.$sheets) {
-
-            // The split view, its bars and its pages - what the sheets are
-            // presented over.
-
-        } destination: { _ in
-            ModalPage(nav: nav)
+        // What is over all of it: a page presented over the split view,
+        // the stack and the bars alike - while the state says so, the
+        // user's dismissal writing it false.
+        .sheet(isPresented: nav.$presentsPage) {
+            ModalPage(shown: nav.$presentsPage, depth: 1)
         }
         """#,
         "MainPage.overlays": #"""
@@ -6521,7 +6989,7 @@ enum Listings {
         """#,
         "MainPage.split": #"""
         // Sources/Gallery/MainPage.swift
-        SplitView(nav.$menuOpen) {
+        SplitView {
             MenuPage(
                 catalog: catalog,
                 nav: nav,
@@ -6530,13 +6998,17 @@ enum Listings {
         } detail: {
             detail()
         }
+        .showsSidebar(nav.$menuOpen)
         // What the sidebar stands on beside the page and sliding over it,
         // in each theme, as the gallery's looks say.
         .sidebarBackground(surface(\.sidebar, .sidebar))
-        .flyoutBackground(surface(\.flyout, .flyout))
+        .sidebarOverlayBackground(surface(\.sidebarOverlay, .sidebarOverlay))
         // Where the platform places it for the room: a choice closes it
         // over the page and leaves it open beside it.
         .sidebarOverlays(nav.$menuOverlays)
+        // Whether the bar offers the menu's button - the Split view
+        // sample's switch takes it away.
+        .showsSidebarToggle(nav.$showsMenuButton)
         """#,
         "MainPage.tabs": #"""
         // Sources/Gallery/MainPage.swift
@@ -6601,15 +7073,15 @@ enum Listings {
 
                 HStack {
                     Button("Old Town")
-                        .onClicked(gate: .cancelPrevious) {
+                        .onClicked(.cancelPrevious) {
                             try await map.moveToRegion(
-                                latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
+                                MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                         }
 
                     Button("Poland")
-                        .onClicked(gate: .cancelPrevious) {
+                        .onClicked(.cancelPrevious) {
                             try await map.moveToRegion(
-                                latitude: 52.1, longitude: 19.4, radiusMeters: 350_000)
+                                MapRegion(center: Location(latitude: 52.1, longitude: 19.4), radiusMeters: 350_000))
                         }
 
                     // What it DRAWS, cycled so all three can be seen.
@@ -6639,7 +7111,7 @@ enum Listings {
                 // written here it is kept until the platform's map has connected,
                 // while an act can land an instant too early and be overwritten
                 // by the map's own opening view.
-                Map(latitude: 50.0617, longitude: 19.9373, radiusMeters: 1500)
+                Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                     .aim(map)
                     // What the map draws, and whether the user may move it.
                     .mapType(kind)
@@ -6651,13 +7123,13 @@ enum Listings {
                         // Each place its own marker by its name, so a place put
                         // before the others leaves them themselves.
                         Self.places.map { place in
-                            Marker(place.name)
+                            Marker(at: Location(latitude: place.latitude, longitude: place.longitude))
                                 .id(place.name)
+                                .label(place.name)
                                 .subtitle(place.address)
                                 // What the marker stands for, which is what decides
                                 // the icon the platform draws for it.
                                 .type(place.type)
-                                .location(latitude: place.latitude, longitude: place.longitude)
                                 .onSelected { said = "pin: \(place.name)" }
                                 .onDetailsClicked { said = "details: \(place.name)" }
                         }
@@ -6682,7 +7154,7 @@ enum Listings {
         /// Which of the blurs the blurred panel wears.
         @State private var thickness = Blur.regular
 
-        /// Whether the blur wears the gallery's colour as a tint.
+        /// Whether the blur wears the gallery's color as a tint.
         @State private var tinted = false
 
         /// Whether the glass is the clearer kind.
@@ -6691,7 +7163,7 @@ enum Listings {
         /// Whether the glass answers the touch and the pointer.
         @State private var interactive = false
 
-        /// The colour the last panel walks to and back - a colour's channel.
+        /// The color the last panel walks to and back - a color's channel.
         @State private var wash = Palette.accent
 
         /// The blurs on offer, thinnest first.
@@ -6707,26 +7179,31 @@ enum Listings {
 
             return VStack {
                 ZStack {
-                    // Stripes of colour behind the panels: what each lets through shows on them.
+                    // Stripes of color behind the panels: what each lets through shows on them.
                     Grid {
-                        Rectangle(.tomato).gridColumn(0)
-                        Rectangle(.gold).gridColumn(1)
-                        Rectangle(.steelBlue).gridColumn(2)
-                        Rectangle(.white).gridColumn(3)
-                        Rectangle(Palette.accent).gridColumn(4)
+                        Fill(.tomato)
+                            .gridColumn(0)
+                        Fill(.gold)
+                            .gridColumn(1)
+                        Fill(.steelBlue)
+                            .gridColumn(2)
+                        Fill(.white)
+                            .gridColumn(3)
+                        Fill(Palette.accent)
+                            .gridColumn(4)
                     }
                     .columns(.fill, .fill, .fill, .fill, .fill)
 
                     Grid {
-                        panel("Colour", .color(Palette.accent)).gridRow(0).gridColumn(0)
+                        panel("Color", .color(Palette.accent)).gridRow(0).gridColumn(0)
                         panel("Gradient", .gradient(Palette.identity)).gridRow(0).gridColumn(1)
                         panel("Blur", .blur(blur)).gridRow(1).gridColumn(0)
                         panel("Glass", .glass(glass)).gridRow(1).gridColumn(1)
                         // A blur in the dark theme, and nearly white in the light one.
                         panel("Light and dark", Material(light: .color(Color.white.opacity(0.85)), dark: .blur(.regular)))
                             .gridRow(2).gridColumn(0)
-                        // A colour's channel: the host walks the colour, and no view is built again.
-                        words("A colour's channel")
+                        // A color's channel: the host walks the color, and no view is built again.
+                        words("A color's channel")
                             .height(76)
                             .gridRow(2).gridColumn(1)
                     }
@@ -6740,7 +7217,7 @@ enum Listings {
                 SwitchRow("Tinted blur", $tinted)
                 SwitchRow("Clear glass", $clear)
                 SwitchRow("Glass answers the touch", $interactive)
-                Button("Change the colour")
+                Button("Change the color")
                     .horizontalAlignment(.center)
                     .onClicked { wash = wash == Palette.accent ? Palette.brand : Palette.accent }
             }
@@ -6773,6 +7250,9 @@ enum Listings {
         /// Whether this page adds a menu of its own.
         @State private var ownMenu = false
 
+        /// Words to edit through the Edit menu's own entries.
+        @State private var note = "Edit me"
+
         var body: some View {
             VStack {
                 // The counts are read here, so every entry that acts builds
@@ -6785,6 +7265,10 @@ enum Listings {
 
                 switchRow($pageSaves, "This page saves", id: "menubar.pageSaves")
                 switchRow($ownMenu, "A menu of its own", id: "menubar.ownMenu")
+
+                Text("Select words here, then Cut, Copy, Paste or Undo from Edit.")
+
+                TextField($note)
             }
             // File, joined by its identity with the platform's own where it has
             // one: this page's entries are a section of their own.
@@ -6802,6 +7286,15 @@ enum Listings {
                 }
                 .id(StandardMenu.file)
 
+                // Edit holds the platform's own entries, acting on the field the
+                // user typed into; Clear stands after them, this page's own.
+                Menu("Edit") {
+                    MenuItem("Clear")
+                        .id("clear")
+                        .onClicked { note = "" }
+                }
+                .id(StandardMenu.edit)
+
                 if ownMenu {
                     Menu("Sample") {
                         MenuItem("Save twice")
@@ -6813,27 +7306,37 @@ enum Listings {
         }
 
         /// A switch and what it says, told apart for scripts by `id`.
-        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
-            HStack {
-                Switch(value)
-
-                Text(words)
-                    .verticalAlignment(.center)
-            }
+        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
+            Switch(value)
+                .text(words)
         }
         """#,
         "MenuPage": #"""
         // Sources/Gallery/MenuPage.swift
         /// The gallery's sidebar - and it is an ordinary page.
         ///
-        /// That is the whole point of it. Some rows, a line at the bottom, and - on
-        /// Android, where nothing else names the gallery - the mark at the top. A row
+        /// That is the whole point of it. Some rows and a line at the bottom. A row
         /// is a view with a tap on it that writes state. There is no menu vocabulary
         /// to learn: what can go in the pane is whatever can go on a page, and what a
         /// row does is whatever a handler can do.
         ///
-        /// Its title names the pane on hosts whose navigation chrome exposes that name.
+        /// Its title and picture name the gallery where the platform's chrome names
+        /// an application over the sidebar.
         struct MenuPage: View {
+            /// The gallery's mark beside its name: none on Windows, where a mark on the
+            /// title bar reads as a button; the violet one on Android's sidebar bar,
+            /// which stands on the theme's light or dark ground.
+            private static var mark: ImageSource {
+                #if WINUI
+                ""
+                #elseif ANDROID
+                ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png")
+                #else
+                "stateui_mark.png"
+                #endif
+            }
+
+
             /// Everything the gallery shows - the rows are one per group.
             let catalog: Catalog
 
@@ -6854,47 +7357,24 @@ enum Listings {
             @Environment(\.device) private var device
 
             var body: some View {
+                // The rows run under the bars, the first and the last stopping clear
+                // of them.
                 Grid {
-                    // The name over the menu where the platform says it nowhere else:
-                    // Android's drawer has no bar of its own. Everywhere else the
-                    // window's chrome or the sidebar's bar names the gallery already.
-                    #if ANDROID
-                    header
-                    #endif
-
                     ScrollView {
                         rows
                     }
-                    .gridRow(1)
-
-                    footer
-
-                    WindowPhaseLog(log: log)
                 }
-                // Three rows: the header and the footer keep their height, and the
-                // rows take what is left and scroll between them.
-                .rows(.auto, .fill, .auto)
+                .ignoresSafeArea(.all)
                 .title("StateUI")
-                // The picture on the button that opens the menu, where the host draws
-                // that button from this page.
-                .icon(ImageSource(light: "nav_menu.png", dark: "nav_menu_dark.png"))
-            }
-
-            /// The mark and the name, on the pane the platform draws - where nothing
-            /// else names the gallery over its menu.
-            private var header: some View {
-                HStack {
-                    Image(ImageSource(light: "stateui_mark_violet.png", dark: "stateui_mark_violet_dark.png"))
-                        .width(28)
-                        .height(28)
-                        .verticalAlignment(.center)
-
-                    Text("StateUI")
-                        .fontWeight(.bold)
-                        .tracking(-0.3)
-                        .verticalAlignment(.center)
+                .icon(Self.mark)
+                // The line about what this is stands at the menu's foot, and the rows
+                // scroll under it.
+                .bottomBar {
+                    ZStack {
+                        footer
+                        WindowPhaseLog(log: log)
+                    }
                 }
-                .padding(left: 20, top: 12, right: 20, bottom: 8)
             }
 
             /// Home, one row per group, the row that is not always listed, and the one
@@ -6936,9 +7416,13 @@ enum Listings {
             /// answered before the first render, and the StateUI release it is built on.
             private var footer: some View {
                 Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
-                    .padding(12)
-                    // The footer's own row, written on the footer.
-                    .gridRow(2)
+                    #if UIKIT
+                    // Above the home indicator's strip, which stands under it: none
+                    // of its own beneath.
+                    .padding(start: 12, top: 8, end: 12, bottom: 0)
+                    #else
+                    .padding(horizontal: 12, vertical: 8)
+                    #endif
             }
         }
         """#,
@@ -6946,12 +7430,19 @@ enum Listings {
         // Sources/Samples/Navigation/ModalPage.swift
         /// A page presented OVER everything - the bars, the menu and the stack alike.
         ///
-        /// It carries its own way out because the modal presentation covers the page
-        /// that opened it.
+        /// A sheet has no bar of its own, so it carries its own way out; a stack
+        /// presented in a sheet brings its bar. Each sheet stands on the button
+        /// presenting it, by a state of its own.
         struct ModalPage: View {
-            /// Where the gallery is. A modal closes itself by shortening the array it
-            /// is a member of, exactly as a pushed page pops itself.
-            let nav: Navigation
+            /// Whether this page stands presented: Close writes it false.
+            @Binding var shown: Bool
+
+            /// How many sheets stand, this one included.
+            let depth: Int
+
+            /// Whether another page stands over this one, and whether a stack does.
+            @State private var presentsAnother = false
+            @State private var presentsStack = false
 
             var body: some View {
                 VStack {
@@ -6960,20 +7451,51 @@ enum Listings {
                     Text("Native modal page")
                         .fontWeight(.bold)
 
-                    Text("The host chooses the presentation that belongs to this platform.")
+                    Text("Present a stack: its bar comes with it.")
 
                     Button("Close")
                         .horizontalAlignment(.center)
-                        .onClicked { nav.dismiss() }
+                        .onClicked { shown = false }
 
                     Button("Present another")
                         .horizontalAlignment(.center)
-                        .onClicked { nav.present(.page) }
+                        .onClicked { presentsAnother = true }
+                        .sheet(isPresented: $presentsAnother) {
+                            ModalPage(shown: $presentsAnother, depth: depth + 1)
+                        }
 
-                    Text("Depth: \(nav.sheets.count)")
+                    Button("Present a stack")
+                        .horizontalAlignment(.center)
+                        .onClicked { presentsStack = true }
+                        .sheet(isPresented: $presentsStack) {
+                            StackSheet(shown: $presentsStack)
+                        }
+
+                    Text("Depth: \(depth)")
                 }
                 .verticalAlignment(.center)
-                .galleryPage("Presented")
+            }
+        }
+
+        /// A stack presented in a sheet: the bar over its pages is the stack's own, its close button the page's to offer.
+        struct StackSheet: View {
+            @Binding var shown: Bool
+            @State private var path: [Int] = []
+            @State private var offersClose = true
+
+            var body: some View {
+                NavigationStack($path) {
+                    VStack {
+                        Switch($offersClose).text("Close button")
+                        Button("Push").onClicked { path.append(path.count + 1) }
+                        Button("Close").onClicked { shown = false }
+                    }
+                    .galleryPage("In a stack")
+                    .showsCloseButton(offersClose)
+                } destination: { number in
+                    Text("Page \(number)")
+                        .galleryPage("Pushed")
+                }
             }
         }
         """#,
@@ -6987,11 +7509,363 @@ enum Listings {
 
                 Button("Present native modal")
                     .horizontalAlignment(.center)
-                    .onClicked { nav.present(.page) }
+                    .onClicked { nav.presentsPage = true }
 
-                Text(nav.sheets.isEmpty ? "Nothing presented" : "Depth: \(nav.sheets.count)")
+                Text(nav.presentsPage ? "Presented" : "Nothing presented")
             }
         }
+        """#,
+        "MotionLayoutSample": #"""
+        // Sources/Samples/MotionLayout/MotionLayoutSample.swift
+        import StateUIFoundation
+
+        /// The cards: the gallery's groups, each its name and its picture as the
+        /// home page shows it.
+        static let cards: [Card] = [
+            Card(name: "Layout", art: "cat_layout.png"),
+            Card(name: "Motion Layout", art: "cat_motionlayout.png"),
+            Card(name: "Styles", art: "cat_styles.png"),
+            Card(name: "Shapes", art: "cat_shapes.png"),
+            Card(name: "Media", art: "cat_media.png"),
+            Card(name: "Navigation", art: "cat_navigation.png"),
+            Card(name: "Date & time", art: "cat_datetime.png"),
+            Card(name: "Fundamentals", art: "cat_fundamentals.png"),
+            Card(name: "Animation", art: "cat_animation.png"),
+            Card(name: "Gestures", art: "cat_gestures.png"),
+        ]
+
+        /// One card's face.
+        struct Card {
+            let name: String
+            let art: String
+        }
+
+        /// What the ring places: every card, and a dot for each at the board's
+        /// foot - one arithmetic for both, so the dots move with the cards.
+        enum Piece: Hashable {
+            case card(Int)
+            case dot(Int)
+        }
+
+        static let pieces = cards.indices.map(Piece.card) + cards.indices.map(Piece.dot)
+
+        /// How big the place a card stands in is - what the ring is worked out
+        /// from - and how big the card is drawn in it.
+        static let width = 176.0
+        static let height = 248.0
+        static let card = 0.8
+
+        /// How far the eye stands from the ring's front, in radii: the nearer it
+        /// stands, the smaller a card at the back is drawn.
+        static let eye = 1.6
+
+        /// How far below the horizon the front card stands, in card heights: the
+        /// higher the eye above the ring, the more of the far cards it sees.
+        static let above = 1.9
+
+        /// How tall the whole ring stands, in card heights: the back card's top to
+        /// the front card's foot.
+        static var ringHeight: Double { above - back * (above - 1) }
+
+        /// How big the card at the back is drawn, against the one at the front.
+        static var back: Double { eye / (eye + 2) }
+
+        /// HOW A THROW GOES ON - any motion: how far a throw carries, and the
+        /// curve it slows on.
+        enum Throwing: CaseIterable, Hashable {
+            case easeOut, glide, spring, bounce, short
+
+            var motion: Motion {
+                switch self {
+                case .easeOut: .eased(.milliseconds(400), .cubicOut)
+                case .glide: .eased(.milliseconds(300), .sineOut)
+                case .spring: .spring(response: .milliseconds(400), damping: 0.8)
+                case .bounce: .eased(.milliseconds(600), .backOut)
+                case .short: .eased(.milliseconds(200), .cubicOut)
+                }
+            }
+
+            var title: String {
+                switch self {
+                case .easeOut: "Ease out"
+                case .glide: "Glide"
+                case .spring: "Spring"
+                case .bounce: "Bounce"
+                case .short: "Short"
+                }
+            }
+        }
+
+        /// Which of them the ring is thrown by.
+        @State private var throwing = Throwing.easeOut
+
+        /// Whether the board is laid out right to left, and whether the ring
+        /// turns with it or keeps the shape its arithmetic writes.
+        @State private var rightToLeft = false
+        @State private var mirrored = true
+
+        /// Whether each card follows its place as a body, lagging as the ring
+        /// turns and swaying back onto it.
+        @State private var swaying = true
+
+        /// Whether the ring grows as it turns - the cards flung outward, as a
+        /// weight on a string is - read by the arithmetic below, never the body.
+        @State private var flungOut = true
+
+        /// The card the ring last came to rest on - every card and the ring
+        /// still - told once each rest.
+        @State private var rested = MotionLayoutSample.cards.count / 2
+
+        /// WHICH CARD IS AT THE FRONT - the parameters, two-way: `Back` and `Next`
+        /// write it and the ring travels there; the hand names the card it passes
+        /// and the one it comes to rest on. It starts on the middle card, and it
+        /// has no end: a turn on, it is the same card again.
+        @State private var turn = Double(MotionLayoutSample.cards.count / 2)
+
+        /// The device - a phone's cards carry their names alone, smaller.
+        @Environment(\.device) private var device
+
+        var body: some View {
+            // A GRID rather than a stack: the board takes whatever room is left
+            // over, which a stack cannot give a child - and a ring wants it all.
+            Grid {
+                Grid {
+                    // THE CARDS, and what moves them - the whole of the example.
+                    ring
+
+                    // The ring turns for no build at all: the label says so, at
+                    // the board's top corner.
+                    DebugInfoLabel()
+                        .horizontalAlignment(.end)
+                        .verticalAlignment(.start)
+                }
+                .layoutDirection(rightToLeft ? .rightToLeft : .inherited)
+                .gridRow(0)
+                // The cards stay ON the board: one turned far out in a small room
+                // is cut at the board's edge rather than painted over the page.
+                .clipsContent(true)
+
+                // WHERE THE RING CAME TO REST, told once it is still.
+                Text("At rest on \(Self.cards[rested].name)")
+                    .horizontalAlignment(.center)
+                    .gridRow(1)
+
+                HStack {
+                    Button("Back")
+                        .onClicked { move(-1) }
+
+                    Button("Next")
+                        .onClicked { move(1) }
+
+                }
+                .horizontalAlignment(.center)
+                .gridRow(2)
+
+                Picker(Throwing.allCases, selection: $throwing) { $0.title }
+                    .horizontalAlignment(.center)
+                    .gridRow(3)
+
+                HStack {
+                    SwitchRow("Right to left", $rightToLeft)
+
+                    SwitchRow("Mirrored", $mirrored)
+
+                    SwitchRow("Cards sway", $swaying)
+
+                    SwitchRow("Flung outward", $flungOut)
+                }
+                // On a narrow screen the switches go on onto further lines, each
+                // line in the middle.
+                .wraps(true)
+                .lineAlignment(.center)
+                .horizontalAlignment(.center)
+                .gridRow(4)
+            }
+            .rows(.fill, .auto, .auto, .auto, .auto)
+        }
+
+        /// The ring of cards and its dots, placed by the arithmetic below.
+        private var ring: some View {
+            MotionLayout(Self.pieces, parameters: $turn) { piece in
+                switch piece {
+                case .card(let index):
+                    // A BODY FOLLOWING ITS PLACE: carried by the ring, the card lags
+                    // behind as it turns, swings past where the turn stops and
+                    // settles back onto its place.
+                    if swaying {
+                        face(Self.cards[index])
+                            .followsLayout(.spring(response: .milliseconds(420), damping: 0.55))
+                    } else {
+                        face(Self.cards[index])
+                    }
+                case .dot:
+                    Rectangle()
+                        .fill(Palette.text)
+                }
+            } placements: { room, turn in
+                // THE WHOLE LAYOUT, run on the display's own frames whenever the
+                // room or the parameters have moved, with no view built.
+                // FLUNG OUTWARD, the ring grows with how fast it turns.
+                let flung = flungOut ? min(abs($turn.journey.velocity) * 0.05, 0.35) : 0
+                return Self.cards.indices.map { place($0, turn, room, flung: flung) }
+                    + Self.cards.indices.map { dot($0, turn, room) }
+            }
+            // THE HAND OVER THE CARDS: a finger or a pointer dragged, a trackpad's
+            // two fingers and a wheel all turn the ring, carrying the card in
+            // front with them, and let go with speed it goes on to the card
+            // nearest where the throw would end. It rests on a card, never
+            // between two - and comes round, a turn of the range bringing every
+            // card back.
+            .axis(\.self, input: .scroll(.horizontal), range: 0...Double(Self.cards.count), snaps: .every(1), periodic: true)
+            .throwMotion(throwing.motion)
+            // WHAT `shade` IN THE ARITHMETIC BELOW IS WORN BY: one view, drawn
+            // over every card, wearing the card's own corners - which is why it is
+            // the application's to give and not the library's to draw.
+            .shade(
+                Rectangle()
+                    .fill(Color(hex: 0x000000)))
+            .motion(.eased(.milliseconds(300), .cubicOut))
+            // AT REST - the ring and every card still - it says where, once.
+            .onSettled { turned in
+                let count = Self.cards.count
+                rested = ((Int(turned.rounded()) % count) + count) % count
+            }
+            // RIGHT TO LEFT, MIRRORED: the ring turns about the board's middle,
+            // the arithmetic above still written left to right, and the hand turns
+            // it the mirror's way. Not mirrored, it keeps the shape it is written in.
+            .mirrorsRightToLeft(mirrored)
+        }
+
+        /// A card either way, from a button: the ring travels there, and the
+        /// arithmetic follows it frame by frame - past the last card to the first.
+        private func move(_ by: Int) {
+            turn += Double(by)
+        }
+
+        /// One card's face - a picture and its name, and nothing at all about where
+        /// the card is or which way it faces. That is the placement's, and keeping
+        /// the two apart is what lets one run of cards be turned into any shape.
+        private func face(_ card: Card) -> some View {
+            let phone = device.info.formFactor == .phone
+
+            return ZStack {
+                Grid {
+                    Image(ImageSource(card.art))
+                        .contentMode(.fill)
+
+                    VStack {
+                        // ONE LINE, whatever the card's width: a caption that
+                        // wrapped would change the picture's height with it.
+                        Text(card.name)
+                            .fontWeight(.bold)
+                            .lineBreak(.tailTruncation)
+
+                        // A phone's small card carries its name alone.
+                        if !phone {
+                            Text("Placed by arithmetic")
+                                .opacity(0.8)
+                                .lineBreak(.tailTruncation)
+                        }
+                    }
+                    // A dark strip under the words, so a caption reads over a
+                    // picture of any color.
+                    .verticalAlignment(.end)
+                }
+                // THE PICTURE IS CUT AT THE CARD'S EDGE: a picture told to FILL
+                // the card is cut at its own room - the Web's reaches two points
+                // past it - so the grid holding it - a layout, with edges to cut
+                // at - cuts it there.
+                .clipsContent(true)
+            }
+            .style(.card)
+            .lineWidth(0)
+        }
+
+        /// How big the cards are in THIS room, as a multiple of the size above -
+        /// what every distance below scales with.
+        ///
+        /// BOTH AXES: the ring spread to either side takes the room's width, and
+        /// the ring seen from above - the back card's top to the front card's foot
+        /// - its height above the dots; the smaller of the two answers, so a
+        /// window grown taller draws a bigger ring and a phone on its side -
+        /// plenty of width, almost no height - is answered by the height.
+        private func fit(in room: Rect) -> Double {
+            max(
+                min(
+                    1.375,
+                    (room.width * 0.4 - 6) / Self.width,
+                    (room.height - 46) / (Self.height * Self.ringHeight)),
+                0.1)
+        }
+
+        /// A RING IN SPACE, turned to `at` - the cards standing upright on a
+        /// circle that lies flat, seen from in front and above, the chosen card
+        /// nearest the eye. The whole of the layout.
+        private func place(_ index: Int, _ at: Double, _ room: Rect, flung: Double = 0) -> Placement {
+            let count = Self.cards.count
+            let fit = fit(in: room)
+            let step = Double(index) - at
+            let angle = step / Double(max(count, 1)) * 2 * .pi
+            let wide = Self.width * fit
+            let tall = Self.height * fit
+
+            // PERSPECTIVE: how big a card is drawn - 1 at the front, under half at
+            // the back - which also says how near the middle it stands and how far
+            // below the horizon its foot is.
+            let drawn = Self.eye / (Self.eye + 1 - cos(angle))
+
+            // The circle as wide as the room lets the cards spread, and the horizon
+            // where the whole ring - the back card's top to the front card's foot -
+            // stands in the middle of the room above the dots.
+            let radius = min(wide * 1.75, (room.width / 2 - 8 - wide * 0.33) / 0.65)
+            let horizon = (room.height - 30 - tall * Self.ringHeight) / 2 - tall * Self.back * (Self.above - 1)
+            // Flung outward, every card farther from the ring's middle - across,
+            // and nearer or farther from the eye.
+            let across = room.width / 2 + sin(angle) * radius * drawn * (1 + flung)
+            let foot = horizon + tall * Self.above * (1 + (drawn - 1) * (1 + flung))
+
+            // THE CARD AT ITS OWN SIZE, a little smaller than its place, standing
+            // on the ring where its place does.
+            let (cardWide, cardTall) = (wide * Self.card, tall * Self.card)
+
+            return Placement(
+                // Scaled about its middle to how big it is drawn - its words scale
+                // with it rather than wrapping anew.
+                Rect(across - cardWide / 2, foot - cardTall * drawn / 2 - cardTall / 2, cardWide, cardTall),
+                transform: .scale(drawn),
+                // THE FAR CARDS DARKEN. `shade` is the opacity of the view the
+                // layout was given by `.shade(_:)` - nothing at all without one -
+                // and here it is how far back the card stands. A FADE would show
+                // the card behind it, which on a ring is every other card.
+                shade: min((1 - drawn) * 1.1, 0.55),
+                // The nearer card is drawn over the farther one.
+                zIndex: Int(cos(angle) * 1000))
+        }
+
+        /// One dot at the board's foot, saying which card is at the front by a
+        /// fade - over every card.
+        private func dot(_ index: Int, _ at: Double, _ room: Rect) -> Placement {
+            let count = Self.cards.count
+
+            return Placement(
+                Rect(
+                    room.width / 2 + (Double(index) - Double(count - 1) / 2) * 13 - 3,
+                    room.height - 16,
+                    6,
+                    6),
+                // THE RING COMES ROUND: how far a card is from the front is taken
+                // the short way, a turn on or back.
+                opacity: 0.25 + 0.75 * chosen((Double(index) - at).remainder(dividingBy: Double(count))),
+                zIndex: 2000)
+        }
+
+        /// How much of "the chosen one" a card is: 1 at the front, nothing a card
+        /// away, and part way between while the ring is moving - which is what
+        /// makes the emphasis cross over rather than jump.
+        private func chosen(_ step: Double) -> Double {
+            max(0, 1 - abs(step))
+        }
+
         """#,
         "MotionSample": #"""
         // Sources/Samples/Animation/MotionSample.swift
@@ -7009,6 +7883,7 @@ enum Listings {
         @State private var law = 2
         @State private var wide = false
         @State private var warm = false
+        @State(motion: .spring(response: .milliseconds(320))) private var reach = 120.0
 
         var body: some View {
             // NOTHING HERE SAYS "ANIMATE". A value that changes is a setpoint: the
@@ -7036,16 +7911,35 @@ enum Listings {
 
                 HStack {
                     Button("Size").onClicked { wide.toggle() }
-                    Button("Colour").onClicked { warm.toggle() }
+                    Button("Color").onClicked { warm.toggle() }
                     Button(Self.laws[law]).onClicked { law = (law + 1) % Self.laws.count }
+                }
+
+                Text("A move's own law, then the value's")
+                    .tracking(1)
+
+                Rectangle()
+                    .fill(Palette.brand)
+                    .width($reach)
+                    .height(24)
+                    .horizontalAlignment(.start)
+
+                HStack {
+                    // The law given here is this move's alone...
+                    Button("Slow move").onClicked {
+                        $reach.journey.move(to: 300, .eased(.milliseconds(2000), .sineInOut))
+                    }
+                    // ...and a plain write travels on the value's own spring.
+                    Button("Back").onClicked { reach = 120 }
                 }
             }
         }
 
-        /// One panel, either travelling at the chosen law or arriving at once.
+        /// One panel, either traveling at the chosen law or arriving at once.
         private func panel(travels: Bool) -> some View {
             // `.motion` is per view: the chosen law, or `.none` to arrive at once.
-            Rectangle(warm ? Palette.accent : Palette.brand)
+            Rectangle()
+                .fill(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 110 : 56)
                 .horizontalAlignment(.start)
@@ -7056,7 +7950,8 @@ enum Listings {
         /// `.size` takes to be its width and its height - its corners are its
         /// shape, and travel with the rest.
         private func sized() -> some View {
-            Rectangle(warm ? Palette.accent : Palette.brand)
+            Rectangle()
+                .fill(warm ? Palette.accent : Palette.brand)
                 .width(wide ? 300 : 120)
                 .height(wide ? 110 : 56)
                 .horizontalAlignment(.start)
@@ -7066,7 +7961,7 @@ enum Listings {
         """#,
         "MultiWindowSample": #"""
         // Sources/Samples/Windows/MultiWindowSample.swift
-        /// The look every gallery window wears, which the Fonts and Colours
+        /// The look every gallery window wears, which the Fonts and Colors
         /// windows change.
         let style: SessionStyle
 
@@ -7089,13 +7984,13 @@ enum Listings {
 
                 HStack {
                     opens("Fonts", .fonts)
-                    opens("Colours", .colours)
+                    opens("Colors", .colors)
                 }
                 .horizontalAlignment(.center)
 
                 HStack {
                     closes("Close fonts", .fonts)
-                    closes("Close colours", .colours)
+                    closes("Close colors", .colors)
                 }
                 .horizontalAlignment(.center)
 
@@ -7123,42 +8018,42 @@ enum Listings {
 
                 Button("Close swatch 2")
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .ignoreWhileRunning) { await closeSwatch(2) }
+                    .onClicked(.ignoreWhileRunning) { await closeSwatch(2) }
 
                 SectionTitle("More gallery windows")
 
                 Button("New gallery window")
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .ignoreWhileRunning) { await openAnother() }
+                    .onClicked(.ignoreWhileRunning) { await openAnother() }
 
                 Button("Close every gallery window")
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .ignoreWhileRunning) { await closeThis() }
+                    .onClicked(.ignoreWhileRunning) { await closeThis() }
             }
         }
 
         /// A line in the scene's font and accent - what its two windows change.
         private var preview: some View {
             let line = Text("The quick brown fox jumps over the lazy dog.")
-                .textColor(style.look(dark: application.info.colorScheme == .dark).barColour.color(system: application.info.accentColor, for: .bar))
+                .textColor(style.look(dark: application.info.colorScheme == .dark).bars.color.color(system: application.info.accentColor, for: .bar))
 
             return style.font.isEmpty ? line : line.fontFamily(style.font)
         }
 
         /// The button that opens one of the scene's windows.
-        private func opens(_ caption: String, _ type: WindowType) -> some View {
+        private func opens(_ caption: String, _ type: WindowType<Void>) -> some View {
             Button(caption)
-                .onClicked(gate: .ignoreWhileRunning) { await open(type, caption) }
+                .onClicked(.ignoreWhileRunning) { await open(type, caption) }
         }
 
         /// The button that closes it.
-        private func closes(_ caption: String, _ type: WindowType) -> some View {
+        private func closes(_ caption: String, _ type: WindowType<Void>) -> some View {
             Button(caption)
-                .onClicked(gate: .ignoreWhileRunning) { await close(type, caption) }
+                .onClicked(.ignoreWhileRunning) { await close(type, caption) }
         }
 
         /// Opens a window of the scene, and says what came of it.
-        private func open(_ type: WindowType, _ caption: String) async {
+        private func open(_ type: WindowType<Void>, _ caption: String) async {
             do {
                 try await application.openWindow(type)
                 said = "\(caption): opened."
@@ -7170,7 +8065,7 @@ enum Listings {
         }
 
         /// Closes one, and says what came of it.
-        private func close(_ type: WindowType, _ caption: String) async {
+        private func close(_ type: WindowType<Void>, _ caption: String) async {
             do {
                 try await application.closeWindow(type)
                 said = "\(caption): closed."
@@ -7194,7 +8089,7 @@ enum Listings {
         /// The button that opens one swatch's window.
         private func swatch(_ number: Int) -> some View {
             Button("Swatch \(number)")
-                .onClicked(gate: .ignoreWhileRunning) { await openSwatch(number) }
+                .onClicked(.ignoreWhileRunning) { await openSwatch(number) }
         }
 
         /// Opens a swatch's window, and says what came of it.
@@ -7232,35 +8127,10 @@ enum Listings {
         """#,
         "Navigation.sheets": #"""
         // Sources/Gallery/Navigation.swift
-        /// A page the gallery presents OVER everything - see `ModalSample`.
-        ///
-        /// The modal stack is the WINDOW's page, so a sheet this value names covers
-        /// the bars as well as the content.
-        enum Sheet: Hashable {
-            /// A page shown through the host's adaptive native modal presentation.
-            case page
-        }
-
-        /// What is presented over all of it, the first presented first and the
-        /// top one last. Usually empty, and almost always one deep when it is not -
-        /// it is a stack because the platforms make it one: a sheet may present a
-        /// sheet.
-        @State var sheets: [Sheet] = []
-
-        /// Presents a page over everything - the bars included, which is the whole
-        /// difference from `push`.
-        func present(_ sheet: Sheet) {
-            sheets.append(sheet)
-        }
-
-        /// Closes the top one. A sheet the USER dismisses needs none of this: the
-        /// host reports how many survived and `ModalStack` shortens the array, the
-        /// same way a back gesture shortens a path.
-        func dismiss() {
-            if !sheets.isEmpty {
-                sheets.removeLast()
-            }
-        }
+        /// Whether a page stands presented over all of it - the bars included,
+        /// which is the whole difference from `push`. The user dismissing it
+        /// writes false, the way a back gesture shortens a path.
+        @State var presentsPage = false
         """#,
         "NavigationSample": #"""
         // Sources/Samples/Navigation/NavigationSample.swift
@@ -7520,10 +8390,10 @@ enum Listings {
 
                 HStack {
                     Button("Top")
-                        .onClicked(gate: .cancelPrevious) { try await move(to: 0) }
+                        .onClicked(.cancelPrevious) { try await move(to: 0) }
 
                     Button("Line 9")
-                        .onClicked(gate: .cancelPrevious) { try await move(to: 240) }
+                        .onClicked(.cancelPrevious) { try await move(to: 240) }
                 }
                 .horizontalAlignment(.center)
                 .gridRow(1)
@@ -7638,7 +8508,8 @@ enum Listings {
                 // The box fills the ZStack; its corners are cut only while the
                 // ZStack clips what it holds.
                 ZStack {
-                    Rectangle(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                 }
                 .shape(.roundedRectangle(24))
                 .clipsContent(clips)
@@ -7667,7 +8538,7 @@ enum Listings {
                 Text("Press each button three times, quickly.")
 
                 row("Ignore while running", ignored)
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         ignored.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         ignored.finished += 1
@@ -7676,21 +8547,21 @@ enum Listings {
                 // The run a press cancels ends at its sleep: what it would write
                 // after is never written.
                 row("Cancel previous", cancelled)
-                    .onClicked(gate: .cancelPrevious) {
+                    .onClicked(.cancelPrevious) {
                         cancelled.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         cancelled.finished += 1
                     }
 
                 row("Wait for previous", waited)
-                    .onClicked(gate: .waitForPrevious) {
+                    .onClicked(.waitForPrevious) {
                         waited.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         waited.finished += 1
                     }
 
-                row("None", unheld)
-                    .onClicked(gate: .none) {
+                row("Run concurrently", unheld)
+                    .onClicked(.runConcurrently) {
                         unheld.started += 1
                         try await Task.sleep(for: .milliseconds(1500))
                         unheld.finished += 1
@@ -7743,7 +8614,8 @@ enum Listings {
                 }
                 .samples($fade, into: $shown, .every(.milliseconds(100)))
 
-                Rectangle(Palette.accent)
+                Rectangle()
+                    .fill(Palette.accent)
                     .height(60)
                     .opacity($fade)
 
@@ -7764,16 +8636,16 @@ enum Listings {
 
         static let onAccent = Color(light: AppColors.white, dark: AppColors.white)
 
-        static let subtle = Color(light: Color("#8C000000"), dark: Color("#8CFFFFFF"))
+        static let subtle = Color(light: Color(hex: 0x000000, opacity: 0.55), dark: Color(hex: 0xFFFFFF, opacity: 0.55))
 
-        static let disabled = Color(light: Color("#40000000"), dark: Color("#40FFFFFF"))
+        static let disabled = Color(light: Color(hex: 0x000000, opacity: 0.25), dark: Color(hex: 0xFFFFFF, opacity: 0.25))
 
-        static let outline = Color(light: Color("#1F000000"), dark: Color("#1FFFFFFF"))
+        static let outline = Color(light: Color(hex: 0x000000, opacity: 0.12), dark: Color(hex: 0xFFFFFF, opacity: 0.12))
 
         static let danger = Color(light: AppColors.red, dark: AppColors.redLight)
 
         /// What such an action stands on: its red let faintly through.
-        static let dangerWash = Color(light: Color("#1FD92D20"), dark: Color("#33FF8A80"))
+        static let dangerWash = Color(light: Color(hex: 0xD92D20, opacity: 0.12), dark: Color(hex: 0xFF8A80, opacity: 0.2))
         """#,
         "PanSample": #"""
         // Sources/Samples/Gestures/PanSample.swift
@@ -7784,6 +8656,11 @@ enum Listings {
 
         /// Whether the reading written on every report is a SNAP.
         @State private var snaps = true
+
+        /// What the box does as it is let go: stays, springs home, or glides on
+        /// - the last two at the hand's speed.
+        @State private var letting = "Stays"
+        static let lettings = ["Stays", "Springs home", "Glides on"]
 
         /// Where the box IS, driven - the host reads the translation off these on
         /// its own frames, so a drag costs the arithmetic and no renders at all.
@@ -7800,7 +8677,8 @@ enum Listings {
                 // A fixed box for it to move inside, so the layout does not follow
                 // the view about.
                 ZStack {
-                    Rectangle(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(64)
                         .height(64)
                         .horizontalAlignment(.center)
@@ -7813,6 +8691,24 @@ enum Listings {
                             switch update.phase {
                             case .changed:
                                 follow(panX + update.totalX, panY + update.totalY)
+                            case .ended where letting == "Springs home":
+                                // The hand's speed is the box's as it lets go: it
+                                // goes on that way, and the spring brings it home.
+                                (panX, panY) = (0, 0)
+                                $liveX.journey.velocity = update.velocityX
+                                $liveY.journey.velocity = update.velocityY
+                                $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+                                $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
+                            case .ended where letting == "Glides on":
+                                // It glides on from the hand's speed to where that
+                                // throw carries it, kept inside the box.
+                                let glide = Motion.glide(longest: .milliseconds(900))
+                                $liveX.journey.velocity = update.velocityX
+                                $liveY.journey.velocity = update.velocityY
+                                panX = min(max($liveX.journey.reach(glide), -140), 140)
+                                panY = min(max($liveY.journey.reach(glide), -60), 60)
+                                $liveX.journey.move(to: panX, glide)
+                                $liveY.journey.move(to: panY, glide)
                             case .ended:
                                 panX = $liveX.journey.value
                                 panY = $liveY.journey.value
@@ -7831,11 +8727,14 @@ enum Listings {
                 // Two states into one conversion: the host works the words out
                 // from where the box HAS GOT TO, on its own frames.
                 Text()
-                    .text($liveX.journey.convert(with: $liveY.journey) { x, y in
+                    .text(.multi($liveX.journey, $liveY.journey).convert { x, y in
                         "Moved \(Int(x.value)), \(Int(y.value))"
                     })
 
                 SwitchRow("The drag snaps", $snaps)
+                // What the box does as the hand lets it go.
+                Picker(Self.lettings, selection: $letting) { $0 }
+                    .presentation(.segmented)
 
                 Button("Put it back")
                     .horizontalAlignment(.center)
@@ -7881,15 +8780,19 @@ enum Listings {
             case bold
         }
 
-        extension PersistentKey {
+        extension PersistentKey where Value == Int {
             /// How many times the user has pressed the button, ever.
-            static let visits = PersistentKey("dev.stateui.gallery.visits", of: Int.self)
+            static let visits = PersistentKey("dev.stateui.gallery.visits")
+        }
 
+        extension PersistentKey where Value == String {
             /// What the user is called.
-            static let who = PersistentKey("dev.stateui.gallery.who", of: String.self)
+            static let who = PersistentKey("dev.stateui.gallery.who")
+        }
 
+        extension PersistentKey where Value == Shade {
             /// Whether the panel below paints loudly.
-            static let shade = PersistentKey("dev.stateui.gallery.shade", of: Shade.self)
+            static let shade = PersistentKey("dev.stateui.gallery.shade")
         }
 
         @State(persistentKey: .visits) private var visits = 0
@@ -7921,15 +8824,12 @@ enum Listings {
 
                 // A key whose value is an enum - kept as the word it is spelled
                 // with, so anything else that opens the store can read it.
-                HStack {
-                    Text("Bold shade")
-                        .verticalAlignment(.center)
+                Switch(shade == .bold)
+                    .text("Bold shade")
+                    .onToggled { on in shade = on ? .bold : .quiet }
 
-                    Switch(shade == .bold)
-                        .onToggled { on in shade = on ? .bold : .quiet }
-                }
-
-                Rectangle(shade == .bold ? Palette.accent : Palette.well)
+                Rectangle()
+                    .fill(shade == .bold ? Palette.accent : Palette.well)
                     .height(48)
             }
         }
@@ -7943,10 +8843,10 @@ enum Listings {
             Grid {
                 HStack {
                     Button("Top")
-                        .onClicked(gate: .cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
+                        .onClicked(.cancelPrevious) { try await list.scrollTo(0, anchor: .start) }
 
                     Button("Row 500")
-                        .onClicked(gate: .cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
+                        .onClicked(.cancelPrevious) { try await list.scrollTo(500, anchor: .start) }
 
                     Button("Clear")
                         .isEnabled(!chosen.isEmpty)
@@ -7995,15 +8895,14 @@ enum Listings {
 
                 Picker(Size.allCases, selection: $size) { "\($0)".titled }
                     .placeholder("Size")
-                    // Settable, so a button elsewhere can open the list. The two
-                    // events answer the user and the platform - never this
-                    // side's own write.
-                    .isOpen(showing)
-                    .onOpened { opened += 1; showing = true }
-                    .onClosed { showing = false }
+                    // Both ways, so a button elsewhere can open the list and the
+                    // user's closing writes it back. The event answers the user
+                    // and the platform - never this side's own write.
+                    .isOpen($showing)
+                    .onOpened { opened += 1 }
 
                 // Only where the platform opens a list at the program's asking.
-                if device.honours(PickerContract.isOpen) {
+                if device.honors(PickerContract.isOpen) {
                     Button("Open the list")
                         .onClicked { showing = true }
                         .horizontalAlignment(.center)
@@ -8025,24 +8924,29 @@ enum Listings {
         "PinchSample": #"""
         // Sources/Samples/Gestures/PinchSample.swift
         @State private var pinch = 1.0
+        @State private var pinchedFrom = 1.0
+        @State private var turn = 0.0
+        @State private var turnedFrom = 0.0
         @State private var reports = 0
 
         var body: some View {
             VStack {
-                // The scale and the report count are read here, so every report a
-                // pinch makes builds this closure.
+                // The scale, the angle and the report count are read here, so every
+                // report the fingers make builds this closure.
                 DebugInfoLabel()
 
                 // The recognizer is on the ZStack; the rectangle inside it is what
                 // moves. Putting both on one view is what stops a pinch after its
                 // first report - see the notes.
                 ZStack {
-                    Rectangle(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(80)
                         .height(80)
                         .horizontalAlignment(.center)
                         .verticalAlignment(.center)
                         .scale(pinch)
+                        .rotation(turn)
                 }
                 .style(.card)
                 .stroke(Palette.outline)
@@ -8051,11 +8955,18 @@ enum Listings {
                 .onPinchUpdated { update in
                     reports += 1
 
-                    // Multiplying needs no scale captured at the start: each
-                    // report carries its own step.
-                    if update.phase == .changed {
-                        pinch = max(0.5, min(3, pinch * update.scale))
-                    }
+                    // The spread since the pinch began scales the size it had
+                    // then.
+                    if update.phase == .began { pinchedFrom = pinch }
+                    pinch = max(0.5, min(3, pinchedFrom * update.scale))
+                }
+                .onRotationUpdated { update in
+                    reports += 1
+
+                    // The angle since the fingers began turns the view from where
+                    // it stood then.
+                    if update.phase == .began { turnedFrom = turn }
+                    turn = turnedFrom + update.angle
                 }
 
                 // Per cent rather than a formatted double: String(format:) is
@@ -8063,12 +8974,13 @@ enum Listings {
                 //
                 // The count is here on purpose: a pinch that reports once is a pinch
                 // that has been interrupted, and the number says so at a glance.
-                Text("Scale \(Int(pinch * 100))% - \(reports) report(s)")
+                Text("Scale \(Int(pinch * 100))%, turned \(Int(turn))° - \(reports) report(s)")
 
-                Button("Back to life size")
+                Button("Back as it was")
                     .horizontalAlignment(.center)
                     .onClicked {
                         pinch = 1
+                        turn = 0
                         reports = 0
                     }
             }
@@ -8076,26 +8988,26 @@ enum Listings {
         """#,
         "PlatformSupportSample": #"""
         // Sources/Samples/Environment/PlatformSupportSample.swift
-        /// The device, by its name: what its platform honours is its host's.
+        /// The device, by its name: what its platform honors is its host's.
         @Environment(\.device) var device
 
         var body: some View {
             VStack {
-                supported("Opening a picker's list", device.honours(PickerContract.isOpen))
-                supported("Hearing a picker's list open", device.honours(PickerContract.opened))
-                supported("A tooltip", device.honours(VisualElementContract.tooltip))
-                supported("A picture beside a menu's entry", device.honours(MenuItemElementContract.icon))
+                supported("Opening a picker's list", device.honors(PickerContract.isOpen))
+                supported("Hearing a picker's list open", device.honors(PickerContract.opened))
+                supported("A tooltip", device.honors(VisualElementContract.tooltip))
+                supported("A picture beside a menu's entry", device.honors(MenuItemElementContract.icon))
             }
         }
 
-        /// One member, and whether this platform honours it.
-        private func supported(_ words: String, _ honoured: Bool) -> some View {
+        /// One member, and whether this platform honors it.
+        private func supported(_ words: String, _ honored: Bool) -> some View {
             HStack {
                 Text(words)
 
-                Spacer()
+                Space()
 
-                Text(honoured ? "honoured" : "not here")
+                Text(honored ? "honored" : "not here")
             }
         }
         """#,
@@ -8169,7 +9081,7 @@ enum Listings {
 
                 Text("\(rounds) round(s)")
 
-                ActivityIndicator(checking)
+                Spinner(checking)
                     .height(28)
 
                 Button(poll.isRunning || checking ? "Stop" : "Start")
@@ -8221,8 +9133,8 @@ enum Listings {
             }
         }
         """#,
-        "PositionIndicatorSample": #"""
-        // Sources/Samples/Collections/PositionIndicatorSample.swift
+        "PositionDotsSample": #"""
+        // Sources/Samples/Collections/PositionDotsSample.swift
         @State private var step = 0
         @State private var cap = 5.0
 
@@ -8237,20 +9149,20 @@ enum Listings {
                 Text(Self.steps[step])
                     .fontWeight(.bold)
 
-                PositionIndicator()
+                PositionDots()
                     .count(Self.steps.count)
                     .position(step)
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
-                PositionIndicator()
+                PositionDots()
                     .count(Self.steps.count)
                     .position(step)
-                    .indicatorShape(.square)
-                    .indicatorSize(10)
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotShape(.square)
+                    .dotSize(10)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
                 HStack {
@@ -8271,23 +9183,23 @@ enum Listings {
                 Text("Twelve items, maximumVisible(12)")
                     .horizontalAlignment(.center)
 
-                PositionIndicator()
+                PositionDots()
                     .count(12)
                     .position(step)
                     .maximumVisible(12)
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
                 Text("The same twelve, maximumVisible(\(Int(cap)))")
                     .horizontalAlignment(.center)
 
-                PositionIndicator()
+                PositionDots()
                     .count(12)
                     .position(step)
                     .maximumVisible(Int(cap))
-                    .indicatorColor(Palette.outline)
-                    .currentIndicatorColor(Palette.accent)
+                    .dotColor(Palette.outline)
+                    .currentDotColor(Palette.accent)
                     .horizontalAlignment(.center)
 
                 Stepper($cap)
@@ -8303,24 +9215,24 @@ enum Listings {
                     VStack {
                         Text("hidesForSinglePage(true)")
 
-                        PositionIndicator()
+                        PositionDots()
                             .count(1)
                             .position(0)
                             .hidesForSinglePage(true)
-                            .indicatorColor(Palette.outline)
-                            .currentIndicatorColor(Palette.accent)
+                            .dotColor(Palette.outline)
+                            .currentDotColor(Palette.accent)
                             .horizontalAlignment(.center)
                     }
 
                     VStack {
                         Text("hidesForSinglePage(false)")
 
-                        PositionIndicator()
+                        PositionDots()
                             .count(1)
                             .position(0)
                             .hidesForSinglePage(false)
-                            .indicatorColor(Palette.outline)
-                            .currentIndicatorColor(Palette.accent)
+                            .dotColor(Palette.outline)
+                            .currentDotColor(Palette.accent)
                             .horizontalAlignment(.center)
                     }
                 }
@@ -8410,35 +9322,6 @@ enum Listings {
                 }
             }
         }
-        """#,
-        "RadioButtonSample": #"""
-        // Sources/Samples/BasicInput/RadioButtonSample.swift
-        @State private var size = "Medium"
-
-        var body: some View {
-            VStack {
-                // The chosen one is read here, so picking builds this closure.
-                DebugInfoLabel()
-
-                ForEach(sizes) { name in
-                    RadioButton(name)
-                        .groupName("size")
-                        .isOn(size == name)
-                        // Fires on the button that WAS chosen too, with false - so
-                        // the state is written only by the one that won.
-                        .onToggled { chosen in
-                            if chosen {
-                                size = name
-                            }
-                        }
-                        .id(name)
-                }
-
-                Text("Chosen: \(size)")
-            }
-        }
-
-        private var sizes: [String] { ["Small", "Medium", "Large"] }
         """#,
         "RatingBar.flash": #"""
         // Sources/Samples/Interop/RatingBar.swift
@@ -8677,6 +9560,164 @@ enum Listings {
             }
         }
         """#,
+        "RecordEditingSample": #"""
+        // Sources/Samples/State/RecordEditingSample.swift
+        /// A row edited live: each field a state of its own, which the host carries.
+        @MainActor
+        private final class Todo {
+            let id: Int
+            @State var title: String
+            @State var done = false
+
+            init(id: Int, title: String) {
+                self.id = id
+                // The state made here: a wrapped property is not assigned in `init`.
+                _title = State(wrappedValue: title)
+            }
+        }
+
+        /// A row that borrows its fields whole.
+        private struct TodoRow: View {
+            @Binding var title: String
+            @Binding var done: Bool
+
+            var body: some View {
+                // The field takes what the check box leaves.
+                Grid {
+                    CheckBox($done)
+                    TextField($title)
+                        .gridColumn(1)
+                }
+                .columns(.auto, .fill)
+            }
+        }
+
+        /// The rows of a class of states: typing writes that row's own state, and
+        /// nothing here is built again.
+        private struct LiveTodos: View {
+            @State private var todos = [Todo(id: 1, title: "Milk"), Todo(id: 2, title: "Bread")]
+
+            var body: some View {
+                VStack {
+                    SectionTitle("A class of states")
+                    DebugInfoLabel()
+
+                    ForEach(todos, id: \.id) { todo in
+                        TodoRow(title: todo.$title, done: todo.$done)
+                    }
+                }
+            }
+        }
+
+        /// A row kept as a value - what a file holds, or a scene keeps.
+        private struct Chore {
+            let id: Int
+            var title: String
+            var done = false
+        }
+
+        /// The rows of a value: every control shows its value, and its event writes
+        /// the user's change into the whole list - which builds this again.
+        private struct KeptChores: View {
+            @State private var chores = [Chore(id: 1, title: "Dishes"), Chore(id: 2, title: "Laundry", done: true)]
+            @State private var chosen: Int? = 1
+            @State private var refreshing = false
+
+            var body: some View {
+                Grid {
+                    VStack {
+                        SectionTitle("A value and its event")
+                        DebugInfoLabel()
+                    }
+                    .gridRow(0)
+
+                    ItemsView(chores, id: \.id) { chore in
+                        Text(chore.done ? "\(chore.title) ✓" : chore.title)
+                    }
+                    .selection($chosen)
+                    .isRefreshing($refreshing)
+                    .onRefreshRequested(.ignoreWhileRunning) {
+                        defer { refreshing = false }
+                        try await Task.sleep(for: .seconds(1))
+                    }
+                    .gridRow(1)
+
+                    VStack {
+                        if let chore = chores.first(where: { $0.id == chosen }) {
+                            TextField(chore.title)
+                                .onTextChanged { title in edit(chore.id) { $0.title = title } }
+
+                            CheckBox(chore.done)
+                                .text("Done")
+                                .onToggled { done in edit(chore.id) { $0.done = done } }
+                        }
+                    }
+                    .gridRow(2)
+                }
+                .rows(.auto, .fill, .auto)
+            }
+
+            /// The chore of `id`, changed in place - found by its identity, never by
+            /// where it stands.
+            private func edit(_ id: Int, _ change: (inout Chore) -> Void) {
+                if let row = chores.firstIndex(where: { $0.id == id }) { change(&chores[row]) }
+            }
+        }
+
+        var body: some View {
+            Grid {
+                LiveTodos()
+                    .gridRow(0)
+
+                KeptChores()
+                    .gridRow(1)
+            }
+            .rows(.auto, .fill)
+        }
+        """#,
+        "RefreshingList": #"""
+        // Sources/Samples/Collections/RefreshSample.swift
+        @State private var items = ["Weekly notes", "Old news"]
+        @State private var refreshing = false
+        @State private var fetched = 0
+
+        var body: some View {
+            Grid {
+                HStack {
+                    // Where the platform has no pull, a command refreshes - its spinner showing where it has one.
+                    Button("Refresh")
+                        .isEnabled(!refreshing)
+                        .onClicked(.ignoreWhileRunning) { try await fetch() }
+
+                    Button("Clear")
+                        .onClicked { items = [] }
+
+                    Text(refreshing ? "Refreshing" : items.count == 1 ? "1 item" : "\(items.count) items")
+                        .verticalAlignment(.center)
+                }
+                .gridRow(0)
+
+                ItemsView(items, id: \.self) { item in
+                    Text(item)
+                }
+                // An empty list keeps its pull.
+                .emptyView(Text("Nothing yet").textColor(Palette.subtle))
+                .isRefreshing($refreshing)
+                .onRefreshRequested(.ignoreWhileRunning) { try await fetch() }
+                .gridRow(1)
+            }
+            .rows(.auto, .fill)
+        }
+
+        /// Fetches what is new, the spinner showing until it is in.
+        private func fetch() async throws {
+            refreshing = true
+            defer { refreshing = false }
+            try await Task.sleep(for: .milliseconds(900))
+            fetched += 1
+            items.insert("Fresh \(fetched)", at: 0)
+        }
+        """#,
         "RemovingRowSample": #"""
         // Sources/Samples/Layout/RemovingRowSample.swift
         /// The rows, and which of them have gone.
@@ -8795,6 +9836,35 @@ enum Listings {
             .verticalAlignment(.center)
         }
         """#,
+        "SafeAreaSample": #"""
+        // Sources/Samples/Layout/SafeAreaSample.swift
+        @State private var presented = false
+        @State private var under = true
+        @State private var path: [Int] = []
+
+        var body: some View {
+            Button("Open a page")
+                .onClicked { presented = true }
+                .sheet(isPresented: $presented) {
+                    NavigationStack($path) {
+                        Grid {
+                            ScrollView {
+                                VStack {
+                                    Switch($under).text("Under the bars")
+                                    ForEach(Array(1...40), id: \.self) { row in
+                                        Text("Row \(row)")
+                                    }
+                                }
+                            }
+                        }
+                        .ignoresSafeArea(under ? .all : .none)
+                        .galleryPage("Safe area")
+                    } destination: { _ in
+                        Text("")
+                    }
+                }
+        }
+        """#,
         "SameInputsSample": #"""
         // Sources/Samples/Fundamentals/SameInputsSample.swift
         @State private var counter = 0
@@ -8888,7 +9958,7 @@ enum Listings {
         "SaveAndDelete": #"""
         // Sources/Samples/State/GateSample.swift
         /// One gate for both of the document's actions.
-        @State private var document = Gatekeeper(.ignoreWhileRunning)
+        @State private var document = Gate(.ignoreWhileRunning)
         @State private var said = "Saved nothing yet."
 
         var body: some View {
@@ -8915,7 +9985,7 @@ enum Listings {
 
                 HStack {
                     if document.isBusy {
-                        ActivityIndicator(true)
+                        Spinner(true)
                     }
                     Text(said)
                 }
@@ -8934,11 +10004,11 @@ enum Listings {
             VStack {
                 Button("New scratchpad")
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
+                    .onClicked(.ignoreWhileRunning) { await open(.scratchpad, "New scratchpad") }
 
                 Button("About")
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .ignoreWhileRunning) { await open(.about, "About") }
+                    .onClicked(.ignoreWhileRunning) { await open(.about, "About") }
 
                 VStack {
                     DebugInfoLabel()
@@ -8951,7 +10021,7 @@ enum Listings {
         }
 
         /// Opens a window of the kind `type` names, in the scene declaring it, and says what came of it.
-        private func open(_ type: WindowType, _ caption: String) async {
+        private func open(_ type: WindowType<Void>, _ caption: String) async {
             do {
                 try await application.openWindow(type)
                 said = "\(caption): opened."
@@ -8990,10 +10060,10 @@ enum Listings {
 
                     HStack {
                         Button("Close this window")
-                            .onClicked(gate: .ignoreWhileRunning) { try await window.close() }
+                            .onClicked(.ignoreWhileRunning) { try await window.close() }
 
                         Button("Close every scratchpad")
-                            .onClicked(gate: .ignoreWhileRunning) { try await scene.close() }
+                            .onClicked(.ignoreWhileRunning) { try await scene.close() }
                     }
                     .horizontalAlignment(.end)
                 }
@@ -9009,15 +10079,15 @@ enum Listings {
         """#,
         "ScratchpadScene": #"""
         // Sources/Samples/Windows/ScratchpadScene.swift
-        extension WindowType {
+        extension WindowType where Value == Void {
             /// A scratchpad window: as many as the user opens.
             static let scratchpad = WindowType("gallery.scratchpad")
         }
 
         /// What the scratchpads KEEP - handed back with their scene when the system restores the application's windows.
-        extension SceneKey {
+        extension SceneKey where Value == String {
             /// The scratchpads' text.
-            static let scratch = SceneKey("gallery.scratch", of: String.self)
+            static let scratch = SceneKey("gallery.scratch")
         }
 
         /// The scratchpads: a scene of their own beside the galleries, its windows as many as
@@ -9071,6 +10141,7 @@ enum Listings {
         """#,
         "SearchSample": #"""
         // Sources/Samples/Navigation/SearchSample.swift
+        @Environment(\.window) private var window
         /// Where the gallery is: choosing a suggestion pushes a page.
         let nav: Navigation
 
@@ -9146,20 +10217,19 @@ enum Listings {
                 Text("A caption the user only reads.")
                     .textStyle(.caption)
 
-                HStack {
-                    Switch($selectable)
-
-                    Text("Selectable")
-                        .verticalAlignment(.center)
-                }
+                Switch($selectable)
+                    .text("Selectable")
             }
         }
         """#,
         "SemanticsSample": #"""
         // Sources/Samples/BasicInput/SemanticsSample.swift
+        @Environment(\.application) private var application
         @State private var described = true
 
         @State private var taps = 0
+
+        @State private var rating = 3
 
         /// The last thing said out loud, shown - because a machine with no screen
         /// reader running shows nothing at all otherwise, and what was said is the
@@ -9168,7 +10238,7 @@ enum Listings {
 
         /// Said once, and both written onto the button and printed under it - so
         /// what the sample shows cannot drift from what the platform was handed.
-        private static let says = "Add to favourites"
+        private static let says = "Add to favorites"
 
         private static let hint = "Puts this item on your list"
 
@@ -9180,9 +10250,10 @@ enum Listings {
 
                 HStack {
                     VStack {
-                        // A picture and nothing else. To anybody not looking at it,
+                        // A picture and no words. To anybody not looking at it,
                         // this control has no name at all.
-                        Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                        Button()
+                            .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
                             .style(.iconButton)
                             .contentMode(.fit)
                             .width(64)
@@ -9232,6 +10303,27 @@ enum Listings {
                         .accessibilityHeading(.h1)
                 }
 
+                SectionTitle("One thing made of parts")
+
+                // Five stars drawn, one rating heard: a screen reader meets the row
+                // as one adjustable thing holding its value, not as five pictures,
+                // steps it with a swipe up or down, and offers Clear as an action.
+                HStack {
+                    ForEach(1...5) { star in
+                        Text(star <= rating ? "★" : "☆")
+                            .onTapped { rating = star }
+                    }
+                }
+                .horizontalAlignment(.center)
+                .accessibilityRole(.adjustable)
+                .accessibilityValue("\(rating) of 5")
+                .onAccessibilityAdjusted { step in
+                    rating = min(5, max(0, rating + (step == .increment ? 1 : -1)))
+                }
+                .accessibilityAction("Clear") { rating = 0 }
+
+                Text("A user hears: Rating, \(rating) of 5")
+
                 SectionTitle("Said out loud")
 
                 // Said out loud, now, whatever the user was on. An ACT, because
@@ -9239,9 +10331,9 @@ enum Listings {
                 // view can hold.
                 Button("Announce the count")
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         let words = "Tapped \(taps) time\(taps == 1 ? "" : "s")"
-                        try await ScreenReader.announce(words)
+                        try await application.announce(words)
                         said = words
                     }
 
@@ -9275,12 +10367,12 @@ enum Listings {
                         }
                     }
                     .style(.card)
-                    .automationExcludedWithChildren(true)
+                    .hidesChildrenFromAccessibility(true)
                 }
                 .horizontalAlignment(.center)
 
                 // A rule is decoration: a stop that would waste the user's time.
-                Rectangle(Palette.outline)
+                Fill(Palette.outline)
                     .height(1)
                     .isAccessibilityHidden(true)
             }
@@ -9292,7 +10384,8 @@ enum Listings {
         /// makes a modifier written under a condition cost the property and not
         /// the control.
         private var describedButton: some View {
-            let button = Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+            let button = Button()
+                .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
                 .style(.iconButton)
                 .contentMode(.fit)
                 .width(64)
@@ -9325,21 +10418,25 @@ enum Listings {
                 SectionTitle("Filled")
 
                 HStack {
-                    Rectangle(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(56)
                         .height(56)
 
-                    Rectangle(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .cornerRadius(14)
                         .width(56)
                         .height(56)
 
-                    Rectangle(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .cornerRadius(topLeft: 22, topRight: 4, bottomLeft: 4, bottomRight: 22)
                         .width(56)
                         .height(56)
 
-                    Ellipse(Palette.accent)
+                    Ellipse()
+                        .fill(Palette.accent)
                         .width(56)
                         .height(56)
                 }
@@ -9348,11 +10445,13 @@ enum Listings {
 
                 // A capsule's ends stay round at every size: wide, tall, or square.
                 HStack {
-                    Capsule(Palette.accent)
+                    Capsule()
+                        .fill(Palette.accent)
                         .width(120)
                         .height(40)
 
-                    Capsule(Palette.accent)
+                    Capsule()
+                        .fill(Palette.accent)
                         .width(40)
                         .height(80)
                 }
@@ -9361,56 +10460,64 @@ enum Listings {
 
                 SectionTitle("Stroked")
 
-                HStack {
-                    Line()
-                        .x1(0).y1(0)
-                        .x2(56).y2(56)
-                        .stroke(Palette.accent)
-                        .lineWidth(4)
-                        .lineCap(.round)
-                        .width(56)
-                        .height(56)
+                // Two rows of three: six shapes side by side stand wider than a phone.
+                VStack {
+                    HStack {
+                        Line()
+                            .x1(0).y1(0)
+                            .x2(56).y2(56)
+                            .stroke(Palette.accent)
+                            .lineWidth(4)
+                            .lineCap(.round)
+                            .width(56)
+                            .height(56)
 
-                    Line()
-                        .x1(0).y1(28)
-                        .x2(56).y2(28)
-                        .stroke(Palette.accent)
-                        .lineWidth(4)
-                        .dash([3, 2])
-                        .width(56)
-                        .height(56)
+                        Line()
+                            .x1(0).y1(28)
+                            .x2(56).y2(28)
+                            .stroke(Palette.accent)
+                            .lineWidth(4)
+                            .dash([3, 2])
+                            .width(56)
+                            .height(56)
 
-                    // The one shape that is whatever you can write down: SVG path
-                    // syntax, normalized by StateUI for every native host.
-                    Path("M 28,0 L 56,56 L 0,56 Z")
-                        .fill(Palette.accent)
-                        .width(56)
-                        .height(56)
+                        Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
+                            .stroke(Palette.accent)
+                            .lineWidth(4)
+                            .lineJoin(.round)
+                            .width(56)
+                            .height(56)
+                    }
+                    .spacing(28)
 
-                    // A transform on the GEOMETRY - the same ViewTransform
-                    // every view takes, drawn whole: a lean draws here, and the
-                    // stroke follows the shape it makes. On any shape, not only
-                    // a Path.
-                    Path("M 28,0 L 56,56 L 0,56 Z")
-                        .fill(Palette.accent)
-                        .geometryTransform(.skew(20, 0))
-                        .width(56)
-                        .height(56)
+                    HStack {
+                        // The one shape that is whatever you can write down: SVG path
+                        // syntax, normalized by StateUI for every native host.
+                        Path("M 28,0 L 56,56 L 0,56 Z")
+                            .fill(Palette.accent)
+                            .width(56)
+                            .height(56)
 
-                    Rectangle(Palette.accent)
-                        .cornerRadius(14)
-                        .geometryTransform(.skew(20, 0))
-                        .width(56)
-                        .height(56)
+                        // A transform on the GEOMETRY - the same ViewTransform
+                        // every view takes, drawn whole: a lean draws here, and the
+                        // stroke follows the shape it makes. On any shape, not only
+                        // a Path. Narrowed first, the lean stays inside its room.
+                        Path("M 28,0 L 56,56 L 0,56 Z")
+                            .fill(Palette.accent)
+                            .geometryTransform(.scaleX(0.6).skew(20, 0))
+                            .width(56)
+                            .height(56)
 
-                    Polyline([Point(0, 44), Point(14, 12), Point(30, 34), Point(56, 4)])
-                        .stroke(Palette.accent)
-                        .lineWidth(4)
-                        .lineJoin(.round)
-                        .width(56)
-                        .height(56)
+                        Rectangle()
+                            .fill(Palette.accent)
+                            .cornerRadius(14)
+                            .geometryTransform(.scaleX(0.6).skew(20, 0))
+                            .width(56)
+                            .height(56)
+                    }
+                    .spacing(28)
                 }
-                .spacing(12)
+                .spacing(16)
                 .horizontalAlignment(.center)
 
                 SectionTitle("Where the dashes start")
@@ -9477,8 +10584,77 @@ enum Listings {
 
                 SwitchRow("Even-odd fill", $evenOdd)
                     .horizontalAlignment(.center)
+
+                SectionTitle("Made of a material")
+
+                // Over stripes, so what each figure lets through shows.
+                ZStack {
+                    HStack {
+                        Space()
+                            .background(.tomato)
+                        Space()
+                            .background(.gold)
+                        Space()
+                            .background(.steelBlue)
+                        Space()
+                            .background(Palette.accent)
+                    }
+
+                    HStack {
+                        Capsule()
+                            .fill(.blur(.regular))
+                            .width(120)
+                            .height(48)
+
+                        Ellipse()
+                            .fill(.glass(.clear))
+                            .stroke(.white)
+                            .width(64)
+                            .height(64)
+
+                        Polygon(Self.star)
+                            .fill(.blur(.thin))
+                            .fillRule(evenOdd ? .evenOdd : .nonzero)
+                            .stroke(.white)
+                            .width(64)
+                            .height(64)
+                    }
+                    .spacing(16)
+                    .horizontalAlignment(.center)
+                    .verticalAlignment(.center)
+                }
+                .height(100)
+                .shape(.roundedRectangle(14))
+                .clipsContent(true)
             }
             .spacing(12)
+        }
+        """#,
+        "ShareSample": #"""
+        // Sources/Samples/Navigation/ShareSample.swift
+        @Environment(\.window) private var window
+        @State private var words = "The language I mentioned"
+        @State private var link = "https://www.swift.org"
+        @State private var answer = "nothing shared yet"
+
+        var body: some View {
+            VStack {
+                TextField($words)
+                TextField($link)
+
+                // False is a cancel; a platform with no share sheet throws why.
+                Button("Share")
+                    .onClicked(.ignoreWhileRunning) {
+                        do {
+                            let shared = try await window.share(text: words, link: link)
+                            answer = shared ? "shared" : "cancelled"
+                        } catch {
+                            answer = "\(error)"
+                        }
+                    }
+
+                Text(answer)
+            }
         }
         """#,
         "ShortcutSample": #"""
@@ -9528,7 +10704,7 @@ enum Listings {
                 .id(StandardMenu.file)
             }
             .toolbar {
-                ToolbarItem("Mark")
+                ToolbarButton("Mark")
                     .keyboardShortcut("2", modifiers: [])
                     .onClicked { pressed("Mark") }
             }
@@ -9545,24 +10721,35 @@ enum Listings {
             VStack {
                 row("width(120)",
                     // A request, not an instruction: the layout has the last word.
-                    Rectangle(Palette.accent).width(120).height(24))
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .width(120)
+                        .height(24))
 
                 row("maximumWidth(200)",
-                    Rectangle(Palette.accent).height(24).maximumWidth(200))
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .height(24)
+                        .maximumWidth(200))
 
                 row("minimumWidth(160)",
-                    Rectangle(Palette.accent).height(24).minimumWidth(160))
+                    Rectangle()
+                        .fill(Palette.accent)
+                        .height(24)
+                        .minimumWidth(160))
 
                 // The pair is the point: both ask for 80 high, and only the one
                 // without a ceiling on it is allowed to have it.
                 row("height(80), then the same with maximumHeight(32)",
                     HStack {
-                        Rectangle(Palette.outline)
+                        Rectangle()
+                            .fill(Palette.outline)
                             .width(60)
                             .height(80)
                             .verticalAlignment(.start)
 
-                        Rectangle(Palette.accent)
+                        Rectangle()
+                            .fill(Palette.accent)
                             .width(60)
                             .height(80)
                             .maximumHeight(32)
@@ -9572,7 +10759,8 @@ enum Listings {
                 // A child drawn past the layout's edge, cut off at it.
                 row("clipsContent(true)",
                     VStack {
-                        Rectangle(Palette.accent)
+                        Rectangle()
+                            .fill(Palette.accent)
                             .height(24)
                             .translationX(60)
                     }
@@ -9581,7 +10769,8 @@ enum Listings {
 
                 row("clipsContent(false)",
                     VStack {
-                        Rectangle(Palette.accent)
+                        Rectangle()
+                            .fill(Palette.accent)
                             .height(24)
                             .translationX(60)
                     }
@@ -9623,13 +10812,29 @@ enum Listings {
 
                 Text(dragging ? "Dragging..." : "At rest")
 
-                HStack {
-                    Text("Sound")
-                        .verticalAlignment(.center)
+                Switch($soundOn)
+                    .text("Sound")
+                    .horizontalAlignment(.center)
+            }
+        }
+        """#,
+        "SpinnerSample": #"""
+        // Sources/Samples/BasicInput/SpinnerSample.swift
+        @State private var loading = true
 
-                    Switch($soundOn)
-                }
-                .horizontalAlignment(.center)
+        var body: some View {
+            VStack {
+                // The flag is read here, so starting and stopping builds this
+                // closure - the spinner itself costs nothing to keep running.
+                DebugInfoLabel()
+
+                Spinner(loading)
+                    .height(48)
+
+                Switch($loading)
+                    .text("Working")
+                    .horizontalAlignment(.center)
+
             }
         }
         """#,
@@ -9644,6 +10849,9 @@ enum Listings {
                 Text("Open the menu - every row in it a view - and narrow the window to lay it over the page.")
 
                 SwitchRow("Menu open", nav.$menuOpen)
+                    .horizontalAlignment(.center)
+
+                SwitchRow("Menu button", nav.$showsMenuButton)
                     .horizontalAlignment(.center)
 
                 // Where the platform places the menu for the room, as the split
@@ -9666,9 +10874,106 @@ enum Listings {
             }
         }
         """#,
+        "StackInASheet": #"""
+        // Sources/Samples/Navigation/SheetsSample.swift
+        @State private var presented = false
+        @State private var said = "Nothing done yet."
+
+        var body: some View {
+            VStack {
+                Text("Present the sheet, press its actions and push a page.")
+
+                Button("Present the stack")
+                    .horizontalAlignment(.center)
+                    .onClicked { presented = true }
+                    .sheet(isPresented: $presented) {
+                        DraftSheet(said: $said)
+                    }
+
+                Text(said)
+            }
+        }
+
+        /// A draft's stack in a sheet: the bar's actions are its pages', and Help is
+        /// the stack's own, on every page it shows.
+        private struct DraftSheet: View {
+            @Binding var said: String
+            @State private var path: [Int] = []
+            @State private var pinned = false
+
+            var body: some View {
+                NavigationStack($path) {
+                    VStack {
+                        Text(said)
+                        Text(pinned ? "Pinned" : "Not pinned")
+                        Button("Push a page")
+                            .onClicked { path.append(path.count + 1) }
+                    }
+                    .galleryPage("Draft")
+                    .toolbar {
+                        ToolbarButton("Undo")
+                            .id("sheet.undo")
+                            .placement(at: .start)
+                            .onClicked { said = "Undone." }
+
+                        ToolbarGroup {
+                            ToolbarButton("Save")
+                                .id("sheet.save")
+                                .onClicked { said = "Saved." }
+                                .menu(.split) {
+                                    MenuItem("Save a copy")
+                                        .id("sheet.saveCopy")
+                                        .onClicked { said = "Saved a copy." }
+                                }
+
+                            ToolbarButton("Add")
+                                .id("sheet.add")
+                                .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                                .onClicked { said = "Added." }
+                        }
+
+                        ToolbarToggle("Pin", isOn: $pinned)
+                            .id("sheet.pin")
+                            .icon(
+                                ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"),
+                                on: ImageSource(light: "menu_star_on.png", dark: "menu_star_on_dark.png"))
+
+                        ToolbarButton("Delete")
+                            .id("sheet.delete")
+                            .placement(at: .overflow)
+                            .role(.destructive)
+                            .onClicked { said = "Deleted." }
+                    }
+                } destination: { number in
+                    Text("Page \(number)")
+                        .galleryPage("Page \(number)")
+                        .toolbar {
+                            ToolbarButton("Share")
+                                .id("sheet.share")
+                                .onClicked { said = "Shared page \(number)." }
+                        }
+                }
+                // The stack's own action, on the bar of every page it shows.
+                .toolbar {
+                    ToolbarButton("Help")
+                        .id("sheet.help")
+                        .onClicked { said = "Help for every page." }
+                }
+            }
+        }
+        """#,
         "StackLayoutSample": #"""
         // Sources/Samples/Layout/StackLayoutSample.swift
         @State private var spaced = true
+        @State private var onBaseline = true
+        @State private var wraps = true
+
+        /// Where a wrapped line shorter than the row stands.
+        @State private var lines = TextAlignment.start
+        static let tags = [
+            "Button", "Toggle", "Slider", "Picker", "Text", "Image", "Stack", "Grid",
+            "Scroll", "List", "Map", "Sheet", "Menu", "Toolbar", "Tab", "Split",
+        ]
 
         var body: some View {
             VStack {
@@ -9705,41 +11010,85 @@ enum Listings {
                         .horizontalAlignment(.fill)
                 }
 
-                SectionTitle("Spacer")
+                SectionTitle("First baseline")
 
-                // A spacer takes the room the other children leave.
+                // A label and a value of other sizes reading as one line: each
+                // rests its first line of words on the row's baseline.
+                HStack {
+                    Text("Total")
+                        .verticalAlignment(onBaseline ? .firstBaseline : .center)
+                    Text("€120")
+                        .fontWeight(.bold)
+                        .verticalAlignment(onBaseline ? .firstBaseline : .center)
+                }
+
+                Switch($onBaseline)
+                    .text("On one baseline")
+
+                SectionTitle("Space")
+
+                // A space takes the room the other children leave.
                 HStack {
                     StackCell(text: "Draft")
-                    if spaced { Spacer() }
+                    if spaced { Space() }
                     StackCell(text: "Send")
                 }
 
-                HStack {
-                    Switch($spaced)
+                Switch($spaced)
+                    .text("Space")
 
-                    Text("Spacer")
-                        .verticalAlignment(.center)
+                SectionTitle("Short of room")
+
+                // A row short of room takes it from its words: the button stays
+                // whole, and the title wraps to what is left - or, kept to one
+                // line, ends where the room does.
+                HStack {
+                    Text("A title longer than the row has room for beside its button")
+                    Button("Open")
                 }
 
-                SectionTitle("Divider")
+                HStack {
+                    Text("A title longer than the row has room for beside its button")
+                        .maximumLines(1)
+                    Button("Open")
+                }
+
+                SectionTitle("Wraps")
+
+                // A row that wraps goes on onto the next line where its room
+                // ends; on one line, its words share the room it has.
+                HStack {
+                    ForEach(Self.tags, id: \.self) { StackCell(text: $0) }
+                }
+                .wraps(wraps)
+                .lineAlignment(lines)
+
+                Switch($wraps)
+                    .text("Wraps")
+
+                // Where a line shorter than the row stands.
+                Picker([TextAlignment.start, .center, .end], selection: $lines) { "\($0)".titled }
+                    .presentation(.segmented)
+
+                SectionTitle("Separator")
 
                 // The platform's own line, across its stack.
                 VStack {
                     Text("Inbox")
-                    Divider()
+                    Separator()
                     Text("Archive")
                 }
 
                 HStack {
                     Text("Bold")
                         .fontWeight(.bold)
-                    Divider()
+                    Separator()
                     Text("Italic")
                 }
             }
         }
 
-        /// One block of colour with a word in it, so an arrangement is visible.
+        /// One block of color with a word in it, so an arrangement is visible.
         private struct StackCell: View {
             let text: String
 
@@ -9916,6 +11265,7 @@ enum Listings {
         // Sources/Samples/Styles/StyleSample.swift
         @State private var enabled = true
         @State private var platformLook = false
+        @State private var span = "Week"
 
         var body: some View {
             // The gallery's styles, or the platform's own look.
@@ -9942,21 +11292,13 @@ enum Listings {
                     .horizontalAlignment(.center)
                     .onClicked {}
 
-                HStack {
-                    Text("Enabled")
-                        .verticalAlignment(.center)
+                Switch($enabled)
+                    .text("Enabled")
+                    .horizontalAlignment(.center)
 
-                    Switch($enabled)
-                }
-                .horizontalAlignment(.center)
-
-                HStack {
-                    Text("Platform look")
-                        .verticalAlignment(.center)
-
-                    Switch($platformLook)
-                }
-                .horizontalAlignment(.center)
+                Switch($platformLook)
+                    .text("Platform look")
+                    .horizontalAlignment(.center)
 
                 SectionTitle("A style for a role")
 
@@ -9968,6 +11310,15 @@ enum Listings {
                 }
                 .horizontalAlignment(.center)
 
+                SectionTitle("A style for a presentation")
+
+                // The segments wear the style their presentation chooses, over the
+                // one every picker wears.
+                Picker(["Day", "Week", "Month"], selection: $span) { $0 }
+                    .presentation(.segmented)
+                    .style(platformLook ? .platform : nil)
+                    .horizontalAlignment(.center)
+
                 SectionTitle("A style asked for by name")
 
                 // A keyed style is asked for; a keyed style REPLACES the implicit
@@ -9978,15 +11329,42 @@ enum Listings {
                 SectionTitle("A style written from another")
 
                 // The same words twice. "Quote" states the shape; "QuoteLoud" is
-                // `.basedOn(.quote)` plus one colour - so everything that matches
+                // `.basedOn(.quote)` plus one color - so everything that matches
                 // below is inherited, and the one thing that differs is the one
                 // thing it declares.
-                Text("The same eleven words, and one of these declares a colour.")
+                Text("The same eleven words, and one of these declares a color.")
                     .style(.quote)
 
-                Text("The same eleven words, and one of these declares a colour.")
+                Text("The same eleven words, and one of these declares a color.")
                     .style(.quoteLoud)
             }
+        }
+        """#,
+        "SummedOffTheUIThread": #"""
+        // Sources/Samples/State/MainQueueSample.swift
+        import Dispatch
+
+        @State private var result = "Nothing summed yet"
+
+        var body: some View {
+            VStack {
+                Text(result)
+
+                Button("Sum a million on another thread").onClicked {
+                    result = "Summing…"
+                    let shown = $result
+                    #if os(WASI)
+                    shown.wrappedValue = "The Web has no main queue - post to the state instead"
+                    #else
+                    DispatchQueue.global().async {
+                        let sum = (1 ... 1_000_000).reduce(0, +)
+                        // The main queue runs this on the UI thread, where the state is written.
+                        DispatchQueue.main.async { shown.wrappedValue = "\(sum), handed back on the main queue" }
+                    }
+                    #endif
+                }
+            }
+            .horizontalAlignment(.start)
         }
         """#,
         "SwipeSample": #"""
@@ -10044,26 +11422,111 @@ enum Listings {
         // Sources/Samples/BasicInput/SwitchSample.swift
         @State private var soundOn = true
         @State private var said = "not thrown yet"
+        @State private var alignment = Alignment.fill
+
+        static let alignments: [Alignment] = [.fill, .start, .center, .end]
 
         var body: some View {
             VStack {
                 // The flag is read here, so every flip builds this closure.
                 DebugInfoLabel()
 
-                HStack {
-                    Text("Sound")
-                        .verticalAlignment(.center)
+                Switch($soundOn)
+                    .text("Sound")
+                    // Runs beside the binding's write-back, carrying what the
+                    // switch NOW is rather than what this side guessed.
+                    .onToggled { on in said = on ? "thrown on" : "thrown off" }
+                    // Filling its row, its words stand at the start and the switch
+                    // at the end; aligned, it is as wide as the two together.
+                    .horizontalAlignment($alignment)
 
-                    Switch($soundOn)
-                        // Runs beside the binding's write-back, carrying what the
-                        // switch NOW is rather than what this side guessed.
-                        .onToggled { on in said = on ? "thrown on" : "thrown off" }
-                }
-                .horizontalAlignment(.center)
+                Picker(Self.alignments, selection: $alignment) { "\($0)".titled }
+                    .presentation(.segmented)
 
                 Text(soundOn ? "on" : "off")
 
                 Text(said)
+            }
+        }
+        """#,
+        "TabsInASheet": #"""
+        // Sources/Samples/Navigation/SheetsSample.swift
+        @State private var presented = false
+        @State private var said = "Nothing done yet."
+
+        var body: some View {
+            VStack {
+                Text("Present the tabs, change tabs and press each tab's actions.")
+
+                Button("Present the tabs")
+                    .horizontalAlignment(.center)
+                    .onClicked { presented = true }
+                    .sheet(isPresented: $presented) {
+                        MailSheet(said: $said)
+                    }
+
+                Text(said)
+            }
+        }
+
+        /// A mailbox's tabs in a sheet, each a stack.
+        private struct MailSheet: View {
+            enum Tab: Hashable, CaseIterable { case inbox, drafts }
+
+            @Binding var said: String
+            @State private var tab: Tab = .inbox
+            @State private var inbox: [Int] = []
+            @State private var drafts: [Int] = []
+
+            var body: some View {
+                TabView(Tab.allCases) { tab in
+                    switch tab {
+                    case .inbox:
+                        NavigationStack($inbox) {
+                            page("Inbox", path: $inbox)
+                                .toolbar {
+                                    ToolbarButton("Refresh")
+                                        .id("tabs.refresh")
+                                        .onClicked { said = "Refreshed the inbox." }
+                                }
+                        } destination: { number in
+                            Text("Message \(number)").padding(24).galleryPage("Message \(number)")
+                        }
+                        .title("Inbox")
+                        .icon(ImageSource(light: "tab_pages.png", dark: "tab_pages_dark.png"))
+
+                    case .drafts:
+                        NavigationStack($drafts) {
+                            page("Drafts", path: $drafts)
+                                .toolbar {
+                                    ToolbarGroup {
+                                        ToolbarButton("New")
+                                            .id("tabs.new")
+                                            .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                                            .onClicked { said = "Started a draft." }
+                                        ToolbarButton("Send all")
+                                            .id("tabs.send")
+                                            .onClicked { said = "Sent every draft." }
+                                    }
+                                }
+                        } destination: { number in
+                            Text("Draft \(number)").padding(24).galleryPage("Draft \(number)")
+                        }
+                        .title("Drafts")
+                        .icon(ImageSource(light: "tab_code.png", dark: "tab_code_dark.png"))
+                    }
+                }
+                .selection($tab)
+            }
+
+            /// A tab's first page: its name, and a button pushing a page onto its stack.
+            private func page(_ name: String, path: Binding<[Int]>) -> some View {
+                VStack {
+                    Text(said)
+                    Button("Push a page")
+                        .onClicked { path.wrappedValue.append(path.wrappedValue.count + 1) }
+                }
+                .galleryPage(name)
             }
         }
         """#,
@@ -10133,7 +11596,7 @@ enum Listings {
                     // A press while the loop runs cancels it - Stop, or Start
                     // straight after Reset - so no two loops count together.
                     Button(running ? "Stop" : "Start")
-                        .onClicked(gate: .cancelPrevious) {
+                        .onClicked(.cancelPrevious) {
                             if running {
                                 running = false
                                 return
@@ -10232,6 +11695,10 @@ enum Listings {
         @State private var email = ""
         @State private var done = 0
         @State private var hidden = true
+        @State private var user = ""
+        @State private var newPassword = ""
+        @State private var signInCode = ""
+        @State private var outlined = ""
 
         var body: some View {
             VStack {
@@ -10281,13 +11748,9 @@ enum Listings {
                     .isPassword(hidden)
                     .submitLabel(.done)
 
-                HStack {
-                    Text("Hidden")
-                        .verticalAlignment(.center)
-
-                    Switch($hidden)
-                }
-                .horizontalAlignment(.center)
+                Switch($hidden)
+                    .text("Hidden")
+                    .horizontalAlignment(.center)
 
                 // The keyboard the platform brings up, a cap on the length, and
                 // what the return key does when it is pressed.
@@ -10296,6 +11759,29 @@ enum Listings {
                     .inputPurpose(.email)
                     .maximumLength(20)
                     .onSubmitted { done += 1 }
+
+                // Signing in: what each field holds is what the platform fills
+                // it in with - a name it keeps, a strong password it makes and
+                // keeps, a code it received.
+                TextField($user)
+                    .placeholder("a user name")
+                    .inputPurpose(.username)
+
+                TextField($newPassword)
+                    .placeholder("a new password")
+                    .isPassword(true)
+                    .inputPurpose(.newPassword)
+
+                TextField($signInCode)
+                    .placeholder("a code sent to you")
+                    .inputPurpose(.oneTimeCode)
+
+                // An outline of the application's own, in place of the
+                // platform's frame, and the shape the field stands in.
+                TextField($outlined)
+                    .placeholder("an outlined capsule")
+                    .stroke(Palette.accent)
+                    .lineWidth(1.5)
             }
         }
         """#,
@@ -10310,7 +11796,7 @@ enum Listings {
                     .fontSize(16)
                     .fontWeight(.bold)
 
-                Text("Italic, and coloured")
+                Text("Italic, and colored")
                     .fontSize(16)
                     .fontAttributes(.italic)
                     .textColor(Palette.accent)
@@ -10319,7 +11805,7 @@ enum Listings {
                     .fontSize(16)
                     .textDecorations([.underline, .strikethrough])
 
-                Text("Centred, with room around it")
+                Text("Centered, with room around it")
                     .fontSize(16)
                     .horizontalTextAlignment(.center)
                     .padding(8)
@@ -10378,7 +11864,7 @@ enum Listings {
         // Sources/Samples/Text/TextSpanSample.swift
         @State private var highlighted = 1
 
-        /// The line one word of which is coloured - the word the button moves.
+        /// The line one word of which is colored - the word the button moves.
         private let words = ["A", "Text", "has", "one", "TextColor"]
 
         var body: some View {
@@ -10387,7 +11873,7 @@ enum Listings {
                 // closure.
                 DebugInfoLabel()
 
-                // Three colours in one line, which is what runs are FOR: a label
+                // Three colors in one line, which is what runs are FOR: a label
                 // has one `textColor`, so this is the only way.
                 Text()
                     .spans {
@@ -10442,6 +11928,10 @@ enum Listings {
         /// The step a line stands at, moved by the buttons and handed to the line as a state.
         @State private var style = TextStyle.title
 
+        /// The seconds a countdown has left, and whether its digits are all as wide.
+        @State private var seconds = 20
+        @State private var monospaced = true
+
         var body: some View {
             VStack {
                 Text("Display").textStyle(.display)
@@ -10466,6 +11956,20 @@ enum Listings {
                     Button("Larger").onClicked { style = TextStyle(rawValue: style.rawValue - 1) ?? .display }
                     Button("Smaller").onClicked { style = TextStyle(rawValue: style.rawValue + 1) ?? .caption }
                 }
+
+                // With digits of their own width, the words after the number move as it counts.
+                HStack {
+                    Text("\(seconds) s left").fontAttributes(monospaced ? .monospacedDigits : .none)
+                    Button("Count down").onClicked(.cancelPrevious) {
+                        seconds = 20
+                        while seconds > 0 {
+                            try await Task.sleep(for: .milliseconds(300))
+                            seconds -= 1
+                        }
+                    }
+                }
+
+                Switch($monospaced).text("Digits of one width")
             }
         }
         """#,
@@ -10589,13 +12093,15 @@ enum Listings {
                     Text("Go back and this page's actions leave with it.")
                 }
                 .toolbar {
-                    ToolbarItem("Share")
-                        .id("layer.share")
-                        .onClicked { shared += 1 }
+                    ToolbarGroup {
+                        ToolbarButton("Share")
+                            .id("layer.share")
+                            .onClicked { shared += 1 }
 
-                    ToolbarItem("Deeper")
-                        .id("layer.deeper")
-                        .onClicked { path.append(.layer(depth + 1)) }
+                        ToolbarButton("Deeper")
+                            .id("layer.deeper")
+                            .onClicked { path.append(.layer(depth + 1)) }
+                    }
                 }
                 .galleryPage("Layer \(depth)")
             }
@@ -10621,7 +12127,7 @@ enum Listings {
                     .onClicked { nav.push(.layer(1)) }
             }
             .toolbar {
-                ToolbarItem("Refresh")
+                ToolbarButton("Refresh")
                     .id("layers.refresh")
                     .onClicked { refreshed += 1 }
             }
@@ -10640,17 +12146,35 @@ enum Listings {
         /// Whether the sample's group stands after the gallery's, by its order.
         @State private var afterGallery = false
 
-        /// Whether the sample's actions join the gallery's own group, by its id.
-        @State private var inGallery = false
+        /// Whether the sample's group stands at the bar's start.
+        @State private var atStart = false
 
-        /// Whether the sample's group stands at the bar's leading edge.
-        @State private var atLeading = false
+        /// Whether the sample's group stands in the sidebar's part of the bar.
+        @State private var overSidebar = false
+
+        /// Whether the sample's group hides with the sidebar rather than move to
+        /// the detail's start.
+        @State private var hidesWithSidebar = false
 
         /// Whether Add shows its words beside its picture on the bar.
         @State private var addWords = false
 
+        /// Whether the page is a favorite: a setting on the bar and in the File
+        /// menu, one state for both.
+        @State private var favorite = false
+
+        /// Whether Save's menu opens as the button is held rather than from an
+        /// arrow of its own.
+        @State private var saveHeld = false
+
+        /// Whether Sort shows the arrow saying its click opens a menu.
+        @State private var sortArrow = true
+
         /// Whether the branch declaring the actions is disabled.
         @State private var locked = false
+
+        /// Whether the page shows the bar at its foot.
+        @State private var atFoot = true
 
         var body: some View {
             VStack {
@@ -10663,42 +12187,98 @@ enum Listings {
 
                     Text(recent.isEmpty ? "No recent files" : recent.joined(separator: ", "))
 
-                    Text("Press Save and Add on the bar; Clear is in its overflow.")
+                    Text(favorite ? "A favorite" : "Not a favorite")
+
+                    Text("Press Save, Add and the star; Sort and Save's arrow open menus; Clear is in the overflow.")
 
                     SectionTitle("Where the actions stand")
 
                     switchRow($afterGallery, "After the gallery's actions", id: "toolbar.afterGallery")
-                    switchRow($inGallery, "In the gallery's group", id: "toolbar.inGallery")
-                    switchRow($atLeading, "At the leading edge", id: "toolbar.atLeading")
+                    switchRow($atStart, "At the start", id: "toolbar.atStart")
+                    switchRow($overSidebar, "Over the sidebar", id: "toolbar.overSidebar")
+                    switchRow($hidesWithSidebar, "Hidden with the sidebar", id: "toolbar.hidesWithSidebar")
 
                     SectionTitle("A picture and its words")
 
                     switchRow($addWords, "Add's words beside its picture", id: "toolbar.addWords")
+
+                    SectionTitle("A button's menu")
+
+                    switchRow($saveHeld, "Save's menu held", id: "toolbar.saveHeld")
+                    switchRow($sortArrow, "Sort's arrow", id: "toolbar.sortArrow")
+
+                    SectionTitle("At the page's foot")
+
+                    switchRow($atFoot, "The bar at the foot", id: "toolbar.atFoot")
                 }
                 // The page's actions, declared where their state lives: they follow
                 // it as the body builds - `saved` decides whether Clear can be pressed,
-                // `addWords` Add's words, the three switches where the group stands.
-                .toolbar(atLeading ? .leading : .trailing, id: inGallery ? "gallery" : "sample", order: afterGallery ? 1 : 0) {
-                    ToolbarItem("Save")
-                        .id("save")
-                        .onClicked { saved += 1 }
+                // `addWords` Add's words, the four switches where the group stands.
+                .toolbar {
+                    ToolbarGroup {
+                        // Its click its own, its menu apart: from an arrow of its
+                        // own, or held.
+                        ToolbarButton("Save")
+                            .id("save")
+                            .onClicked { saved += 1 }
+                            .menu(saveHeld ? .held : .split) {
+                                MenuItem("Save a copy")
+                                    .id("saveCopy")
+                                    .onClicked {
+                                        saved += 1
+                                        added += 1
+                                        recent.append("copy\(added).txt")
+                                    }
+                            }
 
-                    // A picture alone, unless it asks for its words beside it.
-                    ToolbarItem("Add")
-                        .id("add")
-                        .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
-                        .showsText(addWords)
-                        .onClicked {
-                            added += 1
-                            recent.append("file\(added).txt")
+                        // A picture alone, unless it asks for its words beside it.
+                        ToolbarButton("Add")
+                            .id("add")
+                            .icon(ImageSource(light: "menu_duplicate.png", dark: "menu_duplicate_dark.png"))
+                            .showsText(addWords)
+                            .onClicked {
+                                added += 1
+                                recent.append("file\(added).txt")
+                            }
+                    }
+                    .placement(overSidebar ? .sidebar : nil, at: atStart ? .start : .end, order: afterGallery ? 1 : 0)
+                    .hidesWithSidebar(hidesWithSidebar)
+
+                    // A menu its click opens, an arrow saying so.
+                    ToolbarButton("Sort")
+                        .id("sort")
+                        .showsMenuArrow(sortArrow)
+                        .menu {
+                            MenuItem("A to Z").id("sort.up").onClicked { recent.sort() }
+                            MenuItem("Z to A").id("sort.down").onClicked { recent.sort(by: >) }
                         }
 
-                    ToolbarItem("Clear")
+                    // A setting: on and off, its filled star while on.
+                    ToolbarToggle("Favorite", isOn: $favorite)
+                        .id("favorite")
+                        .icon(
+                            ImageSource(light: "menu_star.png", dark: "menu_star_dark.png"),
+                            on: ImageSource(light: "menu_star_on.png", dark: "menu_star_on_dark.png"))
+
+                    ToolbarButton("Clear")
                         .id("clear")
-                        .placement(.overflow)
-                        .isDestructive(true)
+                        .placement(at: .overflow)
+                        .role(.destructive)
                         .isEnabled(saved > 0)
                         .onClicked { saved = 0 }
+                }
+                // The bar at the page's foot, by the same rules: words nobody
+                // chooses at its start, an action at its end.
+                .toolbar(.bottom) {
+                    if atFoot {
+                        ToolbarLabel(recent.isEmpty ? "No recent files" : "\(recent.count) recent file(s)")
+                            .id("foot.files")
+                            .placement(at: .start)
+
+                        ToolbarButton("Save")
+                            .id("foot.save")
+                            .onClicked { saved += 1 }
+                    }
                 }
                 // The desktop File menu, declared the same way: Save, and the recent
                 // files following the state.
@@ -10707,6 +12287,10 @@ enum Listings {
                         MenuItem("Save")
                             .id("save")
                             .onClicked { saved += 1 }
+
+                        // The bar's setting again, checked as the state is.
+                        MenuToggle("Favorite", isOn: $favorite)
+                            .id("favorite")
 
                         Menu("Recent") {
                             recent.map { file in
@@ -10731,13 +12315,9 @@ enum Listings {
         }
 
         /// A switch and what it says, told apart for scripts by `id`.
-        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
-            HStack {
-                Switch(value)
-
-                Text(words)
-                    .verticalAlignment(.center)
-            }
+        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
+            Switch(value)
+                .text(words)
         }
         """#,
         "TooltipSample": #"""
@@ -10751,14 +12331,18 @@ enum Listings {
                 HStack {
                     // A button that is only a picture says what it does
                     // to the eye under the pointer.
-                    Button(icon: ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                    Button("Media")
+                        .icon(ImageSource(light: "nav_media.png", dark: "nav_media_dark.png"))
+                        .showsText(false)
                         .style(.iconButton)
                         .contentMode(.fit)
                         .width(48)
                         .height(48)
                         .tooltip(detailed ? "Opens the pictures, films and sounds" : "Media")
 
-                    Button(icon: ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                    Button("Layout")
+                        .icon(ImageSource(light: "nav_layout.png", dark: "nav_layout_dark.png"))
+                        .showsText(false)
                         .style(.iconButton)
                         .contentMode(.fit)
                         .width(48)
@@ -10766,18 +12350,15 @@ enum Listings {
                         .tooltip(detailed ? "Opens the stacks, grids and placement" : "Layout")
 
                     // Any view takes one, not only a control.
-                    Rectangle(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .width(48)
                         .height(48)
-                        .tooltip(detailed ? "The colour the gallery marks things with" : "Accent")
+                        .tooltip(detailed ? "The color the gallery marks things with" : "Accent")
                 }
 
-                HStack {
-                    Switch($detailed)
-
-                    Text("Detailed")
-                        .verticalAlignment(.center)
-                }
+                Switch($detailed)
+                    .text("Detailed")
             }
         }
         """#,
@@ -10795,7 +12376,8 @@ enum Listings {
 
                 Grid {
                     // Underneath, and still reachable.
-                    Rectangle(Palette.accent)
+                    Rectangle()
+                        .fill(Palette.accent)
                         .height(120)
                         .onTapped { below += 1 }
 
@@ -10804,7 +12386,7 @@ enum Listings {
                     // the whole of it ignores input, the label included; disabled,
                     // the label still takes a tap and answers none.
                     VStack {
-                        // The child wears its own colour and its own padding, so
+                        // The child wears its own color and its own padding, so
                         // what is the child and what is the empty area around it
                         // can be told apart by eye - and aimed at separately.
                         Text("tap the child")
@@ -10824,11 +12406,12 @@ enum Listings {
                     SwitchRow("Children too", $childrenToo)
 
                     SwitchRow("Disabled", $disabled)
-
-                    Button("Reset")
-                        .onClicked { below = 0; child = 0 }
                 }
                 .horizontalAlignment(.center)
+
+                Button("Reset")
+                    .onClicked { below = 0; child = 0 }
+                    .horizontalAlignment(.center)
             }
         }
         """#,
@@ -10878,6 +12461,15 @@ enum Listings {
                 setValue(TrafficLightContract.signal, value)
             }
 
+            /// The signal from a state, both ways: the light reads it as it is described, and a lamp the user taps lands
+            /// on it.
+            public func signal(_ state: Binding<TrafficSignal>) -> Self {
+                setValue(TrafficLightContract.signal, whenDescribed: { state.wrappedValue })
+                    .onLampTapped { lamp in
+                        if let tapped = TrafficSignal(rawValue: Int32(lamp)) { state.wrappedValue = tapped }
+                    }
+            }
+
             /// A lamp was tapped, with its index from the top.
             public func onLampTapped(_ handler: @escaping @MainActor (Int) throws -> Void) -> Self {
                 onEvent(TrafficLightContract.lampTapped, handler)
@@ -10886,7 +12478,7 @@ enum Listings {
         """#,
         "TransformSample": #"""
         // Sources/Samples/Layout/TransformSample.swift
-        /// One colour per family, so the three rows read apart at a glance rather than
+        /// One color per family, so the three rows read apart at a glance rather than
         /// as one long run of identical squares.
         private enum Family {
             /// The two chains that differ only in the ORDER they are written in.
@@ -10962,7 +12554,7 @@ enum Listings {
                 // The same square and the same factor three times, so the only
                 // thing the row shows is which axis each modifier reaches - and a
                 // WIDER GAP than the orange row, because a scaled box is drawn
-                // outside its room and would otherwise touch its neighbours.
+                // outside its room and would otherwise touch its neighbors.
                 HStack {
                     // Drawing only - the room the layout gave it does not change.
                     piece(box(Family.size).scale(transformed ? 1.6 : 1), "scale")
@@ -10976,15 +12568,16 @@ enum Listings {
         /// The square every example transforms - sized here, because a transform
         /// is about what is DRAWN and the room each one gets has to be the same.
         ///
-        /// - Parameter colour: which family this square belongs to.
+        /// - Parameter color: which family this square belongs to.
         /// - Returns: the square, ready to be transformed.
-        private func box(_ colour: Color) -> Rectangle {
-            Rectangle(colour)
+        private func box(_ color: Color) -> Rectangle {
+            Rectangle()
+                .fill(color)
                 .width(44)
                 .height(44)
         }
 
-        /// One piece with its caption, so a row reads as labelled examples rather
+        /// One piece with its caption, so a row reads as labeled examples rather
         /// than bare boxes. The gap under the box is what a scaled one grows into.
         private func piece<Shown: View>(_ view: Shown, _ caption: String) -> some View {
             VStack {
@@ -10995,12 +12588,12 @@ enum Listings {
         }
         """#,
         "TwoFingersSample": #"""
-        // Sources/Samples/LayoutEngine/TwoFingersSample.swift
+        // Sources/Samples/MotionLayout/TwoFingersSample.swift
         import StateUIFoundation
 
-        /// THE PHASE: how far the ring is turned, a card a unit, and how large it
+        /// THE PARAMETERS: how far the ring is turned, a card a unit, and how large it
         /// stands.
-        struct Ring: LayoutPhase {
+        struct Ring: LayoutParameters {
             var turn = 0.0
             var size = 1.0
 
@@ -11021,19 +12614,18 @@ enum Listings {
             let count = Double(Self.cards.count)
 
             return Grid {
-                LayoutEngine(Self.cards) { art in
+                MotionLayout(Self.cards, parameters: $ring) { art in
                     ZStack { Image(ImageSource(art)).contentMode(.fill) }
                         .clipsContent(true)
                 } placements: { room, ring in
                     Self.cards.indices.map { place($0, ring, room) }
                 }
-                .phase($ring)
                 // TWO FINGERS TURNING turn the ring a card every eighth of a
                 // turn, round and round; SPREADING, they grow it from small to
                 // large, resting at either or at its own size - both at once.
                 .axis(
                     \.turn, input: .rotation(degreesPerUnit: 360 / count), range: 0...count, snaps: .every(1),
-                    wraps: true)
+                    periodic: true)
                 .axis(\.size, input: .magnification, range: 0.6...1.5, snaps: [1])
                 .motion(.spring(response: .milliseconds(420), damping: 0.8))
             }
@@ -11060,7 +12652,7 @@ enum Listings {
         "Uploads": #"""
         // Sources/Samples/State/GateSample.swift
         /// Nothing held back, and busy while any upload runs.
-        @State private var uploads = Gatekeeper(.none)
+        @State private var uploads = Gate(.runConcurrently)
         @State private var sent: [String] = []
 
         private let files = ["notes.txt", "photo.png", "song.mp3"]
@@ -11085,8 +12677,6 @@ enum Listings {
         // Sources/Samples/Styles/VisualStateSample.swift
         @State private var enabled = true
         @State private var presses = 0
-        @State private var ready = true
-        @State private var busy = false
         @State private var entered = "Normal"
 
         /// How big the button is drawn, and what the state handler moves. DRIVEN:
@@ -11104,7 +12694,7 @@ enum Listings {
                 SectionTitle("On the control, not in a style")
 
                 // TWO OF THEM, SIDE BY SIDE, because the difference is the point:
-                // hold each one down and the left crosses to its pressed colour
+                // hold each one down and the left crosses to its pressed color
                 // while the right arrives at it.
                 HStack {
                     // Written on the CONTROL rather than in a style. The states after
@@ -11118,7 +12708,7 @@ enum Listings {
                             .background(Palette.outline)
                             .textColor(Palette.disabled)
                         }
-                        // The colour is a setter, which travels under the button's
+                        // The color is a setter, which travels under the button's
                         // own motion. The scale is DRIVEN by `press`: the handler
                         // sends the state there over 90ms, and the button follows it.
                         .onVisualStateChanged { state in
@@ -11143,31 +12733,14 @@ enum Listings {
                 .spacing(12)
                 .horizontalAlignment(.center)
 
-                HStack {
-                    Text("Enabled")
-                        .fontSize(14)
-                        .verticalAlignment(.center)
-
-                    Switch($enabled)
-                }
-                .spacing(12)
-                .horizontalAlignment(.center)
+                Switch($enabled)
+                    .text("Enabled")
+                    .horizontalAlignment(.center)
 
                 Text("entered \(entered) · pressed \(presses) times")
                     .fontSize(13)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
-
-                SectionTitle("States only a RadioButton has")
-
-                // A RadioButton has two states of its own, following isOn.
-                RadioButton("Ready")
-                    .isOn($ready)
-                    .visualState(.checked) { $0.background(Palette.selected) }
-
-                RadioButton("Busy")
-                    .isOn($busy)
-                    .visualState(.checked) { $0.background(Palette.selected) }
             }
             .spacing(12)
         }
@@ -11191,14 +12764,14 @@ enum Listings {
                     HStack {
                         Button("Back")
                             .isEnabled(hasBack)
-                            .onClicked(gate: .ignoreWhileRunning) { try await browser.goBack() }
+                            .onClicked(.ignoreWhileRunning) { try await browser.goBack() }
 
                         Button("Forward")
                             .isEnabled(hasForward)
-                            .onClicked(gate: .ignoreWhileRunning) { try await browser.goForward() }
+                            .onClicked(.ignoreWhileRunning) { try await browser.goForward() }
 
                         Button("Reload")
-                            .onClicked(gate: .ignoreWhileRunning) { try await browser.reload() }
+                            .onClicked(.ignoreWhileRunning) { try await browser.reload() }
                     }
                     .horizontalAlignment(.center)
                 }
@@ -11231,7 +12804,7 @@ enum Listings {
 
                 Button("Title?")
                     .horizontalAlignment(.center)
-                    .onClicked(gate: .ignoreWhileRunning) {
+                    .onClicked(.ignoreWhileRunning) {
                         answer = try await browser.evaluateJavaScript("document.title")
                     }
                     .gridRow(3)
@@ -11244,10 +12817,10 @@ enum Listings {
         """#,
         "WindowBarSample": #"""
         // Sources/Samples/Windows/WindowBarSample.swift
-        /// What the gallery's window says on its bar, written by the sample and declared by the window.
+        /// What the gallery's window says on its bar, written by the sample and declared by the window and the sample's page.
         @MainActor
         final class WindowBarState {
-            /// The line under the bar's title.
+            /// The line under the sample page's title.
             @State var subtitle = ""
 
             /// Whether the window's bar carries "Surprise me" on every page.
@@ -11262,13 +12835,11 @@ enum Listings {
                 TextField(bar.$subtitle)
                     .placeholder("Window subtitle")
 
-                HStack {
-                    Switch(bar.$showsSurprise)
-
-                    Text("Surprise me on every page")
-                        .verticalAlignment(.center)
-                }
+                Switch(bar.$showsSurprise)
+                    .text("Surprise me on every page")
             }
+            // The line under the page's title, wherever its title shows.
+            .subtitle(bar.$subtitle)
         }
         """#,
         "WindowLog": #"""
@@ -11311,7 +12882,8 @@ enum Listings {
             @Environment(\.window) private var window
 
             var body: some View {
-                Rectangle(Color("#00000000"))
+                Rectangle()
+                    .fill(Color(hex: 0x000000, opacity: 0))
                     .width(0)
                     .height(0)
                     .ignoresInput(true)
@@ -11341,11 +12913,9 @@ enum Listings {
         }
 
         /// A switch and what it says, told apart for scripts by `id`.
-        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> HStack {
-            HStack {
-                Switch(value)
-                Text(words).verticalAlignment(.center)
-            }
+        private func switchRow(_ value: Binding<Bool>, _ words: String, id: String) -> some View {
+            Switch(value)
+                .text(words)
         }
 
         /// A notice laid over the window: a line with its own way out, at the top unless it says otherwise.
@@ -11502,10 +13072,8 @@ enum Listings {
 
         /// A native boolean window capability.
         private func option(_ title: String, id: String, value: Binding<Bool>) -> some View {
-            HStack {
-                Switch(value)
-                Text(title).verticalAlignment(.center)
-            }
+            Switch(value)
+                .text(title)
         }
         """#,
         "WorkFromCode": #"""
@@ -11513,7 +13081,7 @@ enum Listings {
         /// A draft that saves through its own gate, whoever asks.
         @MainActor
         final class Draft {
-            let saving = Gatekeeper(.ignoreWhileRunning)
+            let saving = Gate(.ignoreWhileRunning)
             @State var saves = 0
 
             /// Saves, unless a save is under way: the gate lets this one go.
@@ -11565,7 +13133,7 @@ extension Listings {
         "Cube3DSample.Android.glsl": #"""
         // Platforms/Android/Swift/Host/GLESCube3DView.swift
         // The vertex shader, compiled for OpenGL ES 3.0: a corner carries its face's brightness in w, and the
-        // colour is the frame's.
+        // color is the frame's.
         layout(location = 0) in vec4 corner;
         uniform mat4 transform;
         uniform vec4 color;
@@ -11575,7 +13143,7 @@ extension Listings {
             painted = vec4(color.rgb * corner.w, color.a);
         }
 
-        // The fragment shader: every point of a face takes the colour its corners were painted.
+        // The fragment shader: every point of a face takes the color its corners were painted.
         precision mediump float;
         in vec4 painted;
         out vec4 fragment;
@@ -11695,6 +13263,15 @@ extension Listings {
             /** A display frame for a cube, while it asks for them. */
             static native void cubeFrame(long control, long nanoseconds);
 
+            /** A map's user tapped it, where the place under the finger is. */
+            static native void mapClicked(long control, double latitude, double longitude);
+
+            /** A map's user chose the marker of {@code number}. */
+            static native void markerSelected(long control, long number);
+
+            /** A map's user asked for the details of the marker of {@code number}. */
+            static native void markerDetails(long control, long number);
+
             /** The battery said its level, 0 to 1, and whether it charges. */
             static native void batteryChanged(double level, boolean charging);
         }
@@ -11713,7 +13290,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { draw() } }
             }
 
-            /// Which colour it is painted.
+            /// Which color it is painted.
             var color = CubeColor.teal {
                 didSet { if color != oldValue { draw() } }
             }
@@ -11839,7 +13416,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { drawIfStill() } }
             }
 
-            /// Which colour the cube is painted, as the member number the Swift side
+            /// Which color the cube is painted, as the member number the Swift side
             /// sends: teal 0, amber 1, violet 2. Anything else is teal.
             var color: Int32 = 0 {
                 didSet { if color != oldValue { drawIfStill() } }
@@ -11864,7 +13441,7 @@ extension Listings {
             ]
 
             /// The eight corners as six faces, each face two triangles. `xyz` is the
-            /// corner and `w` is how brightly that face takes the colour - which is
+            /// corner and `w` is how brightly that face takes the color - which is
             /// what makes a solid read as a solid.
             private static let corners: [SIMD4<Float>] = {
                 let faces: [(SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, SIMD3<Float>, Float)] = [
@@ -11951,14 +13528,14 @@ extension Listings {
             }
 
             /// One frame: the angle the clock has reached, the cube at the size and
-            /// colour it was given.
+            /// color it was given.
             override func draw(_ dirtyRect: NSRect) {
                 let now = CACurrentMediaTime()
                 let elapsed = now - lastTime
                 lastTime = now
 
                 // Only a turning cube moves with the clock. Stopped, the frame drawn
-                // for a changed size or colour finds the angle where it was left.
+                // for a changed size or color finds the angle where it was left.
                 if isSpinning {
                     angle += elapsed
                 }
@@ -11999,7 +13576,7 @@ extension Listings {
                     * Self.scaling(scale)
             }
 
-            /// The colour a member number names, opaque - teal for a number naming
+            /// The color a member number names, opaque - teal for a number naming
             /// none, so a value from outside the vocabulary paints rather than
             /// vanishes.
             private static func paint(_ color: Int32) -> SIMD4<Float> {
@@ -12016,7 +13593,7 @@ extension Listings {
             }
 
             /// Draws the one frame a stopped cube needs to show a changed size or
-            /// colour. A turning one is already drawing.
+            /// color. A turning one is already drawing.
             private func drawIfStill() {
                 guard isPaused, window != nil else { return }
 
@@ -12059,7 +13636,7 @@ extension Listings {
         "Cube3DSample.GTK.glsl": #"""
         // Platforms/GTK/Host/OpenGLCube3DWidget.swift
         // GLSL 3.30 core, compiled from source as the area is realized. A corner carries the brightness of its face
-        // in w; the colour comes with each frame.
+        // in w; the color comes with each frame.
         layout(location = 0) in vec4 corner;
         uniform mat4 transform;
         uniform vec4 color;
@@ -12089,7 +13666,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { gtk_gl_area_queue_render(area) } }
             }
 
-            /// Which colour it is painted.
+            /// Which color it is painted.
             var color = CubeColor.teal {
                 didSet { if color != oldValue { gtk_gl_area_queue_render(area) } }
             }
@@ -12152,7 +13729,7 @@ extension Listings {
                 }
             }
 
-            /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+            /// Clears to the housing's color and draws the cube: turned, scaled and seen in perspective.
             private func render() -> gboolean {
                 epoxy_glClearColor(0.102, 0.090, 0.145, 1)
                 epoxy_glClear(GLbitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT))
@@ -12238,7 +13815,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { drawIfStill() } }
             }
 
-            /// Which colour the cube is painted, as the member number the Swift side
+            /// Which color the cube is painted, as the member number the Swift side
             /// sends: teal 0, amber 1, violet 2. Anything else is teal.
             var color: Int32 = 0 {
                 didSet { if color != oldValue { drawIfStill() } }
@@ -12298,14 +13875,14 @@ extension Listings {
             }
 
             /// One frame: the angle the clock has reached, the cube at the size and
-            /// colour it was given.
+            /// color it was given.
             override func draw(_ rect: CGRect) {
                 let now = CACurrentMediaTime()
                 let elapsed = now - lastTime
                 lastTime = now
 
                 // Only a turning cube moves with the clock. Stopped, the frame drawn
-                // for a changed size or colour finds the angle where it was left.
+                // for a changed size or color finds the angle where it was left.
                 if isSpinning {
                     angle += elapsed
                 }
@@ -12498,7 +14075,7 @@ extension Listings {
             }
           }
 
-          // Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+          // Clears to the housing's color and draws the cube: turned, scaled and seen in perspective.
           draw() {
             const gl = this.gl;
             if (!gl) return;
@@ -12533,7 +14110,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { element.setAttribute("size", String(cubeSize)) } }
             }
 
-            /// Which colour it is painted, as the element reads it: the vocabulary's member number.
+            /// Which color it is painted, as the element reads it: the vocabulary's member number.
             var color = CubeColor.teal {
                 didSet { if color != oldValue { element.setAttribute("color", String(color.rawValue)) } }
             }
@@ -12572,7 +14149,7 @@ extension Listings {
             // First what a cube draws with: its paints, its shaders, and its device, corners and swap chain - made once, and
             // sized again with the panel by standChain. Then the drawing itself, and the frames it follows.
 
-                /// Clears to the housing's colour and draws the cube: turned, scaled and seen in perspective.
+                /// Clears to the housing's color and draws the cube: turned, scaled and seen in perspective.
                 void draw(Cube &cube) {
                     auto panel = cube.panel.get();
                     if (!panel || panel.ActualWidth() < 1 || panel.ActualHeight() < 1) return;
@@ -12688,7 +14265,7 @@ extension Listings {
         "Cube3DSample.WinUI.hlsl": #"""
         // Platforms/WinUI/Relay/Cube3D.cpp
         // Compiled by D3DCompile as the cube's device is made: `vertex` as vs_5_0, `pixel` as ps_5_0. A corner
-        // carries its face's brightness in w; the colour is the frame's.
+        // carries its face's brightness in w; the color is the frame's.
         cbuffer Frame : register(b0) { float4x4 transform; float4 color; };
         struct Corner { float4 at : POSITION; };
         struct Painted { float4 position : SV_POSITION; float4 color : COLOR; };
@@ -12715,7 +14292,7 @@ extension Listings {
                 didSet { if cubeSize != oldValue { tell() } }
             }
 
-            /// Which colour it is painted.
+            /// Which color it is painted.
             var color = CubeColor.teal {
                 didSet { if color != oldValue { tell() } }
             }
@@ -12755,21 +14332,13 @@ extension Listings {
         """#,
         "InteropActsSample.Android.java": #"""
         // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java
-        /** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
+        /** What the gallery's own acts and events ask of the device: its log and its battery. */
         final class GalleryDevice {
             private GalleryDevice() {}
 
-            /** Puts `text` on the clipboard. */
-            static void copy(Context context, String text) {
-                context.getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
-            }
-
-            /** The clipboard's text; empty where it holds none. */
-            static String paste(Context context) {
-                ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
-                if (clip == null || clip.getItemCount() == 0) return "";
-                CharSequence text = clip.getItemAt(0).coerceToText(context);
-                return text == null ? "" : text.toString();
+            /** Writes `line` to Android's log, where logcat reads it. */
+            static void log(String line) {
+                Log.i("Gallery", line);
             }
 
             /** The battery's level, 0 to 1 - 0 where the device has none - and 1 where it charges, else 0. */
@@ -12820,7 +14389,7 @@ extension Listings {
         @_cdecl("JNI_OnLoad")
         public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
             MainActor.assumeIsolated {
-                stateui_app_register()
+                registerApplication()
                 GalleryControls.register()
                 GalleryActs.register()
                 GalleryEventSources.register()
@@ -12830,23 +14399,14 @@ extension Listings {
         """#,
         "InteropActsSample.Android.swift": #"""
         // Platforms/Android/Swift/Host/GalleryActs.swift
-        /// The acts the gallery performs on this head: its clipboard and its battery, asked of the device through the
-        /// gallery's own Java, com.stateui.gallery.GalleryDevice.
+        /// The acts the gallery performs on this head: its log and its battery, asked of the device through the gallery's
+        /// own Java, com.stateui.gallery.GalleryDevice.
         enum GalleryActs {
             /// Registers each act with the host. Said once, as the library loads.
             @MainActor
             static func register() {
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    Java.frame {
-                        Java.callStatic(Self.device, Self.copy, .object(StateUIAndroid.context), .object(Java.string(text)))
-                    }
-                }
-
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    let text: String = Java.frame {
-                        Java.text(Java.callStaticObject(Self.device, Self.paste, .object(StateUIAndroid.context)))
-                    }
-                    return text
+                StateUIActs.add(GalleryContract.log) { line in
+                    Java.frame { Java.callStatic(Self.device, Self.log, .object(Java.string(line))) }
                 }
 
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -12869,10 +14429,7 @@ extension Listings {
             }
 
             @MainActor private static let device = Java.findClass("com/stateui/gallery/GalleryDevice")
-            @MainActor private static let copy = Java.staticMethod(
-                device, "copy", "(Landroid/content/Context;Ljava/lang/String;)V")
-            @MainActor private static let paste = Java.staticMethod(
-                device, "paste", "(Landroid/content/Context;)Ljava/lang/String;")
+            @MainActor private static let log = Java.staticMethod(device, "log", "(Ljava/lang/String;)V")
             @MainActor private static let batteryNow = Java.staticMethod(device, "battery", "(Landroid/content/Context;)[D")
         }
 
@@ -12889,7 +14446,7 @@ extension Listings {
                     return bar
                 }) { bar in
                     // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
-                    bar.applies([RatingBarContract.maximum, RatingBarContract.rating]) { control, values in
+                    bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
                         control.show(
                             rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
                     }
@@ -12921,13 +14478,8 @@ extension Listings {
             static func register() {
                 // A performer is handed the arguments its act declares and answers
                 // the values it declares.
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    NSPasteboard.general.clearContents()
-                    NSPasteboard.general.setString(text, forType: .string)
-                }
-
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    NSPasteboard.general.string(forType: .string) ?? ""
+                StateUIActs.add(GalleryContract.log) { line in
+                    Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
                 }
 
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -12973,13 +14525,9 @@ extension Listings {
             @MainActor
             static func register() {
                 // A performer is handed the arguments its act declares and answers the values it declares.
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    gdk_clipboard_set_text(clipboard(), text)
-                }
-                // GTK reads a clipboard only asynchronously: the performer awaits it.
-                // clipboardText() asks gdk_clipboard_read_text_async and resumes with its answer.
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    await clipboardText()
+                // GLib's own log, where journalctl reads it.
+                StateUIActs.add(GalleryContract.log) { line in
+                    g_log_default_handler("Gallery", STATEUI_LOG_LEVEL_MESSAGE, line, nil)
                 }
                 // The battery, as UPower tells it on the system bus.
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -13004,7 +14552,7 @@ extension Listings {
         // Platforms/GTK/main.swift
         // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        stateui_app_register()
+        registerApplication()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()
@@ -13024,12 +14572,8 @@ extension Listings {
             /// application runs.
             @MainActor
             static func register() {
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    UIPasteboard.general.string = text
-                }
-
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    UIPasteboard.general.string ?? ""
+                StateUIActs.add(GalleryContract.log) { line in
+                    Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
                 }
 
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -13066,21 +14610,15 @@ extension Listings {
         """#,
         "InteropActsSample.Web.javascript": #"""
         // Platforms/Web/Page/gallery-acts.js
-        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's clipboard and its
-        // battery, wherever the browser offers them. The Swift half is Platforms/Web/Host/GalleryActs.swift and
+        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's console and its
+        // battery, wherever the browser offers it. The Swift half is Platforms/Web/Host/GalleryActs.swift and
         // GalleryEventSources.swift.
         // The page loads this script before the application starts.
 
-        // The clipboard: a page served over plain http, or one the user gave no leave, has none - the act then fails
-        // with the reason.
-        StateUI.acts.setClipboard = (words) => {
-          if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
-          return navigator.clipboard.writeText(words);
-        };
-
-        StateUI.acts.readClipboard = () => {
-          if (!navigator.clipboard) throw new Error("this page has no clipboard - one served over https has");
-          return navigator.clipboard.readText();
+        // A line for the log: the browser's console, where its developer tools read it.
+        StateUI.acts.log = (line) => {
+          console.log(line);
+          return "";
         };
 
         // The battery as two words, its level from 0 to 1 and whether it charges; a browser that says nothing of it - a
@@ -13093,7 +14631,7 @@ extension Listings {
         "InteropActsSample.Web.swift": #"""
         // Platforms/Web/Host/GalleryActs.swift
         /// The gallery's own acts, as this host answers them: through the page's own scripts, Page/gallery-acts.js, which
-        /// reach the browser's clipboard and battery.
+        /// reach the browser's console and battery.
         ///
         /// `GalleryContract` declares each name with what it takes and answers - see
         /// Sources/Samples/Interop/GalleryContract.swift - and this is the half that performs them. An act aimed at a control
@@ -13103,11 +14641,8 @@ extension Listings {
             /// Registers every act this host performs. Said once, before the application runs.
             @MainActor
             static func register() {
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    _ = try await StateUIScripts.call("setClipboard", text)
-                }
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    try await StateUIScripts.call("readClipboard")
+                StateUIActs.add(GalleryContract.log) { line in
+                    _ = try await StateUIScripts.call("log", line)
                 }
                 StateUIActs.add(GalleryContract.batteryLevel) {
                     battery(try await StateUIScripts.call("batteryLevel"))
@@ -13189,12 +14724,9 @@ extension Listings {
             /// Registers every act this host performs. Said once, before the application runs.
             @MainActor
             static func register() {
-                // The clipboard needs no relay: Swift calls Win32 itself - OpenClipboard, CF_UNICODETEXT.
-                StateUIActs.add(GalleryContract.setClipboard) { text in
-                    Clipboard.write(text)
-                }
-                StateUIActs.add(GalleryContract.readClipboard) {
-                    Clipboard.read()
+                // The log needs no relay: Swift calls Win32 itself - OutputDebugStringW, which a debugger reads.
+                StateUIActs.add(GalleryContract.log) { line in
+                    line.withCString(encodedAs: UTF16.self) { OutputDebugStringW($0) }
                 }
                 // The power status, GetSystemPowerStatus, read by the gallery's relay.
                 StateUIActs.add(GalleryContract.batteryLevel) {
@@ -13230,6 +14762,7 @@ extension Listings {
             TrafficLightView.register()
             RatingBarView.register()
             GLESCube3DView.register()
+            GoogleMapView.register()
         }
         """#,
         "InteropControlSample.Android.java": #"""
@@ -13274,7 +14807,7 @@ extension Listings {
                 canvas.drawRoundRect(housing, 18 * density, 18 * density, paint);
                 for (int lamp = 0; lamp < 3; lamp++) {
                     paint.setColor(lamp == signal ? LAMPS[lamp] : (LAMPS[lamp] & 0x00FFFFFF) | 0x2E000000);
-                    canvas.drawCircle(getWidth() / 2f, centre(lamp), LAMP / 2 * density, paint);
+                    canvas.drawCircle(getWidth() / 2f, center(lamp), LAMP / 2 * density, paint);
                 }
             }
 
@@ -13283,7 +14816,7 @@ extension Listings {
             public boolean onTouchEvent(MotionEvent event) {
                 if (event.getActionMasked() == MotionEvent.ACTION_UP) {
                     for (int lamp = 0; lamp < 3; lamp++) {
-                        if (Math.abs(event.getY() - centre(lamp)) <= LAMP / 2 * density) {
+                        if (Math.abs(event.getY() - center(lamp)) <= LAMP / 2 * density) {
                             GalleryNatives.lampTapped(control, lamp);
                             break;
                         }
@@ -13292,7 +14825,7 @@ extension Listings {
                 return true;
             }
 
-            private float centre(int lamp) {
+            private float center(int lamp) {
                 return (PADDING + LAMP / 2 + lamp * (LAMP + SPACING)) * density;
             }
         }
@@ -13320,6 +14853,15 @@ extension Listings {
 
             /** A display frame for a cube, while it asks for them. */
             static native void cubeFrame(long control, long nanoseconds);
+
+            /** A map's user tapped it, where the place under the finger is. */
+            static native void mapClicked(long control, double latitude, double longitude);
+
+            /** A map's user chose the marker of {@code number}. */
+            static native void markerSelected(long control, long number);
+
+            /** A map's user asked for the details of the marker of {@code number}. */
+            static native void markerDetails(long control, long number);
 
             /** The battery said its level, 0 to 1, and whether it charges. */
             static native void batteryChanged(double level, boolean charging);
@@ -13497,13 +15039,13 @@ extension Listings {
                 }
             }
 
-            /// The lit lamp at full colour, the others dimmed to embers.
+            /// The lit lamp at full color, the others dimmed to embers.
             private func repaint() {
                 for (index, lamp) in lamps.enumerated() {
-                    let colour = Self.lampColors[index]
+                    let color = Self.lampColors[index]
                     lamp.layer?.backgroundColor = Int32(index) == signal
-                        ? colour.cgColor
-                        : colour.withAlphaComponent(0.18).cgColor
+                        ? color.cgColor
+                        : color.withAlphaComponent(0.18).cgColor
                 }
             }
         }
@@ -13679,11 +15221,11 @@ extension Listings {
                     height: Self.padding * 2 + Self.lampSide * 3 + Self.spacing * 2)
             }
 
-            /// The lit lamp at full colour, the others dimmed to embers.
+            /// The lit lamp at full color, the others dimmed to embers.
             private func repaint() {
                 for (index, lamp) in lamps.enumerated() {
-                    let colour = Self.lampColors[index]
-                    lamp.backgroundColor = Int32(index) == signal ? colour : colour.withAlphaComponent(0.18)
+                    let color = Self.lampColors[index]
+                    lamp.backgroundColor = Int32(index) == signal ? color : color.withAlphaComponent(0.18)
                 }
             }
 
@@ -13930,21 +15472,13 @@ extension Listings {
         }
 
         // Platforms/Android/Java/com/stateui/gallery/GalleryDevice.java
-        /** What the gallery's own acts and events ask of the device: its clipboard and its battery. */
+        /** What the gallery's own acts and events ask of the device: its log and its battery. */
         final class GalleryDevice {
             private GalleryDevice() {}
 
-            /** Puts `text` on the clipboard. */
-            static void copy(Context context, String text) {
-                context.getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("StateUI Gallery", text));
-            }
-
-            /** The clipboard's text; empty where it holds none. */
-            static String paste(Context context) {
-                ClipData clip = context.getSystemService(ClipboardManager.class).getPrimaryClip();
-                if (clip == null || clip.getItemCount() == 0) return "";
-                CharSequence text = clip.getItemAt(0).coerceToText(context);
-                return text == null ? "" : text.toString();
+            /** Writes `line` to Android's log, where logcat reads it. */
+            static void log(String line) {
+                Log.i("Gallery", line);
             }
 
             /** The battery's level, 0 to 1 - 0 where the device has none - and 1 where it charges, else 0. */
@@ -14003,6 +15537,15 @@ extension Listings {
 
             /** A display frame for a cube, while it asks for them. */
             static native void cubeFrame(long control, long nanoseconds);
+
+            /** A map's user tapped it, where the place under the finger is. */
+            static native void mapClicked(long control, double latitude, double longitude);
+
+            /** A map's user chose the marker of {@code number}. */
+            static native void markerSelected(long control, long number);
+
+            /** A map's user asked for the details of the marker of {@code number}. */
+            static native void markerDetails(long control, long number);
 
             /** The battery said its level, 0 to 1, and whether it charges. */
             static native void batteryChanged(double level, boolean charging);
@@ -14145,7 +15688,7 @@ extension Listings {
         // Platforms/GTK/main.swift
         // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        stateui_app_register()
+        registerApplication()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()
@@ -14162,7 +15705,7 @@ extension Listings {
         /// THE SPLIT IS THE PLATFORM'S: a device UIKit knows no battery of - the
         /// simulator - reports nothing at all, and the sample's own words say so.
         /// What is watched here is the battery, which UIKit reports through the
-        /// notification centre once its monitoring is on.
+        /// notification center once its monitoring is on.
         @MainActor
         enum GalleryEventSources {
 
@@ -14206,8 +15749,8 @@ extension Listings {
         """#,
         "InteropEventsSample.Web.javascript": #"""
         // Platforms/Web/Page/gallery-acts.js
-        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's clipboard and its
-        // battery, wherever the browser offers them. The Swift half is Platforms/Web/Host/GalleryActs.swift and
+        // The gallery's own acts as the page's scripts answer them, and what they tell: the browser's console and its
+        // battery, wherever the browser offers it. The Swift half is Platforms/Web/Host/GalleryActs.swift and
         // GalleryEventSources.swift.
         // The page loads this script before the application starts.
 
@@ -14335,6 +15878,669 @@ extension Listings {
         // Platforms/WinUI/main.swift
         // Before StateUIWinUI.run(): the pushes this host raises, their source wired.
         GalleryEventSources.start()
+        """#,
+        "android.md.acts": #"""
+        // Platforms/Android/Swift/Host/GalleryActs.swift
+        StateUIActs.add(GalleryContract.log) { line in
+            Java.frame { Java.callStatic(Self.device, Self.log, .object(Java.string(line))) }
+        }
+
+        // Platforms/Android/Swift/Host/RatingBarView.swift
+        // An act aimed at a control is its control's: the identity the aim sent is turned back into the control
+        // this host made, and the performer is handed that control.
+        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+            // The Java view fades itself, with its own animate().
+            bar.flash()
+        }
+        """#,
+        "android.md.applies": #"""
+        // Platforms/Android/Swift/Host/RatingBarView.swift
+        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
+            let bar = RatingBarView()
+            bar.onRatingChanged = { rating in
+                reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
+            }
+            return bar
+        }) { bar in
+            // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
+                control.show(
+                    rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+            }
+            bar.raises(RatingBarContract.ratingChanged)
+        }
+        """#,
+        "android.md.children": #"""
+        // Platforms/Android/Swift/Host/GoogleMapView.swift
+        StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
+            map.property(MapContract.region) { control, region in control.show(region) }
+            map.property(MapContract.mapType) { control, type in control.show(type) }
+            map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
+            map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
+            map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
+            map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
+            map.raises(MapContract.mapClicked)
+            map.children(
+                MarkerContract.self,
+                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                events: MarkerContract.selected, MarkerContract.detailsClicked
+            ) { control, markers in
+                control.show(markers)
+            }
+        }
+        """#,
+        "android.md.control": #"""
+        // Platforms/Android/Swift/Host/TrafficLightView.swift
+        extension TrafficLightView {
+            /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
+            /// reports, and `property` puts the described signal on it. Said once, as the library loads.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+                    let light = TrafficLightView()
+                    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+                    return light
+                }) { light in
+                    light.property(TrafficLightContract.signal) { control, signal in
+                        control.signal = signal ?? .stop
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "android.md.event": #"""
+        // Platforms/Android/Swift/Host/GalleryEventSources.swift
+        /// Declares the event the activity's watcher raises. Said once, as the library loads.
+        @MainActor
+        static func register() {
+            StateUIEvents.raises(GalleryContract.batteryChanged)
+        }
+
+        @MainActor private static var lastSaid: (level: Double, charging: Bool)?
+
+        /// The battery said its level and whether it charges: raised where it changed, and a device with no battery
+        /// says nothing.
+        @MainActor
+        static func report(level: Double, charging: Bool) {
+            guard level > 0 else { return }
+            guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+            lastSaid = (level, charging)
+            StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+        }
+        """#,
+        "android.md.head": #"""
+        // Platforms/Android/Swift/GalleryAndroid.swift
+        import GalleryUI
+        import StateUIAndroid
+
+        // What Android calls as it loads this library, on the UI thread: the application is named to the host, this head
+        // says what it answers for the application - the controls it realizes, the acts it performs, the events it raises,
+        // each in Host/ beside this file - and the host registers the native methods its activity calls.
+        @_cdecl("JNI_OnLoad")
+        public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
+            MainActor.assumeIsolated {
+                registerApplication()
+                GalleryControls.register()
+                GalleryActs.register()
+                GalleryEventSources.register()
+            }
+            return StateUIAndroid.load(machine)
+        }
+        """#,
+        "appkit.md.acts": #"""
+        // Platforms/AppKit/Host/GalleryActs.swift
+        // A performer is handed the arguments its act declares and answers
+        // the values it declares.
+        StateUIActs.add(GalleryContract.log) { line in
+            Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
+        }
+
+        StateUIActs.add(GalleryContract.batteryLevel) {
+            battery()
+        }
+        """#,
+        "appkit.md.aimedAct": #"""
+        // Platforms/AppKit/Host/RatingBarView.swift
+        // Aimed at one bar: the identity the aim sent is turned back into the
+        // view this host made, and the performer is handed that view.
+        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+            bar.flash()
+        }
+        """#,
+        "appkit.md.applies": #"""
+        // Platforms/AppKit/Host/RatingBarView.swift
+        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
+            let bar = RatingBarView()
+
+            // A tapped star is the USER's change: it lands on the state the
+            // value is carried in, and raises the event with it - so an
+            // application hears it once, whether it holds the rating in a
+            // state or in a handler.
+            bar.onRatingChanged = { rating in
+                reports.report(
+                    RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
+            }
+            return bar
+        }) { bar in
+            // The stars and the rating come together: a rating stands within
+            // the stars, whichever of the two changed.
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { view, values in
+                view.show(
+                    rating: values[RatingBarContract.rating] ?? 0,
+                    of: Int(values[RatingBarContract.maximum] ?? 5))
+            }
+            bar.raises(RatingBarContract.ratingChanged)
+        }
+        """#,
+        "appkit.md.control": #"""
+        // Platforms/AppKit/Host/TrafficLightView.swift
+        extension TrafficLightView {
+            /// Adds the light for `TrafficLightContract`: `create` makes the view once
+            /// per element and wires the tap it reports, and `property` puts the
+            /// described signal on it. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+                    let light = TrafficLightView()
+                    light.onLampTapped = { index in
+                        reports.raise(TrafficLightContract.lampTapped, index)
+                    }
+                    return light
+                }) { light in
+                    light.property(TrafficLightContract.signal) { view, signal in
+                        view.signal = (signal ?? .stop).rawValue
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "appkit.md.controls": #"""
+        // Platforms/AppKit/Host/GalleryControls.swift
+        /// The gallery's own controls, as this host realizes them.
+        ///
+        /// The contracts and the Swift halves are shared by every host - see
+        /// Sources/Samples/Interop. What each control IS on screen is its view's, and
+        /// so is its registration: `register()` at the end of the view's own file.
+        /// This is the list of them, and nothing else.
+        enum GalleryControls {
+            /// Registers every control this host realizes. Said once, before the
+            /// application runs.
+            @MainActor
+            static func register() {
+                TrafficLightView.register()
+                RatingBarView.register()
+                MetalCube3DView.register()
+            }
+        }
+        """#,
+        "appkit.md.event": #"""
+        // Platforms/AppKit/Host/GalleryEventSources.swift
+        let notify: IOPowerSourceCallbackType = { _ in
+            MainActor.assumeIsolated { GalleryEventSources.report() }
+        }
+
+        guard let source = IOPSNotificationCreateRunLoopSource(notify, nil)?.takeRetainedValue()
+        else { return }
+
+        CFRunLoopAddSource(CFRunLoopGetMain(), source, .defaultMode)
+
+        /// Raises the battery's reading, where it has changed and there is one.
+        private static func report() {
+            let (level, charging) = GalleryActs.battery()
+
+            guard level > 0 else { return }
+            guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+            lastSaid = (level, charging)
+            StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+        }
+        """#,
+        "appkit.md.head": #"""
+        // Platforms/AppKit/main.swift
+        import GalleryUI
+        import StateUIAppKit
+
+        registerApplication()
+
+        // What this host answers for the application, said before it runs: the
+        // controls it realizes, the acts it performs, and the pushes it reports. Each
+        // lives in Host/ beside this file.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+
+        StateUIAppKit.run(resourceDirectory: resources, applicationIcon: icon)
+        """#,
+        "appkit.md.raises": #"""
+        // Platforms/AppKit/Host/GalleryEventSources.swift
+        // Declared where the source is wired: a handler listening for an
+        // event nothing declared is told, once, that it will not hear it.
+        StateUIEvents.raises(GalleryContract.batteryChanged)
+        """#,
+        "gtk.md.acts": #"""
+        // Platforms/GTK/Host/GalleryActs.swift
+        // A performer is handed the arguments its act declares and answers the values it declares.
+        // GLib's own log, where journalctl reads it.
+        StateUIActs.add(GalleryContract.log) { line in
+            g_log_default_handler("Gallery", STATEUI_LOG_LEVEL_MESSAGE, line, nil)
+        }
+
+        // Platforms/GTK/Host/RatingBarWidget.swift
+        // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
+        // The performer is handed that control, and flash() dims it and brings it back with libadwaita's animation.
+        StateUIActs.add(RatingBarContract.flash, on: RatingBarWidget.self) { bar in
+            bar.flash()
+        }
+        """#,
+        "gtk.md.applies": #"""
+        // Platforms/GTK/Host/RatingBarWidget.swift
+        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarWidget in
+            let bar = RatingBarWidget()
+            // A tapped star is the USER's change: it lands on the state the value is carried in, and raises the event
+            // with it.
+            bar.onRatingChanged = { rating in
+                reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
+            }
+            return bar
+        }) { bar in
+            // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
+                control.show(
+                    rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+            }
+            bar.raises(RatingBarContract.ratingChanged)
+        }
+        """#,
+        "gtk.md.control": #"""
+        // Platforms/GTK/Host/TrafficLightWidget.swift
+        extension TrafficLightWidget {
+            /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
+            /// reports, and `property` puts the described signal on it. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightWidget in
+                    let light = TrafficLightWidget()
+                    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+                    return light
+                }) { light in
+                    // Handed back typed - a TrafficSignal, not its number.
+                    light.property(TrafficLightContract.signal) { control, signal in
+                        control.signal = signal ?? .stop
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "gtk.md.event": #"""
+        // Platforms/GTK/Host/GalleryEventSources.swift
+        /// Declares what the host raises and wires its source. Said once, before the application runs.
+        @MainActor
+        static func start() {
+            // A handler listening for an event nothing declared is told, once, that it will not hear it.
+            StateUIEvents.raises(GalleryContract.batteryChanged)
+
+            // UPower's display device signals each change of its properties, the battery's among them.
+            guard let device = GalleryPower.device else { return }
+            // A C callback carries no context; the report is named in full.
+            let changed: @convention(c) (OpaquePointer?, OpaquePointer?, OpaquePointer?, gpointer?) -> Void = { _, _, _, _ in
+                MainActor.assumeIsolated { GalleryEventSources.report() }
+            }
+            g_signal_connect_data(
+                UnsafeMutableRawPointer(device), "g-properties-changed", unsafeBitCast(changed, to: GCallback.self), nil,
+                nil, GConnectFlags(rawValue: 0))
+            report()
+        }
+
+        @MainActor
+        private static func report() {
+            let (level, charging) = GalleryPower.battery()
+            // Nothing is raised without a battery, nor for a notice that left it as it was.
+            guard level > 0, lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+            lastSaid = (level, charging)
+            StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+        }
+        """#,
+        "gtk.md.head": #"""
+        // Platforms/GTK/main.swift
+        import GalleryUI
+        import StateUIGTK
+        import StateUIWebViewGTK
+
+        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+        // the acts it performs, and the pushes it reports - each in Host/ beside this file.
+        registerApplication()
+        // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+        // The backends the Gallery shows a library element through: the web view, over WebKitGTK.
+        StateUIWebViewGTK.register()
+        // Then GTK holds this thread until the last window closes.
+        StateUIGTK.run(applicationID: "com.stateui.gallery")
+        """#,
+        "uikit.md.acts": #"""
+        // Platforms/UIKit/Host/GalleryActs.swift
+        StateUIActs.add(GalleryContract.log) { line in
+            Logger(subsystem: "com.stateui.gallery", category: "Gallery").notice("\(line, privacy: .public)")
+        }
+
+        StateUIActs.add(GalleryContract.batteryLevel) {
+            battery()
+        }
+
+        // Platforms/UIKit/Host/RatingBarView.swift
+        // Aimed at one bar: the identity the aim sent is turned back into the
+        // view this host made, and the performer is handed that view.
+        StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
+            bar.flash()
+        }
+        """#,
+        "uikit.md.applies": #"""
+        // Platforms/UIKit/Host/RatingBarView.swift
+        // The bar, added for its contract: its stars and its rating put on it together, a tapped star reported.
+        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView in
+            let bar = RatingBarView()
+
+            // A tapped star is the USER's change: it lands on the state the
+            // value is carried in, and raises the event with it - so an
+            // application hears it once, whether it holds the rating in a
+            // state or in a handler.
+            bar.onRatingChanged = { rating in
+                reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
+            }
+            return bar
+        }) { bar in
+            // The stars and the rating come together: a rating stands within
+            // the stars, whichever of the two changed.
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { view, values in
+                view.show(
+                    rating: values[RatingBarContract.rating] ?? 0,
+                    of: Int(values[RatingBarContract.maximum] ?? 5))
+            }
+            bar.raises(RatingBarContract.ratingChanged)
+        }
+        """#,
+        "uikit.md.control": #"""
+        // Platforms/UIKit/Host/TrafficLightView.swift
+        extension TrafficLightView {
+            /// Adds the light for `TrafficLightContract`: `create` makes the view once
+            /// per element and wires the tap it reports, and `property` puts the
+            /// described signal on it. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightView in
+                    let light = TrafficLightView()
+                    light.onLampTapped = { index in
+                        reports.raise(TrafficLightContract.lampTapped, index)
+                    }
+                    return light
+                }) { light in
+                    light.property(TrafficLightContract.signal) { view, signal in
+                        view.signal = (signal ?? .stop).rawValue
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "uikit.md.event": #"""
+        // Platforms/UIKit/Host/GalleryEventSources.swift
+        /// Declares what the gallery raises and starts watching. Said once,
+        /// before the application runs.
+        static func start() {
+            // What the host raises, declared where its source is wired: a handler
+            // listening for an event nothing raises is told so.
+            StateUIEvents.raises(GalleryContract.batteryChanged)
+
+            UIDevice.current.isBatteryMonitoringEnabled = true
+            for name in [UIDevice.batteryLevelDidChangeNotification, UIDevice.batteryStateDidChangeNotification] {
+                observers.append(NotificationCenter.default.addObserver(forName: name, object: nil, queue: .main) { _ in
+                    MainActor.assumeIsolated { report() }
+                })
+            }
+            report()
+        }
+
+        /// Raises the battery's reading, where it has changed and there is one.
+        private static func report() {
+            let (level, charging) = GalleryActs.battery()
+
+            guard level > 0 else { return }
+            guard lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+            lastSaid = (level, charging)
+            StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+        }
+        """#,
+        "uikit.md.head": #"""
+        // Platforms/UIKit/main.swift
+        import GalleryUI
+        import StateUIUIKit
+
+        registerApplication()
+
+        // What this host answers for the application, said before it runs: the
+        // controls it realizes, the acts it performs, and the pushes it reports. Each
+        // lives in Host/ beside this file.
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+
+        StateUIUIKit.run()
+        """#,
+        "web.md.acts": #"""
+        // Platforms/Web/Host/GalleryActs.swift
+        StateUIActs.add(GalleryContract.log) { line in
+            _ = try await StateUIScripts.call("log", line)
+        }
+
+        // Platforms/Web/Host/GalleryEventSources.swift
+        StateUIScripts.hear("battery") { words in
+            let (level, charging) = GalleryActs.battery(words)
+            guard level > 0 else { return }
+            StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+        }
+        """#,
+        "web.md.applies": #"""
+        // Platforms/Web/Host/RatingBarElement.swift
+        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarElement in
+            let bar = RatingBarElement()
+            // A tapped star is the USER's change: it lands on the state the value is carried in, and raises the event
+            // with it.
+            bar.onRatingChanged = { rating in
+                reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
+            }
+            return bar
+        }) { bar in
+            // The stars and the rating come together: a rating stands within the stars, whichever of the two changed.
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
+                control.show(
+                    rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+            }
+            bar.raises(RatingBarContract.ratingChanged)
+        }
+        """#,
+        "web.md.children": #"""
+        // Platforms/Web/Host/GoogleMapElement.swift
+        StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
+            map.property(MapContract.region) { control, region in control.show(region) }
+            map.property(MapContract.mapType) { control, type in control.show(type) }
+            map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
+            map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
+            map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
+            map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
+            map.raises(MapContract.mapClicked)
+            map.children(
+                MarkerContract.self,
+                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                events: MarkerContract.selected, MarkerContract.detailsClicked
+            ) { control, markers in
+                control.show(markers)
+            }
+        }
+        """#,
+        "web.md.control": #"""
+        // Platforms/Web/Host/WebGLCube3DView.swift
+        /// A cube drawn by WebGL 2 in the page: the gallery's own element, `<gallery-cube3d>` of Page/cube3d.js, which knows
+        /// nothing of StateUI - told what it is through its attributes. The Swift half is Sources/Samples/Interop/Cube3D.swift.
+        @MainActor
+        final class WebGLCube3DView: WebControl {
+            let element = WebPageElement(tag: "gallery-cube3d")
+
+            /// How long the cube's edge is, as a share of the element.
+            var cubeSize = 0.6 {
+                didSet { if cubeSize != oldValue { element.setAttribute("size", String(cubeSize)) } }
+            }
+
+            /// Which color it is painted, as the element reads it: the vocabulary's member number.
+            var color = CubeColor.teal {
+                didSet { if color != oldValue { element.setAttribute("color", String(color.rawValue)) } }
+            }
+
+            /// Whether it turns. Stopped, it holds the angle it had.
+            var isSpinning = true {
+                didSet { if isSpinning != oldValue { element.setAttribute("spinning", isSpinning ? "" : nil) } }
+            }
+
+            init() {
+                element.setAttribute("size", String(cubeSize))
+                element.setAttribute("color", String(color.rawValue))
+                element.setAttribute("spinning", "")
+            }
+        }
+
+        extension WebGLCube3DView {
+            /// Adds the cube for `Cube3DContract`. Said once, before the application runs.
+            static func register() {
+                StateUIControls.add(Cube3DContract.self, create: { _ in WebGLCube3DView() }) { cube in
+                    cube.property(Cube3DContract.size) { control, size in control.cubeSize = size ?? 0.6 }
+                    cube.property(Cube3DContract.color) { control, color in control.color = color ?? .teal }
+                    cube.property(Cube3DContract.isSpinning) { control, spinning in control.isSpinning = spinning ?? true }
+                }
+            }
+        }
+        """#,
+        "web.md.head": #"""
+        // Platforms/Web/main.swift
+        import GalleryUI
+        import StateUIWeb
+
+        // Register the application module, then say what this host answers for it
+        // before it runs - the controls it realizes, the acts it performs and the
+        // pushes it reports, each in Host/ beside this file, their scripts in Page/ -
+        // and show it in the page; the browser calls it from then on.
+        registerApplication()
+        GalleryControls.register()
+        GalleryActs.register()
+        GalleryEventSources.start()
+        StateUIWeb.run(name: "Gallery")
+        """#,
+        "winui.md.acts": #"""
+        // Platforms/WinUI/Host/GalleryActs.swift
+        // The log needs no relay: Swift calls Win32 itself - OutputDebugStringW, which a debugger reads.
+        StateUIActs.add(GalleryContract.log) { line in
+            line.withCString(encodedAs: UTF16.self) { OutputDebugStringW($0) }
+        }
+
+        // Platforms/WinUI/Host/RatingBarControl.swift
+        // Aimed at one bar: the identity the aim sent is turned back into the control this host made for it.
+        StateUIActs.add(RatingBarContract.flash, on: RatingBarControl.self) { bar in
+            // A Storyboard in the relay fades the bar's opacity down and back, twice.
+            bar.flash()
+        }
+        """#,
+        "winui.md.applies": #"""
+        // Platforms/WinUI/Host/RatingBarControl.swift
+        // The bar, made once per element, reporting the rating its user chooses; its stars and its rating taken together.
+        StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarControl in
+            let bar = RatingBarControl()
+            bar.onRatingChanged = { rating in
+                reports.report(RatingBarContract.rating, rating, as: RatingBarContract.ratingChanged)
+            }
+            return bar
+        }) { bar in
+            bar.applies(RatingBarContract.maximum, RatingBarContract.rating) { control, values in
+                control.show(
+                    rating: values[RatingBarContract.rating] ?? 0, of: Int(values[RatingBarContract.maximum] ?? 5))
+            }
+            bar.raises(RatingBarContract.ratingChanged)
+        }
+        """#,
+        "winui.md.control": #"""
+        // Platforms/WinUI/Host/TrafficLightControl.swift
+        extension TrafficLightControl {
+            /// Adds the light for `TrafficLightContract`: `create` makes the control once per element and wires the tap it
+            /// reports, and `property` puts the described signal on it. Said once, before the application runs.
+            @MainActor
+            static func register() {
+                StateUIControls.add(TrafficLightContract.self, create: { reports -> TrafficLightControl in
+                    let light = TrafficLightControl()
+                    light.onLampTapped = { index in reports.raise(TrafficLightContract.lampTapped, index) }
+                    return light
+                }) { light in
+                    // Handed back typed - a TrafficSignal, not its number.
+                    light.property(TrafficLightContract.signal) { control, signal in
+                        control.signal = signal ?? .stop
+                    }
+                    light.raises(TrafficLightContract.lampTapped)
+                }
+            }
+        }
+        """#,
+        "winui.md.event": #"""
+        // Platforms/WinUI/Host/GalleryEventSources.swift
+        /// Declares what the host raises and wires its source. Said once, before the application runs.
+        @MainActor
+        static func start() {
+            // A handler listening for an event nothing declared is told, once, that it will not hear it.
+            StateUIEvents.raises(GalleryContract.batteryChanged)
+
+            // The gallery's relay asks Windows for each change of the battery's charge and of the power source
+            // (PowerSettingRegisterNotification). A raise nobody hears is an ordinary answer, so it is wired regardless.
+            gallery_battery_watch(batteryChanged)
+            report()
+        }
+
+        @MainActor
+        fileprivate static func report() {
+            let (level, charging) = GalleryPower.battery()
+            // Windows tells more than a level change: no battery, or a reading unchanged, raises nothing.
+            guard level > 0, lastSaid?.level != level || lastSaid?.charging != charging else { return }
+
+            lastSaid = (level, charging)
+            StateUIEvents.raise(GalleryContract.batteryChanged, level, charging)
+        }
+
+        /// What Windows calls as the battery's charge or the power source changes - on a thread of its own, and once as the
+        /// watch begins: the report is the main actor's.
+        /// It stands outside the main actor, as a closure written inside `start()` would be the main actor's.
+        private let batteryChanged: @convention(c) () -> Void = {
+            Task { @MainActor in GalleryEventSources.report() }
+        }
+        """#,
+        "winui.md.head": #"""
+        // Platforms/WinUI/main.swift
+        import GalleryUI
+        import StateUIWebViewWinUI
+        import StateUIWinUI
+
+        // Register the application module, then say what this host answers for it before it runs: the controls it realizes,
+        // the acts it performs, and the pushes it reports - each in Host/ beside this file, the elements made by the gallery's
+        // relay in Relay/. Then hand WinUI this thread until the last window closes.
+        registerApplication()
+        // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
+        GalleryControls.register()
+        GalleryActs.register()
+        // Before StateUIWinUI.run(): the pushes this host raises, their source wired.
+        GalleryEventSources.start()
+        // The backends the Gallery shows a library element through: the web view, over WebView2.
+        StateUIWebViewWinUI.register()
+        StateUIWinUI.run(linkSchemes: ["stateui-gallery"])
         """#,
     ]
 }

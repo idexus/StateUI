@@ -42,7 +42,7 @@ final class WebSliderView: WebDOMView {
         attribute("disabled", enabled ? nil : "")
     }
 
-    /// The colour of the run behind the thumb; nil for the page's accent.
+    /// The color of the run behind the thumb; nil for the page's accent.
     func setTint(_ tint: HostValue?) {
         style("accent-color", WebCSS.color(tint))
         style("--stateui-on", WebCSS.color(tint))

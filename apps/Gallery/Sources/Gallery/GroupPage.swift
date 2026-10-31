@@ -21,10 +21,11 @@ struct GroupPage: View {
     @Environment(\.device) var device
 
     var body: some View {
-        // The list runs under a phone's home indicator, as its own lists do,
-        // the last row scrolling out clear of it.
+        // The list runs under the bars and a phone's home indicator, as the
+        // platform's own lists do: its rows scroll under a glass bar, the
+        // first and the last stopping clear of it.
         Grid { list }
-            .avoidsSafeArea(.container, .container, .container, .none)
+            .ignoresSafeArea(.all)
             .galleryPage(group.title)
     }
 

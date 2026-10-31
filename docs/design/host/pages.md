@@ -17,8 +17,8 @@ tab shown is the one the user chose, else the one the tree says, kept within
 the tabs; the sidebar shows as it stands on screen, else as the tree says.
 
 A tabbed view's tabs stand in its window's row where it is the first tabbed
-view down the window's stacks, split view details and a modal stack's root -
-the page the window shows under its sheets (`tabsStandInWindow`): one in a
+view down the window's stacks and split view details - the page the window
+shows under its sheets (`tabsStandInWindow`): one in a
 sidebar, in a tab of another, in a sheet or inside content keeps a row of its
 own. It is read from where the tabbed view stands, each time, so a view moved
 elsewhere keeps no word it once had. A split view's sidebar and a modal
@@ -34,7 +34,10 @@ from, disappearing and navigated from, the move's words around the
 disappearing. An arrangement hands it on to what it shows: a stack to its top
 page, as a move where its window came; a tabbed view to its tab and a split
 view to its detail and its shown sidebar, as appearances. Each phase is
-rendered before the next is heard.
+rendered before the next is heard. A page disappearing first takes the pointer
+off every view of it the pointer stood over (`pointerIsOver`, `pointerExited`):
+a toolkit tells no exit to a view gone from under the pointer, and a state
+following the pointer - a row's highlight - would stay as the page comes back.
 
 When what an arrangement shows changes - a push or a pop, another tab, the
 sidebar shown or hidden - what stopped showing leaves first, then what started
@@ -93,14 +96,16 @@ shows none.
 
 A split view says two materials for its sidebar: what it stands on beside the
 detail (`sidebarBackground`) and what it stands on while it slides over the
-detail (`flyoutBackground`). A host whose sidebar can stand over the detail
+detail (`sidebarOverlayBackground`). A host whose sidebar can stand over the detail
 knows which place it stands in - a drawer, an overlay pane, a collapsed
 split - and asks the split view for that place's material
 (`sidebarMaterial(over:)`); a Mac sidebar stands beside the detail alone. An
 empty material is the platform's own there. Beside the detail the platform's
 own lets the window through, as a desktop sidebar does; over the detail it is
-the platform's drawer or overlay surface, never the window's - a clear window
-would leave a flyout with nothing under its words. The sidebar page's own
+the window's background laid over the platform's drawer or overlay surface
+([a page's ground](#a-pages-ground)), the platform's surface alone where the
+window says none - so a clear window still leaves a sidebar over the page
+something under its words. The sidebar page's own
 background still paints the page on top. A split view saying either material
 gives its sidebar to the application to paint (`paintsSidebar`): a host whose
 platform draws a sidebar's material of its own leaves it out then.
@@ -124,8 +129,10 @@ A window's way back (`WindowPresentation.wayBack`) takes the top sheet first:
 its own stack's top page where it can go back, else the sheet itself; with no
 sheet, the arrangement's stack. A stack can go back where it holds more than
 one page and its top page shows its bar and its way back. Going back tells the
-stack it is one page shorter, or the window's modal stack how many sheets
-remain (`HostRuntime.goBack`).
+stack it is one page shorter, or writes false onto the top sheet's state
+(`HostRuntime.goBack`). Sheets the user took away together have their states
+written in one transaction, rendered once: a render between would ask again
+for a sheet already gone, which a toolkit shows again.
 
 ## A path that changes
 
@@ -140,15 +147,70 @@ libadwaita's navigation view, WinUI's entrance of a panel's children,
 Android's transitions, the browser's animations on the page. AppKit changes
 the page without motion, as the Mac's own applications do in a window.
 
+## A page's ground
+
+A page is an opaque surface the size of its room, so a page sliding over
+another - a push, a pop - hides the one under it rather than mixing with it.
+It stands on its own background where it paints one, else on the one the
+nearest arrangement on its path declares for its pages - on past a sheet to
+the view presenting it, as a bar's look; a sidebar's page on its sidebar's
+material (`pageBackground`) - else on the color its host painted its
+toolkit's window in - the window's color, or the platform's own ground where
+the window says none: UIKit's system background, Android's theme background.
+An arrangement draws no background of its own (`drawnBackground`): when it
+changes, its pages are drawn again (`pagesGroundedAnew`), and a page made
+under it presents the background it never wrote. A window whose color
+changes stands every page in it (`MountedElement.pages`) on the new one.
+
+A surface laid over the page - a sheet, a sidebar sliding over the detail -
+stands on the window's background where the application says nothing of it
+(`overlaidGround`), so the window's color reaches every surface the user
+reads on. A host lays that background over the platform's own surface there -
+its dialog, its drawer - so a clear or tinted window still leaves the surface
+opaque under its words; a blur stands where the platform blurs inside a
+window, else as its color. A window saying no background leaves the
+platform's own surface alone. A window whose background changes grounds its
+sheets and its split views (`splitViews`) again.
+
 ## Sheets
 
-A window's sheets follow its modal stack by one rule (`SheetChange`): the
+A window's sheets are the pages its views present
+(`MountedTree.presentedSheets`), in the order they showed: a sheet's page is
+made as it shows, so one presented from beneath stands over the top one. They
+follow by one rule (`SheetChange`): the
 sheets shown that stand as asked, counted from the bottom, stay; the rest
 leave, the top first; and each page asked for after them comes over the one
 before. A sheet swapped beneath one that stays takes every sheet above it
 along, so the stack's last page is always the one on top. A host says only
 whether a sheet shown stands as asked - the same page, and on GTK and the Web
 the same native page - and presents and dismisses as its toolkit does.
+
+## A sheet's size
+
+On a wide screen a sheet stands as large as its page asks (`SheetSize`): the
+page's natural size for the most width the platform gives a sheet, held
+between the least and the most of that room (`SheetRoom`) - a page taller than
+the most scrolls inside it. A stack, tabs and a split view ask nothing, as
+their pages come and go and a sheet resizing with each would jump; nor does a
+page holding a view that takes the room it is given - a list, a motion layout,
+a map, a web view (`NodeType.roomTakingTypes`). Those stand at the room's
+standard size, no larger than its most. Each host gives only its room - the
+platform's dialog bounds and the window around the sheet - and its measure of
+the page; on a narrow screen a sheet rises from the bottom as the platform's
+own does, and the rule is not asked.
+
+## An anchor stands as what it holds
+
+A composed view's anchor has no view of its own (`viewlessTypes`): what it
+holds stands in its place. A layout places the anchor's view among its own
+children (`arrangedChildren`), so its layout values, its drawing and its
+replacement are that view's; the element placing it is the one around the
+anchor (`placingParent`). The same list is an arrangement's pages, so a
+window, a stack, a tab or a split view holding an anchor shows the
+arrangement or page it holds, and every walk down the page path goes through
+it. A walk up the path steps through an anchor as through a stack. What the
+anchor presents - a sheet, a popover - stands by the view it shows
+(`presenter`).
 
 ## Slots
 
@@ -167,36 +229,131 @@ page's room.
 
 ## The visible path
 
-A page's chrome takes what is declared on its path (`declared`): the slots of
+A page's chrome takes what is declared on its path (`declared`), but for its
+actions, which are its own ([a page's actions](#a-pages-actions)): the slots of
 each arrangement around the page, from the outermost in, then what the
 page's own tree declares, in the tree's order. Each carries its level - the
 outermost arrangement's 0, the page's own last. The path ends at the window
-and at a sheet's modal stack, so a sheet starts one of its own - a modal
-stack's root stands on the path around the stack - and so does a split
+and at a sheet, so a sheet starts one of its own - and so does a split
 view's sidebar, which is not on the path; a native
 collection's items belong to no page. A page that goes takes its
 declarations with it, and what the levels around it declare stands as it
 stood: nothing is restored, because nothing was overwritten.
 
-## The actions of a path
+## A page's actions
 
-One toolbar group is one declaration: its items share one background where
-the platform groups a bar's actions. A group whose `.id` was declared further
-out joins that group, which stands where its outermost declaration put it.
-At each edge the groups stand by their `order`, then with the outer ones in
-place at the edge - first at the leading edge, last at the trailing - so an
-action of the window keeps its place from page to page and a page's own come
-in from the title's side; then as declared. The same key orders the
-declarations inside a joined group. An item whose `.id` an item further out
-has stands in that item's place, which the others of that id leave; a group
-left with nothing is none. The items placed in the overflow leave their
-groups for it, in the order composed (`ChromeActions`). A bar that draws no
-groups takes the trailing actions in reading order (`primary`).
+A page's bar holds the groups its own tree declares (`declarations`) - a page
+pushed onto a stack carries none of the page under it - and those the stacks
+and tabs around it declare for every page they show (`arrangementsGroups`),
+further out than its own, the outermost at the edge. Under a split view the page stands under one part of the split view's one
+bar (`splitBarPart`), which holds the split view's groups naming that part, the
+page's own and those the other column's shown page names for it; a group's part
+unsaid is its declarer's - a sidebar page's the sidebar's, a detail page's and
+the split view's the detail's. While the sidebar is not shown, its part's
+groups stand at the start of the detail's - behind its overflow those that
+stood behind the sidebar's - or are gone where they hide with it
+(`hidesWithSidebar`); a part said off any split view changes nothing.
+
+A window's one chrome carries both parts (`WindowChrome`): the detail's from
+the visible page (`actions`), the sidebar's from the sidebar's page
+(`sidebarActions`) - none while the sidebar is not shown, its groups then
+standing among the detail's. Each host stands the sidebar's part over the
+sidebar natively: AppKit before the toolbar's separator tracking the sidebar,
+the Web in the bar's part over the sidebar, WinUI on the head of the split
+view's pane, as a Windows application's navigation pane holds its commands; a
+host with a bar per column - UIKit, Android, GTK - shows each column's part
+on its own bar.
+
+One group is one background where the platform groups a bar's actions; an item
+standing alone is a group of one. At each position - the start, the end, the
+overflow - the groups stand by their `order`, then the outer at the edge -
+first at the start and in the overflow, last at the end - by how far out their
+declarer stands, the split view's furthest, a page's by its depth in the page's
+tree (`ChromeActions`), then as declared. Each group behind the overflow is a
+section of it (`overflowSections`). A bar that draws no groups takes the
+trailing actions in reading order (`primary`).
+
+A group declared for the bar at the page's foot (`barEdge`, `.toolbar(.bottom)`)
+stands there by the same rules, and on no top bar: the host layer composes the
+top bar's actions (`chromeActions`) and the foot's (`chromeBottomActions`) from
+one walk, each taking the groups of its edge. A page that hides its top bar
+keeps its foot's. Words on a bar (`ToolbarLabel`) stand among its actions as
+an item does; behind the overflow they are an entry nobody can choose
+(`MenuEntry.isEnabled`).
+
+## A bar button's menu
+
+A `ToolbarButton` holds a menu as a `Button` does (`ButtonMenuElement`), and
+the host layer reads both alike (`ButtonMenu`): how it opens - its click
+where it has no click of its own, else an arrow of its own or held - whether
+the arrow shows, and its entries. Each host makes the bar item its toolkit
+makes for a menu: a menu item on AppKit's toolbar, a bar button with a menu
+on UIKit - where a split stands as held, the bar offering no arrow part - a
+submenu on Android's bar where the click opens it, else the action on the bar
+and its menu behind the overflow, a flyout on WinUI's command bar, a menu
+button on GTK's header bar, a menu button on the Web's bar. Behind the
+overflow, a button holding a menu is a submenu under its words
+(`ButtonMenu.inOverflow`): its own action first where its click is its own,
+a line, then its menu's entries.
+
+## A bar with no room
+
+Where a platform's bar keeps its own items from crowding - UIKit's, Android's,
+WinUI's command bar - it decides itself; a host that measures its bar itself
+stands its groups by one rule (`BarFit`). Every group stands where they all
+fit around the title in the bar's middle; else around a title taking the room
+they leave; else the first groups in reading order, the leading ones first,
+while they fit, and the rest behind the bar's More - each group's items apart,
+ahead of what is placed there anyway - as the platforms' own bars keep their
+first items on a phone. The host tries each standing on its bar in that order
+and keeps the first that crowds nothing.
+
+## Words beside a picture
+
+A button and a bar's item show words and may show a picture
+(`TextAndIconElement`); whether the words stand beside the picture is one
+rule on every host (`TextAndIcon.showsText`): always where there is no
+picture, else as the element says - unsaid, a button's words show and a bar's
+item's do not, as each platform's bar shows its items' pictures alone. Words
+left out still name the element to assistive technology, and a bar's item's
+stand in its tip. A host puts the words on again where
+`MountedElement.changesAccessibility` says, asking it of everything that
+changed: the words, the picture and `showsText` are its registration's to
+show, and asked of what is left over they never name the button.
+
+## A bar's capsules
+
+Where a host draws a capsule behind its bar's buttons, which buttons stand on
+one is decided once (`BarCapsule.places(of:)`): the buttons of a group its
+author declares stand on one capsule - its first at the start, its last at
+the end, any between in the middle, one alone on the whole of it. A button
+declared alone stands bare: StateUI stands it in a group of its own, which
+says so (`ToolbarGroupContract.standsAlone`), and no host reads that from
+the group's size. None behind "more" stands on a capsule. The host draws its
+parts: WinUI's buttons ([a bar's
+buttons](../platforms/winui/pages.md#a-bars-buttons)).
+
+## A bar's items in the application's look
+
+A bar's items - a `ToolbarButton`, a `ToolbarToggle`, a `ToolbarGroup` - wear
+the look of a control where a host draws its bar itself: their own tiers,
+`BarItemElement` (a style, a background, the pointer over it) and
+`BarButtonElement` (a press), the room between a group's buttons
+(`spacing`) and between the bar's groups (`toolbarSpacing`), and on each item
+the box and the words they share with controls - `BorderElement`,
+`PaddingElement`, `TextColorElement` and `FontElement`.
+Which members those are is said once (`BarItemLook`): a host judges them all
+alike, realized where it draws the bar (the Web), not planned where the bar is
+the platform's own. The style and the states are resolved by StateUI before
+the patch, as a control's are; a host shows the values an item holds and tells
+its element the pointer and the press. Every group on the bar wears the group
+style - a lone item's own too - so a button standing alone stands in the same
+box a declared group gives its buttons.
 
 ## The menus of a path
 
 The menu bar a page's window shows is composed from the menu bars its path
-declares (`ChromeMenus`), by the rule the actions follow. A menu whose `.id`
+declares (`ChromeMenus`). A menu whose `.id`
 was declared further out joins that menu, which its outermost declaration
 heads - its caption, whether it opens - and places. The menus and the
 sections inside a joined one stand by their declaration's `order`, then the
@@ -210,25 +367,41 @@ others of that id leave; a section left with nothing is none. A menu whose
 
 ## The bar a path declares
 
-What an arrangement declares of the bar - its colours, and the application's
-name, the line under the title and its mark - is a value on the arrangement
-(`BarElement`), not a declaration: each value of a page's bar is the nearest
-on its path, its own arrangement included (`barValue`), so a stack further in
-paints its own bar and the window's page still names the application. The
+What an arrangement declares of the bar - its look: its material, its words'
+color, its buttons' background and style - is a value on the arrangement
+(`BarElement`), not a
+declaration: each value of a page's bar is the nearest on its path, its own
+arrangement included (`barValue`), so a stack further in paints its own bar.
+What the bar says is each page's own ([a page's title
+area](#a-pages-title-area)). The
 path is the declarations' (`arrangementsAround`), but for a split view's
 sidebar, which wears its own split view's bar - a split view's bar is both its
-panes', so its colours paint a sidebar's own bar where a platform draws one
-(`barArrangements`) - and nothing from around the split view; a sheet takes
-nothing from around it. The colours are `barColors`; the name, the line and
-the mark are the title area (`titleArea`), none where none is declared, an
-empty line or picture none. A host shows the title area where its platform
-names the application - a desktop's window chrome - and the line under the
-title wherever a bar has one.
+panes', so its colors paint a sidebar's own bar where a platform draws one
+(`barArrangements`) - and nothing from around the split view. The look
+crosses a sheet, which has no bar of its own: a stack in it brings one,
+in the look of the bar over the view presenting the sheet unless the stack
+declares its own, as the sheet's content is that view's; what the bar says
+stops at the sheet ([the visible path](#the-visible-path)). The colors are
+`barColors` - the material as a host that blurs nothing paints it - and the
+material itself is `barMaterial`, for a host whose bars blur.
 
-A tabbed view's row wears the colours of the bar on its path too, and those
+## A page's title area
+
+A page says what its bar says of it, and nothing climbs the path: its title,
+the line under it (`barSubtitle`, an empty one none) and its picture. The line
+stands under the title wherever a bar shows the title - the chrome's line is
+the page naming the window's (`WindowChrome.subtitle`). A split view's
+sidebar's page names the application (`titleArea(applicationName:)`): its
+title, else the application's name ([a sidebar's
+title](#a-sidebars-title)), its line and its picture as the application's
+mark. A host shows that title area where its platform's chrome names the
+application over the sidebar - a desktop's title bar, the sidebar's own bar
+(`WindowChrome.titleArea`, none where the window shows no split view).
+
+A tabbed view's row wears the colors of the bar on its path too, and those
 move on an element above it - a stack, a theme resolved again - that the
 tabbed view never hears from. So where a host paints the row in the bar's
-colours - UIKit and the Web - the row is painted with the
+colors - UIKit and the Web - the row is painted with the
 chrome: every time a window's chrome is shown again - a render touching it, a
 frame moving it - the host paints each tabbed view its arrangements show
 (`tabViewsShown`, through pages and arrangements of pages) in its
@@ -242,8 +415,36 @@ outer under the inner, then each sheet's in turn, then the window's own - the
 library's docked inspector - over every other. Each is one layer holding the
 views declared together. A page that stops being shown - a page pushed over
 it, a tab chosen away - takes its overlays with it; nothing is restored,
-because nothing was overwritten. A modal stack standing as the window's page
-is shown as its root under its sheets.
+because nothing was overwritten.
+
+## A popover
+
+A view's popover is a slot of its own (`.popover`): its parent never lays it
+out, and its host shows it in the platform's popover by the view its parent
+shows (`presenter`) while `isPresented` is true, taking it away when it turns false - AppKit's
+`NSPopover`, UIKit's popover presentation (a popover on a phone too), Android's
+`PopupWindow`, WinUI's `Flyout`, GTK's `GtkPopover`, the browser's popover.
+What it holds is a tree laid out on its own and sized by its content.
+The platform taking it away while the tree asks for it is the user's
+dismissal - false onto the state, then `isPresentedChanged`; taken away while the
+tree no longer asks, it is the application's own write coming back, heard by
+nobody (`MountedElement.reportDismissed`).
+
+A popover shows only by an anchor standing in a window. One the tree shows
+from the start, or in a page coming, may ask before that window is made: a
+host whose windows are made once the render stands - AppKit, UIKit - lets it
+wait (`waitForItsWindow`) and tries again after the render
+(`MountedTree.takeWaitingPopovers`), each waiting popover once a render, so
+one whose anchor stands nowhere costs nothing. Android, WinUI and GTK wait
+for the anchor themselves - attached, loaded, mapped.
+
+A popover written on a view whose branch flips stands on that view's anchor,
+and the view it shows by is made anew: the host layer hands the shown popover
+back after the render the same way (`showsAnew`), and every host shows it by
+the new view - AppKit showing it again there, UIKit moving its source view,
+Android updating its popup, GTK popping it down unheard and up on the new
+widget, WinUI showing the flyout at the new target, the browser placing it
+anew. Nothing of it is heard as the user's.
 
 ## The window's chrome
 
@@ -257,14 +458,19 @@ words the page beneath gives, else "Back"; the actions the visible page's
 path declares (`chromeActions`) - none where the page hides its bar - each
 showing its words beside its picture where it says so and always where it
 has none (`showsActionWords`); the title view the path declares in the
-title's place (`chromeTitleView`); the title area and the bars' colours the
-path declares ([the bar a path declares](#the-bar-a-path-declares)); the menus
+title's place (`chromeTitleView`); the line under the title and the title
+area its sidebar's page names the application with ([a page's title
+area](#a-pages-title-area)); the bars' colors the path declares ([the bar a
+path declares](#the-bar-a-path-declares)); the menus
 its path declares
-(`chromeMenus`); and the sidebar's toggle where the window shows a split view. A host lays these out
+(`chromeMenus`); and the split view the window shows (`splitView`), with its
+sidebar's toggle unless the split view offers none (`showsSidebarToggle`) - a
+bar in two parts stands over the split view either way. A host lays these out
 in its own chrome. A page saying it shows no title (`showsTitle`) still names the window to the system and
 the way back from the page above it; the chrome shows none for it. A host whose pages each stand under a header bar of their
 own takes the same parts page by page: a page's actions (`chromeActions`),
-its title view (`chromeTitleView`), and its bar's colours and the line under its title.
+its title view (`chromeTitleView`), its bar's colors and the line under its
+title (`barSubtitle`).
 
 A stack shows its bar over what stands on it once (`showsTheStacksBar`): over
 a page that keeps its bar, and over tabs or a split view only where the page
@@ -305,16 +511,33 @@ it, whether choosing it destroys something and its identifier; a menu bar
 holds only its menus. A host builds its toolkit's menu
 from the walk, and an item's element hears it chosen.
 
+## The Edit menu
+
+A menu joining `StandardMenu.edit` keeps the platform's own entries before
+the application's. AppKit and UIKit keep an Edit menu of their own and join
+it there; a host whose platform keeps none - WinUI, GTK, the Web - takes the
+entries from the host layer (`ChromeMenus.editing`): Undo and Redo, Cut,
+Copy, Paste and Delete, Select All, sections apart, in the library's words in
+the system's language (`EditWords`) and with the field's own keys beside them
+- the field takes those keys itself, so the menu only shows them. Each entry
+is an `EditCommand` the host does with its toolkit's own act on the field the
+user last typed into in the window: the menu takes the focus as it opens, so
+a host keeps that field as the focus leaves it and hands the focus back as
+the entry acts. A window with no such field does nothing.
+
 ## A checked entry
 
-An item may stand checked or not (`MenuItemContract.isOn`), which each host
-shows as its toolkit marks a setting - a check beside it. Choosing such an
-item is one rule on every host (`MountedElement.chosen`): it turns the other
-way first - `toggled` with the way it turned to, written through a binding -
-and then it is clicked. An item that says neither way is only clicked, and
-shows no mark.
+A setting's entry - a `MenuToggle` - stands checked or not
+(`MenuToggleContract.isOn`), which each host shows as its toolkit marks a
+setting: a check beside it. Choosing an entry is one rule on every host
+(`MountedElement.chosen`): a setting's turns the other way - `toggled` with
+the way it turned to, written through a binding - and a `MenuItem`, which
+acts and shows no mark, is clicked. A setting on a bar - a `ToolbarToggle` -
+turns by the same rule, and the picture it shows on the bar and behind its
+overflow is its `on:` picture while it stands on, else its own
+(`MountedElement.itemPicture`, which every host's entry reads).
 
 A menu is walked from the tree, never a channel of its own, so the two-way
-`isOn($state)` reads its state where the menu is built: the state turning
+`MenuToggle(_:isOn: $state)` reads its state where the menu is built: the state turning
 builds that body again, and the walk shows the new mark on every host the
 same way a caption changing does.

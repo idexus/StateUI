@@ -4,9 +4,9 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `MenuItemElementContract` on a host: an item - a menu's, a toolbar's - chosen runs its handler, one out of reach
-/// itself or with its branch runs nothing, and it stands with the words, icon and warning the tree gives it; each
-/// case made for every element wearing the tier.
+/// `MenuItemElementContract` on a host: an item - a menu's, a toolbar's, an action or a setting - out of reach itself
+/// or with its branch is chosen by nothing, its shortcut chooses it, and it stands with the words and icon the tree
+/// gives it; each case made for every element wearing the tier.
 @_spi(Host) public enum MenuItemElementTests: ConformanceFamily {
     public static let name = "MenuItemElement"
 
@@ -17,7 +17,6 @@
                 outOfReachWithItsBranch(element),
                 Aspects.holds(MenuItemElementContract.text, on: element, "Copy", then: "Duplicate"),
                 Aspects.holds(MenuItemElementContract.icon, on: element, "test_dot.png", then: "test_wide.png"),
-                Aspects.holds(MenuItemElementContract.isDestructive, on: element, false, then: true),
                 Aspects.holds(MenuItemElementContract.isEnabled, on: element, true, then: false),
                 Aspects.holds(
                     MenuItemElementContract.keyboardShortcut, on: element, KeyboardShortcut("s"),
@@ -28,12 +27,21 @@
         }
     }
 
+    /// What tells an item of `element`'s kind was chosen: an action's click, a setting's turn.
+    static func choosing(_ element: String) -> Covered {
+        switch element {
+        case "MenuToggle": Covered(MenuToggleContract.toggled)
+        case "ToolbarToggle": Covered(ToolbarToggleContract.toggled)
+        default: Covered(ActionElementContract.clicked, on: element)
+        }
+    }
+
     /// An item chosen runs its handler; out of reach, it runs nothing.
     @MainActor
     static func chosen(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).anItemChosenRunsItsHandlerUnlessOutOfReach", proves: [
-            Covered(MenuItemElementContract.clicked, on: element), Covered(MenuItemElementContract.isEnabled, on: element),
-        ]) { s in
+            Covered(MenuItemElementContract.isEnabled, on: element),
+        ], needs: [choosing(element)]) { s in
             let heard = Received<String>()
             s.start {
                 Chosen.page(element) { enabled in
@@ -55,7 +63,7 @@
     static func outOfReachWithItsBranch(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).anItemInADisabledBranchIsOutOfReach", proves: [
             Covered(MenuItemElementContract.isEnabled, on: element),
-        ], needs: [Covered(ButtonContract.clicked), Covered(MenuItemElementContract.clicked, on: element)]) { s in
+        ], needs: [Covered(ButtonContract.clicked), choosing(element)]) { s in
             let heard = Received<String>()
             let enabled = State(wrappedValue: false)
             s.start {
@@ -87,7 +95,7 @@ extension MenuItemElementTests {
     static func chosenByItsShortcut(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aShortcutChoosesTheItemInItsWindow", proves: [
             Covered(MenuItemElementContract.keyboardShortcut, on: element),
-        ], needs: [Covered(MenuItemElementContract.clicked, on: element)]) { s in
+        ], needs: [choosing(element)]) { s in
             let heard = Received<String>()
             s.start { Shortcuts.page(element, heard: heard) }
 
@@ -98,7 +106,7 @@ extension MenuItemElementTests {
             try s.perform(.pressKeys(KeyboardShortcut("o")), on: s.element("open"))
             s.turn()
             s.expect(heard.values, ["save"], "an item out of reach is chosen by nothing")
-            guard element == "MenuItem" else { return }
+            guard element.hasPrefix("Menu") else { return }
 
             try s.perform(.pressKeys(KeyboardShortcut("c")), on: s.element("copy"))
             s.turn()
@@ -112,7 +120,7 @@ extension MenuItemElementTests {
         ConformanceCase("\(element).aBareShortcutGivesWayToAFieldBeingTypedInto", proves: [
             Covered(MenuItemElementContract.keyboardShortcut, on: element),
         ], needs: [
-            Covered(MenuItemElementContract.clicked, on: element),
+            choosing(element),
             Covered(FocusElementContract.focus, on: "TextField"),
         ]) { s in
             let heard = Received<String>()
@@ -133,7 +141,7 @@ extension MenuItemElementTests {
 /// context menu's "Copy" on ⌘C beside them.
 @MainActor
 enum Shortcuts {
-    static func page(_ element: String, heard: Received<String>) -> ModifiedContent {
+    static func page(_ element: String, heard: Received<String>) -> AnyView {
         let content = VStack {
             Text("Page").id("page")
             TextField("").id("field")
@@ -143,33 +151,63 @@ enum Shortcuts {
                 }
                 .id("row")
             }
+            if element == "MenuToggle" {
+                Text("Row").contextMenu {
+                    MenuToggle("Copy", isOn: false).keyboardShortcut("c")
+                        .onToggled { _ in heard.values.append("copy") }.id("copy")
+                }
+                .id("row")
+            }
         }
-        if element == "ToolbarItem" {
+        if element == "ToolbarToggle" {
             let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 content.toolbar {
-                    ToolbarItem("Save").keyboardShortcut("s", modifiers: [.primary, .shift])
+                    ToolbarToggle("Save", isOn: false).keyboardShortcut("s", modifiers: [.primary, .shift])
+                        .onToggled { _ in heard.values.append("save") }.id("save")
+                    ToolbarToggle("Open", isOn: false).keyboardShortcut("o").isEnabled(false)
+                        .onToggled { _ in heard.values.append("open") }.id("open")
+                    ToolbarToggle("One", isOn: false).keyboardShortcut("1", modifiers: [])
+                        .onToggled { _ in heard.values.append("one") }.id("one")
+                }
+            } destination: { _ in Text("Pushed") }
+            return AnyView(stack)
+        }
+        if element == "ToolbarButton" {
+            let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                content.toolbar {
+                    ToolbarButton("Save").keyboardShortcut("s", modifiers: [.primary, .shift])
                         .onClicked { heard.values.append("save") }.id("save")
-                    ToolbarItem("Open").keyboardShortcut("o").isEnabled(false)
+                    ToolbarButton("Open").keyboardShortcut("o").isEnabled(false)
                         .onClicked { heard.values.append("open") }.id("open")
-                    ToolbarItem("One").keyboardShortcut("1", modifiers: [])
+                    ToolbarButton("One").keyboardShortcut("1", modifiers: [])
                         .onClicked { heard.values.append("one") }.id("one")
                 }
             } destination: { _ in Text("Pushed") }
-            return ModifiedContent(node: stack.node)
+            return AnyView(stack)
         }
+        let toggles = element == "MenuToggle"
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
             content.menuBar {
                 Menu("File") {
-                    MenuItem("Save").keyboardShortcut("s", modifiers: [.primary, .shift])
-                        .onClicked { heard.values.append("save") }.id("save")
-                    MenuItem("Open").keyboardShortcut("o").isEnabled(false)
-                        .onClicked { heard.values.append("open") }.id("open")
-                    MenuItem("One").keyboardShortcut("1", modifiers: [])
-                        .onClicked { heard.values.append("one") }.id("one")
+                    if toggles {
+                        MenuToggle("Save", isOn: false).keyboardShortcut("s", modifiers: [.primary, .shift])
+                            .onToggled { _ in heard.values.append("save") }.id("save")
+                        MenuToggle("Open", isOn: false).keyboardShortcut("o").isEnabled(false)
+                            .onToggled { _ in heard.values.append("open") }.id("open")
+                        MenuToggle("One", isOn: false).keyboardShortcut("1", modifiers: [])
+                            .onToggled { _ in heard.values.append("one") }.id("one")
+                    } else {
+                        MenuItem("Save").keyboardShortcut("s", modifiers: [.primary, .shift])
+                            .onClicked { heard.values.append("save") }.id("save")
+                        MenuItem("Open").keyboardShortcut("o").isEnabled(false)
+                            .onClicked { heard.values.append("open") }.id("open")
+                        MenuItem("One").keyboardShortcut("1", modifiers: [])
+                            .onClicked { heard.values.append("one") }.id("one")
+                    }
                 }
             }
         } destination: { _ in Text("Pushed") }
-        return ModifiedContent(node: stack.node)
+        return AnyView(stack)
     }
 }
 
@@ -179,9 +217,9 @@ enum Chosen {
     /// A page with an item of `element`'s kind in reach and one out of it, each named and heard as `item` says.
     static func page(
         _ element: String, _ item: @escaping @MainActor (Bool) -> (String, @MainActor () -> Void)
-    ) -> ModifiedContent {
+    ) -> AnyView {
         // Chosen by name, so held as `any View` and handed on as its node.
-        ModifiedContent(node: chosen(element, item).node)
+        AnyView(chosen(element, item))
     }
 
     /// The page `page(_:_:)` shows, chosen by name.
@@ -189,15 +227,33 @@ enum Chosen {
         _ element: String, _ item: @escaping @MainActor (Bool) -> (String, @MainActor () -> Void)
     ) -> any View {
         let (on, off) = (item(true), item(false))
-        if element == "ToolbarItem" {
+        if element == "ToolbarToggle" {
+            return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                DeclaringPage(toggles: {
+                    [
+                        ToolbarToggle(on.0, isOn: false).onToggled { _ in on.1() }.id(on.0),
+                        ToolbarToggle(off.0, isOn: false).isEnabled(false).onToggled { _ in off.1() }.id(off.0),
+                    ]
+                })
+            } destination: { _ in Text("Pushed") }
+        }
+        if element == "ToolbarButton" {
             return NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                 DeclaringPage {
                     [
-                        ToolbarItem(on.0).onClicked { on.1() }.id(on.0),
-                        ToolbarItem(off.0).isEnabled(false).onClicked { off.1() }.id(off.0),
+                        ToolbarButton(on.0).onClicked { on.1() }.id(on.0),
+                        ToolbarButton(off.0).isEnabled(false).onClicked { off.1() }.id(off.0),
                     ]
                 }
             } destination: { _ in Text("Pushed") }
+        }
+        if element == "MenuToggle" {
+            return VStack {
+                Text("Row").contextMenu {
+                    MenuToggle(on.0, isOn: false).onToggled { _ in on.1() }.id(on.0)
+                    MenuToggle(off.0, isOn: false).isEnabled(false).onToggled { _ in off.1() }.id(off.0)
+                }.id("row")
+            }
         }
         return VStack {
             Text("Row").contextMenu {
@@ -211,14 +267,23 @@ enum Chosen {
     /// `enabled` says, `beside` it out of the branch.
     static func branch(
         _ element: String, enabled: Bool, beside: some View, _ heard: @escaping @MainActor () -> Void
-    ) -> ModifiedContent {
-        let branch: any View = element == "ToolbarItem"
-            ? VStack { Text("Branch") }.toolbar { ToolbarItem("Item").onClicked { heard() }.id("item") }
-            : VStack { Text("Row").contextMenu { MenuItem("Item").onClicked { heard() }.id("item") }.id("row") }
-        let page = VStack { [Text("Page"), ModifiedContent(node: branch.node).isEnabled(enabled), beside] as [any View] }
-        guard element == "ToolbarItem" else { return ModifiedContent(node: page.node) }
+    ) -> AnyView {
+        let branch: any View = switch element {
+        case "ToolbarButton":
+            VStack { Text("Branch") }.toolbar { ToolbarButton("Item").onClicked { heard() }.id("item") }
+        case "MenuToggle":
+            VStack {
+                Text("Row").contextMenu { MenuToggle("Item", isOn: false).onToggled { _ in heard() }.id("item") }.id("row")
+            }
+        case "ToolbarToggle":
+            VStack { Text("Branch") }.toolbar { ToolbarToggle("Item", isOn: false).onToggled { _ in heard() }.id("item") }
+        default:
+            VStack { Text("Row").contextMenu { MenuItem("Item").onClicked { heard() }.id("item") }.id("row") }
+        }
+        let page = VStack { Beside([Text("Page"), AnyView(branch).isEnabled(enabled), beside]) }
+        guard element.hasPrefix("Toolbar") else { return AnyView(page) }
         // An item on a bar stands on a page in a navigation stack.
         let stack = NavigationStack(State(wrappedValue: [Int]()).projectedValue) { page } destination: { _ in Text("Pushed") }
-        return ModifiedContent(node: stack.node)
+        return AnyView(stack)
     }
 }

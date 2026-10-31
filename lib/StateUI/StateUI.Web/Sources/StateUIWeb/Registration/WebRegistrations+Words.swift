@@ -5,13 +5,13 @@
 @_spi(Host) import StateUIHost
 
 extension WebRegistrations {
-    /// A Text and a Button: their words in their case, their font and colour and the room around them; a text's
+    /// A Text and a Button: their words in their case, their font and color and the room around them; a text's
     /// lines, alignment, spacing and decorations; a button's picture, its lines, its spacing, its box, whether it
     /// takes a click, the press, its release and the click.
     static func words(_ registry: Registry<WebDOMView>) {
         registry.add(TextContract.self, create: { _ in WebTextView() }) { text in
             text.applies(TextMembers.members) { view, values in applyWords(view, values) }
-            text.applies([TextContract.lineBreak, TextContract.maximumLines]) { view, values in
+            text.applies(TextContract.lineBreak, TextContract.maximumLines) { view, values in
                 view.setLines(breaking: values[TextContract.lineBreak] ?? .wordWrap, maximum: values[TextContract.maximumLines])
             }
             text.property(TextAlignmentElementContract.horizontalTextAlignment) { view, alignment in
@@ -21,10 +21,9 @@ extension WebRegistrations {
                 view.setAlignment(vertical: alignment ?? .start)
             }
             text.property(TextContract.isSelectable) { view, selectable in view.isSelectable = selectable ?? false }
-            text.applies([
+            text.applies(
                 TrackingElementContract.tracking, LineHeightElementContract.lineHeight,
-                DecorableTextElementContract.textDecorations,
-            ]) { view, values in
+                DecorableTextElementContract.textDecorations) { view, values in
                 var look = TextLook()
                 look.letterSpacing = values[TrackingElementContract.tracking] ?? 0
                 look.lineHeight = values[LineHeightElementContract.lineHeight]
@@ -41,22 +40,23 @@ extension WebRegistrations {
             return button
         }, members: { button in
             button.applies(TextMembers.members) { view, values in applyWords(view, values) }
-            button.applies([
+            button.applies(
                 ButtonContract.icon, ButtonContract.iconPosition, ButtonContract.iconSpacing,
-                ImageElementContract.contentMode,
-            ]) { view, values in
+                ImageElementContract.contentMode, TextAndIconElementContract.showsText) { view, values in
                 view.setIcon(
-                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .leading,
-                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit)
+                    values[ButtonContract.icon], position: values[ButtonContract.iconPosition] ?? .start,
+                    spacing: values[ButtonContract.iconSpacing], aspect: values[ImageElementContract.contentMode] ?? .fit,
+                    showsText: TextAndIcon.showsText(
+                        values[TextAndIconElementContract.showsText],
+                        hasPicture: HostPicture(values[ButtonContract.icon], dark: false) != nil, byDefault: true))
             }
             button.property(ButtonContract.lineBreak) { view, lineBreak in view.setLines(lineBreak) }
             button.property(TrackingElementContract.tracking) { view, spacing in
                 view.style("letter-spacing", WebCSS.letterSpacing(spacing ?? 0))
             }
-            button.applies([
-                VisualElementContract.background,
-                BorderElementContract.shape, BorderElementContract.stroke, BorderElementContract.lineWidth,
-            ]) { view, values in
+            button.applies(
+                VisualElementContract.background, BorderElementContract.shape, BorderElementContract.stroke,
+                BorderElementContract.lineWidth) { view, values in
                 view.setBox(
                     fill: values[VisualElementContract.background]?.propValue,
                     stroke: values[BorderElementContract.stroke]?.propValue,
@@ -67,7 +67,7 @@ extension WebRegistrations {
             // The page holds a shortcut on no control - the one stated, else the role's: the window's keys reach it,
             // and assistive technology is told. The role is the document's own for the main action, a submit, and
             // the page's look for each.
-            button.applies([ButtonContract.keyboardShortcut, ButtonContract.role]) { view, values in
+            button.applies(ButtonContract.keyboardShortcut, ButtonContract.role) { view, values in
                 let role = values[ButtonContract.role]
                 let shortcut = KeyboardShortcuts.pressing(stated: values[ButtonContract.keyboardShortcut], role: role)
                 view.attribute("aria-keyshortcuts", shortcut.map { WebKeys.spelled($0, onApple: WebRelay.onApple) })

@@ -7,8 +7,8 @@ import UIKit
 @_spi(Host) import StateUIHost
 
 extension UIKitRegistrations {
-    /// A Picker - its choices and the one chosen, which the user chooses too - and a DatePicker and a TimePicker:
-    /// the day or the time picked, in the range the tree gives.
+    /// A Picker - its choices and the one chosen, which the user chooses too - a DatePicker and a TimePicker: the day
+    /// or the time picked, in the range the tree gives - and a ColorPicker: the color chosen.
     static func pickers(_ registry: Registry<UIView>) {
         // Each presentation is another control: the picker is made as the one it is made with.
         registry.add(PickerContract.self, create: { reports -> UIView in
@@ -24,12 +24,14 @@ extension UIKitRegistrations {
             picker.onClosed = { reports.raise(PickerContract.closed) }
             return picker
         }, members: { (picker: Registration<PickerContract, UIView>) in
-            picker.applies([PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder]) { view, values in
+            picker.applies(
+                PickerContract.options, PickerContract.selectedIndex, PickerContract.placeholder) { view, values in
                 (view as! any UIKitChoosing).setChoices(
                     values[PickerContract.options] ?? [], chosen: values[PickerContract.selectedIndex] ?? -1,
                     writeChosen: values.changed(PickerContract.selectedIndex), title: values[PickerContract.placeholder])
             }
-            picker.applies(TextMembers.lookMembers + [TextAlignmentElementContract.horizontalTextAlignment]) { view, values in
+            picker.applies(
+                TextMembers.lookMembers, TextAlignmentElementContract.horizontalTextAlignment) { view, values in
                 (view as! any UIKitChoosing).setLook(
                     TextMembers.look(of: values),
                     alignment: values[TextAlignmentElementContract.horizontalTextAlignment] ?? .start)
@@ -50,9 +52,9 @@ extension UIKitRegistrations {
             picker.onChosen = { day in reports.report(DatePickerContract.date, day, as: DatePickerContract.dateChanged) }
             return picker
         }, members: { picker in
-            picker.applies([
-                DatePickerContract.date, DatePickerContract.minimumDate, DatePickerContract.maximumDate,
-            ]) { view, values in
+            picker.applies(
+                DatePickerContract.date, DatePickerContract.minimumDate,
+                DatePickerContract.maximumDate) { view, values in
                 view.setRange(earliest: values[DatePickerContract.minimumDate], latest: values[DatePickerContract.maximumDate])
                 if values.changed(DatePickerContract.date) { view.setDay(values[DatePickerContract.date]) }
             }
@@ -68,6 +70,23 @@ extension UIKitRegistrations {
             picker.property(TimePickerContract.time) { view, time in view.setTime(time) }
             picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
             picker.raises(TimePickerContract.timeChanged)
+        })
+
+        registry.add(ColorPickerContract.self, create: { reports in
+            let picker = UIKitColorPickerView()
+            picker.onChosen = { color in
+                reports.report(ColorPickerContract.color, color, as: ColorPickerContract.colorChanged)
+            }
+            return picker
+        }, members: { picker in
+            picker.applies(ColorPickerContract.color, ColorPickerContract.choosesOpacity) { view, values in
+                view.apply(
+                    color: values[ColorPickerContract.color] ?? ColorChoice.unset,
+                    write: values.changed(ColorPickerContract.color),
+                    choosesOpacity: values[ColorPickerContract.choosesOpacity] ?? false)
+            }
+            picker.property(VisualElementContract.isEnabled) { view, enabled in view.isEnabled = enabled ?? true }
+            picker.raises(ColorPickerContract.colorChanged)
         })
     }
 }

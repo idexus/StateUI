@@ -17,7 +17,7 @@ extension UIKitRegistrations {
             slider.onReleased = { reports.raise(SliderContract.released) }
             return slider
         }, members: { slider in
-            slider.applies([SliderContract.value, SliderContract.minimum, SliderContract.maximum]) { view, values in
+            slider.applies(SliderContract.value, SliderContract.minimum, SliderContract.maximum) { view, values in
                 view.apply(
                     value: values.written(
                         SliderContract.value, within: [SliderContract.minimum, SliderContract.maximum],
@@ -40,9 +40,9 @@ extension UIKitRegistrations {
             }
             return stepper
         }, members: { stepper in
-            stepper.applies([
-                StepperContract.value, StepperContract.minimum, StepperContract.maximum, StepperContract.step,
-            ]) { view, values in
+            stepper.applies(
+                StepperContract.value, StepperContract.minimum, StepperContract.maximum,
+                StepperContract.step) { view, values in
                 view.apply(
                     value: values.shownStep(standing: view.value),
                     minimum: values[StepperContract.minimum] ?? 0,

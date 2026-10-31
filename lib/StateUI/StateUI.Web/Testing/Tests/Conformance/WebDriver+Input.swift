@@ -27,12 +27,18 @@ extension WebDriver {
     }
 
     func perform(_ act: UserAct, on element: MountedElement) throws {
-        if element.type == .toolbarItem, act == .activate { return try chooseAction(element) }
-        if element.type == .menuItem, act == .activate { return try choose(element) }
+        if [.toolbarButton, .toolbarToggle].contains(element.type), act == .activate { return try chooseAction(element) }
+        if [.menuItem, .menuToggle].contains(element.type), act == .activate { return try choose(element) }
         if let page = Self.pageState(after: act) { return try running().pageChanged(page) }
         if act == .close, element.type == .window { return try running().runtime.ending() }
-        if case .answer(let caption, let typing) = act { return try answer(caption, typing: typing, on: element) }
+        if case .openLink(let address) = act { return try running().runtime.openLink(address) }
+        if act == .close, element.type == .page {
+            // The close button on the bar of the sheet the page stands in, as a click presses it.
+            return try click(try sheetBar(over: element), part: "button:has(> [data-glyph=close])")
+        }
+        if case .answer(let button, let typing) = act { return try answer(button, typing: typing, on: element) }
         if case .answerFiles(let names) = act { return try answerFiles(names, on: element) }
+        if case .answerShare(let shared) = act { return try answerShare(shared, on: element) }
         if case .dragAndDrop(let target, let across) = act { return try dragAndDrop(element, onto: target, across: across) }
         if case .dropFiles(let names) = act { return try dropFiles(names, on: element) }
         if case .pressKeys(let shortcut) = act { return try pressKeys(shortcut) }
@@ -43,7 +49,7 @@ extension WebDriver {
             }
             return
         }
-        let view = try self.view(of: element, act)
+        let view = try barView(of: element) ?? self.view(of: element, act)
         let e = view.node
         switch (act, view) {
         case (.toggle, is WebSplitView): try click(try bar(over: element), part: "button:has(> [data-glyph=sidebar])")
@@ -52,6 +58,7 @@ extension WebDriver {
             try WebBrowser.run("e.click()", on: e)
         case (.toggle, _), (.activate, _): try click(view)
         case (.tap(let count), _): try click(view, count: count)
+        case (.hold, _): try hold(view)
         case (.slide(let value), is WebSliderView):
             try WebBrowser.run("e.value = \(value); e.dispatchEvent(new Event('input', { bubbles: true })); "
                 + "e.dispatchEvent(new Event('change', { bubbles: true }))", on: e)
@@ -61,6 +68,9 @@ extension WebDriver {
             try type(words, into: e, part: "input")
             press("Enter")
         case (.type(let words), is WebTextInputView): try type(words, into: e)
+        case (.close, is WebPopoverView):
+            // Escape, which takes the popover over everything down as the browser's own.
+            press("Escape")
         case (.submit, is WebTextInputView):
             try WebBrowser.run("e.focus()", on: e)
             press("Enter")
@@ -75,6 +85,9 @@ extension WebDriver {
         case (.pickDate(let date), is WebDatePickerView):
             try pick(String(date.year).leftPadded(4) + "-" + String(date.month).leftPadded(2) + "-"
                 + String(date.day).leftPadded(2), on: e)
+        case (.pickColor(let color), is WebColorPickerView):
+            let (red, green, blue, _) = color.propValue.color ?? (0, 0, 0, 255)
+            try pick("#" + [red, green, blue].map { String($0, radix: 16).leftPadded(2) }.joined(), on: e)
         case (.pickTime(let time), is WebTimePickerView):
             try pick(String(time.hour).leftPadded(2) + ":" + String(time.minute).leftPadded(2) + ":"
                 + String(time.second).leftPadded(2), on: e)
@@ -97,6 +110,9 @@ extension WebDriver {
         case (.hover(let point), _): try mouse("mouseMoved", at: point, on: e)
         case (.leave, _): try leave(e)
         case (.pan(let offset), _): try pan(e, by: offset)
+        // A view that hears no hand - an axis of keyframes alone - takes the pointer as the browser hands it: a drag
+        // across it, which nothing hears.
+        case (.sweep(let offset, _), _) where !element.hearing.contains(.hand): try pan(e, by: offset)
         // A throw's speed is the events' times, which input the driver sends carries as the browser receives it:
         // the hand reaches the host's entry as the pointer would hand it, with the speed - ✓.
         case (.sweep(let offset, let speed), _):
@@ -238,6 +254,20 @@ extension WebDriver {
         ])
     }
 
+    /// The mouse pressed on the element's middle, held there past the time its hold waits, and let go.
+    private func hold(_ view: WebDOMView) throws {
+        let box = try box(of: view.node)
+        let middle = Point(x: box.width / 2, y: box.height / 2)
+        let now = { try WebBrowser.evaluate("performance.now()", on: view.node).flatMap(Double.init) ?? .infinity }
+        mouse("mousePressed", at: middle, in: box)
+        let pressed = try now()
+        for _ in 0..<300 {
+            guard try now() - pressed < view.holdTime + 100 else { break }
+            WebBrowser.pause()
+        }
+        mouse("mouseReleased", at: middle, in: box)
+    }
+
     /// The pointer leaves the element `e`, for a place beside it.
     private func leave(_ e: Int32) throws {
         let box = try box(of: e)
@@ -320,6 +350,14 @@ extension WebDriver {
     }
 
     /// The element of the bar of the window `element` stands in.
+    /// The bar of the sheet `element` stands in.
+    func sheetBar(over element: MountedElement) throws -> Int32 {
+        let page = element.enclosing(type: .sheet)?.children.first
+        guard let sheet = renderer?.roster.controllers.lazy.flatMap(\.sheets).first(where: { $0.element === page })
+        else { throw DriverCannot("find the bar of the sheet over \(element.type.name)") }
+        return sheet.sheet.bar.node
+    }
+
     func bar(over element: MountedElement) throws -> Int32 {
         guard let bar = renderer?.roster.controllers.first?.window.bar else { throw DriverCannot("find the window's bar") }
         return bar.node

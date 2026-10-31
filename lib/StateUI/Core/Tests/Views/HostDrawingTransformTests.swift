@@ -13,7 +13,7 @@ final class HostDrawingTransformTests: XCTestCase {
         XCTAssertTrue(HostDrawingTransform(pivotX: 0, pivotY: 1).isIdentity)
     }
 
-    func testARotationTurnsClockwiseAboutTheCentre() {
+    func testARotationTurnsClockwiseAboutTheCenter() {
         let matrix = HostDrawingTransform(rotation: 90).matrix(width: 100, height: 60)
 
         assert(matrix, draws: (0, 0), at: (80, -20))
@@ -85,16 +85,6 @@ final class HostDrawingTransformTests: XCTestCase {
 
         assert(turn * move, draws: (100, 0), at: (10, 100))
         assert(move * turn, draws: (100, 0), at: (0, 110))
-    }
-
-    func testAPlacementIsDrawnAboutItsRectanglesCentre() throws {
-        let run = PlacedRun([Placement(Rect(0, 0, 100, 60), transform: .rotate(30))])
-        let placements = try XCTUnwrap(HostBoundary.placements(from: run.carried))
-        let drawing = try XCTUnwrap(placements.placements.first).drawing
-
-        XCTAssertEqual(drawing.rotation, 30, accuracy: 1e-9)
-        XCTAssertEqual(drawing.pivotX, 0.5)
-        XCTAssertEqual(drawing.pivotY, 0.5)
     }
 
     private func assert(

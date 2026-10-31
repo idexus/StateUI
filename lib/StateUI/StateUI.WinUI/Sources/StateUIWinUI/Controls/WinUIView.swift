@@ -65,6 +65,7 @@ class WinUIView {
         // A control's style aligns it inside its place; a StateUI layout decides the place, so it fills it.
         // Design: docs/design/platforms/winui/layout.md#a-place-filled
         stateui_winui_fill_place(handle)
+        if keepsTyping { stateui_winui_hear_focus(handle, number, true) }
     }
 
     isolated deinit {
@@ -77,7 +78,7 @@ class WinUIView {
     /// Design: docs/design/platforms/winui/controls.md#a-password
     func replaceNative(with replacement: StateUIObjectRef) {
         if !hearing.isEmpty { stateui_winui_hear(handle, number, 0) }
-        if onFocusChanged != nil { stateui_winui_hear_focus(handle, number, false) }
+        if hearsFocus { stateui_winui_hear_focus(handle, number, false) }
         stateui_winui_replace(handle, replacement)
         stateui_winui_release(handle)
         handle = replacement
@@ -85,7 +86,7 @@ class WinUIView {
 
         stateui_winui_fill_place(handle)
         if !hearing.isEmpty { stateui_winui_hear(handle, number, hearing.rawValue) }
-        if onFocusChanged != nil { stateui_winui_hear_focus(handle, number, true) }
+        if hearsFocus { stateui_winui_hear_focus(handle, number, true) }
         stateui_winui_set_shown(handle, isShown)
         stateui_winui_set_opacity(handle, writtenOpacity)
         stateui_winui_set_z_index(handle, writtenZIndex)
@@ -226,7 +227,24 @@ class WinUIView {
 
     /// Asks WinUI to measure this element again, and every panel above it.
     func invalidateMeasure() {
+        measuredAt.removeAll(keepingCapacity: true)
         stateui_winui_invalidate_measure(handle)
+    }
+
+    /// The sizes the view measured at each width since its content last changed: an arrangement asks them again,
+    /// as WinUI measuring a control again inside one marks its layout for another pass.
+    /// Design: docs/design/platforms/winui/layout.md#measured-every-pass
+    private var measuredAt: [(width: Double?, size: LayoutSize)] = []
+
+    /// The view's size at `width`: inside an arrangement the one a measure made there, else WinUI's measure, kept.
+    func measured(width: Double?) -> LayoutSize {
+        if Self.arranging > 0, let kept = measuredAt.last(where: { $0.width == width }) { return kept.size }
+        let size = measure(width: width, height: nil)
+        guard Self.arranging == 0 else { return size }
+        measuredAt.removeAll { $0.width == width }
+        if measuredAt.count == 4 { measuredAt.removeFirst() }
+        measuredAt.append((width, size))
+        return size
     }
 
     /// The element's size for the room offered, in DIPs; nil offers any.
@@ -238,20 +256,21 @@ class WinUIView {
     }
 
     /// Places the element at `place`, in DIPs of its parent: at once inside a pass, and between passes by asking
-    /// the layout for one. Its size is its words' room while its place travels.
+    /// the layout for one.
     /// Design: docs/design/platforms/winui/layout.md#a-place-between-passes
     func layout(_ place: Rect) {
         let resized = placed.map { $0.width != place.width || $0.height != place.height } ?? true
         placed = place
         if Self.arranging > 0 {
-            // A layout of StateUI's measures its own children at its place before it is put there.
+            // A layout of StateUI's measures its own children where it lays them out - the room it is bound for,
+            // else its place - before it is put there.
             // Design: docs/design/platforms/winui/layout.md#measured-every-pass
             if let layout = self as? WinUILayoutView, placingLayout != nil {
-                _ = measure(width: place.width, height: nil)
-                layout.standsAt = place.width
+                let width = layout.arrangementRoom?.width ?? place.width
+                _ = measure(width: width, height: nil)
+                layout.standsAt = width
             }
-            let room = wordsRoom ?? place
-            stateui_winui_arrange(handle, place.x, place.y, room.width, room.height)
+            stateui_winui_arrange(handle, place.x, place.y, place.width, place.height)
         } else {
             placingLayout?.invalidateArrange()
         }
@@ -273,8 +292,14 @@ class WinUIView {
     /// Nothing of the view's own follows where its place travels.
     func travels(to destination: Rect?) {}
 
-    /// The size the view's words are laid out at while its place travels; nil for its place's.
-    var wordsRoom: Rect? { nil }
+    /// The size of new words the view holds back while its box grows to hold them (`PlacedView`), its former ones
+    /// shown; nil shows its own and forgets the former. Design: docs/design/host/motion.md#words-on-the-way
+    var heldWords: LayoutSize? {
+        didSet { holdWords(heldWords != nil) }
+    }
+
+    /// Shows the words held back, or the view's own; most views hold none.
+    func holdWords(_ holding: Bool) {}
 
     /// Where the element's top left corner stands in its window's content, in DIPs.
     var origin: Point {
@@ -296,7 +321,7 @@ class WinUIView {
         return Rect(x: frame[0], y: frame[1], width: frame[2], height: frame[3])
     }
 
-    /// The control's one accent colour; nil for the platform's.
+    /// The control's one accent color; nil for the platform's.
     /// Design: docs/design/platforms/winui/controls.md#a-controls-accent
     func setTint(_ tint: HostValue?) {
         let argb = tint?.argb
@@ -331,6 +356,9 @@ class WinUIView {
     /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
     func picked(_ first: Int32, _ second: Int32, _ third: Int32) {}
 
+    /// The color a color picker holds changed - the user's, or the program's: its channels as one ARGB number.
+    func colorChosen(_ argb: UInt32) {}
+
     /// What the items of the menus the view offers do, in their order: its context menu's, or a menu bar's.
     var menuActions: [() -> Void] = []
 
@@ -347,14 +375,23 @@ class WinUIView {
     /// What the view does when the keyboard comes into it or leaves; nil hears nothing.
     private var onFocusChanged: ((Bool) -> Void)?
 
+    /// Whether the view hears the keyboard come into it whatever the tree hears: a field, the last of which the user
+    /// typed into an Edit menu's own entries act on (`WinUIEditing`).
+    var keepsTyping: Bool { false }
+
+    /// Whether the relay tells the view of the keyboard coming and going.
+    private var hearsFocus: Bool { onFocusChanged != nil || keepsTyping }
+
     /// Hears the keyboard come into the view and leave it, while `action` is set.
     func setFocusChanged(_ action: ((Bool) -> Void)?) {
-        if (action != nil) != (onFocusChanged != nil) { stateui_winui_hear_focus(handle, number, action != nil) }
+        let heard = hearsFocus
         onFocusChanged = action
+        if hearsFocus != heard { stateui_winui_hear_focus(handle, number, hearsFocus) }
     }
 
     /// The keyboard came into the view or left it.
     func focusChanged(_ focused: Bool) {
+        if focused, keepsTyping { WinUIEditing.typed = self }
         onFocusChanged?(focused)
     }
 
@@ -422,9 +459,28 @@ class WinUIView {
     }
 
     /// A tap the relay says landed at `point` in the view at `time`, its place in its run counted by the host
-    /// layer's rule (`TapRun`).
+    /// layer's rule (`TapRun`) - where the view counts runs; a single tap is the press's.
     func heardTap(at point: Point, time: Duration) {
+        guard countsRuns else { return }
         heard(.tap(run: taps.tapped(at: point, time: time)))
+    }
+
+    /// Whether the view counts a run of taps.
+    var countsRuns = false
+
+    /// A press the relay says stands on the view at `phase`, at `point` in it: taken as a button takes one by the
+    /// host layer's rule.
+    /// Design: docs/design/platforms/winui/input.md#taps
+    func heardButtonPress(_ phase: GesturePhase, at point: Point, byFinger: Bool) {
+        let size = placed.map { LayoutSize(width: $0.width, height: $0.height) } ?? measure(width: nil, height: nil)
+        heard(.press(phase, at: point, size: size, byFinger: byFinger))
+    }
+
+    /// A press the relay says WinUI held: the hold's where it has not become a drag, by the host layer's rule.
+    /// Design: docs/design/host/runtime.md#a-press-held
+    func heardHold() {
+        guard press.held() else { return }
+        heard(.hold)
     }
 
     /// The hand over a layout the relay tells - begun where a pointer went down, none for a trackpad's fingers;

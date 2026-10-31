@@ -70,7 +70,7 @@ struct JourneyLanes<Value: Walked>: StateValue {
     /// Three of the value's widths, the law's three, and the waiter and the stops.
     static var lanes: Int { Value.lanes * 3 + StateLaw.lanes + 2 }
 
-    /// Whatever the value it carries is in - an animated colour is a colour.
+    /// Whatever the value it carries is in - an animated color is a color.
     static var moving: MotionValues { Value.moving }
 
     /// The numbers a value lies as in `theme` - an animated value's lanes.
@@ -113,7 +113,7 @@ enum JourneyPart {
 }
 
 extension JourneyLanes: ThemeWearing {
-    /// Whether the value it carries turns with the theme - an animated colour pair.
+    /// Whether the value it carries turns with the theme - an animated color pair.
     var wearsTheTheme: Bool { (value as? any ThemeWearing)?.wearsTheTheme ?? false }
 
     /// Every lane, the values laid in `theme`.

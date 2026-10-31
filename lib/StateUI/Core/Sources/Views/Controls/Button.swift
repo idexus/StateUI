@@ -11,30 +11,25 @@ extension ButtonProperties {
     }
 
     /// The picture beside the caption - a file among the application's image
-    /// resources, by name; see `Image`. A button with an icon and no caption is
-    /// `Button(icon:)`.
+    /// resources, by name; see `Image`. A button standing for its picture
+    /// alone keeps its words, which name it to assistive technology:
     ///
     ///     Button("Surprise me").icon("nav_surprise.png")
+    ///     Button("Delete").icon("trash.png").showsText(false)
     public func icon(_ value: ImageSource) -> Modified {
         setValue(ButtonContract.icon, value)
     }
 
-    /// Which side of the caption the icon stands on. `.leading`, the default,
+    /// Which side of the caption the icon stands on. `.start`, the default,
     /// is the side a line of text starts from, so it follows the layout
     /// direction.
     ///
     ///     Button("Surprise me")
     ///         .icon("nav_surprise.png")
-    ///         .iconPosition(.leading)
+    ///         .iconPosition(.start)
     ///         .iconSpacing(8)
     public func iconPosition(_ value: IconPosition) -> Modified {
         setValue(ButtonContract.iconPosition, value)
-    }
-
-    /// Whether a button whose click opens its menu shows the arrow saying so - true unless said; a button standing
-    /// for its picture alone may leave it out. A split button's arrow is its menu's, and a held one has none.
-    public func showsMenuArrow(_ value: Bool) -> Modified {
-        setValue(ButtonContract.showsMenuArrow, value)
     }
 
     /// The gap between the icon and the caption, in device units.
@@ -64,29 +59,16 @@ extension ButtonProperties where Self: View {
 ///
 /// A handler runs on the main actor. One that awaits passes through a gate,
 /// which says what a click does while it runs -
-/// `.onClicked(gate: .ignoreWhileRunning) { items = try await load() }` - and
+/// `.onClicked(.ignoreWhileRunning) { items = try await load() }` - and
 /// the interface goes on updating while it is suspended.
 public struct Button: ElementView, TextualElement, TrackingElement, FontElement, PaddingElement, BorderElement,
-    ImageElement, ButtonProperties, FocusElement {
+    ImageElement, ButtonProperties, ButtonMenuElement, TextAndIconElement, FocusElement {
     /// The node this control describes.
     public var node: Node
 
     /// An empty one - what a `Style<Button>` is written against.
     public init() {
         node = Node(contract: ButtonContract.self)
-    }
-
-    /// A button whose content is an icon, with no caption: the picture is what
-    /// gives it its purpose.
-    ///
-    ///     Button(icon: "trash.png")
-    ///     Button(icon: ImageSource(light: "trash.png", dark: "trash_dark.png"))
-    ///
-    /// The same button as one with a caption - the same outline, shape and
-    /// pressed state - with `.contentMode` for how its picture fills it.
-    public init(icon: ImageSource) {
-        node = Node(contract: ButtonContract.self)
-        node.write(ButtonContract.icon, icon)
     }
 
     /// A button captioned `text`.
@@ -98,9 +80,9 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// A button whose caption is carried from a state, written by the host as
     /// it changes, at no render.
     ///
-    /// - Parameter text: the state the caption is read from.
-    public init(_ text: Binding<String>) {
-        self = Button().text(text)
+    /// - Parameter state: the state the caption is read from.
+    public init(_ state: Binding<String>) {
+        self = Button().text(state)
     }
 
     /// Keys that press the button from the keyboard while its window is in
@@ -109,7 +91,7 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     ///
     ///     Button("Save").keyboardShortcut("s")
     ///     Button("Send").keyboardShortcut(.return, modifiers: [])
-    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Self {
+    public func keyboardShortcut(_ key: Key, modifiers: KeyModifiers = .primary) -> Modified {
         setValue(ButtonContract.keyboardShortcut, KeyboardShortcut(key, modifiers: modifiers))
     }
 
@@ -120,33 +102,8 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     ///
     ///     Button("Cancel").role(.cancel)
     ///     Button("Save").role(.primary)
-    public func role(_ role: ButtonRole) -> Self {
+    public func role(_ role: ButtonRole) -> Modified {
         setValue(ButtonContract.role, role)
-    }
-
-    /// A menu the button opens, holding what a menu holds - `MenuItem`, `Menu`, `MenuSeparator` - as `kind` says.
-    /// With no `.onClicked` a click opens it, an arrow pointing down saying so; with one the button splits: its click
-    /// is its own action, and its menu opens from an arrow of its own. `.held` keeps the click the button's own and
-    /// opens the menu as the button is held, with no arrow.
-    ///
-    ///     Button("Share").menu {
-    ///         MenuItem("Mail").onClicked { mail() }
-    ///         MenuItem("Message").onClicked { message() }
-    ///     }
-    ///
-    ///     Button("Save")
-    ///         .onClicked { save() }
-    ///         .menu { MenuItem("Save as…").onClicked { saveAs() } }
-    public func menu(_ kind: ButtonMenuKind = .automatic, @MenuBuilder _ entries: () -> [Element]) -> Self {
-        let menu = modified {
-            // The button's one menu, after its own children; written again, it stands in for the last.
-            // Design: docs/design/views/modifiers.md#slot-children
-            $0.children.removeAll { $0.type == .buttonMenu }
-            $0.children.append(Node(contract: ButtonMenuContract.self, children: entries().map { $0.node }))
-            // Its kind with it: a menu saying none takes no kind an earlier one said.
-            $0.props[ButtonContract.menuKind.token] = nil
-        }
-        return kind == .automatic ? menu : menu.setValue(ButtonContract.menuKind, kind)
     }
 
     // MARK: Events
@@ -154,36 +111,51 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
     /// Runs when the button is pressed AND released on it - the ordinary one - all
     /// of it before the click is over. A second `.onClicked` runs beside the first,
     /// like every typed event modifier.
-    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onClicked(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ButtonContract.clicked, handler)
     }
 
-    /// Runs when the button is clicked, awaiting as it goes; its `gate` says what a
+    /// Runs when the button is clicked, awaiting as it goes; its `policy` says what a
     /// click does while a run is under way.
-    public func onClicked(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ButtonContract.clicked, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onClicked(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ButtonContract.clicked, gate: gate, handler)
     }
 
     /// Runs the moment a press begins, before it ends.
-    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onPressed(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ButtonContract.pressed, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onPressed(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onPressed(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ButtonContract.pressed, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onPressed(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ButtonContract.pressed, gate: gate, handler)
     }
 
     /// Runs when the press ends, wherever the pointer ends up - unlike
     /// `onClicked`, which needs it to end on the button.
-    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Self {
+    public func onReleased(_ handler: @escaping @MainActor () throws -> Void) -> Modified {
         onEvent(ButtonContract.released, handler)
     }
 
-    /// The same, with a handler that awaits: its `gate` says what the event does when it comes
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onReleased(gate: some Gate, _ handler: @escaping EventHandler) -> Self {
+    public func onReleased(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
+        onEvent(ButtonContract.released, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onReleased(gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         onEvent(ButtonContract.released, gate: gate, handler)
     }
 }
@@ -191,13 +163,13 @@ public struct Button: ElementView, TextualElement, TrackingElement, FontElement,
 /// Which side of a button's caption its picture is on.
 public enum IconPosition: Int32, Sendable, HostRepresentable {
     /// Before the words, on the side a line starts from - the default.
-    case leading = 0
+    case start = 0
 
     /// Above them.
     case top = 1
 
     /// After them, on the side a line ends.
-    case trailing = 2
+    case end = 2
 
     /// Below them.
     case bottom = 3

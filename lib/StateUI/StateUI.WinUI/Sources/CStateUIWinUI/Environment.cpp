@@ -134,6 +134,17 @@ namespace {
               << static_cast<double>(mode.dmDisplayOrientation);
     }
 
+    /// The user's accessibility settings: less motion where animations are off, high contrast, a screen reader
+    /// running, and the scale of the system's words.
+    void accessibility(Facts &facts) {
+        BOOL reader = FALSE;
+        SystemParametersInfoW(SPI_GETSCREENREADER, 0, &reader, 0);
+        winrt::Windows::UI::ViewManagement::UISettings settings;
+        facts << !stateui_winui_animations_enabled()
+              << winrt::Windows::UI::ViewManagement::AccessibilitySettings().HighContrast() << (reader != FALSE)
+              << settings.TextScaleFactor();
+    }
+
     void changed() {
         post([] { callbacks.environmentChanged(); });
     }
@@ -150,6 +161,7 @@ extern "C" int32_t stateui_winui_facts(StateUIFacts kind, StateUIObjectRef windo
         case StateUIFactsConnectivity: network(facts); break;
         case StateUIFactsTheme: theme(facts); break;
         case StateUIFactsDisplay: display(facts, window); break;
+        case StateUIFactsAccessibility: accessibility(facts); break;
         }
         if (utf8 && capacity > 0) {
             auto count = std::min<size_t>(facts.text.size(), static_cast<size_t>(capacity - 1));
@@ -172,6 +184,13 @@ extern "C" void stateui_winui_watch_environment(void) {
         // one destroyed as the process exits is let go of after WinUI, which ends the process there.
         static auto &settings = **new std::optional(winrt::Windows::UI::ViewManagement::UISettings());
         settings.ColorValuesChanged(guarded("handling ColorValuesChanged",
+            [](auto const &, auto const &) { changed(); }));
+        settings.TextScaleFactorChanged(guarded("handling TextScaleFactorChanged",
+            [](auto const &, auto const &) { changed(); }));
+        settings.AnimationsEnabledChanged(guarded("handling AnimationsEnabledChanged",
+            [](auto const &, auto const &) { changed(); }));
+        static auto &accessibility = **new std::optional(winrt::Windows::UI::ViewManagement::AccessibilitySettings());
+        accessibility.HighContrastChanged(guarded("handling HighContrastChanged",
             [](auto const &, auto const &) { changed(); }));
         power::PowerManager::BatteryStatusChanged(guarded("handling BatteryStatusChanged",
             [](auto const &, auto const &) { changed(); }));

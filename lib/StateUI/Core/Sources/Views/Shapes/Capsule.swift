@@ -3,7 +3,8 @@
 
 /// A rectangle whose shorter sides round whole, filling the room it is given - a pill, a badge, a track.
 ///
-///     Capsule(.teal)
+///     Capsule()
+///         .fill(.teal)
 ///         .width(120)
 ///         .height(32)
 ///
@@ -16,24 +17,5 @@ public struct Capsule: FilledShape {
     /// A capsule with nothing set - which is also what a `Style<Capsule>` is written against.
     public init() {
         node = Node(contract: CapsuleContract.self)
-    }
-
-    /// A capsule painted with `fill`, a colour.
-    public init(_ fill: Color) {
-        self.init()
-        self = self.fill(fill)
-    }
-
-    /// A capsule painted with `fill`, a brush - a colour or a gradient.
-    public init(_ fill: Brush) {
-        self.init()
-        self = self.fill(fill)
-    }
-
-    /// A capsule painted with a colour state, `$x`: the host animates the colour to each new value, and no view is
-    /// rebuilt for it.
-    public init(_ fill: Binding<Color>) {
-        self.init()
-        self = self.fill(fill)
     }
 }

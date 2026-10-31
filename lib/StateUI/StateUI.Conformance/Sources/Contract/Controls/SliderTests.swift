@@ -5,7 +5,7 @@
 @_spi(Host) import StateUIHost
 
 /// `SliderContract` on a host: its value kept inside its range, the user's move heard once and landing on the state,
-/// the program's travelling there heard by nobody.
+/// the program's traveling there heard by nobody.
 @_spi(Host) public enum SliderTests: ConformanceFamily {
     public static let name = "Slider"
 
@@ -117,7 +117,7 @@
                 try s.perform(.activate, on: s.element("full"))
                 s.frames(of: clock, until: 2_000)
 
-                s.expect(try s.held(SliderContract.value, on: slider), 1, within: 1e-9, "the thumb travelled to it")
+                s.expect(try s.held(SliderContract.value, on: slider), 1, within: 1e-9, "the thumb traveled to it")
                 s.turn()
                 s.expect(heard.values, [], "and no frame of its journey was heard as the user's")
             },

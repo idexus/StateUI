@@ -1,12 +1,12 @@
 import StateUI
 
-/// One swatch - its colour, its number, and a way on to the next: the page of a
+/// One swatch - its color, its number, and a way on to the next: the page of a
 /// window FOR A VALUE, one per swatch number. The number is lent to the window
 /// as its own, so writing it makes the same window about another swatch, and
 /// the system restores the window for the number it was left on. See
 /// `MultiWindowSample`.
 struct SwatchPage: View {
-    /// Which swatch the window is for - its value, lent by its group.
+    /// Which swatch the window is for - its value, a state of the window's own.
     @Binding var number: Int
 
     /// The window this is the page of - named for its swatch, and closed from
@@ -15,7 +15,8 @@ struct SwatchPage: View {
 
     var body: some View {
         VStack {
-            Rectangle(SwatchPage.colour(of: number))
+            Rectangle()
+                .fill(SwatchPage.color(of: number))
                 .height(150)
                 .cornerRadius(12)
 
@@ -29,7 +30,7 @@ struct SwatchPage: View {
                     .onClicked { number += 1 }
 
                 Button("Done")
-                    .onClicked(gate: .ignoreWhileRunning) { try await window.close() }
+                    .onClicked(.ignoreWhileRunning) { try await window.close() }
             }
             .spacing(10)
             .horizontalAlignment(.center)
@@ -48,10 +49,10 @@ struct SwatchPage: View {
         .onChanged(number) { window.title = "Swatch \(number)" }
     }
 
-    /// The colour of a swatch - the gallery's painted accents, in turn.
-    static func colour(of number: Int) -> Color {
-        let colours = AccentChoice.own.map { $0.color(system: .gray, for: .bar) }
-        let index = ((number - 1) % colours.count + colours.count) % colours.count
-        return colours[index]
+    /// The color of a swatch - the gallery's painted accents, in turn.
+    static func color(of number: Int) -> Color {
+        let colors = AccentChoice.own.map { $0.color(system: .gray, for: .bar) }
+        let index = ((number - 1) % colors.count + colors.count) % colors.count
+        return colors[index]
     }
 }

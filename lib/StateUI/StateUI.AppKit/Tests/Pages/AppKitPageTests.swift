@@ -11,7 +11,7 @@ import XCTest
 @MainActor
 final class AppKitPageTests: XCTestCase {
     /// The top page names the window, and the way back is the system's
-    /// navigational toolbar item, labelled by the page it returns to.
+    /// navigational toolbar item, labeled by the page it returns to.
     @MainActor
     func testTheWindowToolbarCarriesTheTopPageAndTheWayBack() throws {
         let renderer = testRenderer(
@@ -56,9 +56,10 @@ final class AppKitPageTests: XCTestCase {
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        var delete = HostPatch(id: .manual("delete"), type: .toolbarItem)
-        delete.properties = [.text: .string("Delete"), .placement: .enumeration(2)]
-        var group = HostPatch(id: .manual("later"), type: .toolbarItemGroup)
+        var delete = HostPatch(id: .manual("delete"), type: .toolbarButton)
+        delete.properties = [.text: .string("Delete")]
+        var group = HostPatch(id: .manual("later"), type: .toolbarGroup)
+        group.properties = [.position: ToolbarPosition.overflow.propValue]
         group.children = .arranged([delete])
         var details = page("details", title: "Details")
         details.children = .arranged(details.children.arrangedForTesting + [group])
@@ -74,7 +75,7 @@ final class AppKitPageTests: XCTestCase {
 
     /// The window's chrome is the system's: a unified toolbar over full-size
     /// content, the page in the safe area under it, and the native window
-    /// background. With no bar colour written, AppKit keeps its toolbar's own
+    /// background. With no bar color written, AppKit keeps its toolbar's own
     /// material.
     @MainActor
     func testANavigationStackStandsUnderTheWindowsNativeToolbar() throws {
@@ -100,22 +101,22 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(navigation.frame, content.safeAreaRect)
         XCTAssertTrue(navigation.topViewForTesting === renderer.viewForTesting(id: .manual("home")))
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
-        XCTAssertNil((content as? AppKitWindowContentView)?.barColor)
+        XCTAssertNil((content as? AppKitWindowContentView)?.barBrush.color)
     }
 
-    /// A written bar colour paints the band the title bar and toolbar cover
+    /// A written bar color paints the band the title bar and toolbar cover
     /// above the page, and the title bar lets it show. The window wears it as
-    /// its background too, and a colour taken away gives the material and the
+    /// its background too, and a color taken away gives the material and the
     /// window's own background back.
     @MainActor
-    func testAWrittenBarColourPaintsTheBandAboveThePage() throws {
+    func testAWrittenBarColorPaintsTheBandAboveThePage() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(stack))
 
@@ -124,12 +125,12 @@ final class AppKitPageTests: XCTestCase {
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         content.layoutSubtreeIfNeeded()
         XCTAssertTrue(window.titlebarAppearsTransparent)
-        XCTAssertEqual(content.barColor, NSColor(
+        XCTAssertEqual(content.barBrush.color, NSColor(
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
         XCTAssertGreaterThan(content.barBand.height, 0)
         XCTAssertEqual(content.barBand, NSRect(
             x: 0, y: 0, width: content.bounds.width, height: content.safeAreaRect.minY))
-        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' colour paints the bars alone")
+        XCTAssertEqual(window.backgroundColor, .windowBackgroundColor, "the bars' color paints the bars alone")
 
         // On the band the page's title is the bar's: white on a dark band
         // when no foreground is written. The window keeps its name.
@@ -141,10 +142,10 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertEqual(title.stringValue, "Home")
         XCTAssertEqual(title.textColor, .white)
 
-        stack.properties[.barBackgroundColor] = .nothing
+        stack.properties[.barBackground] = .nothing
         renderer.applyForTesting(tree(stack))
         XCTAssertFalse(window.titlebarAppearsTransparent)
-        XCTAssertNil(content.barColor)
+        XCTAssertNil(content.barBrush.color)
         XCTAssertTrue(window.backgroundColor.isEqual(NSColor.windowBackgroundColor))
         XCTAssertEqual(window.titleVisibility, .visible)
         XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.title))
@@ -153,14 +154,14 @@ final class AppKitPageTests: XCTestCase {
     /// On the band a navigation stack paints, the page's title stands in the
     /// foreground the stack writes for its bars.
     @MainActor
-    func testAWrittenBarForegroundColoursThePagesTitleOnTheBand() throws {
+    func testAWrittenBarForegroundColorsThePagesTitleOnTheBand() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(red: 54, green: 42, blue: 86, alpha: 255)
+        stack.properties[.barBackground] = .color(red: 54, green: 42, blue: 86, alpha: 255)
         stack.properties[.barForegroundColor] = .color(red: 51, green: 179, blue: 230, alpha: 255)
         renderer.applyForTesting(tree(stack))
 
@@ -172,18 +173,18 @@ final class AppKitPageTests: XCTestCase {
             srgbRed: 51 / 255, green: 179 / 255, blue: 230 / 255, alpha: 1))
     }
 
-    /// In a split view the bars' colour paints the window's band, under the
+    /// In a split view the bars' color paints the window's band, under the
     /// sidebar's glass, and the detail's, which the pane under the bars
     /// paints; the sidebar keeps its own glass.
     @MainActor
-    func testAWrittenBarColourPaintsTheBandsUnderTheSplitView() throws {
+    func testAWrittenBarColorPaintsTheBandsUnderTheSplitView() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(flyout(
             presented: true,
@@ -196,25 +197,65 @@ final class AppKitPageTests: XCTestCase {
         let split = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
         XCTAssertTrue(window.titlebarAppearsTransparent)
-        XCTAssertEqual(split.detailBarColorForTesting, NSColor(
+        XCTAssertEqual(split.detailBarBrushForTesting.color, NSColor(
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1))
-        XCTAssertNil(split.sidebarBarColorForTesting)
-        XCTAssertEqual(content.barColor, NSColor(
+        XCTAssertNil(split.sidebarBarBrushForTesting.color)
+        XCTAssertEqual(content.barBrush.color, NSColor(
             srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1), "the window's band, under the sidebar")
     }
 
-    /// A written bar colour paints the bars alone: the window around a
-    /// floating sidebar keeps the system's background, with the colour written
-    /// and once it goes.
+    /// A gradient written for the bars runs across the window's one band: the
+    /// detail's pane paints its part of it, so where the detail begins it
+    /// shows the color the window's band shows there, not the gradient's start.
     @MainActor
-    func testAWrittenBarColourLeavesTheWindowsBackground() throws {
+    func testABarsGradientRunsAcrossTheWindowsOneBand() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = Material.gradient(.linearGradient(
+            [GradientStop(.black, 0), GradientStop(.white, 1)], endPoint: Point(1, 0))).propValue
+        renderer.applyForTesting(tree(flyout(
+            presented: true,
+            menu: page("menu", title: "Menu"),
+            detail: stack)))
+
+        let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+        let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
+        let split = try XCTUnwrap(
+            renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
+        content.layoutSubtreeIfNeeded()
+        XCTAssertEqual(split.detailBarBrushForTesting, content.barBrush, "one brush, the window's and the detail's")
+
+        let pane = split.detailSurfaceForTesting
+        let band = try XCTUnwrap(content.subviews.lazy.compactMap { $0 as? AppKitBandView }.first)
+        let start = pane.convert(pane.bounds, to: content).minX
+        XCTAssertGreaterThan(start, 0, "the detail stands beside the sidebar")
+        func drawn(_ view: NSView, atX x: CGFloat) throws -> CGFloat {
+            let rep = try XCTUnwrap(view.bitmapImageRepForCachingDisplay(in: view.bounds))
+            view.cacheDisplay(in: view.bounds, to: rep)
+            let scale = CGFloat(rep.pixelsWide) / view.bounds.width
+            return try XCTUnwrap(rep.colorAt(x: Int(x * scale) + 1, y: Int(pane.barBand.midY * scale))).redComponent
+        }
+        XCTAssertEqual(try drawn(pane, atX: 0), try drawn(band, atX: start), accuracy: 0.02,
+                       "the window's gradient where the detail begins, not its start")
+        XCTAssertGreaterThan(try drawn(pane, atX: 0), 0.2)
+    }
+
+    /// A written bar color paints the bars alone: the window around a
+    /// floating sidebar keeps the system's background, with the color written
+    /// and once it goes.
+    @MainActor
+    func testAWrittenBarColorLeavesTheWindowsBackground() throws {
+        let renderer = testRenderer(
+            resourceDirectory: nil,
+            presentsWindows: false)
+        defer { renderer.closeForTesting() }
+
+        var stack = navigation([page("home", title: "Home")])
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(flyout(
             presented: true,
@@ -224,7 +265,7 @@ final class AppKitPageTests: XCTestCase {
         let painted = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         XCTAssertEqual(painted.backgroundColor, .windowBackgroundColor)
 
-        stack.properties[.barBackgroundColor] = .nothing
+        stack.properties[.barBackground] = .nothing
         renderer.applyForTesting(tree(flyout(
             presented: true,
             menu: page("menu", title: "Menu"),
@@ -232,7 +273,7 @@ final class AppKitPageTests: XCTestCase {
 
         let plain = try XCTUnwrap(renderer.windowsForTesting.first?.window)
         XCTAssertEqual(plain.backgroundColor, .windowBackgroundColor,
-                       "with no colour written the window is the system's")
+                       "with no color written the window is the system's")
     }
 
     /// A window asked to be translucent lets the desktop show through it: it
@@ -263,20 +304,20 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertNil(content.materialForTesting)
     }
 
-    /// On a translucent window a colour written for the bars paints the bars
+    /// On a translucent window a color written for the bars paints the bars
     /// alone: the window's band, under the floating sidebar's glass, and the
     /// detail's - over the material, which stays the system's; the window keeps
     /// no background, so the desktop shows around the sidebar. An opaque window
     /// keeps the system's background.
     @MainActor
-    func testATranslucentWindowsBarColourPaintsTheBarsAlone() throws {
+    func testATranslucentWindowsBarColorPaintsTheBarsAlone() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(windowTree(flyout(
             presented: true,
@@ -287,15 +328,15 @@ final class AppKitPageTests: XCTestCase {
         let content = try XCTUnwrap(window.contentView as? AppKitWindowContentView)
         let split = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
-        let colour = NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1)
+        let color = NSColor(srgbRed: 54 / 255, green: 42 / 255, blue: 86 / 255, alpha: 1)
         XCTAssertEqual(window.backgroundColor, .clear, "the material shows around the sidebar")
-        XCTAssertEqual(split.detailBarColorForTesting, colour, "the detail's bar wears the colour")
-        XCTAssertEqual(content.barColor, colour, "the window's band stands under the sidebar's glass")
-        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band beneath it")
+        XCTAssertEqual(split.detailBarBrushForTesting.color, color, "the detail's bar wears the color")
+        XCTAssertEqual(content.barBrush.color, color, "the window's band stands under the sidebar's glass")
+        XCTAssertNil(split.sidebarBarBrushForTesting.color, "the sidebar's glass shows the band beneath it")
         XCTAssertNotNil(content.materialForTesting)
         content.layoutSubtreeIfNeeded()
         let order = content.subviews.map { String(describing: type(of: $0)) }
-        XCTAssertEqual(order.prefix(3), ["AppKitMaterialView", "NSView", "AppKitSplitView"],
+        XCTAssertEqual(order.prefix(3), ["AppKitMaterialView", "AppKitBandView", "AppKitSplitView"],
                        "the material, the band over it, the split view over both")
 
         renderer.applyForTesting(windowTree(flyout(
@@ -303,9 +344,9 @@ final class AppKitPageTests: XCTestCase {
             menu: page("menu", title: "Menu"),
             detail: stack), translucent: false))
         XCTAssertEqual(window.backgroundColor, .windowBackgroundColor)
-        XCTAssertEqual(split.detailBarColorForTesting, colour)
-        XCTAssertNil(split.sidebarBarColorForTesting, "the sidebar's glass shows the band behind it")
-        XCTAssertEqual(content.barColor, colour)
+        XCTAssertEqual(split.detailBarBrushForTesting.color, color)
+        XCTAssertNil(split.sidebarBarBrushForTesting.color, "the sidebar's glass shows the band behind it")
+        XCTAssertEqual(content.barBrush.color, color)
         XCTAssertNil(content.materialForTesting)
     }
 
@@ -320,7 +361,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 81, green: 43, blue: 212, alpha: 255)
         renderer.applyForTesting(windowTree(stack, translucent: true))
 
@@ -330,7 +371,7 @@ final class AppKitPageTests: XCTestCase {
         let material = try XCTUnwrap(content.materialForTesting)
         XCTAssertEqual(material.frame, content.bounds)
         XCTAssertTrue(material.subviews.allSatisfy(\.isHidden), "nothing lies over the material")
-        XCTAssertEqual(content.barColor, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255, alpha: 1),
+        XCTAssertEqual(content.barBrush.color, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255, alpha: 1),
                        "the bars' band is painted over the material")
     }
 
@@ -346,7 +387,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(red: 81, green: 43, blue: 212, alpha: 255)
+        stack.properties[.barBackground] = .color(red: 81, green: 43, blue: 212, alpha: 255)
         let tint = HostValue.color(red: 81, green: 43, blue: 212, alpha: 38)
         renderer.applyForTesting(windowTree(flyout(
             presented: true,
@@ -369,7 +410,7 @@ final class AppKitPageTests: XCTestCase {
             detail: stack), translucent: false, background: tint))
         XCTAssertEqual(window.backgroundColor, NSColor(srgbRed: 81 / 255, green: 43 / 255, blue: 212 / 255,
                                                        alpha: 38 / 255), "the window's own background")
-        XCTAssertFalse(window.isOpaque, "the desktop shows through the colour's alpha")
+        XCTAssertFalse(window.isOpaque, "the desktop shows through the color's alpha")
         XCTAssertNil(content.materialForTesting)
     }
 
@@ -384,7 +425,7 @@ final class AppKitPageTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var stack = navigation([page("home", title: "Home")])
-        stack.properties[.barBackgroundColor] = .color(
+        stack.properties[.barBackground] = .color(
             red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(flyout(
             presented: true,
@@ -413,6 +454,32 @@ final class AppKitPageTests: XCTestCase {
             \(NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency)); the page and its band met it there
             """)
         XCTAssertGreaterThan(sidebar.minX, 0, "the sidebar floats in the window's margin")
+    }
+
+    /// A page in a split view's column stands clear of the window's bar over its pane, and under it where its own
+    /// layout ignores the safe area - as a window's page does.
+    @MainActor
+    func testAColumnsPageRunsUnderTheBarWhereItIgnoresTheSafeArea() throws {
+        func top(ignoring edges: SafeAreaEdges) throws -> CGFloat {
+            let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
+            defer { renderer.closeForTesting() }
+            var column = HostPatch(id: .manual("column"), type: .vStack)
+            column.properties[.ignoresSafeArea] = edges.propValue
+            var home = page("home", title: "Home")
+            home.children = .arranged([column])
+            renderer.applyForTesting(tree(flyout(
+                presented: true, menu: page("menu", title: "Menu"), detail: navigation([home])), width: 1200))
+
+            let window = try XCTUnwrap(renderer.windowsForTesting.first?.window)
+            window.setContentSize(NSSize(width: 1200, height: 800))
+            window.contentView?.layoutSubtreeIfNeeded()
+            let shown = try XCTUnwrap(renderer.viewForTesting(id: .manual("navigation")))
+            return shown.frame.minY
+        }
+
+        let clear = try top(ignoring: .none)
+        XCTAssertGreaterThan(clear, 0, "clear of the bar over its pane")
+        XCTAssertEqual(try top(ignoring: .all), 0, "and under it, ignoring the safe area")
     }
 
     @MainActor
@@ -451,7 +518,7 @@ final class AppKitPageTests: XCTestCase {
         ]
 
         var painted = tabbed(pages, selected: 0, changed: 9)
-        painted.properties[.barBackgroundColor] = .color(red: 54, green: 42, blue: 86, alpha: 255)
+        painted.properties[.barBackground] = .color(red: 54, green: 42, blue: 86, alpha: 255)
         renderer.applyForTesting(tree(painted))
 
         let controller = try XCTUnwrap(renderer.windowsForTesting.first)
@@ -606,30 +673,6 @@ final class AppKitPageTests: XCTestCase {
         XCTAssertFalse(controller.tabRowStandsInTitleBarForTesting)
     }
 
-    /// A tabbed detail under a modal stack - the window's page, its sheets over
-    /// it - stands its tabs in the window's row as it does with no modal stack.
-    @MainActor
-    func testATabbedDetailUnderAModalStackTakesTheWindowsRow() throws {
-        let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
-        defer { renderer.closeForTesting() }
-
-        renderer.applyForTesting(tree(flyout(
-            presented: true,
-            menu: page("menu", title: "Menu", events: 100),
-            detail: tabbed([
-                page("home", title: "Home", events: 200),
-                page("browse", title: "Browse", events: 300),
-            ], selected: 0)), modals: []))
-
-        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
-        let split = try XCTUnwrap(renderer.viewForTesting(id: .manual("flyout")) as? AppKitSplitView)
-        XCTAssertEqual(controller.tabRowForTesting.controlForTesting.segmentCount, 2)
-        XCTAssertTrue(split.detailRowForTesting === controller.tabRowForTesting)
-    }
-
-    /// A tabbed view in a tab of another is a native tab view with its tabs on
-    /// the top edge of its content, named by its pages; a tab clicked there is
-    /// the user choosing. The window's toolbar serves only the outer one.
     @MainActor
     func testATabViewInsideATabShowsItsTabsOnItsContent() throws {
         let renderer = testRenderer(
@@ -754,7 +797,7 @@ final class AppKitPageTests: XCTestCase {
     }
 
     /// A page holds what it shows across all of it and paints its
-    /// background colour behind it.
+    /// background color behind it.
     @MainActor
     func testAPagesContentFillsItAndItsBackgroundReachesItsView() throws {
         let renderer = testRenderer(
@@ -915,10 +958,10 @@ final class AppKitPageTests: XCTestCase {
         var titleSlot = HostPatch(id: .manual("title-slot"), type: .titleView)
         titleSlot.children = .arranged([title])
 
-        var save = HostPatch(id: .manual("save"), type: .toolbarItem)
+        var save = HostPatch(id: .manual("save"), type: .toolbarButton)
         save.properties[.text] = .string("Save")
         save.events = .replace([.clicked: 50])
-        var toolbar = HostPatch(id: .manual("toolbar"), type: .toolbarItemGroup)
+        var toolbar = HostPatch(id: .manual("toolbar"), type: .toolbarGroup)
         toolbar.children = .arranged([save])
 
         var details = page("details", title: "Ignored", events: 200)
@@ -979,7 +1022,8 @@ final class AppKitPageTests: XCTestCase {
 
     /// The page's actions are native toolbar items: each group by its order,
     /// a space between two groups, a leading group before the flexible space,
-    /// and the overflow's behind the toolbar's own overflow menu.
+    /// and the overflow's behind the toolbar's own overflow menu, apart from
+    /// the group before it.
     @MainActor
     func testThePagesGroupsStandInTheToolbarByTheirOrder() throws {
         let renderer = testRenderer(
@@ -987,39 +1031,37 @@ final class AppKitPageTests: XCTestCase {
             presentsWindows: false)
         defer { renderer.closeForTesting() }
 
-        func toolbarItem(
+        func toolbarButton(
             _ id: String,
             title: String,
-            placement: Int32 = 0,
             enabled: Bool = true,
             destructive: Bool = false,
             icon: String? = nil
         ) -> HostPatch {
-            var item = HostPatch(id: .manual(id), type: .toolbarItem)
+            var item = HostPatch(id: .manual(id), type: .toolbarButton)
             item.properties = [
                 .text: .string(title),
-                .placement: .enumeration(placement),
                 .isEnabled: .bool(enabled),
-                .isDestructive: .bool(destructive),
+                .role: (destructive ? ActionRole.destructive : ActionRole.normal).propValue,
             ]
             if let icon { item.properties[.icon] = .string(icon) }
             return item
         }
-        func group(_ id: String, order: Double, side: ToolbarSide = .trailing, _ items: [HostPatch]) -> HostPatch {
-            var group = HostPatch(id: .manual(id), type: .toolbarItemGroup)
-            group.properties = [.order: .number(order), .side: .enumeration(side.rawValue)]
+        func group(
+            _ id: String, order: Double, at position: ToolbarPosition = .end, _ items: [HostPatch]
+        ) -> HostPatch {
+            var group = HostPatch(id: .manual(id), type: .toolbarGroup)
+            group.properties = [.order: .number(order), .position: .enumeration(position.rawValue)]
             group.children = .arranged(items)
             return group
         }
 
         var details = page("details", title: "Details", events: 200)
         details.children = .arranged(details.children.arrangedForTesting + [
-            group("later", order: 1, [
-                toolbarItem("save", title: "Save", enabled: false, icon: "save.png"),
-                toolbarItem("delete", title: "Delete", placement: 2, destructive: true),
-            ]),
-            group("first", order: 0, [toolbarItem("earlier", title: "Earlier")]),
-            group("start", order: 0, side: .leading, [toolbarItem("compose", title: "Compose")]),
+            group("later", order: 1, [toolbarButton("save", title: "Save", enabled: false, icon: "save.png")]),
+            group("tucked", order: 0, at: .overflow, [toolbarButton("delete", title: "Delete", destructive: true)]),
+            group("first", order: 0, [toolbarButton("earlier", title: "Earlier")]),
+            group("start", order: 0, at: .start, [toolbarButton("compose", title: "Compose")]),
         ])
         var stack = navigation([
             page("home", title: "Home", events: 100),
@@ -1044,7 +1086,8 @@ final class AppKitPageTests: XCTestCase {
         let to = try XCTUnwrap(identifiers.firstIndex(of: save.itemIdentifier))
         XCTAssertEqual(identifiers[from...to].filter { $0 == .space }.count, 1, "a space between two groups")
         XCTAssertNil(chrome.itemForTesting(titled: "Delete"))
-        XCTAssertNotNil(chrome.itemForTesting(AppKitWindowToolbar.overflow))
+        let overflow = try XCTUnwrap(identifiers.firstIndex(of: AppKitWindowToolbar.overflow))
+        XCTAssertEqual(identifiers[overflow - 1], .space, "the overflow apart from the group before it")
         XCTAssertFalse(save.isEnabled)
         XCTAssertNotNil(save.image)
         XCTAssertTrue(save.isBordered)
@@ -1093,7 +1136,7 @@ final class AppKitPageTests: XCTestCase {
     }
 
     @MainActor
-    func testModalStackMovesVisibilityBetweenRootAndTopSheet() throws {
+    func testSheetsMoveVisibilityBetweenRootAndTopSheet() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
@@ -1112,6 +1155,139 @@ final class AppKitPageTests: XCTestCase {
 
         renderer.applyForTesting(tree(page("root", events: 100), modals: []))
         XCTAssertEqual(renderer.windowsForTesting.first?.modalCountForTesting, 0)
+    }
+
+    /// A sheet stands as large as its page asks, within the room AppKit's sheet has - here the least, its words few -
+    /// and one holding a stack, whose pages come and go, at the standard size, held within the window.
+    @MainActor
+    func testASheetStandsAsLargeAsItsPageAndAStacksAtTheStandardSize() throws {
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) { Text("A note") }
+        }
+        defer { renderer.closeForTesting() }
+        let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first?.window)
+        XCTAssertEqual(sheet.contentLayoutRect.size, NSSize(width: 320, height: 180))
+
+        let stacked = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: State(wrappedValue: true).projectedValue) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) { Text("Root") } destination: { _ in Text("Next") }
+            }
+        }
+        defer { stacked.closeForTesting() }
+        let stackSheet = try XCTUnwrap(stacked.windowsForTesting.first?.modalsForTesting.first?.window)
+        let around = try XCTUnwrap(stacked.windowsForTesting.first?.window).contentLayoutRect.size
+        XCTAssertEqual(
+            stackSheet.contentLayoutRect.size,
+            NSSize(width: min(560, around.width - 48), height: min(480, around.height - 48)),
+            "the standard size, within the window it hangs from")
+    }
+
+    /// A stack in a sheet brings its bar to the sheet: the top page names the sheet, the way back returns to the
+    /// page beneath, and the close button takes the sheet away, false onto its state.
+    @MainActor
+    func testAStackInASheetBringsItsBar() throws {
+        let (shows, path) = (State(wrappedValue: true), State(wrappedValue: [Int]()))
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: shows.projectedValue) {
+                NavigationStack(path.projectedValue) {
+                    Text("Root").title("Root")
+                } destination: { number in
+                    Text("Page \(number)").title("Pushed").id("pushed")
+                }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first)
+        let toolbar = sheet.toolbarForTesting
+        XCTAssertTrue(sheet.window?.toolbar === toolbar.toolbar, "the stack's bar")
+        XCTAssertEqual(sheet.window?.title, "Root")
+        XCTAssertNil(toolbar.itemForTesting(AppKitWindowToolbar.back), "no way back from the root")
+        XCTAssertNotNil(toolbar.itemForTesting(AppKitWindowToolbar.close))
+
+        path.wrappedValue = [1]
+        renderer.runtime.pump.turn()
+        XCTAssertEqual(sheet.window?.title, "Pushed")
+        let pushed = try XCTUnwrap(renderer.viewForTesting(id: .manual("pushed")))
+        XCTAssertTrue(pushed.window === sheet.window && !pushed.isHiddenOrHasHiddenAncestor, "the pushed page shows")
+
+        toolbar.performForTesting(AppKitWindowToolbar.back)
+        renderer.runtime.pump.turn()
+        XCTAssertEqual(path.wrappedValue, [], "back to the root")
+
+        toolbar.performForTesting(AppKitWindowToolbar.close)
+        renderer.runtime.pump.turn()
+        XCTAssertFalse(shows.wrappedValue, "the sheet closed")
+    }
+
+    /// A sheet's bar crowded with its page's actions keeps its close button last: the groups that do not fit go
+    /// behind the bar's More, ahead of what stands there anyway, and AppKit hides nothing behind a chevron of its own.
+    @MainActor
+    func testASheetsCloseButtonStandsLastBesideManyActions() throws {
+        let shows = State(wrappedValue: true)
+        let renderer = AppKitRenderer.running {
+            Text("Beneath").sheet(isPresented: shows.projectedValue) {
+                NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                    Text("Root").title("A draft with a long title").toolbar {
+                        ToolbarButton("Undo").placement(at: .start)
+                        ToolbarButton("Save")
+                        ToolbarButton("Add")
+                        ToolbarButton("Share")
+                        ToolbarButton("Export")
+                        ToolbarButton("Print")
+                        ToolbarButton("Delete").placement(at: .overflow)
+                    }
+                } destination: { _ in Text("Pushed") }
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let sheet = try XCTUnwrap(renderer.windowsForTesting.first?.modalsForTesting.first)
+        let window = try XCTUnwrap(sheet.window)
+        window.layoutIfNeeded()
+        window.displayIfNeeded()
+
+        let toolbar = sheet.toolbarForTesting.toolbar
+        let spaces: Set<NSToolbarItem.Identifier> = [.space, .flexibleSpace]
+        let visible = (toolbar.visibleItems ?? []).map(\.itemIdentifier).filter { !spaces.contains($0) }
+        let items = toolbar.items.map(\.itemIdentifier).filter { !spaces.contains($0) }
+        XCTAssertEqual(visible, items, "AppKit hides none behind its chevron")
+        XCTAssertEqual(visible.last, AppKitWindowToolbar.close, "the close button last: \(visible.map(\.rawValue))")
+        let more = sheet.toolbarForTesting.overflowTitlesForTesting
+        XCTAssertEqual(more.last, "Delete", "what stood behind More anyway comes after the groups that left: \(more)")
+        XCTAssertGreaterThan(more.count, 1, "the groups that do not fit stand behind More")
+    }
+
+    /// The sidebar's part of a window's bar fits itself: AppKit hides what has no room before the separator tracking
+    /// the sidebar, with no chevron there, so the groups that do not fit stand behind the part's own More.
+    @MainActor
+    func testTheSidebarsPartPutsWhatHasNoRoomBehindItsMore() throws {
+        let renderer = AppKitRenderer.running {
+            SplitView {
+                Text("Folders").title("Library")
+            } detail: {
+                Text("Books").title("All books")
+            }
+            .showsSidebar(State(wrappedValue: true).projectedValue)
+            .toolbar {
+                ToolbarButton("New folder").placement(.sidebar)
+                ToolbarButton("Import").placement(.sidebar)
+                ToolbarButton("Export").placement(.sidebar)
+                ToolbarButton("Share").placement(.sidebar)
+                ToolbarButton("Sort").placement(.sidebar)
+            }
+        }
+        defer { renderer.closeForTesting() }
+        let controller = try XCTUnwrap(renderer.windowsForTesting.first)
+        let window = try XCTUnwrap(controller.window)
+        window.layoutIfNeeded()
+        window.displayIfNeeded()
+
+        let chrome = controller.toolbarForTesting
+        let spaces: Set<NSToolbarItem.Identifier> = [.space, .flexibleSpace, .sidebarTrackingSeparator]
+        let visible = (chrome.toolbar.visibleItems ?? []).map(\.itemIdentifier).filter { !spaces.contains($0) }
+        let items = chrome.toolbar.items.map(\.itemIdentifier).filter { !spaces.contains($0) }
+        XCTAssertEqual(visible, items, "AppKit hides none of the sidebar's part")
+        XCTAssertTrue(items.contains(AppKitWindowToolbar.sidebarOverflow), "the part's own More: \(items.map(\.rawValue))")
+        XCTAssertGreaterThan(chrome.sidebarOverflowForTesting.count, 0, "the groups that do not fit stand behind it")
     }
 
     /// A page that takes its way back away offers none in the window's
@@ -1179,7 +1355,7 @@ private struct ChromePage: View {
     let route: ChromeRoute
 
     var body: some View {
-        Text("Pushed").toolbar { ToolbarItem("Save") }
+        Text("Pushed").toolbar { ToolbarButton("Save") }
             .showsBackButton(route != .withoutBackButton)
             .showsNavigationBar(route != .withoutNavigationBar)
     }
@@ -1197,15 +1373,19 @@ private extension AppKitPageTests {
     ) -> HostPatch {
         var window = HostPatch(id: .manual("window"), type: .window)
         if let width { window.properties[.width] = .number(width) }
-        if let modals {
-            // The window's page is a modal stack: the page it holds, then its sheets.
-            var stack = HostPatch(id: .manual("modals"), type: .modalStack)
-            stack.children = .arranged([page] + modals)
-            stack.events = .replace([.popped: 902])
-            window.children = .arranged([stack])
-        } else {
-            window.children = .arranged([page])
+        // The window's page presents the sheets, each a slot of its own holding its page.
+        var root = page
+        if let modals, !modals.isEmpty {
+            guard case .arranged(let children) = page.children else { preconditionFailure("a page of children") }
+            root.children = .arranged(children + modals.enumerated().map { place, modal in
+                var sheet = HostPatch(id: .manual("sheet \(place)"), type: .sheet)
+                sheet.properties[.isPresented] = .bool(true)
+                sheet.events = .replace([.isPresentedChanged: 902 + Int32(place)])
+                sheet.children = .arranged([modal])
+                return sheet
+            })
         }
+        window.children = .arranged([root])
 
         var scene = HostPatch(id: .manual("scene"), type: .scene)
         scene.children = .arranged([window])

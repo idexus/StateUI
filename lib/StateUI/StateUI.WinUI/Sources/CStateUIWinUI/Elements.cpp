@@ -61,6 +61,23 @@ extern "C" void stateui_winui_measure(StateUIObjectRef handle, double width, dou
     }
 }
 
+extern "C" double stateui_winui_first_baseline(StateUIObjectRef handle) {
+    try {
+        // A label's words stand in a border; the border's padding and edge stand above them.
+        auto element = as<xaml::FrameworkElement>(handle);
+        double above = 0;
+        if (auto border = element.try_as<controls::Border>()) {
+            above = border.Padding().Top + border.BorderThickness().Top;
+            element = border.Child().try_as<xaml::FrameworkElement>();
+        }
+        auto text = element ? element.try_as<controls::TextBlock>() : nullptr;
+        return text ? above + text.Padding().Top + text.BaselineOffset() : -1;
+    } catch (...) {
+        report("reading a first baseline");
+        return -1;
+    }
+}
+
 extern "C" void stateui_winui_arrange(StateUIObjectRef handle, double x, double y, double width, double height) {
     try {
         as<xaml::UIElement>(handle).Arrange(Rect(
@@ -281,10 +298,15 @@ extern "C" bool stateui_winui_is_shown(StateUIObjectRef handle) {
         auto root = element.XamlRoot();
         if (!root) return false;
         auto content = root.Content();
+        auto popups = xaml::Media::VisualTreeHelper::GetOpenPopupsForXamlRoot(root);
         for (xaml::DependencyObject at = element; at; at = xaml::Media::VisualTreeHelper::GetParent(at)) {
             if (auto each = at.try_as<xaml::UIElement>(); each && each.Visibility() != xaml::Visibility::Visible)
                 return false;
             if (at == content) return true;
+            // What an open popup over the window holds - a flyout's content - shows with it.
+            for (auto const &popup : popups) {
+                if (popup.Child() == at) return true;
+            }
         }
         return false;
     } catch (...) {
@@ -330,8 +352,7 @@ namespace {
     /// ground.
     std::vector<std::wstring> groundResources(IInspectable const &control) {
         std::vector<std::wstring> named;
-        if (control.try_as<controls::RadioButton>()) named = {L"RadioButtonBackground"};
-        else if (control.try_as<controls::CheckBox>())
+        if (control.try_as<controls::CheckBox>())
             named = {L"CheckBoxBackgroundUnchecked", L"CheckBoxBackgroundChecked", L"CheckBoxBackgroundIndeterminate"};
         else if (control.try_as<controls::ToggleSwitch>()) named = {L"ToggleSwitchContainerBackground"};
         else if (control.try_as<controls::Slider>()) named = {L"SliderContainerBackground"};
@@ -382,6 +403,8 @@ extern "C" int32_t stateui_winui_text(StateUIObjectRef handle, char *utf8, int32
             words = password.Password();
         } else if (auto search = object.try_as<controls::AutoSuggestBox>()) {
             words = search.Text();
+        } else if (auto toggle = object.try_as<controls::ToggleSwitch>()) {
+            words = winrt::unbox_value_or<winrt::hstring>(toggle.Header(), L"");
         } else if (auto caption = captionOf(object)) {
             words = caption.Text();
         } else if (auto content = object.try_as<controls::ContentControl>()) {

@@ -18,7 +18,7 @@ final class AppKitScrollViewTests: XCTestCase {
             view: FixedScrollTestView(width: 500, height: 36))])
         scroll.apply(
             orientation: ScrollOrientation.horizontal.rawValue,
-            padding: NSEdgeInsets(top: 3, left: 5, bottom: 7, right: 11),
+            padding: Insets(start: 5, top: 3, end: 11, bottom: 7),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 2,
             offset: nil)
@@ -58,7 +58,7 @@ final class AppKitScrollViewTests: XCTestCase {
 
         scroll.apply(
             orientation: ScrollOrientation.vertical.rawValue,
-            padding: NSEdgeInsets(),
+            padding: Insets(0),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
             offset: NSPoint(x: 0, y: 160))
@@ -85,7 +85,7 @@ final class AppKitScrollViewTests: XCTestCase {
 
         scroll.apply(
             orientation: ScrollOrientation.vertical.rawValue,
-            padding: NSEdgeInsets(),
+            padding: Insets(0),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
             offset: nil)
@@ -103,7 +103,7 @@ final class AppKitScrollViewTests: XCTestCase {
         scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
         scroll.setItems([AppKitLayoutItem(view: FixedScrollTestView(width: 80, height: 500))])
         scroll.apply(
-            orientation: ScrollOrientation.vertical.rawValue, padding: NSEdgeInsets(), verticalBarVisibility: 0,
+            orientation: ScrollOrientation.vertical.rawValue, padding: Insets(0), verticalBarVisibility: 0,
             horizontalBarVisibility: 0, offset: nil)
         scroll.layoutSubtreeIfNeeded()
         let moves = scroll.programmaticMovesForTesting
@@ -127,7 +127,7 @@ final class AppKitScrollViewTests: XCTestCase {
         let scroll = AppKitScrollView()
         scroll.apply(
             orientation: ScrollOrientation.horizontal.rawValue,
-            padding: NSEdgeInsets(top: 2, left: 3, bottom: 4, right: 5),
+            padding: Insets(start: 3, top: 2, end: 5, bottom: 4),
             verticalBarVisibility: 1,
             horizontalBarVisibility: 2,
             offset: nil)
@@ -135,7 +135,7 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertFalse(scroll.hasVerticalScroller)
         XCTAssertFalse(scroll.hasHorizontalScroller)
         XCTAssertFalse(scroll.autohidesScrollers)
-        XCTAssertEqual(scroll.padding.left, 3)
+        XCTAssertEqual(scroll.padding.start, 3)
         XCTAssertEqual(scroll.orientation, .horizontal)
     }
 
@@ -172,7 +172,7 @@ final class AppKitScrollViewTests: XCTestCase {
             view: FixedScrollTestView(width: 500, height: 36))])
         inner.apply(
             orientation: ScrollOrientation.horizontal.rawValue,
-            padding: NSEdgeInsets(),
+            padding: Insets(0),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 0,
             offset: nil)
@@ -244,7 +244,7 @@ final class AppKitScrollViewTests: XCTestCase {
             view: FixedScrollTestView(width: 500, height: 36))])
         inner.apply(
             orientation: ScrollOrientation.horizontal.rawValue,
-            padding: NSEdgeInsets(),
+            padding: Insets(0),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 0,
             offset: nil)
@@ -487,7 +487,9 @@ private struct BoundStrip: View {
     var body: some View {
         VStack {
             ScrollView {
-                Rectangle().fill(Color("#3366FF")).height(2_000)
+                Rectangle()
+                    .fill(Color(hex: 0x3366FF))
+                    .height(2_000)
             }
             .scrollOffset($offset)
             .height(300)

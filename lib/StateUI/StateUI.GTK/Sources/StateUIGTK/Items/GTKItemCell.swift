@@ -52,9 +52,9 @@ final class GTKItemCell: GTKSingleChildView, ItemsHolding {
 
     /// The room around the entry, in the reading direction.
     func keep(_ room: ItemsPlacement.Room) {
-        gtk_widget_set_margin_start(widget, Int32(room.leading.rounded()))
+        gtk_widget_set_margin_start(widget, Int32(room.start.rounded()))
         gtk_widget_set_margin_top(widget, Int32(room.top.rounded()))
-        gtk_widget_set_margin_end(widget, Int32(room.trailing.rounded()))
+        gtk_widget_set_margin_end(widget, Int32(room.end.rounded()))
     }
 
     /// A cell whose entry is still on its way keeps the room of a row: measured of nothing, every cell would fit in

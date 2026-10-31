@@ -33,15 +33,14 @@ struct PickerSample: SampleContent, ExampleContent {
                 .accessibilityIdentifier("picker.size")
                 .accessibilityLabel("Size")
                 .placeholder("Size")
-                // Settable, so a button elsewhere can open the list. The two
-                // events answer the user and the platform - never this
-                // side's own write.
-                .isOpen(showing)
-                .onOpened { opened += 1; showing = true }
-                .onClosed { showing = false }
+                // Both ways, so a button elsewhere can open the list and the
+                // user's closing writes it back. The event answers the user
+                // and the platform - never this side's own write.
+                .isOpen($showing)
+                .onOpened { opened += 1 }
 
             // Only where the platform opens a list at the program's asking.
-            if device.honours(PickerContract.isOpen) {
+            if device.honors(PickerContract.isOpen) {
                 Button("Open the list")
                     .onClicked { showing = true }
                     .horizontalAlignment(.center)
@@ -81,10 +80,9 @@ struct PickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("`isOpen` is settable, so the button opens the list without touching "
-                + "it. The platform closes it on its own - a tap outside, a choice made - "
-                + "which is why `onClosed` writes the state back rather than the state "
-                + "being trusted.")
+            Text("`isOpen($showing)` goes both ways: the button opens the list without "
+                + "touching it, and when the platform closes it on its own - a tap outside, "
+                + "a choice made - the state is written back.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

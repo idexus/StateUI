@@ -6,7 +6,7 @@ import StateUI
 /// failure.
 struct InteropActsSample: SampleContent, ExampleContent {
     // listing: InteropActsSample
-    @State private var draft = "Copy me somewhere"
+    @State private var line = "Hello from StateUI"
     @State private var status = "nothing asked yet"
     @State private var tenStars = false
     @Aim(RatingBar.self) private var stars
@@ -40,25 +40,18 @@ struct InteropActsSample: SampleContent, ExampleContent {
         VStack {
             DebugInfoLabel()
 
-            TextField($draft)
-                .accessibilityIdentifier(Self.id + ".draft")
-                .accessibilityLabel("Text to copy")
+            TextField($line)
+                .accessibilityIdentifier(Self.id + ".line")
+                .accessibilityLabel("A line for the log")
 
-            Button("Copy to the clipboard")
-                .onClicked(gate: .ignoreWhileRunning) {
-                    try await stateUICall(GalleryContract.setClipboard, draft)
-                    status = "copied"
-                }
-
-            Button("Paste from the clipboard")
-                .onClicked(gate: .ignoreWhileRunning) {
-                    let text = try await stateUICall(GalleryContract.readClipboard)
-                    draft = text
-                    status = text.isEmpty ? "the clipboard is empty" : "pasted"
+            Button("Write it to the system's log")
+                .onClicked(.ignoreWhileRunning) {
+                    try await stateUICall(GalleryContract.log, line)
+                    status = "logged"
                 }
 
             Button("Ask about the battery")
-                .onClicked(gate: .ignoreWhileRunning) {
+                .onClicked(.ignoreWhileRunning) {
                     let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
 
                     // A desktop without a battery answers 0, so only a level
@@ -69,7 +62,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
                 }
 
             Button("Call something nobody registered")
-                .onClicked(gate: .ignoreWhileRunning) {
+                .onClicked(.ignoreWhileRunning) {
                     do {
                         try await stateUICall(GalleryContract.nobody)
                         status = "that should have thrown"
@@ -87,7 +80,7 @@ struct InteropActsSample: SampleContent, ExampleContent {
             SwitchRow("Ten stars", $tenStars)
 
             Button("Flash the bar")
-                .onClicked(gate: .ignoreWhileRunning) {
+                .onClicked(.ignoreWhileRunning) {
                     try await stars.flash()
                     status = "flashed \(stars)"
                 }

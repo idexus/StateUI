@@ -9,15 +9,9 @@ public enum MenuItemContract: ElementContract {
     /// It carries structure, not a platform control of its own.
     public static let layer: ElementLayer = .structure
 
-    /// An entry is an item a user chooses.
-    public static let tiers: [any Contract.Type] = [MenuItemElementContract.self]
+    /// An entry is an item a user chooses, and it acts.
+    public static let tiers: [any Contract.Type] = [MenuItemElementContract.self, ActionElementContract.self]
 
-    /// Whether the entry stands checked - a mark beside it - for a setting choosing it turns on and off.
-    public static let isOn = ElementProperty<Self, Bool>("isOn", layer: .native)
-
-    /// The user chose an entry standing checked or not, turning it the other way: the way it turned to.
-    public static let toggled = ElementEvent<Self, Bool>("toggled", layer: .native)
-
-    /// The element's own members.
-    public static let members: [any ContractMember] = [isOn, toggled]
+    /// The element's own members: none beyond its tiers'.
+    public static let members: [any ContractMember] = []
 }

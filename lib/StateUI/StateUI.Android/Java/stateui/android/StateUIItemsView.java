@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.CollectionInfoCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayDeque;
 import java.util.Arrays;
@@ -66,6 +67,9 @@ final class StateUIItemsView extends RecyclerView {
     /** What stands an item where it was asked, once the recycler has laid it out. */
     private Runnable settling;
 
+    /** Whether the next layout lays out a room past the list's own each way, for an item about to be glided to. */
+    private boolean reaching;
+
     StateUIItemsView(Context context, long view) {
         super(context);
         this.view = view;
@@ -74,7 +78,7 @@ final class StateUIItemsView extends RecyclerView {
         // The pool keeps every cell it is given: a cell dropped would leave its Swift view behind.
         getRecycledViewPool().setMaxRecycledViews(ITEM, Integer.MAX_VALUE);
         getRecycledViewPool().setMaxRecycledViews(EDGE, Integer.MAX_VALUE);
-        setLayoutManager(new LinearLayoutManager(context));
+        setLayoutManager(new Line(context, VERTICAL));
         addItemDecoration(new Spacing());
         setAdapter(adapter);
         addOnScrollListener(new OnScrollListener() {
@@ -93,6 +97,16 @@ final class StateUIItemsView extends RecyclerView {
         super.onMeasure(
                 MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+    }
+
+    /**
+     * Cuts its cells off at its own edges, as a list does, where every StateUI layout draws its children past its.
+     * Design: docs/design/platforms/android/items.md#cut-at-its-edges
+     */
+    @Override
+    protected void onSizeChanged(int width, int height, int oldWidth, int oldHeight) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight);
+        setClipBounds(new Rect(0, 0, width, height));
     }
 
     @Override
@@ -165,15 +179,20 @@ final class StateUIItemsView extends RecyclerView {
             Integer position = positions.get(identity);
             LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
             if (position == null || manager == null) return;
-            if (animated) {
-                LinearSmoothScroller scroller = new LinearSmoothScroller(getContext()) {
-                    @Override
-                    public int calculateDtToFit(int viewStart, int viewEnd, int boxStart, int boxEnd, int snap) {
-                        return distance(viewStart, viewEnd, boxStart, boxEnd, anchor);
-                    }
+            reaching = false;
+            // A list not laid out yet has nowhere to glide from: it stands the item once it is. An item not laid out
+            // - come a moment ago past the end - is laid out first, a room beyond the list's own, and glides there.
+            if (animated && isLaidOut() && getChildCount() > 0) {
+                if (!hasPendingAdapterUpdates() && manager.findViewByPosition(position) != null) {
+                    glide(position, anchor);
+                    return;
+                }
+                reaching = true;
+                settling = () -> {
+                    reaching = false;
+                    glide(position, anchor);
                 };
-                scroller.setTargetPosition(position);
-                manager.startSmoothScroll(scroller);
+                requestLayout();
                 return;
             }
             if (manager.findViewByPosition(position) != null) {
@@ -188,10 +207,36 @@ final class StateUIItemsView extends RecyclerView {
         });
     }
 
+    /**
+     * Glides until the item at `position` stands where `anchor` says: by the recycler's own glide over a distance where
+     * it is laid out, else flying there by a smooth scroller that stands it as it comes.
+     */
+    private void glide(int position, int anchor) {
+        LinearLayoutManager manager = (LinearLayoutManager) getLayoutManager();
+        View shown = manager == null ? null : manager.findViewByPosition(position);
+        if (shown != null) {
+            int dt = shape == ROW
+                    ? distance(shown.getLeft(), shown.getRight(), getPaddingLeft(), getWidth() - getPaddingRight(), anchor)
+                    : distance(shown.getTop(), shown.getBottom(), getPaddingTop(), getHeight() - getPaddingBottom(), anchor);
+            if (dt != 0) smoothScrollBy(shape == ROW ? -dt : 0, shape == ROW ? 0 : -dt);
+            return;
+        }
+        if (manager == null) return;
+        LinearSmoothScroller scroller = new LinearSmoothScroller(getContext()) {
+            @Override
+            public int calculateDtToFit(int viewStart, int viewEnd, int boxStart, int boxEnd, int snap) {
+                return distance(viewStart, viewEnd, boxStart, boxEnd, anchor);
+            }
+        };
+        scroller.setTargetPosition(position);
+        manager.startSmoothScroll(scroller);
+    }
+
     /** The list left: nothing waits, and the recycler lets every cell go. */
     void release() {
         waiting.clear();
         settling = null;
+        reaching = false;
         setAdapter(null);
     }
 
@@ -203,6 +248,25 @@ final class StateUIItemsView extends RecyclerView {
     /** How far along the list stands now, in pixels. */
     int scrolled() {
         return shape == ROW ? computeHorizontalScrollOffset() : computeVerticalScrollOffset();
+    }
+
+    /**
+     * How far along the list stands at its farthest, in pixels, its last item clear of its padding: exact while the
+     * last item is laid out, the recycler's estimate from the items it measured before.
+     */
+    int reach() {
+        LayoutManager manager = getLayoutManager();
+        int count = manager == null ? 0 : manager.getItemCount();
+        View last = count == 0 ? null : manager.findViewByPosition(count - 1);
+        if (last != null) {
+            int beyond = shape == ROW
+                    ? manager.getDecoratedRight(last) - (getWidth() - getPaddingRight())
+                    : manager.getDecoratedBottom(last) - (getHeight() - getPaddingBottom());
+            return scrolled() + Math.max(0, beyond);
+        }
+        return shape == ROW
+                ? Math.max(0, computeHorizontalScrollRange() - computeHorizontalScrollExtent())
+                : Math.max(0, computeVerticalScrollRange() - computeVerticalScrollExtent());
     }
 
     /** The items the cells on screen show chosen, in the order they show. */
@@ -219,6 +283,59 @@ final class StateUIItemsView extends RecyclerView {
     /** How many items the user may choose, as the cells tell assistive technology. */
     int mode() {
         return mode;
+    }
+
+    /** That number as Android's collections tell assistive technology: none, one, or many. */
+    private int selectionModeForAccessibility() {
+        switch (mode) {
+            case 1: return CollectionInfoCompat.SELECTION_MODE_SINGLE;
+            case 2: return CollectionInfoCompat.SELECTION_MODE_MULTIPLE;
+            default: return CollectionInfoCompat.SELECTION_MODE_NONE;
+        }
+    }
+
+    /** A room past the list's own each way, while an item about to be glided to is laid out. */
+    private void reach(int[] extraLayoutSpace) {
+        if (!reaching) return;
+        int room = shape == ROW ? getWidth() : getHeight();
+        extraLayoutSpace[0] = Math.max(extraLayoutSpace[0], room);
+        extraLayoutSpace[1] = Math.max(extraLayoutSpace[1], room);
+    }
+
+    /** A line of items, Android's own, telling assistive technology how many the user may choose. */
+    private final class Line extends LinearLayoutManager {
+        Line(Context context, int orientation) {
+            super(context, orientation, false);
+        }
+
+        @Override
+        public int getSelectionModeForAccessibility(Recycler recycler, State state) {
+            return selectionModeForAccessibility();
+        }
+
+        @Override
+        protected void calculateExtraLayoutSpace(State state, int[] extraLayoutSpace) {
+            super.calculateExtraLayoutSpace(state, extraLayoutSpace);
+            reach(extraLayoutSpace);
+        }
+    }
+
+    /** A grid of items, Android's own, telling assistive technology how many the user may choose. */
+    private final class Lattice extends GridLayoutManager {
+        Lattice(Context context, int columns) {
+            super(context, columns);
+        }
+
+        @Override
+        public int getSelectionModeForAccessibility(Recycler recycler, State state) {
+            return selectionModeForAccessibility();
+        }
+
+        @Override
+        protected void calculateExtraLayoutSpace(State state, int[] extraLayoutSpace) {
+            super.calculateExtraLayoutSpace(state, extraLayoutSpace);
+            reach(extraLayoutSpace);
+        }
     }
 
     /** The cell showing the entry of `identity`, where one does. */
@@ -252,9 +369,9 @@ final class StateUIItemsView extends RecyclerView {
 
     private LayoutManager manager(int shape, int columns) {
         if (shape != GRID) {
-            return new LinearLayoutManager(getContext(), shape == ROW ? HORIZONTAL : VERTICAL, false);
+            return new Line(getContext(), shape == ROW ? HORIZONTAL : VERTICAL);
         }
-        GridLayoutManager grid = new GridLayoutManager(getContext(), Math.max(columns, 1));
+        GridLayoutManager grid = new Lattice(getContext(), Math.max(columns, 1));
         grid.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {

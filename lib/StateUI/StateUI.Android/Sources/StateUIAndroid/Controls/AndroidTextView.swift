@@ -5,22 +5,11 @@
 @_spi(Host) import StateUIHost
 import CStateUIAndroid
 
-/// A Text: a `TextView` - its words, or runs of them each in its own colour, size and weight.
+/// A Text: a `TextView` - its words, or runs of them each in its own color, size and weight.
 /// Design: docs/design/platforms/android/controls.md#a-labels-words
 @MainActor
 final class AndroidTextView: AndroidTextualView {
-
-    /// Where the label's place travels: its words stand at that size meanwhile.
-    /// Design: docs/design/host/motion.md#words-at-their-destination
-    private var bound: Rect?
-
-    override func travels(to destination: Rect?) {
-        bound = destination
-    }
-
-    override var wordsRoom: Rect? { bound }
-
-    /// A `TextView` in the theme's primary words colour, which its own text appearance leaves secondary.
+    /// A `TextView` in the theme's primary words color, which its own text appearance leaves secondary.
     /// Design: docs/design/platforms/android/controls.md#a-labels-words
     init() {
         super.init { _ in
@@ -55,7 +44,7 @@ final class AndroidTextView: AndroidTextualView {
         setLetterSpacing(letterSpacing)
     }
 
-    /// The Java spans that make a run differ from the label: its colour, size, family, weight, background and
+    /// The Java spans that make a run differ from the label: its color, size, family, weight, background and
     /// lines. Android spaces the letters of a whole text alone. A run's size stands in pixels where it follows the
     /// user's font scale and in density-independent points where not - the label's size where the run says none
     /// and the label scales while the run does not.
@@ -77,6 +66,9 @@ final class AndroidTextView: AndroidTextualView {
         }
         if weight == nil, italic {
             spans.append(Java.new(JavaAPI.styleSpan, JavaAPI.newStyleSpan, .int(AndroidTypeface.italicStyle)))
+        }
+        if look.attributes.contains(.monospacedDigits) {
+            spans.append(Java.new(JavaAPI.digitsSpan, JavaAPI.newDigitsSpan))
         }
         if let argb = look.background.flatMap(Self.argb) {
             spans.append(Java.new(JavaAPI.backgroundSpan, JavaAPI.newBackgroundSpan, .int(argb)))

@@ -8,9 +8,15 @@ import UIKit
 @_spi(Host) import StateUIConformance
 
 /// What the UIKit driver reads of every view: its transform as its layer holds it, what VoiceOver meets, a control's
-/// font and words' colour, and the colour behind it - each from UIKit itself.
+/// font and words' color, and the color behind it - each from UIKit itself.
 /// Design: docs/design/platforms/uikit/conformance.md#what-the-driver-reads
 extension UIKitDriver {
+    /// The view VoiceOver meets for `view`: the control a wrapping view presents - a switch beside its words - else
+    /// the view itself.
+    static func met(_ view: UIView) -> UIView {
+        (view as? UIKitAccessibilityPresenting)?.presentedControl ?? view
+    }
+
     static func viewHolds(_ property: Prop, _ view: UIView, _ native: UIKitElement?) throws -> HostValue? {
         switch property {
         case .translationX, .translationY, .rotation, .rotationX, .rotationY, .scale, .scaleX, .scaleY, .pivotX,
@@ -19,12 +25,18 @@ extension UIKitDriver {
                 throw DriverCannot("read a transform: the view's layer holds another")
             }
             return transform(property, drawn)
-        case .accessibilityLabel: return view.accessibilityLabel.propValue
-        case .accessibilityHint: return view.accessibilityHint.propValue
-        case .accessibilityIdentifier: return view.accessibilityIdentifier.propValue
-        case .isAccessibilityHidden: return (!view.isAccessibilityElement).propValue
-        case .automationExcludedWithChildren:
-            return (!view.isAccessibilityElement && view.accessibilityElementsHidden).propValue
+        case .accessibilityLabel: return met(view).accessibilityLabel.propValue
+        case .accessibilityHint: return met(view).accessibilityHint.propValue
+        case .accessibilityRole:
+            let traits = met(view).accessibilityTraits
+            // A kind said stands alone among the traits saying a kind.
+            let kinds = AccessibilityRole.allCases.filter { traits.contains(UIKitElement.accessibilityTrait($0)) }
+            return kinds.count == 1 ? kinds[0].propValue : nil
+        case .accessibilityValue: return met(view).accessibilityValue.propValue
+        case .accessibilityIdentifier: return met(view).accessibilityIdentifier.propValue
+        case .isAccessibilityHidden: return (!met(view).isAccessibilityElement).propValue
+        case .hidesChildrenFromAccessibility:
+            return (!met(view).isAccessibilityElement && met(view).accessibilityElementsHidden).propValue
         case .accessibilityHeading:
             throw DriverCannot("read a heading's level", because: "UIKit marks a heading, not its level")
         case .keyboardShortcut:
@@ -61,8 +73,20 @@ extension UIKitDriver {
         }
     }
 
-    /// A control's words as UIKit draws them: their font's size, bold and italic, family, and their colour.
-    private static func words(_ property: Prop, _ view: UIView) throws -> HostValue? {
+    /// What `font` draws beyond its size, weight and family: its slant, and its digits of one width.
+    static func attributes(of font: UIFont) -> FontAttributes {
+        var attributes = FontAttributes.none
+        if font.fontDescriptor.symbolicTraits.contains(.traitItalic) { attributes.insert(.italic) }
+        let features = font.fontDescriptor.object(forKey: .featureSettings) as? [[UIFontDescriptor.FeatureKey: Int]]
+        if features?.contains(where: { $0[.type] == kNumberSpacingType && $0[.selector] == kMonospacedNumbersSelector })
+            == true { attributes.insert(.monospacedDigits) }
+        return attributes
+    }
+
+    /// A control's words as UIKit draws them: their font's size, bold and italic, family, and their color.
+    private static func words(_ property: Prop, _ shown: UIView) throws -> HostValue? {
+        // A switch's words are its label's.
+        let view = (shown as? UIKitSwitchView)?.caption ?? shown
         view.layoutIfNeeded()
         let written = (view as? UILabel)?.attributedText ?? (view as? UIButton)?.titleLabel?.attributedText
             ?? (view as? UITextView)?.attributedText
@@ -80,9 +104,7 @@ extension UIKitDriver {
         case .fontSize: return Double(font.pointSize).propValue
         case .fontFamily: return Name(font.familyName).propValue
         case .fontWeight: return FontWeight(uiKit: font.weight).propValue
-        case .fontAttributes:
-            let italic = font.fontDescriptor.symbolicTraits.contains(.traitItalic)
-            return (italic ? FontAttributes.italic : .none).propValue
+        case .fontAttributes: return attributes(of: font).propValue
         case .textColor: return drawn.color.map { color($0).propValue }
         case .tracking:
             guard written != nil else { throw DriverCannot("read the spacing of a \(type(of: view))") }
@@ -116,7 +138,7 @@ extension UIKitDriver {
         return try size() > standing
     }
 
-    /// A colour UIKit holds, in sRGB, as StateUI's.
+    /// A color UIKit holds, in sRGB, as StateUI's.
     static func color(_ native: UIColor) -> Color {
         var (red, green, blue, alpha): (CGFloat, CGFloat, CGFloat, CGFloat) = (0, 0, 0, 0)
         native.resolvedColor(with: UITraitCollection.current).getRed(&red, green: &green, blue: &blue, alpha: &alpha)

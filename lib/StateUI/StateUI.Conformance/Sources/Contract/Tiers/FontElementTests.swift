@@ -4,8 +4,8 @@
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// `FontElementContract` on a host: words stand in the step of the platform's type ramp, the family, size, weight
-/// and slant the tree gives them, scaling with the user's text size as it says, and change as the tree changes them -
+/// `FontElementContract` on a host: words stand in the step of the platform's type ramp, the family, size, weight,
+/// slant and digits the tree gives them, scaling with the user's text size as it says, and change as the tree changes them -
 /// on every element wearing the tier.
 @_spi(Host) public enum FontElementTests: ConformanceFamily {
     public static let name = "FontElement"
@@ -15,7 +15,7 @@
             [
                 Aspects.holds(FontElementContract.fontSize, on: element, 14, then: 20, with: Words.on(element)),
                 eachWeightStands(on: element),
-                Aspects.holds(FontElementContract.fontAttributes, on: element, .none, then: .italic,
+                Aspects.holds(FontElementContract.fontAttributes, on: element, .none, then: [.italic, .monospacedDigits],
                               with: Words.on(element)),
                 theStylesStandInTheRampsOrder(on: element),
                 theTreesSizeAndWeightStandOverTheStyle(on: element),

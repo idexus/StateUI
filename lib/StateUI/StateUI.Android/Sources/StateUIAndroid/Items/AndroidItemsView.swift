@@ -10,7 +10,7 @@ import CStateUIAndroid
 /// TalkBack; StateUI builds what a cell holds and decides what a tap chooses and opens (`ItemsTap`).
 /// Design: docs/design/platforms/android/items.md
 @MainActor
-final class AndroidItemsView: AndroidView {
+final class AndroidItemsView: AndroidView, AndroidRefreshing, AndroidPageScroller {
     let cells: ItemsCells
 
     private var layout = ItemsLayout.list()
@@ -25,6 +25,20 @@ final class AndroidItemsView: AndroidView {
 
     /// Whether the motion of a change or of a scroll the tree asks for is left out.
     private let reducesMotion: () -> Bool
+
+    var onRefreshPulled: (() -> Bool)?
+
+    /// The swipe to refresh the recycler stands in, from the first time its parent holds it.
+    private lazy var pull: AndroidRefresh = {
+        let pull = AndroidRefresh(number: number)
+        Java.call(pull.layout.reference, JavaAPI.addView, .object(reference), .int(-1), .int(-1))
+        return pull
+    }()
+
+    var refresh: AndroidRefresh? { pull }
+
+    /// The swipe to refresh, which its parent holds and places.
+    override var outermost: jobject { pull.layout.reference }
 
     /// What the cells show chosen, how many the user may choose, and whether a tap does anything.
     private struct Choice: Equatable {
@@ -67,7 +81,8 @@ final class AndroidItemsView: AndroidView {
         }
     }
 
-    /// A grid's columns follow the width the list is given, told before the recycler lays its cells out in it.
+    /// Places the list at `place`: a grid's columns follow its width, told before the recycler lays its cells out in
+    /// it; at its end, it stays at its end as its room changes - a bottom bar growing beside it.
     override func layout(_ place: Rect) {
         if case .grid = layout, place.width != width {
             width = place.width
@@ -77,7 +92,18 @@ final class AndroidItemsView: AndroidView {
                 writePlacement(placement)
             }
         }
+        let (before, was) = (standing, placedSize)
         super.layout(place)
+        // The recycler lays out from its first item; its reach grows by what its room lost, an item come meanwhile
+        // left to its own scroll. Design: docs/design/platforms/android/items.md#scrolling-to-an-item
+        guard let was, let now = placedSize, was != now else { return }
+        let reach = Point(
+            x: max(0, before.reach.x + Double(was.width - now.width) / density),
+            y: max(0, before.reach.y + Double(was.height - now.height) / density))
+        guard let end = ScrollArithmetic.keptAtEnd(before.offset, reach: before.reach, now: reach) else { return }
+        let after = standing.offset
+        let along = layout.isAcross ? end.x - after.x : end.y - after.y
+        Java.call(reference, JavaAPI.scrollItemsAlong, .int(pixels(along)))
     }
 
     /// The width the list was last given, in points.
@@ -151,10 +177,36 @@ final class AndroidItemsView: AndroidView {
         cells.endShowing(in: cell)
     }
 
-    /// The items in view, told once a scroll or a layout is over.
+    /// The items in view, told once a scroll or a layout is over: a bottom bar over the list follows them.
     func showing(_ identities: [String]) {
         guard !released else { return }
         cells.showing(identities)
+        standingChanged?()
+    }
+
+    // MARK: - A page's scroller
+
+    /// What the list keeps clear of the bars over it, in points: the recycler's own padding, its items drawn through.
+    private var kept = Clearance.none
+
+    /// Keeps `clearance` clear: its first and last items scroll out from under the bars.
+    /// Design: docs/design/platforms/android/items.md#scrolling-to-an-item
+    func keepClear(_ clearance: Clearance) {
+        guard clearance != kept else { return }
+        kept = clearance
+        Java.call(reference, JavaAPI.setClipToPadding, .bool(false))
+        Java.call(
+            reference, JavaAPI.setPadding, .int(pixels(clearance.left)), .int(pixels(clearance.top)),
+            .int(pixels(clearance.right)), .int(pixels(clearance.bottom)))
+    }
+
+    var standingChanged: (() -> Void)?
+
+    var standing: (offset: Point, reach: Point) {
+        let along = Double(Java.callInt(reference, JavaAPI.itemsScrolled)) / density
+        let farthest = Double(Java.callInt(reference, JavaAPI.itemsReach)) / density
+        return layout.isAcross ? (Point(x: along, y: 0), Point(x: farthest, y: 0))
+            : (Point(x: 0, y: along), Point(x: 0, y: farthest))
     }
 
     /// The user tapped the item of `identity`.

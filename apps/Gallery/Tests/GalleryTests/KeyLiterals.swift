@@ -3,7 +3,7 @@
 
 // A test writes a key as its name; the library makes a key only where it declares one, so it has no literal form.
 
-import StateUI
+@_spi(Host) import StateUI
 
 extension Prop: @retroactive ExpressibleByStringLiteral {
     public init(stringLiteral name: String) { self.init(name) }

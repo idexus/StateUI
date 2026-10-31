@@ -6,21 +6,17 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 
-/// A CheckBox or a RadioButton: UIKit has neither, so a button of its own showing the system's symbol for a box or a
-/// circle, ticked or not, before a radio button's caption. A tap turns a box either way and a radio button only on;
-/// the host layer takes the tick from its group.
+/// A CheckBox: UIKit has none, so a button of its own showing the system's symbol for a box, ticked or not, before
+/// the words it says. A tap on the box or its words turns it either way, and VoiceOver names it by its words.
 @MainActor
 final class UIKitCheckView: UIButton {
     /// What the view does when the user turned it.
     var onToggled: ((Bool) -> Void)?
 
-    private let radio: Bool
-
     /// Whether it is ticked, as the tree last said or the user turned it.
     private(set) var isOn = false
 
-    init(radio: Bool) {
-        self.radio = radio
+    init() {
         super.init(frame: .zero)
         var configuration = UIButton.Configuration.plain()
         configuration.imagePadding = 8
@@ -44,19 +40,12 @@ final class UIKitCheckView: UIButton {
         showTick()
     }
 
-    /// The room between its edges and what it shows: none where the tree says none.
-    func setPadding(_ insets: Insets?) {
-        configuration?.contentInsets = insets.map {
-            NSDirectionalEdgeInsets(top: $0.top, leading: $0.left, bottom: $0.bottom, trailing: $0.right)
-        } ?? .zero
-    }
-
-    /// A radio button's caption.
+    /// The words it says beside its box.
     func setText(_ text: String) {
         configuration?.title = text.isEmpty ? nil : text
     }
 
-    /// The caption's look: the button's own where it says nothing.
+    /// The words' look: the button's own where the tree says nothing.
     func setLook(_ look: TextLook) {
         let color = look.color.flatMap(UIColor.init(stateUI:)) ?? .label
         configuration?.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
@@ -68,14 +57,13 @@ final class UIKitCheckView: UIButton {
     }
 
     private func tapped() {
-        guard !radio || !isOn else { return }
         isOn.toggle()
         showTick()
         onToggled?(isOn)
     }
 
     private func showTick() {
-        let symbol = radio ? (isOn ? "largecircle.fill.circle" : "circle") : (isOn ? "checkmark.square.fill" : "square")
+        let symbol = isOn ? "checkmark.square.fill" : "square"
         configuration?.image = UIImage(systemName: symbol)
         accessibilityTraits = isOn ? [.button, .selected] : .button
     }

@@ -42,7 +42,7 @@ public enum PropValue: Equatable, Sendable {
     /// Bytes as they stand - a file's contents read or written.
     case bytes([UInt8])
 
-    /// A colour: four sRGB channels from 0 to 255, alpha included (Color.swift).
+    /// A color: four sRGB channels from 0 to 255, alpha included (Color.swift).
     case color(red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)
 
     /// A list of values of any kind, for a value whose parts differ in shape - a
@@ -54,10 +54,10 @@ public enum PropValue: Equatable, Sendable {
     /// Design: docs/design/core/identity-and-diffing.md#themes
     indirect case themed(light: PropValue, dark: PropValue)
 
-    /// A colour of the system's - 0, the accent in force - let through to
+    /// A color of the system's - 0, the accent in force - let through to
     /// `alpha`, resolved by the differ as the element is built. Never handed to
     /// a host.
-    /// Design: docs/design/types/colour-and-theme.md#the-accent-in-force
+    /// Design: docs/design/types/color-and-theme.md#the-accent-in-force
     case systemColor(Int32, alpha: UInt8)
 
     /// Whether this value has components a host may animate; a host snaps any pair
@@ -69,7 +69,7 @@ public enum PropValue: Equatable, Sendable {
         }
     }
 
-    /// Which kind of value this is where the value itself says: a colour.
+    /// Which kind of value this is where the value itself says: a color.
     var kind: MotionValues {
         switch self {
         case .color, .values: .color
@@ -77,7 +77,7 @@ public enum PropValue: Equatable, Sendable {
         }
     }
 
-    /// Whether this value has a half for each theme, or a colour of the system's, anywhere in it.
+    /// Whether this value has a half for each theme, or a color of the system's, anywhere in it.
     var isThemed: Bool {
         switch self {
         case .themed, .systemColor: true
@@ -164,7 +164,7 @@ public enum PropValue: Equatable, Sendable {
         return nil
     }
 
-    /// The four channels, when this value is a colour - nil for any other
+    /// The four channels, when this value is a color - nil for any other
     /// kind, so nothing mistakes a number for one.
     public var color: (red: UInt8, green: UInt8, blue: UInt8, alpha: UInt8)? {
         if case .color(let red, let green, let blue, let alpha) = self {
@@ -199,7 +199,7 @@ extension [PropValue] {
 /// What a handler that awaits runs - through a gate, or once by `.onCreated`
 /// and `.onDestroying`:
 ///
-///     Button("Save").onClicked(gate: .ignoreWhileRunning) { try await model.save() }
+///     Button("Save").onClicked(.ignoreWhileRunning) { try await model.save() }
 ///
 /// It runs on `@MainActor`, up to its first `await` inside its event; what it
 /// throws is reported to the host.
@@ -208,8 +208,8 @@ public typealias EventHandler = @MainActor () async throws -> Void
 /// What an event that carries values runs - one parameter for each, in the order
 /// the event declares them. An event with nothing to say takes an `EventHandler`.
 ///
-///     TextField("").onTextChanged(gate: .cancelPrevious) { text in try await model.search(text) }
-///     let heard = HostEvents.on(NotesContract.batteryChanged, gate: .cancelPrevious) { level, _ in try await log(level) }
+///     TextField("").onTextChanged(.cancelPrevious) { text in try await model.search(text) }
+///     let heard = HostEvents.on(NotesContract.batteryChanged, policy: .cancelPrevious) { level, _ in try await log(level) }
 public typealias ValueEventHandler<each Value> = @MainActor (repeat each Value) async throws -> Void
 
 /// One element of the UI tree: its type, properties, children and handlers.
@@ -291,6 +291,23 @@ public struct Node {
     /// Design: docs/design/core/identity-and-diffing.md#containers-run-their-own-content
     var producer: (() -> [Node])?
 
+    /// What the element reads of a state it was handed, run as the differ describes it.
+    /// Design: docs/design/core/invalidation.md#an-element-reads-what-it-was-handed
+    var describedReads: [@MainActor (inout Node) -> Void] = []
+
+    /// Reads a state as the differ describes this element, never while the body writing it builds: the element is the
+    /// state's reader, and a write describes the element alone again.
+    mutating func readsWhenDescribed(_ read: @escaping @MainActor (inout Node) -> Void) {
+        describedReads.append(read)
+    }
+
+    /// Runs what the element reads when described, here and now - for a reading of the tree outside the differ.
+    mutating func readAsDescribed() {
+        let reads = describedReads
+        describedReads = []
+        for read in reads { read(&self) }
+    }
+
     /// Runs the producer, if pending, filing its nodes ahead of the slots. Idempotent.
     mutating func materialize() {
         guard let make = producer else { return }
@@ -336,6 +353,10 @@ public struct Node {
     /// What `.onDestroying` runs, in written order.
     var destroying: [EventHandler] = []
 
+    /// The events of the application's `.onHostEvent` hears while the element stands, in written order
+    /// (HostEventRelay.swift).
+    var hostEvents: [HostEventListen] = []
+
     /// The engines this element runs, in written order; the differ registers them
     /// under numbers the element keeps (Engine.swift).
     var engines: [EngineDeclaration] = []
@@ -349,7 +370,7 @@ public struct Node {
 
     /// Adds a handler beside any the event already has, never instead of it; it starts runs as an owner of its own.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
-    mutating func addHandler(_ event: Event, gate: some Gate, _ handler: @escaping EventHandler) {
+    mutating func addHandler(_ event: Event, gate: Gating, _ handler: @escaping EventHandler) {
         events[event, default: []].append(Handler(run: handler, gate: gate))
     }
 
@@ -408,8 +429,7 @@ public protocol Element {
     var node: Node { get }
 }
 
-/// A `Node` is an `Element`: a node already is what an element describes. In
-/// a view builder it goes as `ModifiedContent(node:)`.
+/// A `Node` is an `Element`: a node already is what an element describes.
 extension Node: Element {
     /// Itself - a node already is what an element describes.
     public var node: Node { self }

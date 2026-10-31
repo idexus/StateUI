@@ -5,7 +5,7 @@
 // `Placement` and once for the host as twelve numbers.
 // Design: docs/design/types/placement.md#where-one-view-goes
 
-/// Where one view goes and how it is turned: what a `LayoutEngine`'s
+/// Where one view goes and how it is turned: what a `MotionLayout`'s
 /// arithmetic answers for each of its views.
 ///
 ///     Placement(Rect(x, 0, 120, 170), transform: .turn(40).scale(0.8), zIndex: 2)
@@ -22,7 +22,7 @@ public struct Placement: LaneValue {
     /// Where the view goes, in device units from the layout's own top left.
     public var bounds: Rect
 
-    /// How it is moved, turned and sized from there, about its own centre.
+    /// How it is moved, turned and sized from there, about its own center.
     public var transform: ViewTransform
 
     /// How opaque, from 0 to 1.
@@ -56,7 +56,7 @@ public struct Placement: LaneValue {
     ///   - bounds: where the view goes, in device units from the layout's own
     ///     top left.
     ///   - transform: how it is moved, turned and sized from there, about its
-    ///     own centre. As it was drawn, unless it says otherwise.
+    ///     own center. As it was drawn, unless it says otherwise.
     ///   - opacity: how opaque, from 0 to 1.
     ///   - shade: how dark, from 0 to 1 - the opacity of the view the layout
     ///     was given by `.shade(_:)`. Nothing at all without one.
@@ -96,8 +96,7 @@ extension Placement {
 }
 
 extension Placement {
-    /// The twelve numbers a placement is, in the order `PackedPlacement`
-    /// writes them.
+    /// The twelve numbers a placement is, in the order a host reads them.
     public var carried: StateCarried {
         .lanes([
             bounds.x,
@@ -138,39 +137,9 @@ extension Placement {
     }
 
     /// Twelve, which is what the host reads by stride.
-    public static var lanes: Int { PackedPlacement.fields }
-}
-
-/// Where one view goes, as twelve doubles in the order below, written into a
-/// buffer the host reads by stride on the platform's own frames.
-/// Design: docs/design/types/placement.md#twelve-numbers-a-view
-enum PackedPlacement {
-    /// How many numbers one view takes.
-    static let fields = 12
+    public static var lanes: Int { 12 }
 
     /// The shade of a layout with none: a number no opacity can be, which tells
     /// the host to look for no shade view.
     static let unshaded = -1.0
-
-    /// Writes one placement into `buffer`, from `offset`.
-    static func write(
-        _ placement: Placement,
-        into buffer: UnsafeMutablePointer<Double>,
-        at offset: Int
-    ) {
-        let transform = placement.transform
-
-        buffer[offset + 0] = placement.bounds.x
-        buffer[offset + 1] = placement.bounds.y
-        buffer[offset + 2] = placement.bounds.width
-        buffer[offset + 3] = placement.bounds.height
-        buffer[offset + 4] = transform.x
-        buffer[offset + 5] = transform.y
-        buffer[offset + 6] = transform.rotation
-        buffer[offset + 7] = transform.width
-        buffer[offset + 8] = transform.height
-        buffer[offset + 9] = placement.opacity
-        buffer[offset + 10] = Double(placement.zIndex)
-        buffer[offset + 11] = placement.shade
-    }
 }

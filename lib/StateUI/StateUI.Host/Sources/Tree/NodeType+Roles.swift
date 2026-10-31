@@ -6,23 +6,37 @@
 /// What part an element plays in what a host shows, the same on every host.
 /// Design: docs/design/host/tree.md#the-native-half
 @_spi(Host) extension NodeType {
-    /// The arrangements of pages a window shows: a page, a stack of them, tabs, a split view, a page with sheets over
-    /// it.
-    public static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabView, .splitView, .modalStack]
+    /// The arrangements of pages a window shows: a page, a stack of them, tabs, a split view.
+    public static let pageTypes: Set<NodeType> = [.page, .navigationStack, .tabView, .splitView]
+
+    /// The views that take the room they are given rather than asking one: a list, a motion layout, a map, a web
+    /// view - a sheet holding one stands at its platform's standard size (`SheetSize`).
+    public static let roomTakingTypes: Set<NodeType> = [.itemsView, .motionLayout, .map, .webView]
 
     /// The entries that have no view of their own: structure, and the parts of another's view.
     public static let viewlessTypes: Set<NodeType> = [
-        .application, .scene, .window, .modalStack, .titleView, .toolbarItemGroup, .toolbarItem, .menuBar, .contextMenu,
-        .menu, .menuItem, .menuSeparator, .buttonMenu, .textSpans, .textSpan,
+        .application, .scene, .window, .anchor, .sheet, .titleView, .bottomBar, .toolbarGroup, .toolbarButton,
+        .toolbarToggle, .toolbarLabel, .menuBar, .contextMenu, .menu, .menuItem, .menuToggle, .menuSeparator, .buttonMenu, .textSpans,
+        .textSpan,
     ]
 
+    /// What stands on a bar among its groups: an action, a setting, words.
+    public static let toolbarItemTypes: Set<NodeType> = [.toolbarButton, .toolbarToggle, .toolbarLabel]
+
     /// The entries a menu draws itself.
-    public static let menuTypes: Set<NodeType> = [.menuBar, .contextMenu, .buttonMenu, .menu, .menuItem, .menuSeparator]
+    public static let menuTypes: Set<NodeType> = [
+        .menuBar, .contextMenu, .buttonMenu, .menu, .menuItem, .menuToggle, .menuSeparator,
+    ]
 
     /// What is declared on an element to furnish the chrome or the window rather than stand in its room.
     public static let slotTypes: Set<NodeType> = [
-        .toolbarItemGroup, .titleView, .menuBar, .contextMenu, .buttonMenu, .overlay,
+        .toolbarGroup, .titleView, .bottomBar, .menuBar, .contextMenu, .buttonMenu, .overlay, .popover, .sheet,
     ]
+
+    /// The elements that lay words out in their room, and how - a label's bare, a button's in its box: one whose place
+    /// travels stands no narrower than its words need where it is bound (`LayoutValues.words`).
+    /// Design: docs/design/host/motion.md#words-on-the-way
+    public static let laidOutWords: [NodeType: LaidOutWords] = [.text: .bare, .button: .boxed]
 }
 
 @_spi(Host) extension MountedElement {
