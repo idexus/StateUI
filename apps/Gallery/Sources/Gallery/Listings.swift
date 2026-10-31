@@ -5272,20 +5272,22 @@ enum Listings {
             @Binding var items: [String]
 
             var body: some View {
-                HStack {
+                // The field takes what the name and the button leave.
+                Grid {
                     Text(item)
-                        .width(90)
                         .verticalAlignment(.center)
 
                     TextField()
                         .placeholder("type here")
-                        .horizontalAlignment(.fill)
+                        .gridColumn(1)
 
                     Button("Remove")
                         .onClicked {
                             items = items.filter { $0 != item }
                         }
+                        .gridColumn(2)
                 }
+                .columns(.fixed(90), .fill, .auto)
             }
         }
         """#,

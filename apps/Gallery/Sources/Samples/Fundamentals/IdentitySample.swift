@@ -81,24 +81,26 @@ private struct IdentityRow: View {
     @Binding var items: [String]
 
     var body: some View {
-        HStack {
+        // The field takes what the name and the button leave.
+        Grid {
             Text(item)
                 .fontSize(15)
-                .width(90)
                 .verticalAlignment(.center)
 
             TextField()
                 .accessibilityIdentifier("identity.typed")
                 .accessibilityLabel("Anything typed here")
                 .placeholder("type here")
-                .horizontalAlignment(.fill)
+                .gridColumn(1)
 
             Button("Remove")
                 .onClicked {
                     items = items.filter { $0 != item }
                 }
+                .gridColumn(2)
         }
-        .spacing(10)
+        .columns(.fixed(90), .fill, .auto)
+        .columnSpacing(10)
     }
 }
 // listing: end
