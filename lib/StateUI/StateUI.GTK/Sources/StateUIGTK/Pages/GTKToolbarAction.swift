@@ -121,6 +121,9 @@ struct GTKPageChrome {
     /// The menus the page's path declares, which stand in the bar's main menu; none for no main menu.
     var mainMenu: [MenuEntry] = []
     var showsBar = true
+
+    /// Whether the bar is another frame's to show - the stack's page's, over a tab that is a stack.
+    var barStandsElsewhere = false
     var offersBack = true
     var offersClose = true
 

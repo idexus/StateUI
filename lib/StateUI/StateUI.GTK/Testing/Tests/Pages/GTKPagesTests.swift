@@ -464,6 +464,43 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A tabbed view's bar goes to the stack's page at once as a tab that is a stack is chosen: hidden with the tab's
+    /// page, never slid away by libadwaita's reveal, which jumped the page by the bar's height.
+    func testATabbedViewsBarGoesToTheStacksPageAtOnce() throws {
+        try onUIThread {
+            let tab = State(wrappedValue: 1)
+            let host = GTKRenderer.running {
+                SplitView {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    TabView([0, 1]) { which in
+                        if which == 0 {
+                            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                                TitledPage(title: "Inbox")
+                            } destination: { _ in TitledPage(title: "Message") }
+                            .title("Mail")
+                        } else {
+                            TitledPage(title: "Settings")
+                        }
+                    }
+                    .selection(tab.projectedValue)
+                }
+            }
+            host.layOut()
+            let window = try XCTUnwrap(host.window).widget
+            let slidAway = { GTKTestHost.descendants(of: window).filter {
+                GTKTestHost.holds($0, adw_toolbar_view_get_type()) && adw_toolbar_view_get_reveal_top_bars($0.opaque) == 0
+            }.count }
+            let tabs = try XCTUnwrap(host.views(GTKTabView.self).first)
+
+            tabs.selectByUser(0)
+            host.settle { tab.wrappedValue == 0 }
+            GTKTestHost.pump(0.2)
+
+            XCTAssertEqual(slidAway(), 0, "a bar slid away over the stack")
+        }
+    }
+
     /// A sheet asks libadwaita's dialog for its page's size - here the least, its words few - and one holding a
     /// stack, whose pages come and go, the standard size, held within the window.
     func testASheetAsksTheSizeOfItsPageAndAStackTheStandard() throws {

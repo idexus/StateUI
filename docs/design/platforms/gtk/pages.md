@@ -180,7 +180,10 @@ switcher's choice is the user's: the pages hear it, then the selection's
 state, and the header bar follows the chosen tab whether or not the
 application renders again. Over a tab that is a stack the stack's bar is the
 one (the host layer's `showsTheStacksBar`): the tabbed view's frame shows no
-header bar, and the switcher - with a split view's sidebar toggle - stands
+header bar - hidden at once with the tab's page, as it comes back at once
+for another tab; libadwaita's reveal, which a page hiding its own bar keeps,
+slid it and jumped the page by the bar's height - and the switcher - with a
+split view's sidebar toggle - stands
 beneath the header bar of the stack's page the user sees, moving with it as
 pages come and go. A widget stands in one place at a time: shown over
 another tab meanwhile, the switcher is taken back by the frame of the

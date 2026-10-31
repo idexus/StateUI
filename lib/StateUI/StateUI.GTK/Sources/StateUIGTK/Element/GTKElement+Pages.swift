@@ -34,6 +34,7 @@ extension GTKElement {
             guard element.showsTheStacksBar else {
                 var chrome = GTKPageChrome()
                 chrome.showsBar = false
+                chrome.barStandsElsewhere = true
                 return chrome
             }
             var chrome = element.selectedTab?.visiblePage?.gtk.chrome ?? GTKPageChrome()

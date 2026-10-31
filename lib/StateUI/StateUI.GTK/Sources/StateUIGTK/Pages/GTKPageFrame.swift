@@ -125,8 +125,14 @@ final class GTKPageFrame {
         if chrome.titleView !== self.chrome.titleView {
             adw_header_bar_set_title_widget(header.opaque, chrome.titleView?.widget ?? heading)
         }
-        if chrome.showsBar != self.chrome.showsBar {
-            adw_toolbar_view_set_reveal_top_bars(widget.opaque, chrome.showsBar ? 1 : 0)
+        // A bar another frame shows goes, and comes back, at once with the tab's page; one the page hides slides.
+        // Design: docs/design/platforms/gtk/pages.md#tabs
+        if chrome.barStandsElsewhere != self.chrome.barStandsElsewhere {
+            gtk_widget_set_visible(header, chrome.barStandsElsewhere ? 0 : 1)
+        }
+        let revealed = chrome.showsBar || chrome.barStandsElsewhere
+        if revealed != (self.chrome.showsBar || self.chrome.barStandsElsewhere) {
+            adw_toolbar_view_set_reveal_top_bars(widget.opaque, revealed ? 1 : 0)
         }
         if chrome.offersBack != self.chrome.offersBack {
             adw_header_bar_set_show_back_button(header.opaque, chrome.offersBack ? 1 : 0)
