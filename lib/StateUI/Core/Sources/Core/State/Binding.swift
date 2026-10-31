@@ -21,14 +21,14 @@
 /// carries it, so a control shows it with no view rebuilt, and it has a
 /// journey. A model lent this way may be edited or replaced; to hand over
 /// less, hand over the value or the object instead. One property or element
-/// of it - `$profile.name`, `$hops[2]` - is a `Proxy`, which reads
-/// and writes through the whole. A class of `@State` properties is lent the
-/// same way: `@Binding var basket: Basket`, with `basket.$note` the note's own
-/// state.
+/// of it - `$profile.name`, `$hops[2]` - is a `StatePart`, which reads and
+/// writes through the whole and which nothing in the library takes. A class
+/// of `@State` properties is lent the same way: `@Binding var basket: Basket`,
+/// with `basket.$note` the note's own state.
 @propertyWrapper
 @dynamicMemberLookup
 @MainActor
-public struct Binding<Value>: TwoWay {
+public struct Binding<Value> {
     // Two closures: reading and writing is all a binding asks of what it borrows.
     private let read: () -> Value
     private let write: (Value) -> Void
@@ -101,41 +101,34 @@ public struct Binding<Value>: TwoWay {
         self = projectedValue
     }
 
-    /// The whole state lent as a proxy - what a child borrowing with
-    /// `@Proxy` is handed where its parent lends all of a state:
-    ///
-    ///     NameRow(name: $name.proxy)
-    ///
-    /// The proxy reads and writes the state; the host does not carry it. A
-    /// child's own initializer can take either, with `Proxy(_:)`.
-    public var proxy: Proxy<Value> {
-        Proxy(read: read, write: write, standing: { [storage] in storage.value }, reaches: { true },
-              lender: storage, lent: nil, mailroom: mailroom)
+    /// The whole state as the root its parts are reached from.
+    private var whole: StatePart<Value> {
+        StatePart(read: read, write: write, standing: { [storage] in storage.value }, reaches: { true },
+                  lender: storage, lent: nil, mailroom: mailroom)
     }
 
     /// One property of the state - `$profile.name` - read and written through
     /// the whole.
     ///
-    ///     TextField($profile.name)
+    ///     $profile.name.wrappedValue = "Ada"
     ///
     /// For a value: the whole is read, the property written, and the whole put back.
     /// A model takes the subscript below.
     public subscript<Subject>(
         dynamicMember keyPath: WritableKeyPath<Value, Subject> & Sendable
-    ) -> Proxy<Subject> {
-        proxy[dynamicMember: keyPath]
+    ) -> StatePart<Subject> {
+        whole[dynamicMember: keyPath]
     }
 
     /// One property of a model, through the model - `$basket.note`.
     ///
-    ///     TextField($basket.note)
-    ///
     /// The write goes straight to the object, and nothing is put back. The
-    /// property's own state is `basket.$note`, a `Binding` the host carries.
+    /// property's own state is `basket.$note`, a `Binding` the host carries -
+    /// what a control takes.
     public subscript<Subject>(
         dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject> & Sendable
-    ) -> Proxy<Subject> {
-        proxy[dynamicMember: keyPath]
+    ) -> StatePart<Subject> {
+        whole[dynamicMember: keyPath]
     }
 }
 
@@ -143,15 +136,13 @@ extension Binding where Value: MutableCollection, Value.Index: Hashable & Sendab
     /// One element of the state - `$hops[2]` - read and written through the
     /// whole.
     ///
-    ///     ForEach(Array(hops.enumerated()), id: \.offset) { hop in
-    ///         Stepper($hops[hop.offset])
-    ///     }
+    ///     $hops[2].wrappedValue = 0.5
     ///
     /// The whole is read, the element written, and the whole put back.
     ///
     /// - Parameter index: which element, in the collection's own index space.
-    public subscript(index: Value.Index) -> Proxy<Value.Element> {
-        proxy[index]
+    public subscript(index: Value.Index) -> StatePart<Value.Element> {
+        whole[index]
     }
 }
 
@@ -168,7 +159,7 @@ extension Binding {
     func reaches() -> Bool { true }
 
     /// A post through it writes the whole.
-    nonisolated var lent: StatePart? { nil }
+    nonisolated var lent: PartPath? { nil }
 }
 
 extension Binding where Value: StateValue {

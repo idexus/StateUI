@@ -67,7 +67,7 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
     }
 
     /// Two-way: shows what the binding holds, and writes back what is typed.
-    public init(_ state: some TwoWay<String>) {
+    public init(_ state: Binding<String>) {
         self = TextField().text(state)
     }
 
@@ -84,12 +84,8 @@ public struct TextField: TextInput, TextualElement, FontElement, TextAlignmentEl
     /// - Parameter state: the state shown, and written back into as the user
     ///   types.
     /// - Returns: the control, wearing and reporting that text.
-    public func text(_ state: some TwoWay<String>) -> Modified {
-        guard let whole = state.whole else {
-            return described(TextualElementContract.text.token, state, on: .textChanged)
-        }
-
-        return words(TextualElementContract.text.token, by: whole, mode: .inOut)
+    public func text(_ state: Binding<String>) -> Modified {
+        words(TextualElementContract.text.token, by: state, mode: .inOut)
     }
 
     // MARK: Events

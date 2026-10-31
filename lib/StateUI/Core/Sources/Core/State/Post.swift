@@ -50,8 +50,8 @@ extension Binding where Value: Sendable {
     }
 }
 
-extension Proxy where Value: Sendable {
-    /// Writes `value` through the proxy from any thread, in a job of
+extension StatePart where Value: Sendable {
+    /// Writes `value` through the part from any thread, in a job of
     /// `MainActor`'s soon after - a post to a part waits under that part.
     ///
     /// - Parameter value: what the part holds once the job runs.
@@ -61,7 +61,7 @@ extension Proxy where Value: Sendable {
         mailroom.post(value, through: self)
     }
 
-    /// Changes the value through the proxy from any thread, in a job of
+    /// Changes the value through the part from any thread, in a job of
     /// `MainActor`'s soon after, each change over what the one before left.
     ///
     /// - Parameter transform: given the value as it stands, answers the next.
@@ -72,13 +72,13 @@ extension Proxy where Value: Sendable {
     }
 }
 
-/// What a post writes through - a whole state's binding, or a proxy to a part of one.
+/// What a post writes through - a whole state's binding, or a part of one.
 @MainActor
 protocol PostTarget<Value>: Sendable {
     associatedtype Value
 
     /// Which part of the state it writes; nil for the whole.
-    nonisolated var lent: StatePart? { get }
+    nonisolated var lent: PartPath? { get }
 
     /// The value as it stands, without recording a read.
     var standing: Value { get }
@@ -104,7 +104,7 @@ final class Mailroom: Sendable {
     /// Replaces whatever waits for this part, and for every part of it, with a value - posted last, it lands last.
     func post<Target: PostTarget>(_ value: Target.Value, through target: Target) where Target.Value: Sendable {
         book { entries in
-            entries.removeAll { StatePart.covers(target.lent, $0.part) }
+            entries.removeAll { PartPath.covers(target.lent, $0.part) }
             entries.append(PartPost(target: target, value: value))
         }
     }
@@ -152,20 +152,20 @@ final class Mailroom: Sendable {
 /// One part's posts waiting in a mailroom.
 protocol PostEntry: Sendable {
     /// Which part of the state it writes; nil for the whole.
-    var part: StatePart? { get }
+    var part: PartPath? { get }
 
     /// Writes what waits.
     @MainActor func land()
 }
 
 /// What waits for one part: the last value posted and the changes posted after it, in order, written through a
-/// binding or a proxy to that part - held only until the job runs.
+/// binding or that part - held only until the job runs.
 struct PartPost<Target: PostTarget>: PostEntry where Target.Value: Sendable {
     let target: Target
     var value: Target.Value?
     var transforms: [@Sendable (Target.Value) -> Target.Value] = []
 
-    var part: StatePart? { target.lent }
+    var part: PartPath? { target.lent }
 
     init(target: Target, value: Target.Value? = nil, transforms: [@Sendable (Target.Value) -> Target.Value] = []) {
         self.target = target

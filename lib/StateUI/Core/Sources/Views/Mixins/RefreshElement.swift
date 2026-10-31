@@ -39,13 +39,8 @@ extension RefreshElement {
     ///
     /// - Parameter state: the state the spinner follows, and the pull writes into.
     /// - Returns: the element, showing and reporting that state.
-    public func isRefreshing(_ state: some TwoWay<Bool>) -> Modified {
-        let isRefreshing = RefreshElementContract.isRefreshing
-        if let whole = state.whole { return plain(isRefreshing.token, by: whole, mode: .inOut) }
-        return modified {
-            $0.write(isRefreshing, state.wrappedValue)
-            $0.addHandler(RefreshElementContract.refreshRequested) { state.wrappedValue = true }
-        }
+    public func isRefreshing(_ state: Binding<Bool>) -> Modified {
+        plain(RefreshElementContract.isRefreshing.token, by: state, mode: .inOut)
     }
 
     /// Whether the refresh is under way, as a value: the spinner shows while it is true, and the pull writes

@@ -65,7 +65,7 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
     ///   sidebar's bar, the application's name where it says none.
     /// - Parameter detail: the page beside it, which is the application.
     public init<Sidebar: View, Detail: View>(
-        _ showsSidebar: some TwoWay<Bool>,
+        _ showsSidebar: Binding<Bool>,
         @ViewBuilder sidebar: () -> Sidebar,
         @ViewBuilder detail: () -> Detail
     ) {

@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// The pull to refresh as the core writes it: a state the host cannot carry written by the pull.
+// The pull to refresh as the core writes it: a value shown, and the pull heard.
 
 import XCTest
 
@@ -12,25 +12,6 @@ final class RefreshElementTests: XCTestCase {
     override func setUp() async throws {
         Renderer.shared.clearInvalidation()
         Renderer.shared.clearStates()
-    }
-
-    /// A proxy - which the host does not carry - shows what it holds, and the pull writes it true before the handler
-    /// hears the pull.
-    func testThePullWritesAStateTheHostCannotCarry() throws {
-        var held = false
-        var heard: [Bool] = []
-        let renders = Renders()
-        let patch = renders.render(ScrollView { Text("") }
-            .isRefreshing(Proxy(get: { held }, set: { held = $0 }))
-            .onRefreshRequested { heard.append(held) }
-            .node)
-
-        XCTAssertEqual(patch.properties[.isRefreshing], .bool(false), "the state as it stands")
-        let handler = try XCTUnwrap(patch.events?[.refreshRequested], "the scroller hears the pull")
-        renders.fire(handler)
-
-        XCTAssertTrue(held, "the pull wrote the state")
-        XCTAssertEqual(heard, [true], "before the handler heard it")
     }
 
     /// A value shows the spinner as it says and writes nothing: the pull is only heard, for the application to

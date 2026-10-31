@@ -89,7 +89,7 @@ private struct CartOwner {
 
     /// What `TextField($cart.note)` would be given - a proxy INTO the model,
     /// through a key path.
-    var note: Proxy<String> { $cart.note }
+    var note: StatePart<String> { $cart.note }
 }
 
 /// A view that was LENT the model. There is no second wrapper for a class: a
@@ -98,7 +98,7 @@ private struct CartOwner {
 private struct NoteRow {
     @Binding var basket: Cart
 
-    var note: Proxy<String> { $basket.note }
+    var note: StatePart<String> { $basket.note }
 }
 
 /// How many times a closure was built, and what `debugInfo()` said there - a
@@ -271,12 +271,14 @@ final class ModelStateTests: XCTestCase {
     }
 
     /// `$cart.note` - the model's property reached THROUGH the holding state
-    /// by a key path - is a PART of that state, a proxy with no storage of its
-    /// own: it takes the described road, as `$room.width` does.
-    func testAKeyPathBindingIntoAModelIsDescribed() {
+    /// by a key path - is a PART of that state, which nothing in the library
+    /// takes; the model's own `cart.$note` is the whole state the host carries.
+    func testAKeyPathIntoAModelIsAPartAndItsOwnStateTheWhole() {
         let owner = CartOwner()
 
-        XCTAssertNil(owner.note.whole, "a key-path part is a proxy, which the host does not carry")
+        let part: StatePart<String> = owner.note
+        part.wrappedValue = "milk"
+        XCTAssertEqual(owner.cart.note, "milk", "a part writes through the holding state")
         XCTAssertNotNil(owner.cart.$note.image, "the model's own `$note` is the whole state")
     }
 
@@ -518,8 +520,8 @@ final class ModelStateTests: XCTestCase {
 
         XCTAssertTrue(owner.cart === replacement, """
             `$` says: I lend you this, do with it what you want - which includes \
-            replacing it. A parent meaning to lend less hands the object itself \
-            and the child builds its own Proxy(get:set:).
+            replacing it. A parent meaning to lend less hands the object itself, \
+            whose `@State` properties are states of their own.
             """)
         XCTAssertTrue(Renderer.shared.needsRender)
     }

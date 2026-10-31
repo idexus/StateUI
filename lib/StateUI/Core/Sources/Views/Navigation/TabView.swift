@@ -62,7 +62,7 @@ public struct TabView<Tab: Hashable>: ElementView, Arrangement, BarElement, Auto
     ///   - destination: the page for one tab.
     public init<Tabs: RandomAccessCollection, Destination: View>(
         _ tabs: Tabs,
-        selection: some TwoWay<Tab>,
+        selection: Binding<Tab>,
         @ViewBuilder destination: (Tab) -> Destination
     ) where Tabs.Element == Tab {
         self.init(tabs, destination: destination)

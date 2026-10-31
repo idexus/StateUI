@@ -25,8 +25,10 @@ extension View {
     ///   - state: whether the sheet shows, written false as it closes.
     ///   - content: what the sheet shows.
     /// - Returns: this view, with its sheet.
-    public func sheet<Content: View>(isPresented state: some TwoWay<Bool>, @ViewBuilder content: () -> Content) -> Modified {
-        presenting(SheetElement(page: state.wrappedValue ? Node.page(content()) : nil, presented: state))
+    public func sheet<Content: View>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Modified {
+        presenting(SheetElement(
+            page: state.wrappedValue ? Node.page(content()) : nil,
+            read: { state.wrappedValue }, write: { state.wrappedValue = $0 }))
     }
 
     /// Presents the page `content` makes of a value while the state holds one: the user dismissing it writes nil,
@@ -45,15 +47,15 @@ extension View {
     ///   - content: what the sheet shows of the value.
     /// - Returns: this view, with its sheet.
     public func sheet<Item: Hashable, Content: View>(
-        item state: some TwoWay<Item?>, @ViewBuilder content: (Item) -> Content
+        item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content
     ) -> Modified {
         let page = state.wrappedValue.map { item in
             var page = Node.page(content(item))
             page.identify(item)
             return page
         }
-        let presented = Proxy(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
-        return presenting(SheetElement(page: page, presented: presented))
+        return presenting(SheetElement(
+            page: page, read: { state.wrappedValue != nil }, write: { if !$0 { state.wrappedValue = nil } }))
     }
 
     /// This view with `sheet` after its own children: one, written again it stands in.
@@ -70,11 +72,12 @@ extension View {
 struct SheetElement: ElementView {
     var node: Node
 
-    /// `page` presented while `state` holds true, the user's dismissal written back - described, never carried by
-    /// the host: the view presenting it builds again as it changes, its page with it; leaving the tree writes false.
-    init(page: Node?, presented state: some TwoWay<Bool>) {
+    /// `page` presented while `read` says so, the user's dismissal written through `write` - described, never
+    /// carried by the host: the view presenting it builds again as it changes, its page with it; leaving the tree
+    /// writes false.
+    init(page: Node?, read: @escaping @MainActor () -> Bool, write: @escaping @MainActor (Bool) -> Void) {
         node = Node(contract: SheetContract.self, children: page.map { [$0] } ?? [])
-        self = described(SheetContract.isPresented.token, state, on: SheetContract.isPresentedChanged.token)
-        node.destroying.append { if state.wrappedValue { state.wrappedValue = false } }
+        self = described(SheetContract.isPresented.token, read: read, write: write, on: SheetContract.isPresentedChanged.token)
+        node.destroying.append { if read() { write(false) } }
     }
 }

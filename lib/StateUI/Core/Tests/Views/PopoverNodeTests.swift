@@ -29,12 +29,6 @@ final class PopoverNodeTests: XCTestCase {
         Renderer.shared.clearStates()
     }
 
-    /// A proxy the host does not carry, whose writes the test reads back.
-    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Proxy<Value> {
-        var held = value
-        return Proxy(get: { held }, set: { held = $0; written($0) })
-    }
-
     /// A view holds one popover - written again it stands in - its state carried in and out, what it shows its
     /// children.
     func testAPopoverIsOneSlotHoldingWhatItShows() throws {
@@ -50,33 +44,19 @@ final class PopoverNodeTests: XCTestCase {
         XCTAssertEqual(popover.built.children.map(\.type), [.text])
     }
 
-    /// A proxy - which the host does not carry - shows what it holds, and the user's dismissal writes it.
-    func testTheDismissalWritesFalseIntoIsPresented() throws {
-        var written: [Bool] = []
-        let renders = Renders()
-        let patch = renders.render(VStack { Text("Mine") }
-            .popover(isPresented: binding(true) { written.append($0) }) { Text("Inside") }
-            .node)
-        let popover = try XCTUnwrap(patch.subtree.first { $0.type == .popover })
-
-        XCTAssertEqual(popover.properties[.isPresented], .bool(true))
-        renders.fire(try XCTUnwrap(popover.events?[.isPresentedChanged]), with: [.bool(false)])
-        XCTAssertEqual(written, [false], "the dismissal written into the state")
-    }
-
     /// A value shows what the content makes of it; the user's dismissal writes nil.
     func testTheDismissalWritesNilIntoItem() throws {
-        var written: [String?] = []
+        let item = State<String?>(wrappedValue: "Inbox")
         let renders = Renders()
         let patch = renders.render(VStack { Text("Notes") }
-            .popover(item: binding("Inbox") { written.append($0) }) { name in Text(name) }
+            .popover(item: item.projectedValue) { name in Text(name) }
             .node)
         let popover = try XCTUnwrap(patch.subtree.first { $0.type == .popover })
 
         XCTAssertEqual(popover.properties[.isPresented], .bool(true))
         XCTAssertEqual(popover.children.first?.properties[.text], .string("Inbox"))
         renders.fire(try XCTUnwrap(popover.events?[.isPresentedChanged]), with: [.bool(false)])
-        XCTAssertEqual(written, [nil], "the dismissal written into the state")
+        XCTAssertNil(item.wrappedValue, "the dismissal written into the state")
     }
 
     /// Another value shows another view in the popover, standing in the place of the first; no value shows none.

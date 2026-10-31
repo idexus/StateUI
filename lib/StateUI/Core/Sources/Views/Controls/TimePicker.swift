@@ -63,7 +63,7 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
     }
 
     /// Two-way: shows the time and writes back the one that is chosen.
-    public init(_ state: some TwoWay<ClockTime>) {
+    public init(_ state: Binding<ClockTime>) {
         self = TimePicker().time(state)
     }
 
@@ -80,12 +80,8 @@ public struct TimePicker: ElementView, TextColorElement, FontElement, TimePicker
     /// - Parameter state: the state shown, and written back into when a time
     ///   is chosen.
     /// - Returns: the control, wearing and reporting that time.
-    public func time(_ state: some TwoWay<ClockTime>) -> Modified {
-        guard let whole = state.whole else {
-            return described(.time, state, on: .timeChanged)
-        }
-
-        return plain(.time, by: whole, mode: .inOut)
+    public func time(_ state: Binding<ClockTime>) -> Modified {
+        plain(.time, by: state, mode: .inOut)
     }
 
     // MARK: Events

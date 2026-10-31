@@ -35,7 +35,7 @@ public struct ToolbarToggle: PlacedToolbarItem, MenuItemElement, TextAndIconElem
 
     /// An item captioned `text`, standing on as the state holds; choosing it
     /// turns the state over.
-    public init(_ text: String, isOn: some TwoWay<Bool>) {
+    public init(_ text: String, isOn: Binding<Bool>) {
         self.init(text, isOn: isOn.wrappedValue)
         node.addHandler(ToolbarToggleContract.toggled.token) {
             if let turned = EventBuffer.current.value()?.bool { isOn.wrappedValue = turned }

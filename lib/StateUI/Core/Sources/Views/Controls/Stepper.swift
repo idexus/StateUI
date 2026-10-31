@@ -67,7 +67,7 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     ///
     /// A Stepper draws its number on some platforms and not on others: show
     /// `count` beside it, or a driven text an engine writes, which costs no render.
-    public init(_ state: some TwoWay<Double>) {
+    public init(_ state: Binding<Double>) {
         self = Stepper().value(state)
     }
 
@@ -80,12 +80,8 @@ public struct Stepper: ElementView, StepperProperties, FocusElement {
     /// - Parameter state: the state the stepper shows and writes back into,
     ///   carried by the host as a journey.
     /// - Returns: the control, wearing and reporting that value.
-    public func value(_ state: some TwoWay<Double>) -> Modified {
-        guard let whole = state.whole else {
-            return described(StepperContract.value.token, state, on: StepperContract.valueChanged.token)
-        }
-
-        return journey(StepperContract.value.token, by: whole)
+    public func value(_ state: Binding<Double>) -> Modified {
+        journey(StepperContract.value.token, by: state)
     }
 
     // MARK: Events

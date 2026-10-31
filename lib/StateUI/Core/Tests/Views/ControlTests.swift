@@ -852,12 +852,6 @@ final class ControlTests: XCTestCase {
                 let name = String(line[line.index(line.startIndex, offsetBy: 12)..<open])
                 let type = String(inside[inside.index(after: colon)...].drop(while: { $0 == " " }))
 
-                // A two-way control's twin takes a whole state or a proxy alike.
-                if type.hasPrefix("some TwoWay<"), type.hasSuffix(">"), !name.contains("<") {
-                    twins.insert(path + "|" + name + ":" + String(type.dropFirst("some TwoWay<".count).dropLast()))
-                    continue
-                }
-
                 // A view or a protocol's value - a header, a shade - is no value a state carries.
                 guard !name.contains("<"), !type.hasPrefix("some "), !type.hasPrefix("any ") else { continue }
 
@@ -1314,92 +1308,6 @@ final class ControlTests: XCTestCase {
         renders.fire(handler(patch, "selectedIndexChanged"), with: [.string("not-a-number")])
 
         XCTAssertEqual(size.wrappedValue, "M")
-    }
-
-    /// A two-way control handed a proxy - a part of a state, or one made from
-    /// closures - keeps the described road: the value is read at build, the
-    /// report is written back through the proxy, and nothing is registered for
-    /// the host to tie.
-    func testAPartOrClosureBindingKeepsTheDescribedRoad() {
-        var on = false
-        let closure = Proxy<Bool>(get: { on }, set: { on = $0 })
-        let room = State(wrappedValue: Rect(0, 0, 3, 4))
-        let sizes = ["S", "M", "L", "XL"]
-
-        struct Profile { var name = "" }
-        let profile = State(wrappedValue: Profile())
-        var typed = ""
-        let text = Proxy<String>(get: { typed }, set: { typed = $0 })
-        var day = CalendarDate(year: 2026, month: 1, day: 1)
-        let date = Proxy<CalendarDate>(get: { day }, set: { day = $0 })
-        var clock = ClockTime(hour: 0, minute: 0)
-        let time = Proxy<ClockTime>(get: { clock }, set: { clock = $0 })
-
-        let renders = Renders()
-        let patch = renders.render(Node(type: "VStack", children: [
-            Switch(closure).node,
-            Picker(sizes, selection: Proxy(
-                get: { sizes[Int(room.wrappedValue.width)] },
-                set: { room.wrappedValue.width = Double(sizes.firstIndex(of: $0) ?? 0) })).node,
-            TextField(text).node,
-            TextEditor(profile.projectedValue.name).id("editor").node,
-            SearchField(text).id("search").node,
-            DatePicker(date).id("date").node,
-            TimePicker(time).id("time").node,
-        ]))
-
-        XCTAssertEqual(patch.children[0].props[.isOn], .bool(false), "described: the value is written at build")
-        XCTAssertNil(patch.children[0].driven, "and nothing is tied")
-        XCTAssertEqual(patch.children[1].props[.selectedIndex], .number(3))
-
-        // The fields and the pickers take the same road over a part or a
-        // closure: the value read at build, nothing tied, the report written
-        // back through the binding.
-        XCTAssertEqual(patch.children[2].props[.text], .string(""))
-        XCTAssertNil(patch.children[2].driven)
-        XCTAssertEqual(patch.child("editor")?.props[.text], .string(""))
-        XCTAssertNil(patch.child("editor")?.driven)
-        XCTAssertEqual(patch.child("date")?.props[.date], .numbers([2026, 1, 1]))
-        XCTAssertNil(patch.child("date")?.driven)
-        XCTAssertEqual(patch.child("time")?.props[.time], .numbers([0, 0, 0]))
-        XCTAssertNil(patch.child("time")?.driven)
-
-        renders.fire(handler(patch.children[0], "toggled"), with: [.bool(true)])
-        renders.fire(handler(patch.children[1], "selectedIndexChanged"), with: [.number(1)])
-        renders.fire(handler(patch.children[2], "textChanged"), with: [.string("Ada")])
-        renders.fire(handler(patch.child("editor"), "textChanged"), with: [.string("Notes")])
-        renders.fire(handler(patch.child("date"), "dateChanged"), with: [.numbers([2026, 8, 2])])
-        renders.fire(handler(patch.child("time"), "timeChanged"), with: [.numbers([9, 30, 0])])
-
-        XCTAssertTrue(on, "the report went back through the closure")
-        XCTAssertEqual(room.wrappedValue.width, 1, "and through the part")
-        XCTAssertEqual(typed, "Ada")
-        XCTAssertEqual(profile.wrappedValue.name, "Notes")
-        XCTAssertEqual(day, CalendarDate(year: 2026, month: 8, day: 2))
-        XCTAssertEqual(clock, ClockTime(hour: 9, minute: 30))
-    }
-
-    /// A slider and a stepper take a part of a state as every two-way control
-    /// does: the value read at build, nothing tied, the user's move written
-    /// back through the whole.
-    func testASliderAndAStepperTakeAPartTheDescribedWay() {
-        let levels = State(wrappedValue: [0.2, 3.0])
-
-        let renders = Renders()
-        let patch = renders.render(Node(type: "VStack", children: [
-            Slider(levels.projectedValue[0]).id("slider").node,
-            Stepper(levels.projectedValue[1]).id("stepper").node,
-        ]))
-
-        XCTAssertEqual(patch.child("slider")?.props[.value], .number(0.2))
-        XCTAssertNil(patch.child("slider")?.driven)
-        XCTAssertEqual(patch.child("stepper")?.props[.value], .number(3))
-        XCTAssertNil(patch.child("stepper")?.driven)
-
-        renders.fire(handler(patch.child("slider"), "valueChanged"), with: [.number(0.7)])
-        renders.fire(handler(patch.child("stepper"), "valueChanged"), with: [.number(4)])
-
-        XCTAssertEqual(levels.wrappedValue, [0.7, 4])
     }
 
     /// A value the PLATFORM moves - the scroller's offset, which the platform

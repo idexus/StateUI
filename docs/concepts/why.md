@@ -124,26 +124,24 @@ declared journey type, and an engine woken by what it reads. Each would double
 every API that takes a state, and where a state is used already says what it
 is.
 
-## Three words: `@State`, `@Binding`, `@Proxy`
+## Two words and a part: `@State`, `@Binding`, `StatePart`
 
-One simple rule names the three ways a view holds a value:
+One rule names how a view holds a value:
 
 - `@State` owns the value and manages its state;
-- `@Binding` refers to a value through a whole binding, with the host's
-  reactive channel;
-- `@Proxy` reads and writes a value through another source, with no host
-  channel of its own.
+- `@Binding` borrows a whole state, with the host's reactive channel;
+- a `StatePart` - `$mix.volume`, `$levels[1]` - is one property or element of
+  a state, read and written through the whole, and nothing in the library
+  takes it.
 
-`$master` is a `Binding`: the state itself, which the host carries with no
-body rebuilt, which has a journey and which wakes an engine. `$mix.volume`,
-`$levels[1]` and `Proxy(get:set:)` are a `Proxy`
-([A part of a state](state-and-reactivity.md#a-part-of-a-state-proxy)).
-Every two-way control takes either, through the protocol both keep, `TwoWay`;
-what needs the state itself takes `Binding` alone:
+Every member takes a value, which a body reads, or a `Binding`, which the
+host carries - `Text(name)` reads, `Text($name)` is the channel. A
+part is neither, so it reaches no control
+([Editing a record: two ways](state-and-reactivity.md#editing-a-record-two-ways)):
 
 ```swift
-struct Mix {
-    var volume = 0.5
+final class Mix {
+    @State var volume = 0.5
 }
 
 struct Mixer: View {
@@ -152,7 +150,7 @@ struct Mixer: View {
 
     var body: some View {
         VStack {
-            Slider($mix.volume)     // read at build, each move written back
+            Slider(mix.$volume)     // the field's own state, carried by the host
             Slider($master)         // carried by the host, on a journey
         }
         .engine(following: $master) { _ in }
@@ -160,28 +158,26 @@ struct Mixer: View {
 }
 ```
 
-- **The road is the type's.** Whether a value rides the host's channel is
-  decided by its type, never by where it came from: a proxy is described,
-  whatever it reaches - a whole state lent as one with `$master.proxy` too.
-- **A mistake the compiler refuses.** A proxy handed to a journey, a driven
-  modifier, `engine(following:)`, a motion layout's parameters or `convert`
-  does not compile; `.engine(following: $mix.volume)` is an error, not an
-  engine that never wakes.
-- **One language.** The three words say who holds the value, and each type is
-  one of them; a child says which it accepts - `@Binding` a whole state,
-  `@Proxy` a part as well, through `$x.proxy` or an initializer of its own
-  taking `some TwoWay` and making it `Proxy(_:)`.
-- **A proxy promises reading and writing, never a notification.** A part
-  reads through the whole state, so a body reading it is rebuilt when the state
-  changes; closures over a store StateUI does not own rebuild nothing when that
-  store changes.
+- **The road is the type's.** A `Binding` rides the host's channel, has a
+  journey and wakes an engine; a value is read where the body is built.
+  Nothing decides it at run time.
+- **A mistake the compiler refuses.** A part handed to a control, a journey,
+  a driven modifier, `engine(following:)` or `convert` does not compile: the
+  error names a `StatePart` where a `Binding` is asked, rather than a control
+  that quietly rebuilds its body on every keystroke.
+- **The write stands where it is seen.** A record kept as a value gives each
+  control the value and writes the user's change in the control's event - by
+  identity, in the handler.
+- **One language.** Two words say who holds the value, and the part's name
+  says what it is: a child borrowing a state says `@Binding`, a child given a
+  value takes the value.
 
-**Deliberately rejected:** one binding type whose road depends on its origin -
-a slider that moves on `$master.journey` and silently stands still for
-`$mix.volume`, or a control that compiles with a part and sets nothing;
-refusing a part at run time with a complaint, which still compiles and does
-nothing; and aliases for the proxy - two names for one type are two things to
-learn.
+**Deliberately rejected:** one protocol a whole state and a part both keep,
+through which a control takes either - a part then compiles into a control and
+takes the slower road unseen; a part refused at run time with a complaint,
+which still compiles; a binding made from closures, which promises nothing its
+type can keep; and a property wrapper for a part - two wrappers that look
+alike and behave apart.
 
 ## Native controls, through what they expose
 

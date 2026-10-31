@@ -14,11 +14,7 @@ private struct Note: Hashable {
 
 /// A view presenting a sheet while its state says so.
 private struct Presenting: View {
-    let editing: Proxy<Bool>
-
-    init(editing: some TwoWay<Bool>) {
-        self.editing = Proxy(editing)
-    }
+    let editing: Binding<Bool>
 
     var body: some View {
         Button("Edit")
@@ -30,11 +26,7 @@ private struct Presenting: View {
 
 /// A view presenting a page of the note its state holds.
 private struct PresentingANote: View {
-    let note: Proxy<Note?>
-
-    init(note: some TwoWay<Note?>) {
-        self.note = Proxy(note)
-    }
+    let note: Binding<Note?>
 
     var body: some View {
         Text("Notes")
@@ -97,12 +89,6 @@ final class SheetTests: XCTestCase {
         Renderer.shared.clearStates()
     }
 
-    /// A proxy the host does not carry, whose writes the test reads back.
-    private func binding<Value>(_ value: Value, _ written: @escaping (Value) -> Void) -> Proxy<Value> {
-        var held = value
-        return Proxy(get: { held }, set: { held = $0; written($0) })
-    }
-
     /// A sheet is one slot of the view presenting it: while its state is false it holds no page, its state
     /// described - never carried by the host, as the view builds its page again; while true, the page its content
     /// makes.
@@ -122,29 +108,29 @@ final class SheetTests: XCTestCase {
         XCTAssertEqual(shown.children.first?.props[.title], .string("Editor"))
     }
 
-    /// The user's dismissal writes false into a proxy the host does not carry.
+    /// The user's dismissal writes false into the state - described, which the host does not carry.
     func testTheDismissalWritesFalseIntoIsPresented() throws {
-        var written: [Bool] = []
+        let editing = State(wrappedValue: true)
         let renders = Renders()
-        let patch = renders.render(Presenting(editing: binding(true) { written.append($0) }).node)
+        let patch = renders.render(Presenting(editing: editing.projectedValue).node)
         let sheet = try XCTUnwrap(patch.subtree.first { $0.type == .sheet })
 
         XCTAssertEqual(sheet.props[.isPresented], .bool(true))
         XCTAssertTrue(renders.fire(try XCTUnwrap(sheet.events?[.isPresentedChanged]), with: [.bool(false)]))
-        XCTAssertEqual(written, [false], "the dismissal written into the state")
+        XCTAssertFalse(editing.wrappedValue, "the dismissal written into the state")
     }
 
     /// A value presents the page its content makes of it, keyed by it; the user's dismissal writes nil.
     func testTheDismissalWritesNilIntoItem() throws {
-        var written: [Note?] = []
+        let note = State<Note?>(wrappedValue: Note(name: "Inbox"))
         let renders = Renders()
-        let patch = renders.render(PresentingANote(note: binding(Note(name: "Inbox")) { written.append($0) }).node)
+        let patch = renders.render(PresentingANote(note: note.projectedValue).node)
         let sheet = try XCTUnwrap(patch.subtree.first { $0.type == .sheet })
 
         XCTAssertEqual(sheet.props[.isPresented], .bool(true))
         XCTAssertEqual(sheet.children.first?.props[.title], .string("Inbox"))
         XCTAssertTrue(renders.fire(try XCTUnwrap(sheet.events?[.isPresentedChanged]), with: [.bool(false)]))
-        XCTAssertEqual(written, [nil], "the dismissal written into the state")
+        XCTAssertNil(note.wrappedValue, "the dismissal written into the state")
     }
 
     /// Another value presents another page, standing in the place of the first.

@@ -643,7 +643,7 @@ final class CarriedStateTests: XCTestCase {
         let room = State(wrappedValue: Rect(0, 0, 0, 0))
 
         let whole: Binding<Rect> = room.projectedValue
-        let part: Proxy<Double> = whole.width
+        let part: StatePart<Double> = whole.width
 
         part.wrappedValue = 90
 

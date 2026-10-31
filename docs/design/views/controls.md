@@ -11,7 +11,7 @@ and acts it declares, and the binding twins of its values.
       public var node: Node                      Node(contract: SliderContract.self)
       init()                                     nothing set: what a Style<Slider> uses
       init(_ value: Double)                      the purpose value, one-way
-      init(_ value: some TwoWay<Double>)         the purpose value, two-way
+      init(_ state: Binding<Double>)             the purpose value, two-way
       func value(_:) / minimum(_:) / …           properties, from SliderProperties
       func onValueChanged(_:)                    events, through onEvent(member)
   }

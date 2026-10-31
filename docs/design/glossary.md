@@ -32,9 +32,8 @@ and this table maps the two.
 | StateUI term | Common term | What it means here |
 | --- | --- | --- |
 | `@State` | state | the one declaration of mutable state: owns the value and manages its state |
-| `Binding` (`$x`) | binding | refers to a value through a whole binding, with the host's reactive channel |
-| `Proxy` (`@Proxy`, `$x.member`, `$x[i]`) | lens | reads and writes a value through another source - a part of a state, or closures - with no host channel of its own |
-| `TwoWay` | binding protocol | what a two-way control takes: a `Binding` or a `Proxy` |
+| `Binding` (`$x`, `@Binding`) | binding | a whole state borrowed, with the host's reactive channel - what every member taking a state takes |
+| `StatePart` (`$x.member`, `$x[i]`) | lens | one property or element of a state, read and written through the whole; nothing in the library takes it |
 | body rebuild, reactive path 1 | re-render | a body that read a written state runs again and is diffed |
 | reader (of a state) | dependent, subscriber | the body or content that read a state and is rebuilt when it changes |
 | binding twin | binding overload | the `Binding` form of a value modifier |

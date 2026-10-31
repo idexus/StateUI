@@ -50,14 +50,14 @@ private struct Shown: View {
     }
 }
 
-/// The same, lent one property of a state.
+/// The same, handed one property of a state.
 private struct ShownPart: View {
-    @Proxy var text: String
+    let text: StatePart<String>
     let builds: Builds
 
     var body: some View {
         builds.count += 1
-        return Text(text)
+        return Text(text.wrappedValue)
     }
 }
 
@@ -139,25 +139,6 @@ final class CarriedViewTests: XCTestCase {
         let patch = renders.render(tree(2))
         XCTAssertEqual(builds.count, 2, "a value it was built with moved")
         XCTAssertEqual(texts(in: patch).last, .string("caption 2"))
-    }
-
-    /// A view borrowing with `@Proxy`, lent a WHOLE state through `Proxy(_:)`, is compared by that state: a parent
-    /// built again for another reason carries it.
-    func testAProxyMadeFromAWholeStateIsCarriedWithIt() {
-        let renders = Renders()
-        let builds = Builds()
-        let text = State("a")
-
-        func tree(_ n: Int) -> Node {
-            VStack {
-                Text("n \(n)")
-                ShownPart(text: Proxy(text.projectedValue), builds: builds)
-            }.node
-        }
-
-        renders.render(tree(1))
-        renders.render(tree(2))
-        XCTAssertEqual(builds.count, 1, "the same state is lent, so nothing here moved")
     }
 
     /// A view lent ANOTHER ELEMENT'S PROPERTY is described again: `$rows[0].title`

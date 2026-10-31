@@ -61,11 +61,10 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     ///   - selection: the state holding the chosen value, shown and written back into.
     ///   - caption: the words each value shows by; its description unless given.
     public init<Item: Equatable>(
-        _ items: [Item], selection: some TwoWay<Item>, caption: (Item) -> String = { "\($0)" }
+        _ items: [Item], selection: Binding<Item>, caption: (Item) -> String = { "\($0)" }
     ) {
-        let chosen = Proxy<Item?>(
-            get: { selection.wrappedValue }, set: { if let value = $0 { selection.wrappedValue = value } })
-        self.init(items, chosen: chosen, caption: caption)
+        let write: @MainActor (Item?) -> Void = { if let value = $0 { selection.wrappedValue = value } }
+        self.init(items, read: { selection.wrappedValue }, write: write, caption: caption)
     }
 
     /// A picker offering `items`, each by its `caption`, with nothing chosen
@@ -77,9 +76,10 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     ///   - selection: the state holding the chosen value, or nil, shown and written back into.
     ///   - caption: the words each value shows by; its description unless given.
     public init<Item: Equatable>(
-        _ items: [Item], selection: some TwoWay<Item?>, caption: (Item) -> String = { "\($0)" }
+        _ items: [Item], selection: Binding<Item?>, caption: (Item) -> String = { "\($0)" }
     ) {
-        self.init(items, chosen: selection, caption: caption)
+        let write: @MainActor (Item?) -> Void = { if let value = $0 { selection.wrappedValue = value } }
+        self.init(items, read: { selection.wrappedValue }, write: write, caption: caption)
     }
 
     /// A picker offering `items`, each by its `caption`, with `selection`
@@ -118,13 +118,17 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     /// The choice crosses as the chosen value's place in the list, worked out
     /// again at each build, and a choice reported comes back as its value.
     /// Design: docs/design/views/bindings.md#two-way-controls
-    private init<Item: Equatable>(_ items: [Item], chosen: some TwoWay<Item?>, caption: (Item) -> String) {
+    private init<Item: Equatable>(
+        _ items: [Item], read: @escaping @MainActor () -> Item?, write: @escaping @MainActor (Item?) -> Void,
+        caption: (Item) -> String
+    ) {
         var picker = Picker()
         picker.node.write(PickerContract.options, items.map(caption))
-        let place = Proxy<Int>(
-            get: { chosen.wrappedValue.flatMap { items.firstIndex(of: $0) } ?? -1 },
-            set: { place in if items.indices.contains(place) { chosen.wrappedValue = items[place] } })
-        self = picker.described(.selectedIndex, place, on: .selectedIndexChanged)
+        self = picker.described(
+            .selectedIndex,
+            read: { read().flatMap { items.firstIndex(of: $0) } ?? -1 },
+            write: { place in if items.indices.contains(place) { write(items[place]) } },
+            on: .selectedIndexChanged)
     }
 
     // MARK: Events

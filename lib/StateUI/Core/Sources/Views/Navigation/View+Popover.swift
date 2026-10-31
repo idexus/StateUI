@@ -20,7 +20,7 @@ extension View {
     ///   - content: what the popover shows.
     /// - Returns: this view, with its popover.
     public func popover<Content: View>(
-        isPresented state: some TwoWay<Bool>, @ViewBuilder content: @escaping () -> Content
+        isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content
     ) -> Modified {
         showing(PopoverElement(content: { [content().node] }, presented: state))
     }
@@ -40,10 +40,9 @@ extension View {
     ///   - content: what the popover shows of a value.
     /// - Returns: this view, with its popover.
     public func popover<Item: Hashable, Content: View>(
-        item state: some TwoWay<Item?>, @ViewBuilder content: @escaping (Item) -> Content
+        item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content
     ) -> Modified {
         let item = state.wrappedValue
-        let presented = Proxy(get: { state.wrappedValue != nil }, set: { if !$0 { state.wrappedValue = nil } })
         return showing(PopoverElement(
             content: {
                 item.map { item in
@@ -52,7 +51,7 @@ extension View {
                     return [shown]
                 } ?? []
             },
-            presented: presented))
+            read: { state.wrappedValue != nil }, write: { if !$0 { state.wrappedValue = nil } }))
     }
 
     /// This view with `popover`, in the place of one written before.
@@ -69,12 +68,21 @@ extension View {
 struct PopoverElement: ElementView {
     var node = Node(contract: PopoverContract.self)
 
-    /// What `content` makes, shown while `state` holds true, the user's dismissal written back; leaving the tree
+    /// What `content` makes, shown while `state` holds true - carried by the host both ways; leaving the tree
     /// writes false.
-    init(content: @escaping () -> [Node], presented state: some TwoWay<Bool>) {
+    init(content: @escaping () -> [Node], presented state: Binding<Bool>) {
         node.producer = content
-        self = state.whole.map { plain(PopoverContract.isPresented.token, by: $0, mode: .inOut) }
-            ?? described(PopoverContract.isPresented.token, state, on: PopoverContract.isPresentedChanged.token)
+        self = plain(PopoverContract.isPresented.token, by: state, mode: .inOut)
         node.destroying.append { if state.wrappedValue { state.wrappedValue = false } }
+    }
+
+    /// What `content` makes, shown while `read` says so - a value worked out from another, described: the user's
+    /// dismissal written through `write`; leaving the tree writes false.
+    init(content: @escaping () -> [Node], read: @escaping @MainActor () -> Bool,
+         write: @escaping @MainActor (Bool) -> Void) {
+        node.producer = content
+        self = described(PopoverContract.isPresented.token, read: read, write: write,
+                         on: PopoverContract.isPresentedChanged.token)
+        node.destroying.append { if read() { write(false) } }
     }
 }

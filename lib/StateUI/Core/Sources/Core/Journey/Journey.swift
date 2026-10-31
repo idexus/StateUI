@@ -20,8 +20,7 @@
 /// is going, writing it sends it there. The host animates a state handed to a
 /// driven modifier, a two-way control or a scroller; an engine of your own
 /// animates one declared `@State(motion: .custom)`; a state nobody wears lands
-/// where it is sent. A part of a state and a binding made from closures stand at
-/// their value.
+/// where it is sent. A part of a state has none: a journey is a whole state's.
 @MainActor
 public struct Journey<Value: Walked> {
     /// The state this is the journey of.

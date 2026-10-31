@@ -382,7 +382,6 @@ final class DrivenPatchTests: XCTestCase {
                 // Each declaration starts afresh, so a body is never read as an earlier signature's.
                 if let name = written.occurrences(between: "public func ", and: "(").first {
                     let type = written.occurrences(between: "Binding<", and: ">").first
-                        ?? written.occurrences(between: "TwoWay<", and: ">").first
                     signature = type.map { (name, $0) }
                 } else if let property = written.occurrences(between: "journey(", and: ",").first,
                           property.hasPrefix(".")
@@ -430,7 +429,10 @@ final class DrivenPatchTests: XCTestCase {
     /// grid's spacing came to jump where a stack's glides. A control's own value, carried both ways (`mode:`), and
     /// the values the host walks by a key of their own stand apart.
     func testEveryTwinIsDecidedByItsContract() throws {
-        let ownValues = ["journey(.scrollOffset,", "journey(SliderContract.value.token,", "journey(StepperContract.value.token,"]
+        let ownValues = [
+            "journey(.scrollOffset,", "journey(SliderContract.value.token,", "journey(StepperContract.value.token,",
+            "journey(ColorPickerContract.color.token,",
+        ]
         var bypassing: [String] = []
 
         // The helpers themselves, where the choice is made, stand apart.

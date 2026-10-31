@@ -65,10 +65,8 @@ written `$x.journey.value` is a jump and a `velocity` a kick. A value moving
 under a finger costs the arithmetic and nothing else.
 
 A part of a state (`$room.width`) has no image of its own for the host to write
-into, and a proxy made from closures has none either. Both are a
-`Proxy`, and a driven property takes `Binding` alone, so a proxy handed
-to one does not compile; every two-way control takes either and describes a
-proxy (core/state.md#proxies).
+into. It is a `StatePart`, and a driven property takes `Binding` alone, so a
+part handed to one does not compile (core/state.md#parts-of-a-state).
 
 ## Element side only
 
@@ -123,10 +121,7 @@ control, so the driven text is written per control.
 
 A control the user changes - a switch, a check box, a radio button, a picker,
 a slider, a stepper, the date, time and color pickers, the text fields - takes
-`some TwoWay<Value>`, and so does every selection, presentation and toggle
-that only reads and writes: a tab or a stack's path, a sheet or popover's
-`isPresented`, a menu or toolbar toggle, a list's selection, `isFocused`. It
-takes the value one of two ways, decided by the type:
+its value one of two ways, each its own type:
 
 ```text
   $x of a @State or @Binding      handed over: the host sets the control from the state on
@@ -134,22 +129,29 @@ takes the value one of two ways, decided by the type:
                                   own write. The control is no reader of the state, and
                                   what a change costs is decided by who reads the state.
 
-  a Proxy - a part of a   described: the value read at build goes into the
-  state, or closures              description, and each report is written back through the
-                                  proxy. The closure that wrote the control is a reader
-                                  and renders on every report.
+  a value                         described: the value read at build goes into the
+                                  description, and the user's change comes as the control's
+                                  event, for the application to write. The closure that
+                                  wrote the control is a reader of what it read.
 ```
 
-The road is the type's, never the value's origin: a whole state handed as
-`$x.proxy` is described too. A slider and a stepper carry a whole state as a
-journey, so `$volume.journey.move(to:)` moves the thumb; a proxy they describe
-as every other two-way control does, with no motion.
+Every selection, presentation and toggle that only reads and writes - a tab or
+a stack's path, a sheet or popover's `isPresented`, a menu or toolbar toggle,
+a list's selection, `isFocused` - takes a `Binding`. A slider and a stepper
+carry a whole state as a journey, so `$volume.journey.move(to:)` moves the
+thumb.
+
+A value the library works out itself takes the described road inside it, fed
+by the library alone: a picker's choice crosses as its place in the list,
+worked out again at each build, and a sheet is described - the view presenting
+it builds its page as it changes - as is a popover shown for an item. Nothing
+an application hands over takes that road but a value.
 
 A color picker carries its color as a journey too, as a fill, a background
 or a text color does: a state has one shape (core/state.md#a-state-has-one-shape),
 so one state both takes what the user chooses and paints whatever wears it -
-`ColorPicker($tint)` beside `Rectangle().fill($tint)`. A proxy takes the
-described form.
+`ColorPicker($tint)` beside `Rectangle().fill($tint)`. A color given as a
+value is described, its user's choice coming as `onColorChanged`.
 
 The date and time pickers carry their value as three lanes: year, month and
 day, or hour, minute and second. A value the platform cannot show - a day

@@ -86,10 +86,10 @@ post is refused as it is posted.
 
 ## Bindings
 
-Three words say how a view holds a value: `@State` owns it and manages its
-state; `@Binding` refers to it through a whole binding, with the host's
-reactive channel; `@Proxy` reads and writes it through another source, with no
-host channel of its own.
+Two words say how a view holds a state - `@State` owns it, `@Binding` borrows
+it whole, with the host's reactive channel - and a `StatePart` is one property
+or element of it, which nothing in the library takes. Every member takes a
+value, read where the body is built, or a `Binding`, carried by the host.
 
 A `Binding` is a whole state: two closures - read and write - and the storage
 it borrows (`storage`). `$counter` builds a new binding every time it is
@@ -104,49 +104,38 @@ less is done by handing over less - the value to read it, the object to edit
 what it holds, `$` to do everything the owner can. A class of `@State`
 properties is lent the same way; there is no second wrapper for it.
 
-## Proxies
+## Parts of a state
 
-A `Proxy` reads and writes through something else: a part of a state,
-reached from a `Binding` by a member or an index, or two closures. It holds
-read and write, the value as it stands, and who it borrows from: the storage
-behind the state (`lender`) and which part of it (`lent`) - nothing for
-closures. A part is the whole road from the state (`StatePart`):
-`$rows[0].title` and `$rows[1].title` are two parts, so a post to one lands in
-its own entry, and a child lent the second is described again rather than
-carried with the first. A proxy to an element knows whether its collection
-still has it (`reaches`), and so does every proxy to a property of it: a
-write, or a post's job, to an element the list no longer has - it shrank under
-the proxy - is dropped and said once, rather than writing past the end.
+A `StatePart` is one property or element of a state, reached from a `Binding`
+by a member or an index. It holds read and write, the value as it stands, and
+who it borrows from: the storage behind the state (`lender`) and which part of
+it (`lent`), the whole road from the state (`PartPath`): `$rows[0].title` and
+`$rows[1].title` are two parts, so a post to one lands in its own entry, and a
+child handed the second is described again rather than carried with the first.
+A part of an element knows whether its collection still has it (`reaches`),
+and so does every part of a property of it: a write, or a post's job, to an
+element the list no longer has - it shrank under the part - is dropped and said
+once, rather than writing past the end.
 
-A proxy to a property of a value (`$profile.name`) reads the whole, writes the
-property and puts the whole back, the whole read without recording at every
-depth. For a class, a `ReferenceWritableKeyPath` writes straight into the
-object both sides hold; Swift prefers that overload wherever both fit, which
-keeps a model's own binding from being rewritten on every keystroke.
+A part of a value (`$profile.name`) reads the whole, writes the property and
+puts the whole back, the whole read without recording at every depth. For a
+class, a `ReferenceWritableKeyPath` writes straight into the object both sides
+hold; Swift prefers that overload wherever both fit.
 
-The type is the road. A proxy has no storage of its own, so the host carries
-none, and none has a journey or wakes an engine. What needs those - a driven
-modifier, `journey`, `engine(following:)` and `tracking:`, MotionLayout's
-parameters and `.following`, `convert` and `multi` - takes `Binding` alone,
-and a proxy there does not compile. A two-way control takes
-`some TwoWay<Value>`, the protocol both keep, and describes a proxy
-(views/bindings.md#two-way-controls). A whole state lent as a proxy
-(`$x.proxy`) is described too: the road never depends on where a proxy came
-from. Four bars the host animates are four states.
-
-A proxy promises reading and writing, never a notification. A part's reads go
-through the whole state, so a body reading it is that state's reader; closures
-over a store StateUI does not own rebuild nothing when the store changes.
-
-A child borrows a proxy with `@Proxy`. Swift's memberwise initializer
-takes the wrapper's type, so a parent lending a whole state to such a child
-writes `$x.proxy` - or the child's own initializer takes `some TwoWay` and
-makes it `Proxy(_:)`, which keeps who a whole state or a proxy borrows from,
-so the child is carried while that stays the same.
+The type is the road. A part has no storage of its own, so the host carries
+none, and none has a journey or wakes an engine. Every member that takes a
+state - a control, a driven modifier, `journey`, `engine(following:)` and
+`tracking:`, MotionLayout's parameters and `.following`, `convert` and `multi`
+- takes `Binding` alone, and a part there does not compile. A control's other
+form is its value, with the user's change in its event: a record kept as a
+value is edited that way, and one edited live is a class whose fields are
+states (`object.$field`). There is no protocol a state and a part both keep,
+no wrapper for a part, and no part made of closures: a value the library does
+not own reaches a control through a class of `@State` fields that follows it.
 
 ## Reading without recording
 
-`Binding.standing` and `Proxy.standing` read the value without
+`Binding.standing` and `StatePart.standing` read the value without
 recording a dependency. It is what
 the machinery of a write uses - `move`, `stop`, `snap(to:)` and the journey's
 setters read what they are about to change - because a write reading its target

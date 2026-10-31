@@ -13,13 +13,16 @@ ownership model and the host motion axis are introduced in
 [Architecture](architecture.md). This chapter is the author-facing reference
 for choosing and composing those paths.
 
-Three words say how a view holds a value:
+Two words say how a view holds a state, and one type names a part of it:
 
 - `@State` owns the value and manages its state;
-- `@Binding` refers to a value through a whole binding, with the host's
-  reactive channel;
-- `@Proxy` reads and writes a value through another source, with no host
-  channel of its own.
+- `@Binding` borrows a whole state, with the host's reactive channel;
+- a `StatePart` - `$contact.name`, `$levels[1]` - is one property or element
+  of a state, read and written through the whole, which nothing in the
+  library takes.
+
+Every member takes a value, which a body reads, or a `Binding`, which the host
+carries: `Text(contact.name)` reads, `Text(contact.$name)` is the channel.
 
 ## Owning a value with `@State`
 
@@ -218,16 +221,19 @@ The projection `$name` is a `Binding<String>`. A borrowed binding projects
 itself again, so it can be handed through several composed views without a new
 wrapper or adapter.
 
-### A part of a state: `Proxy`
+### Editing a record: two ways
 
-Bindings use dynamic-member lookup for writable key paths. `$contact.name` is
-one property of the state, a `Proxy<String>`: it reads the whole value,
-changes the member, and writes the whole value back:
+A control takes a whole state, `$x`, which the host carries. A record edited
+field by field is written one of two ways.
+
+**A class whose fields are states.** Each field is a `@State` of its own, so a
+control is handed it whole - `contact.$name` - and the host carries it: typing
+writes that field alone, and no body is built for it.
 
 ```swift
-struct Contact {
-    var name = ""
-    var subscribed = false
+final class Contact {
+    @State var name = ""
+    @State var subscribed = false
 }
 
 struct ContactForm: View {
@@ -235,105 +241,122 @@ struct ContactForm: View {
 
     var body: some View {
         VStack {
-            TextField($contact.name)
-            Switch($contact.subscribed)
+            TextField(contact.$name)
+            Switch(contact.$subscribed)
+            Text("Hello, \(contact.name)")
         }
     }
 }
 ```
 
-A mutable collection lends one element by index in the same way:
+An array of such objects edits its rows the same way: a row borrows its fields
+with `@Binding`, and a keystroke writes that row's state alone.
 
 ```swift
-struct Levels: View {
-    @State private var levels = [0.2, 0.5, 0.8]
+final class Todo {
+    let id: Int
+    @State var title: String
+    @State var done = false
+
+    init(id: Int, title: String) {
+        self.id = id
+        self.title = title
+    }
+}
+
+struct TodoRow: View {
+    @Binding var title: String
+    @Binding var done: Bool
 
     var body: some View {
-        Stepper($levels[1])
-    }
-}
-```
-
-Every two-way control takes either a `Binding` or a `Proxy`: both keep
-`TwoWay`. A proxy has no state storage of its own, so the control reads it
-while the body is built and writes the user's change back through it, and the
-body that read it is rebuilt when the state changes. Only a whole state rides
-the host's channel with no body rebuilt, has a journey (`$x.journey`), or wakes
-an engine. Those take `Binding` alone, so a proxy handed to them does not
-compile. Give each value the host carries on its own its own `@State`.
-
-A child that accepts a part borrows it with `@Proxy`. Its memberwise
-initializer takes a `Proxy`, so a parent lending it a whole state writes
-`$nickname.proxy`; a child of its own initializer, with `Proxy(_:)`, takes
-either:
-
-```swift
-struct Contact {
-    var name = ""
-}
-
-struct NameRow: View {
-    @Proxy var name: String
-
-    init(name: some TwoWay<String>) {
-        _name = Proxy(name)
-    }
-
-    var body: some View {
-        TextField($name)
+        HStack {
+            CheckBox($done)
+            TextField($title)
+        }
     }
 }
 
-struct People: View {
-    @State private var contact = Contact()
-    @State private var nickname = ""
+struct Checklist: View {
+    @State private var todos = [Todo(id: 1, title: "Milk"), Todo(id: 2, title: "Bread")]
 
     var body: some View {
         VStack {
-            NameRow(name: $contact.name)
-            NameRow(name: $nickname)
+            ForEach(todos, id: \.id) { todo in
+                TodoRow(title: todo.$title, done: todo.$done)
+            }
         }
     }
 }
 ```
 
-Inside the child the value is a proxy whatever it was handed: read while the
-body is built, and the child built again as it changes. A row of fields and
-switches pays nothing for it; a child that animates a value, or hands it to
-the host, borrows with `@Binding`.
-
-For a model held in state, the two useful spellings have different owners:
-
-- `profile.$name` is the model property's whole state, a `Binding`;
-- `$profile.name` is the `name` part reached through the state that holds the
-  model, a `Proxy`.
-
-A proxy to an element knows whether its collection still has it: a write, or
-a post, to `$levels[1]` after the array shrank to one element is dropped and
-said once rather than reaching past the end.
-
-### A proxy over closures
-
-Use `Proxy(get:set:)` at an integration boundary that StateUI does not
-own:
+**A value and its event.** A record that stays a value - written to a file,
+compared, kept by a scene - hands each control its value, and the control's
+event writes the user's change:
 
 ```swift
-@MainActor
-final class ExternalSettings {
-    var name = ""
+struct Chore {
+    let id: Int
+    var title: String
+    var done = false
+}
 
-    var nameProxy: Proxy<String> {
-        Proxy(
-            get: { self.name },
-            set: { self.name = $0 })
+struct Chores: View {
+    @State private var chores = [Chore(id: 1, title: "Milk"), Chore(id: 2, title: "Bread")]
+
+    var body: some View {
+        VStack {
+            ForEach(chores, id: \.id) { chore in
+                HStack {
+                    CheckBox(chore.done)
+                        .onToggled { done in edit(chore.id) { $0.done = done } }
+                    TextField(chore.title)
+                        .onTextChanged { title in edit(chore.id) { $0.title = title } }
+                }
+            }
+        }
+    }
+
+    private func edit(_ id: Int, _ change: (inout Chore) -> Void) {
+        if let row = chores.firstIndex(where: { $0.id == id }) { change(&chores[row]) }
     }
 }
 ```
 
-A proxy promises reading and writing, never a notification. The setter decides
-whether anything is invalidated: writing a `@State` does, while a store StateUI
-does not own rebuilds nothing when it changes. Prefer a real `@State` whenever
-StateUI owns the value.
+Each change writes the whole array, so the body that read it is built again
+and describes the new values; the write stands where it can be seen, and finds
+its row by identity, not by place.
+
+| | A class of states | A value and its event |
+| --- | --- | --- |
+| The record | a class: shared, never copied | a value: `Codable` and `Equatable` come with it |
+| One keystroke | writes that field's state, builds nothing | writes the whole value, builds its readers |
+| The control's value | carried by the host | described by the body |
+| A journey, an animation, an engine on a field | yes | no |
+| Suits | live editing, values that move | lists and records saved or compared |
+
+Every two-way control takes both forms: `TextField($name)` or
+`TextField(name).onTextChanged { … }`, `Picker(items, selection: $item)` or
+`Picker(items, selection: item).onSelectedIndexChanged { … }`.
+
+### A part of a state: `StatePart`
+
+`$contact.name` and `$levels[1]` are one property or one element of a state - a
+`StatePart`, which reads the whole value and writes the member back. Nothing
+in the library takes one: a control, a driven modifier, a conversion and an
+engine take a whole state, so a part handed to one does not compile, and the
+error names a `StatePart` where a `Binding` is asked. A part is read and
+written - `$levels[1].wrappedValue` - and posted to from another thread,
+`$levels[1].post(0.5)`; a write or a post to an element its collection no
+longer has is dropped and said once.
+
+For a model held in state, the two spellings have different owners:
+
+- `profile.$name` is the model property's whole state, a `Binding`;
+- `$profile.name` is the `name` part reached through the state that holds the
+  model, a `StatePart`.
+
+A value StateUI does not own reaches a control through a class of `@State`
+fields that follows it, as [State in a class](#state-in-a-class) shows.
 
 ## Selecting a reactive path
 
@@ -343,7 +366,7 @@ Use the consequence you need as the selection rule:
 | --- | --- | --- |
 | Change which views exist or how authored values are composed | read the state in a body | rebuild current readers, then diff |
 | Give a child access to the same value | pass `$value` to `@Binding` | determined by what the child does with it |
-| Give a child one property of a value | pass `$value.member` to `@Proxy` | rebuild the child, which reads it |
+| Give a child one field of a record | the field's own state, `record.$field`, to `@Binding`; or its value | as for a whole state; or rebuild the child, which reads it |
 | Keep a native property synchronized continuously | hand the whole state to a binding-taking control or modifier | host-cycle update, no body read |
 | Wake arithmetic on a display frame | name the state in `engine(following:)` or `engine(tracking:)` | wake that engine |
 | Turn one or more carried states into another carried value | `convert`, or `multi` for several | conversion engine, no body read |

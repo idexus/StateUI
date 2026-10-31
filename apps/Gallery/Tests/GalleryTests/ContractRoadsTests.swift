@@ -205,8 +205,14 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Map(region: MapRegion(center: Location(latitude: 52, longitude: 21), radiusMeters: 500)).markers { Marker(at: Location(latitude: 52, longitude: 21)) }"#),
         Road(
             name: "a tab selection of another type than the tabs",
-            closed: #"_ = TabView([1, 2], selection: Proxy<String>(get: { "a" }, set: { _ in })) { Text("\($0)") }"#,
-            open: #"_ = TabView([1, 2], selection: Proxy<Int>(get: { 1 }, set: { _ in })) { Text("\($0)") }"#),
+            closed: """
+                @State var tab = "a"
+                _ = TabView([1, 2], selection: $tab) { Text("\\($0)") }
+                """,
+            open: """
+                @State var tab = 1
+                _ = TabView([1, 2], selection: $tab) { Text("\\($0)") }
+                """),
         Road(
             name: "a view standing on the menu bar",
             closed: #"_ = Text("Notes").menuBar { Text("File") }"#,
@@ -398,18 +404,67 @@ final class ContractRoadsTests: XCTestCase {
                 _ = NameRow(name: $room.name)
                 """,
             open: """
-                struct Room { var name = "" }
                 struct NameRow: View {
-                    @Proxy var name: String
+                    @Binding var name: String
                     var body: some View { TextField($name) }
                 }
-                @State var room = Room()
-                _ = NameRow(name: $room.name)
+                @State var name = ""
+                _ = NameRow(name: $name)
                 """),
         Road(
-            name: "closures taken for a whole state",
-            closed: "_ = Slider(Binding(get: { 0.5 }, set: { _ in }))",
-            open: "_ = Slider(Proxy(get: { 0.5 }, set: { _ in }))"),
+            name: "closures taken for a state",
+            closed: "_ = Slider(StatePart(get: { 0.5 }, set: { _ in }))",
+            open: """
+                @State var level = 0.5
+                _ = Slider($level)
+                """),
+        Road(
+            name: "a part of a state handed to a control",
+            closed: """
+                struct Contact { var name = "" }
+                @State var contact = Contact()
+                _ = TextField($contact.name)
+                """,
+            open: """
+                @State var name = ""
+                _ = TextField($name)
+                """),
+        Road(
+            name: "a part of a state shown as a channel",
+            closed: """
+                struct Contact { var name = "" }
+                @State var contact = Contact()
+                _ = Text($contact.name)
+                """,
+            open: """
+                struct Contact { var name = "" }
+                @State var contact = Contact()
+                _ = Text(contact.name)
+                """),
+        Road(
+            name: "a part of a state worn by a property wrapper",
+            closed: """
+                struct NameRow: View {
+                    @StatePart var name: String
+                    var body: some View { Text(name) }
+                }
+                """,
+            open: """
+                struct NameRow: View {
+                    let name: StatePart<String>
+                    var body: some View { Text(name.wrappedValue) }
+                }
+                """),
+        Road(
+            name: "an element of an array of values edited through a part",
+            closed: """
+                @State var done = [false, true]
+                _ = CheckBox($done[0])
+                """,
+            open: """
+                @State var done = [false, true]
+                _ = CheckBox(done[0]).onToggled { done[0] = $0 }
+                """),
     ]
 
     /// Each closed road fails to compile, and the open road beside it compiles.
