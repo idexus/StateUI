@@ -6,7 +6,7 @@ import XCTest
 
 /// The handbook's Swift examples compile.
 ///
-/// Every fenced `swift` block in README.md and docs is type-checked against the
+/// Every fenced `swift` block in README.md and docs is compiled against the
 /// library this package just built. A listing that names a removed member,
 /// misspells a modifier, or hands over the wrong value fails with its document
 /// and line.
@@ -20,7 +20,7 @@ import XCTest
 /// only a file can hold - an `extension`, a `protocol`, a `public` type,
 /// a class - is compiled at file scope instead.
 ///
-/// The blocks are type-checked in parallel, one `swiftc -typecheck` each,
+/// The blocks are compiled in parallel, one `swiftc -emit-sil` each,
 /// against the `.swiftmodule` this package's own build wrote - so the check
 /// costs seconds, and needs nothing installed beyond the toolchain running it.
 @MainActor
@@ -92,7 +92,7 @@ final class DocumentationExamplesTests: XCTestCase {
         try FileManager.default.createDirectory(at: scratch, withIntermediateDirectories: true)
         defer { try? FileManager.default.removeItem(at: scratch) }
 
-        // One file per block, then every file type-checked at once - each in
+        // One file per block, then every file compiled at once - each in
         // its own process so a failure names one listing and not the lot.
         let failures = Failures()
         let group = DispatchGroup()
@@ -111,7 +111,7 @@ final class DocumentationExamplesTests: XCTestCase {
             lanes.wait()
             DispatchQueue.global().async {
                 defer { lanes.signal(); group.leave() }
-                let output = Self.typecheck(file, module: module, sdk: sdk)
+                let output = Self.compile(file, module: module, sdk: sdk)
                 if let output {
                     failures.add(example.document, example.line, output)
                 }
@@ -262,9 +262,11 @@ final class DocumentationExamplesTests: XCTestCase {
         #endif
     }
 
-    /// Type-checks one file; the compiler's output where it failed, nil where it passed.
-    nonisolated static func typecheck(_ file: URL, module: URL, sdk: String?) -> String? {
-        var arguments = ["-typecheck", "-parse-as-library", "-I", module.path, file.path]
+    /// Compiles one file as far as the compiler's own diagnostics go - through definite initialization, which a
+    /// type-check alone never reaches; the compiler's output where it failed, nil where it passed.
+    nonisolated static func compile(_ file: URL, module: URL, sdk: String?) -> String? {
+        let sil = file.deletingPathExtension().appendingPathExtension("sil")
+        var arguments = ["-emit-sil", "-o", sil.path, "-parse-as-library", "-I", module.path, file.path]
         // The host layer's C module stands in its sources, never in a build: named to the compiler as SwiftPM
         // names it to a dependent, or `import StateUITesting` misses it off Apple.
         let hostModuleMap = repository.appendingPathComponent("lib/StateUI/StateUI.Host/CStateUIHost/module.modulemap")

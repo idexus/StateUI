@@ -39,7 +39,7 @@ final class UIThreadRoadTests: XCTestCase {
             let body = listing.body.split(separator: "\n").map { "    \($0)" }.joined(separator: "\n")
             try Data("import StateUI\n\nfunc road() {\n\(body)\n}\n".utf8).write(to: file)
 
-            let output = DocumentationExamplesTests.typecheck(file, module: module, sdk: sdk)
+            let output = DocumentationExamplesTests.compile(file, module: module, sdk: sdk)
 
             if listing.compiles {
                 XCTAssertNil(output, "\(listing.spelling) does not compile:\n\(output ?? "")")

@@ -250,7 +250,9 @@ struct ContactForm: View {
 ```
 
 An array of such objects edits its rows the same way: a row borrows its fields
-with `@Binding`, and a keystroke writes that row's state alone.
+with `@Binding`, and a keystroke writes that row's state alone. A field given
+its first value in `init` is made there, `_title = State(wrappedValue: title)`:
+assigning a wrapped property in `init` does not compile.
 
 ```swift
 final class Todo {
@@ -260,7 +262,7 @@ final class Todo {
 
     init(id: Int, title: String) {
         self.id = id
-        self.title = title
+        _title = State(wrappedValue: title)
     }
 }
 

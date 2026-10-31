@@ -46,7 +46,7 @@ final class SampleCodeTests: XCTestCase {
         }
         let outputs = CompilerOutputs(count: files.count)
         DispatchQueue.concurrentPerform(iterations: files.count) { index in
-            outputs.set(index, DocumentationExamplesTests.typecheck(files[index], module: module, sdk: sdk))
+            outputs.set(index, DocumentationExamplesTests.compile(files[index], module: module, sdk: sdk))
         }
 
         for (index, listing) in listings.enumerated() {
