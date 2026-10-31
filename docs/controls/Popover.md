@@ -37,11 +37,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (2)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>1 ✅ · 1 ✓</td><td><code>NSPopover</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td></td><td><code>UIPopoverPresentationController</code>, a popover on a phone too</td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td></td><td><code>PopupWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td></td><td><code>Flyout</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td></td><td><code>GtkPopover</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td></td><td><code>&lt;div popover&gt;</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>1 ✅ · 1 ✓</td><td><code>UIPopoverPresentationController</code>, a popover on a phone too</td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>1 ✅ · 1 ✓</td><td><code>PopupWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>1 ✅ · 1 ✓</td><td><code>Flyout</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>1 ✅ · 1 ✓</td><td><code>GtkPopover</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>2 ✅</td><td><code>&lt;div popover&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/PopoverContract.swift`.
@@ -50,7 +50,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/PopoverContract.s
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>isPresented</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isPresentedChanged</code></td><td>event</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: close on Popover: the host's own close of a popover held unshown, as a test shows no window</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isPresented</code></td><td>property</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>isPresentedChanged</code></td><td>event</td><td><code>Bool</code></td><td>adaptive</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: close on Popover: the host's own close of a popover held unshown, as a test shows no window<br>UIKit: only through the host's own: close on Popover: the popover taken away and its delegate told, no tap beside it<br>Android Views: only through the host's own: close on Popover: the popup window dismissed as a touch beside it dismisses it, no touch sent<br>WinUI 3: only through the host's own: close on Popover: the flyout hidden as a click beside it hides it, no click sent<br>GTK 4: only through the host's own: close on Popover: the popover popped down as a click beside it pops it down, no click sent</td></tr></tbody>
 </table>
