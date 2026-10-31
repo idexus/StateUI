@@ -1130,7 +1130,7 @@ swift.init Name.init(extendedGraphemeClusterLiteral:): init(extendedGraphemeClus
 swift.init Name.init(propValue:): init?(propValue: PropValue)
 swift.init Name.init(stringLiteral:): init(stringLiteral text: String)
 swift.init Name.init(unicodeScalarLiteral:): init(unicodeScalarLiteral value: Self.ExtendedGraphemeClusterLiteralType)
-swift.init NavigationStack.init(_:root:destination:): @MainActor init<Route, Root, Destination>(_ path: Binding<[Route]>, @ViewBuilder root: () -> Root, @ViewBuilder destination: (Route) -> Destination) where Route : Hashable, Root : View, Destination : View
+swift.init NavigationStack.init(_:root:destination:): @MainActor init<Route, Root, Destination>(_ path: Binding<[Route]>, @ViewBuilder root: () -> Root, @ViewBuilder destination: @escaping (Route) -> Destination) where Route : Hashable, Root : View, Destination : View
 swift.init NetworkAccess.init(rawValue:): init?(rawValue: Int32)
 swift.init Node.init(contract:id:children:): @MainActor init<Declaration>(contract: Declaration.Type, id: String? = nil, children: [Node] = []) where Declaration : ElementContract
 swift.init NodeType.init(_:): init(_ name: String)
@@ -1508,8 +1508,8 @@ swift.method @SwiftNever.setValue(_:_:): @MainActor func setValue<Owner, Value>(
 swift.method @SwiftNever.setValue(_:on:mode:): @MainActor func setValue<Owner>(_ property: ElementProperty<Owner, String>, on state: Binding<String>, mode: StateMode) -> Self.Modified where Owner : Contract
 swift.method @SwiftNever.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method @SwiftNever.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method @SwiftNever.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method @SwiftNever.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method @SwiftNever.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method @SwiftNever.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method @SwiftNever.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method @SwiftNever.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -1747,8 +1747,8 @@ swift.method AnyView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>
 swift.method AnyView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method AnyView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method AnyView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method AnyView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method AnyView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method AnyView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method AnyView.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method AnyView.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -2032,8 +2032,8 @@ swift.method Button.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>)
 swift.method Button.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Button.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method Button.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method Button.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Button.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Button.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Button.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Button.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Button.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -2281,8 +2281,8 @@ swift.method Canvas.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>)
 swift.method Canvas.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Canvas.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Canvas.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Canvas.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Canvas.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Canvas.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Canvas.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Canvas.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -2515,8 +2515,8 @@ swift.method Capsule.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>
 swift.method Capsule.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Capsule.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Capsule.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Capsule.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Capsule.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Capsule.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Capsule.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Capsule.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -2746,8 +2746,8 @@ swift.method CheckBox.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double
 swift.method CheckBox.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method CheckBox.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method CheckBox.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method CheckBox.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method CheckBox.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method CheckBox.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method CheckBox.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method CheckBox.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -2989,8 +2989,8 @@ swift.method ColorPicker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Dou
 swift.method ColorPicker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method ColorPicker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method ColorPicker.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method ColorPicker.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method ColorPicker.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method ColorPicker.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method ColorPicker.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method ColorPicker.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -3245,8 +3245,8 @@ swift.method DatePicker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Doub
 swift.method DatePicker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method DatePicker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method DatePicker.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method DatePicker.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method DatePicker.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method DatePicker.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method DatePicker.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method DatePicker.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -3472,8 +3472,8 @@ swift.method DebugInspector.scaleX(_:): @MainActor func scaleX(_ state: Binding<
 swift.method DebugInspector.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method DebugInspector.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method DebugInspector.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method DebugInspector.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method DebugInspector.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method DebugInspector.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method DebugInspector.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method DebugInspector.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -3732,8 +3732,8 @@ swift.method Either.setValue(_:_:): @MainActor func setValue<Owner, Value>(_ pro
 swift.method Either.setValue(_:on:mode:): @MainActor func setValue<Owner>(_ property: ElementProperty<Owner, String>, on state: Binding<String>, mode: StateMode) -> Self.Modified where Owner : Contract
 swift.method Either.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Either.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Either.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Either.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Either.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Either.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Either.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Either.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Either.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -3969,8 +3969,8 @@ swift.method Ellipse.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>
 swift.method Ellipse.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Ellipse.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Ellipse.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Ellipse.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Ellipse.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Ellipse.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Ellipse.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Ellipse.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -4195,8 +4195,8 @@ swift.method Fill.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -
 swift.method Fill.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Fill.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method Fill.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method Fill.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Fill.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Fill.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Fill.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Fill.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Fill.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -4467,8 +4467,8 @@ swift.method GalleryView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Dou
 swift.method GalleryView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method GalleryView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method GalleryView.shade(_:amount:): @MainActor func shade(_ view: some View, amount: Double = 1) -> GalleryView<Items, ID>
-swift.method GalleryView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method GalleryView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method GalleryView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method GalleryView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method GalleryView.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method GalleryView.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -4684,8 +4684,8 @@ swift.method GeometryReader.scaleX(_:): @MainActor func scaleX(_ state: Binding<
 swift.method GeometryReader.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method GeometryReader.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method GeometryReader.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method GeometryReader.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method GeometryReader.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method GeometryReader.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method GeometryReader.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method GeometryReader.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -4922,8 +4922,8 @@ swift.method Grid.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -
 swift.method Grid.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Grid.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method Grid.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method Grid.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Grid.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Grid.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Grid.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Grid.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Grid.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -5147,8 +5147,8 @@ swift.method Group.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) 
 swift.method Group.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Group.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Group.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Group.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Group.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Group.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Group.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Group.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -5379,8 +5379,8 @@ swift.method HStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>)
 swift.method HStack.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method HStack.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method HStack.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method HStack.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method HStack.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method HStack.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method HStack.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method HStack.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method HStack.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -5614,8 +5614,8 @@ swift.method Image.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) 
 swift.method Image.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Image.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Image.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Image.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Image.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Image.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Image.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Image.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -5837,8 +5837,8 @@ swift.method InspectorButton.scaleX(_:): @MainActor func scaleX(_ state: Binding
 swift.method InspectorButton.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method InspectorButton.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method InspectorButton.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method InspectorButton.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method InspectorButton.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method InspectorButton.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method InspectorButton.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method InspectorButton.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method InspectorButton.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method InspectorButton.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -6083,8 +6083,8 @@ swift.method ItemsView.selection(_:): @MainActor func selection(_ value: ID?) ->
 swift.method ItemsView.selection(_:): @MainActor func selection(_ value: Set<ID>) -> ItemsView<ID>
 swift.method ItemsView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method ItemsView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method ItemsView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method ItemsView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method ItemsView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method ItemsView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method ItemsView.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method ItemsView.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -6345,8 +6345,8 @@ swift.method Line.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -
 swift.method Line.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Line.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Line.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Line.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Line.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Line.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Line.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Line.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -6588,8 +6588,8 @@ swift.method Link.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -
 swift.method Link.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Link.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Link.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Link.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Link.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Link.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Link.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Link.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -6830,8 +6830,8 @@ swift.method Map.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) ->
 swift.method Map.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Map.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Map.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Map.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Map.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Map.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Map.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Map.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -7150,8 +7150,8 @@ swift.method ModifiedContent.scaleX(_:): @MainActor func scaleX(_ state: Binding
 swift.method ModifiedContent.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method ModifiedContent.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method ModifiedContent.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method ModifiedContent.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method ModifiedContent.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method ModifiedContent.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method ModifiedContent.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method ModifiedContent.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -7400,8 +7400,8 @@ swift.method MotionLayout.scaleY(_:): @MainActor func scaleY(_ state: Binding<Do
 swift.method MotionLayout.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method MotionLayout.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method MotionLayout.shade(_:): @MainActor func shade(_ view: some View) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method MotionLayout.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method MotionLayout.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method MotionLayout.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method MotionLayout.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method MotionLayout.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -7649,8 +7649,8 @@ swift.method NavigationStack.scaleX(_:): @MainActor func scaleX(_ state: Binding
 swift.method NavigationStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method NavigationStack.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method NavigationStack.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method NavigationStack.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method NavigationStack.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method NavigationStack.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method NavigationStack.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method NavigationStack.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -7906,8 +7906,8 @@ swift.method Path.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -
 swift.method Path.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Path.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Path.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Path.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Path.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Path.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Path.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Path.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -8153,8 +8153,8 @@ swift.method Picker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>)
 swift.method Picker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Picker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Picker.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Picker.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Picker.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Picker.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Picker.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Picker.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -8397,8 +8397,8 @@ swift.method Polygon.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>
 swift.method Polygon.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Polygon.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Polygon.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Polygon.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Polygon.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Polygon.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Polygon.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Polygon.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -8637,8 +8637,8 @@ swift.method Polyline.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double
 swift.method Polyline.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Polyline.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Polyline.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Polyline.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Polyline.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Polyline.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Polyline.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Polyline.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -8875,8 +8875,8 @@ swift.method PositionDots.scaleX(_:): @MainActor func scaleX(_ state: Binding<Do
 swift.method PositionDots.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method PositionDots.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method PositionDots.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method PositionDots.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method PositionDots.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method PositionDots.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method PositionDots.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method PositionDots.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -9095,8 +9095,8 @@ swift.method ProgressBar.scaleX(_:): @MainActor func scaleX(_ state: Binding<Dou
 swift.method ProgressBar.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method ProgressBar.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method ProgressBar.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method ProgressBar.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method ProgressBar.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method ProgressBar.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method ProgressBar.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method ProgressBar.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -9340,8 +9340,8 @@ swift.method Rectangle.scaleX(_:): @MainActor func scaleX(_ state: Binding<Doubl
 swift.method Rectangle.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Rectangle.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Rectangle.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Rectangle.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Rectangle.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Rectangle.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Rectangle.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Rectangle.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -9618,8 +9618,8 @@ swift.method ScrollView.scrollOffset(_:): @MainActor func scrollOffset(_ state: 
 swift.method ScrollView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method ScrollView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method ScrollView.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method ScrollView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method ScrollView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method ScrollView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method ScrollView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method ScrollView.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method ScrollView.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -9873,8 +9873,8 @@ swift.method SearchField.selectionLength(_:): @MainActor func selectionLength(_ 
 swift.method SearchField.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method SearchField.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method SearchField.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method SearchField.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method SearchField.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method SearchField.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method SearchField.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method SearchField.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method SearchField.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -10107,8 +10107,8 @@ swift.method Separator.scaleX(_:): @MainActor func scaleX(_ state: Binding<Doubl
 swift.method Separator.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Separator.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Separator.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Separator.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Separator.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Separator.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Separator.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Separator.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -10357,8 +10357,8 @@ swift.method Slider.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>)
 swift.method Slider.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Slider.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Slider.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Slider.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Slider.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Slider.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Slider.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Slider.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -10586,8 +10586,8 @@ swift.method Space.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) 
 swift.method Space.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Space.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method Space.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method Space.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Space.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Space.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Space.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Space.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Space.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -10811,8 +10811,8 @@ swift.method Spinner.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>
 swift.method Spinner.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Spinner.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Spinner.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Spinner.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Spinner.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Spinner.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Spinner.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Spinner.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -11038,8 +11038,8 @@ swift.method SplitView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Doubl
 swift.method SplitView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method SplitView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method SplitView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method SplitView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method SplitView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method SplitView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method SplitView.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method SplitView.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -11282,8 +11282,8 @@ swift.method Stepper.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>
 swift.method Stepper.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Stepper.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Stepper.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Stepper.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Stepper.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Stepper.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Stepper.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Stepper.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -11697,8 +11697,8 @@ swift.method Switch.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>)
 swift.method Switch.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Switch.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Switch.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Switch.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Switch.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Switch.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Switch.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Switch.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -11927,8 +11927,8 @@ swift.method TabView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>
 swift.method TabView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method TabView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method TabView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method TabView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method TabView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method TabView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method TabView.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method TabView.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -12161,8 +12161,8 @@ swift.method Text.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -
 swift.method Text.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method Text.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method Text.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method Text.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method Text.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method Text.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method Text.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method Text.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -12441,8 +12441,8 @@ swift.method TextEditor.selectionLength(_:): @MainActor func selectionLength(_ s
 swift.method TextEditor.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method TextEditor.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method TextEditor.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method TextEditor.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method TextEditor.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method TextEditor.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method TextEditor.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method TextEditor.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method TextEditor.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -12698,8 +12698,8 @@ swift.method TextField.selectionLength(_:): @MainActor func selectionLength(_ st
 swift.method TextField.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method TextField.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method TextField.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method TextField.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method TextField.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method TextField.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method TextField.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method TextField.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method TextField.showsClearButton(_:): @MainActor func showsClearButton(_ state: Binding<Bool>) -> TextField.Modified
@@ -13037,8 +13037,8 @@ swift.method TimePicker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Doub
 swift.method TimePicker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method TimePicker.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method TimePicker.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method TimePicker.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method TimePicker.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method TimePicker.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method TimePicker.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method TimePicker.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -13399,8 +13399,8 @@ swift.method VStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>)
 swift.method VStack.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method VStack.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method VStack.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method VStack.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method VStack.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method VStack.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method VStack.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method VStack.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method VStack.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -13532,8 +13532,8 @@ swift.method View.panX(_:): @MainActor func panX(_ state: Binding<Double>) -> Se
 swift.method View.panY(_:): @MainActor func panY(_ state: Binding<Double>) -> Self.Modified
 swift.method View.popover(isPresented:content:): @MainActor func popover<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
 swift.method View.popover(item:content:): @MainActor func popover<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
-swift.method View.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method View.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method View.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method View.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method View.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method View.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method View.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -13861,8 +13861,8 @@ swift.method WebView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>
 swift.method WebView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method WebView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
-swift.method WebView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method WebView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method WebView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method WebView.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method WebView.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method WebView.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified
@@ -14125,8 +14125,8 @@ swift.method ZStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>)
 swift.method ZStack.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method ZStack.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method ZStack.shape(_:): @MainActor func shape(_ value: ContainerShape) -> Self.Modified
-swift.method ZStack.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
-swift.method ZStack.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
+swift.method ZStack.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content) -> Self.Modified where Content : View
+swift.method ZStack.sheet(item:content:): @MainActor func sheet<Item, Content>(item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content) -> Self.Modified where Item : Hashable, Content : View
 swift.method ZStack.showsBackButton(_:): @MainActor func showsBackButton(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.showsBackButton(_:): @MainActor func showsBackButton(_ value: Bool) -> Self.Modified
 swift.method ZStack.showsCloseButton(_:): @MainActor func showsCloseButton(_ state: Binding<Bool>) -> Self.Modified

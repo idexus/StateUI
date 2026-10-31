@@ -23,6 +23,17 @@ private struct Handing: View {
     }
 }
 
+/// A stack standing as the page, counting the builds of the view whose body it is.
+private struct Stack: View {
+    let builds: Builds
+    let path: Binding<[Int]>
+
+    var body: some View {
+        builds.count += 1
+        return NavigationStack(path) { Text("root") } destination: { Text("page \($0)") }
+    }
+}
+
 /// A tab view standing as the page, counting the builds of the view whose body it is.
 private struct Tabs: View {
     let builds: Builds
@@ -52,15 +63,13 @@ final class ElementReadsTests: XCTestCase {
         Renderer.shared.clearStates()
     }
 
-    /// The body that hands `$x` to the member is built once; a write describes the element alone again, carrying
-    /// its new value.
-    private func assertTheElementReads(
-        _ name: String, type: NodeType, prop: Prop, becomes value: PropValue,
-        root: (Builds) -> some View, write: () -> Void
+    /// The body that hands `$x` to the member is built once; a write describes the element alone again, which
+    /// `check` reads in the patch it sends.
+    private func assertTheParentStands(
+        _ name: String, root: (Builds) -> some View, write: () -> Void, check: (HostPatch) -> Void
     ) {
         let builds = Builds()
         let renders = Renders()
-        // At a page's root, where a tab view or a split view stands as the page itself.
         // At a page's root, as a window shows a view.
         renders.render(Node.page(root(builds)))
         XCTAssertEqual(builds.count, 1, name)
@@ -69,8 +78,18 @@ final class ElementReadsTests: XCTestCase {
         let patch = renders.revisit(changed: Renderer.shared.pendingChanges)
 
         XCTAssertEqual(builds.count, 1, "\(name): handing a state over makes no reader")
-        XCTAssertEqual(patch.subtree.first { $0.type == type }?.props[prop], value,
-                       "\(name): the element read the new value")
+        check(patch)
+    }
+
+    /// The same, the element carrying its new value.
+    private func assertTheElementReads(
+        _ name: String, type: NodeType, prop: Prop, becomes value: PropValue,
+        root: (Builds) -> some View, write: () -> Void
+    ) {
+        assertTheParentStands(name, root: root, write: write) { patch in
+            XCTAssertEqual(patch.subtree.first { $0.type == type }?.props[prop], value,
+                           "\(name): the element read the new value")
+        }
     }
 
     func testAPickerReadsItsChoice() {
@@ -113,5 +132,41 @@ final class ElementReadsTests: XCTestCase {
         assertTheElementReads("ToolbarToggle", type: "ToolbarToggle", prop: "isOn", becomes: .bool(true),
                               root: { Handing(builds: $0) { AnyView(Text("page").toolbar { ToolbarToggle("Inspector", isOn: on.projectedValue) }) } },
                               write: { on.wrappedValue = true })
+    }
+
+    func testAStackReadsItsPath() {
+        let path = State(wrappedValue: [Int]())
+        assertTheParentStands("NavigationStack", root: { Stack(builds: $0, path: path.projectedValue) },
+                              write: { path.wrappedValue = [1] }) { patch in
+            XCTAssertEqual(patch.subtree.first { $0.type == "NavigationStack" }?.children.count, 2,
+                           "NavigationStack: the stack made the page the path names")
+        }
+    }
+
+    func testASheetReadsWhetherItShows() {
+        let shown = State(wrappedValue: false)
+        assertTheElementReads("sheet", type: "Sheet", prop: "isPresented", becomes: .bool(true),
+                              root: { Handing(builds: $0) {
+                                  AnyView(Text("page").sheet(isPresented: shown.projectedValue) { Text("Sheet") })
+                              } },
+                              write: { shown.wrappedValue = true })
+    }
+
+    func testASheetForAValueReadsIt() {
+        let note = State<String?>(wrappedValue: nil)
+        assertTheElementReads("sheet(item:)", type: "Sheet", prop: "isPresented", becomes: .bool(true),
+                              root: { Handing(builds: $0) {
+                                  AnyView(Text("page").sheet(item: note.projectedValue) { Text($0) })
+                              } },
+                              write: { note.wrappedValue = "Inbox" })
+    }
+
+    func testAPopoverForAValueReadsIt() {
+        let topic = State<String?>(wrappedValue: nil)
+        assertTheElementReads("popover(item:)", type: "Popover", prop: "isPresented", becomes: .bool(true),
+                              root: { Handing(builds: $0) {
+                                  AnyView(Button("Why?").popover(item: topic.projectedValue) { Text($0) })
+                              } },
+                              write: { topic.wrappedValue = "Sync" })
     }
 }

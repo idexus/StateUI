@@ -42,10 +42,10 @@ extension View {
     public func popover<Item: Hashable, Content: View>(
         item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content
     ) -> Modified {
-        let item = state.wrappedValue
+        // The value read as the popover's content runs, in the popover's own scope, never the body's.
         return showing(PopoverElement(
             content: {
-                item.map { item in
+                state.wrappedValue.map { item in
                     var shown = content(item).node
                     shown.identify(item)
                     return [shown]

@@ -25,9 +25,11 @@ extension View {
     ///   - state: whether the sheet shows, written false as it closes.
     ///   - content: what the sheet shows.
     /// - Returns: this view, with its sheet.
-    public func sheet<Content: View>(isPresented state: Binding<Bool>, @ViewBuilder content: () -> Content) -> Modified {
+    public func sheet<Content: View>(
+        isPresented state: Binding<Bool>, @ViewBuilder content: @escaping () -> Content
+    ) -> Modified {
         presenting(SheetElement(
-            page: state.wrappedValue ? Node.page(content()) : nil,
+            page: { state.wrappedValue ? Node.page(content()) : nil },
             read: { state.wrappedValue }, write: { state.wrappedValue = $0 }))
     }
 
@@ -47,12 +49,14 @@ extension View {
     ///   - content: what the sheet shows of the value.
     /// - Returns: this view, with its sheet.
     public func sheet<Item: Hashable, Content: View>(
-        item state: Binding<Item?>, @ViewBuilder content: (Item) -> Content
+        item state: Binding<Item?>, @ViewBuilder content: @escaping (Item) -> Content
     ) -> Modified {
-        let page = state.wrappedValue.map { item in
-            var page = Node.page(content(item))
-            page.identify(item)
-            return page
+        let page: @MainActor () -> Node? = {
+            state.wrappedValue.map { item in
+                var page = Node.page(content(item))
+                page.identify(item)
+                return page
+            }
         }
         return presenting(SheetElement(
             page: page, read: { state.wrappedValue != nil }, write: { if !$0 { state.wrappedValue = nil } }))
@@ -75,9 +79,15 @@ struct SheetElement: ElementView {
     /// `page` presented while `read` says so, the user's dismissal written through `write` - described, never
     /// carried by the host: the view presenting it builds again as it changes, its page with it; leaving the tree
     /// writes false.
-    init(page: Node?, read: @escaping @MainActor () -> Bool, write: @escaping @MainActor (Bool) -> Void) {
-        node = Node(contract: SheetContract.self, children: page.map { [$0] } ?? [])
-        self = described(SheetContract.isPresented.token, read: read, write: write, on: SheetContract.isPresentedChanged.token)
+    init(
+        page: @escaping @MainActor () -> Node?, read: @escaping @MainActor () -> Bool,
+        write: @escaping @MainActor (Bool) -> Void
+    ) {
+        node = Node(contract: SheetContract.self)
+        self = described(
+            SheetContract.isPresented.token, read: read, write: write, on: SheetContract.isPresentedChanged.token)
+        // The page, made as the sheet is described: the sheet reads its state, never the body that presents it.
+        node.readsWhenDescribed { $0.children.insert(contentsOf: page().map { [$0] } ?? [], at: 0) }
         node.destroying.append { if read() { write(false) } }
     }
 }
