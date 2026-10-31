@@ -35,6 +35,18 @@ final class UIKitLeaveTests: XCTestCase {
         XCTAssertEqual(try Leaving.outlived(on: driver, elements), [])
     }
 
+    /// A field focused as its host ends lets the keyboard go: kept, it stands over the next test's page, which lays
+    /// out above it.
+    @MainActor
+    func testAFieldFocusedAsItsHostEndsLetsTheKeyboardGo() throws {
+        let host = UIKitRenderer.running { TextField("") }
+        let field = try XCTUnwrap(host.views(UIKitTextFieldView.self).first)
+        XCTAssertTrue(field.becomeFirstResponder(), "the field takes the keyboard")
+
+        host.finish()
+        XCTAssertFalse(field.isFirstResponder, "the keyboard went with the host")
+    }
+
     /// An element that leaves the tree lets go of its view: the host holds one view fewer alive, the count its
     /// tally writes.
     @MainActor
