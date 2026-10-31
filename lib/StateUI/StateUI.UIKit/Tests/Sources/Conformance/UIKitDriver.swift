@@ -435,8 +435,9 @@ final class UIKitDriver: HostDriver {
         return WebDocument.document(at: address).map { .html($0, baseURL: nil) } ?? .url(address)
     }
 
-    /// Where the element's view stands in its window, as UIKit placed it.
+    /// Where the element's view stands in its window once UIKit has laid it out, as the display's next pass shows it.
     func place(of element: MountedElement) throws -> Rect {
+        renderer?.layOut()
         guard let view = (element.native as? UIKitElement)?.view else {
             throw DriverCannot("read where \(element.type.name) stands")
         }
