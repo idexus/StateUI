@@ -182,6 +182,8 @@ final class GTKPageFrame {
         }
         let row = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0)!
         gtk_widget_add_css_class(row, "toolbar")
+        // In the middle of the bar, scrolled across where it is wider.
+        gtk_widget_set_halign(row, GTK_ALIGN_CENTER)
         gtk_box_append(row.of(GtkBox.self), tabs.widget)
         let bar = gtk_scrolled_window_new()!
         gtk_scrolled_window_set_policy(bar.opaque, GTK_POLICY_AUTOMATIC, GTK_POLICY_NEVER)

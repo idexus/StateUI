@@ -169,9 +169,9 @@ blurs nothing inside a window, so a blur stands as its color.
 A tabbed view is a `GtkStack` of its tabs, each named by its page's title,
 in the tree's order - the stack adds a page last alone, so from the first tab
 out of its place each is taken off and added again in turn - and its
-`GtkStackSwitcher` - the captions joined in one control - stands at
-the start of a bar of its own beneath the header bar of the frame the tabbed
-view stands in, painted as the header bar is. The header bar keeps its room
+`GtkStackSwitcher` - the captions joined in one control - stands in
+the middle of a bar of its own beneath the header bar of the frame the
+tabbed view stands in, painted as the header bar is. The header bar keeps its room
 for the title - the host layer's: tabs on a stack name it by their own
 title, else by the page beneath - the chosen tab's actions and the window's buttons,
 and the tabs' bar scrolls them across where the page is narrower than they
