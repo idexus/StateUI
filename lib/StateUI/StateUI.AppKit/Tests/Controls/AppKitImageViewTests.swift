@@ -52,8 +52,8 @@ final class AppKitImageViewTests: XCTestCase {
 
     /// A DRAWN PICTURE STANDS AS PIXELS OF THE SIZE IT IS SHOWN AT: AppKit draws an image view again whenever a
     /// transform above it moves, and an SVG drawn anew each time cost a turning light table 300 ms of every 500. As
-    /// pixels a draw costs nothing; made with room to grow, away from the main thread, a pinch makes them again only
-    /// past what was made.
+    /// pixels a draw costs nothing; made away from the main thread, they are made again only for more pixels, by the
+    /// host layer's rule.
     func testADrawnPictureStandsAsPixelsOfTheSizeItIsShownAt() throws {
         let svg = #"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50"><rect width="100" height="50" fill="red"/></svg>"#
         let drawing = try XCTUnwrap(NSImage(data: Data(svg.utf8)))
@@ -66,19 +66,19 @@ final class AppKitImageViewTests: XCTestCase {
         let shown = try pixels(of: view)
         let bitmap = try XCTUnwrap(shown.representations.first as? NSBitmapImageRep)
         XCTAssertEqual(shown.size, view.renderedImageFrame.size, "pixels of the size it covers")
-        XCTAssertGreaterThanOrEqual(bitmap.pixelsWide, 180, "a pixel and a half a point at the least")
+        XCTAssertGreaterThanOrEqual(bitmap.pixelsWide, 120, "a pixel a point at the least")
         XCTAssertTrue(view.image === drawing, "the picture as given")
         XCTAssertEqual(view.intrinsicContentSize, drawing.size)
 
-        view.frame = NSRect(x: 0, y: 0, width: 80, height: 80)
+        view.frame = NSRect(x: 0, y: 0, width: 50, height: 50)
         view.layoutSubtreeIfNeeded()
         pump()
-        XCTAssertTrue(view.shownImage === shown, "a size the pixels made still serve draws nothing again")
+        XCTAssertTrue(view.shownImage === shown, "fewer pixels draw nothing again")
 
         view.frame = NSRect(x: 0, y: 0, width: 200, height: 200)
         view.layoutSubtreeIfNeeded()
         let grown = try pixels(of: view, other: shown)
-        XCTAssertEqual(grown.size, NSSize(width: 400, height: 200), "a size past them, its own pixels")
+        XCTAssertEqual(grown.size, NSSize(width: 400, height: 200), "more pixels, drawn again")
     }
 
     /// The pixels the view shows once they come, other than `other`.

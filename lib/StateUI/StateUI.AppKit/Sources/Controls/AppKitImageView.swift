@@ -23,8 +23,8 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     var shownImage: NSImage? { imageView.image }
 
     /// The drawing the shown pixels were made of, and how many there are across and down; the ones on their way.
-    private var pixelsMade: (image: NSImage, pixels: NSSize)?
-    private var pixelsComing: (image: NSImage, pixels: NSSize)?
+    private var pixelsMade: (image: NSImage, pixels: LayoutSize)?
+    private var pixelsComing: (image: NSImage, pixels: LayoutSize)?
 
     var animationPlaying: Bool { imageView.animates }
     var renderedImageFrame: NSRect { imageView.frame }
@@ -115,22 +115,23 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
         needsLayout = true
     }
 
-    /// A drawing stands as pixels of the size it is shown at, with room to grow, made away from the main thread once it
-    /// needs other ones - the picture standing as it is meanwhile: AppKit draws an image view again whenever a
-    /// transform above it moves, and a drawing made anew each time, or on the main thread, drops frames.
+    /// A drawing stands as pixels of the size it is shown at, made away from the main thread - the picture standing as
+    /// it is meanwhile - and again only for more pixels, by the host layer's rule (`PictureArithmetic.vectorPixels`,
+    /// `drawsAgain`): AppKit draws an image view again whenever a transform above it moves, and a drawing made anew
+    /// each time, or on the main thread, drops frames.
     /// Design: docs/design/platforms/appkit/views.md#a-drawn-picture
     private func showPixels() {
         guard let image, Self.isDrawing(image) else { return }
-        let size = shownSize(of: image.size)
         let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
-        guard size.width >= 1, size.height >= 1 else { return }
-        let needed = NSSize(width: size.width * scale, height: size.height * scale)
-        for wanted in [pixelsMade, pixelsComing] {
-            if let wanted, wanted.image === image, Self.serves(wanted.pixels, needed) { return }
-        }
+        let room = imageView.frame.size
+        let pixels = PictureArithmetic.vectorPixels(
+            LayoutSize(width: Double(image.size.width), height: Double(image.size.height)),
+            in: LayoutSize(width: Double(room.width), height: Double(room.height)), aspect: aspect, scale: Double(scale))
+        guard pixels.width >= 1, pixels.height >= 1 else { return }
+        let wanted = pixelsComing?.image === image ? pixelsComing : pixelsMade?.image === image ? pixelsMade : nil
+        guard PictureArithmetic.drawsAgain(drawn: wanted?.pixels, for: pixels) else { return }
 
-        let pixels = NSSize(
-            width: (needed.width * Self.headroom).rounded(.up), height: (needed.height * Self.headroom).rounded(.up))
+        let size = NSSize(width: pixels.width / Double(scale), height: pixels.height / Double(scale))
         pixelsComing = (image, pixels)
         let drawing = SendableDrawing(image: image)
         Task.detached(priority: .userInitiated) {
@@ -140,35 +141,11 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     }
 
     /// The pixels made for `image`, shown where they are still the ones on their way.
-    private func take(_ made: NSImage?, of image: NSImage?, pixels: NSSize) {
+    private func take(_ made: NSImage?, of image: NSImage?, pixels: LayoutSize) {
         guard let made, let coming = pixelsComing, coming.image === image, coming.pixels == pixels else { return }
         pixelsComing = nil
         pixelsMade = coming
         imageView.image = made
-    }
-
-    /// How many more pixels a drawing is made with than it is shown with.
-    private static let headroom = 1.5
-
-    /// Whether pixels `made` serve a picture `needed` pixels big: as many at the least, at most twice as many.
-    private static func serves(_ made: NSSize, _ needed: NSSize) -> Bool {
-        needed.width <= made.width && needed.height <= made.height
-            && needed.width * 2 >= made.width && needed.height * 2 >= made.height
-    }
-
-    /// The size the picture is drawn at in the image view, for its aspect.
-    private func shownSize(of size: NSSize) -> NSSize {
-        switch aspect {
-        case .fit:
-            let placed = PictureArithmetic.place(
-                LayoutSize(width: Double(size.width), height: Double(size.height)),
-                in: LayoutSize(width: Double(imageView.frame.width), height: Double(imageView.frame.height)), aspect: .fit)
-            return NSSize(width: placed.width, height: placed.height)
-        case .fill, .stretch:
-            return imageView.frame.size
-        case .center:
-            return size
-        }
     }
 
     /// Whether a picture is a file's drawing - an SVG's, a PDF's - rather than pixels; an icon - a template - AppKit
@@ -179,7 +156,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     }
 
     /// `image` drawn into `pixels` across and down, standing `size` big - on any thread.
-    nonisolated private static func pixels(of image: NSImage?, size: NSSize, pixels: NSSize) -> NSImage? {
+    nonisolated private static func pixels(of image: NSImage?, size: NSSize, pixels: LayoutSize) -> NSImage? {
         guard let image else { return nil }
         guard let bitmap = NSBitmapImageRep(
             bitmapDataPlanes: nil, pixelsWide: Int(pixels.width), pixelsHigh: Int(pixels.height),
