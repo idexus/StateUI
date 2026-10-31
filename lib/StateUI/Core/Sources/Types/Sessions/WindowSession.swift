@@ -95,6 +95,10 @@ public final class WindowSession {
     /// window reads, and nothing once that scene has ended.
     weak var record: SceneRecord?
 
+    /// The state saying which value a window for a value is about - a `State` of the group's value type, made
+    /// the first time its page is built.
+    var value: AnyObject?
+
     /// A window's own, made by the scene it is in.
     init(key: String, record: SceneRecord?) {
         self.key = key

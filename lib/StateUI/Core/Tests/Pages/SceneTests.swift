@@ -65,7 +65,7 @@ private struct Showing: View {
 
 /// A page that says which document its window is for, and makes the window about another.
 private struct Retargeting: View {
-    @Proxy var number: Int
+    @Binding var number: Int
 
     var body: some View {
         VStack {

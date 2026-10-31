@@ -1304,7 +1304,7 @@ swift.init WebViewSource.init(propValue:): init?(propValue: PropValue)
 swift.init Weekday.init(rawValue:): init?(rawValue: Int32)
 swift.init Window.init(_:content:): @MainActor init<Content>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
 swift.init WindowGroup.init(_:content:): @MainActor init<Content>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
-swift.init WindowGroup.init(_:content:): @MainActor init<Value, Content>(_ type: WindowType<Value>, @ViewBuilder content: @escaping (Proxy<Value>) -> Content) where Value : Decodable, Value : Encodable, Value : Hashable, Value : SendableMetatype, Content : View
+swift.init WindowGroup.init(_:content:): @MainActor init<Value, Content>(_ type: WindowType<Value>, @ViewBuilder content: @escaping (Binding<Value>) -> Content) where Value : Decodable, Value : Encodable, Value : Hashable, Value : SendableMetatype, Content : View
 swift.init WindowGroup.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : View
 swift.init WindowSession.init(): @MainActor convenience init()
 swift.init WindowType.init(_:): init(_ name: String)

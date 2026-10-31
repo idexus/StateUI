@@ -49,8 +49,9 @@ public struct WindowGroup: Scene {
     ///
     ///     WindowGroup(.document) { $id in DocumentPage(id: id) }
     ///
-    /// The view is handed a proxy to its window's value: reading it says which value the window is for, and
-    /// writing it makes the same window about another - which is also what the system restores it for.
+    /// The view is handed a binding to its window's value, a state of the window's own: reading it says which
+    /// value the window is for, and writing it makes the same window about another - which is also what the
+    /// system restores it for.
     ///
     /// - Parameters:
     ///   - type: what `ApplicationSession.openWindow` opens one by, with a value of its type - anything `Codable`
@@ -58,20 +59,14 @@ public struct WindowGroup: Scene {
     ///   - content: the view for one value.
     public init<Value: Codable & Hashable & SendableMetatype, Content: View>(
         _ type: WindowType<Value>,
-        @ViewBuilder content: @escaping (Proxy<Value>) -> Content
+        @ViewBuilder content: @escaping (Binding<Value>) -> Content
     ) {
         declared = DeclaredWindows(
             type: type.key, valueType: Value.self,
             page: { opened, record in
-                // The value the scene was built with; a write retargets this window, and the scene, which reads
-                // what it has open, builds it again.
-                let standing = opened?.value?.base as! Value
+                guard let opened, let record else { preconditionFailure("A window for a value is built in its scene.") }
 
-                let window = Proxy<Value>(
-                    get: { standing },
-                    set: { if let opened, let record { record.retarget(opened.serial, to: $0) } })
-
-                return Node.page(content(window))
+                return Node.page(content(Binding(record.windowValue(opened, as: Value.self))))
             },
             restore: { text in ValueText.read(Value.self, from: text).map(AnyHashable.init) })
     }

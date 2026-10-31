@@ -6,8 +6,8 @@ import StateUI
 /// the system restores the window for the number it was left on. See
 /// `MultiWindowSample`.
 struct SwatchPage: View {
-    /// Which swatch the window is for - its value, lent by its group.
-    @Proxy var number: Int
+    /// Which swatch the window is for - its value, a state of the window's own.
+    @Binding var number: Int
 
     /// The window this is the page of - named for its swatch, and closed from
     /// here.

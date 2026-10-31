@@ -107,6 +107,22 @@ final class SceneRecord {
         windows[index].text = try? ValueText.write(value)
     }
 
+    /// The state saying which value one of its windows is about, kept with the window's session: a write
+    /// retargets the window, which is also what the platform restores it for.
+    /// Design: docs/design/core/scenes.md#a-window-for-a-value
+    func windowValue<Value: Codable & Hashable>(_ opened: OpenedWindow, as _: Value.Type) -> State<Value> {
+        let session = windowSession(opened.key)
+        if let standing = session.value as? State<Value> {
+            return standing
+        }
+
+        let made = State(wrappedValue: opened.value?.base as! Value)
+        let serial = opened.serial
+        made.storage.keep = { [weak self] in self?.retarget(serial, to: $0) }
+        session.value = made
+        return made
+    }
+
     /// The session of one of its windows, made once and kept.
     func windowSession(_ key: String) -> WindowSession {
         if let standing = windowSessions[key] {
