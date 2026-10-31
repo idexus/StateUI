@@ -127,9 +127,12 @@ none, and none has a journey or wakes an engine. Every member that takes a
 state - a control, a driven modifier, `journey`, `engine(following:)` and
 `tracking:`, MotionLayout's parameters and `.following`, `convert` and `multi`
 - takes `Binding` alone, and a part there does not compile. A control's other
-form is its value, with the user's change in its event: a record kept as a
-value is edited that way, and one edited live is a class whose fields are
-states (`object.$field`). There is no protocol a state and a part both keep,
+form, for a value that crosses to the host as it is, is its value, with the
+user's change in its event: a record kept as a value is edited that way, and
+one edited live is a class whose fields are states (`object.$field`). A
+choice the library translates for the host - a picker's place, a list's
+chosen items, a tab, a stack's pages, a sheet - takes the state alone, read
+by its element (invalidation.md, an element reads what it was handed). There is no protocol a state and a part both keep,
 no wrapper for a part, and no part made of closures: a value the library does
 not own reaches a control through a class of `@State` fields that follows it.
 

@@ -84,7 +84,8 @@ input:
 | --- | --- |
 | value conforming to `Equatable` | value equality |
 | ordinary class | object identity |
-| `@Binding` | the storage and member being borrowed, not its current value |
+| `@Binding` | the state's storage being borrowed, not its current value |
+| a `StatePart` | the storage and the part of it reached, not its current value |
 | owned `@State` or `@Aim` | the adopted storage box |
 | `@Environment` | the resolved object |
 | opaque closure or value | not comparable, so the view rebuilds |

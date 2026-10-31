@@ -65,8 +65,10 @@ scene ([Scenes](#scenes)).
 An application follows the theme the user chose until it holds one of its
 own. `application.colorScheme` is `.system` until it is written; `.light` or
 `.dark` shows every window in that theme with each platform's own call, and
-`.system` gives it back to the user's setting. `info.colorScheme` reports the
-theme in force, which every `Color(light:dark:)` resolves against.
+`.system` gives it back to the user's setting. It is a state, so a control
+takes it whole: `Picker(themes, selection: application.$colorScheme)`.
+`info.colorScheme` reports the theme in force, which every
+`Color(light:dark:)` resolves against.
 
 ```swift
 @Environment(\.application) private var application
