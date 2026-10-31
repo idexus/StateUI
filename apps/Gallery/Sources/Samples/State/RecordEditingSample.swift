@@ -21,13 +21,16 @@ private struct TodoRow: View {
     @Binding var done: Bool
 
     var body: some View {
-        HStack {
+        // The field takes what the check box leaves.
+        Grid {
             CheckBox($done)
                 .accessibilityLabel("Done")
             TextField($title)
                 .accessibilityLabel("Todo")
+                .gridColumn(1)
         }
-        .spacing(8)
+        .columns(.auto, .fill)
+        .columnSpacing(8)
     }
 }
 

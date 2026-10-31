@@ -9580,10 +9580,13 @@ enum Listings {
             @Binding var done: Bool
 
             var body: some View {
-                HStack {
+                // The field takes what the check box leaves.
+                Grid {
                     CheckBox($done)
                     TextField($title)
+                        .gridColumn(1)
                 }
+                .columns(.auto, .fill)
             }
         }
 
