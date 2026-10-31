@@ -929,17 +929,14 @@ enum Listings {
                 #if WEB
                 // The bars' buttons, which the Web draws itself.
                 SectionTitle("The bars' buttons")
-                Picker(Self.toolbarStyles.map(\.style), selection: Proxy(
-                    get: { style.toolbarStyle }, set: { style.toolbarStyle = $0 })) { chosen in
+                Picker(Self.toolbarStyles.map(\.style), selection: style.$toolbarStyle) { chosen in
                     Self.toolbarStyles.first { $0.style == chosen }?.name ?? ""
                 }
                 // The application's own look for them: a style for every group and
                 // every button on a bar, its states included (AppStyles.bars).
-                Switch(Proxy(get: { style.barsInOwnLook }, set: { owns in
-                    style.barsInOwnLook = owns
-                    application.styles = AppStyles.sheet(barsInOwnLook: owns)
-                }))
+                Switch(style.$barsInOwnLook)
                     .text("In the gallery's own look")
+                    .onToggled { owns in application.styles = AppStyles.sheet(barsInOwnLook: owns) }
                 #endif
 
                 // A look for each theme: the gallery wears the one of the theme in
@@ -976,9 +973,7 @@ enum Listings {
                 let key = self.look
                 let name = title.lowercased()
                 // Each surface's choices write that part of the theme's look.
-                let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in
-                    Proxy(get: { style[keyPath: key][keyPath: part] }, set: { style[keyPath: key][keyPath: part] = $0 })
-                }
+                let surface = { (part: WritableKeyPath<ThemeLook, SurfaceLook>) in key.appending(path: part) }
 
                 let choice = self.choice
                 let composed = style[keyPath: choice] != .own
@@ -992,29 +987,36 @@ enum Listings {
                         .isEnabled(composed)
                         .onClicked { style[keyPath: choice] = .own }
 
-                    SurfacePickers(title: "The bars", label: "Bars", theme: name, part: .bar, surface: surface(\.bars))
-                    SurfacePickers(title: "The window", label: "Window", theme: name, part: .window, surface: surface(\.window))
                     SurfacePickers(
-                        title: "The sidebar", label: "Sidebar", theme: name, part: .sidebar, surface: surface(\.sidebar))
+                        title: "The bars", label: "Bars", theme: name, part: .bar, style: style, surface: surface(\.bars))
+                    SurfacePickers(
+                        title: "The window", label: "Window", theme: name, part: .window, style: style,
+                        surface: surface(\.window))
+                    SurfacePickers(
+                        title: "The sidebar", label: "Sidebar", theme: name, part: .sidebar, style: style,
+                        surface: surface(\.sidebar))
                     SurfacePickers(
                         title: "The sidebar over the page", label: "Overlay", theme: name, part: .sidebarOverlay,
-                        surface: surface(\.sidebarOverlay))
+                        style: style, surface: surface(\.sidebarOverlay))
                 }
             }
         }
 
         /// One surface's choices: what it is made of, in which color, and how thick
-        /// a blur.
+        /// a blur - each shown as the look holds it and written into it by hand, as
+        /// the look is a value the scene keeps.
         private struct SurfacePickers: View {
             let title: String
             let label: String
             let theme: String
             let part: GallerySurface
-            let surface: Proxy<SurfaceLook>
+            let style: SessionStyle
+            let surface: ReferenceWritableKeyPath<SessionStyle, SurfaceLook>
 
             var body: some View {
+                let style = self.style
                 let surface = self.surface
-                let look = surface.wrappedValue
+                let look = style[keyPath: surface]
                 let materials = SurfaceMaterial.offered(on: part)
                 let accents = AccentChoice.allCases
                 let blurs = SurfaceLook.blurs
@@ -1022,16 +1024,19 @@ enum Listings {
 
                 return VStack {
                     Text(title)
-                    Picker(materials, selection: surface.material) {
+                    Picker(materials, selection: look.material) {
                         $0.name
                     }
-                    Picker(accents, selection: surface.color) {
+                        .onSelectedIndexChanged { style[keyPath: surface].material = materials[$0] }
+                    Picker(accents, selection: look.color) {
                         $0.name
                     }
+                        .onSelectedIndexChanged { style[keyPath: surface].color = accents[$0] }
                         .isEnabled(look.material.showsColor)
-                    Picker(blurs, selection: surface.blur) { blur in
+                    Picker(blurs, selection: look.blur) { blur in
                         ["Ultra thin", "Thin", "Regular", "Thick", "Ultra thick"][blurs.firstIndex(of: blur) ?? 0]
                     }
+                        .onSelectedIndexChanged { style[keyPath: surface].blur = blurs[$0] }
                         .isEnabled(look.material.showsBlur)
                 }
             }
@@ -6017,16 +6022,12 @@ enum Listings {
                 .gridRow(0)
                 .clipsContent(true)
 
-                SwitchRow(
-                    "Fan out",
-                    Proxy(
-                        get: { fanned },
-                        set: { fanning in
-                            fanned = fanning
-                            // ONE AXIS WRITTEN: the spread travels there, and a
-                            // turn under way goes on as it was.
-                            deal.spread = fanning ? 1 : 0
-                        }))
+                SwitchRow("Fan out", $fanned)
+                    .onToggled { fanning in
+                        // ONE AXIS WRITTEN: the spread travels there, and a turn
+                        // under way goes on as it was.
+                        deal.spread = fanning ? 1 : 0
+                    }
                 .horizontalAlignment(.center)
                 .gridRow(1)
             }
@@ -6237,20 +6238,16 @@ enum Listings {
                 .gridRow(0)
                 .clipsContent(true)
 
-                SwitchRow(
-                    "Snap",
-                    Proxy(
-                        get: { snaps },
-                        set: { snapping in
-                            snaps = snapping
-                            // SNAPPING AGAIN, the table travels to the photo and
-                            // the quarter turn nearest where it was left.
-                            if snapping {
-                                table.x = table.x.rounded()
-                                table.y = table.y.rounded()
-                                table.turn = (table.turn * 4).rounded() / 4
-                            }
-                        }))
+                SwitchRow("Snap", $snaps)
+                    .onToggled { snapping in
+                        // SNAPPING AGAIN, the table travels to the photo and the
+                        // quarter turn nearest where it was left.
+                        if snapping {
+                            table.x = table.x.rounded()
+                            table.y = table.y.rounded()
+                            table.turn = (table.turn * 4).rounded() / 4
+                        }
+                    }
                 .horizontalAlignment(.center)
                 .gridRow(1)
 

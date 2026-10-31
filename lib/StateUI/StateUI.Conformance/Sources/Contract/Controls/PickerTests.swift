@@ -29,11 +29,13 @@
             ], needs: [Covered(TextualElementContract.text, on: TextContract.self), Covered(ButtonContract.clicked)]) { s in
                 let size = State(wrappedValue: "M")
                 let written = Received<String>()
-                let chosen = Proxy(get: { size.wrappedValue }, set: { written.values.append($0); size.wrappedValue = $0 })
+                let sizes = ["S", "M", "L"]
                 s.start {
                     VStack {
                         Text("size \(size.wrappedValue)").id("label")
-                        Picker(["S", "M", "L"], selection: chosen).id("picker")
+                        Picker(sizes, selection: size.projectedValue)
+                            .onSelectedIndexChanged { written.values.append(sizes[$0]) }
+                            .id("picker")
                         Button("Small").onClicked { size.wrappedValue = "S" }.id("small")
                     }
                 }
@@ -180,11 +182,14 @@
         ], needs: [Covered(TextualElementContract.text, on: TextContract.self)]) { s in
             let size = State(wrappedValue: "M")
             let written = Received<String>()
-            let chosen = Proxy(get: { size.wrappedValue }, set: { written.values.append($0); size.wrappedValue = $0 })
+            let sizes = ["S", "M", "L"]
             s.start {
                 VStack {
                     Text("size \(size.wrappedValue)").id("label")
-                    Picker(["S", "M", "L"], selection: chosen).presentation(presentation).id("picker")
+                    Picker(sizes, selection: size.projectedValue)
+                        .onSelectedIndexChanged { written.values.append(sizes[$0]) }
+                        .presentation(presentation)
+                        .id("picker")
                 }
             }
             try s.perform(.choose(2), on: s.element("picker"))

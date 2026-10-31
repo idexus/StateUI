@@ -60,16 +60,12 @@ struct LayoutParametersSample: SampleContent, ExampleContent {
             .gridRow(0)
             .clipsContent(true)
 
-            SwitchRow(
-                "Fan out",
-                Proxy(
-                    get: { fanned },
-                    set: { fanning in
-                        fanned = fanning
-                        // ONE AXIS WRITTEN: the spread travels there, and a
-                        // turn under way goes on as it was.
-                        deal.spread = fanning ? 1 : 0
-                    }))
+            SwitchRow("Fan out", $fanned)
+                .onToggled { fanning in
+                    // ONE AXIS WRITTEN: the spread travels there, and a turn
+                    // under way goes on as it was.
+                    deal.spread = fanning ? 1 : 0
+                }
             .horizontalAlignment(.center)
             .gridRow(1)
         }

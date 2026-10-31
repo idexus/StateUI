@@ -51,20 +51,16 @@ struct LightTableSample: SampleContent, ExampleContent {
             .gridRow(0)
             .clipsContent(true)
 
-            SwitchRow(
-                "Snap",
-                Proxy(
-                    get: { snaps },
-                    set: { snapping in
-                        snaps = snapping
-                        // SNAPPING AGAIN, the table travels to the photo and
-                        // the quarter turn nearest where it was left.
-                        if snapping {
-                            table.x = table.x.rounded()
-                            table.y = table.y.rounded()
-                            table.turn = (table.turn * 4).rounded() / 4
-                        }
-                    }))
+            SwitchRow("Snap", $snaps)
+                .onToggled { snapping in
+                    // SNAPPING AGAIN, the table travels to the photo and the
+                    // quarter turn nearest where it was left.
+                    if snapping {
+                        table.x = table.x.rounded()
+                        table.y = table.y.rounded()
+                        table.turn = (table.turn * 4).rounded() / 4
+                    }
+                }
             .horizontalAlignment(.center)
             .gridRow(1)
 

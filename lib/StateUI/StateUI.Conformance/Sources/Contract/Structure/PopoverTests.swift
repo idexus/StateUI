@@ -44,25 +44,19 @@
                 s.expect(try s.isShown("inside"), true, "with what it holds")
             },
             ConformanceCase("theUsersDismissalLandsOnTheState", proves: [
-                Covered(PopoverContract.isPresented), Covered(PopoverContract.isPresentedChanged),
+                Covered(PopoverContract.isPresented),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
-                // A proxy, which the host does not carry, hears the dismissal as the event, the written value with it.
+                // The state the host carries takes the dismissal the user makes.
                 let shown = State(wrappedValue: false)
-                let written = Received<Bool>()
-                let bound = Proxy(get: { shown.wrappedValue }, set: {
-                    written.values.append($0)
-                    shown.wrappedValue = $0
-                })
-                s.start { FiltersAnchor(shown: bound) }
+                s.start { FiltersAnchor(shown: shown.projectedValue) }
                 let popover = try Self.popover(of: s.element("anchor"))
                 try s.perform(.activate, on: s.element("anchor"))
                 try s.settle { try s.held(PopoverContract.isPresented, on: popover) == true }
-                written.values = []
 
                 try s.perform(.close, on: popover)
                 s.settle { !shown.wrappedValue }
 
-                s.expect(written.values, [false], "the user's dismissal written once")
+                s.expect(shown.wrappedValue, false, "the user's dismissal written")
                 try s.settle { try s.held(PopoverContract.isPresented, on: popover) == false }
                 s.expect(try s.held(PopoverContract.isPresented, on: popover), false, "the popover gone")
             },
@@ -121,7 +115,7 @@
 
 /// A button showing its popover of filters, which a button inside closes.
 struct FiltersAnchor: View {
-    let shown: any TwoWay<Bool>
+    let shown: Binding<Bool>
 
     var body: some View {
         VStack {

@@ -16,21 +16,33 @@ import StateUI
 struct SwitchRow: View {
     private let text: String
 
-    private let value: any TwoWay<Bool>
+    private let value: Binding<Bool>
+
+    private var toggled: (@MainActor (Bool) -> Void)?
 
     /// - Parameters:
     ///   - text: What the option is called.
     ///   - value: The state it is thrown from, and written back to.
-    init(_ text: String, _ value: some TwoWay<Bool>) {
+    init(_ text: String, _ value: Binding<Bool>) {
         self.text = text
         self.value = value
     }
 
+    /// What else the user's throw does, after the state is written.
+    func onToggled(_ handler: @escaping @MainActor (Bool) -> Void) -> Self {
+        var copy = self
+        copy.toggled = handler
+        return copy
+    }
+
     var body: some View {
-        Switch(value)
+        let toggled = toggled
+
+        return Switch(value)
             .text(text)
             // The words name the switch; the handle is worked out from them -
             // Handle.swift.
             .accessibilityIdentifier(handle("switch", text))
+            .onToggled { toggled?($0) }
     }
 }
