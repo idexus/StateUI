@@ -47,8 +47,7 @@ struct AppearanceSample: SampleContent, ExampleContent {
         return VStack {
             // The theme first: which of the two looks below the gallery wears.
             SectionTitle("The theme")
-            Picker(themes.map(\.scheme),
-                   selection: Proxy(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
+            Picker(themes.map(\.scheme), selection: application.$colorScheme) { scheme in
                 themes.first { $0.scheme == scheme }?.name ?? ""
             }
                 .accessibilityIdentifier("appearance.theme")
@@ -57,9 +56,9 @@ struct AppearanceSample: SampleContent, ExampleContent {
             // The accent the platform draws its controls in, where the user
             // chooses none for the system.
             SectionTitle("The accent")
-            Picker(Array(accents.indices), selection: Proxy(
-                get: { accents.firstIndex { $0.color == application.accentColor } ?? 0 },
-                set: { application.accentColor = accents[$0].color })) { accents[$0].name }
+            Picker(accents.map(\.color), selection: application.$accentColor) { color in
+                accents.first { $0.color == color }?.name ?? ""
+            }
                 .accessibilityIdentifier("appearance.accent")
                 .accessibilityLabel("Accent")
 

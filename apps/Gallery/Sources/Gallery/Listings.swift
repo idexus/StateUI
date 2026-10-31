@@ -915,17 +915,16 @@ enum Listings {
             return VStack {
                 // The theme first: which of the two looks below the gallery wears.
                 SectionTitle("The theme")
-                Picker(themes.map(\.scheme),
-                       selection: Proxy(get: { application.colorScheme }, set: { application.colorScheme = $0 })) { scheme in
+                Picker(themes.map(\.scheme), selection: application.$colorScheme) { scheme in
                     themes.first { $0.scheme == scheme }?.name ?? ""
                 }
 
                 // The accent the platform draws its controls in, where the user
                 // chooses none for the system.
                 SectionTitle("The accent")
-                Picker(Array(accents.indices), selection: Proxy(
-                    get: { accents.firstIndex { $0.color == application.accentColor } ?? 0 },
-                    set: { application.accentColor = accents[$0].color })) { accents[$0].name }
+                Picker(accents.map(\.color), selection: application.$accentColor) { color in
+                    accents.first { $0.color == color }?.name ?? ""
+                }
 
                 #if WEB
                 // The bars' buttons, which the Web draws itself.
@@ -1066,8 +1065,7 @@ enum Listings {
 
                 // One write for the whole application: every value without a
                 // motion of its own takes it.
-                Picker(Self.laws, selection: Proxy(get: { application.motion }, set: { application.motion = $0 }),
-                       caption: Self.name)
+                Picker(Self.laws, selection: application.$motion, caption: Self.name)
                     .horizontalAlignment(.center)
 
                 // No `.motion` here: the panel takes the application's.

@@ -14226,9 +14226,9 @@ swift.property ApplicationInfo.name: @State @MainActor var name: String { get se
 swift.property ApplicationInfo.packageName: @State @MainActor var packageName: String { get set }
 swift.property ApplicationInfo.versionString: @State @MainActor var versionString: String { get set }
 swift.property ApplicationPhase.hashValue: var hashValue: Int { get }
-swift.property ApplicationSession.accentColor: @MainActor var accentColor: Color? { get set }
+swift.property ApplicationSession.accentColor: @State @MainActor var accentColor: Color? { get set }
 swift.property ApplicationSession.clipboard: @MainActor var clipboard: Clipboard { get }
-swift.property ApplicationSession.colorScheme: @MainActor var colorScheme: ColorScheme { get set }
+swift.property ApplicationSession.colorScheme: @State @MainActor var colorScheme: ColorScheme { get set }
 swift.property ApplicationSession.info: @MainActor let info: ApplicationInfo
 swift.property ApplicationSession.motion: @State @MainActor var motion: Motion { get set }
 swift.property ApplicationSession.phase: @State @MainActor var phase: ApplicationPhase { get set }

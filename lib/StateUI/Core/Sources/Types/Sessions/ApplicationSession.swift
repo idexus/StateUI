@@ -41,20 +41,14 @@ public final class ApplicationSession {
     /// asks.
     ///
     ///     application.colorScheme = .dark
+    ///     Picker([ColorScheme.system, .light, .dark], selection: application.$colorScheme)
     ///
     /// The host shows every window in it, natively, and reports the theme in
     /// force as `info.colorScheme`, which color pairs resolve against.
-    public var colorScheme: ColorScheme {
-        get { heldColorScheme }
-        set {
-            guard newValue != heldColorScheme else { return }
-            heldColorScheme = newValue
-            stateUISend(ApplicationContract.useColorScheme, newValue)
-        }
-    }
+    @State public var colorScheme = ColorScheme.system
 
-    /// The theme the application asked for last.
-    @State private var heldColorScheme = ColorScheme.system
+    /// The theme last handed to the host.
+    private var sentColorScheme = ColorScheme.system
 
     /// The application's own accent, which its controls and `Color.accent`
     /// take where the user chooses none for the system - the Web, iOS and
@@ -65,27 +59,20 @@ public final class ApplicationSession {
     ///
     /// The host reports the accent in force as `info.accentColor`; a pair
     /// follows the theme.
-    public var accentColor: Color? {
-        get { heldAccentColor }
-        set {
-            guard newValue != heldAccentColor else { return }
-            heldAccentColor = newValue
-            sendAccentColor()
-        }
-    }
+    @State public var accentColor: Color? = nil
 
-    /// The accent the application asked for last.
-    @State private var heldAccentColor: Color?
+    /// The accent last handed to the host.
+    private var sentAccentColor: Color?
 
     /// Hands the host the accent the application holds, its half in force where it is a pair: again as the theme
     /// turns.
     func sendAccentColor() {
-        stateUISend(ApplicationContract.useAccentColor, heldAccentColor.flatMap { Color(propValue: $0.propValue.resolvingTheme()) })
+        stateUISend(ApplicationContract.useAccentColor, sentAccentColor.flatMap { Color(propValue: $0.propValue.resolvingTheme()) })
     }
 
     /// The theme in force turned: an accent of two halves is handed on again.
     func themeTurned() {
-        if heldAccentColor?.propValue.isThemed == true { sendAccentColor() }
+        if sentAccentColor?.propValue.isThemed == true { sendAccentColor() }
     }
 
     /// The styles every control in the application can be given.
@@ -113,7 +100,20 @@ public final class ApplicationSession {
 
     /// A fresh instance, for providing a fake to one branch with
     /// `.environment(...)`. It opens scenes as the application's own does.
-    public init() {}
+    public init() {
+        // Whoever writes them - the application, a control the binding is handed to - the host is told.
+        // Design: docs/design/core/state.md#kept-state
+        _colorScheme.storage.keep = { [unowned self] scheme in
+            guard scheme != sentColorScheme else { return }
+            sentColorScheme = scheme
+            stateUISend(ApplicationContract.useColorScheme, scheme)
+        }
+        _accentColor.storage.keep = { [unowned self] accent in
+            guard accent != sentAccentColor else { return }
+            sentAccentColor = accent
+            sendAccentColor()
+        }
+    }
 
     /// Opens one more window of the `WindowGroup` with no name - what launch
     /// opens and *File ▸ New Window* does - in its scene, which opens with it

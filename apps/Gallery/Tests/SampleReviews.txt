@@ -9,8 +9,8 @@ AnimatedPropertySample.swift 3e32ce6e1efaac36
 AnimationSample.swift c490402644539ae0
 AppSwitcherSample.swift 8572c4ecb3c90bb3
 AppThemeSample.swift e3467cfdec02937b
-AppearanceSample.swift 3056969e5ad87c3e
-ApplicationSessionSample.swift a09514319768f9c3
+AppearanceSample.swift b99a7f0167c671b9
+ApplicationSessionSample.swift 02b610eb8ee6a1b1
 BatterySample.swift 361332732b730510
 BindingReaderSample.swift 1239ebd325c706fa
 BottomBarSample.swift bcce016628204202

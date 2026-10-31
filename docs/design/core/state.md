@@ -305,6 +305,13 @@ delay. A write to a kept state asks the host for a turn itself, and waiting
 saves count as pending work, because a kept state nobody reads asks for no
 render and its save must not wait for the next event.
 
+The hook that marks the key - the storage's `keep`, run on every road a value
+comes in by - serves two more states whose every write must leave the core: a
+window's value, which retargets its window (scenes.md), and the application's
+theme and accent, which reach the host as the acts that set them. A control
+handed `application.$colorScheme` writes the state, and the host is told as if
+the application had assigned it.
+
 One key is one piece of state: two views declaring a key share its storage, so
 a write in one rebuilds the readers in the other. The first state to claim a key
 decides the storage, and only it reads the store.

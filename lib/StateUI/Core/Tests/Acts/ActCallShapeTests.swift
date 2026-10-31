@@ -292,6 +292,10 @@ final class ActCallShapeTests: XCTestCase {
         XCTAssertTrue(drain().isEmpty, "the theme it holds already is sent no more")
         application.colorScheme = .system
         taken(drain(), "useColorScheme", [.enumeration(ColorScheme.system.rawValue)], awaited: false)
+
+        // The theme is a state: written through its binding - a control's, a picker's - it crosses the same way.
+        application.$colorScheme.wrappedValue = .light
+        taken(drain(), "useColorScheme", [.enumeration(ColorScheme.light.rawValue)], awaited: false)
     }
 
     /// The accent the application holds crosses as one color - a pair's half in force, and the other half as the
@@ -318,6 +322,10 @@ final class ActCallShapeTests: XCTestCase {
 
         application.accentColor = nil
         taken(drain(), "useAccentColor", [.nothing], awaited: false)
+
+        // The accent is a state: written through its binding - a color picker's - it crosses the same way.
+        application.$accentColor.wrappedValue = .steelBlue
+        taken(drain(), "useAccentColor", [Color.steelBlue.propValue], awaited: false)
     }
 
     func testAFailedHandlerCrossesWithItsArgumentsInPlace() throws {

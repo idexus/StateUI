@@ -39,8 +39,7 @@ struct ApplicationSessionSample: SampleContent, ExampleContent {
 
             // One write for the whole application: every value without a
             // motion of its own takes it.
-            Picker(Self.laws, selection: Proxy(get: { application.motion }, set: { application.motion = $0 }),
-                   caption: Self.name)
+            Picker(Self.laws, selection: application.$motion, caption: Self.name)
                 .horizontalAlignment(.center)
 
             // No `.motion` here: the panel takes the application's.
