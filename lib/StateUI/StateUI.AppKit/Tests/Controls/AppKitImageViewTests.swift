@@ -50,6 +50,52 @@ final class AppKitImageViewTests: XCTestCase {
         XCTAssertEqual(view.nativeImageScaling, .scaleNone)
     }
 
+    /// A DRAWN PICTURE STANDS AS PIXELS OF THE SIZE IT IS SHOWN AT: AppKit draws an image view again whenever a
+    /// transform above it moves, and an SVG drawn anew each time cost a turning light table 300 ms of every 500. As
+    /// pixels a draw costs nothing; made with room to grow, away from the main thread, a pinch makes them again only
+    /// past what was made.
+    func testADrawnPictureStandsAsPixelsOfTheSizeItIsShownAt() throws {
+        let svg = #"<svg xmlns="http://www.w3.org/2000/svg" width="100" height="50"><rect width="100" height="50" fill="red"/></svg>"#
+        let drawing = try XCTUnwrap(NSImage(data: Data(svg.utf8)))
+        let view = AppKitImageView()
+        view.frame = NSRect(x: 0, y: 0, width: 60, height: 60)
+        view.apply(image: drawing, aspect: .fill, animationPlaying: false)
+        view.layoutSubtreeIfNeeded()
+        XCTAssertTrue(view.shownImage === drawing, "the drawing as it is, until its pixels come")
+
+        let shown = try pixels(of: view)
+        let bitmap = try XCTUnwrap(shown.representations.first as? NSBitmapImageRep)
+        XCTAssertEqual(shown.size, view.renderedImageFrame.size, "pixels of the size it covers")
+        XCTAssertGreaterThanOrEqual(bitmap.pixelsWide, 180, "a pixel and a half a point at the least")
+        XCTAssertTrue(view.image === drawing, "the picture as given")
+        XCTAssertEqual(view.intrinsicContentSize, drawing.size)
+
+        view.frame = NSRect(x: 0, y: 0, width: 80, height: 80)
+        view.layoutSubtreeIfNeeded()
+        pump()
+        XCTAssertTrue(view.shownImage === shown, "a size the pixels made still serve draws nothing again")
+
+        view.frame = NSRect(x: 0, y: 0, width: 200, height: 200)
+        view.layoutSubtreeIfNeeded()
+        let grown = try pixels(of: view, other: shown)
+        XCTAssertEqual(grown.size, NSSize(width: 400, height: 200), "a size past them, its own pixels")
+    }
+
+    /// The pixels the view shows once they come, other than `other`.
+    private func pixels(of view: AppKitImageView, other: NSImage? = nil) throws -> NSImage {
+        let deadline = Date(timeIntervalSinceNow: 2)
+        while Date() < deadline {
+            if let shown = view.shownImage, shown !== other, shown.representations.first is NSBitmapImageRep { return shown }
+            pump()
+        }
+        return try XCTUnwrap(nil as NSImage?, "no pixels came")
+    }
+
+    /// A turn of the main run loop, where what the background made is taken.
+    private func pump() {
+        RunLoop.main.run(until: Date(timeIntervalSinceNow: 0.02))
+    }
+
     @MainActor
     func testAnimationStateAndIntrinsicSizeFollowTheImage() {
         let image = NSImage(size: NSSize(width: 42, height: 24))

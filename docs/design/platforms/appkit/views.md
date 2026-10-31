@@ -164,6 +164,21 @@ bounds for visible where it or an ancestor stands under a transform
 a scroller uncovering a long label still draws it strip by strip (A long
 text).
 
+## A drawn picture
+
+A picture that is a file's drawing - an SVG's, a PDF's - stands in the
+image view as pixels of the size it is shown at, half as many again to
+grow into (`AppKitImageView`). They are made away from the main thread,
+the picture standing as it is meanwhile, and made again only once its size
+or the screen's scale needs more than they hold or fewer than half of them;
+pixels, icons and pictures drawn by code stand as they are given. The
+trap: AppKit draws an image view again whenever a transform above it moves
+- a photo turning as a throw slows, a card of a ring - and its drawing
+view, a private part of the control, draws a drawing anew from its source
+each time: a light table's turned photos spent 300 ms of every 500 in
+CoreSVG and the throw stuttered. Pixels made on the main thread for every
+size made a pinch stutter instead.
+
 ## A button's icon beside its words
 
 A button keeps its icon beside its words, the two together in the middle

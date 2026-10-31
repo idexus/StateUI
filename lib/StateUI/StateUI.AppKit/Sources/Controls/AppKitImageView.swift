@@ -16,7 +16,16 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
 
     private(set) var aspect: ContentMode = .fit
 
-    var image: NSImage? { imageView.image }
+    /// The picture as given; a drawing - an SVG's, a PDF's - is shown as pixels of the size it stands at.
+    private(set) var image: NSImage?
+
+    /// What the image view shows: the picture, or a drawing's pixels.
+    var shownImage: NSImage? { imageView.image }
+
+    /// The drawing the shown pixels were made of, and how many there are across and down; the ones on their way.
+    private var pixelsMade: (image: NSImage, pixels: NSSize)?
+    private var pixelsComing: (image: NSImage, pixels: NSSize)?
+
     var animationPlaying: Bool { imageView.animates }
     var renderedImageFrame: NSRect { imageView.frame }
     var nativeImageScaling: NSImageScaling { imageView.imageScaling }
@@ -45,8 +54,13 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     var picture: ((HostPicture) -> NSImage?)?
 
     func apply(image: NSImage?, aspect: ContentMode, animationPlaying: Bool) {
-        let imageChanged = imageView.image !== image
-        imageView.image = image
+        let imageChanged = self.image !== image
+        self.image = image
+        if imageChanged {
+            pixelsMade = nil
+            pixelsComing = nil
+            imageView.image = image
+        }
         imageView.animates = animationPlaying
         self.aspect = aspect
 
@@ -73,7 +87,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     }
 
     override var intrinsicContentSize: NSSize {
-        imageView.image?.size ?? .zero
+        image?.size ?? .zero
     }
 
     override func layout() {
@@ -83,7 +97,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
         case .fit:
             imageView.imageScaling = .scaleProportionallyUpOrDown
         case .fill:
-            let size = imageView.image?.size ?? .zero
+            let size = image?.size ?? .zero
             imageView.frame = NSRect(placed: PictureArithmetic.place(
                 LayoutSize(width: Double(size.width), height: Double(size.height)),
                 in: LayoutSize(width: Double(bounds.width), height: Double(bounds.height)), aspect: .fill))
@@ -93,7 +107,100 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
         case .center:
             imageView.imageScaling = .scaleNone
         }
+        showPixels()
     }
+
+    override func viewDidChangeBackingProperties() {
+        super.viewDidChangeBackingProperties()
+        needsLayout = true
+    }
+
+    /// A drawing stands as pixels of the size it is shown at, with room to grow, made away from the main thread once it
+    /// needs other ones - the picture standing as it is meanwhile: AppKit draws an image view again whenever a
+    /// transform above it moves, and a drawing made anew each time, or on the main thread, drops frames.
+    /// Design: docs/design/platforms/appkit/views.md#a-drawn-picture
+    private func showPixels() {
+        guard let image, Self.isDrawing(image) else { return }
+        let size = shownSize(of: image.size)
+        let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
+        guard size.width >= 1, size.height >= 1 else { return }
+        let needed = NSSize(width: size.width * scale, height: size.height * scale)
+        for wanted in [pixelsMade, pixelsComing] {
+            if let wanted, wanted.image === image, Self.serves(wanted.pixels, needed) { return }
+        }
+
+        let pixels = NSSize(
+            width: (needed.width * Self.headroom).rounded(.up), height: (needed.height * Self.headroom).rounded(.up))
+        pixelsComing = (image, pixels)
+        let drawing = SendableDrawing(image: image)
+        Task.detached(priority: .userInitiated) {
+            let made = SendableDrawing(image: Self.pixels(of: drawing.image, size: size, pixels: pixels))
+            await self.take(made.image, of: drawing.image, pixels: pixels)
+        }
+    }
+
+    /// The pixels made for `image`, shown where they are still the ones on their way.
+    private func take(_ made: NSImage?, of image: NSImage?, pixels: NSSize) {
+        guard let made, let coming = pixelsComing, coming.image === image, coming.pixels == pixels else { return }
+        pixelsComing = nil
+        pixelsMade = coming
+        imageView.image = made
+    }
+
+    /// How many more pixels a drawing is made with than it is shown with.
+    private static let headroom = 1.5
+
+    /// Whether pixels `made` serve a picture `needed` pixels big: as many at the least, at most twice as many.
+    private static func serves(_ made: NSSize, _ needed: NSSize) -> Bool {
+        needed.width <= made.width && needed.height <= made.height
+            && needed.width * 2 >= made.width && needed.height * 2 >= made.height
+    }
+
+    /// The size the picture is drawn at in the image view, for its aspect.
+    private func shownSize(of size: NSSize) -> NSSize {
+        switch aspect {
+        case .fit:
+            let placed = PictureArithmetic.place(
+                LayoutSize(width: Double(size.width), height: Double(size.height)),
+                in: LayoutSize(width: Double(imageView.frame.width), height: Double(imageView.frame.height)), aspect: .fit)
+            return NSSize(width: placed.width, height: placed.height)
+        case .fill, .stretch:
+            return imageView.frame.size
+        case .center:
+            return size
+        }
+    }
+
+    /// Whether a picture is a file's drawing - an SVG's, a PDF's - rather than pixels; an icon - a template - AppKit
+    /// tints, and one drawn by code may draw on the main thread alone: both stand as they are.
+    private static func isDrawing(_ image: NSImage) -> Bool {
+        !image.isTemplate && !image.representations.isEmpty
+            && !image.representations.contains { $0 is NSBitmapImageRep || $0 is NSCustomImageRep }
+    }
+
+    /// `image` drawn into `pixels` across and down, standing `size` big - on any thread.
+    nonisolated private static func pixels(of image: NSImage?, size: NSSize, pixels: NSSize) -> NSImage? {
+        guard let image else { return nil }
+        guard let bitmap = NSBitmapImageRep(
+            bitmapDataPlanes: nil, pixelsWide: Int(pixels.width), pixelsHigh: Int(pixels.height),
+            bitsPerSample: 8, samplesPerPixel: 4, hasAlpha: true,
+            isPlanar: false, colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0)
+        else { return nil }
+        bitmap.size = size
+        guard let context = NSGraphicsContext(bitmapImageRep: bitmap) else { return nil }
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = context
+        image.draw(in: NSRect(origin: .zero, size: size))
+        NSGraphicsContext.restoreGraphicsState()
+        let shown = NSImage(size: size)
+        shown.addRepresentation(bitmap)
+        return shown
+    }
+}
+
+/// A picture handed between the main thread and the one drawing it: neither changes it.
+private struct SendableDrawing: @unchecked Sendable {
+    let image: NSImage?
 }
 
 #endif
