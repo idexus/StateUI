@@ -34,17 +34,31 @@ final class AppKitDecoration {
         draws || surface != nil ? nil : fill.color?.cgColor
     }
 
+    /// Whether the box has been applied once.
+    private var applied = false
+
     /// Takes the element's values - its background by the host layer's reading of it (`HostMaterial`), its outline
-    /// by the host layer's rule (`BoxArithmetic`); the view draws again.
+    /// by the host layer's rule (`BoxArithmetic`); the view draws again where they changed.
     func apply(
         background: HostValue?, stroke: HostValue?, lineWidth: Double?, shape: HostValue?, clips: Bool,
         to view: NSView
     ) {
-        material = HostMaterial(background)
+        let material = HostMaterial(background)
+        let outline = AppKitBrush(stroke)
+        let width = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth))
+        let shape = BoxArithmetic.outline(shape)
+        // The same box again - a run placing the layout every frame - draws nothing anew.
+        // Design: docs/design/platforms/appkit/views.md#the-same-box-again
+        guard !applied || material != self.material || outline != self.stroke || width != self.lineWidth
+            || shape != self.shape || clips != self.clips
+        else { return }
+
+        applied = true
+        self.material = material
         fill = AppKitBrush(material.paint)
-        self.stroke = AppKitBrush(stroke)
-        self.lineWidth = CGFloat(BoxArithmetic.outlineWidth(stroke: stroke, width: lineWidth))
-        self.shape = BoxArithmetic.outline(shape)
+        self.stroke = outline
+        self.lineWidth = width
+        self.shape = shape
         self.clips = clips
         clip(view)
         view.layer?.backgroundColor = layerColor

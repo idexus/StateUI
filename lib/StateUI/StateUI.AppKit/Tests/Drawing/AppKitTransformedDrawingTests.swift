@@ -8,6 +8,19 @@ import AppKit
 @testable import StateUIAppKit
 import XCTest
 
+/// A view that counts each time it is marked for display.
+private final class MarkCountingView: NSView {
+    var marks = 0
+
+    override var needsDisplay: Bool {
+        get { super.needsDisplay }
+        set {
+            if newValue { marks += 1 }
+            super.needsDisplay = newValue
+        }
+    }
+}
+
 /// AppKit draws a layer-backed view only where it is visible, and measures that without its layers' transforms.
 @MainActor
 final class AppKitTransformedDrawingTests: XCTestCase {
@@ -41,6 +54,25 @@ final class AppKitTransformedDrawingTests: XCTestCase {
 
         XCTAssertEqual(drawn(turned), turned.bounds, "the turned card, whole")
         XCTAssertEqual(drawn(straight).width, 40, accuracy: 0.5, "the straight one, as far as it shows")
+    }
+
+    /// THE SAME BOX AGAIN DRAWS NOTHING ANEW: a run places its layout every frame and hands it its box each time; the
+    /// same box marks nothing for display, a box that changed draws again.
+    func testTheSameBoxAgainDrawsNothingAnew() {
+        let view = MarkCountingView(frame: NSRect(x: 0, y: 0, width: 100, height: 100))
+        let decoration = AppKitDecoration()
+        let rounded = ContainerShape.roundedRectangle(12).propValue
+        decoration.apply(background: nil, stroke: nil, lineWidth: nil, shape: rounded, clips: true, to: view)
+        let drawn = view.marks
+        XCTAssertGreaterThan(drawn, 0, "the first box draws")
+
+        decoration.apply(background: nil, stroke: nil, lineWidth: nil, shape: rounded, clips: true, to: view)
+        XCTAssertEqual(view.marks, drawn, "the same box marked the layout for display")
+
+        decoration.apply(
+            background: nil, stroke: nil, lineWidth: nil, shape: ContainerShape.roundedRectangle(20).propValue,
+            clips: true, to: view)
+        XCTAssertGreaterThan(view.marks, drawn, "a box that changed draws again")
     }
 
     /// The layout's two shapes, once the run has placed them.

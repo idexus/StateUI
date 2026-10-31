@@ -79,6 +79,14 @@ clears its color and outline, so the scroller puts them back each time it
 updates its layer. An oval scroller's outline is a shape layer over what it
 shows: under the oval's mask a layer's border would show only as slivers.
 
+## The same box again
+
+A layout takes its box - background, outline, shape, cut - each time the
+host applies its values, which a run placing it does every frame; the same
+box again changes nothing and marks nothing for display
+(`AppKitDecoration.apply`): cut and displayed again on every frame of a run,
+it would be work for nothing.
+
 ## A figure made of a material
 
 A shape whose fill is a blur or glass (`HostMaterial`) stands AppKit's own
