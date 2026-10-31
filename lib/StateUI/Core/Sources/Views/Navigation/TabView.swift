@@ -74,7 +74,7 @@ public struct TabView<Tab: Hashable>: ElementView, Arrangement, BarElement, Auto
     ///
     ///     TabView(Tab.allCases) { tab in … }
     ///         .selection($tab)
-    public func selection(_ state: Binding<Tab>) -> Self {
+    public func selection(_ state: Binding<Tab>) -> Modified {
         let ordered = tabs
         return modified { node in
             // The current page as its index among the children, and none where the state names no tab.

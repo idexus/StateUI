@@ -83,7 +83,7 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
     ///
     ///     SplitView { MenuPage() } detail: { NotesPage() }
     ///         .showsSidebar($showsMenu)
-    public func showsSidebar(_ state: Binding<Bool>) -> Self {
+    public func showsSidebar(_ state: Binding<Bool>) -> Modified {
         modified { node in
             node.readsWhenDescribed { $0.write(SplitViewContract.showsSidebar, state.wrappedValue) }
 

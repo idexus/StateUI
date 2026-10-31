@@ -11069,7 +11069,7 @@ swift.method SplitView.showsCloseButton(_:): @MainActor func showsCloseButton(_ 
 swift.method SplitView.showsCloseButton(_:): @MainActor func showsCloseButton(_ value: Bool) -> Self.Modified
 swift.method SplitView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
-swift.method SplitView.showsSidebar(_:): @MainActor func showsSidebar(_ state: Binding<Bool>) -> SplitView
+swift.method SplitView.showsSidebar(_:): @MainActor func showsSidebar(_ state: Binding<Bool>) -> SplitView.Modified
 swift.method SplitView.showsSidebarToggle(_:): @MainActor func showsSidebarToggle(_ state: Binding<Bool>) -> SplitView.Modified
 swift.method SplitView.showsSidebarToggle(_:): @MainActor func showsSidebarToggle(_ value: Bool) -> SplitView.Modified
 swift.method SplitView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
@@ -11951,7 +11951,7 @@ swift.method TabView.samples(_:into:_:): @MainActor func samples<Value>(_ source
 swift.method TabView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
-swift.method TabView.selection(_:): @MainActor func selection(_ state: Binding<Tab>) -> TabView<Tab>
+swift.method TabView.selection(_:): @MainActor func selection(_ state: Binding<Tab>) -> TabView<Tab>.Modified
 swift.method TabView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method TabView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method TabView.setValue(_:whenDescribed:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, whenDescribed value: @escaping @MainActor @Sendable () -> Value) -> Self where Owner : Contract, Value : HostRepresentable
