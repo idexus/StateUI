@@ -113,8 +113,12 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = Device(battery: Battery(chargeLevel: 1)).battery.chargeLevel"),
         Road(
             name: "a provided object replaced from below",
-            closed: "Environment<ApplicationSession>().projectedValue.wrappedValue = ApplicationSession()",
-            open: "_ = Environment<ApplicationSession>().projectedValue.motion"),
+            closed: "Environment<ApplicationSession>().wrappedValue = ApplicationSession()",
+            open: "_ = Environment<ApplicationSession>().wrappedValue.$motion"),
+        Road(
+            name: "a provided object's property lent through the environment",
+            closed: "_ = Environment<ApplicationSession>().projectedValue",
+            open: "let motion: Binding<Motion> = Environment<ApplicationSession>().wrappedValue.$motion; _ = motion"),
         Road(
             name: "a style asked for by a name as words",
             closed: #"_ = Text("x").style("Headline")"#,

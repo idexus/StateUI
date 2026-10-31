@@ -119,36 +119,6 @@ public final class Environment<Value> {
             on a view above this one.
             """)
     }
-
-    /// The provided object, lent on a property at a time: `TextField($context.note)`.
-    /// The object itself is the ancestor's to provide, so nothing replaces it from below; a part of
-    /// resources lends nothing.
-    public var projectedValue: EnvironmentLender<Value> {
-        EnvironmentLender { self.wrappedValue }
-    }
-}
-
-/// An object an ancestor provided, lent on a property at a time - what `$context` is
-/// for an `@Environment var context`. It lends properties only: the object is the
-/// ancestor's, so there is no road to replace it.
-///
-///     TextField($context.note)
-@dynamicMemberLookup
-@MainActor
-public struct EnvironmentLender<Value> {
-    private let object: () -> Value
-
-    init(_ object: @escaping () -> Value) {
-        self.object = object
-    }
-
-    /// One property of the object, as a proxy that writes through it.
-    public subscript<Subject>(
-        dynamicMember keyPath: ReferenceWritableKeyPath<Value, Subject> & Sendable
-    ) -> Proxy<Subject> {
-        let object = object
-        return Proxy(get: { object()[keyPath: keyPath] }, set: { object()[keyPath: keyPath] = $0 })
-    }
 }
 
 extension Environment: EnvironmentSlot {

@@ -445,8 +445,8 @@ Below it, a view reads:
   number or a day, or to change a choice.
 
 A part with no localization of its catalog above stops the program with both
-names, as an object nobody gave does. A part lends nothing: `$res.title` does
-not compile, because a part is a value, not an object to write through.
+names, as an object nobody gave does. A part is read, never written:
+`$res.title` does not compile, as an `@Environment` has no projected value.
 
 ## Changing the language
 

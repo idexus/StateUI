@@ -71,17 +71,13 @@ lookup.
 
 ### Editing a provided object
 
-The projected environment `$account` can lend a writable member to ordinary
-described input. The model property's own projection is the whole state and is
-the appropriate channel when a host carries that value:
+A provided object's `@State` properties are its states, so a control is handed
+one as any object's: `account.$name`, as `AccountEditor` does above, borrows the
+`@State` declared on `Account.name`, and the host carries it.
 
-- `$account.name` reaches the member through the provided object;
-- `account.$name` borrows the `@State` declared on `Account.name` itself.
-
-`$account` lends members only: assigning a different object through it does
-not compile. The ancestor owns which object it provides; descendants edit its
-properties or communicate a replacement through an explicit binding owned by
-that ancestor.
+`@Environment` has no projected value. The ancestor owns which object it
+provides, so nothing replaces it from below; a replacement travels through an
+explicit binding owned by that ancestor.
 
 ## Overriding one branch
 

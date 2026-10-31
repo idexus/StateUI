@@ -84,8 +84,8 @@ rebuilt when it changes, and only that body: the provider passes a reference
 and reads nothing. A part with no localization of its catalog above stops the
 program with both names, as an object nobody provided does.
 
-A part is a value and lends nothing: `$res.title` does not compile, because the
-lender needs a reference to write through.
+A part is a value, read and never written: `$res.title` does not compile, as an
+`@Environment` has no projected value.
 
 ## Matching a language
 

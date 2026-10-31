@@ -14334,7 +14334,6 @@ swift.property EngineCycle.count: let count: UInt64
 swift.property EngineCycle.elapsed: let elapsed: Double
 swift.property EngineCycle.now: let now: Double
 swift.property EngineCycle.reducesMotion: let reducesMotion: Bool
-swift.property Environment.projectedValue: @MainActor var projectedValue: EnvironmentLender<Value> { get }
 swift.property Environment.wrappedValue: @MainActor var wrappedValue: Value { get }
 swift.property EnvironmentValues.application: @MainActor var application: ApplicationSession { get }
 swift.property EnvironmentValues.device: @MainActor var device: Device { get }
@@ -14905,7 +14904,6 @@ swift.struct ElementEvent: struct ElementEvent<Owner, Payload> where Owner : Con
 swift.struct ElementProperty: struct ElementProperty<Owner, Value> where Owner : Contract, Value : HostRepresentable
 swift.struct Ellipse: @MainActor struct Ellipse
 swift.struct EngineCycle: struct EngineCycle
-swift.struct EnvironmentLender: @MainActor @dynamicMemberLookup struct EnvironmentLender<Value>
 swift.struct EnvironmentValues: @MainActor struct EnvironmentValues
 swift.struct Event: struct Event
 swift.struct FileType: struct FileType
@@ -15031,7 +15029,6 @@ swift.subscript Binding.subscript(_:): @MainActor subscript(index: Value.Index) 
 swift.subscript Binding.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any ReferenceWritableKeyPath<Value, Subject> & Sendable) -> Proxy<Subject> { get }
 swift.subscript Binding.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any WritableKeyPath<Value, Subject> & Sendable) -> Proxy<Subject> { get }
 swift.subscript ControlValues.subscript(_:): subscript<Owner, Value>(member: ElementProperty<Owner, Value>) -> Value? where Owner : Contract, Value : HostRepresentable { get }
-swift.subscript EnvironmentLender.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any ReferenceWritableKeyPath<Value, Subject> & Sendable) -> Proxy<Subject> { get }
 swift.subscript Proxy.subscript(_:): @MainActor subscript(index: Value.Index) -> Proxy<Value.Element> { get }
 swift.subscript Proxy.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any ReferenceWritableKeyPath<Value, Subject> & Sendable) -> Proxy<Subject> { get }
 swift.subscript Proxy.subscript(dynamicMember:): @MainActor subscript<Subject>(dynamicMember keyPath: any WritableKeyPath<Value, Subject> & Sendable) -> Proxy<Subject> { get }

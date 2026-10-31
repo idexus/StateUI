@@ -17,7 +17,8 @@
 //     the new one - through the clean walk, deep under clean ancestors;
 //   - an unchanged memo token does not carry a subtree past a provider
 //     replacement (`RenderedNode.seen` is what the skip compares);
-//   - `$context.property` lends one property on, writes included.
+//   - a provided object's `@State` is handed on by its own binding,
+//     `context.$property` - an `@Environment` has no projected value.
 
 import XCTest
 @_spi(Host) @testable import StateUI
@@ -86,14 +87,14 @@ private struct VisitButton: View {
     }
 }
 
-/// A handler lending one property on: `$session.name` is a `Binding<String>`
-/// writing through the object, the model rule.
+/// A handler handing on one property of a provided object: `session.$name`,
+/// the `Binding` of the `@State` the class declares.
 private struct RenameButton: View {
     @Environment var session: Session
 
     var body: some View {
         Button("rename").onClicked {
-            let name: Proxy<String> = $session.name
+            let name: Binding<String> = session.$name
             name.wrappedValue = "typed"
         }
     }
@@ -276,7 +277,7 @@ final class EnvironmentTests: XCTestCase {
         XCTAssertEqual(patch.child(.auto(1))?.props["text"], .string("visits 1"))
     }
 
-    func testTheProjectedValueLendsOnePropertyOn() {
+    func testAProvidedObjectsStateIsHandedOnByItsOwnBinding() {
         let renders = Renders()
         let session = Session()
 
@@ -286,7 +287,7 @@ final class EnvironmentTests: XCTestCase {
 
         XCTAssertTrue(renders.fire(id!))
         XCTAssertEqual(session.name, "typed",
-                       "$session.name writes through the object, the model rule")
+                       "session.$name is the state the object declares")
     }
 
     // MARK: - What a carried view compares beside its inputs
