@@ -3,6 +3,191 @@
 What each release changes for an application and for a host, newest first. A breaking change says how to move
 over. StateUI is before 1.0: a release may break what the one before it promised, and says so here.
 
+## 0.8.0 - 2026-10-31
+
+### Breaking changes
+
+- **A state is lent whole, or its value is handed with an event.** Every member that takes a state takes a
+  `Binding<Value>` made from a `@State`: `$name`, or `contact.$name` where a class declares `@State var name`.
+  `$state.member` and `$state[i]` are a `StatePart`, which reads, writes and posts but which no member takes, and
+  `Binding(get:set:)` is gone. A value that crosses to the host as it is - words, a switch, a number, a date, a
+  time, a color - may instead be given as a plain value, the user's change heard in its event:
+  `TextField(chore.title).onTextChanged { … }`, `CheckBox(todo.done).onToggled { … }`. A choice the library
+  translates - a picker's item, a list's selection, a tab, a stack's pages, a sheet - takes the state alone. Move
+  over: make the field a control edits a `@State` of a class, or hand its value and write the change back in the
+  event. `@Environment` has no projected value - a provided object's field is `model.$field` - and
+  `ApplicationSession.colorScheme` and `.accentColor` are states (`Picker(themes, selection:
+  application.$colorScheme)`).
+- **A split view shows its sidebar by a modifier.** `SplitView($showsSidebar, sidebar: …, detail: …)` is
+  `SplitView(sidebar: …, detail: …).showsSidebar($showsSidebar)`; `flyoutBackground` is
+  `sidebarOverlayBackground`.
+- **A tab view is typed by its tab** (`TabView<Tab>`), and its `.selection(_:)` takes a state of that type.
+- **A window kind names the value it opens for.** `WindowType<Value>` is declared in an extension -
+  `extension WindowType where Value == Note { static let note = WindowType("note") }` - and
+  `WindowGroup(.note, for: Note.self) { $note in … }` is `WindowGroup(.note) { $note in … }`.
+- **A handler's policy stands alone.** `.onClicked(gate: .ignoreWhileRunning) { … }` is
+  `.onClicked(.ignoreWhileRunning) { … }`; after an event's own arguments it is `policy:`
+  (`.onTapped(count: 2, policy: .waitForPrevious)`); `.none` is `.runConcurrently`; and `gate:` takes only a shared
+  `Gate(.ignoreWhileRunning)`, what was `Gatekeeper`.
+- **The layout worked out from parameters is `MotionLayout`.** Move over by renaming:
+
+  | Before | Now |
+  |---|---|
+  | `LayoutEngine` | `MotionLayout` |
+  | `LayoutPhase` | `LayoutParameters` |
+  | the generic parameter `Phase` | `Parameters` |
+  | `LayoutPlaces`, `LayoutPlaces.limits` | `AxisValues`, `AxisValues.endpoints` |
+  | the axis's `wraps:` | `periodic:` |
+  | `LayoutInput.Axis` | `LayoutInput.Orientation` |
+  | `ItemDragStart.across`, `.held` | `.perpendicular`, `.longPress` |
+
+  A throw goes on by one law for the whole layout: `.throwMotion(_:)` replaces the `throwing:` argument of every
+  `LayoutInput` (`.magnification(throwing:)` is gone), and a `GalleryView`'s `.throwing(_:)` is `.throwMotion(_:)`.
+  A gallery's `onItemTapped { item in }` is `onItemActivated { id in }`, handed the card's identity.
+- **A motion is compared, never read apart.** `Motion.law`, `.curve`, `.factor`, `.isInherited`, `.isCustom`,
+  `.length` and `Motion.Law` are gone (`motion == .none`). A law given to `move(to:_:)` is that move's alone: a plain
+  assignment after it travels on the value's own law. `Sync`, the `sync:` of `engine(following:)` and
+  `engine(tracking:)`, and `EngineCycle.sync` are gone - an engine runs on the display's frame.
+- **Several sources convert through `multi` alone.** `$a.convert(with: $b) { … }` is `.multi($a, $b).convert { … }`,
+  and journeys alike.
+- **Controls named for what they show.** `Spacer` is `Space` - it alone grows along a stack - and `Fill` takes the
+  room it is offered; `ActivityIndicator` is `Spinner`; `PositionIndicator` is `PositionDots`, with `.dotColor`,
+  `.currentDotColor`, `.dotSize`, `.dotShape` and `DotShape`; `Divider` is `Separator`. `RadioButton` and
+  `groupName` are gone: a choice among few is `Picker(...).presentation(.radio)`, and `CheckBox` and `Switch` say
+  their words with `.text(_:)`.
+- **A side follows the direction.** `Insets`, `.margin` and `.padding` take `start:` and `end:` where they took
+  `left:` and `right:`; `IconPosition.leading` and `.trailing` are `.start` and `.end`.
+- **A layout names the edges it runs under.** `.avoidsSafeArea(...)` and `SafeArea` are gone:
+  `.ignoresSafeArea(.top)` (`SafeAreaEdges`) runs a layout under the bars and the system's edges it names, and
+  keeps it clear of the rest.
+- **A toolbar's items are typed.** `ToolbarItem` is what every bar item is: `ToolbarButton`, `ToolbarToggle`,
+  `ToolbarLabel` and `ToolbarGroup`. `.toolbar(.trailing, order: 1) { ToolbarItem("Save") }` is
+  `.toolbar { ToolbarButton("Save") }`; an item says where it stands with `.placement(.sidebar, at: .end, order: 1)`,
+  and `ToolbarSide` and `ToolbarItemPlacement` are gone. A page's `barTitle`, `barSubtitle` and `barIcon` are gone -
+  a page names itself with `.title(_:)` and `.subtitle(_:)` - and `barBackgroundColor` is `barBackground`, a color
+  or a material.
+- **A checked menu entry is a `MenuToggle`**: `MenuItem("Wrap").isOn($wraps)` is `MenuToggle("Wrap", isOn: $wraps)`.
+  `.isDestructive(true)` on a menu item or a toolbar button is `.role(.destructive)`. `Button(icon:)` is
+  `Button().icon(_:)`, and `showsMenuArrow` is gone - a button's menu names its kind, `.menu(.split) { … }`.
+- **A sheet is presented by a view.** `ModalStack` is gone: `.sheet(isPresented: $shown) { … }` and
+  `.sheet(item: $item) { item in … }` present a page the state asks for, and the user's dismissal writes `false` or
+  `nil`.
+- **The window asks; the application acts.** `Dialogs.alert`, `.confirm`, `.chooseAction`, `.prompt`, `.openFile`,
+  `.openFiles` and `.saveFile`, `OnScreenKeyboard.hide()` and `Inspector.open/close/toggle/isOpen(in:)` are the
+  window's (`@Environment(\.window)`: `window.confirm(...)`, `window.hideOnScreenKeyboard()`,
+  `window.openInspector()`) and stand over that window. `Links.launch` and `ScreenReader.announce` are
+  `application.launch` and `application.announce`. A choice of actions answers the value chosen:
+  `window.chooseAction("Share via", among: Share.allCases, caption: …, destructive: .delete) -> Share?`, `nil` for its
+  cancel; `confirm`'s `cancel:` may be left out, and `alert`'s button is `accept:`.
+- **A kept key is typed by its value.** `PersistentKey("name", of: T.self)` is `PersistentKey<T>("name")`, declared as
+  a static of `extension PersistentKey where Value == T`, and a state of another type does not compile; `SceneKey`
+  alike, its value any `Codable`, kept as JSON text - a value an earlier version kept reads as none once.
+  `application.persistentKeys` is gone.
+- **Names say what a thing is.** `AppInfo` is `ApplicationInfo`; `device.info.deviceType` is
+  `device.info.isVirtual: Bool?`; `device.honours(_:)` is `device.honors(_:)`; a catalog's languages are an
+  `enum AppLanguage: LocaleTag, CaseIterable`, its associated type `CatalogLanguage`;
+  `.automationExcludedWithChildren(_:)` is `.hidesChildrenFromAccessibility(_:)`.
+- **Values are typed.** `Color("#512BD4")` is `Color(hex: 0x512BD4)`, `Color("#80FF0000")` is
+  `Color(hex: 0xFF0000, opacity: 0.5)`, and a color from data is `Color(parsing:)`, `nil` for what is no color.
+  `Rectangle(.red)` is `Rectangle().fill(.red)`, `Ellipse` and `Capsule` alike; `Image(light:dark:)` is
+  `Image(ImageSource(light:dark:))`. `Map(latitude:longitude:radiusMeters:)` is
+  `Map(region: MapRegion(center: Location(...), radiusMeters:))`, `Marker("Name").location(latitude:longitude:)` is
+  `Marker(at: Location(...)).label("Name")`, and an aim moves a map with `moveToRegion(_:)`.
+  `DatePicker.format("D")` is `.format(.long)` (`DateStyle`).
+- **One road for each thing.** A scroller's offset is read with `.scrollOffset($offset)`; its `scrollXChanged` and
+  `scrollYChanged` events are gone. An array of views is no longer a container's content: write the statements, or a
+  `ForEach`. `onKeyPressed`'s handler takes a `KeyPress` (`press.key`, `press.modifiers`). `currentThreadNumber()`
+  is gone - ask `MainActor.preconditionIsolated`.
+- **A head starts the application in Swift.** `@_cdecl("stateui_app_register") public func stateui_app_register()`
+  is `public func registerApplication()`, and `exit(StateUIGTK.run(...))` and `exit(StateUIWinUI.run())` are
+  `StateUIGTK.run(...)` and `StateUIWinUI.run()`, which never return.
+- **For host and backend authors (`@_spi(Host)`):** `Renderer` is the host's alone - an application tells every
+  change by writing a state. `Prop("…")`, `Event("…")` and `Act("…")` are the host's; a member is reached through
+  its contract. The motion layout is `MotionLayoutContract`, node type `"MotionLayout"`, its members `parameters`,
+  `translationOrientation`, `translationUpdated`, `wheelStepped`, `itemDragUpdated` and `pinchRotationUpdated`;
+  `ViewContract.layoutBody` is new. A registered control's `applies([a, b])` is `applies(a, b)`,
+  `children(_:members:)` is `children(_:properties:events:)`, and an element reads a state handed to it when it is
+  described. `CoreLink.readsKept { name, kind in … }` replaces `persistentKeys` and `restorePersistent`. The tier
+  `TextStyleElement` is `TextColorElement`; `HostDeviceInfo` takes `isVirtual:`. A host's motion laws take and give
+  speeds per second.
+
+### New
+
+- A two-way control - a field, a switch, a check box, a slider, a stepper, a date or time picker, a color picker -
+  takes its value with an event of the user's change: `onTextChanged`, `onToggled`, `onValueChanged`,
+  `onDateChanged`, `onTimeChanged`, `onColorChanged`. A picker tells the index chosen (`onSelectedIndexChanged`), a list its selection
+  (`onSelectionChanged`).
+- `.popover(isPresented:)` and `.popover(item:)` show the platform's popover by a view, a sheet on a phone. A sheet
+  stands as a card on a wide screen, as large as its page asks, and its stack offers a close button
+  (`.showsCloseButton(_:)`).
+- A page stands a bar at its foot (`.bottomBar { … }`) and a toolbar there (`.toolbar(.bottom) { … }`); a page runs
+  under its bars where it says so (`.ignoresSafeArea`). A bar says how rows show at its edge (`.barScrollEdge`), how
+  its buttons stand (`.toolbarStyle`, `.toolbarSpacing`) and the color of their words (`.barForegroundColor`); its
+  background may be a material. A split view's bar stands in two parts, and `.showsSidebarToggle(false)` hides its
+  toggle.
+- `Link` opens its address; `.onLinkOpened` hears the links of a view's window, a link of the application's own
+  scheme included. `.onHeld` hears a press held on any view. `ColorPicker` opens the platform's own picker.
+  `ToolbarToggle` is a setting on the bar, a toolbar button holds a menu (`.menu(_:_:)`), and a button's words may
+  stand out of sight and still name it (`.showsText(false)`).
+- `application.clipboard` writes and reads text; `window.share(text:link:)` offers the platform's share sheet;
+  `application.send(HTTPRequest(...))` sends an HTTP request on every host.
+- A scroller or a list is pulled to refresh: `.isRefreshing($refreshing)`, `.onRefreshRequested`,
+  `.isRefreshEnabled`. A list item's `.contextMenu` is also its swipe actions on UIKit.
+- `.accessibilityRole` and `.accessibilityValue` say what a view made of parts is and holds;
+  `.accessibilityAction(_:perform:)` and `.onAccessibilityAdjusted` take a screen reader's actions and steps;
+  `device.accessibility` reads less motion, more contrast, a running screen reader and the scale of words.
+- `InputPurpose.username`, `.newPassword` and `.oneTimeCode` let the platform fill a sign-in in. Tab, Space, Home,
+  End, Page Up and Page Down are keys. On Windows, GNOME and the Web an Edit menu (`.id(StandardMenu.edit)`) holds
+  the platform's undo, clipboard and selection entries, as on the Mac and the iPad.
+- `StateUITesting` drives an application's own pages in its tests as a user does, on every host's toolkit; the
+  starter's test clicks its button.
+- `DispatchQueue.main.async` runs on the UI thread on Android, Windows and Linux too.
+- `Space`, `Fill`, and a figure filled with a material (`.fill(_:)` takes a `Material`). `Group` and `AnyView` hold a view with no
+  element of their own.
+- Words of other sizes rest on one baseline (`Alignment.firstBaseline`), a row can wrap onto further lines
+  (`HStack { … }.wraps(true)`, `.rowSpacing`, `.lineAlignment`), a row short of room takes it from its words, and
+  `.monospacedDigits` draws every digit at one width.
+- An application gives its own accent (`application.accentColor`).
+- A motion layout may mirror right to left (`.mirrorsRightToLeft(true)`); its views move as bodies
+  (`.dynamics(_:)`, `.layoutBody(_:)`, `.followsLayout(_:)`), it tells once it rests (`.onSettled`), and an axis of
+  keyframes alone needs no input. A gallery's cards may follow their places (`.itemBody(_:)`).
+- `Motion.glide(longest:)` is a public motion law, setting out at its value's speed; `journey.reach(_:)` says where a
+  motion would bring a value. Every gesture tells how fast it goes (`PanUpdate.velocityX`, `.velocityY`,
+  `PinchUpdate.velocity`, `.onRotationUpdated`), and a dragged item knows what it is over.
+- `.onHostEvent(event) { … }` hears a host event while its view stands, and a field takes an outline of its own
+  (`.stroke`, `.shape`, `.lineWidth`).
+- An application's own control raises the events of the tiers it wears (`reports.raise`).
+
+### Fixed
+
+- A tapped view presses as a button on every host, and a single tap is pressed as a button is; a press that traveled
+  is no tap, a touch catching a moving or springing list presses no row, and a held finger's menu stays as it lifts.
+- A placed opacity no longer wakes UIKit's focus system: with a hardware keyboard, a motion layout and the Home
+  screen no longer jump once a second on the iPad.
+- A drawn picture under a moving transform stands as pixels of the size it is shown at on AppKit, so a thrown or
+  zoomed picture no longer stutters, and a box that did not change draws nothing anew.
+- A tabbed view's tabs come back after a tab that is a stack, stand in the middle of their bar, and its bar moves at
+  once on GTK.
+- A traveling layout lays out at its destination, a button's words stand where it travels to, and a field keeps the
+  keyboard as its row moves.
+- A closed window's views are let go on every host; a UIKit bar button no longer outlives its element.
+- On Android pages no longer slide through each other on a push, a list cuts its cells at its edges and reports where
+  it stands, a view is never a pixel short, the window draws edge to edge, and a theme holds before Android 12.
+- A grid draws its children in their order, a grid child spanning tracks asks its room of them, and a child's new
+  words arrange its layout again.
+- A UIKit list chooses many with taps; a GTK sheet fits its window; a WinUI bar's buttons stand as a toolbar's.
+
+### Faster
+
+- A ticker's tick rebuilds only the views that read its values, and sheets taken together go in one render.
+- A motion layout moving alone arranges no child.
+
+### Tooling
+
+- The public API stands recorded in `lib/StateUI/exports/api/StateUI.txt`, held by the suite; every interface
+  example in the handbook compiles, and a Gallery sample's listed code is the code that runs.
+- An element a host keeps after it left is counted, and a closed window's views are proven let go.
+
 ## 0.7.1 - 2026-10-20
 
 ### Breaking changes

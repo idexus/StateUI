@@ -32,7 +32,7 @@ android {
         minSdk = 28
         targetSdk = 36
         versionCode = 1
-        versionName = "0.7.1"
+        versionName = "0.8.0"
         manifestPlaceholders["googleMapsKey"] = googleMapsKey
     }
 
