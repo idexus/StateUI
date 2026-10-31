@@ -62,7 +62,7 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/PickerContract
 <tr><td colspan="9">UIKit: UIKit has no radio buttons: <code>.radio</code> is a column of its buttons, each marked by a filled or an empty circle.<br>Android Views: Android has no segmented control: <code>.segmented</code> is a radio group in a row.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>selectedIndex</code></td><td>property</td><td><code>Int</code></td><td>native</td><td align="center">✅</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>selectedIndexChanged</code></td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>onSelectedIndexChanged</code> (<code>selectedIndexChanged</code>)</td><td>event</td><td><code>Int</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: choose on Picker: the host's action called, not the pop-up's<br>UIKit: only through the host's own: choose on Picker: the host's choice called, not the menu's action</td></tr></tbody>
 </table>
 

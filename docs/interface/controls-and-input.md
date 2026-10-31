@@ -415,6 +415,31 @@ VStack {
 }
 ```
 
+Given a value rather than a state, a picker shows it chosen and writes
+nothing: `.onSelectedIndexChanged` says where in the list the user chose, and
+the application writes its choice itself - the way a row of an array of values
+is edited:
+
+```swift
+enum Priority: CaseIterable, Equatable { case low, normal, high }
+
+struct Todo {
+    let id: Int
+    var priority = Priority.normal
+}
+
+@State var todos = [Todo(id: 1), Todo(id: 2)]
+
+ForEach(todos, id: \.id) { todo in
+    Picker(Priority.allCases, selection: todo.priority)
+        .onSelectedIndexChanged { index in
+            if let row = todos.firstIndex(where: { $0.id == todo.id }) {
+                todos[row].priority = Priority.allCases[index]
+            }
+        }
+}
+```
+
 The application owns the selected value: one choice of several is a picker,
 offered as radio buttons where `.radio` says so, and the one state holding its
 selection. Range bounds are semantic constraints and are not

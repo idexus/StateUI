@@ -8820,6 +8820,12 @@ enum Listings {
                 Picker(Size.allCases, selection: $size) { "\($0)".titled }
                     .presentation(.radio)
 
+                // A value, not a state: this picker writes nothing, and the
+                // user's choice comes as its place in the list, written here.
+                Picker(Size.allCases, selection: size) { "\($0)".titled }
+                    .placeholder("Size")
+                    .onSelectedIndexChanged { index in size = Size.allCases[index] }
+
                 Text(size.map { "Chosen: \($0)" } ?? "Nothing chosen")
 
                 Text("Opened \(opened)x")

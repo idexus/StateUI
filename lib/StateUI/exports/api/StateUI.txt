@@ -1144,6 +1144,8 @@ swift.init PersistentKey.init(_:): init(_ name: String)
 swift.init PersistentKind.init(rawValue:): init?(rawValue: Int32)
 swift.init PersistentValue.init(persisted:): init?(persisted: PropValue)
 swift.init Picker.init(): @MainActor init()
+swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Item, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
+swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: Item?, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
 swift.init Picker.init(_:selection:caption:): @MainActor init<Item>(_ items: [Item], selection: some TwoWay, caption: (Item) -> String = { "\($0)" }) where Item : Equatable
 swift.init PickerPresentation.init(propValue:): init?(propValue: PropValue)
 swift.init PickerPresentation.init(rawValue:): init?(rawValue: Int32)
@@ -8111,6 +8113,9 @@ swift.method Picker.onPointerReleased(gate:_:): @MainActor func onPointerRelease
 swift.method Picker.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ handler: @escaping @MainActor @Sendable (RotationUpdate) throws -> Void) -> Self.Modified
 swift.method Picker.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Picker.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
+swift.method Picker.onSelectedIndexChanged(_:): @MainActor func onSelectedIndexChanged(_ handler: @escaping @MainActor @Sendable (Int) throws -> Void) -> Picker.Modified
+swift.method Picker.onSelectedIndexChanged(_:_:): @MainActor func onSelectedIndexChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Picker.Modified
+swift.method Picker.onSelectedIndexChanged(gate:_:): @MainActor func onSelectedIndexChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Picker.Modified
 swift.method Picker.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method Picker.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method Picker.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified

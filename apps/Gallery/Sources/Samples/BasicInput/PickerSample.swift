@@ -57,6 +57,14 @@ struct PickerSample: SampleContent, ExampleContent {
                 .accessibilityLabel("Size as radio buttons")
                 .presentation(.radio)
 
+            // A value, not a state: this picker writes nothing, and the
+            // user's choice comes as its place in the list, written here.
+            Picker(Size.allCases, selection: size) { "\($0)".titled }
+                .accessibilityIdentifier("picker.value")
+                .accessibilityLabel("Size as a value")
+                .placeholder("Size")
+                .onSelectedIndexChanged { index in size = Size.allCases[index] }
+
             Text(size.map { "Chosen: \($0)" } ?? "Nothing chosen")
                 .fontSize(17)
                 .horizontalTextAlignment(.center)
@@ -76,7 +84,9 @@ struct PickerSample: SampleContent, ExampleContent {
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
-            Text("The three pickers share one state: choose in any and the others follow.")
+            Text("The first three pickers share one state: choose in any and the others follow. "
+                + "The fourth is given the value, and writes the user's choice itself from the place "
+                + "`onSelectedIndexChanged` reports.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 

@@ -37,7 +37,9 @@ extension PickerProperties {
 ///         .placeholder("Span")
 ///
 /// The choice is one of the values, not a place in the list: the list may
-/// change its order and the choice stays. Each value shows by its caption -
+/// change its order and the choice stays. Given a value rather than a state,
+/// it shows that, and `.onSelectedIndexChanged` says where in the list the
+/// user chose, for the application to write. Each value shows by its caption -
 /// its description unless the picker is given one. The picker takes
 /// `.textColor` but has no `.text`: the field shows the chosen value's caption,
 /// or the placeholder while nothing is chosen.
@@ -80,6 +82,39 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
         self.init(items, chosen: selection, caption: caption)
     }
 
+    /// A picker offering `items`, each by its `caption`, with `selection`
+    /// chosen - a value, read where the picker is built. The user's choice
+    /// writes nothing: `.onSelectedIndexChanged` reports its place in `items`.
+    ///
+    ///     Picker(Priority.allCases, selection: todo.priority)
+    ///         .onSelectedIndexChanged { index in edit(todo.id) { $0.priority = Priority.allCases[index] } }
+    ///
+    /// - Parameters:
+    ///   - items: the values to choose from, in the order they are offered.
+    ///   - selection: the value shown chosen.
+    ///   - caption: the words each value shows by; its description unless given.
+    public init<Item: Equatable>(_ items: [Item], selection: Item, caption: (Item) -> String = { "\($0)" }) {
+        self.init(items, showing: selection, caption: caption)
+    }
+
+    /// The same, with nothing chosen while `selection` is nil - the placeholder shows then.
+    ///
+    /// - Parameters:
+    ///   - items: the values to choose from, in the order they are offered.
+    ///   - selection: the value shown chosen, or nil.
+    ///   - caption: the words each value shows by; its description unless given.
+    public init<Item: Equatable>(_ items: [Item], selection: Item?, caption: (Item) -> String = { "\($0)" }) {
+        self.init(items, showing: selection, caption: caption)
+    }
+
+    /// The list and the value's place in it, with no way back.
+    private init<Item: Equatable>(_ items: [Item], showing selection: Item?, caption: (Item) -> String) {
+        var picker = Picker()
+        picker.node.write(PickerContract.options, items.map(caption))
+        picker.node.write(PickerContract.selectedIndex, selection.flatMap { items.firstIndex(of: $0) } ?? -1)
+        self = picker
+    }
+
     /// The choice crosses as the chosen value's place in the list, worked out
     /// again at each build, and a choice reported comes back as its value.
     /// Design: docs/design/views/bindings.md#two-way-controls
@@ -93,6 +128,24 @@ public struct Picker: ElementView, TextColorElement, FontElement, TextAlignmentE
     }
 
     // MARK: Events
+
+    /// The user has chosen the value at `index` in the list - after a state's
+    /// write, where the picker was given one. A choice the application makes
+    /// raises nothing.
+    public func onSelectedIndexChanged(_ handler: @escaping @MainActor (Int) throws -> Void) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, handler)
+    }
+
+    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
+    /// again while a run is under way.
+    public func onSelectedIndexChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Int>) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, policy: policy, handler)
+    }
+
+    /// The same, through `gate`, which every handler and task written with it shares.
+    public func onSelectedIndexChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Int>) -> Modified {
+        onEvent(PickerContract.selectedIndexChanged, gate: gate, handler)
+    }
 
     /// The user has opened the list of choices. Opening it with `isOpen(true)`
     /// raises nothing: the application already knows.

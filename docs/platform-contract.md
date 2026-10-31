@@ -631,7 +631,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 9 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
-| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `presentation`, `selectedIndex`, `selectedIndexChanged` | 8 | 4 ✅ · 1 ✓ | 1 ✅ · 1 ☑️ · 3 ✓ | 3 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ | 4 ✅ · 4 – | 5 ✅ · 3 – |
+| [Picker](controls/Picker.md) | `onClosed` (`closed`), `isOpen`, `onOpened` (`opened`), `options`, `placeholder`, `presentation`, `selectedIndex`, `onSelectedIndexChanged` (`selectedIndexChanged`) | 8 | 4 ✅ · 1 ✓ | 1 ✅ · 1 ☑️ · 3 ✓ | 3 ✅ · 1 ☑️ · 1 ✓ | 8 ✅ | 4 ✅ · 4 – | 5 ✅ · 3 – |
 | [Polygon](controls/Polygon.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Polyline](controls/Polyline.md) | `fillRule`, `points` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Popover](controls/Popover.md) | `isPresented`, `isPresentedChanged` | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 2 ✅ |

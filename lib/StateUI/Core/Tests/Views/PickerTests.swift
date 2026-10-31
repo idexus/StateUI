@@ -63,4 +63,40 @@ final class PickerTests: XCTestCase {
         renders.fire(chosen, with: [.number(7)])
         XCTAssertEqual(span.wrappedValue, .month, "no value there")
     }
+
+    /// A picker of a value shows it chosen and writes nothing: the user's choice comes as its place in the list,
+    /// for the application to write itself.
+    func testAPickerOfAValueReportsTheUsersChoiceByItsPlace() {
+        var places: [Int] = []
+        let renders = Renders()
+        let patch = renders.render(
+            Picker(Span.allCases, selection: Span.week).onSelectedIndexChanged { places.append($0) }.node)
+
+        XCTAssertEqual(patch.props["options"], .strings(["day", "week", "month"]))
+        XCTAssertEqual(patch.props["selectedIndex"], .number(1))
+
+        renders.fire(patch.events?["selectedIndexChanged"] ?? -1, with: [.number(2)])
+        XCTAssertEqual(places, [2])
+    }
+
+    /// Nothing is chosen while a picker's value is nil.
+    func testAPickerOfNoValueChoosesNothing() {
+        let node = Picker(Span.allCases, selection: Span?.none).node
+
+        XCTAssertEqual(node.props["selectedIndex"], .number(-1))
+    }
+
+    /// A picker of a state reports the choice too, after writing its value.
+    func testAPickerOfAStateReportsTheChoiceAfterWritingIt() {
+        let span = State(Span.day)
+        var seen: [Span] = []
+        let renders = Renders()
+        let patch = renders.render(
+            Picker(Span.allCases, selection: span.projectedValue).onSelectedIndexChanged { _ in
+                seen.append(span.wrappedValue)
+            }.node)
+
+        renders.fire(patch.events?["selectedIndexChanged"] ?? -1, with: [.number(1)])
+        XCTAssertEqual(seen, [.week])
+    }
 }
