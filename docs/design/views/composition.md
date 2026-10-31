@@ -93,6 +93,12 @@ crossed rebuilds that empty view rather than the deck. Handlers that need
 the value when they fire ask it through a closure rather than reading it at
 build.
 
+A watcher is for an action on a change - the gallery's run sent to the asked
+card, its report. A value an element shows of a state it was handed is read
+by the element itself as the differ describes it
+(core/invalidation.md#an-element-reads-what-it-was-handed), with no view of
+its own beside it.
+
 ## Items held behind a class
 
 The differ finds a composed view's `@State` by walking its stored properties,

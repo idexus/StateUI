@@ -291,6 +291,23 @@ public struct Node {
     /// Design: docs/design/core/identity-and-diffing.md#containers-run-their-own-content
     var producer: (() -> [Node])?
 
+    /// What the element reads of a state it was handed, run as the differ describes it.
+    /// Design: docs/design/core/invalidation.md#an-element-reads-what-it-was-handed
+    var describedReads: [@MainActor (inout Node) -> Void] = []
+
+    /// Reads a state as the differ describes this element, never while the body writing it builds: the element is the
+    /// state's reader, and a write describes the element alone again.
+    mutating func readsWhenDescribed(_ read: @escaping @MainActor (inout Node) -> Void) {
+        describedReads.append(read)
+    }
+
+    /// Runs what the element reads when described, here and now - for a reading of the tree outside the differ.
+    mutating func readAsDescribed() {
+        let reads = describedReads
+        describedReads = []
+        for read in reads { read(&self) }
+    }
+
     /// Runs the producer, if pending, filing its nodes ahead of the slots. Idempotent.
     mutating func materialize() {
         guard let make = producer else { return }

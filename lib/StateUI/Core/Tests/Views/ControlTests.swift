@@ -1051,6 +1051,7 @@ final class ControlTests: XCTestCase {
     private static func carriedNames(in node: Node) -> Set<String> {
         var node = node
         node.materialize()
+        node.readAsDescribed()
 
         let own = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))
 
@@ -1427,6 +1428,7 @@ final class ControlTests: XCTestCase {
     private static func propNames(in node: Node) -> Set<String> {
         var node = node
         node.materialize()
+        node.readAsDescribed()
 
         // A property driven from a state is carried as much as one stated.
         let carried = Set(node.props.keys.map(\.name)).union(node.driven.keys.map(\.name))

@@ -92,7 +92,8 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
 
         if let choice {
             element.node.write(ItemsViewContract.selectionMode, choice.mode)
-            element.node.write(ItemsViewContract.selectedItems, source.identities(of: choice.chosen))
+            // Read as the list is described: the list is the reader, never the body that wrote it.
+            element.node.readsWhenDescribed { $0.write(ItemsViewContract.selectedItems, source.identities(of: choice.chosen())) }
             element.node.addHandler(ItemsViewContract.selectedItemsChanged.token) {
                 guard let identities = MemberValues.carried(
                     EventBuffer.current, by: ItemsViewContract.selectedItemsChanged.name, as: [String].self)
@@ -141,7 +142,7 @@ extension ItemsView {
     /// holds now, and how the user's choice is written back.
     struct Choice {
         let mode: SelectionMode
-        let chosen: [ID]
+        let chosen: @MainActor () -> [ID]
         let write: ([ID]) -> Void
     }
 
@@ -161,7 +162,7 @@ extension ItemsView {
         var copy = self
         copy.choice = Choice(
             mode: .single,
-            chosen: state.wrappedValue.map { [$0] } ?? [],
+            chosen: { state.wrappedValue.map { [$0] } ?? [] },
             write: { ids in if ids.first != state.wrappedValue { state.wrappedValue = ids.first } })
         return copy
     }
@@ -171,7 +172,7 @@ extension ItemsView {
         var copy = self
         copy.choice = Choice(
             mode: .multiple,
-            chosen: Array(state.wrappedValue),
+            chosen: { Array(state.wrappedValue) },
             write: { ids in if Set(ids) != state.wrappedValue { state.wrappedValue = Set(ids) } })
         return copy
     }
@@ -180,7 +181,7 @@ extension ItemsView {
     /// nowhere: the user's choice comes as `onSelectionChanged`.
     public func selection(_ value: ID?) -> Self {
         var copy = self
-        copy.choice = Choice(mode: .single, chosen: value.map { [$0] } ?? [], write: { _ in })
+        copy.choice = Choice(mode: .single, chosen: { value.map { [$0] } ?? [] }, write: { _ in })
         return copy
     }
 
@@ -188,7 +189,7 @@ extension ItemsView {
     /// nowhere: the user's choice comes as `onSelectionChanged`.
     public func selection(_ value: Set<ID>) -> Self {
         var copy = self
-        copy.choice = Choice(mode: .multiple, chosen: Array(value), write: { _ in })
+        copy.choice = Choice(mode: .multiple, chosen: { Array(value) }, write: { _ in })
         return copy
     }
 

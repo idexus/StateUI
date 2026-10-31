@@ -75,7 +75,7 @@ public struct SplitView: ElementView, Arrangement, BarElement, AutomationElement
                 Self.identified(Node.page(sidebar()), as: Self.sidebarIdentity),
                 Self.identified(Node.page(detail()), as: Self.detailIdentity),
             ])
-        node.write(SplitViewContract.showsSidebar, showsSidebar.wrappedValue)
+        node.readsWhenDescribed { $0.write(SplitViewContract.showsSidebar, showsSidebar.wrappedValue) }
 
         // The user's ways in and out, once finished, written only when moved.
         node.addHandler(SplitViewContract.showsSidebarChanged.token) {

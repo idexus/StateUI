@@ -71,8 +71,10 @@ public struct TabView<Tab: Hashable>: ElementView, Arrangement, BarElement, Auto
         // The current page as its index among the children, and none where the
         // state names no tab: the platform then reports what it shows.
         // Design: docs/design/views/pages.md#tabs-report-an-index
-        if let index = ordered.firstIndex(of: selection.wrappedValue) {
-            node.write(TabViewContract.selectedTab, index)
+        node.readsWhenDescribed { node in
+            if let index = ordered.firstIndex(of: selection.wrappedValue) {
+                node.write(TabViewContract.selectedTab, index)
+            }
         }
 
         // The user's choice, as that index, written only when it moved.

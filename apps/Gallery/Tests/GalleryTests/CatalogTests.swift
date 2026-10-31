@@ -1326,7 +1326,7 @@ final class CatalogTests: XCTestCase {
         let place = Place()
         place.section.wrappedValue = .tabs
 
-        let detail = mainPage(place.nav).detail().node
+        let detail = mainPage(place.nav).detail().node.built
 
         XCTAssertEqual(detail.type, "TabView")
         XCTAssertEqual(detail.props["selectedTab"], .number(0))
@@ -1359,11 +1359,11 @@ final class CatalogTests: XCTestCase {
         place.tabs.wrappedValue = [.stack, .second, .extra(1)]
         place.tab.wrappedValue = .second
 
-        let before = mainPage(place.nav).detail().node.props["selectedTab"]
+        let before = mainPage(place.nav).detail().node.built.props["selectedTab"]
 
         place.nav.reverseTabs(showing: .second)
 
-        let after = mainPage(place.nav).detail().node.props["selectedTab"]
+        let after = mainPage(place.nav).detail().node.built.props["selectedTab"]
 
         XCTAssertEqual(place.tabs.wrappedValue, [.extra(1), .second, .stack])
         XCTAssertEqual(before, .number(1))

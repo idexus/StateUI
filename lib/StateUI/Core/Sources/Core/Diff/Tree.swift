@@ -77,6 +77,14 @@ final class RenderedNode {
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     var placeholder: Node?
 
+    /// The element its composed views' bodies made, its own reads still to run - where the clean walk starts when
+    /// only the element read what moved; nil for an element that reads nothing itself.
+    /// Design: docs/design/core/invalidation.md#an-element-reads-what-it-was-handed
+    var expanded: Node?
+
+    /// What the element itself read of a state it was handed - none of it a page value.
+    var ownReads: Set<ObjectIdentifier> = []
+
     /// The composed view whose body wrote this element, for `debugInfo()` in a bare
     /// container's braces.
     var view: String?

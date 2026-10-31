@@ -247,6 +247,11 @@ extension Differ {
             break
         }
 
+        // An element under composed views that reads a state itself is described again from here alone.
+        if !pass.views.isEmpty, !node.describedReads.isEmpty {
+            pass.expanded = node
+        }
+
         // What the view says of its page: the page takes it where this is the view it shows, an arrangement standing
         // where a page stands its title and icon; anywhere else it says nothing.
         // Design: docs/design/views/pages.md#what-a-view-says-of-its-page
@@ -300,7 +305,10 @@ extension Differ {
     /// innermost, where none did - the content a container runs, the values it wears.
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     static func start(of rendered: RenderedNode, changed: Set<ObjectIdentifier>) -> Int {
-        rendered.views.firstIndex { !$0.reads.isDisjoint(with: changed) } ?? max(rendered.views.count - 1, 0)
+        if let read = rendered.views.firstIndex(where: { !$0.reads.isDisjoint(with: changed) }) { return read }
+
+        // Only the element read what moved: the walk goes on from the element its views made.
+        return rendered.expanded != nil ? rendered.views.count : max(rendered.views.count - 1, 0)
     }
 
     /// The views of `rendered` outside its view `start` standing as they were built - their state, what they read and
@@ -315,11 +323,15 @@ extension Differ {
             pass.derived += view.derived
             if let record = view.placeholder.stateful?.scene, sceneRecord == nil { sceneRecord = record }
         }
-        for view in rendered.views[1...start] {
-            pass.pushed += view.placeholder.environments.count
-            scope.append(contentsOf: view.placeholder.environments)
+        // The nodes standing from the outermost view in, the starting one included - the element itself, where the
+        // walk starts there.
+        let element = start == rendered.views.count ? rendered.expanded : nil
+        let standing = rendered.views.dropFirst().prefix(start).map(\.placeholder) + (element.map { [$0] } ?? [])
+        for node in standing {
+            pass.pushed += node.environments.count
+            scope.append(contentsOf: node.environments)
         }
-        return rendered.views[start].placeholder
+        return element ?? rendered.views[start].placeholder
     }
 
     /// A page describes the view it shows first, and says what that view says of it; it reads all that view's own
@@ -336,7 +348,9 @@ extension Differ {
         describesPageRoot = false
 
         if let root = children.first {
-            pass.reads.formUnion(root.reads)
+            // Not what the view's element read for itself: no page value follows that.
+            let built = root.views.reduce(into: Set<ObjectIdentifier>()) { $0.formUnion($1.reads) }
+            pass.reads.formUnion(root.reads.subtracting(root.ownReads).union(built))
             if let said = root.pageValues { pass.node.take(said) }
         }
         pass.described = (children, holder)
@@ -359,6 +373,22 @@ extension Differ {
         // The same for a reading written on that root.
         for (image, into, asks, take) in node.samples {
             pass.readings.append(image.sample(into: into, every: asks.window, take: take))
+        }
+
+        // What the element reads of a state it was handed - a picker's place, a tab, a stack's pages - read here, so
+        // the element is that state's reader, never the body that wrote it.
+        // Design: docs/design/core/invalidation.md#an-element-reads-what-it-was-handed
+        if !node.describedReads.isEmpty {
+            let reads = node.describedReads
+            node.describedReads = []
+            ReadScope.collect(into: &pass.ownReads) {
+                for read in reads { read(&node) }
+            }
+            pass.reads.formUnion(pass.ownReads)
+
+            if pass.placeholder == nil {
+                pass.placeholder = pass.authored
+            }
         }
 
         // The style is applied here, so a host receives every value already on the
@@ -662,6 +692,8 @@ extension Differ {
             children: children
         )
         result.identity = pass.identity
+        result.expanded = pass.expanded
+        result.ownReads = pass.ownReads
         result.sizesArrive = pass.sizesArrive
         result.atPagePosition = pass.atPagePosition
         result.visualInput = pass.visualInput
@@ -899,6 +931,12 @@ final class ElementPass {
     /// placeholder, a container its node with the content still to run; a leaf keeps nothing.
     /// Design: docs/design/core/identity-and-diffing.md#the-clean-walk
     var placeholder: Node?
+
+    /// The element its composed views made, kept where it reads a state itself.
+    var expanded: Node?
+
+    /// What the element itself read of a state it was handed.
+    var ownReads: Set<ObjectIdentifier> = []
 
     /// The readings asked for here (Sampling.swift), everything the builds read, and the derived states they made
     /// or found.

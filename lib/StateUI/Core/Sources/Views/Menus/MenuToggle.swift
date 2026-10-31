@@ -24,11 +24,12 @@ public struct MenuToggle: Element, MenuItemElement {
     /// An entry captioned `text`, standing checked as the state holds; choosing
     /// it turns the state over.
     ///
-    /// The state is read where the menu is built, so a change builds that
-    /// body again: a menu is walked from the tree, never a channel of its own.
+    /// The state is read as the entry is described, so a change describes the
+    /// entry alone again: a menu is walked from the tree, never a channel of its own.
     /// Design: docs/design/host/pages.md#a-checked-entry
     public init(_ text: String, isOn: Binding<Bool>) {
-        self.init(text, isOn: isOn.wrappedValue)
+        self.init(text, isOn: false)
+        node.readsWhenDescribed { $0.write(MenuToggleContract.isOn, isOn.wrappedValue) }
         node.addHandler(MenuToggleContract.toggled.token) {
             if let turned = EventBuffer.current.value()?.bool { isOn.wrappedValue = turned }
         }

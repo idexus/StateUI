@@ -14,7 +14,7 @@ final class PickerTests: XCTestCase {
 
     func testTheChoiceCrossesAsTheChosenValuesPlace() {
         let span = State(Span.week)
-        let node = Picker(Span.allCases, selection: span.projectedValue) { "\($0)".capitalized }.node
+        let node = Picker(Span.allCases, selection: span.projectedValue) { "\($0)".capitalized }.node.built
 
         XCTAssertEqual(node.props["options"], .strings(["Day", "Week", "Month"]))
         XCTAssertEqual(node.props["selectedIndex"], .number(1))
@@ -43,10 +43,11 @@ final class PickerTests: XCTestCase {
     /// Nothing is chosen while the state holds nil, or a value the list does not hold.
     func testNothingIsChosenForNoValueOrOneOutsideTheList() {
         let none = State<Span?>(nil)
-        XCTAssertEqual(Picker(Span.allCases, selection: none.projectedValue).node.props["selectedIndex"], .number(-1))
+        XCTAssertEqual(
+            Picker(Span.allCases, selection: none.projectedValue).node.built.props["selectedIndex"], .number(-1))
 
         let outside = State(Span.month)
-        XCTAssertEqual(Picker([Span.day, .week], selection: outside.projectedValue).node.props["selectedIndex"],
+        XCTAssertEqual(Picker([Span.day, .week], selection: outside.projectedValue).node.built.props["selectedIndex"],
                        .number(-1))
     }
 

@@ -208,6 +208,10 @@ extension Node {
         }
 
         node.materialize()
+
+        // What the element reads of a state it was handed, as the differ reads it.
+        node.readAsDescribed()
+
         node.children = node.children.map { $0.built(within: scope) }
         return node
     }
