@@ -182,6 +182,42 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(chosen.wrappedValue, [1, 2, 8])
     }
 
+    /// A list given its selection as a value writes nothing back: the user's
+    /// choice comes as the ids chosen, a set in either mode.
+    func testAChoiceGivenAsAValueIsReportedNotWritten() throws {
+        let one = Received<Set<Int>>()
+        let renders = Renders()
+        let single = try list(in: renders.render(ItemsView(0..<10) { Text("\($0)") }
+            .selection(Int?(5))
+            .onSelectionChanged { one.values.append($0) }.node))
+
+        XCTAssertEqual(single.props[.selectionMode], SelectionMode.single.propValue)
+        XCTAssertEqual(single.props[.selectedItems], .strings(["5"]))
+        renders.fire(try XCTUnwrap(single.events?[.selectedItemsChanged]), with: [.strings(["7"])])
+        XCTAssertEqual(one.values, [[7]])
+
+        let many = Received<Set<Int>>()
+        let multiple = try list(in: Renders().render(ItemsView(0..<10) { Text("\($0)") }
+            .selection(Set([2, 8]))
+            .onSelectionChanged { many.values.append($0) }.node))
+
+        XCTAssertEqual(multiple.props[.selectionMode], SelectionMode.multiple.propValue)
+        XCTAssertEqual(multiple.props[.selectedItems], .strings(["2", "8"]))
+    }
+
+    /// A list given its selection as a state reports the choice too, after writing it.
+    func testAChoiceGivenAsAStateIsReportedAfterItIsWritten() throws {
+        let chosen = State<Int?>(wrappedValue: nil)
+        let seen = Received<Int?>()
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(0..<10) { Text("\($0)") }
+            .selection(chosen.projectedValue)
+            .onSelectionChanged { _ in seen.values.append(chosen.wrappedValue) }.node))
+
+        renders.fire(try XCTUnwrap(list.events?[.selectedItemsChanged]), with: [.strings(["3"])])
+        XCTAssertEqual(seen.values, [3])
+    }
+
     /// An item the user opens is handed over as its id; the end reached is heard.
     func testAnItemOpenedNamesItsIdAndTheEndIsHeard() throws {
         let opened = Received<Int>()

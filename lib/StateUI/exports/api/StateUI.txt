@@ -5914,6 +5914,7 @@ swift.method ItemsView.isFocused(_:): @MainActor func isFocused(_ state: some Tw
 swift.method ItemsView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> ItemsView<ID>
 swift.method ItemsView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ value: Bool) -> ItemsView<ID>
 swift.method ItemsView.isRefreshing(_:): @MainActor func isRefreshing(_ state: some TwoWay<Bool>) -> ItemsView<ID>
+swift.method ItemsView.isRefreshing(_:): @MainActor func isRefreshing(_ value: Bool) -> ItemsView<ID>
 swift.method ItemsView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.itemsLayout(_:): @MainActor func itemsLayout(_ layout: ItemsLayout) -> ItemsView<ID>
 swift.method ItemsView.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -6049,6 +6050,9 @@ swift.method ItemsView.onRefreshRequested(gate:_:): @MainActor func onRefreshReq
 swift.method ItemsView.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ handler: @escaping @MainActor @Sendable (RotationUpdate) throws -> Void) -> Self.Modified
 swift.method ItemsView.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method ItemsView.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
+swift.method ItemsView.onSelectionChanged(_:): @MainActor func onSelectionChanged(_ handler: @escaping @MainActor @Sendable (Set<ID>) throws -> Void) -> ItemsView<ID>
+swift.method ItemsView.onSelectionChanged(_:_:): @MainActor func onSelectionChanged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Set<ID>>) -> ItemsView<ID>
+swift.method ItemsView.onSelectionChanged(gate:_:): @MainActor func onSelectionChanged(gate: Gate, _ handler: @escaping ValueEventHandler<Set<ID>>) -> ItemsView<ID>
 swift.method ItemsView.onSwiped(_:_:): @MainActor func onSwiped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
 swift.method ItemsView.onSwiped(direction:threshold:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, _ handler: @escaping @MainActor @Sendable (SwipeDirection) throws -> Void) -> Self.Modified
 swift.method ItemsView.onSwiped(direction:threshold:gate:_:): @MainActor func onSwiped(direction: SwipeDirection = .all, threshold: Double? = nil, gate: Gate, _ handler: @escaping ValueEventHandler<SwipeDirection>) -> Self.Modified
@@ -6081,6 +6085,8 @@ swift.method ItemsView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Doubl
 swift.method ItemsView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.selection(_:): @MainActor func selection(_ state: some TwoWay<Optional<ID>>) -> ItemsView<ID>
 swift.method ItemsView.selection(_:): @MainActor func selection(_ state: some TwoWay<Set<ID>>) -> ItemsView<ID>
+swift.method ItemsView.selection(_:): @MainActor func selection(_ value: ID?) -> ItemsView<ID>
+swift.method ItemsView.selection(_:): @MainActor func selection(_ value: Set<ID>) -> ItemsView<ID>
 swift.method ItemsView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : LaneValue
 swift.method ItemsView.setValue(_:on:mode:kind:): @MainActor func setValue<Owner, Value>(_ property: ElementProperty<Owner, Value>, on state: Binding<Value>, mode: StateMode, kind: StateKind) -> Self.Modified where Owner : Contract, Value : HostRepresentable, Value : Walked
 swift.method ItemsView.sheet(isPresented:content:): @MainActor func sheet<Content>(isPresented state: some TwoWay<Bool>, @ViewBuilder content: () -> Content) -> Self.Modified where Content : View
@@ -9375,6 +9381,7 @@ swift.method RectangleProperties.cornerRadius(topLeft:topRight:bottomLeft:bottom
 swift.method RefreshElement.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method RefreshElement.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ value: Bool) -> Self.Modified
 swift.method RefreshElement.isRefreshing(_:): @MainActor func isRefreshing(_ state: some TwoWay<Bool>) -> Self.Modified
+swift.method RefreshElement.isRefreshing(_:): @MainActor func isRefreshing(_ value: Bool) -> Self.Modified
 swift.method RefreshElement.onRefreshRequested(_:): @MainActor func onRefreshRequested(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method RefreshElement.onRefreshRequested(_:_:): @MainActor func onRefreshRequested(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method RefreshElement.onRefreshRequested(gate:_:): @MainActor func onRefreshRequested(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9445,7 +9452,7 @@ swift.method ScrollView.isEnabled(_:): @MainActor func isEnabled(_ state: Bindin
 swift.method ScrollView.isFocused(_:): @MainActor func isFocused(_ state: some TwoWay<Bool>) -> Self.Modified
 swift.method ScrollView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ value: Bool) -> Self.Modified
-swift.method ScrollView.isRefreshing(_:): @MainActor func isRefreshing(_ state: some TwoWay<Bool>) -> Self.Modified
+swift.method ScrollView.isRefreshing(_:): @MainActor func isRefreshing(_ value: Bool) -> Self.Modified
 swift.method ScrollView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method ScrollView.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified

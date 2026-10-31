@@ -33,6 +33,24 @@ final class RefreshElementTests: XCTestCase {
         XCTAssertEqual(heard, [true], "before the handler heard it")
     }
 
+    /// A value shows the spinner as it says and writes nothing: the pull is only heard, for the application to
+    /// write its own value.
+    func testAValueShowsTheSpinnerAndThePullIsHeard() throws {
+        var heard = 0
+        let renders = Renders()
+        let patch = renders.render(ScrollView { Text("") }
+            .isRefreshing(true)
+            .onRefreshRequested { heard += 1 }
+            .node)
+
+        XCTAssertEqual(patch.properties[.isRefreshing], .bool(true))
+        renders.fire(try XCTUnwrap(patch.events?[.refreshRequested]))
+        XCTAssertEqual(heard, 1)
+
+        let list = ItemsView(["one"]) { Text($0) }.isRefreshing(true).node.built
+        XCTAssertEqual(list.props[.isRefreshing], .bool(true), "a list wears it on its collection")
+    }
+
     /// A list keeps what it wears of the pull on its collection, and an empty one on the scroller its empty view
     /// stands in.
     func testAnEmptyListKeepsItsPull() throws {

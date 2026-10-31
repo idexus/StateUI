@@ -827,7 +827,10 @@ builds that item alone, and a state it declares lives while the item stays
 near what the platform holds. The binding given to `.selection` says how many the
 user may choose - an optional for one, a `Set` for many - and the user's
 choice lands on it, while a value the application writes is shown and
-reported to nobody. `.onItemActivated` hears an item opened: a tap on a
+reported to nobody. Given a value instead, `.selection(chosen)`, the list
+shows it and writes nothing: `.onSelectionChanged` hands over the ids the user
+chose - a set in either mode - for the application to write. It hears a state's
+choice too, after the write. `.onItemActivated` hears an item opened: a tap on a
 phone, a double-click or Return on a desktop. An aim at the list,
 `Aim<ItemsView<ID>>`, scrolls it to an item by an identity of the list's
 own type.
@@ -872,7 +875,9 @@ struct InboxPage: View {
 into the state before `onRefreshRequested` runs, and the application writes
 false once what it shows is fresh - or true, to show a refresh it began
 itself, which runs no handler. Without it the spinner a pull shows goes at
-once. `.isRefreshEnabled(false)` withholds the pull while there is nothing to
+once. Given a value, `.isRefreshing(loading)`, the spinner shows as it says
+and the pull writes nothing: `onRefreshRequested` hears it, and the
+application writes its own value. `.isRefreshEnabled(false)` withholds the pull while there is nothing to
 refresh. An empty list keeps its pull: its empty view stands in a scroller
 that offers it. The pull is the platform's - UIKit's refresh control,
 Android's swipe to refresh, WinUI's refresh container on a scroller; AppKit,
