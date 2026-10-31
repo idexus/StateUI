@@ -60,6 +60,9 @@ final class GTKPageFrame {
     /// The bar beneath the header bar holding a tabbed view's switcher, where the page has one.
     private var tabsBar: GTKWidget?
 
+    /// The row in the tabs' bar the switcher stands in.
+    private var tabsRow: GTKWidget?
+
     /// The style sheet's class painting the header bar, and the tabs' bar with it.
     private var barClass: String?
 
@@ -131,7 +134,8 @@ final class GTKPageFrame {
         if chrome.offersClose != self.chrome.offersClose {
             adw_header_bar_set_show_end_title_buttons(header.opaque, chrome.offersClose ? 1 : 0)
         }
-        if chrome.tabs !== self.chrome.tabs { showTabs(chrome.tabs) }
+        // The tabs this frame held may stand on another tab's frame since: it takes them back.
+        if chrome.tabs !== self.chrome.tabs || !holds(chrome.tabs) { showTabs(chrome.tabs) }
         if chrome.bottomBar !== self.chrome.bottomBar { showBottomBar(chrome.bottomBar) }
         showFoot(chrome.foot)
         showEdges(
@@ -169,6 +173,7 @@ final class GTKPageFrame {
     private func showTabs(_ tabs: GTKView?) {
         if let tabsBar { adw_toolbar_view_remove(widget.opaque, tabsBar) }
         tabsBar = nil
+        tabsRow = nil
         guard let tabs else { return }
 
         if let row = gtk_widget_get_parent(tabs.widget),
@@ -185,6 +190,13 @@ final class GTKPageFrame {
         if let barClass { gtk_widget_add_css_class(bar, barClass) }
         adw_toolbar_view_add_top_bar(widget.opaque, bar)
         tabsBar = bar
+        tabsRow = row
+    }
+
+    /// Whether the frame holds `tabs` in its bar - none where it shows none.
+    private func holds(_ tabs: GTKView?) -> Bool {
+        guard let tabs else { return tabsBar == nil }
+        return tabsRow != nil && gtk_widget_get_parent(tabs.widget) == tabsRow
     }
 
     /// The holder of the page's bottom bar beneath its content; nil until the page shows one or a bar at its foot.

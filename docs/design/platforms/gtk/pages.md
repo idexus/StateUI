@@ -182,7 +182,10 @@ application renders again. Over a tab that is a stack the stack's bar is the
 one (the host layer's `showsTheStacksBar`): the tabbed view's frame shows no
 header bar, and the switcher - with a split view's sidebar toggle - stands
 beneath the header bar of the stack's page the user sees, moving with it as
-pages come and go.
+pages come and go. A widget stands in one place at a time: shown over
+another tab meanwhile, the switcher is taken back by the frame of the
+stack's page, which held it before - each frame asks where it stands, not
+only whether it was handed the same.
 
 A tab shows its caption alone. The switcher draws a page's icon in place of
 its caption, never beside it, so a tab's picture is not given to it.

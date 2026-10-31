@@ -424,6 +424,46 @@ final class GTKPagesTests: XCTestCase {
         }
     }
 
+    /// A tab that is a stack shows its tabs again after another tab - the tabs the detail of a split view, as the
+    /// Gallery's: the tabs stood on the detail's frame meanwhile, and the stack's page, which held them before, takes
+    /// them back.
+    func testATabThatIsAStackTakesItsTabsBack() throws {
+        try onUIThread {
+            let tab = State(wrappedValue: 0)
+            let host = GTKRenderer.running {
+                SplitView {
+                    TitledPage(title: "Menu")
+                } detail: {
+                    TabView([0, 1]) { which in
+                        if which == 0 {
+                            NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
+                                TitledPage(title: "Inbox")
+                            } destination: { _ in TitledPage(title: "Message") }
+                            .title("Mail")
+                        } else {
+                            TitledPage(title: "Settings")
+                        }
+                    }
+                    .selection(tab.projectedValue)
+                }
+            }
+            host.layOut()
+            let tabs = try XCTUnwrap(host.views(GTKTabView.self).first)
+            let shown = { gtk_widget_get_mapped(tabs.switcher.widget) != 0 }
+            host.settle { shown() }
+
+            tabs.selectByUser(1)
+            host.layOut()
+            host.settle { tab.wrappedValue == 1 && shown() }
+            XCTAssertTrue(shown(), "the tabs over the other tab")
+
+            tabs.selectByUser(0)
+            host.layOut()
+            host.settle { tab.wrappedValue == 0 && shown() }
+            XCTAssertTrue(shown(), "the tabs back over the stack's page")
+        }
+    }
+
     /// A sheet asks libadwaita's dialog for its page's size - here the least, its words few - and one holding a
     /// stack, whose pages come and go, the standard size, held within the window.
     func testASheetAsksTheSizeOfItsPageAndAStackTheStandard() throws {
