@@ -200,5 +200,5 @@ extension Binding {
 extension Binding: PostTarget {}
 
 extension Binding: BorrowedState {
-    var lends: (lender: AnyObject?, lent: AnyHashable?) { (storage, nil) }
+    var lends: (lender: AnyObject, lent: AnyHashable?) { (storage, nil) }
 }

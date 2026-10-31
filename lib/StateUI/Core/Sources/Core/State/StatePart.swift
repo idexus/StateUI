@@ -32,7 +32,7 @@ public struct StatePart<Value> {
     // Who this borrows from - the storage and which part of it: a view's
     // inputs compare by it (`lends`), and a post waits under its part.
     // Design: docs/design/core/state.md#parts-of-a-state
-    let lender: AnyObject?
+    let lender: AnyObject
     nonisolated let lent: PartPath?
 
     /// Where a post to this waits for its job - the borrowed state's, or its own.
@@ -45,7 +45,7 @@ public struct StatePart<Value> {
         write: @escaping (Value) -> Void,
         standing: @escaping () -> Value,
         reaches: @escaping () -> Bool,
-        lender: AnyObject?,
+        lender: AnyObject,
         lent: PartPath?,
         mailroom: Mailroom
     ) {
@@ -145,5 +145,5 @@ extension StatePart {
 extension StatePart: PostTarget {}
 
 extension StatePart: BorrowedState {
-    var lends: (lender: AnyObject?, lent: AnyHashable?) { (lender, lent.map { AnyHashable($0) }) }
+    var lends: (lender: AnyObject, lent: AnyHashable?) { (lender, lent.map { AnyHashable($0) }) }
 }

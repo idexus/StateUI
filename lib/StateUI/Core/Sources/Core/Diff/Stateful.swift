@@ -35,8 +35,8 @@ extension StateBox {
 @MainActor
 protocol BorrowedState {
     /// What the wrapper borrows from: the storage behind a whole `@State` and which
-    /// part of it, or nothing for a binding made from closures.
-    var lends: (lender: AnyObject?, lent: AnyHashable?) { get }
+    /// part of it.
+    var lends: (lender: AnyObject, lent: AnyHashable?) { get }
 }
 
 /// One stored property of a composed view, as the differ can compare it - what

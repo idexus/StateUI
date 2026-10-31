@@ -177,7 +177,7 @@ private struct StateParts {
             let lends = (value as! BorrowedState).lends
             inputs.append((
                 path: path,
-                input: lends.lender.map { .borrowed(ObjectIdentifier($0), lends.lent) } ?? .opaque))
+                input: .borrowed(ObjectIdentifier(lends.lender), lends.lent)))
         case .node:
             // A built node is interface, never state, and cannot be compared.
             inputs.append((path: path, input: .opaque))
