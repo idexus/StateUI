@@ -62,7 +62,7 @@ grep -qi '<title' "$head" && named=1
 shown="$({ grep -io '<meta[^>]*name="application-name"[^>]*>' "$head" || true; } | head -1 | sed -n 's/.*content="\([^"]*\)".*/\1/p')"
 [[ -n "$shown" ]] || shown="$({ grep -io '<title>[^<]*</title>' "$head" || true; } | head -1 | sed 's/<[^>]*>//g')"
 [[ -n "$shown" ]] || shown="$application"
-shown="${shown//\"/&quot;}"
+shown="$(printf '%s' "$shown" | sed 's/"/\&quot;/g')"
 replaced="$(printf '%s' "$shown" | sed -e 's/[\/&]/\\&/g')"
 sed -e "s/{{application}}/$replaced/g" -e "s/{{module}}/$product.wasm/g" -e "s/{{stamp}}/$stamp/g" \
   -e "s#{{scripts}}#$scripts#" \
