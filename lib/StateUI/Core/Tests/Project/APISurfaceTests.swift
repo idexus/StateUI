@@ -105,7 +105,8 @@ final class APISurfaceTests: XCTestCase {
         #endif
     }
 
-    /// Runs a tool found on PATH - the toolchain running these tests - and answers what it printed.
+    /// Runs a tool found on PATH - the toolchain running these tests - or, where PATH holds only Xcode's `swift`,
+    /// in Xcode's toolchain, and answers what it printed.
     private static func run(_ tool: String, _ arguments: [String]) throws -> String {
         let environment = ProcessInfo.processInfo.environment
         let path = environment["PATH"] ?? environment.first { $0.key.lowercased() == "path" }?.value ?? ""
@@ -117,7 +118,9 @@ final class APISurfaceTests: XCTestCase {
         let found = path.split(separator: divider).lazy
             .flatMap { folder in spellings.map { URL(fileURLWithPath: String(folder)).appendingPathComponent($0) } }
             .first { FileManager.default.isExecutableFile(atPath: $0.path) }
-        guard let found else { throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: tool]) }
+        guard let found = found ?? xcodeTool(tool) else {
+            throw CocoaError(.fileNoSuchFile, userInfo: [NSFilePathErrorKey: tool])
+        }
 
         let process = Process()
         process.executableURL = found
@@ -129,5 +132,16 @@ final class APISurfaceTests: XCTestCase {
         let data = pipe.fileHandleForReading.readDataToEndOfFile()
         process.waitUntilExit()
         return String(decoding: data, as: UTF8.self)
+    }
+
+    /// A tool of Xcode's toolchain, which stands off PATH beside the `/usr/bin/swift` shim; nil off macOS.
+    private static func xcodeTool(_ tool: String) -> URL? {
+        #if os(macOS)
+        guard let found = try? run("xcrun", ["--find", tool]).trimmingCharacters(in: .whitespacesAndNewlines),
+              FileManager.default.isExecutableFile(atPath: found) else { return nil }
+        return URL(fileURLWithPath: found)
+        #else
+        return nil
+        #endif
     }
 }
