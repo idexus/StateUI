@@ -236,7 +236,7 @@ pasteboard of the driver's own name, so it never writes over the user's.
 ## Sharing
 
 What the user shares is offered in AppKit's sharing picker, shown from the
-middle of the window's content: the words and the link as the picker's items.
+middle of the window's content: the words and the address as the picker's items.
 The answer is the service's: shared where the service the user chose says it
 shared them, not where they chose none or it failed.
 

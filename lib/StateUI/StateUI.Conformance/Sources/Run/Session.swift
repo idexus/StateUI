@@ -257,7 +257,7 @@
         return try driven { try driver.fileDialog(over: root) }
     }
 
-    /// What the share sheet over the window offers now - its words, then its link on a line of its own; nil where
+    /// What the share sheet over the window offers now - its words, then its address on a line of its own; nil where
     /// none shows.
     public func shared() throws -> String? {
         guard let root = tree?.root else { return nil }

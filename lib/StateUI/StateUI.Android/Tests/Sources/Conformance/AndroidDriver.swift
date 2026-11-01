@@ -221,7 +221,7 @@ final class AndroidDriver: HostDriver {
         Java.callStaticBool(JavaAPI.environment, Self.night, .object(TestContext.window.reference)) ? .dark : .light
     }
 
-    /// What the chooser the host holds offers: its words, then its link on a line of its own.
+    /// What the chooser the host holds offers: its words, then its address on a line of its own.
     func shared(over element: MountedElement) throws -> String? {
         renderer?.actToolkit.sharing?.shared.together
     }

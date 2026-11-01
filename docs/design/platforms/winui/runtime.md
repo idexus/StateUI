@@ -240,7 +240,7 @@ reads and writes.
 
 What the user shares is Windows' own share sheet over the window
 (`DataTransferManager`, reached for a window through its interop): the words
-as text, the link as a web link, handed over as the sheet asks for them; the
+as text, the address as a web link, handed over as the sheet asks for them; the
 answer is the sheet's, shared or cancelled, told once on the UI thread.
 
 ## Questions for the user

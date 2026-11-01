@@ -395,7 +395,7 @@ extension NodeType {
     static let saveFile = ApplicationContract.saveFile.token
     static let readFile = ApplicationContract.readFile.token
     static let launchFile = ApplicationContract.launchFile.token
-    static let launchLink = ApplicationContract.launchLink.token
+    static let launchAddress = ApplicationContract.launchAddress.token
     static let readClipboard = ApplicationContract.readClipboard.token
     static let share = ApplicationContract.share.token
     static let sendRequest = ApplicationContract.sendRequest.token

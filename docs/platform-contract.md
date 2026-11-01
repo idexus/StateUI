@@ -349,8 +349,8 @@ the tier.
 | `currentTime` | [Application](controls/Application.md) |
 | `handlerFailed` | [Application](controls/Application.md) |
 | `hideOnScreenKeyboard` | [Application](controls/Application.md) |
+| `launchAddress` | [Application](controls/Application.md) |
 | `launchFile` | [Application](controls/Application.md) |
-| `launchLink` | [Application](controls/Application.md) |
 | `openFiles` | [Application](controls/Application.md) |
 | `persistSceneValue` | [Application](controls/Application.md) |
 | `persistValue` | [Application](controls/Application.md) |
@@ -751,8 +751,8 @@ realizes the element and each of its members.
 
 `alert`, `announce`, `cancelCall`, `chooseAction`, `confirm`, `currentTime`,
 `evaluateJavaScript`, `focus`, `goBack`, `goForward`, `handlerFailed`,
-`hideOnScreenKeyboard`, `launchFile`, `launchLink`, `moveToRegion`, `openFiles`,
-`persistSceneValue`, `persistValue`, `prompt`, `readClipboard`, `readFile`,
-`reload`, `saveFile`, `scrollTo`, `sendRequest`, `share`, `unfocus`,
+`hideOnScreenKeyboard`, `launchAddress`, `launchFile`, `moveToRegion`,
+`openFiles`, `persistSceneValue`, `persistValue`, `prompt`, `readClipboard`,
+`readFile`, `reload`, `saveFile`, `scrollTo`, `sendRequest`, `share`, `unfocus`,
 `useAccentColor`, `useColorScheme`, `utcOffset`, `writeClipboard`.
 <!-- vocabulary:end -->

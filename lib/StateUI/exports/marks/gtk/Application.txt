@@ -1,4 +1,4 @@
-# revision 13.1
+# revision 14.1
 Application: ✅
 Application.alert: ✅
 Application.announce: ✓ read what the screen reader said: the host's own list of what it asked GTK to announce
@@ -8,8 +8,8 @@ Application.confirm: ✅
 Application.currentTime: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
+Application.launchAddress: ✓ read a file dialog: the dialog the host holds, which a test never shows
 Application.launchFile: ✓ read a file dialog: the dialog the host holds, which a test never shows
-Application.launchLink: ✓ read a file dialog: the dialog the host holds, which a test never shows
 Application.openFiles: ✓ read a file dialog: the dialog the host holds, which a test never shows
 Application.persistSceneValue: ✅
 Application.persistValue: ✅

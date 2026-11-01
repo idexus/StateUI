@@ -373,7 +373,7 @@
                 s.expect(try s.held().stopped - before.stopped, 1, "the first run's request stopped as the run ended")
             },
             ConformanceCase("anAddressAndAFileAreLaunched", proves: [
-                Covered(ApplicationContract.launchLink), Covered(ApplicationContract.launchFile),
+                Covered(ApplicationContract.launchAddress), Covered(ApplicationContract.launchFile),
             ], needs: [Covered(ButtonContract.clicked), Covered(ApplicationContract.saveFile)]) { s in
                 let said = Received<Bool>()
                 s.start {
@@ -435,7 +435,7 @@
                 s.settle { !read.values.isEmpty }
                 s.expect(read.values, ["Copied with StateUI"], "the words written, read back from the platform's clipboard")
             },
-            ConformanceCase("wordsAndALinkAreOfferedToShare", proves: [Covered(ApplicationContract.share)],
+            ConformanceCase("wordsAndAnAddressAreOfferedToShare", proves: [Covered(ApplicationContract.share)],
                             needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<Bool>()
                 s.start {
@@ -450,7 +450,7 @@
 
                 try s.perform(.activate, on: s.element("share"))
                 try s.settle { try s.shared() != nil }
-                s.expect(try s.shared(), "Notes\nhttps://www.swift.org", "the words and the link offered")
+                s.expect(try s.shared(), "Notes\nhttps://www.swift.org", "the words and the address offered")
                 try s.perform(.answerShare(shared: true), on: s.element(ofType: WindowContract.nodeType))
                 s.settle { said.values.count == 1 }
 

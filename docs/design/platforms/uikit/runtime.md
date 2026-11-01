@@ -145,7 +145,7 @@ of the driver's own name, as the simulator's general one is the Mac's too.
 
 What the user shares is offered in UIKit's activity sheet over what the window
 shows - from its middle on an iPad, a popover with no arrow: the words and the
-link as its items, the answer whether the user completed an activity.
+address as its items, the answer whether the user completed an activity.
 
 ## Questions for the user
 

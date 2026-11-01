@@ -137,7 +137,7 @@ final class WinUIActToolkit: ActToolkit {
             return element
         }
         let waiting = Unmanaged.passRetained(WinUIShareWaiting(answered)).toOpaque()
-        stateui_winui_share(shown.handle, shared.text, shared.link, waiting) { context, shared in
+        stateui_winui_share(shown.handle, shared.text, shared.address, waiting) { context, shared in
             let waiting = Unmanaged<WinUIShareWaiting>.fromOpaque(context!).takeRetainedValue()
             MainActor.assumeIsolated {
                 waiting.answered(shared < 0 ? .failure(ActFailure("Windows offered no share sheet")) : .success(shared == 1))

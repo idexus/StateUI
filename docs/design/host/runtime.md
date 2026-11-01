@@ -877,7 +877,7 @@ a time, over the window it is offered from: answered whether the user shared,
 and answered as not shared where its window went while it waited
 (`HostShare`). A toolkit with no share sheet answers the act's failure at
 once. A host's test holds the sheet unshown and answers it as the user would,
-so its driver proves the words and the link offered, never a sheet's look.
+so its driver proves the words and the address offered, never a sheet's look.
 
 ## Files
 

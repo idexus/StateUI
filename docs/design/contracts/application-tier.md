@@ -21,14 +21,20 @@ contract declares them.
   saveFile               window.saveFile            writes the contents, answers the file, or nothing
   readFile               ChosenFile.read()          answers the file's bytes
   launchFile             ChosenFile.launch()        answers whether an application took the file
-  launchLink             application.launch         answers whether an application took the address
+  launchAddress          application.launch         answers whether an application took the address
   announce               application.announce       the screen reader says a text
   hideOnScreenKeyboard   window.hideOnScreenKeyboard()  answers whether a view held the focus
   currentTime            application.clock.now(), .today()  year, month, day, hour, minute, second, millisecond
   utcOffset              application.clock.utcOffset  minutes, for a zone and a day
+  readClipboard          application.clipboard.read()  answers the words on the clipboard, or nothing
+  writeClipboard         application.clipboard.write   the words put on the clipboard
+  share                  window.share               answers whether the user shared it
+  sendRequest            application.send           answers the server's status, headers and body
   persistValue           a kept state's write       a key's new value, to its store
   persistSceneValue      a scene state's write      a scene key's new value, to the platform's scene record
   useColorScheme         application.colorScheme    the theme the application shows in
+  useAccentColor         application.accentColor    the accent its controls are drawn in where the user chose none
+  cancelCall             a run's end                stops what the host performs for a call nobody waits for
   handlerFailed          the runtime                a handler's escaped error, told to the host
 ```
 

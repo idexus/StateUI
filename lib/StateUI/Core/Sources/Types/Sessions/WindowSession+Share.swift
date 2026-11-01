@@ -34,8 +34,8 @@ extension WindowSession {
     }
 
     /// Offers what is given to the share sheet; at least one of them is, as the overloads take it.
-    private func shared(_ text: String?, _ link: String?) async throws -> Bool {
+    private func shared(_ text: String?, _ shared: String?) async throws -> Bool {
         let (scene, window) = try address
-        return try await callAct(ApplicationContract.share, scene, window, text, link)
+        return try await callAct(ApplicationContract.share, scene, window, text, shared)
     }
 }

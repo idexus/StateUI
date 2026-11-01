@@ -69,7 +69,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// a mail address - answering whether one took it.
     ///
     /// See `ApplicationSession.launch(_:)`.
-    public static let launchLink = ElementAct<Self, String, Bool>("launchLink")
+    public static let launchAddress = ElementAct<Self, String, Bool>("launchAddress")
 
     /// Shows the whole application in a theme - light, dark, or the system's,
     /// which follows the user's setting again.
@@ -134,9 +134,9 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     public static let sendRequest = ElementAct<Self, (String, Name, [String], [UInt8]), (Int, [String], [UInt8])>(
         "sendRequest")
 
-    /// Offers words, a link or both to the platform's share sheet over a window -
-    /// the window, the words, the link - answering whether the user shared
-    /// them.
+    /// Offers words, an address or both to the platform's share sheet over a
+    /// window - the window, the words, the address - answering whether the user
+    /// shared them.
     ///
     /// See `WindowSession.share(text:address:)`.
     public static let share = ElementAct<Self, (Name, Name, String?, String?), Bool>("share")
@@ -156,7 +156,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// The element's own members.
     public static let members: [any ContractMember] = [
         alert, announce, cancelCall, chooseAction, confirm, currentTime, handlerFailed,
-        hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
+        hideOnScreenKeyboard, launchAddress, launchFile, openFiles, persistSceneValue, persistValue, prompt,
         readClipboard, readFile, saveFile, sendRequest, share, useAccentColor, useColorScheme, utcOffset,
         writeClipboard,
     ]

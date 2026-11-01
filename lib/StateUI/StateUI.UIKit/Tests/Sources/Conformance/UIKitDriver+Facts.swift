@@ -154,7 +154,7 @@ extension UIKitDriver {
     }
 
     /// The file dialog UIKit's document picker shows now: one that opens or one that exports.
-    /// What the activity sheet the window presents offers: its words, then its link on a line of its own.
+    /// What the activity sheet the window presents offers: its words, then its address on a line of its own.
     func shared(over element: MountedElement) throws -> String? {
         guard let sheet = renderer?.actToolkit.sharing, sheet.controller != nil else { return nil }
         return sheet.shared.together

@@ -464,7 +464,7 @@ final class HostActPerformerTests: XCTestCase {
         XCTAssertEqual(answers.failures[3], "the act offers nothing to share")
 
         toolkit.shown[0].answered(.success(.init(accepted: true)))
-        XCTAssertEqual(toolkit.shares.map(\.shared), [HostShare(text: "Notes", link: "https://example.com")])
+        XCTAssertEqual(toolkit.shares.map(\.shared), [HostShare(text: "Notes", address: "https://example.com")])
         XCTAssertEqual(toolkit.shares[0].shared.together, "Notes\nhttps://example.com")
         toolkit.shares[0].answered(.success(true))
         XCTAssertEqual(answers.replies[2], [.bool(true)])
@@ -557,7 +557,7 @@ final class HostActPerformerTests: XCTestCase {
         acts.perform(HostActCall(
             act: .readFile, arguments: [ChosenFile(address: "gone", name: "gone").propValue], completion: 2))
         acts.perform(HostActCall(act: .launchFile, arguments: [report.propValue], completion: 3))
-        acts.perform(HostActCall(act: .launchLink, arguments: [.string("https://www.swift.org")], completion: 4))
+        acts.perform(HostActCall(act: .launchAddress, arguments: [.string("https://www.swift.org")], completion: 4))
         acts.perform(HostActCall(act: .readFile, arguments: [], completion: 5))
 
         XCTAssertEqual(answers.replies[1], [.bytes([60, 104, 49, 62])])
@@ -590,7 +590,7 @@ final class HostActPerformerTests: XCTestCase {
         let answers = Answers()
         let acts = performer(Toolkit(), answers)
 
-        for (completion, act) in [Act.openFiles, .saveFile, .readFile, .launchFile, .launchLink].enumerated() {
+        for (completion, act) in [Act.openFiles, .saveFile, .readFile, .launchFile, .launchAddress].enumerated() {
             acts.perform(HostActCall(act: act, arguments: [], completion: completion))
             XCTAssertEqual(answers.failures[completion], "the Test host does not perform the act '\(act.name)'")
         }

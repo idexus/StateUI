@@ -30,7 +30,7 @@ final class HostActsTests: XCTestCase {
         let names = (HostActs.performed + HostActs.files).map(\.name)
         XCTAssertEqual(Set(names).count, names.count)
         XCTAssertTrue(names.contains("utcOffset"))
-        XCTAssertTrue(names.contains("launchLink"))
+        XCTAssertTrue(names.contains("launchAddress"))
     }
 
     /// An application's own act is handed the values its contract declares and answers its own; a call carrying

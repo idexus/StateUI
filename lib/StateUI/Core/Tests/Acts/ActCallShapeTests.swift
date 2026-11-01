@@ -479,7 +479,7 @@ final class ActCallShapeTests: XCTestCase {
 
     /// An address launched crosses as written.
     func testALinkCrossesAsWritten() async throws {
-        try await check("launchLink", [.string("https://www.swift.org")]) {
+        try await check("launchAddress", [.string("https://www.swift.org")]) {
             _ = try await StandardEnvironment.application.launch("https://www.swift.org")
         }
     }

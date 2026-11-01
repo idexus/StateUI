@@ -13649,8 +13649,8 @@ swift.type.property ApplicationContract.confirm: static let confirm: ElementAct<
 swift.type.property ApplicationContract.currentTime: static let currentTime: ElementAct<ApplicationContract, Void, [Double]>
 swift.type.property ApplicationContract.handlerFailed: static let handlerFailed: ElementAct<ApplicationContract, String, Void>
 swift.type.property ApplicationContract.hideOnScreenKeyboard: static let hideOnScreenKeyboard: ElementAct<ApplicationContract, (Name, Name), Bool>
+swift.type.property ApplicationContract.launchAddress: static let launchAddress: ElementAct<ApplicationContract, String, Bool>
 swift.type.property ApplicationContract.launchFile: static let launchFile: ElementAct<ApplicationContract, ChosenFile, Bool>
-swift.type.property ApplicationContract.launchLink: static let launchLink: ElementAct<ApplicationContract, String, Bool>
 swift.type.property ApplicationContract.layer: static let layer: ElementLayer
 swift.type.property ApplicationContract.layer: static var layer: ElementLayer { get }
 swift.type.property ApplicationContract.members: static let members: [any ContractMember]

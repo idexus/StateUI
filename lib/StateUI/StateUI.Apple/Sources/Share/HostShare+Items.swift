@@ -5,11 +5,11 @@ import Foundation
 @_spi(Host) import StateUIHost
 
 @_spi(Host) extension HostShare {
-    /// What Apple's share sheets take: the words, then the link as an address - each only where it is given.
+    /// What Apple's share sheets take: the words, then the address as a URL - each only where it is given.
     public var items: [Any] {
         var items: [Any] = []
         if let text { items.append(text) }
-        if let link = link.flatMap(URL.init(string:)) { items.append(link) }
+        if let url = address.flatMap(URL.init(string:)) { items.append(url) }
         return items
     }
 }

@@ -16,7 +16,7 @@ extension ApplicationSession {
     /// - Returns: whether an application took it; false where none opens its scheme.
     @discardableResult
     public func launch(_ address: String) async throws -> Bool {
-        try await callAct(ApplicationContract.launchLink, address)
+        try await callAct(ApplicationContract.launchAddress, address)
     }
 
     /// Says something to the user through the platform's screen reader now, whatever they were on.

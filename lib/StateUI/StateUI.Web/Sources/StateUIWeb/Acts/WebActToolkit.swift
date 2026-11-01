@@ -66,7 +66,7 @@ final class WebActToolkit: ActToolkit {
             let words = WebRelay.fileWords
             answered(WebRelay.fileKept ? .success(words == "1") : .failure(ActFailure(words)))
         }
-        WebRelay.share(text: shared.text, link: shared.link, listener)
+        WebRelay.share(text: shared.text, address: shared.address, listener)
         return window
     }
 

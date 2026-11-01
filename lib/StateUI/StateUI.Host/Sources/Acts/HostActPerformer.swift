@@ -74,7 +74,7 @@
         case .share:
             guard let shared = HostShare(call) else { return fail(call, "the act offers nothing to share") }
             ask(call, .share(shared), in: AskedWindow(call))
-        case .openFiles, .saveFile, .readFile, .launchFile, .launchLink:
+        case .openFiles, .saveFile, .readFile, .launchFile, .launchAddress:
             guard let files else { return fail(call, notPerformed(call)) }
             perform(call, files: files)
         case .sendRequest:

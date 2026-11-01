@@ -27,7 +27,7 @@
     /// launches.
     public static let files: [any ContractMember] = [
         ApplicationContract.openFiles, ApplicationContract.saveFile, ApplicationContract.readFile,
-        ApplicationContract.launchFile, ApplicationContract.launchLink,
+        ApplicationContract.launchFile, ApplicationContract.launchAddress,
     ]
 
     /// The acts a host with a `NetworkToolkit` performs: the requests the application sends.

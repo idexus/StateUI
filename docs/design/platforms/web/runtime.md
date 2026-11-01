@@ -195,7 +195,7 @@ served over plain http has no clipboard, and its read fails with that reason.
 ## Sharing
 
 What the user shares is the browser's share sheet, where it has one: the words
-as the shared text and the link as its address. Sent on, it answers shared; a
+as the shared text and the address as its URL. Sent on, it answers shared; a
 user's cancel answers not shared; a browser with none fails the act with that
 reason.
 
