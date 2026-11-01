@@ -164,7 +164,7 @@ turns the nodes into the patch.
   `WebView` and the rest), `Text/` (`Text`, `TextSpan`, `TextField`,
   `TextEditor`, `SearchField`), `Layouts/` (`VStack`, `HStack`, `Grid`,
   `ZStack`, `ScrollView`), `Shapes/` (`Rectangle`, `Path`, `Canvas` and
-  their kin) and `Collections/` (`ItemsView`, whose groups are `Section`s) -
+  their kin) and `Collections/` (`ItemsView` and its `Section`s) -
   are each a node written through its contract, most with a `…Properties`
   protocol of its own; `VStack`, `HStack`, `ZStack`, `Ellipse`, `TextSpan`,
   `ItemsView` and `Marker` have none. *Application.*

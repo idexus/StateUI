@@ -167,9 +167,9 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
             for content in AppKitItemsLayout.sections(of: entries) {
                 switch content {
                 case .listHeader(let identity), .listFooter(let identity): snapshot.appendSections([identity])
-                case .group(let group):
-                    snapshot.appendSections([entries.sections[group].identity])
-                    snapshot.appendItems(entries.sections[group].items, toSection: entries.sections[group].identity)
+                case .listSection(let index):
+                    snapshot.appendSections([entries.sections[index].identity])
+                    snapshot.appendItems(entries.sections[index].items, toSection: entries.sections[index].identity)
                 }
             }
             source.apply(snapshot, animatingDifferences: changes?.isEmpty == false && !reducesMotion())
@@ -273,8 +273,8 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         switch (kind, contents[indexPath.section]) {
         case (AppKitItemsLayout.listHeader, .listHeader(let identity)): return identity
         case (AppKitItemsLayout.listFooter, .listFooter(let identity)): return identity
-        case (AppKitItemsLayout.header, .group(let group)): return entries.sections[group].header
-        case (AppKitItemsLayout.footer, .group(let group)): return entries.sections[group].footer
+        case (AppKitItemsLayout.header, .listSection(let index)): return entries.sections[index].header
+        case (AppKitItemsLayout.footer, .listSection(let index)): return entries.sections[index].footer
         default: return nil
         }
     }

@@ -94,10 +94,10 @@ final class AppKitItemsViewTests: XCTestCase {
         XCTAssertEqual(said.sorted(), ["Dishes", "Laundry ✓"])
     }
 
-    /// A group added before the others brings its own header, and every other group keeps its own: a group is known
-    /// by its name, not its place.
+    /// A section added before the others brings its own header, and every other section keeps its own: a section is
+    /// known by its name, not its place.
     @MainActor
-    func testAGroupAddedOnTopBringsItsOwnHeader() throws {
+    func testASectionAddedOnTopBringsItsOwnHeader() throws {
         let days = State(wrappedValue: ["Yesterday"])
         let renderer = autoreleasepool {
             AppKitRenderer.running {

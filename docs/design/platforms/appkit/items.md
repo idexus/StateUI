@@ -1,7 +1,8 @@
 # Items
 
 An ItemsView is AppKit's collection view in a scroll view: a diffable data
-source over the list's identities, one section a group known by its name,
+source over the list's identities, one of its sections for each of the
+list's, known by its name,
 and a compositional layout. The host makes the view itself, since each cell asks the tree for
 what it holds through the host layer's `ItemsCells`
 ([items](../../host/items.md)). AppKit scrolls, reuses its items, holds the
@@ -26,7 +27,7 @@ color.
 A list is one full-width item under another, a row one item beside another
 as tall as the list, scrolling across, and a grid a group of as many
 columns as the width holds (`ItemsGrid`) sharing it, `spacing` apart both
-ways. A group's header and footer are the section's supplementary views,
+ways. A section's header and footer are its supplementary views,
 and the list's own header and footer each the one supplementary view of a
 section of its own, which holds no items and is known by their identity:
 AppKit takes the layout's own boundary views down while it animates a change

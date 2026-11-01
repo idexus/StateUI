@@ -3,10 +3,10 @@
 
 @_spi(Host) import StateUI
 
-/// How the entries stand in a collection that knows no groups and shares a grid's width equally among its columns:
+/// How the entries stand in a collection that knows no sections and shares a grid's width equally among its columns:
 /// whether each is a header or a footer, the columns it spans, and the room it keeps around it, which spaces the items
 /// and makes each a column's width.
-/// Design: docs/design/host/items.md#a-collection-without-groups
+/// Design: docs/design/host/items.md#a-collection-without-sections
 @_spi(Host) public struct ItemsPlacement: Equatable, Sendable {
     /// The room an entry keeps around it, in points: before it in the reading direction, above it, after it.
     public struct Room: Equatable, Sendable {
@@ -40,7 +40,7 @@
     public private(set) var rooms: [Room] = []
 
     /// How `entries` stand as `layout` says in `width` points. Where the collection lets an entry span columns, a
-    /// header or a footer spans them all and a group's last item what its row has left, so a group starts a row;
+    /// header or a footer spans them all and a section's last item what its row has left, so a section starts a row;
     /// where it does not, every entry takes the next cell.
     public init(_ entries: ItemsEntries, layout: ItemsLayout, width: Double, spanning: Bool) {
         guard case .grid(let minimum, let spacing) = layout else {
@@ -86,7 +86,7 @@
         rooms.append(room)
     }
 
-    /// Every entry in the order it shows: whether it is a header or a footer, and an item's place among its group's
+    /// Every entry in the order it shows: whether it is a header or a footer, and an item's place among its section's
     /// items and their count.
     private static func walk(_ entries: ItemsEntries) -> [(edge: Bool, place: Int, count: Int)] {
         let edge = (edge: true, place: 0, count: 0)

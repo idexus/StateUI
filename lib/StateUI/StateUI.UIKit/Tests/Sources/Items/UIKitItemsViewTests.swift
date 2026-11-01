@@ -122,10 +122,10 @@ final class UIKitItemsViewTests: XCTestCase {
         XCTAssertEqual(alpha(cells[2]), 0, "an item at rest draws a background")
     }
 
-    /// A group added before the others brings its own header, and every other group keeps its own: a group is known
-    /// by its name, not its place.
+    /// A section added before the others brings its own header, and every other section keeps its own: a section is
+    /// known by its name, not its place.
     @MainActor
-    func testAGroupAddedOnTopBringsItsOwnHeader() throws {
+    func testASectionAddedOnTopBringsItsOwnHeader() throws {
         let days = State(wrappedValue: ["Yesterday"])
         let host = UIKitRenderer.running(reducesMotion: true) {
             ItemsView(sections: days.wrappedValue.map { day in

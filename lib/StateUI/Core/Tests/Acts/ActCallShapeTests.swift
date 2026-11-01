@@ -222,8 +222,8 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// A list scrolls to an identity - a group's name before an item's where the
-    /// list has groups - and says where it stands, after the view.
+    /// A list scrolls to an identity - a section's name before an item's where the
+    /// list has sections - and says where it stands, after the view.
     func testScrollingAListCrossesWithItsArgumentsInPlace() async throws {
         try await check("scrollTo", [.string("list"), .string("500"), .enumeration(ScrollAnchor.start.rawValue)]) {
             try await named("list", ItemsView<Int>.self).scrollTo(500, anchor: .start)
@@ -233,9 +233,9 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// A list of groups scrolls to an item by the identity its own source wrote for it - its group's name before it
-    /// - without being told the group.
-    func testScrollingAGroupedListFindsTheItemsGroup() async throws {
+    /// A list of sections scrolls to an item by the identity its own source wrote for it - its section's name before
+    /// it - without being told the section.
+    func testScrollingASectionedListFindsTheItemsSection() async throws {
         let list = Aim(ItemsView<String>.self)
         let fruit = Section(["Apple", "Pear"]) { Text($0) }.id("Fruit")
         Renders().render(stack([ItemsView(sections: [fruit]).aim(list).node], id: "root"))

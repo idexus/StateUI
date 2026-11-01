@@ -22,17 +22,17 @@ enum AppKitItemsLayout {
     static let kinds = [header, footer, listHeader, listFooter]
 
     /// What one of the collection's sections holds: the list's own header or footer of an identity, each alone in a
-    /// section of its own known by it, or a group.
+    /// section of its own known by it, or a section of the list.
     /// Design: docs/design/platforms/appkit/items.md#the-layout
     enum SectionContent: Equatable {
         case listHeader(String)
-        case group(Int)
+        case listSection(Int)
         case listFooter(String)
     }
 
     /// The collection's sections for `entries`, in order.
     static func sections(of entries: ItemsEntries) -> [SectionContent] {
-        (entries.header.map { [.listHeader($0)] } ?? []) + entries.sections.indices.map { .group($0) }
+        (entries.header.map { [.listHeader($0)] } ?? []) + entries.sections.indices.map { .listSection($0) }
             + (entries.footer.map { [.listFooter($0)] } ?? [])
     }
 
@@ -52,16 +52,16 @@ enum AppKitItemsLayout {
                 section.boundarySupplementaryItems = [supplement(listHeader, across: across, before: true)]
             case .listFooter:
                 section.boundarySupplementaryItems = [supplement(listFooter, across: across, before: false)]
-            case .group(let group):
+            case .listSection(let index):
                 section.boundarySupplementaryItems =
-                    (entries.sections[group].header == nil ? [] : [supplement(header, across: across, before: true)])
-                    + (entries.sections[group].footer == nil ? [] : [supplement(footer, across: across, before: false)])
+                    (entries.sections[index].header == nil ? [] : [supplement(header, across: across, before: true)])
+                    + (entries.sections[index].footer == nil ? [] : [supplement(footer, across: across, before: false)])
             }
             return section
         }, configuration: configuration)
     }
 
-    /// One group's items as the layout lays them.
+    /// One section's items as the layout lays them.
     private static func section(_ layout: ItemsLayout, width: CGFloat) -> NSCollectionLayoutSection {
         switch layout {
         case .list(let spacing):

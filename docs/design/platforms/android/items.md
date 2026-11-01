@@ -28,9 +28,9 @@ something hears one opened.
 
 A list is a vertical `LinearLayoutManager`, a row a horizontal one whose
 cells are as tall as the row, and a grid a `GridLayoutManager` of the
-columns the width holds. The recycler knows no groups, so the host layer
+columns the width holds. The recycler knows no sections, so the host layer
 places every entry ([a collection without
-groups](../../host/items.md#a-collection-without-groups)), spanning: the
+sections](../../host/items.md#a-collection-without-sections)), spanning: the
 span lookup gives each entry its columns, and an item decoration its room.
 The columns are worked out from the width the list's layout gives it,
 before the recycler lays its cells out in that width.
