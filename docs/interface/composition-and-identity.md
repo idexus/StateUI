@@ -336,7 +336,9 @@ margin, an opacity, a handler of the view's own events - stands on the view
 shown, branch by branch. Such a view stands on an anchor: an element with no
 view and no layout of its own, which a layout places as what it holds. It is
 made only where the view may build one root or another, as its type tells - a
-view whose body is a `VStack` keeps one root and needs none.
+view whose body is a `VStack` keeps one root and needs none. An `.id` written
+on the view stays the view's, before `.onCreated` or after it: a test finds
+the list by it, not the element around it.
 
 ## Build diagnostics
 

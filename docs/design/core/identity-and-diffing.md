@@ -313,8 +313,11 @@ writing any of:
 The anchor holds the view - its placeholder, or the branch it chose - as its
 first child, the sheet and the popover beside it, and a flip replaces that
 child alone. It takes the environments provided on the view, so what it
-presents sees them, and the identity written on a composed view; a branch's
-own identity stays the branch's. Every modifier written after it lands
+presents sees them. An identity written on the view - before the anchor was
+made or after - stays with the view it is written on, so `.id("list")` finds
+the list and not its anchor, and the anchor stands under an identity made from
+it (`AnchorIdentity`), which matches it among its siblings as they reorder; a
+branch's own identity stays the branch's. Every modifier written after it lands
 through it (`Node.writing`): what outlives a branch on the anchor, the rest -
 values, handlers, motion, engines, aims, readings, a context menu, what the
 view says of its page - on what it holds, so a look never waits on an element
