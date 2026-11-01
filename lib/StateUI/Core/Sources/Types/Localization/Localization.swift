@@ -138,9 +138,9 @@ public final class Localization<Catalog: LocalizationCatalog> {
         case .fixed(let tag):
             formats = tag
         case .system:
-            let parts = [speaks.language, speaks.script, system.region.isEmpty ? nil : system.region]
+            let parts = [speaks.language, speaks.script, system.language?.region]
             formats = LocaleTag(parts.compactMap { $0 }.joined(separator: "-"))
-            clock = system.name.isEmpty ? nil : system.uses24HourClock
+            clock = system.language == nil ? nil : system.uses24HourClock
         }
         let region = RegionConventions.of(formats)
         return MessageContext(
@@ -150,7 +150,7 @@ public final class Localization<Catalog: LocalizationCatalog> {
     /// The user's languages, in order: the host's list, or its one language where it gives none.
     static func preferences(of system: LocaleInfo) -> [LocaleTag] {
         if !system.languages.isEmpty { return system.languages }
-        return [system.name, system.language].filter { !$0.isEmpty }.map { LocaleTag($0) }
+        return system.language.map { [$0] } ?? []
     }
 
     /// The first of `wanted` the catalog speaks: the same tag, then the same language in the same script, then

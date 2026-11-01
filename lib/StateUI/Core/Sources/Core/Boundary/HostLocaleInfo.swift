@@ -53,3 +53,12 @@
         self.languages = languages
     }
 }
+
+extension HostLocaleInfo {
+    /// The locale as one tag: its full name, else its language and region; nil where the host said no language.
+    var tag: LocaleTag? {
+        if !name.isEmpty { return LocaleTag(name) }
+        guard !language.isEmpty else { return nil }
+        return LocaleTag(region.isEmpty ? language : language + "-" + region)
+    }
+}

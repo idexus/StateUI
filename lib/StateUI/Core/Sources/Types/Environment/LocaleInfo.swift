@@ -5,15 +5,9 @@
 /// reports them. Read it with `@Environment(\.locale) private var locale`.
 @MainActor
 public final class LocaleInfo {
-    /// The two-letter language, such as "en" or "pl".
-    @State public internal(set) var language = ""
-
-    /// The two-letter region, such as "US" or "PL", and empty where the
-    /// locale has none.
-    @State public internal(set) var region = ""
-
-    /// The locale's full name, such as "en-PL".
-    @State public internal(set) var name = ""
+    /// The user's language as a tag - the language, and its script and region where they are said: `"en-PL"`, its
+    /// `language` "en" and its `region` "PL". Nil until the host has said.
+    @State public internal(set) var language: LocaleTag?
 
     /// The user's languages, most wanted first, each with its script and region where the host says them:
     /// `["pl-PL", "en-GB"]`. Empty where the host gives only `language`.
@@ -39,13 +33,11 @@ public final class LocaleInfo {
     /// A locale as a test or a preview fakes it, for one branch with `.environment(...)`; what is not said starts as a
     /// headless host's does.
     public init(
-        language: String = "", region: String = "", name: String = "", timeZone: TimeZoneName? = nil,
+        language: LocaleTag? = nil, timeZone: TimeZoneName? = nil,
         uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true,
         layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = []
     ) {
         self.language = language
-        self.region = region
-        self.name = name
         self.timeZone = timeZone
         self.uses24HourClock = uses24HourClock
         self.firstDayOfWeek = firstDayOfWeek

@@ -75,6 +75,7 @@ final class HostEnvironmentTests: XCTestCase {
     /// that reads as a fact - and so does a charge where no battery stands.
     func testWhatTheHostHasNotSaidIsNone() {
         XCTAssertNil(Battery().chargeLevel)
+        XCTAssertNil(LocaleInfo().language)
         let display = DeviceDisplay()
         XCTAssertEqual([display.width, display.height, display.density, display.refreshRate], [nil, nil, nil, nil])
 
@@ -116,9 +117,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.device.display.orientation = .unknown
         StandardEnvironment.device.display.rotation = .unknown
         StandardEnvironment.device.display.refreshRate = nil
-        StandardEnvironment.locale.language = ""
-        StandardEnvironment.locale.region = ""
-        StandardEnvironment.locale.name = ""
+        StandardEnvironment.locale.language = nil
         StandardEnvironment.locale.timeZone = nil
         StandardEnvironment.locale.uses24HourClock = false
         StandardEnvironment.locale.firstDayOfWeek = .sunday
@@ -294,9 +293,8 @@ final class HostEnvironmentTests: XCTestCase {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw",
             uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .rightToLeft))
-        XCTAssertEqual(StandardEnvironment.locale.language, "pl")
-        XCTAssertEqual(StandardEnvironment.locale.region, "PL")
-        XCTAssertEqual(StandardEnvironment.locale.name, "pl-PL")
+        XCTAssertEqual(StandardEnvironment.locale.language, "pl-PL")
+        XCTAssertEqual(StandardEnvironment.locale.language?.region, "PL")
         XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(

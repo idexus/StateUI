@@ -6590,11 +6590,11 @@ enum Listings {
                 // closure.
                 DebugInfoLabel()
 
-                Text(locale.name.isEmpty ? "the host has not said" : locale.name)
+                Text(locale.language?.identifier ?? "the host has not said")
                     .fontWeight(.bold)
 
-                Text("language · \(locale.language)")
-                Text("region · \(locale.region.isEmpty ? "none" : locale.region)")
+                Text("language · \(locale.language?.language ?? "not said")")
+                Text("region · \(locale.language?.region ?? "none")")
                 Text("zone · \(locale.timeZone?.identifier ?? "not said")")
                 Text("clock · \(locale.uses24HourClock ? "24-hour" : "12-hour")")
                 Text("week starts · \(locale.firstDayOfWeek)")

@@ -49,7 +49,7 @@ struct EnvironmentPage: View {
 
     var body: some View {
         VStack {
-            Text("locale \(locale.name) \(locale.timeZone?.identifier ?? "")")
+            Text("locale \(locale.language?.identifier ?? "") \(locale.timeZone?.identifier ?? "")")
             Text("battery \(device.battery.state)")
             Text("network \(device.connectivity.networkAccess)")
         }

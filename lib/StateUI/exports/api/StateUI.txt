@@ -2970,7 +2970,7 @@ swift.init LineJoin.init(rawValue:): init?(rawValue: Int32)
 swift.init Link.init(): @MainActor init()
 swift.init Link.init(_:destination:): @MainActor init(_ text: String, destination: Binding<String>)
 swift.init Link.init(_:destination:): @MainActor init(_ text: String, destination: String)
-swift.init LocaleInfo.init(language:region:name:timeZone:uses24HourClock:firstDayOfWeek:isMetric:layoutDirection:languages:): @MainActor init(language: String = "", region: String = "", name: String = "", timeZone: TimeZoneName? = nil, uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = [])
+swift.init LocaleInfo.init(language:timeZone:uses24HourClock:firstDayOfWeek:isMetric:layoutDirection:languages:): @MainActor init(language: LocaleTag? = nil, timeZone: TimeZoneName? = nil, uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = [])
 swift.init LocaleTag.init(_:): init(_ text: String)
 swift.init LocaleTag.init(stringLiteral:): init(stringLiteral value: String)
 swift.init Localization.init(_:language:formatLocale:timeZone:): @MainActor init(_ catalog: Catalog.Type, language: LocaleChoice<Catalog.CatalogLanguage> = .system, formatLocale: LocaleChoice<LocaleTag> = .system, timeZone: LocaleChoice<TimeZoneName> = .system)
@@ -16140,11 +16140,9 @@ swift.property Link.node: @MainActor var node: Node
 swift.property Link.nodes: @MainActor var nodes: [Node] { get }
 swift.property LocaleInfo.firstDayOfWeek: @State @MainActor var firstDayOfWeek: Weekday { get set }
 swift.property LocaleInfo.isMetric: @State @MainActor var isMetric: Bool { get set }
-swift.property LocaleInfo.language: @State @MainActor var language: String { get set }
+swift.property LocaleInfo.language: @State @MainActor var language: LocaleTag? { get set }
 swift.property LocaleInfo.languages: @State @MainActor var languages: [LocaleTag] { get set }
 swift.property LocaleInfo.layoutDirection: @State @MainActor var layoutDirection: LayoutDirection { get set }
-swift.property LocaleInfo.name: @State @MainActor var name: String { get set }
-swift.property LocaleInfo.region: @State @MainActor var region: String { get set }
 swift.property LocaleInfo.timeZone: @State @MainActor var timeZone: TimeZoneName? { get set }
 swift.property LocaleInfo.uses24HourClock: @State @MainActor var uses24HourClock: Bool { get set }
 swift.property LocaleTag.description: var description: String { get }

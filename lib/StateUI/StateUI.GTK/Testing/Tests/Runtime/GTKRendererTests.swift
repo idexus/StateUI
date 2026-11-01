@@ -260,13 +260,13 @@ extension GTKRendererTests {
     }
 }
 
-/// A page saying the locale's name and zone, the battery's state and the network's access.
+/// A page saying the locale's tag and zone, the battery's state and the network's access.
 private struct MachinePage: View {
     @Environment(\.locale) private var locale
     @Environment(\.device) private var device
 
     var body: some View {
-        Text("\(locale.name) \(locale.timeZone?.identifier ?? "") \(device.battery.state) \(device.connectivity.networkAccess)")
+        Text("\(locale.language?.identifier ?? "") \(locale.timeZone?.identifier ?? "") \(device.battery.state) \(device.connectivity.networkAccess)")
     }
 }
 

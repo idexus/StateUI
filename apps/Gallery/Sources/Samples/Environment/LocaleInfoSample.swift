@@ -21,14 +21,14 @@ struct LocaleInfoSample: SampleContent, ExampleContent {
             // closure.
             DebugInfoLabel()
 
-            Text(locale.name.isEmpty ? "the host has not said" : locale.name)
+            Text(locale.language?.identifier ?? "the host has not said")
                 .fontSize(28)
                 .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
-            Text("language · \(locale.language)")
+            Text("language · \(locale.language?.language ?? "not said")")
                 .fontSize(15)
-            Text("region · \(locale.region.isEmpty ? "none" : locale.region)")
+            Text("region · \(locale.language?.region ?? "none")")
                 .fontSize(15)
             Text("zone · \(locale.timeZone?.identifier ?? "not said")")
                 .fontSize(15)

@@ -98,9 +98,7 @@
     /// Replaces the standard locale report.
     public static func setLocaleInfo(_ info: HostLocaleInfo) {
         let locale = StandardEnvironment.locale
-        update(locale, \.language, info.language)
-        update(locale, \.region, info.region)
-        update(locale, \.name, info.name)
+        update(locale, \.language, info.tag)
         update(locale, \.timeZone, info.timeZone.isEmpty ? nil : TimeZoneName(info.timeZone))
         update(locale, \.uses24HourClock, info.uses24HourClock)
         update(locale, \.firstDayOfWeek, info.firstDayOfWeek)
