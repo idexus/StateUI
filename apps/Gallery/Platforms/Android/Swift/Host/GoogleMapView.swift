@@ -100,7 +100,7 @@ final class GoogleMapView: AndroidControl {
             case .searchResult: "searchResult"
             }
             return [String(number), String(location.latitude), String(location.longitude), kind,
-                    Self.line(child.value(MarkerContract.label)), Self.line(child.value(MarkerContract.subtitle))]
+                    Self.line(child.value(MarkerContract.title)), Self.line(child.value(MarkerContract.subtitle))]
                 .joined(separator: "\t")
         }
         numbers = kept
@@ -136,7 +136,7 @@ extension GoogleMapView {
         // listing: android.md.children
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.mapType) { control, type in control.show(type) }
+            map.property(MapContract.type) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
@@ -144,7 +144,7 @@ extension GoogleMapView {
             map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)

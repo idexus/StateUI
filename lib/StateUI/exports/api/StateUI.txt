@@ -8456,7 +8456,6 @@ swift.method Map.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>
 swift.method Map.isZoomEnabled(_:): @MainActor func isZoomEnabled(_ value: Bool) -> Self.Modified
 swift.method Map.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
 swift.method Map.layoutDirection(_:): @MainActor func layoutDirection(_ state: Binding<LayoutDirection>) -> Self.Modified
-swift.method Map.mapType(_:): @MainActor func mapType(_ value: MapType) -> Self.Modified
 swift.method Map.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
 swift.method Map.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method Map.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
@@ -8639,6 +8638,7 @@ swift.method Map.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Mo
 swift.method Map.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method Map.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
+swift.method Map.type(_:): @MainActor func type(_ value: MapType) -> Self.Modified
 swift.method Map.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method Map.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
 swift.method Map.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (StyleBag<Self, StyleState>) -> StyleBag<Self, StyleState>) -> Self.Modified
@@ -8646,12 +8646,11 @@ swift.method Map.width(_:): @MainActor func width(_ state: Binding<Double>) -> S
 swift.method Map.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method MapProperties.isScrollEnabled(_:): @MainActor func isScrollEnabled(_ value: Bool) -> Self.Modified
 swift.method MapProperties.isZoomEnabled(_:): @MainActor func isZoomEnabled(_ value: Bool) -> Self.Modified
-swift.method MapProperties.mapType(_:): @MainActor func mapType(_ value: MapType) -> Self.Modified
 swift.method MapProperties.showsTraffic(_:): @MainActor func showsTraffic(_ value: Bool) -> Self.Modified
 swift.method MapProperties.showsUserLocation(_:): @MainActor func showsUserLocation(_ value: Bool) -> Self.Modified
+swift.method MapProperties.type(_:): @MainActor func type(_ value: MapType) -> Self.Modified
 swift.method Marker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Marker.id(_:): @MainActor func id(_ value: some Hashable) -> Marker
-swift.method Marker.label(_:): @MainActor func label(_ value: String) -> Marker
 swift.method Marker.onDetailsClicked(_:): @MainActor func onDetailsClicked(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Marker
 swift.method Marker.onDetailsClicked(_:_:): @MainActor func onDetailsClicked(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Marker
 swift.method Marker.onDetailsClicked(gate:_:): @MainActor func onDetailsClicked(gate: Gate, _ handler: @escaping EventHandler) -> Marker
@@ -8659,6 +8658,7 @@ swift.method Marker.onSelected(_:): @MainActor func onSelected(_ handler: @escap
 swift.method Marker.onSelected(_:_:): @MainActor func onSelected(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Marker
 swift.method Marker.onSelected(gate:_:): @MainActor func onSelected(gate: Gate, _ handler: @escaping EventHandler) -> Marker
 swift.method Marker.subtitle(_:): @MainActor func subtitle(_ value: String) -> Marker
+swift.method Marker.title(_:): @MainActor func title(_ value: String) -> Marker
 swift.method Marker.type(_:): @MainActor func type(_ value: MarkerType) -> Marker
 swift.method Menu.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Menu.id(_:): @MainActor func id(_ value: some Hashable) -> Menu
@@ -13127,7 +13127,6 @@ swift.method StyleBag.lineCap(_:): @MainActor func lineCap(_ value: LineCap) -> 
 swift.method StyleBag.lineHeight(_:): @MainActor func lineHeight(_ value: Double) -> Self.Modified
 swift.method StyleBag.lineJoin(_:): @MainActor func lineJoin(_ value: LineJoin) -> Self.Modified
 swift.method StyleBag.lineWidth(_:): @MainActor func lineWidth(_ value: Double) -> Self.Modified
-swift.method StyleBag.mapType(_:): @MainActor func mapType(_ value: MapType) -> Self.Modified
 swift.method StyleBag.margin(_:): @MainActor func margin(_ value: Insets) -> Self.Modified
 swift.method StyleBag.margin(horizontal:vertical:): @MainActor func margin(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method StyleBag.margin(start:top:end:bottom:): @MainActor func margin(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
@@ -13192,6 +13191,7 @@ swift.method StyleBag.tracking(_:): @MainActor func tracking(_ value: Double) ->
 swift.method StyleBag.transform(_:): @MainActor func transform(_ transform: ViewTransform) -> Self.Modified
 swift.method StyleBag.translationX(_:): @MainActor func translationX(_ value: Double) -> Self.Modified
 swift.method StyleBag.translationY(_:): @MainActor func translationY(_ value: Double) -> Self.Modified
+swift.method StyleBag.type(_:): @MainActor func type(_ value: MapType) -> Self.Modified
 swift.method StyleBag.userAgent(_:): @MainActor func userAgent(_ value: String) -> Self.Modified
 swift.method StyleBag.value(_:): @MainActor func value(_ value: Double) -> Self.Modified
 swift.method StyleBag.verticalAlignment(_:): @MainActor func verticalAlignment(_ value: Alignment) -> Self.Modified
@@ -17462,7 +17462,6 @@ swift.type.property MapContract.isZoomEnabled: static let isZoomEnabled: Element
 swift.type.property MapContract.layer: static let layer: ElementLayer
 swift.type.property MapContract.layer: static var layer: ElementLayer { get }
 swift.type.property MapContract.locationTapped: static let locationTapped: ElementEvent<MapContract, Location>
-swift.type.property MapContract.mapType: static let mapType: ElementProperty<MapContract, MapType>
 swift.type.property MapContract.members: static let members: [any ContractMember]
 swift.type.property MapContract.moveToRegion: static let moveToRegion: ElementAct<MapContract, MapRegion, Void>
 swift.type.property MapContract.name: static var name: String { get }
@@ -17472,11 +17471,11 @@ swift.type.property MapContract.showsTraffic: static let showsTraffic: ElementPr
 swift.type.property MapContract.showsUserLocation: static let showsUserLocation: ElementProperty<MapContract, Bool>
 swift.type.property MapContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property MapContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property MapContract.type: static let type: ElementProperty<MapContract, MapType>
 swift.type.property MapType.laneKind: static var laneKind: LaneKind { get }
 swift.type.property MapType.lanes: static var lanes: Int { get }
 swift.type.property MapType.moving: static var moving: MotionValues { get }
 swift.type.property MarkerContract.detailsClicked: static let detailsClicked: ElementEvent<MarkerContract, Void>
-swift.type.property MarkerContract.label: static let label: ElementProperty<MarkerContract, String>
 swift.type.property MarkerContract.layer: static let layer: ElementLayer
 swift.type.property MarkerContract.layer: static var layer: ElementLayer { get }
 swift.type.property MarkerContract.location: static let location: ElementProperty<MarkerContract, Location>
@@ -17486,6 +17485,7 @@ swift.type.property MarkerContract.nodeType: static let nodeType: NodeType
 swift.type.property MarkerContract.selected: static let selected: ElementEvent<MarkerContract, Void>
 swift.type.property MarkerContract.subtitle: static let subtitle: ElementProperty<MarkerContract, String>
 swift.type.property MarkerContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property MarkerContract.title: static let title: ElementProperty<MarkerContract, String>
 swift.type.property MarkerContract.type: static let type: ElementProperty<MarkerContract, MarkerType>
 swift.type.property Material.laneKind: static var laneKind: LaneKind { get }
 swift.type.property Material.lanes: static var lanes: Int { get }

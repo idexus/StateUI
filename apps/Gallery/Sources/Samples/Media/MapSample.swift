@@ -88,7 +88,7 @@ struct MapSample: SampleContent, ExampleContent {
             Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                 .aim(map)
                 // What the map draws, and whether the user may move it.
-                .mapType(kind)
+                .type(kind)
                 .showsTraffic(traffic)
                 .showsUserLocation(showsMe)
                 .isZoomEnabled(!locked)
@@ -99,7 +99,7 @@ struct MapSample: SampleContent, ExampleContent {
                     Self.places.map { place in
                         Marker(at: Location(latitude: place.latitude, longitude: place.longitude))
                             .id(place.name)
-                            .label(place.name)
+                            .title(place.name)
                             .subtitle(place.address)
                             // What the marker stands for, which is what decides
                             // the icon the platform draws for it.

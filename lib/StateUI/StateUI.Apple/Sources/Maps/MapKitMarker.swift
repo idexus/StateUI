@@ -34,7 +34,7 @@ public final class MapKitMarker: NSObject, @MainActor MKAnnotation {
     public func take() {
         let location = child.value(MarkerContract.location) ?? Location(latitude: 0, longitude: 0)
         coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
-        title = child.value(MarkerContract.label)
+        title = child.value(MarkerContract.title)
         subtitle = child.value(MarkerContract.subtitle)
         type = child.value(MarkerContract.type) ?? .generic
     }

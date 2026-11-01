@@ -393,21 +393,21 @@ final class ControlTests: XCTestCase {
             // in ActCallShapeTests rather than here.
             ControlCase("Map", source: "Map.swift",
                 Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
-                    .mapType(.hybrid)
+                    .type(.hybrid)
                     .isScrollEnabled(true)
                     .isZoomEnabled(true)
                     .showsTraffic(false)
                     .showsUserLocation(false)
                     .markers {
                         Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
-                            .label("Royal Castle")
+                            .title("Royal Castle")
                             .subtitle("Plac Zamkowy 4")
                             .type(.place)
                             .onSelected {}
                             .onDetailsClicked {}
 
                         Marker(at: Location(latitude: 52.2151, longitude: 21.0355))
-                            .label("Lazienki Park")
+                            .title("Lazienki Park")
                     }
                     .onLocationTapped { _ in }),
 
@@ -825,7 +825,7 @@ final class ControlTests: XCTestCase {
             "barBackground", "barForegroundColor", "barScrollEdge", "toolbarStyle", "toolbarSpacing",
             "isScrollEnabled",
             "isZoomEnabled", "showsTraffic", "showsUserLocation", "title",
-            "mapType", "ignoresSafeArea",
+            "type", "ignoresSafeArea",
         ])
         var values: Set<String> = []
         var twins: Set<String> = []
@@ -1284,7 +1284,7 @@ final class ControlTests: XCTestCase {
         seen = []
         let pin = renders.render(
             Marker(at: Location(latitude: 52.23, longitude: 21.01))
-                .label("Office")
+                .title("Office")
                 .onSelected { seen.append("first") }
                 .onSelected { seen.append("second") }
                 .node)

@@ -112,14 +112,15 @@ Link
 Map
   isScrollEnabled
   isZoomEnabled
-  mapType
   region
   showsTraffic
   showsUserLocation
+  type
+  locationTapped()
 Marker
-  label
   location
   subtitle
+  title
   type
   detailsClicked()
   selected()

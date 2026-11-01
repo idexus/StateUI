@@ -621,8 +621,8 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 9 ✅ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Link](controls/Link.md) | `onClicked` (`clicked`), `destination` | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ |
-| [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onLocationTapped` (`locationTapped`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
-| [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `label`, `location`, `onSelected` (`selected`), `subtitle`, `type` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
+| [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onLocationTapped` (`locationTapped`), `region`, `showsUserLocation`, `type` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
+| [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `location`, `onSelected` (`selected`), `subtitle`, `title`, `type` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuToggle](controls/MenuToggle.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -705,11 +705,11 @@ realizes the element and each of its members.
 `isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`,
 `isSelectable`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`,
 `isZoomEnabled`, `itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`,
-`keysTaken`, `label`, `layoutBody`, `layoutDirection`, `letsInputThrough`,
+`keysTaken`, `layoutBody`, `layoutDirection`, `letsInputThrough`,
 `lineAlignment`, `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`,
-`location`, `magnifies`, `mapType`, `margin`, `maximum`, `maximumDate`,
-`maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`,
-`minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`,
+`location`, `magnifies`, `margin`, `maximum`, `maximumDate`, `maximumHeight`,
+`maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`, `minimum`,
+`minimumDate`, `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`,
 `miterLimit`, `onIcon`, `opacity`, `options`, `order`, `orientation`, `padding`,
 `pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `parameters`, `part`,
 `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,

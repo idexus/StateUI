@@ -202,7 +202,7 @@ view of its own. The Gallery's Google map draws its markers so:
 // Platforms/Android/Swift/Host/GoogleMapView.swift
 StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
     map.property(MapContract.region) { control, region in control.show(region) }
-    map.property(MapContract.mapType) { control, type in control.show(type) }
+    map.property(MapContract.type) { control, type in control.show(type) }
     map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
     map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
@@ -210,7 +210,7 @@ StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports
     map.raises(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
-        properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+        properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
         events: MarkerContract.selected, MarkerContract.detailsClicked
     ) { control, markers in
         control.show(markers)

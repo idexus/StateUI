@@ -185,7 +185,7 @@ extension ControlDictionary {
             @State var tapped = "nowhere yet"
 
             Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
-                .mapType(.hybrid)
+                .type(.hybrid)
                 .onLocationTapped { place in tapped = "\(place.latitude), \(place.longitude)" }
             """#),
 
@@ -341,7 +341,7 @@ extension ControlDictionary {
             Map(region: MapRegion(center: Location(latitude: 52.2479, longitude: 21.0155), radiusMeters: 1500))
                 .markers {
                     Marker(at: Location(latitude: 52.2479, longitude: 21.0155))
-                        .label("Royal Castle")
+                        .title("Royal Castle")
                         .subtitle("Plac Zamkowy 4")
                         .onSelected { chosen = "castle" }
                 }

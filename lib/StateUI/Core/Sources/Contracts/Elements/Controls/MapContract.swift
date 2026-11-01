@@ -24,9 +24,6 @@ public enum MapContract: ElementContract {
     /// The map itself was tapped - not a marker - at a place.
     public static let locationTapped = ElementEvent<Self, Location>("locationTapped", layer: .provider)
 
-    /// How the world is drawn - streets, photography from above, or both.
-    public static let mapType = ElementProperty<Self, MapType>("mapType", layer: .provider)
-
     /// Slides the map until it shows a region.
     public static let moveToRegion = ElementAct<Self, MapRegion, Void>("moveToRegion")
 
@@ -37,9 +34,12 @@ public enum MapContract: ElementContract {
     /// Whether the user's own position is drawn on it.
     public static let showsUserLocation = ElementProperty<Self, Bool>("showsUserLocation", layer: .provider)
 
+    /// How the world is drawn - streets, photography from above, or both.
+    public static let type = ElementProperty<Self, MapType>("type", layer: .provider)
+
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        isScrollEnabled, showsTraffic, isZoomEnabled, locationTapped, mapType, moveToRegion, region,
-        showsUserLocation,
+        isScrollEnabled, showsTraffic, isZoomEnabled, locationTapped, moveToRegion, region,
+        showsUserLocation, type,
     ]
 }

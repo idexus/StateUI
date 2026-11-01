@@ -52,7 +52,7 @@ enum PatchDump {
         out += head + "\n"
 
         for key in patch.properties.keys.sorted() {
-            out += indent + "  \(key.name): \(line(for: patch.properties[key]!, under: key.name))\n"
+            out += indent + "  \(key.name): \(line(for: patch.properties[key]!, under: key.name, in: patch.type))\n"
         }
 
         for key in patch.transitions.keys.sorted() {
@@ -135,7 +135,7 @@ enum PatchDump {
     /// and a `name` of the same text are told apart. `key` is the property it
     /// was written under, the only thing that can say which vocabulary a
     /// member number belongs to.
-    static func line(for value: HostValue, under key: String? = nil) -> String {
+    static func line(for value: HostValue, under key: String? = nil, in element: NodeType? = nil) -> String {
         switch value {
         case .bool(let flag):
             return flag ? "true" : "false"
@@ -157,7 +157,7 @@ enum PatchDump {
         case .name(let name):
             return "name \"\(name)\""
         case .enumeration(let member):
-            guard let spelling = key.flatMap({ spelling(of: member, under: $0) }) else {
+            guard let spelling = key.flatMap({ spelling(of: member, under: $0, in: element) }) else {
                 return "enum \(member)"
             }
             return "enum \(spelling)(\(member))"
@@ -178,11 +178,13 @@ enum PatchDump {
     // MARK: - What a member number means
 
     /// The spelling of one member of a closed vocabulary, given the property
-    /// key it was written under: `(4, "lineBreak")` is `tailTruncation`. The
+    /// key it was written under: `(4, "lineBreak")` is `tailTruncation` - and
+    /// the element, for a name two elements give two vocabularies (a map's
+    /// `type` and a marker's). The
     /// keys are `Prop`'s own members, so a renamed property is a compile error
     /// here. Nil for a key not listed or a number the vocabulary lacks, both of
     /// which print the bare number.
-    static func spelling(of member: Int32, under key: String) -> String? {
+    static func spelling(of member: Int32, under key: String, in element: NodeType? = nil) -> String? {
         switch key {
         // The view tiers and the text mixins.
         case Prop.horizontalAlignment.name, Prop.verticalAlignment.name:
@@ -201,6 +203,8 @@ enum PatchDump {
             return spelled(member, as: ContentMode.self)
         case Prop.iconPosition.name:
             return spelled(member, as: IconPosition.self)
+        case Prop.type.name where element == MapContract.nodeType:
+            return spelled(member, as: MapType.self)
         case Prop.type.name:
             return spelled(member, as: MarkerType.self)
         case Prop.layoutDirection.name:
@@ -235,8 +239,6 @@ enum PatchDump {
             return spelled(member, as: LineJoin.self)
         case Prop.fillRule.name:
             return spelled(member, as: FillRule.self)
-        case Prop.mapType.name:
-            return spelled(member, as: MapType.self)
 
         // The bit sets: an OptionSet's members are static properties nothing
         // can enumerate, so their names are written out here.

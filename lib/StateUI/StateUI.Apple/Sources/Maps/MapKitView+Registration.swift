@@ -21,8 +21,8 @@ extension MapKitView {
             map.property(MapContract.region) { view, region in
                 if let region { view.show(region, sliding: false) }
             }
-            map.applies(MapContract.mapType, MapContract.showsTraffic) { view, values in
-                view.style(values[MapContract.mapType] ?? .standard, traffic: values[MapContract.showsTraffic] ?? false)
+            map.applies(MapContract.type, MapContract.showsTraffic) { view, values in
+                view.style(values[MapContract.type] ?? .standard, traffic: values[MapContract.showsTraffic] ?? false)
             }
             map.property(MapContract.isScrollEnabled) { view, on in view.isScrollEnabled = on ?? true }
             map.property(MapContract.isZoomEnabled) { view, on in view.isZoomEnabled = on ?? true }
@@ -30,7 +30,7 @@ extension MapKitView {
             map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.type, MarkerContract.location,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.type, MarkerContract.location,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { view, pins in
                 view.show(pins)

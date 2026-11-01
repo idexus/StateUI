@@ -199,14 +199,12 @@ extension NodeType {
     static let isZoomEnabled = MapContract.isZoomEnabled.token
     static let options = PickerContract.options.token
     static let inputPurpose = TextInputContract.inputPurpose.token
-    static let label = MarkerContract.label.token
     static let lineAlignment = HStackContract.lineAlignment.token
     static let lineBreak = ButtonContract.lineBreak.token
     static let menuKind = ButtonMenuElementContract.menuKind.token
     static let showsMenuArrow = ButtonMenuElementContract.showsMenuArrow.token
     static let lineHeight = LineHeightElementContract.lineHeight.token
     static let location = MarkerContract.location.token
-    static let mapType = MapContract.mapType.token
     static let margin = ViewContract.margin.token
     static let maximum = SliderContract.maximum.token
     static let maximumDate = DatePickerContract.maximumDate.token

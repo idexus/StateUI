@@ -7119,7 +7119,7 @@ enum Listings {
                 Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), radiusMeters: 1500))
                     .aim(map)
                     // What the map draws, and whether the user may move it.
-                    .mapType(kind)
+                    .type(kind)
                     .showsTraffic(traffic)
                     .showsUserLocation(showsMe)
                     .isZoomEnabled(!locked)
@@ -7130,7 +7130,7 @@ enum Listings {
                         Self.places.map { place in
                             Marker(at: Location(latitude: place.latitude, longitude: place.longitude))
                                 .id(place.name)
-                                .label(place.name)
+                                .title(place.name)
                                 .subtitle(place.address)
                                 // What the marker stands for, which is what decides
                                 // the icon the platform draws for it.
@@ -15919,7 +15919,7 @@ extension Listings {
         // Platforms/Android/Swift/Host/GoogleMapView.swift
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.mapType) { control, type in control.show(type) }
+            map.property(MapContract.type) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.showTraffic(on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
@@ -15927,7 +15927,7 @@ extension Listings {
             map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)
@@ -16374,7 +16374,7 @@ extension Listings {
         // Platforms/Web/Host/GoogleMapElement.swift
         StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(reports) }) { map in
             map.property(MapContract.region) { control, region in control.show(region) }
-            map.property(MapContract.mapType) { control, type in control.show(type) }
+            map.property(MapContract.type) { control, type in control.show(type) }
             map.property(MapContract.showsTraffic) { control, on in control.set("traffic", on ?? false) }
             map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
@@ -16382,7 +16382,7 @@ extension Listings {
             map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
-                properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
+                properties: MarkerContract.title, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
                 events: MarkerContract.selected, MarkerContract.detailsClicked
             ) { control, markers in
                 control.show(markers)

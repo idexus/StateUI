@@ -43,7 +43,7 @@ The public API has no road by token.
 
 An element that wears no tier - a map's `Marker`, which stands only among its
 map's pins - carries no modifiers but its own. It writes a member on its node,
-`node.write(MarkerContract.label, value)`, and hears one,
+`node.write(MarkerContract.title, value)`, and hears one,
 `node.addHandler(MarkerContract.selected, handler)`: the same typed members a
 view's `setValue` and `onEvent` are written over, so the compiler still pairs
 each member with its value.

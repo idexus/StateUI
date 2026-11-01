@@ -17,7 +17,7 @@ extension UIKitDriver {
     func mapHolds(_ property: Prop, _ map: UIKitMapView) -> HostValue? {
         switch property {
         case .region: map.shownRegion.propValue
-        case .mapType: map.shownType.propValue
+        case .type: map.shownType.propValue
         case .showsTraffic: map.showsTrafficNow.propValue
         case .isScrollEnabled: map.isScrollEnabled.propValue
         case .isZoomEnabled: map.isZoomEnabled.propValue
@@ -30,7 +30,7 @@ extension UIKitDriver {
     func markerHolds(_ property: Prop, _ element: MountedElement) throws -> HostValue? {
         let (map, pin) = try mapPin(element)
         switch property {
-        case .label: return pin.title?.propValue
+        case .title: return pin.title?.propValue
         case .subtitle: return pin.subtitle?.propValue
         case .location: return Location(latitude: pin.coordinate.latitude, longitude: pin.coordinate.longitude).propValue
         case .type:
