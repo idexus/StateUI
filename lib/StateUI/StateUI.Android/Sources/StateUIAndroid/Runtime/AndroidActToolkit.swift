@@ -162,7 +162,13 @@ final class AndroidActToolkit: ActToolkit {
         Java.frame { Java.callStatic(JavaAPI.clipboard, JavaAPI.clipboardWrite, .object(context), .object(Java.string(words))) }
     }
 
+    /// The clipboard's words - or, where the activity's window is not in focus, why not: Android hands that window
+    /// nothing, and an empty clipboard would be a lie.
+    /// Design: docs/design/platforms/android/runtime.md#the-clipboard
     func readClipboard(answered: @escaping (Result<String?, ActFailure>) -> Void) {
+        guard Java.frame({ Java.callStaticBool(JavaAPI.clipboard, JavaAPI.clipboardReadable, .object(context)) }) else {
+            return answered(.failure(ActFailure("Android lets only the window in focus read the clipboard")))
+        }
         let words: String? = Java.frame {
             Java.callStaticObject(JavaAPI.clipboard, JavaAPI.clipboardRead, .object(context)).map { Java.text($0) }
         }

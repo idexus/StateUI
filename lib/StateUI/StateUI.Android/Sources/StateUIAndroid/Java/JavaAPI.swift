@@ -198,6 +198,7 @@ enum JavaAPI {
     static let shareTaken = Java.staticMethod(share, "takeChosen", "(Landroid/app/Activity;)Z")
     static let clipboardWrite = Java.staticMethod(clipboard, "write", "(Landroid/content/Context;Ljava/lang/String;)V")
     static let clipboardRead = Java.staticMethod(clipboard, "read", "(Landroid/content/Context;)Ljava/lang/String;")
+    static let clipboardReadable = Java.staticMethod(clipboard, "readable", "(Landroid/content/Context;)Z")
     static let alert = Java.staticMethod(
         dialogs, "alert", "(Landroid/content/Context;JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V")
     static let confirm = Java.staticMethod(
