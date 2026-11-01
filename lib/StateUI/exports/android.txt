@@ -25,9 +25,6 @@ Button
   released()
 Canvas
   drawing
-  dragged()
-  pressed()
-  released()
 Capsule
   contentMode
   dash
