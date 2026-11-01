@@ -17,7 +17,7 @@ final class WinUIScrollView: WinUILayoutView {
     /// Asks for the display's frames: the scroller moves, or has something to say.
     var onFramesWanted: (() -> Void)?
 
-    private(set) var orientation = ScrollOrientation.vertical
+    private(set) var axes = ScrollAxes.vertical
 
     /// Where the scroller stands, in DIPs, as it last said.
     var offset: Point { scrollerOffset.standing }
@@ -90,20 +90,20 @@ final class WinUIScrollView: WinUILayoutView {
         wrapper.forgetMeasurements()
     }
 
-    /// The scroller's orientation, padding, bars, and an offset the tree moved it to.
+    /// The scroller's axes, padding, bars, and an offset the tree moved it to.
     func apply(
-        orientation: ScrollOrientation, padding: Insets, verticalBar: ScrollIndicatorVisibility,
+        axes: ScrollAxes, padding: Insets, verticalBar: ScrollIndicatorVisibility,
         horizontalBar: ScrollIndicatorVisibility, offset: Point?
     ) {
-        if orientation != self.orientation || verticalBar != bars.vertical || horizontalBar != bars.horizontal {
-            self.orientation = orientation
+        if axes != self.axes || verticalBar != bars.vertical || horizontalBar != bars.horizontal {
+            self.axes = axes
             bars = (verticalBar, horizontalBar)
             configure()
         }
         document.padding = padding
-        document.orientation = orientation
+        document.axes = axes
 
-        if let target = scrollerOffset.written(offset, orientation: orientation) {
+        if let target = scrollerOffset.written(offset, axes: axes) {
             move(to: target)
         }
     }
@@ -116,8 +116,8 @@ final class WinUIScrollView: WinUILayoutView {
     /// document without bound there itself, and asking for none it stands exactly where it is placed.
     /// Design: docs/design/platforms/winui/layout.md#scrolling
     override func measure(width: Double, height: Double) -> LayoutSize {
-        let across = orientation == .horizontal || orientation == .both
-        let down = orientation == .vertical || orientation == .both
+        let across = axes.contains(.horizontal)
+        let down = axes.contains(.vertical)
         _ = outermost.measure(
             width: across ? 0 : (width.isFinite ? width : nil),
             height: down ? 0 : (height.isFinite ? height : nil))
@@ -216,7 +216,7 @@ final class WinUIScrollView: WinUILayoutView {
 
     private func configure() {
         scroller.set(
-            content: document, orientation: orientation, verticalBar: bars.vertical, horizontalBar: bars.horizontal)
+            content: document, axes: axes, verticalBar: bars.vertical, horizontalBar: bars.horizontal)
     }
 
     /// Moves the scroller to `target`, kept within what it reaches, as the program's move; one already there is

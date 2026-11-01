@@ -250,7 +250,7 @@ final class LayoutAxisTests: XCTestCase {
                 .axis(\.sky, input: .scroll(.horizontal, pointsPerUnit: 200), range: 0...3)
         }
         let layout = try XCTUnwrap(bench.laid(renders, built).patch.first(.motionLayout))
-        XCTAssertEqual(layout.properties[.translationOrientation], .enumeration(LayoutInput.Orientation.horizontal.rawValue))
+        XCTAssertEqual(layout.properties[.translationOrientation], .enumeration(Orientation.horizontal.rawValue))
         XCTAssertNil(layout.properties[.pans])
 
         bench.hand(renders, built, .began)

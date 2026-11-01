@@ -509,7 +509,7 @@ final class CarriedStateTests: XCTestCase {
 
         let patch = renders.render(
             ScrollView { Text("x") }
-                .orientation(.horizontal)
+                .axes(.horizontal)
                 .scrollOffset(offset.projectedValue)
                 .node)
 

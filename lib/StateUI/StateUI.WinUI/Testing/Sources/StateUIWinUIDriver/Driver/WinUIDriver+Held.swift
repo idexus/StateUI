@@ -429,11 +429,11 @@ extension WinUIDriver {
             return Self.bar(try read(scroll.scroller, "verticalBar")).propValue
         case ("horizontalScrollIndicator", let scroll as WinUIScrollView):
             return Self.bar(try read(scroll.scroller, "horizontalBar")).propValue
-        case ("orientation", let scroll as WinUIScrollView):
-            let down = try read(scroll.scroller, "verticalMode") != "0"
-            let across = try read(scroll.scroller, "horizontalMode") != "0"
-            let orientation: ScrollOrientation = down && across ? .both : across ? .horizontal : down ? .vertical : .neither
-            return orientation.propValue
+        case ("axes", let scroll as WinUIScrollView):
+            var axes: ScrollAxes = []
+            if try read(scroll.scroller, "horizontalMode") != "0" { axes.insert(.horizontal) }
+            if try read(scroll.scroller, "verticalMode") != "0" { axes.insert(.vertical) }
+            return axes.propValue
         default: return nil
         }
     }

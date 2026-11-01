@@ -219,7 +219,7 @@ extension MountedElement {
     /// Which way the hand moves the layout this element is, where a hand does: along its axis, or every way.
     public var handWay: HandWay? {
         if value(.pans)?.bool == true { return .everyWay }
-        return value(.translationOrientation)?.enumeration.flatMap(LayoutInput.Orientation.init(rawValue:)).map(HandWay.init)
+        return value(.translationOrientation)?.enumeration.flatMap(Orientation.init(rawValue:)).map(HandWay.init)
     }
 
     /// Whether the hand over the layout this element is holds one of its views by itself.

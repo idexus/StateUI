@@ -200,11 +200,11 @@ Rectangle
   miterLimit
   stroke
 ScrollView
+  axes
   horizontalScrollIndicator
   isRefreshEnabled
   isRefreshing
   lineWidth
-  orientation
   padding
   scrollOffset
   shape

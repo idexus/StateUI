@@ -12,26 +12,26 @@ final class ScrollerOffsetTests: XCTestCase {
     /// is no number moves nothing; any other moves it.
     func testAnOffsetTheTreeWritesMovesTheScrollerOnlyWhereItAsksSomething() {
         let standing = Point(x: 0, y: 40)
-        XCTAssertEqual(ScrollArithmetic.offsetWritten(Point(x: 0, y: 90), standing: standing, orientation: .neither),
+        XCTAssertEqual(ScrollArithmetic.offsetWritten(Point(x: 0, y: 90), standing: standing, axes: []),
                        Point(x: 0, y: 0))
-        XCTAssertNil(ScrollArithmetic.offsetWritten(Point(x: 0, y: 40.3), standing: standing, orientation: .vertical))
-        XCTAssertNil(ScrollArithmetic.offsetWritten(nil, standing: standing, orientation: .vertical))
-        XCTAssertNil(ScrollArithmetic.offsetWritten(Point(x: 0, y: .nan), standing: standing, orientation: .vertical))
-        XCTAssertEqual(ScrollArithmetic.offsetWritten(Point(x: 0, y: 90), standing: standing, orientation: .vertical),
+        XCTAssertNil(ScrollArithmetic.offsetWritten(Point(x: 0, y: 40.3), standing: standing, axes: .vertical))
+        XCTAssertNil(ScrollArithmetic.offsetWritten(nil, standing: standing, axes: .vertical))
+        XCTAssertNil(ScrollArithmetic.offsetWritten(Point(x: 0, y: .nan), standing: standing, axes: .vertical))
+        XCTAssertEqual(ScrollArithmetic.offsetWritten(Point(x: 0, y: 90), standing: standing, axes: .vertical),
                        Point(x: 0, y: 90))
     }
 
     /// An offset written before the first layout waits for it, the last one written - but not where nothing scrolls.
     func testAnOffsetWrittenBeforeTheFirstLayoutWaitsForIt() {
         var offset = ScrollerOffset()
-        XCTAssertNil(offset.written(Point(x: 0, y: 40), orientation: .vertical), "no layout yet")
-        XCTAssertNil(offset.written(Point(x: 0, y: 90), orientation: .vertical))
+        XCTAssertNil(offset.written(Point(x: 0, y: 40), axes: .vertical), "no layout yet")
+        XCTAssertNil(offset.written(Point(x: 0, y: 90), axes: .vertical))
         XCTAssertEqual(offset.laidOutNow(), Point(x: 0, y: 90), "the last one written waited")
         XCTAssertNil(offset.laidOutNow(), "moved to once")
-        XCTAssertEqual(offset.written(Point(x: 0, y: 20), orientation: .vertical), Point(x: 0, y: 20))
+        XCTAssertEqual(offset.written(Point(x: 0, y: 20), axes: .vertical), Point(x: 0, y: 20))
 
         var still = ScrollerOffset()
-        XCTAssertEqual(still.written(Point(x: 5, y: 5), orientation: .neither), Point(x: 0, y: 0),
+        XCTAssertEqual(still.written(Point(x: 5, y: 5), axes: []), Point(x: 0, y: 0),
                        "a scroller that scrolls neither way stands at its origin at once")
     }
 
@@ -45,8 +45,8 @@ final class ScrollerOffsetTests: XCTestCase {
     func testAnOffsetWrittenBackBeforeLayoutLeavesNothingWaiting() {
         var offset = ScrollerOffset()
 
-        XCTAssertNil(offset.written(Point(x: 0, y: 500), orientation: .vertical))
-        XCTAssertNil(offset.written(Point(x: 0, y: 0), orientation: .vertical))
+        XCTAssertNil(offset.written(Point(x: 0, y: 500), axes: .vertical))
+        XCTAssertNil(offset.written(Point(x: 0, y: 0), axes: .vertical))
 
         XCTAssertNil(offset.laidOutNow(), "the state says 0, so the scroller stays")
     }

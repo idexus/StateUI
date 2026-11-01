@@ -173,6 +173,6 @@ final class LayoutPanTests: XCTestCase {
         let scrolled = try XCTUnwrap(Renders().settled(
             layout().axis(\.y, input: .scroll(.horizontal), range: 0...1, snaps: .endpoints).node).first(.motionLayout))
         XCTAssertNil(scrolled.properties[.pans], "two axes, one way")
-        XCTAssertEqual(scrolled.properties[.translationOrientation], .enumeration(LayoutInput.Orientation.horizontal.rawValue))
+        XCTAssertEqual(scrolled.properties[.translationOrientation], .enumeration(Orientation.horizontal.rawValue))
     }
 }

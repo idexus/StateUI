@@ -23,7 +23,7 @@ extension MotionLayout {
         let knots: [Double]?
 
         /// Which way the hand moves the axis, where the hand does rather than two fingers.
-        var way: LayoutInput.Orientation? {
+        var way: Orientation? {
             guard case .hand(let way, _, _)? = gesture else { return nil }
             return way
         }
@@ -108,7 +108,7 @@ extension MotionLayout {
         var high: Double { focus?.high ?? 0 }
 
         /// The ways the hand moves the run - every way for a pan, axes moved across and down - and whether it does.
-        var ways: Set<LayoutInput.Orientation> { Set(hands.compactMap { $0.way }) }
+        var ways: Set<Orientation> { Set(hands.compactMap { $0.way }) }
         var moves: Bool { !ways.isEmpty }
         var pans: Bool { ways.count > 1 }
 

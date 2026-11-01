@@ -167,7 +167,7 @@ final class AppKitContainerTests: XCTestCase {
         var outerStack = HostPatch(id: .manual("outer"), type: .vStack)
         outerStack.children = .arranged([frame])
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
-        scroll.properties[.orientation] = .enumeration(ScrollOrientation.vertical.rawValue)
+        scroll.properties[.axes] = .enumeration(ScrollAxes.vertical.rawValue)
         scroll.children = .arranged([outerStack])
         renderer.applyForTesting(scroll)
 
@@ -775,7 +775,7 @@ final class AppKitContainerTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             VStack {
                 ScrollView { Text("code") }
-                    .orientation(.horizontal)
+                    .axes(.horizontal)
                     .background(Color(hex: 0x00FF00))
                     .stroke(Color(hex: 0xFF0000))
                     .lineWidth(2)
@@ -835,7 +835,7 @@ final class AppKitContainerTests: XCTestCase {
     func testAScrollViewKeepsItsPaddingAroundWhatItHolds() throws {
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.properties = [
-            .orientation: .enumeration(ScrollOrientation.horizontal.rawValue),
+            .axes: .enumeration(ScrollAxes.horizontal.rawValue),
             .padding: .numbers([5, 3, 11, 7]),
         ]
         scroll.children = .arranged([box("wide", [.width: .number(500), .height: .number(36)])])

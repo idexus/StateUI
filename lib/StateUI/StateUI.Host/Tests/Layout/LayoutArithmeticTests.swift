@@ -558,7 +558,7 @@ final class LayoutArithmeticTests: XCTestCase {
                 in: room, direction: .leftToRight)
         }, [84, 84], "a grid's row and its place")
         XCTAssertEqual(offered {
-            _ = ScrollArithmetic.contentSize(of: child, padding: Insets(0), orientation: .vertical, width: 100)
+            _ = ScrollArithmetic.contentSize(of: child, padding: Insets(0), axes: .vertical, width: 100)
         }, [84], "a scroller's document")
     }
 
@@ -573,10 +573,10 @@ final class LayoutArithmeticTests: XCTestCase {
         let viewport = LayoutSize(width: 100, height: 50)
 
         XCTAssertEqual(ScrollArithmetic.arrange(
-            child, padding: Insets(0), orientation: .vertical, in: viewport, direction: .rightToLeft).place,
+            child, padding: Insets(0), axes: .vertical, in: viewport, direction: .rightToLeft).place,
             Rect(x: 75, y: 0, width: 20, height: 10))
         XCTAssertEqual(ScrollArithmetic.arrange(
-            child, padding: Insets(0), orientation: .vertical, in: viewport, direction: .leftToRight).place,
+            child, padding: Insets(0), axes: .vertical, in: viewport, direction: .leftToRight).place,
             Rect(x: 5, y: 0, width: 20, height: 10))
     }
 

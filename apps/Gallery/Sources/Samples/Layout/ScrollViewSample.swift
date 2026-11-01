@@ -20,7 +20,7 @@ private func tileStrip() -> ScrollView {
         }
         .spacing(20)
     }
-    .orientation(.horizontal)
+    .axes(.horizontal)
     .horizontalScrollIndicator(.never)
 }
 // listing: end

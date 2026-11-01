@@ -29,18 +29,18 @@ final class WebScrollOffsetTests: XCTestCase {
     }
 
     func testAScrollerThatScrollsNeitherWayStandsAtItsBeginning() throws {
-        let orientation = State(wrappedValue: ScrollOrientation.vertical)
+        let orientation = State(wrappedValue: ScrollAxes.vertical)
         let offset = State(wrappedValue: Point(x: 0, y: 100))
         let host = WebRenderer.running {
             ScrollView { VStack { ForEach(Array(0..<40)) { Text("Row \($0)").height(30) } } }
-                .orientation(orientation.projectedValue)
+                .axes(orientation.projectedValue)
                 .scrollOffset(offset.projectedValue)
                 .height(200)
         }
         let scroller = try XCTUnwrap(host.views(WebScrollView.self).first)
         host.settle { (try? WebBrowser.number("e.scrollTop", on: scroller.node)) == 100 }
 
-        orientation.wrappedValue = .neither
+        orientation.wrappedValue = []
         host.settle { (try? WebBrowser.number("e.scrollTop", on: scroller.node)) == 0 }
 
         XCTAssertEqual(try WebBrowser.number("e.scrollTop", on: scroller.node), 0, "it stands where it was scrolled")

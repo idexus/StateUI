@@ -357,7 +357,7 @@ final class AppKitMotionTests: XCTestCase {
         content.properties[.width] = .number(100)
         content.properties[.height] = .number(500)
         var initial = HostPatch(id: .manual("scroll"), type: .scrollView)
-        initial.properties[.orientation] = .enumeration(ScrollOrientation.vertical.rawValue)
+        initial.properties[.axes] = .enumeration(ScrollAxes.vertical.rawValue)
         initial.properties[.scrollOffset] = .numbers([0, 0])
         initial.properties[.opacity] = .number(0)
         initial.children = .arranged([content])

@@ -9794,7 +9794,7 @@ enum Listings {
                     }
                 }
             }
-            .orientation(.horizontal)
+            .axes(.horizontal)
             .horizontalScrollIndicator(.never)
         }
 

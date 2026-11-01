@@ -40,11 +40,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (92)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>44 ✅ · 3 ☑️ · 38 ✓ · 7 –</td><td><code>NSScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>45 ✅ · 2 ☑️ · 39 ✓ · 4 –</td><td><code>UIScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>68 ✅ · 5 ☑️ · 13 ✓ · 5 –</td><td><code>ScrollView</code> / <code>HorizontalScrollView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>67 ✅ · 2 ☑️ · 14 ✓ · 9 –</td><td><code>ScrollViewer</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>57 ✅ · 2 ☑️ · 24 ✓ · 9 –</td><td><code>GtkScrolledWindow</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 21 ✓ · 9 –</td><td><code>overflow: auto</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>42 ✅ · 2 ☑️ · 39 ✓ · 4 –</td><td><code>UIScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>63 ✅ · 5 ☑️ · 13 ✓ · 5 –</td><td><code>ScrollView</code> / <code>HorizontalScrollView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>62 ✅ · 2 ☑️ · 14 ✓ · 9 –</td><td><code>ScrollViewer</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>52 ✅ · 2 ☑️ · 24 ✓ · 9 –</td><td><code>GtkScrolledWindow</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>56 ✅ · 1 ☑️ · 21 ✓ · 9 –</td><td><code>overflow: auto</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/ScrollViewContract.swift`.
@@ -53,14 +53,12 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/ScrollViewContr
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>horizontalScrollIndicator</code></td><td>property</td><td><code>ScrollIndicatorVisibility</code></td><td>adaptive</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: cannot read horizontalScrollIndicator of ScrollView - UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>orientation</code></td><td>property</td><td><code>ScrollOrientation</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>scrollOffset</code></td><td>property</td><td><code>Point</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onScrollStopped</code> (<code>scrollStopped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td><code>axes</code></td><td>property</td><td><code>ScrollAxes</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>horizontalScrollIndicator</code></td><td>property</td><td><code>ScrollIndicatorVisibility</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>scrollOffset</code></td><td>property</td><td><code>Point</code></td><td>structure</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onScrollStopped</code> (<code>scrollStopped</code>)</td><td>event</td><td></td><td>native</td><td align="center">✓</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: scroll on ScrollView: the host's movement moved, not the clip view</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>verticalScrollIndicator</code></td><td>property</td><td><code>ScrollIndicatorVisibility</code></td><td>adaptive</td><td align="center">✅</td><td align="center">·</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
-<tr><td colspan="9">UIKit: cannot read verticalScrollIndicator of ScrollView - UIKit shows a scroll indicator only while the user scrolls: always and as UIKit decides show alike</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>verticalScrollIndicator</code></td><td>property</td><td><code>ScrollIndicatorVisibility</code></td><td>adaptive</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)

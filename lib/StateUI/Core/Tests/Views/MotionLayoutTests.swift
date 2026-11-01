@@ -110,7 +110,7 @@ final class MotionLayoutTests: XCTestCase {
         let layout = try XCTUnwrap(patch.first(.motionLayout))
 
         XCTAssertNotNil(layout.events?[.translationUpdated])
-        XCTAssertEqual(layout.props[.translationOrientation], LayoutInput.Orientation.vertical.propValue)
+        XCTAssertEqual(layout.props[.translationOrientation], Orientation.vertical.propValue)
         XCTAssertNil(patch.first(.scrollView), "nothing scrolls under the hand")
     }
 

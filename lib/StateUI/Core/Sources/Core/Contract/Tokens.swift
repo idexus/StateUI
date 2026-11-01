@@ -102,6 +102,7 @@ extension NodeType {
     static let subtitle = MarkerContract.subtitle.token
     static let allowsDrop = ViewContract.allowsDrop.token
     static let area = ViewContract.area.token
+    static let axes = ScrollViewContract.axes.token
     static let barScrollEdge = BarElementContract.barScrollEdge.token
     static let barForegroundColor = BarElementContract.barForegroundColor.token
     static let endReachedWithin = ItemsViewContract.endReachedWithin.token
@@ -227,7 +228,6 @@ extension NodeType {
     static let part = ToolbarGroupContract.part.token
     static let barEdge = ToolbarGroupContract.barEdge.token
     static let position = ToolbarGroupContract.position.token
-    static let orientation = ScrollViewContract.orientation.token
     static let padding = PaddingElementContract.padding.token
     static let holdDuration = ViewContract.holdDuration.token
     static let choosesOpacity = ColorPickerContract.choosesOpacity.token

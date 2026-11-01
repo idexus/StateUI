@@ -877,11 +877,6 @@ swift.conformance LayoutDirection: Swift.RawRepresentable
 swift.conformance LayoutDirection: Swift.Sendable
 swift.conformance LayoutDynamics: Swift.Equatable
 swift.conformance LayoutDynamics: Swift.Sendable
-swift.conformance LayoutInput.Orientation: StateUI.HostRepresentable
-swift.conformance LayoutInput.Orientation: Swift.Equatable
-swift.conformance LayoutInput.Orientation: Swift.Hashable
-swift.conformance LayoutInput.Orientation: Swift.RawRepresentable
-swift.conformance LayoutInput.Orientation: Swift.Sendable
 swift.conformance LayoutInput.Travel: Swift.Equatable
 swift.conformance LayoutInput.Travel: Swift.Sendable
 swift.conformance LayoutInput: Swift.Equatable
@@ -1133,6 +1128,11 @@ swift.conformance NodeType: Swift.ExpressibleByStringLiteral
 swift.conformance NodeType: Swift.ExpressibleByUnicodeScalarLiteral
 swift.conformance NodeType: Swift.Hashable
 swift.conformance NodeType: Swift.Sendable
+swift.conformance Orientation: StateUI.HostRepresentable
+swift.conformance Orientation: Swift.Equatable
+swift.conformance Orientation: Swift.Hashable
+swift.conformance Orientation: Swift.RawRepresentable
+swift.conformance Orientation: Swift.Sendable
 swift.conformance OverlayContract: StateUI.Contract
 swift.conformance OverlayContract: StateUI.ElementContract
 swift.conformance OverlayContract: Swift.Sendable
@@ -1371,6 +1371,16 @@ swift.conformance ScrollAnchor: Swift.Equatable
 swift.conformance ScrollAnchor: Swift.Hashable
 swift.conformance ScrollAnchor: Swift.RawRepresentable
 swift.conformance ScrollAnchor: Swift.Sendable
+swift.conformance ScrollAxes: StateUI.HostRepresentable
+swift.conformance ScrollAxes: StateUI.LaneValue
+swift.conformance ScrollAxes: StateUI.StateChoice
+swift.conformance ScrollAxes: StateUI.StateValue
+swift.conformance ScrollAxes: Swift.Equatable
+swift.conformance ScrollAxes: Swift.ExpressibleByArrayLiteral
+swift.conformance ScrollAxes: Swift.OptionSet
+swift.conformance ScrollAxes: Swift.RawRepresentable
+swift.conformance ScrollAxes: Swift.Sendable
+swift.conformance ScrollAxes: Swift.SetAlgebra
 swift.conformance ScrollEdge: StateUI.HostRepresentable
 swift.conformance ScrollEdge: Swift.Equatable
 swift.conformance ScrollEdge: Swift.Hashable
@@ -1384,14 +1394,6 @@ swift.conformance ScrollIndicatorVisibility: Swift.Equatable
 swift.conformance ScrollIndicatorVisibility: Swift.Hashable
 swift.conformance ScrollIndicatorVisibility: Swift.RawRepresentable
 swift.conformance ScrollIndicatorVisibility: Swift.Sendable
-swift.conformance ScrollOrientation: StateUI.HostRepresentable
-swift.conformance ScrollOrientation: StateUI.LaneValue
-swift.conformance ScrollOrientation: StateUI.StateChoice
-swift.conformance ScrollOrientation: StateUI.StateValue
-swift.conformance ScrollOrientation: Swift.Equatable
-swift.conformance ScrollOrientation: Swift.Hashable
-swift.conformance ScrollOrientation: Swift.RawRepresentable
-swift.conformance ScrollOrientation: Swift.Sendable
 swift.conformance ScrollView: StateUI.AutomationElement
 swift.conformance ScrollView: StateUI.BorderElement
 swift.conformance ScrollView: StateUI.Element
@@ -2285,7 +2287,6 @@ swift.enum KeyboardElementContract: enum KeyboardElementContract
 swift.enum LaneKind: enum LaneKind
 swift.enum LayoutContract: enum LayoutContract
 swift.enum LayoutDirection: enum LayoutDirection
-swift.enum LayoutInput.Orientation: enum Orientation
 swift.enum LayoutInput.Travel: enum Travel
 swift.enum LineBreak: enum LineBreak
 swift.enum LineCap: enum LineCap
@@ -2310,6 +2311,7 @@ swift.enum MenuToggleContract: enum MenuToggleContract
 swift.enum MotionLayoutContract: enum MotionLayoutContract
 swift.enum NavigationStackContract: enum NavigationStackContract
 swift.enum NetworkAccess: enum NetworkAccess
+swift.enum Orientation: enum Orientation
 swift.enum OverlayContract: enum OverlayContract
 swift.enum PaddingElementContract: enum PaddingElementContract
 swift.enum PageContract: enum PageContract
@@ -2330,7 +2332,6 @@ swift.enum SceneContract: enum SceneContract
 swift.enum ScrollAnchor: enum ScrollAnchor
 swift.enum ScrollEdge: enum ScrollEdge
 swift.enum ScrollIndicatorVisibility: enum ScrollIndicatorVisibility
-swift.enum ScrollOrientation: enum ScrollOrientation
 swift.enum ScrollViewContract: enum ScrollViewContract
 swift.enum SearchFieldContract: enum SearchFieldContract
 swift.enum SelectionMode: enum SelectionMode
@@ -2591,8 +2592,6 @@ swift.enum.case LaneKind.number: case number
 swift.enum.case LayoutDirection.inherited: case inherited
 swift.enum.case LayoutDirection.leftToRight: case leftToRight
 swift.enum.case LayoutDirection.rightToLeft: case rightToLeft
-swift.enum.case LayoutInput.Orientation.horizontal: case horizontal
-swift.enum.case LayoutInput.Orientation.vertical: case vertical
 swift.enum.case LayoutInput.Travel.front: case front
 swift.enum.case LayoutInput.Travel.points(_:): case points(Double)
 swift.enum.case LayoutInput.Travel.room: case room
@@ -2622,6 +2621,8 @@ swift.enum.case NetworkAccess.internet: case internet
 swift.enum.case NetworkAccess.local: case local
 swift.enum.case NetworkAccess.none: case none
 swift.enum.case NetworkAccess.unknown: case unknown
+swift.enum.case Orientation.horizontal: case horizontal
+swift.enum.case Orientation.vertical: case vertical
 swift.enum.case PersistentKind.boolean: case boolean
 swift.enum.case PersistentKind.integer: case integer
 swift.enum.case PersistentKind.number: case number
@@ -2652,10 +2653,6 @@ swift.enum.case ScrollEdge.none: case none
 swift.enum.case ScrollIndicatorVisibility.automatic: case automatic
 swift.enum.case ScrollIndicatorVisibility.never: case never
 swift.enum.case ScrollIndicatorVisibility.visible: case visible
-swift.enum.case ScrollOrientation.both: case both
-swift.enum.case ScrollOrientation.horizontal: case horizontal
-swift.enum.case ScrollOrientation.neither: case neither
-swift.enum.case ScrollOrientation.vertical: case vertical
 swift.enum.case SelectionMode.multiple: case multiple
 swift.enum.case SelectionMode.none: case none
 swift.enum.case SelectionMode.single: case single
@@ -2941,8 +2938,6 @@ swift.init LayoutBody.init(propValue:): init?(propValue: PropValue)
 swift.init LayoutDirection.init(carried:): init?(carried: StateCarried)
 swift.init LayoutDirection.init(propValue:): init?(propValue: PropValue)
 swift.init LayoutDirection.init(rawValue:): init?(rawValue: Int32)
-swift.init LayoutInput.Orientation.init(propValue:): init?(propValue: PropValue)
-swift.init LayoutInput.Orientation.init(rawValue:): init?(rawValue: Int32)
 swift.init LayoutParameters.init(): init()
 swift.init LayoutParameters.init(carried:): init?(carried: StateCarried)
 swift.init Line.init(): @MainActor init()
@@ -2998,6 +2993,8 @@ swift.init NetworkAccess.init(rawValue:): init?(rawValue: Int32)
 swift.init Node.init(contract:id:children:): @MainActor init<Declaration>(contract: Declaration.Type, id: String? = nil, children: [Node] = []) where Declaration : ElementContract
 swift.init NodeType.init(_:): init(_ name: String)
 swift.init NodeType.init(stringLiteral:): init(stringLiteral value: String)
+swift.init Orientation.init(propValue:): init?(propValue: PropValue)
+swift.init Orientation.init(rawValue:): init?(rawValue: Int32)
 swift.init Path.init(): @MainActor init()
 swift.init Path.init(_:): @MainActor init(_ data: String)
 swift.init PersistentKey.init(_:): init(_ name: String)
@@ -3036,14 +3033,14 @@ swift.init SceneKey.init(_:): init(_ name: String)
 swift.init SceneSession.init(): @MainActor convenience init()
 swift.init ScrollAnchor.init(propValue:): init?(propValue: PropValue)
 swift.init ScrollAnchor.init(rawValue:): init?(rawValue: Int32)
+swift.init ScrollAxes.init(carried:): init?(carried: StateCarried)
+swift.init ScrollAxes.init(propValue:): init?(propValue: PropValue)
+swift.init ScrollAxes.init(rawValue:): init(rawValue: Int32)
 swift.init ScrollEdge.init(propValue:): init?(propValue: PropValue)
 swift.init ScrollEdge.init(rawValue:): init?(rawValue: Int32)
 swift.init ScrollIndicatorVisibility.init(carried:): init?(carried: StateCarried)
 swift.init ScrollIndicatorVisibility.init(propValue:): init?(propValue: PropValue)
 swift.init ScrollIndicatorVisibility.init(rawValue:): init?(rawValue: Int32)
-swift.init ScrollOrientation.init(carried:): init?(carried: StateCarried)
-swift.init ScrollOrientation.init(propValue:): init?(propValue: PropValue)
-swift.init ScrollOrientation.init(rawValue:): init?(rawValue: Int32)
 swift.init ScrollView.init(): @MainActor init()
 swift.init ScrollView.init(content:): @MainActor init<Content>(@ViewBuilder content: @escaping () -> Content) where Content : Views
 swift.init SearchField.init(): @MainActor init()
@@ -11330,6 +11327,7 @@ swift.method ScrollView.accessibilityRole(_:): @MainActor func accessibilityRole
 swift.method ScrollView.accessibilityValue(_:): @MainActor func accessibilityValue(_ state: Binding<String>) -> Self.Modified
 swift.method ScrollView.aim(_:): @MainActor func aim(_ aim: Aim<Self>) -> Self.Modified
 swift.method ScrollView.area(_:): @MainActor func area(_ value: Area) -> Self.Modified
+swift.method ScrollView.axes(_:): @MainActor func axes(_ state: Binding<ScrollAxes>) -> ScrollView.Modified
 swift.method ScrollView.backButtonTitle(_:): @MainActor func backButtonTitle(_ state: Binding<String>) -> Self.Modified
 swift.method ScrollView.backButtonTitle(_:): @MainActor func backButtonTitle(_ value: String) -> Self.Modified
 swift.method ScrollView.background(_:): @MainActor func background(_ state: Binding<Color>) -> Self.Modified
@@ -11515,7 +11513,6 @@ swift.method ScrollView.onVisualStateChanged(_:_:): @MainActor func onVisualStat
 swift.method ScrollView.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ScrollView.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ScrollView.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
-swift.method ScrollView.orientation(_:): @MainActor func orientation(_ state: Binding<ScrollOrientation>) -> ScrollView.Modified
 swift.method ScrollView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ScrollView.padding(_:): @MainActor func padding(_ state: Binding<Insets>) -> Self.Modified
 swift.method ScrollView.padding(horizontal:vertical:): @MainActor func padding(horizontal: Double, vertical: Double) -> Self.Modified
@@ -11572,8 +11569,8 @@ swift.method ScrollView.visualState(_:): @MainActor func visualState(_ state: Vi
 swift.method ScrollView.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (StyleBag<Self, StyleState>) -> StyleBag<Self, StyleState>) -> Self.Modified
 swift.method ScrollView.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
+swift.method ScrollViewProperties.axes(_:): @MainActor func axes(_ value: ScrollAxes) -> Self.Modified
 swift.method ScrollViewProperties.horizontalScrollIndicator(_:): @MainActor func horizontalScrollIndicator(_ value: ScrollIndicatorVisibility) -> Self.Modified
-swift.method ScrollViewProperties.orientation(_:): @MainActor func orientation(_ value: ScrollOrientation) -> Self.Modified
 swift.method ScrollViewProperties.verticalScrollIndicator(_:): @MainActor func verticalScrollIndicator(_ value: ScrollIndicatorVisibility) -> Self.Modified
 swift.method SearchField.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SearchField.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
@@ -13291,6 +13288,7 @@ swift.method StyleBag.accessibilityLabel(_:): @MainActor func accessibilityLabel
 swift.method StyleBag.accessibilityRole(_:): @MainActor func accessibilityRole(_ value: AccessibilityRole) -> Self.Modified
 swift.method StyleBag.accessibilityValue(_:): @MainActor func accessibilityValue(_ value: String) -> Self.Modified
 swift.method StyleBag.area(_:): @MainActor func area(_ value: Area) -> Self.Modified
+swift.method StyleBag.axes(_:): @MainActor func axes(_ value: ScrollAxes) -> Self.Modified
 swift.method StyleBag.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method StyleBag.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method StyleBag.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
@@ -13378,7 +13376,6 @@ swift.method StyleBag.minimumWidth(_:): @MainActor func minimumWidth(_ value: Do
 swift.method StyleBag.miterLimit(_:): @MainActor func miterLimit(_ value: Double) -> Self.Modified
 swift.method StyleBag.modified(_:): @MainActor func modified(_ change: (inout Node) -> Void) -> Self
 swift.method StyleBag.opacity(_:): @MainActor func opacity(_ value: Double) -> Self.Modified
-swift.method StyleBag.orientation(_:): @MainActor func orientation(_ value: ScrollOrientation) -> Self.Modified
 swift.method StyleBag.padding(_:): @MainActor func padding(_ value: Insets) -> Self.Modified
 swift.method StyleBag.padding(horizontal:vertical:): @MainActor func padding(horizontal: Double, vertical: Double) -> Self.Modified
 swift.method StyleBag.padding(start:top:end:bottom:): @MainActor func padding(start: Double, top: Double, end: Double, bottom: Double) -> Self.Modified
@@ -16420,7 +16417,6 @@ swift.property LayoutBody.propValue: var propValue: PropValue { get }
 swift.property LayoutCurve.reach: var reach: Int { get }
 swift.property LayoutDirection.carried: var carried: StateCarried { get }
 swift.property LayoutDirection.propValue: var propValue: PropValue { get }
-swift.property LayoutInput.Orientation.propValue: var propValue: PropValue { get }
 swift.property LayoutInterpolation.reach: var reach: Int { get }
 swift.property LayoutParameters.carried: var carried: StateCarried { get }
 swift.property Line.body: @MainActor var body: Never { get }
@@ -16494,6 +16490,7 @@ swift.property Node.node: @MainActor var node: Node { get }
 swift.property Node.type: @MainActor var type: NodeType { get }
 swift.property NodeType.description: var description: String { get }
 swift.property NodeType.name: var name: String { get }
+swift.property Orientation.propValue: var propValue: PropValue { get }
 swift.property PanUpdate.at: var at: Point
 swift.property PanUpdate.phase: var phase: GesturePhase
 swift.property PanUpdate.total: var total: Point
@@ -16571,11 +16568,12 @@ swift.property SceneSession.phase: @State @MainActor var phase: SessionPhase { g
 swift.property SceneSession.windows: @MainActor var windows: [WindowSession] { get }
 swift.property Scenes.body: @MainActor var body: Never { get }
 swift.property ScrollAnchor.propValue: var propValue: PropValue { get }
+swift.property ScrollAxes.carried: var carried: StateCarried { get }
+swift.property ScrollAxes.propValue: var propValue: PropValue { get }
+swift.property ScrollAxes.rawValue: let rawValue: Int32
 swift.property ScrollEdge.propValue: var propValue: PropValue { get }
 swift.property ScrollIndicatorVisibility.carried: var carried: StateCarried { get }
 swift.property ScrollIndicatorVisibility.propValue: var propValue: PropValue { get }
-swift.property ScrollOrientation.carried: var carried: StateCarried { get }
-swift.property ScrollOrientation.propValue: var propValue: PropValue { get }
 swift.property ScrollView.body: @MainActor var body: Never { get }
 swift.property ScrollView.node: @MainActor var node: Node
 swift.property ScrollView.nodes: @MainActor var nodes: [Node] { get }
@@ -16898,6 +16896,7 @@ swift.struct SafeAreaEdges: struct SafeAreaEdges
 swift.struct SceneBuilder.Declared: struct Declared
 swift.struct SceneKey: struct SceneKey<Value> where Value : Decodable, Value : Encodable
 swift.struct Scenes: @MainActor struct Scenes
+swift.struct ScrollAxes: struct ScrollAxes
 swift.struct ScrollView: @MainActor struct ScrollView
 swift.struct SearchField: @MainActor struct SearchField
 swift.struct Section: struct Section<ID> where ID : Hashable
@@ -17121,12 +17120,10 @@ swift.type.method LayoutCurve.catmullRom(tension:): static func catmullRom(tensi
 swift.type.method LayoutDirection.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method LayoutDirection.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method LayoutDynamics.spring(response:damping:): static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutDynamics
-swift.type.method LayoutInput.Orientation.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method LayoutInput.Orientation.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method LayoutInput.pages(_:): static func pages(_ orientation: LayoutInput.Orientation) -> LayoutInput
+swift.type.method LayoutInput.pages(_:): static func pages(_ orientation: Orientation) -> LayoutInput
 swift.type.method LayoutInput.rotation(degreesPerUnit:): static func rotation(degreesPerUnit: Double) -> LayoutInput
-swift.type.method LayoutInput.scroll(_:pointsPerUnit:): static func scroll(_ orientation: LayoutInput.Orientation, pointsPerUnit: Double? = nil) -> LayoutInput
-swift.type.method LayoutInput.swipe(_:pointsPerUnit:): static func swipe(_ orientation: LayoutInput.Orientation, pointsPerUnit: Double? = nil) -> LayoutInput
+swift.type.method LayoutInput.scroll(_:pointsPerUnit:): static func scroll(_ orientation: Orientation, pointsPerUnit: Double? = nil) -> LayoutInput
+swift.type.method LayoutInput.swipe(_:pointsPerUnit:): static func swipe(_ orientation: Orientation, pointsPerUnit: Double? = nil) -> LayoutInput
 swift.type.method LayoutInterpolation.catmullRom(tension:): static func catmullRom(tension: Double) -> LayoutCurve
 swift.type.method LineBreak.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method LineBreak.propValue(of:): static func propValue(of list: [Self]) -> PropValue
@@ -17176,6 +17173,8 @@ swift.type.method Motion.glide(longest:): static func glide(longest: Duration) -
 swift.type.method Motion.spring(response:damping:): static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> Motion
 swift.type.method Name.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Name.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method Orientation.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method Orientation.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method PickerPresentation.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method PickerPresentation.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Point.list(from:): static func list(from value: PropValue) -> [Point]?
@@ -17198,12 +17197,12 @@ swift.type.method SceneBuilder.buildPartialBlock(accumulated:next:): @MainActor 
 swift.type.method SceneBuilder.buildPartialBlock(first:): @MainActor static func buildPartialBlock(first: SceneBuilder.Declared) -> SceneBuilder.Declared
 swift.type.method ScrollAnchor.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ScrollAnchor.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method ScrollAxes.list(from:): static func list(from value: PropValue) -> [Self]?
+swift.type.method ScrollAxes.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ScrollEdge.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ScrollEdge.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ScrollIndicatorVisibility.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ScrollIndicatorVisibility.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method ScrollOrientation.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ScrollOrientation.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method SelectionMode.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method SelectionMode.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method StyleBuilder.buildArray(_:): @MainActor static func buildArray(_ parts: [[AnyStyle]]) -> [AnyStyle]
@@ -17846,7 +17845,7 @@ swift.type.property MotionLayoutContract.pinchRotationUpdated: static let pinchR
 swift.type.property MotionLayoutContract.rotates: static let rotates: ElementProperty<MotionLayoutContract, Bool>
 swift.type.property MotionLayoutContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property MotionLayoutContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property MotionLayoutContract.translationOrientation: static let translationOrientation: ElementProperty<MotionLayoutContract, LayoutInput.Orientation>
+swift.type.property MotionLayoutContract.translationOrientation: static let translationOrientation: ElementProperty<MotionLayoutContract, Orientation>
 swift.type.property MotionLayoutContract.translationUpdated: static let translationUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point)>
 swift.type.property MotionLayoutContract.wheelStepped: static let wheelStepped: ElementEvent<MotionLayoutContract, Point>
 swift.type.property MotionValues.all: static let all: MotionValues
@@ -18007,19 +18006,22 @@ swift.type.property SceneContract.nodeType: static let nodeType: NodeType
 swift.type.property SceneContract.stopped: static let stopped: ElementEvent<SceneContract, Void>
 swift.type.property SceneContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property SceneContract.windowClosed: static let windowClosed: ElementEvent<SceneContract, String>
+swift.type.property ScrollAxes.all: static let all: ScrollAxes
+swift.type.property ScrollAxes.horizontal: static let horizontal: ScrollAxes
+swift.type.property ScrollAxes.laneKind: static var laneKind: LaneKind { get }
+swift.type.property ScrollAxes.lanes: static var lanes: Int { get }
+swift.type.property ScrollAxes.moving: static var moving: MotionValues { get }
+swift.type.property ScrollAxes.vertical: static let vertical: ScrollAxes
 swift.type.property ScrollIndicatorVisibility.laneKind: static var laneKind: LaneKind { get }
 swift.type.property ScrollIndicatorVisibility.lanes: static var lanes: Int { get }
 swift.type.property ScrollIndicatorVisibility.moving: static var moving: MotionValues { get }
-swift.type.property ScrollOrientation.laneKind: static var laneKind: LaneKind { get }
-swift.type.property ScrollOrientation.lanes: static var lanes: Int { get }
-swift.type.property ScrollOrientation.moving: static var moving: MotionValues { get }
+swift.type.property ScrollViewContract.axes: static let axes: ElementProperty<ScrollViewContract, ScrollAxes>
 swift.type.property ScrollViewContract.horizontalScrollIndicator: static let horizontalScrollIndicator: ElementProperty<ScrollViewContract, ScrollIndicatorVisibility>
 swift.type.property ScrollViewContract.layer: static let layer: ElementLayer
 swift.type.property ScrollViewContract.layer: static var layer: ElementLayer { get }
 swift.type.property ScrollViewContract.members: static let members: [any ContractMember]
 swift.type.property ScrollViewContract.name: static var name: String { get }
 swift.type.property ScrollViewContract.nodeType: static let nodeType: NodeType
-swift.type.property ScrollViewContract.orientation: static let orientation: ElementProperty<ScrollViewContract, ScrollOrientation>
 swift.type.property ScrollViewContract.scrollOffset: static let scrollOffset: ElementProperty<ScrollViewContract, Point>
 swift.type.property ScrollViewContract.scrollStopped: static let scrollStopped: ElementEvent<ScrollViewContract, Void>
 swift.type.property ScrollViewContract.tiers: static let tiers: [any Contract.Type]

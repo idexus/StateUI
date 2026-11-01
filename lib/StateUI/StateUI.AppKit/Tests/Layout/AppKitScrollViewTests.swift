@@ -17,7 +17,7 @@ final class AppKitScrollViewTests: XCTestCase {
         scroll.setItems([AppKitLayoutItem(
             view: FixedScrollTestView(width: 500, height: 36))])
         scroll.apply(
-            orientation: ScrollOrientation.horizontal.rawValue,
+            axes: ScrollAxes.horizontal.rawValue,
             padding: Insets(start: 5, top: 3, end: 11, bottom: 7),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 2,
@@ -57,7 +57,7 @@ final class AppKitScrollViewTests: XCTestCase {
         scroll.onOffsetChanged = { changes.append(($0, $1)) }
 
         scroll.apply(
-            orientation: ScrollOrientation.vertical.rawValue,
+            axes: ScrollAxes.vertical.rawValue,
             padding: Insets(0),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
@@ -84,7 +84,7 @@ final class AppKitScrollViewTests: XCTestCase {
             view: FixedScrollTestView(width: 80, height: 500))])
 
         scroll.apply(
-            orientation: ScrollOrientation.vertical.rawValue,
+            axes: ScrollAxes.vertical.rawValue,
             padding: Insets(0),
             verticalBarVisibility: 0,
             horizontalBarVisibility: 0,
@@ -103,7 +103,7 @@ final class AppKitScrollViewTests: XCTestCase {
         scroll.frame = NSRect(x: 0, y: 0, width: 100, height: 100)
         scroll.setItems([AppKitLayoutItem(view: FixedScrollTestView(width: 80, height: 500))])
         scroll.apply(
-            orientation: ScrollOrientation.vertical.rawValue, padding: Insets(0), verticalBarVisibility: 0,
+            axes: ScrollAxes.vertical.rawValue, padding: Insets(0), verticalBarVisibility: 0,
             horizontalBarVisibility: 0, offset: nil)
         scroll.layoutSubtreeIfNeeded()
         let moves = scroll.programmaticMovesForTesting
@@ -126,7 +126,7 @@ final class AppKitScrollViewTests: XCTestCase {
     func testOrientationAndBarVisibilityMapToNativeScrolling() {
         let scroll = AppKitScrollView()
         scroll.apply(
-            orientation: ScrollOrientation.horizontal.rawValue,
+            axes: ScrollAxes.horizontal.rawValue,
             padding: Insets(start: 3, top: 2, end: 5, bottom: 4),
             verticalBarVisibility: 1,
             horizontalBarVisibility: 2,
@@ -136,25 +136,25 @@ final class AppKitScrollViewTests: XCTestCase {
         XCTAssertFalse(scroll.hasHorizontalScroller)
         XCTAssertFalse(scroll.autohidesScrollers)
         XCTAssertEqual(scroll.padding.start, 3)
-        XCTAssertEqual(scroll.orientation, .horizontal)
+        XCTAssertEqual(scroll.axes, .horizontal)
     }
 
     @MainActor
-    func testHostUsesThePublicScrollOrientationValuesDirectly() throws {
+    func testHostUsesThePublicScrollAxesValuesDirectly() throws {
         let renderer = testRenderer(
             resourceDirectory: nil,
             presentsWindows: false)
         defer { renderer.closeForTesting() }
         var scroll = HostPatch(id: .manual("scroll"), type: .scrollView)
         scroll.properties = [
-            .orientation: .enumeration(ScrollOrientation.horizontal.rawValue),
+            .axes: .enumeration(ScrollAxes.horizontal.rawValue),
         ]
         renderer.applyForTesting(tree(scroll))
 
         let native = try XCTUnwrap(
             renderer.viewForTesting(id: .manual("scroll")) as? AppKitScrollView)
 
-        XCTAssertEqual(native.orientation, .horizontal)
+        XCTAssertEqual(native.axes, .horizontal)
         XCTAssertTrue(native.hasHorizontalScroller)
         XCTAssertFalse(native.hasVerticalScroller)
     }
@@ -171,7 +171,7 @@ final class AppKitScrollViewTests: XCTestCase {
         inner.setItems([AppKitLayoutItem(
             view: FixedScrollTestView(width: 500, height: 36))])
         inner.apply(
-            orientation: ScrollOrientation.horizontal.rawValue,
+            axes: ScrollAxes.horizontal.rawValue,
             padding: Insets(0),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 0,
@@ -243,7 +243,7 @@ final class AppKitScrollViewTests: XCTestCase {
         inner.setItems([AppKitLayoutItem(
             view: FixedScrollTestView(width: 500, height: 36))])
         inner.apply(
-            orientation: ScrollOrientation.horizontal.rawValue,
+            axes: ScrollAxes.horizontal.rawValue,
             padding: Insets(0),
             verticalBarVisibility: 2,
             horizontalBarVisibility: 0,
@@ -298,12 +298,12 @@ final class AppKitScrollViewTests: XCTestCase {
         let renderer = AppKitRenderer.running {
             VStack {
                 ScrollView { Text("Default") }
-                    .orientation(.horizontal)
+                    .axes(.horizontal)
                 ScrollView { Text("Never") }
-                    .orientation(.horizontal)
+                    .axes(.horizontal)
                     .horizontalScrollIndicator(.never)
                 ScrollView { Text("Always") }
-                    .orientation(.horizontal)
+                    .axes(.horizontal)
                     .horizontalScrollIndicator(.visible)
             }
         }

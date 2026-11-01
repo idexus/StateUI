@@ -129,7 +129,7 @@ of its members each meets, and why a cell is empty.
 | [ProgressBar](controls/ProgressBar.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Rectangle](controls/Rectangle.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Scene](controls/Scene.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [ScrollView](controls/ScrollView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [ScrollView](controls/ScrollView.md) | native | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [SearchField](controls/SearchField.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Separator](controls/Separator.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Sheet](controls/Sheet.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -499,7 +499,7 @@ Every control, and every part an application, its windows and its pages are made
 | [Polyline](controls/Polyline.md) | 87 | 48 ✅ · 2 ☑️ · 37 ✓ | 46 ✅ · 3 ☑️ · 37 ✓ · 1 – | 69 ✅ · 6 ☑️ · 10 ✓ · 1 – | 63 ✅ · 2 ☑️ · 15 ✓ · 7 – | 55 ✅ · 3 ☑️ · 23 ✓ · 6 – | 61 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [ProgressBar](controls/ProgressBar.md) | 77 | 36 ✅ · 2 ☑️ · 37 ✓ · 2 – | 36 ✅ · 2 ☑️ · 37 ✓ · 2 – | 60 ✅ · 5 ☑️ · 10 ✓ · 1 – | 55 ✅ · 1 ☑️ · 14 ✓ · 7 – | 45 ✅ · 2 ☑️ · 24 ✓ · 6 – | 52 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Rectangle](controls/Rectangle.md) | 86 | 47 ✅ · 2 ☑️ · 37 ✓ | 45 ✅ · 3 ☑️ · 37 ✓ · 1 – | 68 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 2 ☑️ · 15 ✓ · 7 – | 54 ✅ · 3 ☑️ · 23 ✓ · 6 – | 60 ✅ · 2 ☑️ · 21 ✓ · 3 – |
-| [ScrollView](controls/ScrollView.md) | 92 | 44 ✅ · 3 ☑️ · 38 ✓ · 7 – | 45 ✅ · 2 ☑️ · 39 ✓ · 4 – | 68 ✅ · 5 ☑️ · 13 ✓ · 5 – | 67 ✅ · 2 ☑️ · 14 ✓ · 9 – | 57 ✅ · 2 ☑️ · 24 ✓ · 9 – | 61 ✅ · 1 ☑️ · 21 ✓ · 9 – |
+| [ScrollView](controls/ScrollView.md) | 92 | 44 ✅ · 3 ☑️ · 38 ✓ · 7 – | 42 ✅ · 2 ☑️ · 39 ✓ · 4 – | 63 ✅ · 5 ☑️ · 13 ✓ · 5 – | 62 ✅ · 2 ☑️ · 14 ✓ · 9 – | 52 ✅ · 2 ☑️ · 24 ✓ · 9 – | 56 ✅ · 1 ☑️ · 21 ✓ · 9 – |
 | [SearchField](controls/SearchField.md) | 105 | 56 ✅ · 4 ☑️ · 37 ✓ · 5 – | 62 ✅ · 2 ☑️ · 39 ✓ · 2 – | 84 ✅ · 5 ☑️ · 12 ✓ · 2 – | 77 ✅ · 6 ☑️ · 14 ✓ · 8 – | 66 ✅ · 4 ☑️ · 29 ✓ · 6 – | 80 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Separator](controls/Separator.md) | 75 | 35 ✅ · 2 ☑️ · 37 ✓ · 1 – | 34 ✅ · 2 ☑️ · 37 ✓ · 2 – | 58 ✅ · 5 ☑️ · 10 ✓ · 1 – | 51 ✅ · 2 ☑️ · 15 ✓ · 6 – | 44 ✅ · 2 ☑️ · 23 ✓ · 6 – | 50 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Slider](controls/Slider.md) | 87 | 44 ✅ · 2 ☑️ · 37 ✓ · 2 – | 39 ✅ · 2 ☑️ · 41 ✓ · 5 – | 64 ✅ · 5 ☑️ · 12 ✓ · 5 – | 63 ✅ · 2 ☑️ · 14 ✓ · 6 – | 51 ✅ · 2 ☑️ · 26 ✓ · 8 – | 62 ✅ · 21 ✓ · 4 – |
@@ -514,10 +514,10 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 85 | 46 ✅ · 1 ☑️ · 37 ✓ | 42 ✅ · 3 ☑️ · 38 ✓ · 1 – | 68 ✅ · 5 ☑️ · 11 ✓ · 1 – | 63 ✅ · 2 ☑️ · 14 ✓ · 5 – | 53 ✅ · 2 ☑️ · 23 ✓ · 7 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 91 | 50 ✅ · 2 ☑️ · 38 ✓ · 1 – | 47 ✅ · 2 ☑️ · 40 ✓ · 2 – | 69 ✅ · 5 ☑️ · 12 ✓ · 4 – | 50 ✅ · 13 ✓ · 27 – | 58 ✅ · 2 ☑️ · 25 ✓ · 6 – | 60 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 84 | 45 ✅ · 1 ☑️ · 37 ✓ | 40 ✅ · 3 ☑️ · 39 ✓ · 1 – | 66 ✅ · 5 ☑️ · 12 ✓ · 1 – | 62 ✅ · 2 ☑️ · 14 ✓ · 5 – | 51 ✅ · 2 ☑️ · 24 ✓ · 7 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1700 | 1601 | 2366 | 2286 | 1942 | 2215 |
+| ✅ |  | 1700 | 1598 | 2361 | 2281 | 1937 | 2210 |
 | ✓ |  | 1392 | 1434 | 403 | 531 | 889 | 762 |
 | – |  | 57 | 106 | 162 | 250 | 238 | 134 |
-| **Met** | 3247 | **3149** | **3141** | **2931** | **3067** | **3069** | **3111** |
+| **Met** | 3247 | **3149** | **3138** | **2926** | **3062** | **3064** | **3106** |
 | 🧩 |  | 0 | 0 | 83 | 83 | 83 | 83 |
 
 ### Application structure
@@ -637,7 +637,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ProgressBar](controls/ProgressBar.md) | `progress` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Rectangle](controls/Rectangle.md) | `cornerRadius` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Scene](controls/Scene.md) | `activated`, `deactivated`, `stopped`, `windowClosed` | 4 | 4 ✅ | 3 ✅ | 3 ✅ | 4 ✅ | 4 ✅ | 3 ✅ · 1 – |
-| [ScrollView](controls/ScrollView.md) | `horizontalScrollIndicator`, `orientation`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `verticalScrollIndicator` | 5 | 4 ✅ · 1 ✓ | 3 ✅ | 5 ✅ | 5 ✅ | 5 ✅ | 5 ✅ |
+| [ScrollView](controls/ScrollView.md) | `axes`, `horizontalScrollIndicator`, `scrollOffset`, `onScrollStopped` (`scrollStopped`), `verticalScrollIndicator` | 5 | 4 ✅ · 1 ✓ |  |  |  |  |  |
 | [SearchField](controls/SearchField.md) | `submitLabel`, `onSubmitted` (`submitted`) | 2 | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 1 ✅ · 1 ☑️ | 1 ✅ · 1 ☑️ | 2 ✅ |
 | [Sheet](controls/Sheet.md) | `isPresented`, `isPresentedChanged` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [Slider](controls/Slider.md) | `onReleased` (`released`), `onPressed` (`pressed`), `maximum`, `minimum`, `value`, `onValueChanged` (`valueChanged`) | 6 | 4 ✅ | 4 ✅ · 2 ✓ | 6 ✅ | 4 ✅ | 4 ✅ · 2 – | 6 ✅ |
@@ -688,32 +688,32 @@ realizes the element and each of its members.
 
 `accessibilityActions`, `accessibilityHeading`, `accessibilityHint`,
 `accessibilityIdentifier`, `accessibilityLabel`, `accessibilityRole`,
-`accessibilityValue`, `address`, `allowsDrop`, `area`, `backButtonTitle`,
-`background`, `barBackground`, `barEdge`, `barForegroundColor`, `barScrollEdge`,
-`choosesOpacity`, `clipsContent`, `color`, `columns`, `columnSpacing`,
-`contentMode`, `cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`,
-`date`, `dragText`, `drawing`, `droppedFileTypes`, `endReachedWithin`, `fill`,
-`fillRule`, `floatsOnTop`, `fontAttributes`, `fontFamily`, `fontSize`,
-`fontWeight`, `format`, `frame`, `from`, `geometryTransform`, `gridColumn`,
-`gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`, `height`,
-`hidesChildrenFromAccessibility`, `hidesWhenInactive`, `hidesWithSidebar`,
-`holdDuration`, `horizontalAlignment`, `horizontalScrollIndicator`,
-`horizontalTextAlignment`, `icon`, `iconPosition`, `iconSpacing`,
-`ignoresInput`, `ignoresSafeArea`, `inputPurpose`, `isAccessibilityHidden`,
-`isAnimating`, `isDraggable`, `isEnabled`, `isFontAutoScalingEnabled`,
-`isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isPresented`,
-`isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`,
-`isSelectable`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`,
-`isZoomEnabled`, `itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`,
-`keysTaken`, `layoutBody`, `layoutDirection`, `letsInputThrough`,
-`lineAlignment`, `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`,
-`location`, `magnifies`, `margin`, `maximum`, `maximumDate`, `maximumHeight`,
-`maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`, `minimum`,
-`minimumDate`, `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`,
-`miterLimit`, `onIcon`, `opacity`, `options`, `order`, `orientation`, `padding`,
-`pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `parameters`, `part`,
-`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
-`presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
+`accessibilityValue`, `address`, `allowsDrop`, `area`, `axes`,
+`backButtonTitle`, `background`, `barBackground`, `barEdge`,
+`barForegroundColor`, `barScrollEdge`, `choosesOpacity`, `clipsContent`,
+`color`, `columns`, `columnSpacing`, `contentMode`, `cornerRadius`,
+`cursorPosition`, `dash`, `dashPhase`, `data`, `date`, `dragText`, `drawing`,
+`droppedFileTypes`, `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`,
+`fontAttributes`, `fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`,
+`from`, `geometryTransform`, `gridColumn`, `gridColumnSpan`, `gridRow`,
+`gridRowSpan`, `growsWithText`, `height`, `hidesChildrenFromAccessibility`,
+`hidesWhenInactive`, `hidesWithSidebar`, `holdDuration`, `horizontalAlignment`,
+`horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
+`iconSpacing`, `ignoresInput`, `ignoresSafeArea`, `inputPurpose`,
+`isAccessibilityHidden`, `isAnimating`, `isDraggable`, `isEnabled`,
+`isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`,
+`isPassword`, `isPresented`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`,
+`isScrollEnabled`, `isSelectable`, `isSpellCheckEnabled`,
+`isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`, `itemDrag`, `items`,
+`itemsLayout`, `keyboardShortcut`, `keysTaken`, `layoutBody`, `layoutDirection`,
+`letsInputThrough`, `lineAlignment`, `lineBreak`, `lineCap`, `lineHeight`,
+`lineJoin`, `lineWidth`, `location`, `magnifies`, `margin`, `maximum`,
+`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
+`menuKind`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
+`mirrorsRightToLeft`, `miterLimit`, `onIcon`, `opacity`, `options`, `order`,
+`padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `parameters`,
+`part`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`,
+`position`, `presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
 `scrollEdge`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,

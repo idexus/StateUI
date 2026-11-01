@@ -29,7 +29,7 @@ struct CodeBlock: View {
         ScrollView {
             snippet
         }
-        .orientation(.horizontal)
+        .axes(.horizontal)
         .verticalScrollIndicator(.never)
         .background(Palette.shade)
         .stroke(Palette.edge)

@@ -42,7 +42,7 @@ extension AppKitRegistrations {
         // Design: docs/design/platforms/appkit/registrations.md#the-scroll-view
         registry.add(ScrollViewContract.self, madeByHost: AppKitScrollView.self) { scroll in
             scroll.applies(
-                ScrollViewContract.orientation, ScrollViewContract.verticalScrollIndicator,
+                ScrollViewContract.axes, ScrollViewContract.verticalScrollIndicator,
                 ScrollViewContract.horizontalScrollIndicator, ScrollViewContract.scrollOffset,
                 PaddingElementContract.padding) { view, values in
                 // The offset is written only where the tree moved it.
@@ -52,7 +52,7 @@ extension AppKitRegistrations {
                     : nil
 
                 view.apply(
-                    orientation: (values[ScrollViewContract.orientation] ?? .vertical).rawValue,
+                    axes: (values[ScrollViewContract.axes] ?? .vertical).rawValue,
                     padding: values[PaddingElementContract.padding] ?? Insets(0),
                     verticalBarVisibility:
                         (values[ScrollViewContract.verticalScrollIndicator] ?? .automatic).rawValue,

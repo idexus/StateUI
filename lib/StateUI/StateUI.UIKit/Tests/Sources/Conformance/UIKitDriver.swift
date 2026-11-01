@@ -547,7 +547,7 @@ final class UIKitDriver: HostDriver {
             return bar?.shownEdge?.propValue
         case (.scrollOffset, let scroll as UIKitScrollView):
             return scroll.toolkitStanding.propValue
-        case (.orientation, let scroll as UIKitScrollView): return scroll.orientation.propValue
+        case (.axes, let scroll as UIKitScrollView): return scroll.axes.propValue
         case (.source, let image as UIKitImageView): return image.image?.accessibilityIdentifier.map { .string($0) }
         case (.userAgent, let web as WebKitView): return web.customUserAgent.propValue
         case (.source, let web as WebKitView): return Self.shown(by: web)?.propValue

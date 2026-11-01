@@ -16,8 +16,8 @@ final class UIKitScrollDocument: UIKitLayoutView {
         didSet { if padding != oldValue { invalidate() } }
     }
 
-    var orientation = ScrollOrientation.vertical {
-        didSet { if orientation != oldValue { invalidate() } }
+    var axes = ScrollAxes.vertical {
+        didSet { if axes != oldValue { invalidate() } }
     }
 
     private func invalidate() {
@@ -26,20 +26,20 @@ final class UIKitScrollDocument: UIKitLayoutView {
     }
 
     override func contentSize(width: Double?) -> LayoutSize {
-        ScrollArithmetic.contentSize(of: items.first, padding: padding, orientation: orientation, width: width)
+        ScrollArithmetic.contentSize(of: items.first, padding: padding, axes: axes, width: width)
     }
 
     /// The document's size in `viewport`.
     func documentSize(in viewport: LayoutSize) -> LayoutSize {
         guard let item = items.first, item.isShown else { return viewport }
         return ScrollArithmetic.arrange(
-            item, padding: padding, orientation: orientation, in: viewport, direction: direction).document
+            item, padding: padding, axes: axes, in: viewport, direction: direction).document
     }
 
     override func arrange(in bounds: Rect) {
         guard let item = items.first, item.isShown else { return }
         let arranged = ScrollArithmetic.arrange(
-            item, padding: padding, orientation: orientation, in: LayoutSize(width: bounds.width, height: bounds.height),
+            item, padding: padding, axes: axes, in: LayoutSize(width: bounds.width, height: bounds.height),
             direction: direction)
         place(item, at: arranged.place)
     }

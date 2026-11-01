@@ -215,9 +215,9 @@ extension AndroidDriver {
 
     /// Whether each of the view's scrollers, the outermost first, moves across rather than down.
     static func ways(of scroll: AndroidScrollView) -> [Bool] {
-        switch scroll.orientation {
+        switch scroll.axes {
         case .horizontal: [true]
-        case .both: [false, true]
+        case .all: [false, true]
         default: [false]
         }
     }

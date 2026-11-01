@@ -325,7 +325,7 @@ final class ControlTests: XCTestCase {
                 ScrollView {
                     Text("content")
                 }
-                .orientation(.both)
+                .axes(.all)
                 .verticalScrollIndicator(.never)
                 .horizontalScrollIndicator(.visible)
                 // The offset is ONE POINT - both axes on one state - written

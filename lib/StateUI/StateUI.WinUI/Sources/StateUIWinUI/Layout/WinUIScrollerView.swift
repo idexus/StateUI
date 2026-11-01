@@ -21,11 +21,11 @@ final class WinUIScrollerView: WinUIView {
 
     /// The document it moves, the ways it scrolls, and its bars.
     func set(
-        content: WinUIView, orientation: ScrollOrientation, verticalBar: ScrollIndicatorVisibility,
+        content: WinUIView, axes: ScrollAxes, verticalBar: ScrollIndicatorVisibility,
         horizontalBar: ScrollIndicatorVisibility
     ) {
         stateui_winui_scroller_set(
-            handle, content.handle, orientation.rawValue, verticalBar.rawValue, horizontalBar.rawValue)
+            handle, content.handle, axes.rawValue, verticalBar.rawValue, horizontalBar.rawValue)
     }
 
     /// Moves the view to `target` at once; the scroller says where it stands once it has moved.

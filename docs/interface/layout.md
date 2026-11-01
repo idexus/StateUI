@@ -359,7 +359,7 @@ author's own:
 let cards = Text("Cards")
 
 ScrollView { cards }
-    .orientation(.horizontal)
+    .axes(.horizontal)
     .scrollOffset($offset)
     .onScrollStopped {
         let card = ($offset.journey.value.x / 320).rounded()

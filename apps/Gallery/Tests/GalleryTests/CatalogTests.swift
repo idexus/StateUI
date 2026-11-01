@@ -148,7 +148,7 @@ private func verticalScrollers(in node: Node) -> Int {
         let node = node.built
 
         if node.type == "ScrollView",
-           node.props["orientation"] != .enumeration(ScrollOrientation.horizontal.rawValue) {
+           node.props["axes"] != .enumeration(ScrollAxes.horizontal.rawValue) {
             count += 1
         }
 
@@ -793,8 +793,8 @@ final class CatalogTests: XCTestCase {
 
         XCTAssertEqual(scrollers.count, 1)
         XCTAssertEqual(
-            scrollers.first?.props["orientation"],
-            .enumeration(ScrollOrientation.horizontal.rawValue))
+            scrollers.first?.props["axes"],
+            .enumeration(ScrollAxes.horizontal.rawValue))
         XCTAssertEqual(
             scrollers.first?.props["verticalScrollIndicator"],
             .enumeration(ScrollIndicatorVisibility.never.rawValue))

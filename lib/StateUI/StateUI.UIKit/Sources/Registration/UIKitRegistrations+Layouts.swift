@@ -74,11 +74,11 @@ extension UIKitRegistrations {
     static func scrolling(_ registry: Registry<UIView>) {
         registry.add(ScrollViewContract.self, create: { _ in UIKitScrollView() }) { scroll in
             scroll.applies(
-                ScrollViewContract.orientation, ScrollViewContract.verticalScrollIndicator,
+                ScrollViewContract.axes, ScrollViewContract.verticalScrollIndicator,
                 ScrollViewContract.horizontalScrollIndicator, ScrollViewContract.scrollOffset,
                 PaddingElementContract.padding) { view, values in
                 view.apply(
-                    orientation: values[ScrollViewContract.orientation] ?? .vertical,
+                    axes: values[ScrollViewContract.axes] ?? .vertical,
                     padding: values[PaddingElementContract.padding] ?? Insets(0),
                     verticalBar: values[ScrollViewContract.verticalScrollIndicator] ?? .automatic,
                     horizontalBar: values[ScrollViewContract.horizontalScrollIndicator] ?? .automatic,

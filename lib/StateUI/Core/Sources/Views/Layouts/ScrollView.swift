@@ -6,13 +6,13 @@
 public protocol ScrollViewProperties: PropertyContainer {}
 
 extension ScrollViewProperties {
-    /// Which way it scrolls, if not down. The default is `.vertical`.
+    /// The ways it scrolls, if not down - `.horizontal`, `.all` for both. The default is `.vertical`.
     ///
-    /// `.neither` is for a scroller with nothing to scroll, such as an emptied
+    /// None, `[]`, is for a scroller with nothing to scroll, such as an emptied
     /// list: it goes back to the beginning. To stop the user's hand and leave
     /// the scroller where it stands, write `.ignoresInput(true)` instead.
-    public func orientation(_ value: ScrollOrientation) -> Modified {
-        setValue(ScrollViewContract.orientation, value)
+    public func axes(_ value: ScrollAxes) -> Modified {
+        setValue(ScrollViewContract.axes, value)
     }
 
     /// Whether the bar down the side is drawn.
@@ -117,10 +117,10 @@ extension ScrollView {
         twin(ScrollViewContract.horizontalScrollIndicator, by: state)
     }
 
-    /// `orientation` from a state, `$x`: the host sets each new value as it
+    /// `axes` from a state, `$x`: the host sets each new value as it
     /// stands, and no view is rebuilt for it.
-    public func orientation(_ state: Binding<ScrollOrientation>) -> Modified {
-        twin(ScrollViewContract.orientation, by: state)
+    public func axes(_ state: Binding<ScrollAxes>) -> Modified {
+        twin(ScrollViewContract.axes, by: state)
     }
 
     /// `verticalScrollIndicator` from a state, `$x`: the host sets each new

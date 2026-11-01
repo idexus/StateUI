@@ -191,9 +191,9 @@ Rectangle
   miterLimit
   stroke
 ScrollView
+  axes
   horizontalScrollIndicator
   lineWidth
-  orientation
   padding
   scrollOffset
   shape

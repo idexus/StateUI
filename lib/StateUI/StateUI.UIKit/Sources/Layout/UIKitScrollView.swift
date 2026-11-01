@@ -20,7 +20,7 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
     /// Asks for the display's frames: the scroller moves, or has something to say.
     var onFramesWanted: (() -> Void)?
 
-    private(set) var orientation = ScrollOrientation.vertical
+    private(set) var axes = ScrollAxes.vertical
 
     /// Where the scroller stands, as it last said.
     var offset: Point { scrollerOffset.standing }
@@ -77,20 +77,20 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
         wrapper.forgetMeasurements()
     }
 
-    /// The scroller's orientation, padding, bars, and an offset the tree moved it to.
+    /// The scroller's axes, padding, bars, and an offset the tree moved it to.
     func apply(
-        orientation: ScrollOrientation, padding: Insets, verticalBar: ScrollIndicatorVisibility,
+        axes: ScrollAxes, padding: Insets, verticalBar: ScrollIndicatorVisibility,
         horizontalBar: ScrollIndicatorVisibility, offset: Point?
     ) {
-        if orientation != self.orientation {
-            self.orientation = orientation
+        if axes != self.axes {
+            self.axes = axes
             setNeedsLayout()
         }
         configure(vertical: verticalBar, horizontal: horizontalBar)
         document.padding = padding
-        document.orientation = orientation
+        document.axes = axes
 
-        if let target = scrollerOffset.written(offset, orientation: orientation) {
+        if let target = scrollerOffset.written(offset, axes: axes) {
             move(to: target)
         }
     }
@@ -169,11 +169,11 @@ final class UIKitScrollView: UIKitLayoutView, UIScrollViewDelegate, UIKitRefresh
     }
 
     private func configure(vertical: ScrollIndicatorVisibility, horizontal: ScrollIndicatorVisibility) {
-        scroller.isScrollEnabled = orientation != .neither
-        scroller.alwaysBounceVertical = orientation == .vertical || orientation == .both
-        scroller.alwaysBounceHorizontal = orientation == .horizontal || orientation == .both
-        scroller.showsVerticalScrollIndicator = vertical != .never && orientation != .horizontal
-        scroller.showsHorizontalScrollIndicator = horizontal != .never && orientation != .vertical
+        scroller.isScrollEnabled = !axes.isEmpty
+        scroller.alwaysBounceVertical = axes.contains(.vertical)
+        scroller.alwaysBounceHorizontal = axes.contains(.horizontal)
+        scroller.showsVerticalScrollIndicator = vertical != .never && axes != .horizontal
+        scroller.showsHorizontalScrollIndicator = horizontal != .never && axes != .vertical
     }
 
     /// Moves the scroller to `target`, kept within what it reaches, as the program's move.

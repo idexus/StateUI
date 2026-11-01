@@ -6,11 +6,11 @@
 /// Where a scroller stands when the tree writes its offset, the same on every host.
 /// Design: docs/design/host/layout.md#an-offset-the-tree-writes
 extension ScrollArithmetic {
-    /// What the tree's `offset` asks of a scroller standing at `standing` along `orientation`: the origin for one
+    /// What the tree's `offset` asks of a scroller standing at `standing` along `axes`: the origin for one
     /// that scrolls neither way; nothing for no offset, one that is no number, or one it stands at already - the
     /// user's own scrolling coming back as the state it wrote; else the offset.
-    public static func offsetWritten(_ offset: Point?, standing: Point, orientation: ScrollOrientation) -> Point? {
-        guard orientation != .neither else { return Point(x: 0, y: 0) }
+    public static func offsetWritten(_ offset: Point?, standing: Point, axes: ScrollAxes) -> Point? {
+        guard !axes.isEmpty else { return Point(x: 0, y: 0) }
         guard let offset, offset.x.isFinite, offset.y.isFinite, differs(offset, standing) else { return nil }
         return offset
     }

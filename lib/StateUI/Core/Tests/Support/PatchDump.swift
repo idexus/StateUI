@@ -219,8 +219,10 @@ enum PatchDump {
             return spelled(member, as: SubmitLabel.self)
 
         // Scrolling, and the pages.
-        case Prop.orientation.name:
-            return spelled(member, as: ScrollOrientation.self)
+        case Prop.axes.name:
+            return spelled(member, asBitsOf: [
+                ("none", 0), ("horizontal", ScrollAxes.horizontal.rawValue), ("vertical", ScrollAxes.vertical.rawValue),
+            ])
         case Prop.horizontalScrollIndicator.name, Prop.verticalScrollIndicator.name:
             return spelled(member, as: ScrollIndicatorVisibility.self)
         case Prop.scrollEdge.name:

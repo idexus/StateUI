@@ -19,7 +19,7 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
     /// Asks for the display's frames: the scroller moves, or has something to say.
     var onFramesWanted: (() -> Void)?
 
-    private(set) var orientation = ScrollOrientation.vertical
+    private(set) var axes = ScrollAxes.vertical
 
     /// Where the scroller stands, in points, as it was last seen.
     var offset: Point { scrollerOffset.standing }
@@ -91,17 +91,17 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
         wrapper.forgetMeasurements()
     }
 
-    /// The scroller's orientation, padding, bars, and an offset the tree moved it to.
+    /// The scroller's axes, padding, bars, and an offset the tree moved it to.
     func apply(
-        orientation: ScrollOrientation, padding: Insets, verticalBar: ScrollIndicatorVisibility,
+        axes: ScrollAxes, padding: Insets, verticalBar: ScrollIndicatorVisibility,
         horizontalBar: ScrollIndicatorVisibility, offset: Point?
     ) {
-        if orientation != self.orientation {
-            self.orientation = orientation
+        if axes != self.axes {
+            self.axes = axes
             build()
         }
         document.padding = padding
-        document.orientation = orientation
+        document.axes = axes
 
         for scroller in scrollers {
             Java.call(scroller.reference, JavaAPI.setVerticalScrollBarEnabled, .bool(verticalBar != .never))
@@ -112,7 +112,7 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
         }
 
         // Design: docs/design/host/layout.md#an-offset-the-tree-writes
-        if let target = scrollerOffset.written(offset, orientation: orientation) {
+        if let target = scrollerOffset.written(offset, axes: axes) {
             move(to: target)
         }
     }
@@ -223,10 +223,10 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
 
     // MARK: - Android's scrollers
 
-    /// The scroller moving down, and the one moving across; nil where the orientation has none.
-    private var vertical: JavaObject? { orientation == .horizontal ? nil : scrollers.first }
+    /// The scroller moving down, and the one moving across; nil where the axes has none.
+    private var vertical: JavaObject? { axes == .horizontal ? nil : scrollers.first }
     private var horizontal: JavaObject? {
-        orientation == .horizontal || orientation == .both ? scrollers.last : nil
+        axes.contains(.horizontal) ? scrollers.last : nil
     }
 
     /// Where Android's scrollers stand, in points.
@@ -274,7 +274,7 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
         Java.release(local: held)
     }
 
-    /// Makes the scrollers the orientation asks for, each listened to, the document in the innermost.
+    /// Makes the scrollers the axes asks for, each listened to, the document in the innermost.
     private func build() {
         if let swipe = refresh?.layout.reference, let old = scrollers.first {
             Java.call(swipe, JavaAPI.removeView, .object(old.reference))
@@ -285,9 +285,9 @@ final class AndroidScrollView: AndroidLayoutView, AndroidRefreshing {
             Java.release(local: parent)
         }
 
-        let kinds: [Bool] = switch orientation {
+        let kinds: [Bool] = switch axes {
         case .horizontal: [false]
-        case .both: [true, false]
+        case .all: [true, false]
         default: [true]
         }
         scrollers = kinds.map { downward in

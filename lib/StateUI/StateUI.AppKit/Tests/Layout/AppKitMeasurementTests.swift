@@ -487,7 +487,7 @@ final class AppKitMeasurementTests: XCTestCase {
             .joined(separator: "\n")
 
         return node("page", .scrollView, [
-            .orientation: .enumeration(ScrollOrientation.vertical.rawValue),
+            .axes: .enumeration(ScrollAxes.vertical.rawValue),
         ], [
             node("content", .vStack, [
                 .padding: .numbers([24, 24, 24, 24]),
@@ -512,7 +512,7 @@ final class AppKitMeasurementTests: XCTestCase {
                     label("heading", "IN SWIFT"),
                     node("codeFrame", .zStack, [:], [
                         node("codeScroll", .scrollView, [
-                            .orientation: .enumeration(ScrollOrientation.horizontal.rawValue),
+                            .axes: .enumeration(ScrollAxes.horizontal.rawValue),
                         ], [
                             node("codeStack", .vStack, [:], [label("code", listing)]),
                         ]),

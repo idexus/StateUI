@@ -14,7 +14,7 @@
         [
             Aspects.standsAlone("ScrollView"),
             ConformanceCase("scrollingDownItsContentTakesItsWidth", proves: [
-                Covered(ScrollViewContract.orientation),
+                Covered(ScrollViewContract.axes),
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
@@ -25,7 +25,7 @@
                                 .height(2000)
                                 .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
                         }
-                        .orientation(.vertical)
+                        .axes(.vertical)
                         .width(200).height(100)
                     }
                     .horizontalAlignment(.start)
@@ -36,7 +36,7 @@
                 s.expect(frames.values.last.map(FrameReport.size), [200, 2000], "the scroller's width, its own height")
             },
             ConformanceCase("scrollingAcrossItsContentKeepsItsOwnWidth", proves: [
-                Covered(ScrollViewContract.orientation),
+                Covered(ScrollViewContract.axes),
             ]) { s in
                 let frames = Received<[Double]>()
                 s.start {
@@ -48,7 +48,7 @@
                                 .height(40)
                                 .onEvent(ViewContract.frameChanged) { frames.values.append($0) }
                         }
-                        .orientation(.horizontal)
+                        .axes(.horizontal)
                         .width(200).height(100)
                     }
                     .horizontalAlignment(.start)
@@ -117,7 +117,7 @@
                 s.expect(rests.values, [1], "at rest once")
             },
             ConformanceCase("theUsersScrollAcrossLandsOnTheState", proves: [
-                Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.orientation),
+                Covered(ScrollViewContract.scrollOffset), Covered(ScrollViewContract.axes),
             ]) { s in
                 let clock = TestClock()
                 let offset = State(wrappedValue: Point(0, 0))
@@ -129,7 +129,7 @@
                                 .width(3000)
                                 .height(40)
                         }
-                            .orientation(.horizontal)
+                            .axes(.horizontal)
                             .scrollOffset(offset.projectedValue)
                             .width(200).height(100).id("scroller")
                     }
@@ -146,7 +146,7 @@
             },
             Aspects.holds(ScrollViewContract.verticalScrollIndicator, on: "ScrollView", .visible, then: .never),
             Aspects.holds(ScrollViewContract.horizontalScrollIndicator, on: "ScrollView", .visible, then: .never,
-                          with: [Write(ScrollViewContract.orientation, ScrollOrientation.horizontal)]),
+                          with: [Write(ScrollViewContract.axes, ScrollAxes.horizontal)]),
         ]
     }
 }

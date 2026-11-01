@@ -132,15 +132,6 @@ typedef enum {
     StateUIPickerPresentationRadio,
 } StateUIPickerPresentation;
 
-/// The ways a scroller moves its document: down, across, both, neither.
-// Swift: ScrollOrientation
-typedef enum {
-    StateUIScrollOrientationVertical,
-    StateUIScrollOrientationHorizontal,
-    StateUIScrollOrientationBoth,
-    StateUIScrollOrientationNeither,
-} StateUIScrollOrientation;
-
 /// When a scroller shows its bar: as the platform does, always, never.
 // Swift: ScrollIndicatorVisibility
 typedef enum {
@@ -1093,10 +1084,11 @@ uint32_t stateui_winui_canvas_ground(StateUIObjectRef canvas);
 /// what a test reads of the screen; whether it rendered.
 bool stateui_winui_pixels(StateUIObjectRef element, double const *points, int32_t count, uint32_t *argb);
 
-/// A ScrollView's scroller: a ScrollViewer around `content`, scrolling the ways its `StateUIScrollOrientation` says;
+/// A ScrollView's scroller: a ScrollViewer around `content`, scrolling the ways `axes` says - Swift's `ScrollAxes`
+/// bits, 1 across and 2 down;
 /// each bar shown as its `StateUIScrollIndicatorVisibility` says.
 StateUIObjectRef stateui_winui_scroller_make(int64_t view);
-void stateui_winui_scroller_set(StateUIObjectRef scroller, StateUIObjectRef content, int32_t orientation,
+void stateui_winui_scroller_set(StateUIObjectRef scroller, StateUIObjectRef content, int32_t axes,
                                 int32_t verticalBar, int32_t horizontalBar);
 
 /// Moves the scroller's view to `x`, `y` DIPs at once; the scroller keeps it within what it can reach, and says where
