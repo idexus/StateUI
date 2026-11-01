@@ -42,12 +42,12 @@ public func galleryCubeFrame(_ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jcl
     MainActor.assumeIsolated { (GalleryControls.control(control) as? GLESCube3DView)?.frame(at: time) }
 }
 
-@_cdecl("Java_com_stateui_gallery_GalleryNatives_mapClicked")
-public func galleryMapClicked(
+@_cdecl("Java_com_stateui_gallery_GalleryNatives_locationTapped")
+public func galleryLocationTapped(
     _ env: UnsafeMutablePointer<JNIEnv?>?, _ owner: jclass?, _ control: jlong, _ latitude: jdouble, _ longitude: jdouble
 ) {
     MainActor.assumeIsolated {
-        (GalleryControls.control(control) as? GoogleMapView)?.clicked(latitude: latitude, longitude: longitude)
+        (GalleryControls.control(control) as? GoogleMapView)?.tapped(latitude: latitude, longitude: longitude)
     }
 }
 

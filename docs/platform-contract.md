@@ -110,14 +110,14 @@ of its members each meets, and why a cell is empty.
 | [ItemsView](controls/ItemsView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Line](controls/Line.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Link](controls/Link.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Map](controls/Map.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 | 🧩 |
+| [Map](controls/Map.md) | provider | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [Marker](controls/Marker.md) | provider | ✅ | ✅ | 🧩 | 🧩 | 🧩 | 🧩 |
 | [Menu](controls/Menu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuBar](controls/MenuBar.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuItem](controls/MenuItem.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuSeparator](controls/MenuSeparator.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [MenuToggle](controls/MenuToggle.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [MotionLayout](controls/MotionLayout.md) | stateUI | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [MotionLayout](controls/MotionLayout.md) | stateUI | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [NavigationStack](controls/NavigationStack.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Overlay](controls/Overlay.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Page](controls/Page.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -491,8 +491,8 @@ Every control, and every part an application, its windows and its pages are made
 | [ItemsView](controls/ItemsView.md) | 93 | 45 ✅ · 2 ☑️ · 41 ✓ · 4 – | 42 ✅ · 2 ☑️ · 43 ✓ · 5 – | 71 ✅ · 5 ☑️ · 13 ✓ · 2 – | 67 ✅ · 2 ☑️ · 14 ✓ · 9 – | 56 ✅ · 2 ☑️ · 24 ✓ · 9 – | 63 ✅ · 1 ☑️ · 22 ✓ · 6 – |
 | [Line](controls/Line.md) | 86 | 47 ✅ · 2 ☑️ · 37 ✓ | 46 ✅ · 2 ☑️ · 37 ✓ · 1 – | 69 ✅ · 5 ☑️ · 10 ✓ · 1 – | 63 ✅ · 1 ☑️ · 15 ✓ · 7 – | 55 ✅ · 2 ☑️ · 23 ✓ · 6 – | 61 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [Link](controls/Link.md) | 85 | 44 ✅ · 2 ☑️ · 38 ✓ · 1 – | 38 ✅ · 2 ☑️ · 40 ✓ · 5 – | 62 ✅ · 5 ☑️ · 13 ✓ · 4 – | 62 ✅ · 2 ☑️ · 15 ✓ · 6 – | 51 ✅ · 2 ☑️ · 26 ✓ · 6 – | 59 ✅ · 1 ☑️ · 22 ✓ · 3 – |
-| [Map](controls/Map.md) | 83 | 42 ✅ · 2 ☑️ · 38 ✓ · 1 – | 41 ✅ · 2 ☑️ · 38 ✓ · 2 – | 83 🧩 | 83 🧩 | 83 🧩 | 83 🧩 |
-| [MotionLayout](controls/MotionLayout.md) | 95 | 42 ✅ · 1 ☑️ · 46 ✓ · 1 – | 39 ✅ · 3 ☑️ · 48 ✓ · 2 – | 68 ✅ · 5 ☑️ · 16 ✓ · 2 – | 55 ✅ · 2 ☑️ · 27 ✓ · 9 – | 49 ✅ · 2 ☑️ · 31 ✓ · 8 – | 63 ✅ · 2 ☑️ · 25 ✓ · 4 – |
+| [Map](controls/Map.md) | 83 | 42 ✅ · 2 ☑️ · 38 ✓ · 1 – | 34 ✅ · 2 ☑️ · 37 ✓ · 2 – | 75 🧩 | 75 🧩 | 75 🧩 | 75 🧩 |
+| [MotionLayout](controls/MotionLayout.md) | 95 | 42 ✅ · 1 ☑️ · 46 ✓ · 1 – | 37 ✅ · 3 ☑️ · 39 ✓ · 2 – | 61 ✅ · 5 ☑️ · 12 ✓ · 2 – | 53 ✅ · 2 ☑️ · 19 ✓ · 8 – | 45 ✅ · 2 ☑️ · 24 ✓ · 8 – | 57 ✅ · 1 ☑️ · 21 ✓ · 4 – |
 | [Path](controls/Path.md) | 86 | 47 ✅ · 2 ☑️ · 37 ✓ | 45 ✅ · 3 ☑️ · 37 ✓ · 1 – | 68 ✅ · 6 ☑️ · 10 ✓ · 1 – | 62 ✅ · 2 ☑️ · 15 ✓ · 7 – | 54 ✅ · 3 ☑️ · 23 ✓ · 6 – | 60 ✅ · 2 ☑️ · 21 ✓ · 3 – |
 | [Picker](controls/Picker.md) | 97 | 52 ✅ · 2 ☑️ · 38 ✓ · 2 – | 44 ✅ · 3 ☑️ · 42 ✓ · 5 – | 69 ✅ · 6 ☑️ · 13 ✓ · 4 – | 75 ✅ · 2 ☑️ · 14 ✓ · 6 – | 58 ✅ · 2 ☑️ · 25 ✓ · 12 – | 67 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [Polygon](controls/Polygon.md) | 87 | 48 ✅ · 2 ☑️ · 37 ✓ | 46 ✅ · 3 ☑️ · 37 ✓ · 1 – | 69 ✅ · 6 ☑️ · 10 ✓ · 1 – | 63 ✅ · 2 ☑️ · 15 ✓ · 7 – | 55 ✅ · 3 ☑️ · 23 ✓ · 6 – | 61 ✅ · 2 ☑️ · 21 ✓ · 3 – |
@@ -514,11 +514,11 @@ Every control, and every part an application, its windows and its pages are made
 | [VStack](controls/VStack.md) | 85 | 46 ✅ · 1 ☑️ · 37 ✓ | 42 ✅ · 3 ☑️ · 38 ✓ · 1 – | 68 ✅ · 5 ☑️ · 11 ✓ · 1 – | 63 ✅ · 2 ☑️ · 14 ✓ · 5 – | 53 ✅ · 2 ☑️ · 23 ✓ · 7 – | 60 ✅ · 1 ☑️ · 21 ✓ · 3 – |
 | [WebView](controls/WebView.md) | 91 | 50 ✅ · 2 ☑️ · 38 ✓ · 1 – | 47 ✅ · 2 ☑️ · 40 ✓ · 2 – | 69 ✅ · 5 ☑️ · 12 ✓ · 4 – | 50 ✅ · 13 ✓ · 27 – | 58 ✅ · 2 ☑️ · 25 ✓ · 6 – | 60 ✅ · 1 ☑️ · 21 ✓ · 6 – |
 | [ZStack](controls/ZStack.md) | 84 | 45 ✅ · 1 ☑️ · 37 ✓ | 40 ✅ · 3 ☑️ · 39 ✓ · 1 – | 66 ✅ · 5 ☑️ · 12 ✓ · 1 – | 62 ✅ · 2 ☑️ · 14 ✓ · 5 – | 51 ✅ · 2 ☑️ · 24 ✓ · 7 – | 59 ✅ · 1 ☑️ · 21 ✓ · 3 – |
-| ✅ |  | 1702 | 1603 | 2371 | 2291 | 1947 | 2220 |
-| ✓ |  | 1395 | 1437 | 403 | 531 | 889 | 762 |
-| – |  | 57 | 106 | 162 | 250 | 238 | 134 |
-| **Met** | 3252 | **3154** | **3146** | **2936** | **3072** | **3074** | **3116** |
-| 🧩 |  | 0 | 0 | 83 | 83 | 83 | 83 |
+| ✅ |  | 1702 | 1594 | 2364 | 2289 | 1943 | 2214 |
+| ✓ |  | 1395 | 1427 | 399 | 523 | 882 | 758 |
+| – |  | 57 | 106 | 162 | 249 | 238 | 134 |
+| **Met** | 3252 | **3154** | **3127** | **2925** | **3061** | **3063** | **3106** |
+| 🧩 |  | 0 | 0 | 75 | 75 | 75 | 75 |
 
 ### Application structure
 
@@ -621,12 +621,12 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ItemsView](controls/ItemsView.md) | `items`, `itemsLayout`, `selectionMode`, `selectedItems`, `selectedItemsChanged`, `itemActivated`, `endReachedWithin`, `endReached`, `realizedChanged` | 9 | 5 ✅ · 4 ✓ | 5 ✅ · 4 ✓ | 9 ✅ | 9 ✅ | 9 ✅ | 8 ✅ · 1 ✓ |
 | [Line](controls/Line.md) | `x1`, `x2`, `y1`, `y2` | 4 | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ | 4 ✅ |
 | [Link](controls/Link.md) | `onClicked` (`clicked`), `destination` | 2 | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ | 1 ✅ · 1 ✓ |
-| [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onMapClicked` (`mapClicked`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 🧩 | 7 🧩 | 7 🧩 | 7 🧩 |
+| [Map](controls/Map.md) | `isScrollEnabled`, `showsTraffic`, `isZoomEnabled`, `onLocationTapped` (`locationTapped`), `mapType`, `region`, `showsUserLocation` | 7 | 6 ✅ · 1 ✓ |  |  |  |  |  |
 | [Marker](controls/Marker.md) | `onDetailsClicked` (`detailsClicked`), `label`, `location`, `onSelected` (`selected`), `subtitle`, `type` | 6 | 6 ✅ | 4 ✅ · 2 ✓ | 6 🧩 | 6 🧩 | 6 🧩 | 6 🧩 |
 | [Menu](controls/Menu.md) | `isEnabled`, `text` | 2 | 2 ✅ | 1 ✅ · 1 ☑️ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [MenuBar](controls/MenuBar.md) | `order` | 1 | 1 ✓ | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [MenuToggle](controls/MenuToggle.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
-| [MotionLayout](controls/MotionLayout.md) | `itemDrag`, `itemDragUpdated`, `magnifies`, `mirrorsRightToLeft`, `pans`, `parameters`, `pinchRotationUpdated`, `rotates`, `translationOrientation`, `translationUpdated`, `wheelStepped` | 11 | 2 ✅ · 9 ✓ | 2 ✅ · 9 ✓ | 7 ✅ · 4 ✓ | 2 ✅ · 8 ✓ · 1 – | 4 ✅ · 7 ✓ | 6 ✅ · 1 ☑️ · 4 ✓ |
+| [MotionLayout](controls/MotionLayout.md) | `itemDrag`, `itemDragUpdated`, `magnifies`, `mirrorsRightToLeft`, `pans`, `parameters`, `pinchRotationUpdated`, `rotates`, `translationOrientation`, `translationUpdated`, `wheelStepped` | 11 | 2 ✅ · 9 ✓ |  |  |  |  |  |
 | [NavigationStack](controls/NavigationStack.md) | `popped` | 1 | 1 ✓ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [Page](controls/Page.md) | `onAppearing` (`appearing`), `backButtonTitle`, `onDisappearing` (`disappearing`), `showsBackButton`, `showsCloseButton`, `showsNavigationBar`, `showsTitle`, `subtitle`, `onNavigatedFrom` (`navigatedFrom`), `onNavigatedTo` (`navigatedTo`), `onNavigatingFrom` (`navigatingFrom`) | 11 | 9 ✅ | 11 ✅ | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ · 1 – | 10 ✅ |
 | [Path](controls/Path.md) | `data` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
@@ -737,13 +737,13 @@ realizes the element and each of its members.
 `detailsClicked`, `disappearing`, `dragEnded`, `dragged`, `dragLeave`,
 `dragOver`, `dragStarting`, `drop`, `endReached`, `filesDropped`,
 `frameChanged`, `held`, `isFocusedChanged`, `isPresentedChanged`,
-`itemActivated`, `itemDragUpdated`, `keyPressed`, `linkOpened`, `mapClicked`,
-`navigated`, `navigatedFrom`, `navigatedTo`, `navigating`, `navigatingFrom`,
-`opened`, `panUpdated`, `pinchRotationUpdated`, `pinchUpdated`,
-`pointerEntered`, `pointerExited`, `pointerMoved`, `pointerPressed`,
-`pointerReleased`, `popped`, `pressed`, `processTerminated`, `realizedChanged`,
-`refreshRequested`, `released`, `resumed`, `rotationUpdated`, `scrollStopped`,
-`selected`, `selectedIndexChanged`, `selectedItemsChanged`,
+`itemActivated`, `itemDragUpdated`, `keyPressed`, `linkOpened`,
+`locationTapped`, `navigated`, `navigatedFrom`, `navigatedTo`, `navigating`,
+`navigatingFrom`, `opened`, `panUpdated`, `pinchRotationUpdated`,
+`pinchUpdated`, `pointerEntered`, `pointerExited`, `pointerMoved`,
+`pointerPressed`, `pointerReleased`, `popped`, `pressed`, `processTerminated`,
+`realizedChanged`, `refreshRequested`, `released`, `resumed`, `rotationUpdated`,
+`scrollStopped`, `selected`, `selectedIndexChanged`, `selectedItemsChanged`,
 `selectedTabChanged`, `showsSidebarChanged`, `stopped`, `submitted`, `swiped`,
 `tapped`, `textChanged`, `timeChanged`, `toggled`, `translationUpdated`,
 `valueChanged`, `wheelStepped`, `windowClosed`.

@@ -98,7 +98,9 @@ final class APISurfaceTests: XCTestCase {
                 // What every type is unless it says otherwise, and what another module's type was before StateUI.
                 if ["Swift.Copyable", "Swift.Escapable", "Swift.SendableMetatype"].contains(target) { continue }
                 if !extended.isEmpty, !target.hasPrefix("StateUI.") { continue }
-                let constraints = (relationship["swiftConstraints"] as? [[String: Any]] ?? []).map { constraint in
+                let constraints = (relationship["swiftConstraints"] as? [[String: Any]] ?? []).filter { constraint in
+                    !["Copyable", "Escapable"].contains(constraint["rhs"] as? String ?? "")
+                }.map { constraint in
                     "\(constraint["lhs"] as? String ?? "?") \(constraint["kind"] as? String == "sameType" ? "==" : ":") \(constraint["rhs"] as? String ?? "?")"
                 }
                 lines.insert("swift.conformance \(source): \(target)"

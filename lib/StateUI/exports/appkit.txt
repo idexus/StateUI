@@ -119,7 +119,6 @@ Map
   region
   showsTraffic
   showsUserLocation
-  mapClicked()
 Marker
   label
   location

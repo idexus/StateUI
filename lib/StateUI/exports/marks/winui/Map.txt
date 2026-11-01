@@ -2,7 +2,6 @@
 Map: 🧩
 Map.isScrollEnabled: 🧩
 Map.isZoomEnabled: 🧩
-Map.mapClicked: 🧩
 Map.mapType: 🧩
 Map.moveToRegion: 🧩
 Map.region: 🧩

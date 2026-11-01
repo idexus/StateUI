@@ -22,7 +22,7 @@ public enum MapContract: ElementContract {
     public static let isZoomEnabled = ElementProperty<Self, Bool>("isZoomEnabled", layer: .provider)
 
     /// The map itself was tapped - not a marker - at a place.
-    public static let mapClicked = ElementEvent<Self, Location>("mapClicked", layer: .provider)
+    public static let locationTapped = ElementEvent<Self, Location>("locationTapped", layer: .provider)
 
     /// How the world is drawn - streets, photography from above, or both.
     public static let mapType = ElementProperty<Self, MapType>("mapType", layer: .provider)
@@ -39,7 +39,7 @@ public enum MapContract: ElementContract {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        isScrollEnabled, showsTraffic, isZoomEnabled, mapClicked, mapType, moveToRegion, region,
+        isScrollEnabled, showsTraffic, isZoomEnabled, locationTapped, mapType, moveToRegion, region,
         showsUserLocation,
     ]
 }

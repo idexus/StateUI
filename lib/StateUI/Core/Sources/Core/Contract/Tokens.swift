@@ -339,7 +339,7 @@ extension NodeType {
     static let keyPressed = KeyboardElementContract.keyPressed.token
     static let linkOpened = PageElementContract.linkOpened.token
     static let showsSidebarChanged = SplitViewContract.showsSidebarChanged.token
-    static let mapClicked = MapContract.mapClicked.token
+    static let locationTapped = MapContract.locationTapped.token
     static let navigated = WebViewContract.navigated.token
     static let navigatedFrom = PageContract.navigatedFrom.token
     static let navigatedTo = PageContract.navigatedTo.token

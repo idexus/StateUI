@@ -27,7 +27,7 @@ extension AppKitDriver {
         case (.tap(let count), let map as AppKitMapView):
             // A click on a map is the map's, and the view's where it hears taps too.
             tap(native, map, count: count)
-            map.clicked(at: NSPoint(x: map.bounds.midX, y: map.bounds.midY))
+            map.tapped(at: NSPoint(x: map.bounds.midX, y: map.bounds.midY))
         case (.endContent, let web as WebKitView):
             // As WebKit tells it when the page's process dies.
             web.navigationDelegate?.webViewWebContentProcessDidTerminate?(web)

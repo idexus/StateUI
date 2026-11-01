@@ -368,7 +368,7 @@ final class ControlTests: XCTestCase {
                 .motion(.spring(response: .milliseconds(240)))
                 .dynamics(.standard)
                 .mirrorsRightToLeft(true)
-                .onItemTapped { _ in }
+                .onItemActivated { _ in }
                 .itemDrag(begins: .longPress)
                 .onItemDragged { _ in }
                 .onItemDismissed(.up, beyond: 80) { _ in }
@@ -408,7 +408,7 @@ final class ControlTests: XCTestCase {
                         Marker(at: Location(latitude: 52.2151, longitude: 21.0355))
                             .label("Lazienki Park")
                     }
-                    .onMapClicked { _ in }),
+                    .onLocationTapped { _ in }),
 
             // The case's source is the URL form; HTML written in place
             // travels as a list under the same name - the brush rule, one

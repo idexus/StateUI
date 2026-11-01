@@ -761,7 +761,7 @@ enum Listings {
                     // high or fast, it flies off and the app closes - the others
                     // close up, the card in front staying in front.
                     .itemDrag(begins: .perpendicular)
-                    .onItemDismissed(.up, beyond: 120) { app in close(app) }
+                    .onItemDismissed(.up, beyond: 120) { name in close(name) }
                 }
                 .gridRow(0)
                 .clipsContent(true)
@@ -776,11 +776,11 @@ enum Listings {
             .rows(.fill, .auto)
         }
 
-        /// `app` closed: the others close up; one before the card in front keeps
+        /// The app `name` closed: the others close up; one before the card in front keeps
         /// that card in front, and where the last closes, the parameters travel
         /// to the one before.
-        private func close(_ app: RunningApp) {
-            guard let leaving = apps.firstIndex(of: app) else { return }
+        private func close(_ name: String) {
+            guard let leaving = apps.firstIndex(where: { $0.name == name }) else { return }
             let front = min(max(Int(turn.rounded()), 0), apps.count - 1)
             apps.remove(at: leaving)
             if leaving < front {
@@ -1887,7 +1887,7 @@ enum Listings {
 
                     // THE FRONT CARD LEAVES: at once, the others closing up, and
                     // the card behind it comes to the front.
-                    Button("Remove").onClicked { remove(cards[front]) }
+                    Button("Remove").onClicked { remove(cards[front].name) }
                 }
                 .horizontalAlignment(.center)
                 .gridRow(1)
@@ -1914,11 +1914,11 @@ enum Listings {
             min(max(Int(turn.rounded()), 0), cards.count - 1)
         }
 
-        /// `card` leaves the deck, the others closing up: one before the front
+        /// The card `name` leaves the deck, the others closing up: one before the front
         /// card keeps that card in front; the front card's place goes to the one
         /// behind it - where it was the last, the parameters travel to the one before.
-        private func remove(_ card: Card) {
-            guard cards.count > 1, let leaving = cards.firstIndex(of: card) else { return }
+        private func remove(_ name: String) {
+            guard cards.count > 1, let leaving = cards.firstIndex(where: { $0.name == name }) else { return }
             let shown = front
             cards.remove(at: leaving)
             if leaving < shown {
@@ -1947,7 +1947,7 @@ enum Listings {
             // A CARD PULLED UP is the hand's alone: let go far enough, it flies
             // out of the deck and leaves it; short of that, it goes back.
             .itemDrag(begins: .perpendicular)
-            .onItemDismissed(.up, beyond: 120) { card in remove(card) }
+            .onItemDismissed(.up, beyond: 120) { name in remove(name) }
             // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
             // where the parameters stand; `.dynamics` THE CARDS reaching their new
             // places after a card joins, leaves or the order changes.
@@ -4879,12 +4879,12 @@ enum Listings {
                     .onItemDragged { drag in
                         switch drag.phase {
                         case .began:
-                            lifted = drag.item.name
+                            lifted = drag.id
                         case .ended, .cancelled:
                             lifted = nil
                         default:
                             // The icon under the hand gives the held one its place.
-                            if let over = drag.over, let place = icons.firstIndex(of: over) { move(drag.item, to: place) }
+                            if let over = drag.over, let place = icons.firstIndex(where: { $0.name == over }) { move(drag.id, to: place) }
                             // At an edge, standing there or pushed against it fast, the board turns.
                             if drag.still >= .milliseconds(500) || Self.pushes(drag) {
                                 turn(at: drag.at, in: drag.room, of: boards)
@@ -4926,18 +4926,17 @@ enum Listings {
             if Double(showing) != board { $board.journey.snap(to: Double(showing)) }
         }
 
-        /// `icon` taken out of its place and put at `slot`: a new order, which
+        /// The icon `name` taken out of its place and put at `slot`: a new order, which
         /// the others travel to.
-        private func move(_ icon: HomeIcon, to slot: Int) {
-            guard let from = icons.firstIndex(of: icon), from != slot else { return }
-            icons.remove(at: from)
-            icons.insert(icon, at: slot)
+        private func move(_ name: String, to slot: Int) {
+            guard let from = icons.firstIndex(where: { $0.name == name }), from != slot else { return }
+            icons.insert(icons.remove(at: from), at: slot)
         }
 
         /// Whether the hand reached the edge it stands at going that way faster
         /// than 600 points a second.
-        private static func pushes(_ drag: ItemDrag<HomeIcon>) -> Bool {
-            drag.at.x > drag.room.width - 24 && drag.speed.x > 600 || drag.at.x < 24 && drag.speed.x < -600
+        private static func pushes(_ drag: ItemDrag<String>) -> Bool {
+            drag.at.x > drag.room.width - 24 && drag.velocity.x > 600 || drag.at.x < 24 && drag.velocity.x < -600
         }
 
         /// The board on the side of the room `point` stands at the edge of, if
@@ -7140,7 +7139,7 @@ enum Listings {
                                 .onDetailsClicked { said = "details: \(place.name)" }
                         }
                     }
-                    .onMapClicked { location in
+                    .onLocationTapped { location in
                         said = "map: \(rounded(location.latitude)), \(rounded(location.longitude))"
                     }
                     .height(300)
@@ -13270,7 +13269,7 @@ extension Listings {
             static native void cubeFrame(long control, long nanoseconds);
 
             /** A map's user tapped it, where the place under the finger is. */
-            static native void mapClicked(long control, double latitude, double longitude);
+            static native void locationTapped(long control, double latitude, double longitude);
 
             /** A map's user chose the marker of {@code number}. */
             static native void markerSelected(long control, long number);
@@ -14861,7 +14860,7 @@ extension Listings {
             static native void cubeFrame(long control, long nanoseconds);
 
             /** A map's user tapped it, where the place under the finger is. */
-            static native void mapClicked(long control, double latitude, double longitude);
+            static native void locationTapped(long control, double latitude, double longitude);
 
             /** A map's user chose the marker of {@code number}. */
             static native void markerSelected(long control, long number);
@@ -15545,7 +15544,7 @@ extension Listings {
             static native void cubeFrame(long control, long nanoseconds);
 
             /** A map's user tapped it, where the place under the finger is. */
-            static native void mapClicked(long control, double latitude, double longitude);
+            static native void locationTapped(long control, double latitude, double longitude);
 
             /** A map's user chose the marker of {@code number}. */
             static native void markerSelected(long control, long number);
@@ -15925,7 +15924,7 @@ extension Listings {
             map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
             map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-            map.raises(MapContract.mapClicked)
+            map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
                 properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,
@@ -16380,7 +16379,7 @@ extension Listings {
             map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
             map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-            map.raises(MapContract.mapClicked)
+            map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
                 properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,

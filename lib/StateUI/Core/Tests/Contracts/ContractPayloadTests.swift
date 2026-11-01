@@ -73,7 +73,7 @@ final class ContractPayloadTests: XCTestCase {
         check(ItemsViewContract.selectedItemsChanged, [.strings(["7"])])
         check(LinkContract.clicked)
         check(ColorPickerContract.colorChanged, [Color(hex: 0x512BD4).propValue])
-        check(MapContract.mapClicked, [.numbers([52.25, 21.01])])
+        check(MapContract.locationTapped, [.numbers([52.25, 21.01])])
         check(NavigationStackContract.popped, [.number(1)])
         check(PageContract.appearing)
         check(PageContract.disappearing)

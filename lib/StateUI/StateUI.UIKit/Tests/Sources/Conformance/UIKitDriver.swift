@@ -247,7 +247,7 @@ final class UIKitDriver: HostDriver {
         case (.tap(let count), let map as UIKitMapView):
             // A tap on a map is the map's, and the view's where it hears taps too.
             try touch(element) { listening, view in Self.tap(listening, on: view, count: count) }
-            map.clicked(at: CGPoint(x: map.bounds.midX, y: map.bounds.midY))
+            map.tapped(at: CGPoint(x: map.bounds.midX, y: map.bounds.midY))
         case (.activate, _) where element.parent?.type == .itemsView:
             guard let items = (element.parent?.native as? UIKitElement)?.view as? UIKitItemsView,
                   case .manual(let identity) = element.id

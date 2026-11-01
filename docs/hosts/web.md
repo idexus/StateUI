@@ -244,7 +244,7 @@ StateUIControls.add(MapContract.self, create: { reports in GoogleMapElement(repo
     map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
     map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-    map.raises(MapContract.mapClicked)
+    map.raises(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
         properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,

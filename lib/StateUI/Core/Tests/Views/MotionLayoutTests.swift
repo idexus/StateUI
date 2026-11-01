@@ -536,7 +536,7 @@ final class MotionLayoutTests: XCTestCase {
         let patch = renders.render(
             MotionLayout([7, 8], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [] }
                 .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...1, snaps: .every(1))
-                .onItemTapped { heard.append($0) }
+                .onItemActivated { heard.append($0) }
                 .node)
         let layout = try XCTUnwrap(patch.first(.motionLayout))
         let tap = try XCTUnwrap(layout.children[1].events?[.tapped])

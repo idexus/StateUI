@@ -56,11 +56,12 @@ extension MotionLayout {
         /// Which description of the layout the run is: a render that describes it again makes another.
         let description: Int
         let mask: Node?
-        let tapped: ValueHandler<Items.Element>?
+        let path: KeyPath<Items.Element, ID>
+        let activated: ValueHandler<ID>?
         let named: ((Parameters) -> Void)?
         let itemStart: ItemDragStart?
-        let dragged: (@MainActor (ItemDrag<Items.Element>) throws -> Void)?
-        let dismissal: LayoutDismissal<Items.Element>?
+        let dragged: (@MainActor (ItemDrag<ID>) throws -> Void)?
+        let dismissal: LayoutDismissal<ID>?
 
         /// The parameters the element wears: the author's, or the layout's own.
         let parameters: Binding<Parameters>
@@ -318,20 +319,20 @@ extension MotionLayout {
         /// overwritten by a frame of arithmetic; a shade is the holder's second child. Where its view is not, a
         /// holder lets input through to the layout.
         func wrapped(_ slot: Slot) -> AnyView {
-            // With no shade and no tap, the holder is a view of its own: a new order carries every one.
+            // With no shade and no activation, the holder is a view of its own: a new order carries every one.
             // Design: docs/design/views/motion-layout.md#a-view-in-its-holder
-            if mask == nil, tapped == nil {
+            if mask == nil, activated == nil {
                 rebuilt(slot.index)
                 return AnyView(node: holder(slot.item))
             }
 
             let holder = Grid { BuiltViews(nodes: [built(slot)] + (mask.map { [$0] } ?? [])) }
 
-            guard let tapped else { return AnyView(holder.letsInputThrough(true)) }
+            guard let activated else { return AnyView(holder.letsInputThrough(true)) }
 
-            let item = slot.item
-            let tap: EventHandler = { try await tapped.run(item) }
-            return switch tapped.gate {
+            let id = slot.item[keyPath: path]
+            let tap: EventHandler = { try await activated.run(id) }
+            return switch activated.gate {
             case .own(let policy): AnyView(holder.onTapped(policy, tap))
             case .shared(let gate): AnyView(holder.onTapped(gate: gate, tap))
             }

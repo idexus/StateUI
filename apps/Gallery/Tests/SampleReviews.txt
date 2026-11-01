@@ -7,7 +7,7 @@ AnalogClockSample.swift cd93fe3f0af8c877
 AnimatedInputSample.swift 1d4e3ab94a8e6a90
 AnimatedPropertySample.swift 3e32ce6e1efaac36
 AnimationSample.swift c490402644539ae0
-AppSwitcherSample.swift 8572c4ecb3c90bb3
+AppSwitcherSample.swift eca2de522aece82d
 AppThemeSample.swift e3467cfdec02937b
 AppearanceSample.swift d6e252cafd3cf075
 ApplicationSessionSample.swift 02b610eb8ee6a1b1
@@ -21,7 +21,7 @@ ButtonMenuSample.swift d4e17af0531f4452
 ButtonRoleSample.swift 36d33f316a462966
 ButtonSample.swift 07e87a36914e4779
 CanvasSample.swift 52db70adead39b9b
-ChangingDeckSample.swift 61f290a4473b6a31
+ChangingDeckSample.swift ff5ace01e23a5f5c
 CheckBoxSample.swift 70837379658f7ee0
 ChoosingItemsSample.swift 1a8449147a34b6dc
 ClipboardSample.swift 51f030ebe6f9b4dc
@@ -32,7 +32,7 @@ ConcurrentStateSample.swift 4a0fb787dddb59d7
 ConnectivitySample.swift b032daec8c0b386f
 ContextMenuSample.swift 3e5f2705df54f438
 ConverterSample.swift 4826e332b502150c
-Cube3DSample.swift c9c36b15857f5c0b
+Cube3DSample.swift 135119576379091d
 DatePickerSample.swift 96e1d0bb2c2f86e8
 DeviceDisplaySample.swift a9241d0b33fff4dc
 DeviceInfoSample.swift cb6c33fedbd844cf
@@ -51,15 +51,15 @@ GeometryReaderSample.swift 4e6226814b27d935
 GridSample.swift ab50747c056b3832
 HTTPRequestSample.swift 78608735f89f533f
 HoldSample.swift 3179a83bed36f2d7
-HomeScreenSample.swift eb0646bdf70b261f
+HomeScreenSample.swift 3b4dc906e5d19d61
 HostTimeSample.swift 5d3479731742a1f9
 IconButtonSample.swift 3becb5bca84feb1e
 IconSample.swift b1a55d5d263b6a6e
 IdentitySample.swift acf3e514f8ce470d
 ImageSample.swift 798ac3475ce4ff0a
 InteropActsSample.swift 55949476a7fb481e
-InteropControlSample.swift fd4554765d6cb7e4
-InteropEventsSample.swift d498d6b52a28e186
+InteropControlSample.swift b139c0a32f33f926
+InteropEventsSample.swift 28725267c691bbe5
 ItemActionsSample.swift 33deb2472b783b81
 ItemsViewSample.swift ad7bb28667c10afe
 KeyPressSample.swift 0bc3f571522ec49a
@@ -78,7 +78,7 @@ LoadingItemsSample.swift 1d396ac70557a258
 LocaleInfoSample.swift 05651c8dc28e1420
 LocalizationSample.swift 1636a0f168875c65
 MainQueueSample.swift 142b7947497fae78
-MapSample.swift 9f441e3325fef845
+MapSample.swift 19bee4841260adff
 MaterialsSample.swift 0074507d1ab40b46
 MenuBarSample.swift feaefec006cc6607
 ModalSample.swift 28493152bcbfb7b6

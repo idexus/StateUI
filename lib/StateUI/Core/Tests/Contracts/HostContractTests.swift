@@ -56,7 +56,7 @@ final class HostContractTests: XCTestCase {
         XCTAssertEqual(Self.layer(of: NodeType.marker), .provider)
         XCTAssertEqual(Self.layer(of: Prop.mapType), .provider)
         XCTAssertEqual(Self.layer(of: Prop.region), .provider)
-        XCTAssertEqual(Self.layer(of: Event.mapClicked), .provider)
+        XCTAssertEqual(Self.layer(of: Event.locationTapped), .provider)
     }
 
     func testPlatformContractNamesEveryBuiltInTokenAndTargetHost() throws {

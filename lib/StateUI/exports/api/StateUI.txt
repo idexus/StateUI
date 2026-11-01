@@ -161,7 +161,7 @@ swift.conformance BatteryState: Swift.Equatable
 swift.conformance BatteryState: Swift.Hashable
 swift.conformance BatteryState: Swift.RawRepresentable
 swift.conformance BatteryState: Swift.Sendable
-swift.conformance Binding: Swift.Sendable where Value : Copyable, Value : Escapable
+swift.conformance Binding: Swift.Sendable
 swift.conformance Blur.Thickness: StateUI.HostRepresentable
 swift.conformance Blur.Thickness: Swift.CaseIterable
 swift.conformance Blur.Thickness: Swift.Equatable
@@ -779,8 +779,8 @@ swift.conformance InspectorButton: StateUI.Views
 swift.conformance InspectorButton: StateUI.VisualElement
 swift.conformance InspectorButton: StateUI.VisualElementProperties
 swift.conformance InspectorButton: Swift.Sendable
-swift.conformance ItemDrag: Swift.Equatable where Item : Copyable, Item : Equatable, Item : Escapable
-swift.conformance ItemDrag: Swift.Sendable where Item : Copyable, Item : Escapable, Item : Sendable
+swift.conformance ItemDrag: Swift.Equatable where ID : Hashable
+swift.conformance ItemDrag: Swift.Sendable where ID : Hashable, ID : Sendable
 swift.conformance ItemDragStart: StateUI.HostRepresentable
 swift.conformance ItemDragStart: Swift.Equatable
 swift.conformance ItemDragStart: Swift.Hashable
@@ -1598,7 +1598,7 @@ swift.conformance StateMode: Swift.Equatable
 swift.conformance StateMode: Swift.Hashable
 swift.conformance StateMode: Swift.RawRepresentable
 swift.conformance StateMode: Swift.Sendable
-swift.conformance StatePart: Swift.Sendable where Value : Copyable, Value : Escapable
+swift.conformance StatePart: Swift.Sendable
 swift.conformance StateUIError: Swift.CustomStringConvertible
 swift.conformance StateUIError: Swift.Equatable
 swift.conformance StateUIError: Swift.Error
@@ -1626,125 +1626,125 @@ swift.conformance StepperContract: StateUI.Contract
 swift.conformance StepperContract: StateUI.ElementContract
 swift.conformance StepperContract: Swift.Sendable
 swift.conformance StepperProperties: StateUI.PropertyContainer
-swift.conformance StyleBag: StateUI.BarItemElement where Context : Copyable, Context : Escapable, Target : BarItemElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.BorderElement where Context : Copyable, Context : Escapable, Target : BorderElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ButtonMenuElement where Context : Copyable, Context : Escapable, Target : ButtonMenuElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ButtonProperties where Context : Copyable, Context : Escapable, Target == Button
-swift.conformance StyleBag: StateUI.CanvasProperties where Context : Copyable, Context : Escapable, Target == Canvas
-swift.conformance StyleBag: StateUI.CheckBoxProperties where Context : Copyable, Context : Escapable, Target == CheckBox
-swift.conformance StyleBag: StateUI.ColorPickerProperties where Context : Copyable, Context : Escapable, Target == ColorPicker
-swift.conformance StyleBag: StateUI.CorneredShapeProperties where Context : Copyable, Context : Escapable, Target : CorneredShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.DatePickerProperties where Context : Copyable, Context : Escapable, Target == DatePicker
-swift.conformance StyleBag: StateUI.DecorableTextElement where Context : Copyable, Context : Escapable, Target : DecorableTextElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.FilledShapeProperties where Context : Copyable, Context : Escapable, Target : FilledShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.FontElement where Context : Copyable, Context : Escapable, Target : FontElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.GridProperties where Context : Copyable, Context : Escapable, Target == Grid
-swift.conformance StyleBag: StateUI.HStackProperties where Context : Copyable, Context : Escapable, Target == HStack
-swift.conformance StyleBag: StateUI.ImageElement where Context : Copyable, Context : Escapable, Target : ImageElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ImageProperties where Context : Copyable, Context : Escapable, Target == Image
-swift.conformance StyleBag: StateUI.LayoutProperties where Context : Copyable, Context : Escapable, Target : Layout, Target : StyleTarget
-swift.conformance StyleBag: StateUI.LayoutProperties where Context : Copyable, Context : Escapable, Target : Stack, Target : StyleTarget
-swift.conformance StyleBag: StateUI.LineHeightElement where Context : Copyable, Context : Escapable, Target : LineHeightElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.LineProperties where Context : Copyable, Context : Escapable, Target == Line
-swift.conformance StyleBag: StateUI.MapProperties where Context : Copyable, Context : Escapable, Target == Map
-swift.conformance StyleBag: StateUI.PaddingElement where Context : Copyable, Context : Escapable, Target : PaddingElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PathProperties where Context : Copyable, Context : Escapable, Target == Path
-swift.conformance StyleBag: StateUI.PickerProperties where Context : Copyable, Context : Escapable, Target == Picker
-swift.conformance StyleBag: StateUI.PolygonProperties where Context : Copyable, Context : Escapable, Target == Polygon
-swift.conformance StyleBag: StateUI.PolylineProperties where Context : Copyable, Context : Escapable, Target == Polyline
-swift.conformance StyleBag: StateUI.ProgressBarProperties where Context : Copyable, Context : Escapable, Target == ProgressBar
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : BarItemElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : BorderElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : ButtonMenuElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : CorneredShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : DecorableTextElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : FilledShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : FontElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : ImageElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : Layout, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : LineHeightElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : PaddingElement, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : Shape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : Stack, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextAndIconElement
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextColorElement
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextInput
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextualElement
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TintElement
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TrackingElement
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : View
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : VisualElement
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Button
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Canvas
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == CheckBox
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == ColorPicker
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == DatePicker
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Grid
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == HStack
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Image
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Line
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Map
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Path
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Picker
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Polygon
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Polyline
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == ProgressBar
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Rectangle
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == ScrollView
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == SearchField
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Slider
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Spinner
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Stepper
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Switch
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == Text
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == TextEditor
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == TextField
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == TimePicker
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == ToolbarGroup
-swift.conformance StyleBag: StateUI.PropertyContainer where Context : Copyable, Context : Escapable, Target == WebView
-swift.conformance StyleBag: StateUI.RectangleProperties where Context : Copyable, Context : Escapable, Target == Rectangle
-swift.conformance StyleBag: StateUI.ScrollViewProperties where Context : Copyable, Context : Escapable, Target == ScrollView
-swift.conformance StyleBag: StateUI.SearchFieldProperties where Context : Copyable, Context : Escapable, Target == SearchField
-swift.conformance StyleBag: StateUI.ShapeProperties where Context : Copyable, Context : Escapable, Target : CorneredShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ShapeProperties where Context : Copyable, Context : Escapable, Target : FilledShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ShapeProperties where Context : Copyable, Context : Escapable, Target : Shape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.SliderProperties where Context : Copyable, Context : Escapable, Target == Slider
-swift.conformance StyleBag: StateUI.SpinnerProperties where Context : Copyable, Context : Escapable, Target == Spinner
-swift.conformance StyleBag: StateUI.StackProperties where Context : Copyable, Context : Escapable, Target : Stack, Target : StyleTarget
-swift.conformance StyleBag: StateUI.StepperProperties where Context : Copyable, Context : Escapable, Target == Stepper
-swift.conformance StyleBag: StateUI.SwitchProperties where Context : Copyable, Context : Escapable, Target == Switch
-swift.conformance StyleBag: StateUI.TextAlignmentElement where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
-swift.conformance StyleBag: StateUI.TextAndIconElement where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextAndIconElement
-swift.conformance StyleBag: StateUI.TextColorElement where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextColorElement
-swift.conformance StyleBag: StateUI.TextColorElement where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextualElement
-swift.conformance StyleBag: StateUI.TextEditorProperties where Context : Copyable, Context : Escapable, Target == TextEditor
-swift.conformance StyleBag: StateUI.TextFieldProperties where Context : Copyable, Context : Escapable, Target == TextField
-swift.conformance StyleBag: StateUI.TextInputProperties where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextInput
-swift.conformance StyleBag: StateUI.TextProperties where Context : Copyable, Context : Escapable, Target == Text
-swift.conformance StyleBag: StateUI.TextualElement where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextualElement
-swift.conformance StyleBag: StateUI.TimePickerProperties where Context : Copyable, Context : Escapable, Target == TimePicker
-swift.conformance StyleBag: StateUI.TintElement where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TintElement
-swift.conformance StyleBag: StateUI.ToolbarGroupProperties where Context : Copyable, Context : Escapable, Target == ToolbarGroup
-swift.conformance StyleBag: StateUI.TrackingElement where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TrackingElement
-swift.conformance StyleBag: StateUI.ViewProperties where Context : Copyable, Context : Escapable, Target : CorneredShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ViewProperties where Context : Copyable, Context : Escapable, Target : FilledShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ViewProperties where Context : Copyable, Context : Escapable, Target : Layout, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ViewProperties where Context : Copyable, Context : Escapable, Target : Shape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ViewProperties where Context : Copyable, Context : Escapable, Target : Stack, Target : StyleTarget
-swift.conformance StyleBag: StateUI.ViewProperties where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextInput
-swift.conformance StyleBag: StateUI.ViewProperties where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : View
-swift.conformance StyleBag: StateUI.VisualElementProperties where Context : Copyable, Context : Escapable, Target : CorneredShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.VisualElementProperties where Context : Copyable, Context : Escapable, Target : FilledShape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.VisualElementProperties where Context : Copyable, Context : Escapable, Target : Layout, Target : StyleTarget
-swift.conformance StyleBag: StateUI.VisualElementProperties where Context : Copyable, Context : Escapable, Target : Shape, Target : StyleTarget
-swift.conformance StyleBag: StateUI.VisualElementProperties where Context : Copyable, Context : Escapable, Target : Stack, Target : StyleTarget
-swift.conformance StyleBag: StateUI.VisualElementProperties where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
-swift.conformance StyleBag: StateUI.VisualElementProperties where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : TextInput
-swift.conformance StyleBag: StateUI.VisualElementProperties where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : View
-swift.conformance StyleBag: StateUI.VisualElementProperties where Context : Copyable, Context : Escapable, Target : StyleTarget, Target : VisualElement
-swift.conformance StyleBag: StateUI.WebViewProperties where Context : Copyable, Context : Escapable, Target == WebView
+swift.conformance StyleBag: StateUI.BarItemElement where Target : BarItemElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.BorderElement where Target : BorderElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ButtonMenuElement where Target : ButtonMenuElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ButtonProperties where Target == Button
+swift.conformance StyleBag: StateUI.CanvasProperties where Target == Canvas
+swift.conformance StyleBag: StateUI.CheckBoxProperties where Target == CheckBox
+swift.conformance StyleBag: StateUI.ColorPickerProperties where Target == ColorPicker
+swift.conformance StyleBag: StateUI.CorneredShapeProperties where Target : CorneredShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.DatePickerProperties where Target == DatePicker
+swift.conformance StyleBag: StateUI.DecorableTextElement where Target : DecorableTextElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.FilledShapeProperties where Target : FilledShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.FontElement where Target : FontElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.GridProperties where Target == Grid
+swift.conformance StyleBag: StateUI.HStackProperties where Target == HStack
+swift.conformance StyleBag: StateUI.ImageElement where Target : ImageElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ImageProperties where Target == Image
+swift.conformance StyleBag: StateUI.LayoutProperties where Target : Layout, Target : StyleTarget
+swift.conformance StyleBag: StateUI.LayoutProperties where Target : Stack, Target : StyleTarget
+swift.conformance StyleBag: StateUI.LineHeightElement where Target : LineHeightElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.LineProperties where Target == Line
+swift.conformance StyleBag: StateUI.MapProperties where Target == Map
+swift.conformance StyleBag: StateUI.PaddingElement where Target : PaddingElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PathProperties where Target == Path
+swift.conformance StyleBag: StateUI.PickerProperties where Target == Picker
+swift.conformance StyleBag: StateUI.PolygonProperties where Target == Polygon
+swift.conformance StyleBag: StateUI.PolylineProperties where Target == Polyline
+swift.conformance StyleBag: StateUI.ProgressBarProperties where Target == ProgressBar
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : BarItemElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : BorderElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : ButtonMenuElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : CorneredShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : DecorableTextElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : FilledShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : FontElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : ImageElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : Layout, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : LineHeightElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : PaddingElement, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : Shape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : Stack, Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget, Target : TextAndIconElement
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget, Target : TextColorElement
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget, Target : TextInput
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget, Target : TextualElement
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget, Target : TintElement
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget, Target : TrackingElement
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget, Target : View
+swift.conformance StyleBag: StateUI.PropertyContainer where Target : StyleTarget, Target : VisualElement
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Button
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Canvas
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == CheckBox
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == ColorPicker
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == DatePicker
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Grid
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == HStack
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Image
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Line
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Map
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Path
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Picker
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Polygon
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Polyline
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == ProgressBar
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Rectangle
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == ScrollView
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == SearchField
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Slider
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Spinner
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Stepper
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Switch
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == Text
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == TextEditor
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == TextField
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == TimePicker
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == ToolbarGroup
+swift.conformance StyleBag: StateUI.PropertyContainer where Target == WebView
+swift.conformance StyleBag: StateUI.RectangleProperties where Target == Rectangle
+swift.conformance StyleBag: StateUI.ScrollViewProperties where Target == ScrollView
+swift.conformance StyleBag: StateUI.SearchFieldProperties where Target == SearchField
+swift.conformance StyleBag: StateUI.ShapeProperties where Target : CorneredShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ShapeProperties where Target : FilledShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ShapeProperties where Target : Shape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.SliderProperties where Target == Slider
+swift.conformance StyleBag: StateUI.SpinnerProperties where Target == Spinner
+swift.conformance StyleBag: StateUI.StackProperties where Target : Stack, Target : StyleTarget
+swift.conformance StyleBag: StateUI.StepperProperties where Target == Stepper
+swift.conformance StyleBag: StateUI.SwitchProperties where Target == Switch
+swift.conformance StyleBag: StateUI.TextAlignmentElement where Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
+swift.conformance StyleBag: StateUI.TextAndIconElement where Target : StyleTarget, Target : TextAndIconElement
+swift.conformance StyleBag: StateUI.TextColorElement where Target : StyleTarget, Target : TextColorElement
+swift.conformance StyleBag: StateUI.TextColorElement where Target : StyleTarget, Target : TextualElement
+swift.conformance StyleBag: StateUI.TextEditorProperties where Target == TextEditor
+swift.conformance StyleBag: StateUI.TextFieldProperties where Target == TextField
+swift.conformance StyleBag: StateUI.TextInputProperties where Target : StyleTarget, Target : TextInput
+swift.conformance StyleBag: StateUI.TextProperties where Target == Text
+swift.conformance StyleBag: StateUI.TextualElement where Target : StyleTarget, Target : TextualElement
+swift.conformance StyleBag: StateUI.TimePickerProperties where Target == TimePicker
+swift.conformance StyleBag: StateUI.TintElement where Target : StyleTarget, Target : TintElement
+swift.conformance StyleBag: StateUI.ToolbarGroupProperties where Target == ToolbarGroup
+swift.conformance StyleBag: StateUI.TrackingElement where Target : StyleTarget, Target : TrackingElement
+swift.conformance StyleBag: StateUI.ViewProperties where Target : CorneredShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ViewProperties where Target : FilledShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ViewProperties where Target : Layout, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ViewProperties where Target : Shape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ViewProperties where Target : Stack, Target : StyleTarget
+swift.conformance StyleBag: StateUI.ViewProperties where Target : StyleTarget, Target : TextInput
+swift.conformance StyleBag: StateUI.ViewProperties where Target : StyleTarget, Target : View
+swift.conformance StyleBag: StateUI.VisualElementProperties where Target : CorneredShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.VisualElementProperties where Target : FilledShape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.VisualElementProperties where Target : Layout, Target : StyleTarget
+swift.conformance StyleBag: StateUI.VisualElementProperties where Target : Shape, Target : StyleTarget
+swift.conformance StyleBag: StateUI.VisualElementProperties where Target : Stack, Target : StyleTarget
+swift.conformance StyleBag: StateUI.VisualElementProperties where Target : StyleTarget, Target : TextAlignmentElement, Target : VisualElement
+swift.conformance StyleBag: StateUI.VisualElementProperties where Target : StyleTarget, Target : TextInput
+swift.conformance StyleBag: StateUI.VisualElementProperties where Target : StyleTarget, Target : View
+swift.conformance StyleBag: StateUI.VisualElementProperties where Target : StyleTarget, Target : VisualElement
+swift.conformance StyleBag: StateUI.WebViewProperties where Target == WebView
 swift.conformance StyleBag: Swift.Sendable
 swift.conformance StyleBuilder: Swift.Sendable
 swift.conformance StyleKey: Swift.Equatable
@@ -8551,9 +8551,9 @@ swift.method Map.onHostEvent(_:policy:_:): @MainActor func onHostEvent<Owner>(_ 
 swift.method Map.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Map.onLinkOpened(_:_:): @MainActor func onLinkOpened(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Map.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
-swift.method Map.onMapClicked(_:): @MainActor func onMapClicked(_ handler: @escaping @MainActor @Sendable (Location) throws -> Void) -> Map.Modified
-swift.method Map.onMapClicked(_:_:): @MainActor func onMapClicked(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Map.Modified
-swift.method Map.onMapClicked(gate:_:): @MainActor func onMapClicked(gate: Gate, _ handler: @escaping ValueEventHandler<Location>) -> Map.Modified
+swift.method Map.onLocationTapped(_:): @MainActor func onLocationTapped(_ handler: @escaping @MainActor @Sendable (Location) throws -> Void) -> Map.Modified
+swift.method Map.onLocationTapped(_:_:): @MainActor func onLocationTapped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Map.Modified
+swift.method Map.onLocationTapped(gate:_:): @MainActor func onLocationTapped(gate: Gate, _ handler: @escaping ValueEventHandler<Location>) -> Map.Modified
 swift.method Map.onNavigatedFrom(_:): @MainActor func onNavigatedFrom(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.onNavigatedFrom(_:_:): @MainActor func onNavigatedFrom(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onNavigatedFrom(gate:_:): @MainActor func onNavigatedFrom(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
@@ -9096,13 +9096,13 @@ swift.method MotionLayout.onHostEvent(_:policy:_:): @MainActor func onHostEvent<
 swift.method MotionLayout.onHostEvent(_:policy:_:): @MainActor func onHostEvent<Owner, First, Second>(_ event: ElementEvent<Owner, (First, Second)>, policy: GatePolicy, _ handler: @escaping ValueEventHandler<First, Second>) -> Self.Modified where Owner : ApplicationTier, First : HostRepresentable, Second : HostRepresentable
 swift.method MotionLayout.onHostEvent(_:policy:_:): @MainActor func onHostEvent<Owner, Value>(_ event: ElementEvent<Owner, Value>, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Value>) -> Self.Modified where Owner : ApplicationTier, Value : HostRepresentable
 swift.method MotionLayout.onHostEvent(_:policy:_:): @MainActor func onHostEvent<Owner>(_ event: ElementEvent<Owner, Void>, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified where Owner : ApplicationTier
-swift.method MotionLayout.onItemDismissed(_:beyond:_:): @MainActor func onItemDismissed(_ directions: SwipeDirection, beyond: Double, _ handler: @escaping @MainActor @Sendable (Items.Element) throws -> Void) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.onItemDismissed(_:beyond:gate:_:): @MainActor func onItemDismissed(_ directions: SwipeDirection, beyond: Double, gate: Gate, _ handler: @escaping ValueEventHandler<Items.Element>) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.onItemDismissed(_:beyond:policy:_:): @MainActor func onItemDismissed(_ directions: SwipeDirection, beyond: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<Items.Element>) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.onItemDragged(_:): @MainActor func onItemDragged(_ handler: @escaping @MainActor @Sendable (ItemDrag<Items.Element>) throws -> Void) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.onItemTapped(_:): @MainActor func onItemTapped(_ handler: @escaping @MainActor @Sendable (Items.Element) throws -> Void) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.onItemTapped(_:_:): @MainActor func onItemTapped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Items.Element>) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.onItemTapped(gate:_:): @MainActor func onItemTapped(gate: Gate, _ handler: @escaping ValueEventHandler<Items.Element>) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemActivated(_:): @MainActor func onItemActivated(_ handler: @escaping @MainActor @Sendable (ID) throws -> Void) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemActivated(_:_:): @MainActor func onItemActivated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemActivated(gate:_:): @MainActor func onItemActivated(gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemDismissed(_:beyond:_:): @MainActor func onItemDismissed(_ directions: SwipeDirection, beyond: Double, _ handler: @escaping @MainActor @Sendable (ID) throws -> Void) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemDismissed(_:beyond:gate:_:): @MainActor func onItemDismissed(_ directions: SwipeDirection, beyond: Double, gate: Gate, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemDismissed(_:beyond:policy:_:): @MainActor func onItemDismissed(_ directions: SwipeDirection, beyond: Double, policy: GatePolicy, _ handler: @escaping ValueEventHandler<ID>) -> MotionLayout<Items, ID, Parameters>
+swift.method MotionLayout.onItemDragged(_:): @MainActor func onItemDragged(_ handler: @escaping @MainActor @Sendable (ItemDrag<ID>) throws -> Void) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.onLinkOpened(_:): @MainActor func onLinkOpened(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method MotionLayout.onLinkOpened(_:_:): @MainActor func onLinkOpened(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method MotionLayout.onLinkOpened(gate:_:): @MainActor func onLinkOpened(gate: Gate, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
@@ -16100,12 +16100,12 @@ swift.property InspectorButton.body: @MainActor var body: some View { get }
 swift.property InspectorButton.node: @MainActor var node: Node { get set }
 swift.property InspectorButton.nodes: @MainActor var nodes: [Node] { get }
 swift.property ItemDrag.at: let at: Point
-swift.property ItemDrag.item: let item: Item
-swift.property ItemDrag.over: let over: Item?
+swift.property ItemDrag.id: let id: ID
+swift.property ItemDrag.over: let over: ID?
 swift.property ItemDrag.phase: let phase: GesturePhase
 swift.property ItemDrag.room: let room: Rect
-swift.property ItemDrag.speed: let speed: Point
 swift.property ItemDrag.still: let still: Duration
+swift.property ItemDrag.velocity: let velocity: Point
 swift.property ItemDragStart.propValue: var propValue: PropValue { get }
 swift.property ItemsEntries.Section.footer: let footer: String?
 swift.property ItemsEntries.Section.header: let header: String?
@@ -16563,7 +16563,7 @@ swift.struct Image: @MainActor struct Image
 swift.struct ImageSource: struct ImageSource
 swift.struct Insets: struct Insets
 swift.struct InspectorButton: @MainActor struct InspectorButton
-swift.struct ItemDrag: struct ItemDrag<Item>
+swift.struct ItemDrag: struct ItemDrag<ID> where ID : Hashable
 swift.struct ItemsEntries.Section: struct Section
 swift.struct ItemsEntries: struct ItemsEntries
 swift.struct ItemsView: @MainActor struct ItemsView<ID> where ID : Hashable
@@ -17475,7 +17475,7 @@ swift.type.property MapContract.isScrollEnabled: static let isScrollEnabled: Ele
 swift.type.property MapContract.isZoomEnabled: static let isZoomEnabled: ElementProperty<MapContract, Bool>
 swift.type.property MapContract.layer: static let layer: ElementLayer
 swift.type.property MapContract.layer: static var layer: ElementLayer { get }
-swift.type.property MapContract.mapClicked: static let mapClicked: ElementEvent<MapContract, Location>
+swift.type.property MapContract.locationTapped: static let locationTapped: ElementEvent<MapContract, Location>
 swift.type.property MapContract.mapType: static let mapType: ElementProperty<MapContract, MapType>
 swift.type.property MapContract.members: static let members: [any ContractMember]
 swift.type.property MapContract.moveToRegion: static let moveToRegion: ElementAct<MapContract, MapRegion, Void>

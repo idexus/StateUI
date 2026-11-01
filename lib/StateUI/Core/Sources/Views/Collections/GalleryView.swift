@@ -410,25 +410,25 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // The shade sits beside the press: the card that dips wears none.
         if let mask { layout = layout.shade(mask) }
 
-        // The tap, answered on the card in front: the press shows, and the card is back at its size, before the
-        // activation's own work, which usually builds a page.
+        // The activation, answered on the card in front: the press shows, and the card is back at its size, before
+        // the activation's own work, which usually builds a page.
         if let activated {
-            let tapped: ValueEventHandler<Items.Element> = { item in
+            let tapped: ValueEventHandler<ID> = { id in
                 let front = items[items.index(items.startIndex, offsetBy: asked())]
 
-                guard item[keyPath: path] == front[keyPath: path] else { return }
+                guard id == front[keyPath: path] else { return }
 
-                dips.wrappedValue = item[keyPath: path]
+                dips.wrappedValue = id
 
                 try await Task.sleep(for: .milliseconds(Self.held))
 
                 dips.wrappedValue = nil
 
-                try await activated.run(item[keyPath: path])
+                try await activated.run(id)
             }
             switch activated.gate {
-            case .own(let policy): layout = layout.onItemTapped(policy, tapped)
-            case .shared(let gate): layout = layout.onItemTapped(gate: gate, tapped)
+            case .own(let policy): layout = layout.onItemActivated(policy, tapped)
+            case .shared(let gate): layout = layout.onItemActivated(gate: gate, tapped)
             }
         }
 

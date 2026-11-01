@@ -29,7 +29,7 @@ final class GalleryNatives {
     static native void cubeFrame(long control, long nanoseconds);
 
     /** A map's user tapped it, where the place under the finger is. */
-    static native void mapClicked(long control, double latitude, double longitude);
+    static native void locationTapped(long control, double latitude, double longitude);
 
     /** A map's user chose the marker of {@code number}. */
     static native void markerSelected(long control, long number);

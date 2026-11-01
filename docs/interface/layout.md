@@ -716,8 +716,9 @@ cutting across it. `turn` is the snap the run rests on: written by the
 program, the run travels there under `.motion(_:)` - with a hand or none -
 and `try await $turn.journey.move(to: 2).arrived()` waits until it has; under
 the hand it is the snap the run passes and the one it comes to rest on, and
-a hand taking the run on its way stops the journey. A tap reaches the view
-drawn on top through `.onItemTapped`, and `.shade(_:)` darkens a far view by
+a hand taking the run on its way stops the journey. A tap activates the view
+drawn on top, and `.onItemActivated` is handed its item's identity, as a
+list's and a gallery's activation is; `.shade(_:)` darkens a far view by
 the `shade` its placement answers.
 
 Laid out right to left, a motion layout keeps the shape its arithmetic writes:
@@ -947,8 +948,9 @@ whose first move runs across the layout's axis - a card pulled up out of a
 deck that scrolls sideways; a hand that begins any other way moves the run
 as before. The held view follows the hand over the others, and
 `.onItemDragged` is told whether the hand takes it, moves it or lets it go,
-the item, where the hand is in the room, how long it has stood still, how
-fast the hand goes, and the item whose view it is over (`drag.over`) - each
+the identity of its item (`drag.id`), where the hand is in the room, how long
+it has stood still, how fast the hand goes (`drag.velocity`), and the
+identity of the item whose view it is over (`drag.over`) - each
 time the hand moves it, and again each long press it stands. Lift the
 view as the hand takes it - `.scale(lifted == item ? 1.18 : 1)` with a
 `.motion(_:_:)` of its own on `.transform` - so the hand knows it has it. Changing the order there makes room: the others travel to
@@ -971,22 +973,22 @@ struct Board: View {
         .itemDrag(begins: .longPress)
         .onItemDragged { drag in
             // Over another name, the held one takes its place, the others make room.
-            guard let over = drag.over, let from = names.firstIndex(of: drag.item),
+            guard let over = drag.over, let from = names.firstIndex(of: drag.id),
                   let to = names.firstIndex(of: over) else { return }
             names.remove(at: from)
-            names.insert(drag.item, at: to)
+            names.insert(drag.id, at: to)
         }
         .height(80)
     }
 }
 ```
 
-`.onItemDismissed(.up, beyond: 120) { card in … }` lets a view go for good:
+`.onItemDismissed(.up, beyond: 120) { id in … }` lets a view go for good:
 let go past 120 points up - or thrown far enough that way - it flies on out
 of the room, and the handler runs once it has left, where the application
-removes the item. Short of it, the view goes back. A handler that awaits takes
-a gate, as an event's does - `.onItemDismissed(.up, beyond: 120, policy:
-.ignoreWhileRunning) { card in try await archive(card) }` - and what it runs
+removes the item it names. Short of it, the view goes back. A handler that
+awaits takes a gate, as an event's does - `.onItemDismissed(.up, beyond: 120,
+policy: .ignoreWhileRunning) { id in try await archive(id) }` - and what it runs
 ends with the layout.
 
 A run with no ends comes round: `periodic: true` makes one turn of the range

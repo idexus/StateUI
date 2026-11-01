@@ -446,7 +446,7 @@ private func itemLayout(
             }
             .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...2, snaps: .every(1))
             .itemDrag(begins: begins)
-            .onItemDragged { told.values.append("\($0.item) at \(Int($0.at.x)),\(Int($0.at.y))") }
+            .onItemDragged { told.values.append("\($0.id) at \(Int($0.at.x)),\(Int($0.at.y))") }
             .motion(.eased(.milliseconds(200), .linear))
             if dismissing {
                 layout.onItemDismissed(.down, beyond: 10) { told.values.append("\($0) dismissed") }

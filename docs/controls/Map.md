@@ -9,7 +9,7 @@ A map of the world, with markers on it.
 
 Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
     .mapType(.hybrid)
-    .onMapClicked { place in tapped = "\(place.latitude), \(place.longitude)" }
+    .onLocationTapped { place in tapped = "\(place.latitude), \(place.longitude)" }
 ```
 
 A host with no map of its own shows the one the application registers with it - its control, the provider and the key it needs - and draws the pins as the map's children, as the Gallery's [Android](../hosts/android.md#children-a-control-draws) and [Web](../hosts/web.md#children-a-control-draws) heads register Google's.
@@ -37,15 +37,11 @@ See [the dictionary](README.md) for how a mark is given.
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (83)</th><th>Realization</th></tr></thead>
 <tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>42 ✅ · 2 ☑️ · 38 ✓ · 1 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>41 ✅ · 2 ☑️ · 38 ✓ · 2 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Android Views</td><td align="center">🧩</td><td>83 🧩</td><td>the application's own, registered</td></tr>
-<tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">WinUI 3</td><td align="center">🧩</td><td>83 🧩</td><td>the application's own, registered</td></tr>
-<tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">GTK 4</td><td align="center">🧩</td><td>83 🧩</td><td>the application's own, registered</td></tr>
-<tr><td colspan="3">the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2">Web</td><td align="center">🧩</td><td>83 🧩</td><td>the application's own, registered</td></tr>
-<tr><td colspan="3">the application registers its own control</td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>34 ✅ · 2 ☑️ · 37 ✓ · 2 –</td><td><code>MKMapView</code> / <code>MKAnnotation</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>75 🧩</td><td>the application's own, registered</td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>75 🧩</td><td>the application's own, registered</td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>75 🧩</td><td>the application's own, registered</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>75 🧩</td><td>the application's own, registered</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/MapContract.swift`.
@@ -54,22 +50,15 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/MapContract.sw
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>isScrollEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>showsTraffic</code></td><td>property</td><td><code>Bool</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>isZoomEnabled</code></td><td>property</td><td><code>Bool</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>onMapClicked</code> (<code>mapClicked</code>)</td><td>event</td><td><code>Location</code></td><td>provider</td><td align="center">✓</td><td align="center">✓</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">AppKit: only through the host's own: tap on Map: handed to the host's recognizer or handler, no NSEvent sent<br>UIKit: only through the host's own: tap on Map: the view's listening handed the recognizer's states, no touch sent<br>Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>mapType</code></td><td>property</td><td><code>MapType</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>moveToRegion</code></td><td>act</td><td><code>(MapRegion) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>region</code></td><td>property</td><td><code>MapRegion</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>showsUserLocation</code></td><td>property</td><td><code>Bool</code></td><td>provider</td><td align="center">✅</td><td align="center">✅</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td><td align="center">🧩</td></tr>
-<tr><td colspan="9">Android Views, WinUI 3, GTK 4, Web: the application registers its own control</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isScrollEnabled</code></td><td>property</td><td><code>Bool</code></td><td>native</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>showsTraffic</code></td><td>property</td><td><code>Bool</code></td><td>provider</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>isZoomEnabled</code></td><td>property</td><td><code>Bool</code></td><td>provider</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td rowspan="2"><code>onLocationTapped</code> (<code>locationTapped</code>)</td><td>event</td><td><code>Location</code></td><td>provider</td><td align="center">✓</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
+<tr><td colspan="9">AppKit: only through the host's own: tap on Map: handed to the host's recognizer or handler, no NSEvent sent</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>mapType</code></td><td>property</td><td><code>MapType</code></td><td>provider</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>moveToRegion</code></td><td>act</td><td><code>(MapRegion) -&gt; Void</code></td><td></td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>region</code></td><td>property</td><td><code>MapRegion</code></td><td>provider</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>showsUserLocation</code></td><td>property</td><td><code>Bool</code></td><td>provider</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)

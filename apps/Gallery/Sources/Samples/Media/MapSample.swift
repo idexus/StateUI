@@ -108,7 +108,7 @@ struct MapSample: SampleContent, ExampleContent {
                             .onDetailsClicked { said = "details: \(place.name)" }
                     }
                 }
-                .onMapClicked { location in
+                .onLocationTapped { location in
                     said = "map: \(rounded(location.latitude)), \(rounded(location.longitude))"
                 }
                 .height(300)

@@ -73,7 +73,7 @@ FilledShape 3
 AutomationElement 8
 Layout 3
 PaddingElement 3
-MotionLayout 15
+MotionLayout 16
 FocusElement 5
 ScrollView 4
 Slider 3
@@ -86,7 +86,7 @@ Grid 2
 HStack 5
 ItemsView 5
 Line 2
-Map 2
+Map 3
 Path 2
 Polygon 2
 ProgressBar 3

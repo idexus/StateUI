@@ -55,9 +55,9 @@ private struct HomeBoard: View {
         .itemDrag(begins: .longPress)
         .onItemDragged { drag in
             switch drag.phase {
-            case .began: lifted = drag.item
+            case .began: lifted = drag.id
             case .ended, .cancelled: lifted = nil
-            default: move(drag.item, to: Self.slot(at: drag.at, in: drag.room, board: board))
+            default: move(drag.id, to: Self.slot(at: drag.at, in: drag.room, board: board))
             }
         }
         .motion(.spring(response: .milliseconds(380), damping: 0.86))

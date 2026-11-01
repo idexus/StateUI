@@ -97,20 +97,22 @@ public struct Map: ElementView, MapProperties {
 
     // MARK: Events
 
-    /// Fires when the map itself is tapped - not a marker - with where.
-    public func onMapClicked(_ handler: @escaping @MainActor (Location) throws -> Void) -> Modified {
-        onEvent(MapContract.mapClicked, handler)
+    /// Runs when the user taps the map itself - not a marker - with the place under the tap.
+    ///
+    ///     Map(region: city).onLocationTapped { place in pinned = place }
+    public func onLocationTapped(_ handler: @escaping @MainActor (Location) throws -> Void) -> Modified {
+        onEvent(MapContract.locationTapped, handler)
     }
 
     /// The same, with a handler that awaits: its `policy` says what the event does when it comes
     /// again while a run is under way.
-    public func onMapClicked(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
-        onEvent(MapContract.mapClicked, policy: policy, handler)
+    public func onLocationTapped(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
+        onEvent(MapContract.locationTapped, policy: policy, handler)
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func onMapClicked(gate: Gate, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
-        onEvent(MapContract.mapClicked, gate: gate, handler)
+    public func onLocationTapped(gate: Gate, _ handler: @escaping ValueEventHandler<Location>) -> Modified {
+        onEvent(MapContract.locationTapped, gate: gate, handler)
     }
 }
 

@@ -88,11 +88,11 @@ extension MotionLayout.Run {
 
         let room = states.room.wrappedValue
         let over = view(at: hand.at, among: places(), passing: hand.identity).flatMap { under in
-            slots.first { $0.identity == under.0 }?.item
+            slots.first { $0.identity == under.0 }?.item[keyPath: path]
         }
         try dragged(ItemDrag(
-            phase: gesture, item: slot.item, at: hand.at, room: Rect(0, 0, room.width, room.height),
-            still: .milliseconds(still), speed: speed, over: over))
+            phase: gesture, id: slot.item[keyPath: path], at: hand.at, room: Rect(0, 0, room.width, room.height),
+            still: .milliseconds(still), velocity: speed, over: over))
     }
 
     /// Where each view rests by this description, at the parameters the run last showed: the arithmetic asked again, so
@@ -180,10 +180,10 @@ extension MotionLayout.Run {
     func dismissed(_ identity: Int) {
         guard let dismissal, let slot = slots.first(where: { $0.identity == identity }) else { return }
 
-        let (handler, item, runs) = (dismissal.handler, slot.item, states.dismissals)
+        let (handler, id, runs) = (dismissal.handler, slot.item[keyPath: path], states.dismissals)
         libraryTask {
             handler.gate.runs(for: runs).start(
-                { try await handler.run(item) }, handler.gate.policy, payload: nil, owner: runs)
+                { try await handler.run(id) }, handler.gate.policy, payload: nil, owner: runs)
         }
     }
 }

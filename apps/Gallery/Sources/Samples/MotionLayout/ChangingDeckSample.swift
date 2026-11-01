@@ -70,7 +70,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
 
                 // THE FRONT CARD LEAVES: at once, the others closing up, and
                 // the card behind it comes to the front.
-                Button("Remove").onClicked { remove(cards[front]) }
+                Button("Remove").onClicked { remove(cards[front].name) }
             }
             .spacing(8)
             .horizontalAlignment(.center)
@@ -100,11 +100,11 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         min(max(Int(turn.rounded()), 0), cards.count - 1)
     }
 
-    /// `card` leaves the deck, the others closing up: one before the front
+    /// The card `name` leaves the deck, the others closing up: one before the front
     /// card keeps that card in front; the front card's place goes to the one
     /// behind it - where it was the last, the parameters travel to the one before.
-    private func remove(_ card: Card) {
-        guard cards.count > 1, let leaving = cards.firstIndex(of: card) else { return }
+    private func remove(_ name: String) {
+        guard cards.count > 1, let leaving = cards.firstIndex(where: { $0.name == name }) else { return }
         let shown = front
         cards.remove(at: leaving)
         if leaving < shown {
@@ -133,7 +133,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         // A CARD PULLED UP is the hand's alone: let go far enough, it flies
         // out of the deck and leaves it; short of that, it goes back.
         .itemDrag(begins: .perpendicular)
-        .onItemDismissed(.up, beyond: 120) { card in remove(card) }
+        .onItemDismissed(.up, beyond: 120) { name in remove(name) }
         // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
         // where the parameters stand; `.dynamics` THE CARDS reaching their new
         // places after a card joins, leaves or the order changes.

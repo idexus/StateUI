@@ -207,7 +207,7 @@ StateUIControls.add(MapContract.self, create: { reports in GoogleMapView(reports
     map.property(MapContract.showsUserLocation) { control, on in control.showUserLocation(on ?? false) }
     map.property(MapContract.isZoomEnabled) { control, on in control.allow(zooms: on ?? true) }
     map.property(MapContract.isScrollEnabled) { control, on in control.allow(scrolls: on ?? true) }
-    map.raises(MapContract.mapClicked)
+    map.raises(MapContract.locationTapped)
     map.children(
         MarkerContract.self,
         properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,

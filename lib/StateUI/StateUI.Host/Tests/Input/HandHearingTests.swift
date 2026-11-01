@@ -230,7 +230,7 @@ private struct TappedHandPage: View {
             (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
-        .onItemTapped { _ in tapped += 1 }
+        .onItemActivated { _ in tapped += 1 }
     }
 }
 
@@ -252,7 +252,7 @@ private struct RightToLeftPage: View {
         .motion(.eased(.milliseconds(200), .linear))
         .mirrorsRightToLeft(mirrors)
         .itemDrag(begins: .perpendicular)
-        .onItemDragged { drag in dragged.append((drag.item, drag.at)) }
+        .onItemDragged { drag in dragged.append((drag.id, drag.at)) }
         .layoutDirection(.rightToLeft)
     }
 }

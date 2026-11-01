@@ -28,7 +28,7 @@ final class GoogleMapElement: WebControl {
         element.listen("mapclick", words: { [weak self] words in
             let place = words.split(separator: " ").compactMap { Double($0) }
             guard let self, place.count == 2 else { return }
-            self.reports.raise(MapContract.mapClicked, Location(latitude: place[0], longitude: place[1]))
+            self.reports.raise(MapContract.locationTapped, Location(latitude: place[0], longitude: place[1]))
         })
         element.listen("markerselect", words: { [weak self] number in
             self?.marker(number)?.reports.raise(MarkerContract.selected)
@@ -117,7 +117,7 @@ extension GoogleMapElement {
             map.property(MapContract.showsUserLocation) { control, on in control.set("user-location", on ?? false) }
             map.property(MapContract.isZoomEnabled) { control, on in control.set("no-zoom", on == false) }
             map.property(MapContract.isScrollEnabled) { control, on in control.set("no-scroll", on == false) }
-            map.raises(MapContract.mapClicked)
+            map.raises(MapContract.locationTapped)
             map.children(
                 MarkerContract.self,
                 properties: MarkerContract.label, MarkerContract.subtitle, MarkerContract.location, MarkerContract.type,

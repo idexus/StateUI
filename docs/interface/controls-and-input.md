@@ -727,7 +727,7 @@ Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), r
             .onSelected { said = "the castle" }
             .onDetailsClicked { said = "the castle's details" }
     }
-    .onMapClicked { place in said = "\(place.latitude), \(place.longitude)" }
+    .onLocationTapped { place in said = "\(place.latitude), \(place.longitude)" }
     .height(300)
 ```
 

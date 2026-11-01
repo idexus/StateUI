@@ -186,7 +186,7 @@ extension ControlDictionary {
 
             Map(region: MapRegion(center: Location(latitude: 52.2297, longitude: 21.0122), radiusMeters: 3000))
                 .mapType(.hybrid)
-                .onMapClicked { place in tapped = "\(place.latitude), \(place.longitude)" }
+                .onLocationTapped { place in tapped = "\(place.latitude), \(place.longitude)" }
             """#),
 
         (MenuContract.self, #"""
