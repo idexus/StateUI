@@ -17,9 +17,18 @@ list with no sections is one section with neither. An item's identity is
 `String(describing:)` of its id, and in a list of sections the section's name,
 a unit separator, and that - so two sections may hold equal items. A header or
 a footer is named after its section with a record separator (`\u{1E}header`),
-which no author writes. Two items that describe alike are told apart as two
-repeated `.id()`s are, and a complaint says so: a platform's collection
-refuses two cells of one identity.
+which no author writes.
+
+An item is known by its value, as `ForEach` and `MotionLayout` know theirs,
+and its words only name it. The list keeps, from one build to the next, the
+identity each value stood under (`ItemsBook`), and a value still on the list
+stands under it again, wherever it now is, before any new value is named. Two
+values that describe alike are two items, the second named with a variant of
+the words, and each keeps its own across a reorder: were the identities
+handed out by words in order, two such items swapping places would leave every
+identity where it was, and the host would move nothing. The same value twice
+is a repeated identity, told apart as two repeated `.id()`s are, and a
+complaint says so: a platform's collection refuses two cells of one identity.
 
 The entries cross in the patch as any property does, so they are compared,
 sent only when they change, and printed by the inspector. What a host needs

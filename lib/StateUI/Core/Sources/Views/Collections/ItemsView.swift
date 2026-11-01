@@ -17,14 +17,17 @@
 /// lives while the item stays near what the platform holds. The platform scrolls, reuses its cells, lets
 /// the user choose and open items, and tells assistive technology about them.
 ///
-/// An item names itself by `String(describing:)` of its identity, so two items
-/// must describe differently.
+/// An item is known by its identity's value, named by `String(describing:)`
+/// of it; each value stands once in a list.
 public struct ItemsView<ID: Hashable>: View, FocusElement {
     /// The items, their identities and their views - one source a build.
     private let source: ItemsSource<ID>
 
     /// The entries within reach of the host's cells, as it last said.
     @State private var reach = ItemsReach()
+
+    /// The identity each item stood under, kept for it while it stays on the list.
+    @State private var book = ItemsBook<ID>()
 
     private var layout = ItemsLayout.list()
     private var headerView: (any View)?
@@ -62,7 +65,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     /// The platform's collection - or, while there are no items, the empty
     /// view in its place.
     public var body: some View {
-        source.finish(header: headerView, footer: footerView)
+        source.finish(header: headerView, footer: footerView, book: book)
         // The empty view is held as `any View`, so both answers go as nodes; it stands in a scroller keeping the pull.
         if source.entries.isEmpty, let empty {
             guard !pull.isEmpty else { return AnyView(empty) }

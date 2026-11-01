@@ -808,8 +808,9 @@ struct ContactsPage: View {
 }
 ```
 
-An item names itself by its identity described as text, so two items must
-describe differently. Each item is a view of its own: a state it reads
+An item is known by its value, which the list names by its words; each value
+stands once in a list, and two values that describe alike are still two
+items. Each item is a view of its own: a state it reads
 builds that item alone, and a state it declares lives while the item stays
 near what the platform holds. The binding given to `.selection` says how many the
 user may choose - an optional for one, a `Set` for many - and the user's
