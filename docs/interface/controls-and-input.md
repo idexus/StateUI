@@ -609,7 +609,10 @@ platform's accessibility has the role - Android's has none. StateUI
 opens the address as the user chooses the link, before its `onClicked`
 handlers run, so a handler only does what else the click means; an address
 the platform will not open opens nothing. Given a binding, the link takes the
-address from the state as it changes, with no render.
+address from the state as it changes, with no render. A link stands at its
+words' size at the start of its slot - read and clicked on its words, as
+every platform's own link is - where another view fills it; it fills or
+centers as any view does when told, `.horizontalAlignment(.center)`.
 
 ## Web content
 

@@ -564,6 +564,22 @@ final class MountedTreeTests: XCTestCase {
         XCTAssertEqual(tree.root?.children.map(\.layoutValues.grows), [false, true, false])
     }
 
+    /// A link says no alignment and stands at its words' size at the start, as words are read and clicked; any other
+    /// view fills its slot, and a link told otherwise stands as it was told.
+    @MainActor
+    func testALinkStandsAtItsWordsUnlessTold() {
+        let (tree, _) = Self.tree()
+        var centered = HostPatch(id: .manual("centered"), type: .link)
+        centered.properties[.horizontalAlignment] = .enumeration(Alignment.center.rawValue)
+        var column = HostPatch(id: .manual("column"), type: .vStack)
+        column.children = .arranged([
+            HostPatch(id: .manual("link"), type: .link), centered, HostPatch(id: .manual("words"), type: .text),
+        ])
+        tree.apply(column, complete: true)
+
+        XCTAssertEqual(tree.root?.children.map(\.layoutValues.horizontal), [0, 1, 3])
+    }
+
     /// The area a child names reaches its ZStack's arithmetic as it was written, and a child naming none
     /// has none.
     @MainActor

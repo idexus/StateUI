@@ -10,7 +10,8 @@
 /// It stands as the platform's own link where it has one, and as a button
 /// drawn as one elsewhere; a screen reader names it by its words, and calls
 /// it a link where the platform's accessibility has the role. An address the
-/// platform will not open opens nothing.
+/// platform will not open opens nothing. It stands at its words' size at the
+/// start of its slot unless an alignment says otherwise.
 public struct Link: ElementView, TextualElement, FocusElement {
     /// The node this control describes.
     public var node: Node

@@ -721,7 +721,7 @@
         if let sides = value(.margin)?.numbers, sides.count >= 4 {
             values.margin = insets(.margin)
         }
-        values.horizontal = value(.horizontalAlignment)?.enumeration ?? 3
+        values.horizontal = value(.horizontalAlignment)?.enumeration ?? NodeType.unsaidHorizontal[type] ?? 3
         values.vertical = value(.verticalAlignment)?.enumeration ?? 3
         values.width = stated(.width)
         values.height = stated(.height)
