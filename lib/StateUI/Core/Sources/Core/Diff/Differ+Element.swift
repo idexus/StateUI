@@ -424,10 +424,13 @@ extension Differ {
         }
 
         // The engines this element runs, under numbers it keeps; a conversion's engines
-        // come first, in property order.
+        // come first, in property order, each chain from its first sources, each conversion once.
         // Design: docs/design/core/identity-and-diffing.md#engines-on-an-element
+        var convertedOnce = Set<ObjectIdentifier>()
         let converting = node.driven.keys.sorted()
             .compactMap { node.driven[$0]!.conversion }
+            .flatMap(\.chain)
+            .filter { convertedOnce.insert(ObjectIdentifier($0)).inserted }
             .flatMap { $0.declarations() }
 
         // Properties described last render and not now are named for the host to clear.

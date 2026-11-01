@@ -24,12 +24,34 @@ final class Conversion {
     /// The same, as what the forward engine follows.
     var follows: [any FollowedState] { sources }
 
+    /// The conversions this one's sources are the derived side of, held here: the middle of a chain has no binding
+    /// of its own once the expression writing it ends, and the chain is worked out from its first sources.
+    /// Design: docs/design/core/journeys.md#a-chain-of-conversions
+    var upstream: [Conversion] = []
+
+    /// This conversion and every one it is worked out from, the first sources' first, each once.
+    var chain: [Conversion] {
+        var seen = Set<ObjectIdentifier>()
+        var ordered: [Conversion] = []
+        func add(_ conversion: Conversion) {
+            guard seen.insert(ObjectIdentifier(conversion)).inserted else { return }
+            conversion.upstream.forEach(add)
+            ordered.append(conversion)
+        }
+        add(self)
+        return ordered
+    }
+
     /// Works the derived value out and settles it, asking its readers where `asking`
     /// says - the engine does, a read at build does not.
     var forward: (_ asking: Bool) -> Void = { _ in }
 
-    /// Works the sources out from the derived value, where a control reports into it.
-    var back: (() -> Void)?
+    /// Works the sources out from the derived value, where a control reports into it - the current declaration's
+    /// alone (`declareAgain`, `declareBack`).
+    private(set) var back: (() -> Void)?
+
+    /// Whether the declaration before this one wrote a way back.
+    private var backBefore = false
 
     /// How many of the derived state's reports the way back has taken: a write of the derived state that is no
     /// report - the forward way's, settling what the application wrote - goes back to nobody.
@@ -37,6 +59,20 @@ final class Conversion {
 
     /// The derived state, for the back engine to follow.
     var derived: () -> (any FollowedState)? = { nil }
+
+    /// Starts a declaration of this conversion: the way back is what the new one writes, none unless it does.
+    /// Design: docs/design/core/journeys.md#a-conversion-declared-again
+    func declareAgain() {
+        backBefore = back != nil
+        back = nil
+    }
+
+    /// Says the way back this declaration writes. Written anew after a declaration with none, it takes only the
+    /// reports made from now on.
+    func declareBack(_ back: @escaping () -> Void) {
+        if !backBefore, let reports = derived()?.reports { reportsTaken = reports }
+        self.back = back
+    }
 
     /// The engines for this conversion, ahead of every author's: the back one first,
     /// since a report is the newer word.
@@ -78,6 +114,9 @@ protocol AnyStateStorage: FollowedState {
     /// Whether any build has ever read this state.
     var readAtBuild: Bool { get set }
 
+    /// The conversion this state is the derived side of, if it is one.
+    var conversion: Conversion? { get }
+
     /// The derived state a conversion written at `key` keeps on this source.
     func derived<Out>(_: Out.Type, at key: PathNumber, make: @escaping () -> Out) -> State<Out>.Storage
 }
@@ -117,7 +156,9 @@ extension Journey {
         let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) { transform(journey) }
         let conversion = derived.conversion ?? Conversion()
 
+        conversion.declareAgain()
         conversion.sources = [source]
+        conversion.upstream = source.conversion.map { [$0] } ?? []
         conversion.forward = { [weak derived] (asking: Bool) in
             guard let derived else { return }
 
@@ -166,7 +207,9 @@ extension Binding where Value: StateValue {
         let derived = source.derived(Out.self, at: PathNumber(file: file, line: line, column: column)) { transform(source.value) }
         let conversion = derived.conversion ?? Conversion()
 
+        conversion.declareAgain()
         conversion.sources = [source]
+        conversion.upstream = source.conversion.map { [$0] } ?? []
         conversion.forward = { [weak source, weak derived] asking in
             guard let source, let derived else { return }
 
@@ -201,10 +244,12 @@ extension Binding where Value: StateValue {
             return self
         }
 
-        conversion.back = { [weak source, weak derived] in
+        conversion.declareBack { [weak source, weak derived] in
             guard let source, let derived else { return }
 
             source.settle(transform(derived.value), asking: true)
+            // A source that is a link of a chain carries the report on to its own sources.
+            source.conversion?.back?()
         }
 
         return self
@@ -229,13 +274,15 @@ extension Binding where Value: StateValue {
             return self
         }
 
-        conversion.back = { [weak first, weak second, weak derived] in
+        conversion.declareBack { [weak first, weak second, weak derived] in
             guard let first, let second, let derived else { return }
 
             let (one, two) = transform(derived.value)
 
             first.settle(one, asking: true)
             second.settle(two, asking: true)
+            first.conversion?.back?()
+            second.conversion?.back?()
         }
 
         return self

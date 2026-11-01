@@ -25,7 +25,9 @@ public struct MultiBinding<Out: StateValue, Sources> {
         let derived = parts[0].derived(Out.self, at: key, make: read)
         let conversion = derived.conversion ?? Conversion()
 
+        conversion.declareAgain()
         conversion.sources = parts
+        conversion.upstream = parts.compactMap(\.conversion)
         conversion.forward = { [weak derived] asking in
             guard let derived else { return }
 

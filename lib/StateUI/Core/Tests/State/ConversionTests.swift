@@ -27,6 +27,30 @@ private struct Percent: View {
     }
 }
 
+/// A body that READS a chain of two conversions - so it is a reader of the first source.
+private struct Chained: View {
+    let volume: State<Double>
+    let builds: Builds
+
+    var body: some View {
+        builds.count += 1
+
+        let words = volume.projectedValue.convert { $0 * 100 }.convert { "\(Int($0.rounded()))%" }
+        return AnyView(node: label(words.wrappedValue))
+    }
+}
+
+/// A slider over a conversion that reports back only while `editable`.
+private struct Editable: View {
+    let volume: State<Double>
+    let editable: Bool
+
+    var body: some View {
+        let percent = volume.projectedValue.convert { $0 * 100 }
+        return Slider(editable ? percent.convertBack { $0 / 100 } : percent).maximum(100)
+    }
+}
+
 /// A body that hands a conversion on, twice over, so the registration's
 /// number can be compared between two renders.
 private struct Twice: View {
@@ -191,6 +215,119 @@ final class ConversionTests: XCTestCase {
         board.cycle(now: 16, reducesMotion: false)
 
         XCTAssertEqual(words(), "13", "the engine followed the second source")
+    }
+
+    /// A CONVERSION OF A CONVERSION follows the first source: a control handed the last of a chain is told every write
+    /// to the first, whichever of the chain it was handed.
+    func testAConversionOfAConversionFollowsTheFirstSource() throws {
+        let volume = State(wrappedValue: 0.2)
+        let renders = Renders()
+
+        let patch = renders.render(
+            Text()
+                .text(volume.projectedValue.convert { $0 * 100 }.convert { "\(Int($0.rounded()))%" })
+                .node)
+
+        let number = try XCTUnwrap(patch.driven?[.text]?.state)
+        let image = try XCTUnwrap(Renderer.shared.storage(of: number))
+        let board = Renderer.shared.board
+
+        func words() -> String? {
+            String(carried: board.read(image, lanes: 0))
+        }
+
+        XCTAssertEqual(words(), "20%")
+
+        board.cycle(now: 0, reducesMotion: false)
+        volume.wrappedValue = 0.7
+        board.cycle(now: 16, reducesMotion: false)
+
+        XCTAssertEqual(words(), "70%", "the chain followed its first source")
+    }
+
+    /// A body READING a chain reads its first source: rebuilt as the source moves, the chain worked out afresh.
+    func testABodyReadingAChainIsAReaderOfItsFirstSource() {
+        let volume = State(wrappedValue: 0.2)
+        let builds = Builds()
+        let renders = Renders()
+
+        let first = renders.render(Chained(volume: volume, builds: builds).node)
+        XCTAssertEqual(first.props[.text], .string("20%"))
+
+        volume.wrappedValue = 0.75
+        let patch = renders.revisit(changed: Renderer.shared.pendingChanges)
+
+        XCTAssertEqual(builds.count, 2, "the body read the first source through the chain")
+        XCTAssertEqual(patch.props[.text], .string("75%"), "and read the chain afresh")
+    }
+
+    /// A report on the last of a chain comes back through every link to the first source.
+    func testAReportComesBackThroughAChain() throws {
+        let volume = State(wrappedValue: 0.2)
+        let renders = Renders()
+
+        let patch = renders.render(
+            Slider(
+                volume.projectedValue.convert { $0 * 100 }.convertBack { $0 / 100 }
+                    .convert { $0 * 10 }.convertBack { $0 / 10 })
+                .maximum(1000)
+                .node)
+
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        XCTAssertEqual(destination(of: number), 200)
+
+        board.cycle(now: 0, reducesMotion: false)
+        dragged(number, to: 500)
+        board.cycle(now: 16, reducesMotion: false)
+        board.cycle(now: 32, reducesMotion: false)
+
+        XCTAssertEqual(volume.wrappedValue, 0.5, accuracy: 1e-9, "the report landed on the first source")
+    }
+
+    /// A conversion declared again is the new declaration's alone: written without `convertBack`, a report goes back
+    /// to nobody; written with it again, only reports made since land.
+    func testAConversionDeclaredAgainKeepsNoWayBackItNoLongerWrites() throws {
+        let volume = State(wrappedValue: 0.2)
+        let renders = Renders()
+
+        let patch = renders.render(Editable(volume: volume, editable: true).node)
+        let number = try XCTUnwrap(patch.driven?[.value]?.state)
+        let board = Renderer.shared.board
+        board.cycle(now: 0, reducesMotion: false)
+
+        renders.render(Editable(volume: volume, editable: false).node)
+        dragged(number, to: 50)
+        board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(volume.wrappedValue, 0.2, accuracy: 1e-9, "no way back is written now")
+
+        renders.render(Editable(volume: volume, editable: true).node)
+        board.cycle(now: 32, reducesMotion: false)
+        XCTAssertEqual(volume.wrappedValue, 0.2, accuracy: 1e-9, "a report made with no way back stays unanswered")
+
+        // The host reads the frame - the slider shows the source again - before the user drags it.
+        _ = board.dirty()
+        dragged(number, to: 70)
+        board.cycle(now: 48, reducesMotion: false)
+        XCTAssertEqual(volume.wrappedValue, 0.7, accuracy: 1e-9, "a report made since lands")
+    }
+
+    /// A conversion made with no element being built and never read lets its source go: the source holds the
+    /// derived state, and nothing the derived state keeps holds the source.
+    func testAConversionNobodyReadLetsItsSourceGo() {
+        weak var held: AnyObject?
+        weak var heldByJourney: AnyObject?
+        do {
+            let source = State(wrappedValue: 0.2)
+            held = source.storage
+            _ = source.projectedValue.convert { $0 * 100 }
+
+            let moving = State(wrappedValue: 0.2)
+            heldByJourney = moving.storage
+            _ = moving.projectedValue.journey.convert { $0.value * 100 }
+        }
+        XCTAssertNil(held, "a conversion nobody read kept its source")
+        XCTAssertNil(heldByJourney, "a journey's conversion nobody read kept its source")
     }
 
     /// `.multi` reads several states as one, in the order they are named -

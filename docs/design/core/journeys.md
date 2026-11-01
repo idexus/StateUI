@@ -228,7 +228,8 @@ clamp - a report lands on the source as the round trip makes it.
                   renders - the host's tie keeps its number - two views
                   converting one source on one line keep two, and an element
                   that leaves takes its own; made with no element being built,
-                  the source holds it
+                  the source holds it, worked out at once - its arithmetic
+                  reads the source, which would otherwise hold what holds it
   sources         held WEAKLY by the conversion
   engines         back (priority -2) first, then forward (-1), both ahead of
                   every author's engine, on the element wearing the result
@@ -250,6 +251,27 @@ conversion the source, and no state of that view would ever be freed - every
 visit to a page with a converted text leaving them behind, walked every frame.
 What owns a conversion is the engine the differ arms for it, which hands its
 number back when the element goes, and the binding it was made for.
+
+## A chain of conversions
+
+A conversion of a conversion - `$volume.convert { $0 * 100 }.convert { "\(Int($0))%" }`
+- is worked out from the first sources. Each conversion holds the ones its
+sources are the derived side of (`upstream`), since the middle of a chain has
+no binding of its own once the expression writing it ends; the element wearing
+the last writes the engines of every link, the first sources' first, each
+conversion once, so a write to the first source goes through the chain in one
+cycle. A body reading the last reads every link's sources, and works each link
+out over the one before it. A report goes back the same way: each link's
+`convertBack` lands it on its sources and hands it to the link before.
+
+## A conversion declared again
+
+A conversion is one object across renders, and each render declares it again:
+its sources, its arithmetic and its way back are the new declaration's alone.
+A body that wrote `convertBack` before and does not now leaves no way back -
+the control's reports go back to nobody - and one writing it again takes only
+the reports made from then on, so a report made while there was none never
+lands later (`Conversion.declareAgain`, `declareBack`).
 
 ## Many sources
 

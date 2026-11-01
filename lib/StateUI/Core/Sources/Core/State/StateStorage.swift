@@ -142,9 +142,14 @@ extension State {
             }
 
             let made = State<Out>(making: make).storage
+            let heldHere = !DerivationScope.hold(made)
+
+            // Held by this state, it is worked out at once, so nothing it keeps holds this state.
+            // Design: docs/design/core/journeys.md#conversions
+            if heldHere { _ = made.value }
 
             derivations = derivations.filter { $0.value.state != nil }
-            derivations[key] = Derivation(made, heldHere: !DerivationScope.hold(made))
+            derivations[key] = Derivation(made, heldHere: heldHere)
             return made
         }
 
