@@ -26,6 +26,17 @@ final class DragRecognitionTests: XCTestCase {
         XCTAssertFalse(drag.isDragging)
     }
 
+    /// A press a host measures in its window - which the view a drag moves does not move - tells its drag where it
+    /// went down in the view's own points.
+    func testAPressMeasuredInTheWindowStartsWhereItIsInTheView() {
+        var drag = DragRecognition(distance: .eachAxis(x: 0, y: 0))
+        drag.pressed(at: Point(x: 300, y: 412), inView: Point(x: 50, y: 12))
+
+        XCTAssertEqual(drag.moved(to: Point(x: 240, y: 432)).last,
+                       .drag(.changed, x: -60, y: 20, from: Point(x: 50, y: 12)))
+        XCTAssertEqual(drag.ended(letGo: true), .drag(.ended, x: -60, y: 20, from: Point(x: 50, y: 12)))
+    }
+
     /// Where the platform measures a radius, the press is a drag once it moved more than it any way.
     func testARadiusIsMeasuredAnyWay() {
         var drag = DragRecognition(distance: .radius(5))

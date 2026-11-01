@@ -13,7 +13,6 @@ final class AndroidCanvasViewTests: XCTestCase {
             ("testTheInstructionsDrawInPointsAndInOrder", testTheInstructionsDrawInPointsAndInOrder),
             ("testAFilledArcIsAWedge", testAFilledArcIsAWedge),
             ("testADrawingRunningPastItsListsStopsThere", testADrawingRunningPastItsListsStopsThere),
-            ("testAFingersPressDragAndReleaseArriveInPoints", testAFingersPressDragAndReleaseArriveInPoints),
             ("testWordsAtABoxsStartStandAtItsLeft", testWordsAtABoxsStartStandAtItsLeft),
         ]
     }

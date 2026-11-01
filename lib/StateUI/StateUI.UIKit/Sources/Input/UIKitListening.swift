@@ -183,8 +183,10 @@ final class UIKitListening: NSObject, UIGestureRecognizerDelegate {
         switch recognizer.state {
         case .began:
             let moved = recognizer.translation(in: window)
+            let (here, came) = (recognizer.location(in: view), recognizer.translation(in: view))
             drag = DragRecognition(distance: .eachAxis(x: 0, y: 0))
-            drag.pressed(at: Point(x: now.x - moved.x, y: now.y - moved.y))
+            drag.pressed(
+                at: Point(x: now.x - moved.x, y: now.y - moved.y), inView: Point(x: here.x - came.x, y: here.y - came.y))
             drag.moved(to: Point(x: now.x, y: now.y)).forEach(tell)
         case .changed:
             drag.moved(to: Point(x: now.x, y: now.y)).forEach(tell)

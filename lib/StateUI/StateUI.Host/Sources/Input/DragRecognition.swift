@@ -38,14 +38,20 @@
     private var start: Point?
     private var moved = Point(x: 0, y: 0)
 
+    /// Where the press went down in the view's own points - its drag's `from`.
+    private var origin = Point(x: 0, y: 0)
+
     /// No press yet, a drag past `distance`.
     public init(distance: Distance) {
         self.distance = distance
     }
 
-    /// A press went down at `point`: whatever came before is over.
-    public mutating func pressed(at point: Point) {
+    /// A press went down at `point`: whatever came before is over. Where `point` is measured in other coordinates
+    /// than the view's - a window's, which the view a drag moves does not move - `inView` is the same point in the
+    /// view's own.
+    public mutating func pressed(at point: Point, inView: Point? = nil) {
         start = point
+        origin = inView ?? point
         moved = Point(x: 0, y: 0)
         isDragging = false
         isHeld = false
@@ -65,12 +71,12 @@
         guard let start else { return [] }
 
         moved = Point(x: point.x - start.x, y: point.y - start.y)
-        let running = HeardInput.drag(.changed, x: moved.x, y: moved.y, from: start)
+        let running = HeardInput.drag(.changed, x: moved.x, y: moved.y, from: origin)
         if isDragging { return [running] }
         guard !isHeld, distance.isPassed(by: moved) else { return [] }
 
         isDragging = true
-        return [.drag(.began, x: 0, y: 0, from: start), running]
+        return [.drag(.began, x: 0, y: 0, from: origin), running]
     }
 
     /// The press let go, or the platform took it away: the drag's end, where the press was one.
@@ -79,8 +85,8 @@
             start = nil
             isDragging = false
         }
-        guard isDragging, let start else { return nil }
+        guard isDragging else { return nil }
 
-        return .drag(letGo ? .ended : .cancelled, x: moved.x, y: moved.y, from: start)
+        return .drag(letGo ? .ended : .cancelled, x: moved.x, y: moved.y, from: origin)
     }
 }

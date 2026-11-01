@@ -22,14 +22,7 @@ final class AndroidActTests: XCTestCase {
     func testTheClockAndTheZoneAnswerFromThePlatform() {
         onMainActor {
             let said = State(wrappedValue: "")
-            let host = AndroidRenderer.running {
-                Text(said.wrappedValue).onCreated {
-                    let clock = StandardEnvironment.application.clock
-                    let (time, today) = (try await clock.now(), try await clock.today())
-                    let zone = StandardEnvironment.locale.timeZone?.identifier ?? ""
-                    said.wrappedValue = "\(time.hour) \(today.year) \(zone)"
-                }
-            }
+            let host = AndroidRenderer.running { ClockReading(said: said) }
             host.settle { !said.wrappedValue.isEmpty }
 
             let parts = said.wrappedValue.split(separator: " ")
@@ -125,6 +118,20 @@ private struct FocusPage: View {
         return VStack {
             TextField("").aim(field)
             Button("Focus").onClicked(.ignoreWhileRunning) { answers.values.append(try await field.focus()) }
+        }
+    }
+}
+
+/// The clock's time and day and the locale's zone, written into `said` once the page stands.
+private struct ClockReading: View {
+    @Environment(\.application) private var application
+    @Environment(\.locale) private var locale
+    let said: State<String>
+
+    var body: some View {
+        Text(said.wrappedValue).onCreated {
+            let (time, today) = (try await application.clock.now(), try await application.clock.today())
+            said.wrappedValue = "\(time.hour) \(today.year) \(locale.timeZone?.identifier ?? "")"
         }
     }
 }
