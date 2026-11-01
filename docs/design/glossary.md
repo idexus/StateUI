@@ -26,6 +26,7 @@ and this table maps the two.
 | arrangement | page container | a page that arranges other pages: a stack, tabs, a split view |
 | arrangement (navigation) | navigation container | `NavigationStack`, `TabView` and `SplitView`: what decides which page shows |
 | session | per-instance runtime state | the values one opening of an application, a scene or a window holds |
+| phase (`SessionPhase`) | lifecycle state | where a session stands: `.active` in front and in use, `.inactive` shown but not in use, `.background` out of sight - one vocabulary for the application, a scene and a window |
 
 ## State and reactivity
 
@@ -140,4 +141,8 @@ and this table maps the two.
 | layout parameters (`LayoutParameters`) | animatable layout parameters | the state a motion layout is worked out from: one number an axis, each axis one degree of freedom, moved by the user's hand or the program |
 | room | layout boundary | a container its place sizes, which lays out a change inside itself; in a view's own text, the space it is given |
 | seat | layout position | a child's place in a layout while it animates |
+| section (`Section`) | list section, group | a run of a list's items under its own header and footer: `ItemsView(sections:)`, `scrollTo(_:inSection:)` |
+| fill (`Alignment.fill`) | stretch | a child taking its whole slot across or down, where it would stand at its own size |
+| fill (`.fill(_:)` on a shape) | fill paint | the brush a shape's inside is painted with, beside its outline's `stroke` |
+| fill (`GridLength.fill`, `.fill(count:)`) | star sizing, fractional track | a grid track taking an equal share of the room the fixed and automatic ones leave |
 | record, mark (the dictionary) | declaration entry, support status | a host's statement that it realizes a member, and the ✅ or ☑️ it earns |
