@@ -1,4 +1,4 @@
-# revision 7.3
+# revision 8.3
 SearchField.cursorPosition: cannot read cursorPosition of SearchField - AppKit's driver has no path for it yet
 SearchField.inputPurpose: ☑️ A Mac has no keyboard on the screen: a purpose sets capitals, spell checking, correction, prediction and what macOS fills the words in with, no keys.
 SearchField.isReadOnly: ✅

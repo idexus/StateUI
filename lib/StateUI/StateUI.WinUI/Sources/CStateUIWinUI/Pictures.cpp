@@ -555,7 +555,12 @@ extern "C" void stateui_winui_svgs_read(StateUIObjectRef handle, int32_t *counts
 }
 
 extern "C" int32_t stateui_winui_svgs_made(void) {
-    return svgsMade;
+    try {
+        return svgsMade;
+    } catch (...) {
+        report("counting the SVGs made");
+        return 0;
+    }
 }
 
 extern "C" void stateui_winui_image_draw(StateUIObjectRef handle, double width, double height) {

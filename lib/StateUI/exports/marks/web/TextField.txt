@@ -1,7 +1,6 @@
-# revision 4.1
+# revision 5.1
 TextField: ✅
 TextField.isPassword: ✅
-TextField.placeholder: ✅
 TextField.showsClearButton: not realized
 TextField.submitLabel: ✅
 TextField.submitted: ✅

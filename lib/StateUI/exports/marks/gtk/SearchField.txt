@@ -1,5 +1,4 @@
-# revision 4.1
+# revision 5.1
 SearchField: ✅
-SearchField.placeholder: ✅
 SearchField.submitLabel: ☑️ The return key's word: GTK gives an entry no word for the return key of a keyboard on the screen; Next hands the keyboard on all the same.
 SearchField.submitted: ✅

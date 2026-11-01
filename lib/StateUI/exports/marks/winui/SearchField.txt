@@ -1,5 +1,4 @@
-# revision 4.1
+# revision 5.1
 SearchField: ✅
-SearchField.placeholder: ✅
 SearchField.submitLabel: ☑️ The return key's word: WinUI gives a text box no word for the return key of the keyboard on the screen; Next hands the keyboard on all the same.
 SearchField.submitted: ✅

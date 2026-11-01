@@ -49,7 +49,7 @@ View 21
 VisualElement 22
 Shape 5
 BorderElement 14
-TextInput 7
+TextInput 8
 Application 13
 TextSpan 4
 Separator 4
@@ -66,8 +66,8 @@ ContextMenu 3
 winui VisualElement 2
 winui Layout 2
 gtk Layout 2
-TextField 4
-SearchField 4
+TextField 5
+SearchField 5
 Polyline 3
 FilledShape 3
 AutomationElement 8
