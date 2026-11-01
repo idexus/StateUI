@@ -151,7 +151,7 @@ in front of the user, neither, off the screen - which settles into the phases
 of the application, its scene and its window by the host layer's rule ([the
 application's phase](../../host/runtime.md#the-applications-phase)): each
 rendered before the next is heard, and a window shown again after it stopped
-resumed on its way to active. The window hears it was made as the host layer
+is active or inactive again. The window hears it was made as the host layer
 shows it, once; and it is going, and its scene that it closed, only when the
 activity finishes, not when Android makes the activity again for a new
 configuration. Nor does it hear the pause and the stop the activity goes

@@ -14,7 +14,6 @@ Window.maximumHeight: – A page bounds no browser window: the user sizes it.
 Window.maximumWidth: – A page bounds no browser window: the user sizes it.
 Window.minimumHeight: – A page bounds no browser window: the user sizes it.
 Window.minimumWidth: – A page bounds no browser window: the user sizes it.
-Window.resumed: ✓ minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab
 Window.stopped: ✓ minimize on Window: the notice the browser gives as the page's tab hides, told by the driver: a page hides no tab
 Window.title: ✅
 Window.width: – A page sizes no browser window: the user does, and the page fills it.

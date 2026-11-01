@@ -130,7 +130,7 @@ contract:
 | `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil |
 | `locale` - `LocaleInfo` | `language`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | the user's language as a tag (`LocaleTag`: language, script, region) and their languages in order, IANA zone (`TimeZoneName`), clock and calendar conventions, and the way the language is written; the language and the zone are nil and the list empty until reported, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
 | `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
-| `application.phase` - `ApplicationPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
+| `application.phase` - `SessionPhase` | | process-wide visibility state; it starts `.active`, and the host maps lifecycle to `.active`, `.inactive`, or `.background` |
 
 A host may be unable to observe a fact. The documented fallback remains
 visible in that case; an empty string or `.unknown` is data, not a reason to
@@ -158,7 +158,7 @@ The closed vocabulary used by these fields is:
 | `LayoutDirection` | `inherited`, `leftToRight`, `rightToLeft` |
 | `FormFactor` | `unknown`, `phone`, `tablet`, `desktop`, `tv`, `watch` |
 | `ColorScheme` | `system`, `light`, `dark` |
-| `ApplicationPhase` | `active`, `inactive`, `background` |
+| `SessionPhase` | `active`, `inactive`, `background` |
 
 No conformance case gives a verdict for the standard facts: each host's page
 says which it supplies. A public provider describes the StateUI schema; it

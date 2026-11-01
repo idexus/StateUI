@@ -122,7 +122,8 @@ A window and a page hear where they stand in their life - created, activated,
 appearing, navigated to - through one handler written per report. The
 handlers are written out one by one rather than iterated over a collection:
 the patch is deterministic, and a dictionary or a set iterated into a message
-can differ between two instances within one run.
+can differ between two instances within one run. A window's report moves its
+session's phase ([a session's phase](../types/sessions.md#a-sessions-phase)).
 
 ## A page around a view
 

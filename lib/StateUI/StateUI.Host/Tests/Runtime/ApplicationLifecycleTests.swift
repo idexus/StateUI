@@ -10,8 +10,8 @@ import XCTest
 @MainActor
 final class ApplicationLifecycleTests: XCTestCase {
     /// A window's state is the application's phase - activated in use, deactivated behind another, minimized seen
-    /// nowhere - told to the scene, then to the window; a window shown again hears first, once, that it resumed; a
-    /// state told again tells nothing.
+    /// nowhere - told to the scene, then to the window; a window shown again is active or inactive again, no phase of
+    /// its own; a state told again tells nothing.
     func testAWindowsStateIsTheApplicationsPhase() throws {
         let (runtime, lifecycle) = Self.application([("1", [Self.window("window 1")])])
         let window = try Self.window("window 1", in: "1", of: runtime)
@@ -35,11 +35,11 @@ final class ApplicationLifecycleTests: XCTestCase {
         lifecycle.report(window, minimized: false, activated: false)
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertEqual(moves.phase, .inactive)
-        XCTAssertEqual(Self.names(moves.told), ["1/window 1 resumed", "1 deactivated", "1/window 1 deactivated"])
+        XCTAssertEqual(Self.names(moves.told), ["1 deactivated", "1/window 1 deactivated"], "shown again: behind another")
 
         lifecycle.report(window, minimized: false, activated: true)
         XCTAssertEqual(Self.names(lifecycle.settle(windows: runtime.tree.root!.windows).told),
-                       ["1 activated", "1/window 1 activated"], "resumed once")
+                       ["1 activated", "1/window 1 activated"])
     }
 
     /// One window deactivated as another of the application is activated is one move: the application stays in use,
@@ -157,7 +157,7 @@ final class ApplicationLifecycleTests: XCTestCase {
         lifecycle.report(first, minimized: false, activated: true)
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
         XCTAssertFalse(lifecycle.isHiddenByScene(tool))
-        XCTAssertEqual(Self.names(moves.told).filter { $0.hasPrefix("1/tool 2") }, ["1/tool 2 resumed", "1/tool 2 deactivated"])
+        XCTAssertEqual(Self.names(moves.told).filter { $0.hasPrefix("1/tool 2") }, ["1/tool 2 deactivated"])
     }
 
     /// A window that floats does so while the application is in front - and before it is told it is not - and
@@ -198,7 +198,7 @@ final class ApplicationLifecycleTests: XCTestCase {
 
         lifecycle.report(tool, minimized: false, activated: true)
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
-        XCTAssertEqual(Self.names(moves.told), ["1/tool 2 resumed", "1 activated", "1/tool 2 activated"])
+        XCTAssertEqual(Self.names(moves.told), ["1 activated", "1/tool 2 activated"])
 
         lifecycle.isHidden = true
         moves = lifecycle.settle(windows: runtime.tree.root!.windows)
@@ -231,12 +231,12 @@ final class ApplicationLifecycleTests: XCTestCase {
         runtime.windowStateChanged(element, minimized: true, activated: false)
         runtime.settlePhases()
         XCTAssertEqual(StandardEnvironment.application.phase, .background)
-        XCTAssertEqual(window.phase, .stopped)
+        XCTAssertEqual(window.phase, .background)
 
         runtime.windowStateChanged(element, minimized: false, activated: true)
         runtime.settlePhases()
         XCTAssertEqual(StandardEnvironment.application.phase, .active)
-        XCTAssertEqual(window.phase, .activated)
+        XCTAssertEqual(window.phase, .active)
     }
 
     /// A phase settled in the middle of the user's transaction - as a toolkit tells one while the host shows a
@@ -249,13 +249,16 @@ final class ApplicationLifecycleTests: XCTestCase {
         defer { HostBoundary.setApplicationPhase(.active) }
         let window = try XCTUnwrap(OpenScenes.shared.list.first).windowSession("window 1")
         let element = try XCTUnwrap(runtime.tree.root?.windows.first)
+        runtime.windowStateChanged(element, minimized: false, activated: true)
+        runtime.settlePhases()
+        XCTAssertEqual(window.phase, .active, "in front before the transaction")
 
         runtime.pump.performUserTransaction {
             runtime.windowStateChanged(element, minimized: true, activated: false)
             runtime.settlePhases()
-            XCTAssertNotEqual(window.phase, .stopped, "heard in the middle of the transaction")
+            XCTAssertNotEqual(window.phase, .background, "heard in the middle of the transaction")
         }
-        XCTAssertEqual(window.phase, .stopped)
+        XCTAssertEqual(window.phase, .background)
     }
 
     /// An application of `scenes`, each its windows, and the lifecycle a runtime holds for it.

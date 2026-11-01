@@ -60,7 +60,7 @@ enum JavaNatives {
         let phase: @convention(c) (Environment, jclass?, jint, jboolean) -> Void = { _, _, phase, madeAgain in
             MainActor.assumeIsolated {
                 AndroidRenderer.shared?.setPhase(
-                    ApplicationPhase(rawValue: phase) ?? .active, beingMadeAgain: madeAgain != 0)
+                    SessionPhase(rawValue: phase) ?? .active, beingMadeAgain: madeAgain != 0)
             }
         }
         let insets: @convention(c) (Environment, jclass?, jint, jint, jint, jint, jint) -> Void = {

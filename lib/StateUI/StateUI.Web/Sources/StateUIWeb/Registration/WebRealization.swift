@@ -137,7 +137,6 @@ enum WebRealization {
         .complete(WindowContract.created),
         .complete(WindowContract.deactivated),
         .complete(WindowContract.destroying),
-        .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .notPlanned(WindowContract.floatsOnTop,
             reason: "A page keeps no browser window above the others: the system stacks them."),

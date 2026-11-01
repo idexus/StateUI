@@ -141,7 +141,7 @@ final class PatchShapeTests: XCTestCase {
             ],
             events: [
                 "created": {}, "activated": {}, "deactivated": {},
-                "stopped": {}, "resumed": {}, "destroying": {},
+                "stopped": {}, "destroying": {},
             ])
 
         // Under the application and its scene, which is where every window
@@ -157,8 +157,8 @@ final class PatchShapeTests: XCTestCase {
 
         XCTAssertEqual(
             handlers.keys.map(\.name).sorted(),
-            ["activated", "created", "deactivated", "destroying", "resumed", "stopped"])
-        XCTAssertEqual(Set(handlers.values).count, 6, "one handler id for each moment")
+            ["activated", "created", "deactivated", "destroying", "stopped"])
+        XCTAssertEqual(Set(handlers.values).count, 5, "one handler id for each moment")
     }
 
     /// The elements a patch has anything to say about - a property, a cleared

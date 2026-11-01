@@ -13,7 +13,7 @@
 ///             window.height = 800
 ///         }
 ///         .onChanged(window.phase, policy: .waitForPrevious) {
-///             if window.phase == .stopped { try await save() }
+///             if window.phase == .background { try await save() }
 ///         }
 ///
 ///     Button("Close").onClicked(.ignoreWhileRunning) { try await window.close() }
@@ -29,8 +29,9 @@
 /// Full-screen hosts may retain these values without presenting geometry.
 @MainActor
 public final class WindowSession {
-    /// Where the window stands in its life right now. Starts `.created`.
-    @State public internal(set) var phase: WindowPhase = .created
+    /// Where the window stands right now: in use, showing behind another, or out of sight - going away included.
+    /// Starts `.background`, before the platform has made it.
+    @State public internal(set) var phase: SessionPhase = .background
 
     /// What the window is called in native window chrome and system surfaces.
     @State public var title: String? = nil

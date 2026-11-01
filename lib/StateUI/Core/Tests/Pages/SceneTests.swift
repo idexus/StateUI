@@ -596,16 +596,16 @@ final class SceneTests: XCTestCase {
         let window = try XCTUnwrap(renders.render(tree()).children.first?.children.first)
         let session = try scene("1").windowSession("window 1")
 
-        XCTAssertEqual(session.phase, .created)
+        XCTAssertEqual(session.phase, .background, "before the platform made it")
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.activated])))
-        XCTAssertEqual(session.phase, .activated)
+        XCTAssertEqual(session.phase, .active)
 
         XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.stopped])))
-        XCTAssertEqual(session.phase, .stopped)
+        XCTAssertEqual(session.phase, .background)
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.resumed])))
-        XCTAssertEqual(session.phase, .resumed)
+        XCTAssertTrue(renders.fire(try XCTUnwrap(window.events?[.activated])))
+        XCTAssertEqual(session.phase, .active, "back: active again, no phase of its own")
     }
 
     /// A window's session closes the window it is, and a second close says it is not open.
@@ -978,7 +978,7 @@ final class SceneTests: XCTestCase {
         let opened = differ.reconcile(nil, with: tree(), describeAll: true)
         let (studio, fonts, about) = (ElementID.manual("window 1"), ElementID.manual("fonts 2"), ElementID.manual("about 1"))
         let sceneEvents = ["activated", "deactivated", "stopped", "windowClosed"]
-        let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]
+        let windowEvents = ["activated", "created", "deactivated", "destroying", "stopped"]
 
         XCTAssertEqual(opened.patch.arrangement, [.manual("1"), .manual("2")])
         XCTAssertEqual(opened.patch.at(.manual("1"))?.arrangement, [studio, fonts])

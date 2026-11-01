@@ -12862,10 +12862,10 @@ enum Listings {
         /// it.
         ///
         /// The log's first line is `created`, which `MainPage` writes as the window
-        /// is made: `.onChanged` hears a CHANGE, and the phase starts there. The
-        /// activated/deactivated pair follows the host's own window activation, and
-        /// where the application stands is `application.phase`, which the Phases
-        /// sample shows.
+        /// is made: `.onChanged` hears a CHANGE. The phase moves from there - active
+        /// and inactive as the host activates the window and puts it behind another,
+        /// background as it is minimized or goes away - and where the application
+        /// stands is `application.phase`, which the Phases sample shows.
         struct WindowPhaseLog: View {
             /// Where the moments are written.
             let log: WindowLog
@@ -12946,7 +12946,7 @@ enum Listings {
 
                 PhaseRow(name: "application", value: "\(application.phase)")   // active, inactive or background
                 PhaseRow(name: "the galleries", value: "\(scene.phase)")   // active, inactive or background
-                PhaseRow(name: "this window", value: "\(window.phase)")   // from created to destroying
+                PhaseRow(name: "this window", value: "\(window.phase)")   // active, inactive or background
 
                 Text(verdict)
             }

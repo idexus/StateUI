@@ -25,6 +25,17 @@ is told stands until it is told otherwise.
 An optional property is nil until written, which leaves the host's own
 default standing.
 
+## A session's phase
+
+The application, a scene and a window stand in one `SessionPhase` - active,
+inactive, background - read alike wherever a view reads it. A window's
+lifecycle events map onto it: made, it is inactive until it is the one in use;
+activated, active; behind another, inactive; minimized, hidden or going away,
+background - the one place to save, since nothing promises the process comes
+back. A window starts in the background, before the platform has made it, so
+every event a host raises moves the phase a view can see. Coming back from out
+of sight is no phase of its own: the window is active again.
+
 ## Told not derived
 
 A window's title is not worked out from the window's state on every build: it

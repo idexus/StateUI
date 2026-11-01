@@ -139,7 +139,7 @@ final class AndroidActToolkit: ActToolkit {
     /// The activity's phase turned: a chooser it left for is over once it comes back - shared where the user picked
     /// a target, as Android tells nothing of a cancel.
     /// Design: docs/design/platforms/android/runtime.md#sharing
-    func phaseTurned(_ phase: ApplicationPhase) {
+    func phaseTurned(_ phase: SessionPhase) {
         guard var waiting = sharing else { return }
         guard phase == .active else {
             waiting.left = true

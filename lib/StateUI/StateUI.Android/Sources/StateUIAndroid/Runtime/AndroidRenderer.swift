@@ -232,7 +232,7 @@ final class AndroidRenderer {
     /// application, its scene and its window, each rendered before the next. An activity paused and stopped only
     /// to be made again for a new configuration moves nothing: the next resumes at once.
     /// Design: docs/design/platforms/android/runtime.md#the-activitys-lifecycle
-    func setPhase(_ phase: ApplicationPhase, beingMadeAgain: Bool = false) {
+    func setPhase(_ phase: SessionPhase, beingMadeAgain: Bool = false) {
         guard !beingMadeAgain else { return }
         actToolkit.phaseTurned(phase)
         guard let window = runtime.tree.root?.first(type: .window) else {

@@ -50,7 +50,7 @@ extension HostPatch {
     static let pageEvents = ["appearing", "disappearing", "linkOpened", "navigatedFrom", "navigatedTo", "navigatingFrom"]
 
     /// The six reports every window hears, by name.
-    static let windowEvents = ["activated", "created", "deactivated", "destroying", "resumed", "stopped"]
+    static let windowEvents = ["activated", "created", "deactivated", "destroying", "stopped"]
 }
 
 extension HostDrivenUpdate {

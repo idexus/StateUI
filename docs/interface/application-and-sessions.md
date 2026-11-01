@@ -575,16 +575,14 @@ sheet, and a sidebar sliding over the detail where its split view says no
 `sidebarOverlayBackground` - each laid over the platform's own sheet or drawer, so
 their words keep an opaque surface under them.
 
-The host reports `WindowPhase` through the same session:
+The host reports the window's `phase` through the same session - a
+`SessionPhase`, the one the scene's and the application's phases are too:
 
 | Phase | Meaning |
 | --- | --- |
-| `.created` | the initial state; the native window now exists |
-| `.activated` | the window is in front and receiving input |
-| `.deactivated` | it remains visible but another window or application is in use |
-| `.stopped` | it cannot be seen because it is minimized, hidden with its scene, or its application is hidden; save work here |
-| `.resumed` | it has returned from `.stopped` and is moving toward activation |
-| `.destroying` | the final notification before the window goes away |
+| `.active` | the window is in front and receiving input |
+| `.inactive` | it is showing, and another window or application is in use - as it is once the platform has made it |
+| `.background` | it cannot be seen - minimized, hidden with its scene or its application, or going away, and before the platform has made it; save work here |
 
 The exact path is platform-adaptive: a host reports only transitions that
 occur in its lifecycle. Each phase it reports is rendered before its next
@@ -598,7 +596,7 @@ func saveDraft() async throws {}
 
 VStack { … }
     .onChanged(window.phase, policy: .waitForPrevious) { oldPhase, newPhase in
-        if newPhase == .stopped {
+        if newPhase == .background {
             try await saveDraft()
         }
     }

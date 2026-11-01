@@ -557,7 +557,6 @@ final class AppKitSessionTests: XCTestCase {
                 .activated: eventBase + 1,
                 .deactivated: eventBase + 2,
                 .stopped: eventBase + 3,
-                .resumed: eventBase + 4,
                 .destroying: eventBase + 5,
             ])
         }

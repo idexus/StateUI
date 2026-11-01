@@ -23,7 +23,7 @@ public final class ApplicationSession {
     /// Where the application stands: in front, behind another application, or
     /// out of sight, as the host maps its native application and window
     /// lifecycle.
-    @State public internal(set) var phase: ApplicationPhase = .active
+    @State public internal(set) var phase: SessionPhase = .active
 
     /// What the application is, as the host describes it: its name, identifier, version and build, and the theme
     /// in force - the one `application.colorScheme` holds, else the one the system asks for - updated live.

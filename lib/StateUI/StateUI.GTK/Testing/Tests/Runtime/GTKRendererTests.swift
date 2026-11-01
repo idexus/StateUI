@@ -216,11 +216,11 @@ extension GTKRendererTests {
             host.windowStateChanged(number: controller.window.number)
 
             host.runtime.windowStateChanged(element, minimized: false, activated: false)
-            host.settle { phase() == "\(ScenePhase.inactive)" }
+            host.settle { phase() == "\(SessionPhase.inactive)" }
             host.windowStateChanged(number: controller.window.number)
             host.settle { false }
 
-            XCTAssertEqual(phase(), "\(ScenePhase.inactive)")
+            XCTAssertEqual(phase(), "\(SessionPhase.inactive)")
         }
     }
 
@@ -306,7 +306,7 @@ private struct GoingPage: View {
         let gone = self.gone
         let window = self.window
         return Text("going")
-            .onChanged(window.phase) { if window.phase == .destroying { gone.values.append("window") } }
+            .onChanged(window.phase) { if window.phase == .background { gone.values.append("window") } }
     }
 }
 

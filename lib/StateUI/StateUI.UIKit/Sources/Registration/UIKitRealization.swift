@@ -203,7 +203,6 @@ enum UIKitRealization {
             reason: "Any iPadOS window may be put away: UIKit keeps none from it."),
         .partial(WindowContract.background,
             missing: "iPadOS draws an application's window opaque: a blur or glass shows its color."),
-        .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),
         .notPlanned(WindowContract.width, reason: Self.sizedBySystem),

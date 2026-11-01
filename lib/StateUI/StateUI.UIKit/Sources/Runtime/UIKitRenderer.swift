@@ -133,7 +133,7 @@ final class UIKitRenderer {
 
     /// A scene's lifecycle moved: the window standing in it is in front of the user and activated, off the screen
     /// once in the background, and neither between.
-    func scene(_ scene: UIWindowScene, movedTo phase: ApplicationPhase) {
+    func scene(_ scene: UIWindowScene, movedTo phase: SessionPhase) {
         guard let shown = roster.windows.first(where: { $0.1.window?.windowScene === scene })?.0 else { return }
         window(shown, movedTo: Self.standing(in: scene, moved: phase))
     }
@@ -141,7 +141,7 @@ final class UIKitRenderer {
     /// Where a window stands for the user in `scene`, moved to `phase`: iPadOS keeps every window on screen active
     /// and dims those behind the one the user works in, which stand inactive.
     /// Design: docs/design/platforms/uikit/runtime.md#scenes
-    private static func standing(in scene: UIWindowScene, moved phase: ApplicationPhase) -> ApplicationPhase {
+    private static func standing(in scene: UIWindowScene, moved phase: SessionPhase) -> SessionPhase {
         phase == .active && scene.traitCollection.activeAppearance == .inactive ? .inactive : phase
     }
 
@@ -153,7 +153,7 @@ final class UIKitRenderer {
     }
 
     /// `window`'s lifecycle moved: the host layer settles what that means for it, its scene and the application.
-    func window(_ window: MountedElement, movedTo phase: ApplicationPhase) {
+    func window(_ window: MountedElement, movedTo phase: SessionPhase) {
         roster.windows.first { $0.0 === window }?.1.toldPhase = phase
         runtime.windowStateChanged(window, minimized: phase == .background, activated: phase == .active)
     }

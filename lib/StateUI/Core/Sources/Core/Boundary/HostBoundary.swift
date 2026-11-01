@@ -136,7 +136,7 @@
     }
 
     /// Updates the process-wide application session from native lifecycle.
-    public static func setApplicationPhase(_ phase: ApplicationPhase) {
+    public static func setApplicationPhase(_ phase: SessionPhase) {
         update(StandardEnvironment.application, \.phase, phase)
     }
 

@@ -245,8 +245,6 @@ enum GTKRealization {
         .notPlanned(WindowContract.maximumWidth, reason: "GTK 4 bounds no window from above."),
         .complete(WindowContract.minimumHeight),
         .complete(WindowContract.minimumWidth),
-        .partial(WindowContract.resumed,
-            missing: "A Wayland desktop tells no window it was minimized, nor brought back."),
         .partial(WindowContract.stopped,
             missing: "A Wayland desktop tells no window it was minimized, nor brought back."),
         .complete(WindowContract.title),

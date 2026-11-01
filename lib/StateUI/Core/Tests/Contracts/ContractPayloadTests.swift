@@ -113,7 +113,6 @@ final class ContractPayloadTests: XCTestCase {
         check(WindowContract.created)
         check(WindowContract.deactivated)
         check(WindowContract.destroying)
-        check(WindowContract.resumed)
         check(WindowContract.stopped)
 
         var events: Set<String> = []

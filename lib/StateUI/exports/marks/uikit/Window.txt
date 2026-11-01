@@ -14,7 +14,6 @@ Window.maximumHeight: not realized
 Window.maximumWidth: not realized
 Window.minimumHeight: not realized
 Window.minimumWidth: not realized
-Window.resumed: ✓ minimize on Window: the host told the scene's phase, no scene moved
 Window.stopped: ✓ minimize on Window: the host told the scene's phase, no scene moved
 Window.title: ✅
 Window.width: – iPadOS sizes its windows itself - the user drags a corner: a UIKit scene asks for no size.

@@ -240,7 +240,7 @@
     public var questionWords: QuestionWords { HostBoundary.questionWords }
 
     /// Reports the application's lifecycle phase.
-    public func setApplicationPhase(_ phase: ApplicationPhase) {
+    public func setApplicationPhase(_ phase: SessionPhase) {
         HostBoundary.setApplicationPhase(phase)
     }
 

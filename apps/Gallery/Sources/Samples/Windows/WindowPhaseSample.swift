@@ -26,7 +26,7 @@ struct WindowPhaseSample: SampleContent, ExampleContent {
 
             PhaseRow(name: "application", value: "\(application.phase)")   // active, inactive or background
             PhaseRow(name: "the galleries", value: "\(scene.phase)")   // active, inactive or background
-            PhaseRow(name: "this window", value: "\(window.phase)")   // from created to destroying
+            PhaseRow(name: "this window", value: "\(window.phase)")   // active, inactive or background
 
             Text(verdict)
                 .fontSize(14)

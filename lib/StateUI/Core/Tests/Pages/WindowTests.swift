@@ -219,30 +219,33 @@ final class WindowTests: XCTestCase {
         XCTAssertEqual(patch.children.count, 0)
     }
 
-    /// The window node carries the six moments of its life as its events, so
+    /// The window node carries the five moments of its life as its events, so
     /// the host's window reports with them.
     func testAWindowsLifetimeRidesAsItsEvents() {
         let patch = Renders().render(Node.window(Home(), session: WindowSession()))
 
         XCTAssertEqual(
             patch.events?.keys.sorted(),
-            ["activated", "created", "deactivated", "destroying", "resumed", "stopped"])
+            ["activated", "created", "deactivated", "destroying", "stopped"])
     }
 
-    /// A moment the platform reports moves the session's phase, in the order
-    /// the platform says them.
+    /// A moment the platform reports moves the session's phase: out of sight before the platform made it, showing
+    /// once made, in front activated, behind deactivated, out of sight stopped or going away.
     func testAMomentTheWindowReportsMovesItsPhase() throws {
         let session = WindowSession()
         let renders = Renders()
 
         let patch = renders.render(Node.window(Home(), session: session))
         let events = try XCTUnwrap(patch.events)
+        XCTAssertEqual(session.phase, .background)
 
-        XCTAssertTrue(renders.fire(try XCTUnwrap(events["stopped"])))
-        XCTAssertEqual(session.phase, .stopped)
-
-        XCTAssertTrue(renders.fire(try XCTUnwrap(events["resumed"])))
-        XCTAssertEqual(session.phase, .resumed)
+        var phases: [SessionPhase] = []
+        let moments: [Event] = [.created, .activated, .deactivated, .stopped, .activated, .destroying]
+        for moment in moments {
+            XCTAssertTrue(renders.fire(try XCTUnwrap(events[moment])))
+            phases.append(session.phase)
+        }
+        XCTAssertEqual(phases, [.inactive, .active, .inactive, .background, .active, .background])
     }
 }
 

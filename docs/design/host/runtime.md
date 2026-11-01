@@ -766,7 +766,7 @@ and the two are one move, in which the application stays in use.
   else deactivated.
 - A window is stopped while it is off the screen - minimized, hidden with
   the application, or hidden by its scene - else activated or deactivated.
-  One that stands again hears first that it resumed.
+  One that stands again is activated or deactivated: coming back is no phase.
 - A window that hides while another scene is in front
   (`hidesWhenInactive`) stands hidden while one is, and none hides before a
   scene first came to the front. A window that floats (`floatsOnTop`)

@@ -265,7 +265,6 @@ enum WinUIRealization {
         .complete(WindowContract.maximumWidth),
         .complete(WindowContract.minimumHeight),
         .complete(WindowContract.minimumWidth),
-        .complete(WindowContract.resumed),
         .complete(WindowContract.stopped),
         .complete(WindowContract.title),
         .complete(WindowContract.width),
