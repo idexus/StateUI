@@ -474,7 +474,7 @@ final class CarriedStateTests: XCTestCase {
     /// described next.
     func testAJourneyOnAStateNothingWearsAnswersAtOnce() throws {
         let fade = State(wrappedValue: 1.0)
-        let arrival = fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), .cubicOut))
+        let arrival = fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut))
 
         XCTAssertEqual(arrival.ended, true, "it arrived as it was sent")
         XCTAssertEqual(fade.projectedValue.journey.value, 0.1, "the value is at the target")
@@ -574,14 +574,14 @@ final class CarriedStateTests: XCTestCase {
         let fade = State(wrappedValue: 1.0)
         let renders = Renders()
 
-        renders.render(Text("x").motion(.eased(.milliseconds(90), .linear))
+        renders.render(Text("x").motion(.eased(.milliseconds(90), curve: .linear))
             .opacity(fade.projectedValue).id("one").node)
-        renders.render(Text("x").motion(.eased(.milliseconds(700), .cubicIn))
+        renders.render(Text("x").motion(.eased(.milliseconds(700), curve: .cubicIn))
             .opacity(fade.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(fade.number, as: JourneyLanes<Double>.self)?.motion,
-            .eased(.milliseconds(700), .cubicIn))
+            .eased(.milliseconds(700), curve: .cubicIn))
     }
 
     /// A rule naming COLORS answers a driven color, which the property alone
@@ -591,12 +591,12 @@ final class CarriedStateTests: XCTestCase {
         let tint = State(wrappedValue: Color(hex: 0x102030))
         let renders = Renders()
 
-        renders.render(Text("x").motion(.none).motion(.eased(.milliseconds(640), .cubicIn), .color)
+        renders.render(Text("x").motion(.none).motion(.eased(.milliseconds(640), curve: .cubicIn), .color)
             .background(tint.projectedValue).id("one").node)
 
         XCTAssertEqual(
             standing(tint.number, as: JourneyLanes<Color>.self)?.motion,
-            .eased(.milliseconds(640), .cubicIn))
+            .eased(.milliseconds(640), curve: .cubicIn))
     }
 
     /// A value NO element drives holds `.inherited` as its law - there being
@@ -664,7 +664,7 @@ final class CarriedStateTests: XCTestCase {
         await settle()
 
         XCTAssertEqual(offset.wrappedValue, 42, "the write reached the image")
-        XCTAssertEqual(offset.get(), 42, "and every road to it reads the same")
+        XCTAssertEqual(offset.wrappedValue, 42, "and every road to it reads the same")
     }
 
 }

@@ -46,7 +46,7 @@ final class LayoutPanTests: XCTestCase {
         }
         return (downFirst ? across(down(layout)) : down(across(layout)))
         .axis(\.zoom, input: .magnification, range: 1...2, snaps: .endpoints)
-        .motion(.eased(.milliseconds(160), .linear))
+        .motion(.eased(.milliseconds(160), curve: .linear))
         .node
     }
 

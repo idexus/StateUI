@@ -46,7 +46,7 @@ public struct Binding<Value> {
     /// A binding to state somebody else owns. `$counter` is the ordinary way to
     /// get one.
     public init(_ state: State<Value>) {
-        read = { state.get() }
+        read = { state.wrappedValue }
         write = { state.wrappedValue = $0 }
         storage = state.storage
         mailroom = state.storage.mailroom

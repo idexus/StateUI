@@ -36,7 +36,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
 
         var arrangement: GalleryArrangement {
             switch self {
-            case .wheel: .default
+            case .wheel: .wheel
             case .fan: .fan
             case .row: .row
             case .deck: .deck
@@ -246,7 +246,7 @@ struct GalleryViewSample: SampleContent, ExampleContent {
     var notes: (any View)? {
         VStack {
             Text("`GalleryView` is a run of cards the user swipes through, with "
-                + "`.arrangement` choosing the shape they stand in - `.default` is a "
+                + "`.arrangement` choosing the shape they stand in - `.wheel` a "
                 + "wheel, `.fan` a hand of cards, `.row` a strip, `.deck` a pile swiped a "
                 + "card at a time. The cards TRAVEL between the shapes, and a card added, "
                 + "inserted or removed travels from where it was.")

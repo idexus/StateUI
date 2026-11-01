@@ -18,6 +18,16 @@ struct LayoutBodies: Equatable, Sendable {
     struct Spring: Equatable, Sendable {
         let response: Double
         let damping: Double
+
+        init(response: Double, damping: Double) {
+            self.response = response
+            self.damping = damping
+        }
+
+        /// The spring an author names: its response to the millisecond, a damping that is no number 1.
+        init(response: Duration, damping: Double) {
+            self.init(response: Double(Motion.milliseconds(of: response)), damping: damping.isFinite ? max(damping, 0.01) : 1)
+        }
     }
 
     /// The bodies, by the identity of the view each is.

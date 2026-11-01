@@ -4,7 +4,7 @@
 /// How one view of a motion layout moves as a body of its layout's world (`LayoutDynamics`).
 ///
 ///     MotionLayout(cards, id: \.name) { card in
-///         CardFace(card).layoutBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
+///         CardFace(card).layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
 ///     } placements: { room, parameters in … }
 ///
 /// Design: docs/design/views/motion-layout.md#bodies
@@ -12,19 +12,17 @@ public struct LayoutBody: Equatable, Sendable {
     /// The spring it follows its place on.
     let spring: LayoutBodies.Spring
 
-    /// A body following its place on `spring`: carried by the layout, it lags behind its place while the run moves
-    /// - a card swaying as the run scrolls, flying a little past where a throw stops at the end - and settles back
-    /// onto it. A spring's response and damping say how; any other motion stands for the world's standard spring.
+    /// A body following its place on a spring of `response`, damped by `damping`: carried by the layout, it lags
+    /// behind its place while the run moves - a card swaying as the run scrolls, flying a little past where a throw
+    /// stops at the end - and settles back onto it.
     ///
-    /// - Parameter spring: the spring, `.spring(response:damping:)`.
+    /// - Parameters:
+    ///   - response: how quickly the body answers, to the millisecond. Smaller is snappier.
+    ///   - damping: 1 settles onto the place without passing it; below 1 passes it and comes back. A damping that
+    ///     is no number is 1.
     /// - Returns: the body.
-    public static func followsLayout(_ spring: Motion) -> LayoutBody {
-        guard case .spring(let milliseconds, let damping) = spring.kind else {
-            complain("A body follows its layout on a spring: .followsLayout(.spring(response:damping:)). "
-                + "It follows on the world's standard spring.")
-            return LayoutBody(spring: LayoutDynamics.standard.spring ?? LayoutBodies.Spring(response: 300, damping: 1))
-        }
-        return LayoutBody(spring: LayoutBodies.Spring(response: Double(milliseconds), damping: damping))
+    public static func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutBody {
+        LayoutBody(spring: LayoutBodies.Spring(response: response, damping: damping))
     }
 }
 

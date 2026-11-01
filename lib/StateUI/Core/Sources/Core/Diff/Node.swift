@@ -263,7 +263,7 @@ public struct Node {
 
     /// The readings asked for with `.samples(_:into:_:)`, for the differ to put on
     /// the values they read. Never crosses (Sampling.swift).
-    var samples: [(image: HostStorage, into: ObjectIdentifier, asks: Asks, take: @MainActor () -> Void)] = []
+    var samples: [(image: HostStorage, into: ObjectIdentifier, cadence: Cadence, take: @MainActor () -> Void)] = []
 
     /// The objects `.environment()` wrote here, in writing order, provided to this
     /// element and its subtree by type. Never crosses.

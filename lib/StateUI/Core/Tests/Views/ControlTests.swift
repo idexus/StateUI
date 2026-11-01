@@ -357,7 +357,7 @@ final class ControlTests: XCTestCase {
             ControlCase("MotionLayout", sources: ["PlacedStack.swift", "MotionLayout.swift"],
                 MotionLayout(["one", "two"], parameters: turn.projectedValue) {
                     Text($0)
-                        .layoutBody(.followsLayout(.spring(response: .milliseconds(420), damping: 0.6)))
+                        .layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.6))
                 } placements: { room, phase in
                     [Placement(Rect(phase, 0, room.width / 2, room.height)), Placement(Rect(room.width / 2, 0, 10, 10))]
                 }

@@ -36,7 +36,7 @@ final class LayoutAxisTests: XCTestCase {
 
     /// A layout of one view over `table`, traveling under `motion`, its axes as `declared` says.
     private func tree(
-        _ table: State<Table>, _ handed: Handed, motion: Motion = .eased(.milliseconds(160), .linear),
+        _ table: State<Table>, _ handed: Handed, motion: Motion = .eased(.milliseconds(160), curve: .linear),
         _ declared: @escaping (MotionLayout<[Int], Int, Table>) -> MotionLayout<[Int], Int, Table>
     ) -> () -> Node {
         {
@@ -91,7 +91,7 @@ final class LayoutAxisTests: XCTestCase {
     /// LET GO MOVING, AN AXIS WITH NO SNAPS GOES ON AS THE HAND WENT: no frame after the lift carries it farther
     /// than a frame of the hand did - a springy layout motion or none - and it slows to where its throw ends.
     func testLetGoMovingAnAxisWithNoSnapsGoesOnAsTheHandWent() {
-        for motion in [Motion.spring(response: .milliseconds(420), damping: 0.82), .eased(.milliseconds(300), .cubicOut)] {
+        for motion in [Motion.spring(response: .milliseconds(420), damping: 0.82), .eased(.milliseconds(300), curve: .cubicOut)] {
             Renderer.shared.clearStates()
             let (table, handed, renders) = (State(wrappedValue: Table()), Handed(), Renders())
             let built = tree(table, handed, motion: motion) {

@@ -296,8 +296,11 @@ Button("Delete").onClicked(.ignoreWhileRunning) {
 StateUI also provides a one-button `alert`, a `chooseAction` that returns the
 action chosen - one of the values it offers, or `nil` for its cancel - and a
 prompt that returns typed text or `nil` on cancellation. An accepted empty
-prompt is `""`, distinct from cancellation. A cancel left unnamed says the
-system's own word, in the user's language:
+prompt is `""`, distinct from cancellation. Every question takes the same
+words: a title, a `message` under it where one is given, and its buttons'
+captions. A caption left unnamed says the system's own word, in the user's
+language - "OK", "Cancel" - and a button that does something reads best named
+for what it does, as `accept: "Delete"` above:
 
 ```swift
 enum Share: CaseIterable {
@@ -399,8 +402,8 @@ struct NotePage: View {
 
 ## The clipboard
 
-The system's clipboard is the application's `clipboard`: `write(text:)` puts
-words on it in place of what it held, and `text()` reads the words it holds,
+The system's clipboard is the application's `clipboard`: `write(_:)` puts
+words on it in place of what it held, and `read()` reads the words it holds,
 `nil` where it holds none.
 
 ```swift
@@ -412,7 +415,7 @@ struct LinkRow: View {
         HStack {
             Text(link)
             Button("Copy").onClicked(.ignoreWhileRunning) {
-                try await application.clipboard.write(text: link)
+                try await application.clipboard.write(link)
             }
         }
     }

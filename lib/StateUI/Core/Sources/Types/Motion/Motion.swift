@@ -12,7 +12,7 @@
 ///
 ///     VStack { … }.motion(.spring(response: .milliseconds(260)))
 ///
-///     $fade.journey.move(to: 0.1, .eased(.milliseconds(400), .cubicOut))
+///     $fade.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut))
 ///
 /// `.none` applies a change at once. `.custom` hands the animation to an
 /// engine of your own. `.eased` and `.spring` name a timing law and its
@@ -106,7 +106,7 @@ public struct Motion: Equatable, Sendable {
 
     /// An animation of a stated duration on a stated curve.
     ///
-    ///     .motion(.eased(.milliseconds(400), .cubicOut))
+    ///     .motion(.eased(.milliseconds(400), curve: .cubicOut))
     ///
     /// It takes the stated time whatever the distance: right for something
     /// whose distance is known, such as a fade, a page sliding in, or a card
@@ -117,7 +117,7 @@ public struct Motion: Equatable, Sendable {
     ///   - curve: how it spends that time. `.cubicOut` arrives gently, which is
     ///     what almost everything on screen wants.
     /// - Returns: the motion.
-    public static func eased(_ length: Duration, _ curve: Easing = .cubicOut) -> Motion {
+    public static func eased(_ length: Duration, curve: Easing = .cubicOut) -> Motion {
         let milliseconds = Motion.milliseconds(of: length)
 
         return milliseconds == 0 ? .none : Motion(kind: .eased(milliseconds: milliseconds, curve: curve))
@@ -173,7 +173,7 @@ public struct Motion: Equatable, Sendable {
 
     /// The default motion: 200 milliseconds on `.cubicOut`, for ordinary
     /// changes and a scroller's landing.
-    public static let standard = Motion.eased(.milliseconds(200), .cubicOut)
+    public static let standard = Motion.eased(.milliseconds(200), curve: .cubicOut)
 
     /// A length in whole milliseconds, nought for one before none, rounded to the nearest.
     static func milliseconds(of length: Duration) -> UInt32 {

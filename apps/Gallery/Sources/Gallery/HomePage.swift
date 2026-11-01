@@ -207,7 +207,7 @@ struct HomePage: View {
                 .throwMotion(.spring(response: .milliseconds(500), damping: 0.8))
                 // EACH CARD A LIGHT BODY: it lags a breath behind the turn
                 // and settles back onto its place.
-                .itemBody(.followsLayout(.spring(response: .milliseconds(320), damping: 0.75)))
+                .itemBody(.followsLayout(response: .milliseconds(320), damping: 0.75))
                 .onItemActivated { route in nav.push(.group(route)) }
                 // THE FAR CARDS DARKEN RATHER THAN FADE. A faded card here
                 // would show the card BEHIND it - the wheel stands them one
@@ -353,7 +353,7 @@ struct HomePage: View {
             // ever put it still.
             guard settled || waited >= Self.patience else { return .again }
 
-            $shown.journey.motion = .eased(Self.entrance, .cubicOut)
+            $shown.journey.motion = .eased(Self.entrance, curve: .cubicOut)
             shown = 1
             // `phase` is named in no `tracking:`, so writing it wakes
             // nothing and the entrance is over for good - the engine goes on

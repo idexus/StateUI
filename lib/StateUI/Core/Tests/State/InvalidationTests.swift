@@ -33,7 +33,7 @@ private final class Chooses: View {
     }
 
     var body: some View {
-        AnyView(node: label("\(decision ? first.get() : second.get())"))
+        AnyView(node: label("\(decision ? first.wrappedValue : second.wrappedValue)"))
     }
 }
 
@@ -43,7 +43,7 @@ private struct Shows: View {
     let state: State<Int>
 
     var body: some View {
-        AnyView(node: label("\(state.get())"))
+        AnyView(node: label("\(state.wrappedValue)"))
     }
 }
 
@@ -185,7 +185,7 @@ private struct Inner: View {
 
     var body: some View {
         builds.count += 1
-        return AnyView(node: label("inner \(count.get())"))
+        return AnyView(node: label("inner \(count.wrappedValue)"))
     }
 }
 
@@ -865,7 +865,7 @@ final class InvalidationTests: XCTestCase {
 
     func testAStateWriteNamesItsStorage() {
         let state = State(0)
-        let reader = reading { _ = state.get() }
+        let reader = reading { _ = state.wrappedValue }
         state.wrappedValue = 1
 
         XCTAssertFalse(Renderer.shared.pendingChanges.isEmpty)
@@ -1075,7 +1075,7 @@ final class InvalidationTests: XCTestCase {
 
             var body: some View {
                 builds.count += 1
-                return AnyView(node: toggle.get() ? label("\(counter.get())") : label("off"))
+                return AnyView(node: toggle.wrappedValue ? label("\(counter.wrappedValue)") : label("off"))
             }
         }
 

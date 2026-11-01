@@ -304,7 +304,7 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   *Application.* ([The journey lanes](../design/core/journeys.md#the-journey-lanes);
   [journey is part of state](../concepts/motion-and-journeys.md#journey-is-part-of-state))
 - **Conversions and readings** - `convert`, `.multi` (`MultiBinding`) and
-  `.samples(_:into:_:)` at the pace `Asks` gives. A conversion runs as engines
+  `.samples(_:into:_:)` at the pace its `Cadence` gives. A conversion runs as engines
   the differ writes (`Conversion`, internal); a reading (`Sampling`,
   internal) is no engine, but held by the element that asked for it.
   *Application.*

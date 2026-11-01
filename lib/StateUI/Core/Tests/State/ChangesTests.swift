@@ -282,7 +282,7 @@ final class ChangesTests: XCTestCase {
     func testAHandlerThatWritesStateAsksForTheNextRender() {
         let renders = Renders()
         let echo = State(0)
-        let reader = reading { _ = echo.get() }
+        let reader = reading { _ = echo.wrappedValue }
         defer { _ = reader }
 
         func tree(_ value: Int) -> Node {
@@ -418,7 +418,7 @@ final class ChangesTests: XCTestCase {
     func testAReportedPropertyAsksItsReadersForARender() {
         let renders = Renders()
         let offset = State(Point.zero)
-        let reader = reading { _ = offset.get() }
+        let reader = reading { _ = offset.wrappedValue }
 
         renders.render(VStack { ScrollView { Text("long") }.scrollOffset(offset.projectedValue) }.node)
 

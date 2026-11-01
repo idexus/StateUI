@@ -17,7 +17,7 @@ final class AnimatorTests: XCTestCase {
         let near = DescribedKey(mount: 1, property: .opacity)
         let far = DescribedKey(mount: 2, property: .opacity)
         let animation = Animation(
-            from: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(200), .linear), began: 0)
+            from: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(200), curve: .linear), began: 0)
 
         for target in [AnimationTarget.described(far), .state(5, run: 0), .described(near), .state(1, run: 0)] {
             animator.start(animation, for: target)
@@ -34,7 +34,7 @@ final class AnimatorTests: XCTestCase {
     func testAnAnimationThatArrivesLeavesTheAnimator() {
         let animator = Animator()
         animator.start(
-            Animation(from: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(200), .linear), began: 0),
+            Animation(from: [0], destination: [1], velocity: [0], motion: .eased(.milliseconds(200), curve: .linear), began: 0),
             for: .state(1, run: 0))
 
         let halfway = animator.advance(to: 100)

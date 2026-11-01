@@ -213,7 +213,7 @@ private struct HandPage: View {
             return (0..<5).map { _ in Placement(Rect(0, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
-        .motion(.eased(.milliseconds(200), .linear))
+        .motion(.eased(.milliseconds(200), curve: .linear))
     }
 }
 
@@ -249,7 +249,7 @@ private struct RightToLeftPage: View {
             return (0..<5).map { Placement(Rect(Double($0) * 20, 0, 10, 10)) }
         }
         .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...4, snaps: .every(1))
-        .motion(.eased(.milliseconds(200), .linear))
+        .motion(.eased(.milliseconds(200), curve: .linear))
         .mirrorsRightToLeft(mirrors)
         .itemDrag(begins: .perpendicular)
         .onItemDragged { drag in dragged.append((drag.id, drag.at)) }

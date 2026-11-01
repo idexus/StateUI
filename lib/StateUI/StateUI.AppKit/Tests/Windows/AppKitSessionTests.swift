@@ -438,7 +438,7 @@ final class AppKitSessionTests: XCTestCase {
             preferences: preferences)
 
         renderer.readKeptFromPreferences()
-        XCTAssertEqual(State(wrappedValue: "light", persistentKey: key).get(), "dark")
+        XCTAssertEqual(State(wrappedValue: "light", persistentKey: key).wrappedValue, "dark")
 
         renderer.savePersistent(HostActCall(
             act: .persistValue,

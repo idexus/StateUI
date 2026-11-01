@@ -112,7 +112,7 @@ private struct Reading: View {
 /// Renders a view that reads through `read`, and answers the renderer holding
 /// the tree it stands in - keep it for as long as the reader must count.
 ///
-///     let reader = reading { _ = counter.get() }
+///     let reader = reading { _ = counter.wrappedValue }
 ///     counter.wrappedValue = 1
 ///     XCTAssertTrue(Renderer.shared.needsRender)
 ///     _ = reader

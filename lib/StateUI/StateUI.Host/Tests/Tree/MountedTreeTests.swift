@@ -910,7 +910,7 @@ final class MountedTreeTests: XCTestCase {
             makeNative: { ReadingNative($0) })
         defer { Renderer.shared.clearStates() }
 
-        let law = Motion.eased(.milliseconds(400), .linear)
+        let law = Motion.eased(.milliseconds(400), curve: .linear)
         let states = [State(wrappedValue: 0.0, motion: law), State(wrappedValue: 0.0, motion: law)]
         let images = try states.map { try XCTUnwrap($0.projectedValue.journeyImage) }
         for image in images {

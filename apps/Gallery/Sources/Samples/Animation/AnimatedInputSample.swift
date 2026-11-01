@@ -91,7 +91,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
 
                 button("Send the bottom one") {
                     try await $level.journey.move(to: level < 0.5 ? 1 : 0,
-                                               .eased(.milliseconds(900), .cubicInOut)).arrived()
+                                               .eased(.milliseconds(900), curve: .cubicInOut)).arrived()
                 }
             }
             .spacing(10)
@@ -113,7 +113,7 @@ struct AnimatedInputSample: SampleContent, ExampleContent {
                     .horizontalAlignment(.start)
 
                 button("Send the stepper to 12") {
-                    try await $count.journey.move(to: 12, .eased(.milliseconds(800), .cubicOut)).arrived()
+                    try await $count.journey.move(to: 12, .eased(.milliseconds(800), curve: .cubicOut)).arrived()
                 }
             }
             .spacing(10)

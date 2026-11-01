@@ -34,7 +34,8 @@ public final class State<Value> {
     }
 
     /// State holding `initialValue` - the way to declare it at file scope, where a
-    /// property wrapper is not allowed: `let counter = State(0)`.
+    /// property wrapper is not allowed: `let counter = State(0)`, read and written as
+    /// `counter.wrappedValue`.
     ///
     /// The expression runs when the value is first wanted, and a state that adopts
     /// another's storage never wants it.
@@ -131,20 +132,6 @@ public final class State<Value> {
 
     /// The object that is this state: the storage, which every rebuilt box adopts.
     var lender: AnyObject { storage }
-
-    /// Reads the value, recording the dependency exactly as the wrapper does.
-    ///
-    ///     let counter = State(0)          // at file scope
-    ///     Text("Count: \(counter.get())")
-    ///
-    /// For state held WITHOUT the wrapper - at file scope, where Swift allows
-    /// no property wrapper at all. On `@State private var counter = 0` the
-    /// plain name reads the same value, and that is the spelling to use.
-    @inlinable
-    public func get() -> Value {
-        storage.noteRead()
-        return storage.value
-    }
 }
 
 extension State where Value: Walked {

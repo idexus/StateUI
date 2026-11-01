@@ -18,11 +18,11 @@ extension WindowSession {
     ///
     /// - Parameters:
     ///   - title: what the alert is about, in bold.
-    ///   - message: the sentence under it.
+    ///   - message: the sentence under it; none where empty.
     ///   - accept: the one button's caption; nil says "OK" in the system's language, as the platform's own
     ///     buttons do.
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
-    public func alert(_ title: String, message: String, accept: String? = nil) async throws {
+    public func alert(_ title: String, message: String = "", accept: String? = nil) async throws {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
         try await stateUICall(ApplicationContract.alert, scene, window, title, message, accept ?? words.ok)
@@ -36,18 +36,19 @@ extension WindowSession {
     ///
     /// - Parameters:
     ///   - title: the question, in bold.
-    ///   - message: the sentence under it.
-    ///   - accept: the caption of the button that answers yes.
+    ///   - message: the sentence under it; none where empty.
+    ///   - accept: the caption of the button that answers yes - best the act it does, `"Delete"`; nil says "OK"
+    ///     in the system's language.
     ///   - cancel: the caption of the button that answers no; nil says "Cancel" in the system's language.
     /// - Returns: true when `accept` was pressed.
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
     public func confirm(
-        _ title: String, message: String, accept: String, cancel: String? = nil
+        _ title: String, message: String = "", accept: String? = nil, cancel: String? = nil
     ) async throws -> Bool {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
         return try await stateUICall(
-            ApplicationContract.confirm, scene, window, title, message, accept, cancel ?? words.cancel)
+            ApplicationContract.confirm, scene, window, title, message, accept ?? words.ok, cancel ?? words.cancel)
     }
 
     /// Offers the user a list of things to do, over this window, and answers the one they chose - here `Share`, an
@@ -99,7 +100,7 @@ extension WindowSession {
     ///
     /// - Parameters:
     ///   - title: what is being asked for, in bold.
-    ///   - message: the sentence under it.
+    ///   - message: the sentence under it; none where empty.
     ///   - accept: the confirming button's caption; nil says "OK" in the system's language.
     ///   - cancel: the dismissing button's caption; nil says "Cancel" in the system's language.
     ///   - placeholder: what the field says while it is empty. Nil for nothing.

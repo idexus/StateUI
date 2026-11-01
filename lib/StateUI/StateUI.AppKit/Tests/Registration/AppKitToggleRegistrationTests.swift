@@ -121,7 +121,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
             VStack {
                 Switch(true).text(words.wrappedValue).horizontalAlignment(.start)
             }
-            .motion(.eased(.milliseconds(1000), .linear))
+            .motion(.eased(.milliseconds(1000), curve: .linear))
         })
         let renderer = testRenderer(clock: { now })
         renderer.startForTesting()

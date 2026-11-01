@@ -59,7 +59,7 @@ final class PropertyValuesTests: XCTestCase {
         ]
         var moved = HostPatch(id: .manual("box"), type: .rectangle)
         moved.properties = targets
-        moved.transitions = targets.mapValues { _ in HostTransition(motion: .eased(.milliseconds(200), .linear)) }
+        moved.transitions = targets.mapValues { _ in HostTransition(motion: .eased(.milliseconds(200), curve: .linear)) }
 
         runtime.tree.apply(moved, complete: false)
 
@@ -87,7 +87,7 @@ final class PropertyValuesTests: XCTestCase {
 
         var takenAway = HostPatch(id: .manual("box"), type: .rectangle)
         takenAway.clearedProperties = turned.keys.sorted()
-        takenAway.transitions = turned.mapValues { _ in HostTransition(motion: .eased(.milliseconds(200), .linear)) }
+        takenAway.transitions = turned.mapValues { _ in HostTransition(motion: .eased(.milliseconds(200), curve: .linear)) }
         runtime.tree.apply(takenAway, complete: false)
 
         let box = try XCTUnwrap(runtime.tree.root)

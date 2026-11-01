@@ -398,7 +398,7 @@ final class CycleTests: XCTestCase {
     /// which the host reads as a snap, so a slider that had been touched once
     /// jumped to every value it was sent for the rest of the session.
     func testAShortReportLaysItsLanesAndLeavesTheRestStanding() {
-        let journey = JourneyLanes(0.25, motion: .eased(.milliseconds(400), .cubicIn))
+        let journey = JourneyLanes(0.25, motion: .eased(.milliseconds(400), curve: .cubicIn))
         var slot = StateImage.bytes(of: journey.carried)
         let whole = slot.count
 
@@ -414,7 +414,7 @@ final class CycleTests: XCTestCase {
         XCTAssertEqual(read?.value, 0.75, "the lanes it named are laid")
         XCTAssertEqual(read?.destination, 0.75)
         XCTAssertEqual(
-            read?.motion, Motion.eased(.milliseconds(400), .cubicIn),
+            read?.motion, Motion.eased(.milliseconds(400), curve: .cubicIn),
             "and the law it says nothing about stands")
     }
 

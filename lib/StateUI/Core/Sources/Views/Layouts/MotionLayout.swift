@@ -178,7 +178,7 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
     private var world = LayoutDynamics.standard
 
     /// How a throw goes on once the hand lets go, every axis alike.
-    private var throwLaw = Motion.eased(.milliseconds(400), .cubicOut)
+    private var throwLaw = Motion.eased(.milliseconds(400), curve: .cubicOut)
 
     /// What is told once the run comes to rest.
     private var settled: ValueHandler<Parameters>?

@@ -46,7 +46,7 @@ enum StateLaw {
         case 1: return .inherited
         case 2 where lanes.count > 2:
             let curve = Int(nearest: third).flatMap { Int32(exactly: $0) }.flatMap(Easing.init(rawValue:))
-            return .eased(.milliseconds(length), curve ?? .cubicOut)
+            return .eased(.milliseconds(length), curve: curve ?? .cubicOut)
         case 3 where lanes.count > 2: return .spring(response: .milliseconds(length), damping: third)
         case 4: return .custom
         case 5: return .glide(longest: .milliseconds(length))

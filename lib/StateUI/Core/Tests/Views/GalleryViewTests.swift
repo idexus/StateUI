@@ -591,7 +591,7 @@ final class GalleryViewTests: XCTestCase {
             return try XCTUnwrap(run.placements.dropFirst().first).bounds.x
         }
         let placed = try carried(nil)
-        let following = try carried(.followsLayout(.spring(response: .milliseconds(300), damping: 0.8)))
+        let following = try carried(.followsLayout(response: .milliseconds(300), damping: 0.8))
 
         XCTAssertGreaterThan(abs(following - placed), 1, "behind its place as the hand carries it")
     }
@@ -680,7 +680,7 @@ final class GalleryViewTests: XCTestCase {
     /// the light friction of a gallery that says nothing slides it back to the
     /// first.
     func testAThrowGoesOnAsThrowingSays() {
-        for (throwing, card) in [(Motion?.none, 0), (.eased(.seconds(3), .cubicOut), 2)] {
+        for (throwing, card) in [(Motion?.none, 0), (.eased(.seconds(3), curve: .cubicOut), 2)] {
             Renderer.shared.clearStates()
             let renders = Renders()
             let shown = State(0)

@@ -25,7 +25,7 @@ final class LayoutApproachTests: XCTestCase {
 
     /// One view moved a hundred points a unit, under a linear motion of 320 milliseconds: a unit a 320 ms, 0.05 a
     /// frame.
-    private func tree(_ phase: State<Double>, _ handed: Handed, _ motion: Motion = .eased(.milliseconds(320), .linear))
+    private func tree(_ phase: State<Double>, _ handed: Handed, _ motion: Motion = .eased(.milliseconds(320), curve: .linear))
         -> Node
     {
         MotionLayout([1], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in

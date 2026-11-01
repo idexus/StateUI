@@ -96,7 +96,7 @@ final class LayoutFollowerTests: XCTestCase {
     private func tree(_ phase: State<Double>) -> Node {
         MotionLayout([0, 1], parameters: phase.projectedValue) { index in
             if index == 0 {
-                Text("\(index)").layoutBody(.followsLayout(.spring(response: .milliseconds(400), damping: 0.5)))
+                Text("\(index)").layoutBody(.followsLayout(response: .milliseconds(400), damping: 0.5))
             } else {
                 Text("\(index)")
             }
@@ -107,15 +107,18 @@ final class LayoutFollowerTests: XCTestCase {
         .node
     }
 
-    /// A VIEW FOLLOWING ITS LAYOUT WEARS THE BODY THAT FOLLOWS IT: `.followsLayout(spring)` writes what
-    /// `.layoutBody(.followsLayout(spring))` does.
+    /// A VIEW FOLLOWING ITS LAYOUT WEARS THE BODY THAT FOLLOWS IT: `.followsLayout(response:damping:)` writes what
+    /// `.layoutBody(.followsLayout(response:damping:))` does, on the spring the world's dynamics of the same words
+    /// would be.
     func testAViewFollowingItsLayoutWearsTheBodyThatFollowsIt() {
-        let spring = Motion.spring(response: .milliseconds(420), damping: 0.55)
-        let short = Text("a").followsLayout(spring).node
-        let whole = Text("a").layoutBody(.followsLayout(spring)).node
+        let short = Text("a").followsLayout(response: .milliseconds(420), damping: 0.55).node
+        let whole = Text("a").layoutBody(.followsLayout(response: .milliseconds(420), damping: 0.55)).node
 
         XCTAssertEqual(short.props[.layoutBody], whole.props[.layoutBody])
-        XCTAssertEqual(short.props[.layoutBody], LayoutBody.followsLayout(spring).propValue)
+        XCTAssertEqual(
+            LayoutBody.followsLayout(response: .milliseconds(420), damping: 0.55).spring,
+            LayoutDynamics.spring(response: .milliseconds(420), damping: 0.55).spring)
+        XCTAssertEqual(LayoutBody.followsLayout(damping: .nan).spring, LayoutDynamics.standard.spring)
     }
 
     /// A VIEW'S BODY FOLLOWS THE STATE ITS VIEW READS: a switch the views' own closure reads turns their bodies on,
@@ -134,7 +137,7 @@ final class LayoutFollowerTests: XCTestCase {
         func built() -> Node {
             let layout = MotionLayout([0], parameters: phase.projectedValue) { index in
                 if sways.wrappedValue {
-                    Text("\(index)").followsLayout(.spring(response: .milliseconds(400), damping: 0.5))
+                    Text("\(index)").followsLayout(response: .milliseconds(400), damping: 0.5)
                 } else {
                     Text("\(index)")
                 }

@@ -619,7 +619,8 @@ struct AlbumsPage: View {
 
 The initializer builds a card's face, one card per item, identified by `id:`
 or by the item itself where it is `Hashable`. Where a card stands and which
-way it faces is the arrangement's - `.default` (a wheel), `.fan`, `.row` or
+way it faces is the arrangement's - `.wheel`, the one it stands in unless
+said otherwise, `.fan`, `.row` or
 `.deck`, a pile swiped a card at a time, the card in front going out the way
 the hand goes and under the next - and changing it animates every card to the
 new shape. `.position($shown)` is
@@ -631,8 +632,8 @@ the middle; a swipe carries the card in front with it, however big the room
 draws the cards, and `.throwMotion(_:)` says how one let go with speed goes on, as a
 [motion layout's](#a-motion-layout) does. `.itemBody(_:)` makes every card a
 body of the gallery's world, as `.layoutBody(_:)` makes one view of a motion
-layout - `.itemBody(.followsLayout(.spring(response: .milliseconds(300),
-damping: 0.8)))` and each card lags a breath behind the turn and settles back
+layout - `.itemBody(.followsLayout(response: .milliseconds(300),
+damping: 0.8))` and each card lags a breath behind the turn and settles back
 onto its place - and `.itemSize(width:height:)`, `.isSwipeEnabled`,
 `.emptyView`, `.shade` and `.fade` say the rest. Give it a
 bounded size - a `.height`, or a `.fill` row of a `Grid`.
@@ -818,8 +819,8 @@ others close up. Where the front card was the last, the parameters themselves ha
 go: `$turn.journey.move(to:)` in the same handler sends the run to the card
 before it, under `.motion(_:)`.
 
-A view can be a body of its own: `.followsLayout(_:)` on it - short for
-`.layoutBody(.followsLayout(_:))` - makes it follow its place on the spring it names - carried by the run, it
+A view can be a body of its own: `.followsLayout(response:damping:)` on it - short for
+`.layoutBody(.followsLayout(response:damping:))` - makes it follow its place on a spring of its own - carried by the run, it
 lags behind its place while the run turns, swings past where a throw stops
 and settles back onto it. The world is worked out at a fixed step, so every
 host and frame rate shows the same motion; under less motion every view
@@ -835,7 +836,7 @@ struct Swaying: View {
     var body: some View {
         MotionLayout(["Mural", "Nebula", "Ridge", "Bloom"], parameters: $turn) { name in
             Text(name)
-                .followsLayout(.spring(response: .milliseconds(420), damping: 0.55))
+                .followsLayout(response: .milliseconds(420), damping: 0.55)
         } placements: { room, turn in
             (0..<4).map { index in
                 Placement(Rect(room.width / 2 - 60 + (Double(index) - turn) * 140, 0, 120, room.height))
@@ -1234,7 +1235,7 @@ struct Rearranged: View {
                 }
             }
             .axis(\.self, range: 0...1, keyframes: .every(1))
-            .motion(.eased(.milliseconds(700), .cubicInOut))
+            .motion(.eased(.milliseconds(700), curve: .cubicInOut))
             .height(300)
 
             HStack {

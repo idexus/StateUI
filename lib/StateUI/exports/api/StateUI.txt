@@ -134,8 +134,6 @@ swift.conformance Area: StateUI.HostRepresentable
 swift.conformance Area: Swift.Equatable
 swift.conformance Area: Swift.Sendable
 swift.conformance Arrival: Swift.Sendable
-swift.conformance Asks: Swift.Equatable
-swift.conformance Asks: Swift.Sendable
 swift.conformance AutomationElement: StateUI.PropertyContainer
 swift.conformance AutomationElementContract: StateUI.Contract
 swift.conformance AutomationElementContract: Swift.Sendable
@@ -224,6 +222,8 @@ swift.conformance ButtonRole: Swift.Equatable
 swift.conformance ButtonRole: Swift.Hashable
 swift.conformance ButtonRole: Swift.RawRepresentable
 swift.conformance ButtonRole: Swift.Sendable
+swift.conformance Cadence: Swift.Equatable
+swift.conformance Cadence: Swift.Sendable
 swift.conformance CalendarDate: StateUI.HostRepresentable
 swift.conformance CalendarDate: StateUI.LaneValue
 swift.conformance CalendarDate: StateUI.StateValue
@@ -2222,7 +2222,6 @@ swift.enum ApplicationBuilder: @MainActor @resultBuilder enum ApplicationBuilder
 swift.enum ApplicationContract: enum ApplicationContract
 swift.enum ApplicationPhase: enum ApplicationPhase
 swift.enum Area: enum Area
-swift.enum Asks: enum Asks
 swift.enum AutomationElementContract: enum AutomationElementContract
 swift.enum BarButtonElementContract: enum BarButtonElementContract
 swift.enum BarElementContract: enum BarElementContract
@@ -2237,6 +2236,7 @@ swift.enum ButtonMenuContract: enum ButtonMenuContract
 swift.enum ButtonMenuElementContract: enum ButtonMenuElementContract
 swift.enum ButtonMenuKind: enum ButtonMenuKind
 swift.enum ButtonRole: enum ButtonRole
+swift.enum Cadence: enum Cadence
 swift.enum CanvasContract: enum CanvasContract
 swift.enum CapsuleContract: enum CapsuleContract
 swift.enum CheckBoxContract: enum CheckBoxContract
@@ -2432,8 +2432,6 @@ swift.enum.case ApplicationPhase.background: case background
 swift.enum.case ApplicationPhase.inactive: case inactive
 swift.enum.case Area.absolute(_:_:_:_:): case absolute(Double, Double, Double, Double)
 swift.enum.case Area.proportional(_:_:_:_:): case proportional(Double, Double, Double, Double)
-swift.enum.case Asks.always: case always
-swift.enum.case Asks.every(_:): case every(Duration)
 swift.enum.case BatteryPowerSource.ac: case ac
 swift.enum.case BatteryPowerSource.battery: case battery
 swift.enum.case BatteryPowerSource.unknown: case unknown
@@ -2456,6 +2454,8 @@ swift.enum.case ButtonMenuKind.split: case split
 swift.enum.case ButtonRole.cancel: case cancel
 swift.enum.case ButtonRole.destructive: case destructive
 swift.enum.case ButtonRole.primary: case primary
+swift.enum.case Cadence.always: case always
+swift.enum.case Cadence.every(_:): case every(Duration)
 swift.enum.case ColorScheme.dark: case dark
 swift.enum.case ColorScheme.light: case light
 swift.enum.case ColorScheme.system: case system
@@ -2526,9 +2526,9 @@ swift.enum.case FormFactor.tv: case tv
 swift.enum.case FormFactor.unknown: case unknown
 swift.enum.case FormFactor.watch: case watch
 swift.enum.case GalleryArrangement.deck: case deck
-swift.enum.case GalleryArrangement.default: case `default`
 swift.enum.case GalleryArrangement.fan: case fan
 swift.enum.case GalleryArrangement.row: case row
+swift.enum.case GalleryArrangement.wheel: case wheel
 swift.enum.case GesturePhase.began: case began
 swift.enum.case GesturePhase.cancelled: case cancelled
 swift.enum.case GesturePhase.changed: case changed
@@ -3193,7 +3193,7 @@ swift.method @SwiftNever.engine(following:_:priority:_:): @MainActor func engine
 swift.method @SwiftNever.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method @SwiftNever.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method @SwiftNever.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject
-swift.method @SwiftNever.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method @SwiftNever.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method @SwiftNever.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method @SwiftNever.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method @SwiftNever.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -3354,7 +3354,7 @@ swift.method @SwiftNever.popover(item:content:): @MainActor func popover<Item, C
 swift.method @SwiftNever.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method @SwiftNever.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method @SwiftNever.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method @SwiftNever.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method @SwiftNever.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -3425,7 +3425,7 @@ swift.method AnyView.draggable(text:canDrag:onDragStarting:): @MainActor func dr
 swift.method AnyView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method AnyView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method AnyView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method AnyView.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method AnyView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method AnyView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method AnyView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method AnyView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -3586,7 +3586,7 @@ swift.method AnyView.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method AnyView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method AnyView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method AnyView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method AnyView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -3675,7 +3675,7 @@ swift.method Button.draggable(text:canDrag:onDragStarting:): @MainActor func dra
 swift.method Button.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Button.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Button.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Button.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Button.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Button.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
 swift.method Button.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Button.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
@@ -3867,7 +3867,7 @@ swift.method Button.role(_:): @MainActor func role(_ role: ButtonRole) -> Button
 swift.method Button.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Button.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Button.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Button.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Button.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -3943,7 +3943,7 @@ swift.method Canvas.drawing(_:): @MainActor func drawing(@DrawingBuilder _ drawi
 swift.method Canvas.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Canvas.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Canvas.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Canvas.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Canvas.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Canvas.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Canvas.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Canvas.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -4107,7 +4107,7 @@ swift.method Canvas.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method Canvas.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Canvas.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Canvas.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Canvas.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Canvas.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -4175,7 +4175,7 @@ swift.method Capsule.fill(_:): @MainActor func fill(_ state: Binding<Material>) 
 swift.method Capsule.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Capsule.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Capsule.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Capsule.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Capsule.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Capsule.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Capsule.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Capsule.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -4342,7 +4342,7 @@ swift.method Capsule.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Capsule.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Capsule.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Capsule.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Capsule.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -4402,7 +4402,7 @@ swift.method CheckBox.draggable(text:canDrag:onDragStarting:): @MainActor func d
 swift.method CheckBox.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method CheckBox.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method CheckBox.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method CheckBox.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method CheckBox.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method CheckBox.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method CheckBox.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method CheckBox.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -4574,7 +4574,7 @@ swift.method CheckBox.popover(item:content:): @MainActor func popover<Item, Cont
 swift.method CheckBox.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method CheckBox.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method CheckBox.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method CheckBox.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method CheckBox.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -4616,8 +4616,8 @@ swift.method CheckBoxProperties.isOn(_:): @MainActor func isOn(_ value: Bool) ->
 swift.method ChosenFile.launch(): @discardableResult func launch() async throws -> Bool
 swift.method ChosenFile.read(): func read() async throws -> [UInt8]
 swift.method ChosenFile.read(atMost:): func read(atMost maximum: Int) async throws -> [UInt8]
-swift.method Clipboard.text(): @MainActor func text() async throws -> String?
-swift.method Clipboard.write(text:): @MainActor func write(text: String) async throws
+swift.method Clipboard.read(): @MainActor func read() async throws -> String?
+swift.method Clipboard.write(_:): @MainActor func write(_ text: String) async throws
 swift.method Color.opacity(_:): func opacity(_ fraction: Double) -> Color
 swift.method ColorPicker.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ColorPicker.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
@@ -4647,7 +4647,7 @@ swift.method ColorPicker.draggable(text:canDrag:onDragStarting:): @MainActor fun
 swift.method ColorPicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ColorPicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ColorPicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ColorPicker.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method ColorPicker.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method ColorPicker.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method ColorPicker.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ColorPicker.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -4818,7 +4818,7 @@ swift.method ColorPicker.popover(item:content:): @MainActor func popover<Item, C
 swift.method ColorPicker.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ColorPicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method ColorPicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ColorPicker.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ColorPicker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -4886,7 +4886,7 @@ swift.method DatePicker.draggable(text:canDrag:onDragStarting:): @MainActor func
 swift.method DatePicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method DatePicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DatePicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method DatePicker.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method DatePicker.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method DatePicker.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
 swift.method DatePicker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method DatePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
@@ -5072,7 +5072,7 @@ swift.method DatePicker.popover(item:content:): @MainActor func popover<Item, Co
 swift.method DatePicker.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method DatePicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method DatePicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method DatePicker.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method DatePicker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -5138,7 +5138,7 @@ swift.method DebugInspector.draggable(text:canDrag:onDragStarting:): @MainActor 
 swift.method DebugInspector.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method DebugInspector.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DebugInspector.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method DebugInspector.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method DebugInspector.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method DebugInspector.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method DebugInspector.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method DebugInspector.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -5299,7 +5299,7 @@ swift.method DebugInspector.popover(item:content:): @MainActor func popover<Item
 swift.method DebugInspector.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method DebugInspector.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method DebugInspector.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method DebugInspector.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method DebugInspector.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -5365,7 +5365,7 @@ swift.method Either.draggable(text:canDrag:onDragStarting:): @MainActor func dra
 swift.method Either.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Either.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Either.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Either.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Either.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Either.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Either.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Either.gridColumn(_:): @MainActor func gridColumn(_ value: Int) -> Self.Modified
@@ -5550,7 +5550,7 @@ swift.method Either.rotationX(_:): @MainActor func rotationX(_ state: Binding<Do
 swift.method Either.rotationX(_:): @MainActor func rotationX(_ value: Double) -> Self.Modified
 swift.method Either.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.rotationY(_:): @MainActor func rotationY(_ value: Double) -> Self.Modified
-swift.method Either.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Either.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Either.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Either.scale(_:): @MainActor func scale(_ value: Double) -> Self.Modified
 swift.method Either.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
@@ -5626,7 +5626,7 @@ swift.method Ellipse.fill(_:): @MainActor func fill(_ state: Binding<Material>) 
 swift.method Ellipse.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Ellipse.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Ellipse.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Ellipse.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Ellipse.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Ellipse.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Ellipse.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Ellipse.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -5793,7 +5793,7 @@ swift.method Ellipse.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Ellipse.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Ellipse.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Ellipse.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Ellipse.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -5853,7 +5853,7 @@ swift.method Fill.draggable(text:canDrag:onDragStarting:): @MainActor func dragg
 swift.method Fill.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Fill.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Fill.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Fill.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Fill.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Fill.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Fill.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Fill.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -6018,7 +6018,7 @@ swift.method Fill.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Fill.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Fill.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Fill.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Fill.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Fill.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -6100,7 +6100,7 @@ swift.method GalleryView.engine(following:_:priority:_:): @MainActor func engine
 swift.method GalleryView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method GalleryView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method GalleryView.fade(_:): @MainActor func fade(_ amount: Double) -> GalleryView<Items, ID>
-swift.method GalleryView.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method GalleryView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method GalleryView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method GalleryView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method GalleryView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -6271,7 +6271,7 @@ swift.method GalleryView.position(_:): @MainActor func position(_ state: Binding
 swift.method GalleryView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method GalleryView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method GalleryView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method GalleryView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method GalleryView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -6328,7 +6328,7 @@ swift.method GeometryReader.draggable(text:canDrag:onDragStarting:): @MainActor 
 swift.method GeometryReader.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method GeometryReader.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method GeometryReader.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method GeometryReader.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method GeometryReader.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method GeometryReader.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method GeometryReader.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method GeometryReader.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -6489,7 +6489,7 @@ swift.method GeometryReader.popover(item:content:): @MainActor func popover<Item
 swift.method GeometryReader.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method GeometryReader.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method GeometryReader.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method GeometryReader.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method GeometryReader.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -6549,7 +6549,7 @@ swift.method Grid.draggable(text:canDrag:onDragStarting:): @MainActor func dragg
 swift.method Grid.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Grid.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Grid.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Grid.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Grid.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Grid.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Grid.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Grid.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -6724,7 +6724,7 @@ swift.method Grid.rotationX(_:): @MainActor func rotationX(_ state: Binding<Doub
 swift.method Grid.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.rowSpacing(_:): @MainActor func rowSpacing(_ state: Binding<Double>) -> Grid.Modified
 swift.method Grid.rows(_:): @MainActor func rows(_ runs: GridTracks...) -> Self.Modified
-swift.method Grid.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Grid.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Grid.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Grid.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -6790,7 +6790,7 @@ swift.method Group.draggable(text:canDrag:onDragStarting:): @MainActor func drag
 swift.method Group.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Group.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Group.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Group.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Group.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Group.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Group.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Group.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -6951,7 +6951,7 @@ swift.method Group.popover(item:content:): @MainActor func popover<Item, Content
 swift.method Group.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Group.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Group.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Group.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Group.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7007,7 +7007,7 @@ swift.method HStack.draggable(text:canDrag:onDragStarting:): @MainActor func dra
 swift.method HStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method HStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method HStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method HStack.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method HStack.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method HStack.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method HStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method HStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -7182,7 +7182,7 @@ swift.method HStack.rotation(_:): @MainActor func rotation(_ state: Binding<Doub
 swift.method HStack.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.rowSpacing(_:): @MainActor func rowSpacing(_ state: Binding<Double>) -> HStack.Modified
-swift.method HStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method HStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method HStack.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method HStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7252,7 +7252,7 @@ swift.method Image.draggable(text:canDrag:onDragStarting:): @MainActor func drag
 swift.method Image.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Image.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Image.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Image.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Image.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Image.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Image.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Image.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -7417,7 +7417,7 @@ swift.method Image.popover(item:content:): @MainActor func popover<Item, Content
 swift.method Image.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Image.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Image.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Image.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Image.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7479,7 +7479,7 @@ swift.method InspectorButton.draggable(text:canDrag:onDragStarting:): @MainActor
 swift.method InspectorButton.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method InspectorButton.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method InspectorButton.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method InspectorButton.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method InspectorButton.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method InspectorButton.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method InspectorButton.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method InspectorButton.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -7640,7 +7640,7 @@ swift.method InspectorButton.popover(item:content:): @MainActor func popover<Ite
 swift.method InspectorButton.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method InspectorButton.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method InspectorButton.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method InspectorButton.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method InspectorButton.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method InspectorButton.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method InspectorButton.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method InspectorButton.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7696,7 +7696,7 @@ swift.method ItemsView.emptyView(_:): @MainActor func emptyView(_ view: some Vie
 swift.method ItemsView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ItemsView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ItemsView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ItemsView.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method ItemsView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method ItemsView.footer(_:): @MainActor func footer(_ view: some View) -> ItemsView<ID>
 swift.method ItemsView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method ItemsView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -7880,7 +7880,7 @@ swift.method ItemsView.popover(item:content:): @MainActor func popover<Item, Con
 swift.method ItemsView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ItemsView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method ItemsView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ItemsView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -7957,7 +7957,7 @@ swift.method Line.draggable(text:canDrag:onDragStarting:): @MainActor func dragg
 swift.method Line.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Line.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Line.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Line.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Line.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Line.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Line.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Line.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -8124,7 +8124,7 @@ swift.method Line.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Line.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Line.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Line.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Line.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -8194,7 +8194,7 @@ swift.method Link.draggable(text:canDrag:onDragStarting:): @MainActor func dragg
 swift.method Link.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Link.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Link.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Link.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Link.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Link.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Link.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Link.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -8365,7 +8365,7 @@ swift.method Link.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Link.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Link.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Link.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Link.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Link.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -8437,7 +8437,7 @@ swift.method Map.draggable(text:canDrag:onDragStarting:): @MainActor func dragga
 swift.method Map.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Map.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Map.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Map.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Map.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Map.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Map.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Map.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -8608,7 +8608,7 @@ swift.method Map.popover(item:content:): @MainActor func popover<Item, Content>(
 swift.method Map.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Map.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Map.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Map.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Map.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -8766,7 +8766,7 @@ swift.method ModifiedContent.draggable(text:canDrag:onDragStarting:): @MainActor
 swift.method ModifiedContent.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ModifiedContent.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ModifiedContent.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ModifiedContent.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method ModifiedContent.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method ModifiedContent.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method ModifiedContent.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ModifiedContent.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -8927,7 +8927,7 @@ swift.method ModifiedContent.popover(item:content:): @MainActor func popover<Ite
 swift.method ModifiedContent.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ModifiedContent.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method ModifiedContent.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ModifiedContent.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ModifiedContent.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -8986,7 +8986,7 @@ swift.method MotionLayout.engine(following:_:priority:_:): @MainActor func engin
 swift.method MotionLayout.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method MotionLayout.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method MotionLayout.following(_:): @MainActor func following<each Value>(_ states: repeat Binding<each Value>) -> MotionLayout<Items, ID, Parameters>
-swift.method MotionLayout.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method MotionLayout.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method MotionLayout.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method MotionLayout.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method MotionLayout.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -9160,7 +9160,7 @@ swift.method MotionLayout.popover(item:content:): @MainActor func popover<Item, 
 swift.method MotionLayout.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method MotionLayout.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method MotionLayout.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method MotionLayout.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -9232,7 +9232,7 @@ swift.method NavigationStack.draggable(text:canDrag:onDragStarting:): @MainActor
 swift.method NavigationStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method NavigationStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method NavigationStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method NavigationStack.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method NavigationStack.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method NavigationStack.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method NavigationStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method NavigationStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -9393,7 +9393,7 @@ swift.method NavigationStack.popover(item:content:): @MainActor func popover<Ite
 swift.method NavigationStack.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method NavigationStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method NavigationStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method NavigationStack.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method NavigationStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -9481,7 +9481,7 @@ swift.method Path.fill(_:): @MainActor func fill(_ state: Binding<Material>) -> 
 swift.method Path.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Path.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Path.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Path.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Path.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Path.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Path.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Path.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -9650,7 +9650,7 @@ swift.method Path.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Path.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Path.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Path.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Path.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -9711,7 +9711,7 @@ swift.method Picker.draggable(text:canDrag:onDragStarting:): @MainActor func dra
 swift.method Picker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Picker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Picker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Picker.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Picker.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Picker.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
 swift.method Picker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Picker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
@@ -9897,7 +9897,7 @@ swift.method Picker.presentation(_:): @MainActor func presentation(_ value: Pick
 swift.method Picker.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Picker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Picker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Picker.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Picker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -9971,7 +9971,7 @@ swift.method Polygon.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modi
 swift.method Polygon.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Polygon.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Polygon.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Polygon.Modified
-swift.method Polygon.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Polygon.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Polygon.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Polygon.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Polygon.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -10141,7 +10141,7 @@ swift.method Polygon.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Polygon.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Polygon.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Polygon.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Polygon.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -10212,7 +10212,7 @@ swift.method Polyline.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Mod
 swift.method Polyline.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Polyline.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method Polyline.fillRule(_:): @MainActor func fillRule(_ state: Binding<FillRule>) -> Polyline.Modified
-swift.method Polyline.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Polyline.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Polyline.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Polyline.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Polyline.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -10382,7 +10382,7 @@ swift.method Polyline.popover(item:content:): @MainActor func popover<Item, Cont
 swift.method Polyline.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Polyline.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Polyline.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Polyline.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -10454,7 +10454,7 @@ swift.method PositionDots.draggable(text:canDrag:onDragStarting:): @MainActor fu
 swift.method PositionDots.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method PositionDots.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method PositionDots.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method PositionDots.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method PositionDots.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method PositionDots.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method PositionDots.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method PositionDots.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -10621,7 +10621,7 @@ swift.method PositionDots.position(_:): @MainActor func position(_ value: Int) -
 swift.method PositionDots.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method PositionDots.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method PositionDots.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method PositionDots.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method PositionDots.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -10676,7 +10676,7 @@ swift.method ProgressBar.draggable(text:canDrag:onDragStarting:): @MainActor fun
 swift.method ProgressBar.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ProgressBar.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ProgressBar.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ProgressBar.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method ProgressBar.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method ProgressBar.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method ProgressBar.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ProgressBar.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -10841,7 +10841,7 @@ swift.method ProgressBar.progress(_:): @MainActor func progress(_ state: Binding
 swift.method ProgressBar.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ProgressBar.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method ProgressBar.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ProgressBar.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ProgressBar.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -10918,7 +10918,7 @@ swift.method Rectangle.fill(_:): @MainActor func fill(_ state: Binding<Material>
 swift.method Rectangle.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Modified
 swift.method Rectangle.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method Rectangle.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
-swift.method Rectangle.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Rectangle.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Rectangle.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Rectangle.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Rectangle.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -11087,7 +11087,7 @@ swift.method Rectangle.popover(item:content:): @MainActor func popover<Item, Con
 swift.method Rectangle.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Rectangle.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Rectangle.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Rectangle.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -11158,7 +11158,7 @@ swift.method ScrollView.draggable(text:canDrag:onDragStarting:): @MainActor func
 swift.method ScrollView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ScrollView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ScrollView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ScrollView.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method ScrollView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method ScrollView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method ScrollView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ScrollView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -11341,7 +11341,7 @@ swift.method ScrollView.popover(item:content:): @MainActor func popover<Item, Co
 swift.method ScrollView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ScrollView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method ScrollView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ScrollView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ScrollView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -11409,7 +11409,7 @@ swift.method SearchField.draggable(text:canDrag:onDragStarting:): @MainActor fun
 swift.method SearchField.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method SearchField.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method SearchField.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method SearchField.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method SearchField.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method SearchField.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
 swift.method SearchField.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method SearchField.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
@@ -11597,7 +11597,7 @@ swift.method SearchField.popover(item:content:): @MainActor func popover<Item, C
 swift.method SearchField.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method SearchField.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method SearchField.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method SearchField.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method SearchField.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -11669,7 +11669,7 @@ swift.method Separator.draggable(text:canDrag:onDragStarting:): @MainActor func 
 swift.method Separator.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Separator.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Separator.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Separator.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Separator.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Separator.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Separator.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Separator.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -11833,7 +11833,7 @@ swift.method Separator.popover(item:content:): @MainActor func popover<Item, Con
 swift.method Separator.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Separator.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Separator.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Separator.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Separator.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -11905,7 +11905,7 @@ swift.method Slider.draggable(text:canDrag:onDragStarting:): @MainActor func dra
 swift.method Slider.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Slider.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Slider.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Slider.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Slider.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Slider.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Slider.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Slider.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -12084,7 +12084,7 @@ swift.method Slider.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method Slider.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Slider.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Slider.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Slider.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Slider.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -12148,7 +12148,7 @@ swift.method Space.draggable(text:canDrag:onDragStarting:): @MainActor func drag
 swift.method Space.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Space.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Space.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Space.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Space.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Space.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Space.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Space.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -12313,7 +12313,7 @@ swift.method Space.popover(item:content:): @MainActor func popover<Item, Content
 swift.method Space.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Space.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Space.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Space.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Space.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -12375,7 +12375,7 @@ swift.method Spinner.draggable(text:canDrag:onDragStarting:): @MainActor func dr
 swift.method Spinner.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Spinner.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Spinner.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Spinner.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Spinner.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Spinner.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Spinner.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Spinner.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -12540,7 +12540,7 @@ swift.method Spinner.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Spinner.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Spinner.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Spinner.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Spinner.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Spinner.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -12607,7 +12607,7 @@ swift.method SplitView.draggable(text:canDrag:onDragStarting:): @MainActor func 
 swift.method SplitView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method SplitView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method SplitView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method SplitView.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method SplitView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method SplitView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method SplitView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method SplitView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -12768,7 +12768,7 @@ swift.method SplitView.popover(item:content:): @MainActor func popover<Item, Con
 swift.method SplitView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method SplitView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method SplitView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method SplitView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method SplitView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -12811,7 +12811,6 @@ swift.method SplitView.width(_:): @MainActor func width(_ state: Binding<Double>
 swift.method SplitView.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method Stack.spacing(_:): @MainActor func spacing(_ state: Binding<Double>) -> Self.Modified
 swift.method StackProperties.spacing(_:): @MainActor func spacing(_ value: Double) -> Self.Modified
-swift.method State.get(): @MainActor func get() -> Value
 swift.method StatePart.post(_:): nonisolated func post(_ transform: @escaping @Sendable (Value) -> Value)
 swift.method StatePart.post(_:): nonisolated func post(_ value: Value)
 swift.method Stepper.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -12839,7 +12838,7 @@ swift.method Stepper.draggable(text:canDrag:onDragStarting:): @MainActor func dr
 swift.method Stepper.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Stepper.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Stepper.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Stepper.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Stepper.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Stepper.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Stepper.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Stepper.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -13012,7 +13011,7 @@ swift.method Stepper.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method Stepper.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Stepper.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Stepper.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Stepper.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Stepper.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -13081,7 +13080,7 @@ swift.method StyleBag.fill(_:): @MainActor func fill(_ value: Brush) -> Self.Mod
 swift.method StyleBag.fill(_:): @MainActor func fill(_ value: Color) -> Self.Modified
 swift.method StyleBag.fill(_:): @MainActor func fill(_ value: Material) -> Self.Modified
 swift.method StyleBag.fillRule(_:): @MainActor func fillRule(_ value: FillRule) -> Self.Modified
-swift.method StyleBag.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method StyleBag.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method StyleBag.fontAttributes(_:): @MainActor func fontAttributes(_ value: FontAttributes) -> Self.Modified
 swift.method StyleBag.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method StyleBag.fontSize(_:): @MainActor func fontSize(_ value: Double) -> Self.Modified
@@ -13238,7 +13237,7 @@ swift.method Switch.draggable(text:canDrag:onDragStarting:): @MainActor func dra
 swift.method Switch.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Switch.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Switch.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Switch.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Switch.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Switch.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method Switch.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Switch.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -13410,7 +13409,7 @@ swift.method Switch.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method Switch.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Switch.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Switch.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Switch.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Switch.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -13480,7 +13479,7 @@ swift.method TabView.draggable(text:canDrag:onDragStarting:): @MainActor func dr
 swift.method TabView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TabView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TabView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method TabView.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method TabView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method TabView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method TabView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method TabView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -13641,7 +13640,7 @@ swift.method TabView.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method TabView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method TabView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method TabView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method TabView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TabView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -13700,7 +13699,7 @@ swift.method Text.draggable(text:canDrag:onDragStarting:): @MainActor func dragg
 swift.method Text.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Text.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Text.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method Text.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method Text.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Text.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
 swift.method Text.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method Text.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
@@ -13877,7 +13876,7 @@ swift.method Text.popover(item:content:): @MainActor func popover<Item, Content>
 swift.method Text.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method Text.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method Text.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method Text.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method Text.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -13951,7 +13950,7 @@ swift.method TextEditor.draggable(text:canDrag:onDragStarting:): @MainActor func
 swift.method TextEditor.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TextEditor.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TextEditor.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method TextEditor.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method TextEditor.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method TextEditor.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
 swift.method TextEditor.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TextEditor.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
@@ -14137,7 +14136,7 @@ swift.method TextEditor.popover(item:content:): @MainActor func popover<Item, Co
 swift.method TextEditor.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method TextEditor.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method TextEditor.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method TextEditor.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextEditor.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -14206,7 +14205,7 @@ swift.method TextField.draggable(text:canDrag:onDragStarting:): @MainActor func 
 swift.method TextField.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TextField.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TextField.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method TextField.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method TextField.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method TextField.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
 swift.method TextField.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TextField.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
@@ -14395,7 +14394,7 @@ swift.method TextField.popover(item:content:): @MainActor func popover<Item, Con
 swift.method TextField.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method TextField.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method TextField.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method TextField.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TextField.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -14552,7 +14551,7 @@ swift.method TimePicker.draggable(text:canDrag:onDragStarting:): @MainActor func
 swift.method TimePicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TimePicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TimePicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method TimePicker.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method TimePicker.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method TimePicker.fontAttributes(_:): @MainActor func fontAttributes(_ state: Binding<FontAttributes>) -> Self.Modified
 swift.method TimePicker.fontFamily(_:): @MainActor func fontFamily(_ value: String) -> Self.Modified
 swift.method TimePicker.fontSize(_:): @MainActor func fontSize(_ state: Binding<Double>) -> Self.Modified
@@ -14736,7 +14735,7 @@ swift.method TimePicker.popover(item:content:): @MainActor func popover<Item, Co
 swift.method TimePicker.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method TimePicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method TimePicker.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method TimePicker.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method TimePicker.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -14921,7 +14920,7 @@ swift.method VStack.draggable(text:canDrag:onDragStarting:): @MainActor func dra
 swift.method VStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method VStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method VStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method VStack.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method VStack.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method VStack.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method VStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method VStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -15094,7 +15093,7 @@ swift.method VStack.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method VStack.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method VStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method VStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method VStack.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method VStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -15253,7 +15252,7 @@ swift.method View.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder
 swift.method View.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method View.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method ViewProperties.area(_:): @MainActor func area(_ value: Area) -> Self.Modified
-swift.method ViewProperties.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method ViewProperties.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method ViewProperties.gridColumn(_:): @MainActor func gridColumn(_ value: Int) -> Self.Modified
 swift.method ViewProperties.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ value: Int) -> Self.Modified
 swift.method ViewProperties.gridRow(_:): @MainActor func gridRow(_ value: Int) -> Self.Modified
@@ -15309,7 +15308,7 @@ swift.method VisualElement.pivotY(_:): @MainActor func pivotY(_ state: Binding<D
 swift.method VisualElement.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method VisualElement.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method VisualElement.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method VisualElement.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method VisualElement.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -15382,7 +15381,7 @@ swift.method WebView.draggable(text:canDrag:onDragStarting:): @MainActor func dr
 swift.method WebView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method WebView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method WebView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method WebView.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method WebView.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method WebView.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method WebView.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method WebView.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -15559,7 +15558,7 @@ swift.method WebView.popover(item:content:): @MainActor func popover<Item, Conte
 swift.method WebView.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method WebView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method WebView.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method WebView.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -15607,11 +15606,11 @@ swift.method WindowGroup.environment(_:): @MainActor func environment<Value>(_ o
 swift.method WindowGroup.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject
 swift.method WindowGroup.floatsOnTop(_:): @MainActor func floatsOnTop(_ floats: Bool) -> WindowGroup
 swift.method WindowGroup.hidesWhenInactive(_:): @MainActor func hidesWhenInactive(_ hides: Bool) -> WindowGroup
-swift.method WindowSession.alert(_:message:accept:): @MainActor func alert(_ title: String, message: String, accept: String? = nil) async throws
+swift.method WindowSession.alert(_:message:accept:): @MainActor func alert(_ title: String, message: String = "", accept: String? = nil) async throws
 swift.method WindowSession.chooseAction(_:among:caption:destructive:cancel:): @MainActor func chooseAction<Choice>(_ title: String, among choices: [Choice], caption: (Choice) -> String = { "\($0)" }, destructive: Choice? = nil, cancel: String? = nil) async throws -> Choice? where Choice : Equatable
 swift.method WindowSession.close(): @MainActor func close() async throws
 swift.method WindowSession.closeInspector(): @MainActor func closeInspector()
-swift.method WindowSession.confirm(_:message:accept:cancel:): @MainActor func confirm(_ title: String, message: String, accept: String, cancel: String? = nil) async throws -> Bool
+swift.method WindowSession.confirm(_:message:accept:cancel:): @MainActor func confirm(_ title: String, message: String = "", accept: String? = nil, cancel: String? = nil) async throws -> Bool
 swift.method WindowSession.hideOnScreenKeyboard(): @discardableResult @MainActor func hideOnScreenKeyboard() async throws -> Bool
 swift.method WindowSession.openFile(types:): @MainActor func openFile(types: [FileType] = []) async throws -> ChosenFile?
 swift.method WindowSession.openFiles(types:): @MainActor func openFiles(types: [FileType] = []) async throws -> [ChosenFile]
@@ -15649,7 +15648,7 @@ swift.method ZStack.draggable(text:canDrag:onDragStarting:): @MainActor func dra
 swift.method ZStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ZStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ZStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
-swift.method ZStack.followsLayout(_:): @MainActor func followsLayout(_ spring: Motion) -> Self.Modified
+swift.method ZStack.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method ZStack.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
 swift.method ZStack.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method ZStack.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -15822,7 +15821,7 @@ swift.method ZStack.popover(item:content:): @MainActor func popover<Item, Conten
 swift.method ZStack.rotation(_:): @MainActor func rotation(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.rotationX(_:): @MainActor func rotationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.rotationY(_:): @MainActor func rotationY(_ state: Binding<Double>) -> Self.Modified
-swift.method ZStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ asks: Asks) -> Self.Modified where Value : Walked
+swift.method ZStack.samples(_:into:_:): @MainActor func samples<Value>(_ source: Binding<Value>, into target: Binding<Value>, _ cadence: Cadence) -> Self.Modified where Value : Walked
 swift.method ZStack.scale(_:): @MainActor func scale(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.scaleX(_:): @MainActor func scaleX(_ state: Binding<Double>) -> Self.Modified
 swift.method ZStack.scaleY(_:): @MainActor func scaleY(_ state: Binding<Double>) -> Self.Modified
@@ -16827,7 +16826,7 @@ swift.type.method KeyModifiers.list(from:): static func list(from value: PropVal
 swift.type.method KeyModifiers.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method KeyboardShortcut.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method KeyboardShortcut.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method LayoutBody.followsLayout(_:): static func followsLayout(_ spring: Motion) -> LayoutBody
+swift.type.method LayoutBody.followsLayout(response:damping:): static func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> LayoutBody
 swift.type.method LayoutBody.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method LayoutBody.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method LayoutCurve.catmullRom(tension:): static func catmullRom(tension: Double) -> LayoutCurve
@@ -16884,7 +16883,7 @@ swift.type.method MenuBuilder.buildExpression(_:): @MainActor static func buildE
 swift.type.method MenuBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: [MenuItem]) -> MenuEntries
 swift.type.method MenuBuilder.buildExpression(_:): @MainActor static func buildExpression(_ expression: [MenuToggle]) -> MenuEntries
 swift.type.method MenuBuilder.buildOptional(_:): @MainActor static func buildOptional(_ component: MenuEntries?) -> MenuEntries
-swift.type.method Motion.eased(_:_:): static func eased(_ length: Duration, _ curve: Easing = .cubicOut) -> Motion
+swift.type.method Motion.eased(_:curve:): static func eased(_ length: Duration, curve: Easing = .cubicOut) -> Motion
 swift.type.method Motion.glide(longest:): static func glide(longest: Duration) -> Motion
 swift.type.method Motion.spring(response:damping:): static func spring(response: Duration = .milliseconds(300), damping: Double = 1) -> Motion
 swift.type.method Name.list(from:): static func list(from value: PropValue) -> [Self]?

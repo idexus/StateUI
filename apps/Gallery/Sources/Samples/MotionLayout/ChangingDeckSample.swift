@@ -137,7 +137,7 @@ struct ChangingDeckSample: SampleContent, ExampleContent {
         // `.motion` DRIVES MOVING BETWEEN CARDS, the turn and every change
         // where the parameters stand; `.dynamics` THE CARDS reaching their new
         // places after a card joins, leaves or the order changes.
-        .motion(.eased(.milliseconds(400), .cubicOut))
+        .motion(.eased(.milliseconds(400), curve: .cubicOut))
         .dynamics(.spring(response: .milliseconds(300), damping: 1))
     }
 

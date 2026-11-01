@@ -30,7 +30,7 @@ private struct Shows: View {
     let fade: State<Double>
 
     var body: some View {
-        AnyView(node: label("\(fade.get())"))
+        AnyView(node: label("\(fade.wrappedValue)"))
     }
 }
 
@@ -207,7 +207,7 @@ final class UIThreadTests: XCTestCase {
         _ = Renderer.shared.dispatch(before)
 
         XCTAssertEqual(
-            asked { fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), .cubicOut)) }, 1,
+            asked { fade.projectedValue.journey.move(to: 0.1, .eased(.milliseconds(400), curve: .cubicOut)) }, 1,
             "the movement asked for no turn - the host would not start it until the next event")
 
         ReplyBuffer.current = .finished([.bool(true)])
@@ -245,7 +245,7 @@ final class UIThreadTests: XCTestCase {
         await settle()
 
         XCTAssertGreaterThan(posts.count.load(ordering: .relaxed), 0, "the post asked for no turn")
-        XCTAssertEqual(fade.get(), 0.25, "and its job wrote the value")
+        XCTAssertEqual(fade.wrappedValue, 0.25, "and its job wrote the value")
         XCTAssertTrue(Renderer.shared.needsRender, "which asks for a render")
     }
 

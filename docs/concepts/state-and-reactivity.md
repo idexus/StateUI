@@ -105,7 +105,7 @@ lifetime can use the box directly, on the UI thread's actor:
 
 @MainActor func countLaunch() -> Int {
     launchCount.wrappedValue += 1
-    return launchCount.get()
+    return launchCount.wrappedValue
 }
 ```
 
@@ -597,7 +597,7 @@ struct SampledProgress: View {
             ProgressBar().progress($progress)
             Text("Shown: \(Int(shown * 100))%")
             Button("Run").onClicked {
-                $progress.journey.move(to: 1, .eased(.seconds(1), .cubicOut))
+                $progress.journey.move(to: 1, .eased(.seconds(1), curve: .cubicOut))
             }
         }
         .samples($progress, into: $shown, .every(.milliseconds(100)))

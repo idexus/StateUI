@@ -424,8 +424,8 @@
                     WithSessions { _, application in
                         VStack {
                             Button("Copy").onClicked(.ignoreWhileRunning) {
-                                try await application.clipboard.write(text: "Copied with StateUI")
-                                read.values.append(try await application.clipboard.text() ?? "nothing")
+                                try await application.clipboard.write("Copied with StateUI")
+                                read.values.append(try await application.clipboard.read() ?? "nothing")
                             }.id("copy")
                         }
                     }

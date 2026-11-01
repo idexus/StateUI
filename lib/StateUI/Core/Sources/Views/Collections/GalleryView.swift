@@ -12,7 +12,7 @@
 ///     GalleryView(albums, id: \.title) { album in
 ///         AlbumFace(album)
 ///     }
-///     .arrangement(.default)
+///     .arrangement(.wheel)
 ///     .position($shown)
 ///     .onItemActivated { title in open(title) }
 ///
@@ -57,7 +57,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private var activated: ValueHandler<ID>?
 
     /// Which shape the cards stand in.
-    private var look = GalleryArrangement.default
+    private var look = GalleryArrangement.wheel
 
     /// How wide a card is, in device units.
     private var cardWidth = 176.0
@@ -247,7 +247,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// How each card moves as a body of the gallery's world: a body following its place lags behind it as the
     /// gallery turns, and settles back onto it.
     ///
-    ///     .itemBody(.followsLayout(.spring(response: .milliseconds(300), damping: 0.8)))
+    ///     .itemBody(.followsLayout(response: .milliseconds(300), damping: 0.8))
     ///
     /// - Parameter body: the body every card is, as `layoutBody(_:)` gives one view of a motion layout.
     /// - Returns: the gallery, its cards moving so.
@@ -462,7 +462,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     private static var held: Int { 60 }
 
     /// How the press animates, down and back: short, as an answer to a finger.
-    private static var pressing: Motion { .eased(.milliseconds(50), .cubicOut) }
+    private static var pressing: Motion { .eased(.milliseconds(50), curve: .cubicOut) }
 
     /// How far a far card fades unless said: all of it, or a quarter where a
     /// shade does the rest.
@@ -526,7 +526,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         case .deck:
             return deck(step, setOut: setOut, room, fit)
 
-        case .default:
+        case .wheel:
             return wheel(step, room, fit)
         }
     }

@@ -345,7 +345,7 @@ final class MotionLayoutTests: XCTestCase {
     /// HOW A THROW GOES ON IS THE INPUT'S, a motion as any other: eased, it carries the hand's speed for its
     /// length over how steeply its curve sets out; a spring, for a third of its response.
     func testHowAThrowGoesOnIsTheInputs() throws {
-        for throwing in [Motion.eased(.seconds(3), .cubicOut), .spring(response: .seconds(3))] {
+        for throwing in [Motion.eased(.seconds(3), curve: .cubicOut), .spring(response: .seconds(3))] {
             Renderer.shared.clearStates()
             let phase = State(wrappedValue: 0.0)
             let renders = Renders()

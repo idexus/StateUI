@@ -20,7 +20,7 @@ private struct SaidPage: View {
             .horizontalAlignment(.start)
             .id("stack")
         }
-        .motion(.eased(.milliseconds(400), .linear))
+        .motion(.eased(.milliseconds(400), curve: .linear))
         .verticalAlignment(.start)
     }
 }
@@ -30,12 +30,12 @@ final class WinUILayoutMotionTests: XCTestCase {
     /// A vertical stack of 100 x 40 labels in `order`, traveling on a 200 ms linear law; `hidden` fade out in 100 ms.
     private static func stack(_ order: [String], hidden: Set<String> = []) -> HostPatch {
         var stack = HostPatch(id: .manual("stack"), type: .vStack)
-        stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), .linear), lanes: .all)
+        stack.motion = HostLayoutMotion(motion: .eased(.milliseconds(200), curve: .linear), lanes: .all)
         stack.children = .arranged(order.map { name in
             var row = HostPatch(id: .manual(name), type: .text)
             row.properties = [.text: .string(name), .width: .number(100), .height: .number(40)]
             row.properties[.isVisible] = .bool(!hidden.contains(name))
-            row.motion = HostLayoutMotion(motion: .eased(.milliseconds(100), .linear), lanes: .all)
+            row.motion = HostLayoutMotion(motion: .eased(.milliseconds(100), curve: .linear), lanes: .all)
             return row
         })
         return stack
@@ -249,7 +249,7 @@ private struct SwitchedPage: View {
         VStack {
             Button(on.wrappedValue ? "On" : "Switched off").horizontalAlignment(.center)
         }
-        .motion(.eased(.milliseconds(200), .linear))
+        .motion(.eased(.milliseconds(200), curve: .linear))
         .width(300)
         .verticalAlignment(.start)
     }
@@ -264,7 +264,7 @@ private struct LengtheningPage: View {
             Text(long ? "Text & typing" : "Text").background(.red).horizontalAlignment(.start)
             Button("Longer").onClicked { long = true }
         }
-        .motion(.eased(.milliseconds(200), .linear))
+        .motion(.eased(.milliseconds(200), curve: .linear))
         .width(300)
         .horizontalAlignment(.start)
         .verticalAlignment(.start)

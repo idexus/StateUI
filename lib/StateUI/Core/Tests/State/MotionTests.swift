@@ -26,10 +26,10 @@ final class MotionTests: XCTestCase {
     /// A law read back from lanes that are no law - not a number, past any whole number, too few - is the plainest
     /// law there is, never a trap.
     func testALawReadFromLanesThatAreNoneStopsNothing() {
-        XCTAssertEqual(StateLaw.motion(of: [2, .nan, .nan]), .eased(.milliseconds(0), .cubicOut))
+        XCTAssertEqual(StateLaw.motion(of: [2, .nan, .nan]), .eased(.milliseconds(0), curve: .cubicOut))
         XCTAssertEqual(StateLaw.motion(of: [3, .infinity, 0.5]), .spring(response: .milliseconds(0), damping: 0.5))
         XCTAssertEqual(StateLaw.motion(of: [2]), Motion.none)
-        XCTAssertEqual(StateLaw.motion(of: [2, 300, 4]), .eased(.milliseconds(300), Easing(rawValue: 4) ?? .cubicOut))
+        XCTAssertEqual(StateLaw.motion(of: [2, 300, 4]), .eased(.milliseconds(300), curve: Easing(rawValue: 4) ?? .cubicOut))
     }
 
     /// A glide lies on the image as its kind and its longest, and reads back as itself.
@@ -760,7 +760,7 @@ final class MotionTests: XCTestCase {
     /// damping, and the three that time nothing - none, the inherited one, an engine's own - none at all, each
     /// itself.
     func testEachKindCarriesOnlyItsOwnNumbers() {
-        XCTAssertEqual(Motion.eased(.milliseconds(400), .cubicIn).kind, .eased(milliseconds: 400, curve: .cubicIn))
+        XCTAssertEqual(Motion.eased(.milliseconds(400), curve: .cubicIn).kind, .eased(milliseconds: 400, curve: .cubicIn))
         XCTAssertEqual(
             Motion.spring(response: .milliseconds(260), damping: 0.7).kind, .spring(milliseconds: 260, damping: 0.7))
         XCTAssertEqual([Motion.none, .inherited, .custom].map(\.kind), [.none, .inherited, .custom])
@@ -773,12 +773,12 @@ final class MotionTests: XCTestCase {
         XCTAssertEqual(Motion.eased(.seconds(1.25)).milliseconds, 1250)
         XCTAssertEqual(Motion.spring(response: .milliseconds(260)).milliseconds, 260)
         XCTAssertEqual(Motion.eased(.microseconds(1500)).milliseconds, 2, "to the nearest")
-        XCTAssertEqual(Asks.every(.seconds(2)).window, 2000)
+        XCTAssertEqual(Cadence.every(.seconds(2)).window, 2000)
     }
 
     /// An eased motion of no time - nought, or less - is no motion: one spelling for it.
     func testAnEasedMotionOfNoTimeIsNone() {
-        XCTAssertEqual(Motion.eased(.zero, .cubicIn), .none)
+        XCTAssertEqual(Motion.eased(.zero, curve: .cubicIn), .none)
         XCTAssertEqual(Motion.eased(.milliseconds(-30)), .none, "nothing before none")
         XCTAssertNotEqual(Motion.none, .inherited)
         XCTAssertNotEqual(Motion.none, .custom)

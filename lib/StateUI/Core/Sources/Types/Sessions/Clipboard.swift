@@ -7,20 +7,20 @@
 ///     @Environment(\.application) private var application
 ///
 ///     Button("Copy the link").onClicked(.ignoreWhileRunning) {
-///         try await application.clipboard.write(text: link)
+///         try await application.clipboard.write(link)
 ///     }
 @MainActor
 public struct Clipboard {
     /// Puts `text` on the clipboard, in place of whatever it held.
-    public func write(text: String) async throws {
+    public func write(_ text: String) async throws {
         try await stateUICall(ApplicationContract.writeClipboard, text)
     }
 
     /// The words on the clipboard; nil where it holds none. A browser asks the user before a page reads it, and
     /// throws where they refuse.
     ///
-    ///     let pasted = try await application.clipboard.text()
-    public func text() async throws -> String? {
+    ///     let pasted = try await application.clipboard.read()
+    public func read() async throws -> String? {
         try await stateUICall(ApplicationContract.readClipboard)
     }
 }

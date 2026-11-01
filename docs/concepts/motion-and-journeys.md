@@ -15,7 +15,7 @@ still apply the final destination, normally by snapping. Only checked rows in
 
 `Motion` has three destination-seeking laws:
 
-- `.eased(length, curve)` takes the stated `Duration` - `.milliseconds(300)` -
+- `.eased(length, curve: curve)` takes the stated `Duration` - `.milliseconds(300)` -
   and lands on the destination exactly;
 - `.spring(response:damping:)` keeps standing velocity when retargeted and
   settles on the destination rather than at an unrelated resting point;
@@ -141,7 +141,7 @@ It returns at once; its `arrived()` awaits the outcome:
 
 let arrived = try await $opacity.journey.move(
     to: 0.2,
-    .eased(.milliseconds(400), .cubicOut)).arrived()
+    .eased(.milliseconds(400), curve: .cubicOut)).arrived()
 
 if !arrived {
     // A newer destination, another write, or stop() ended this animation.

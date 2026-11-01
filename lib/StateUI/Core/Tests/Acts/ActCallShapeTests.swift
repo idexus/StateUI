@@ -140,7 +140,8 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// The captions a dialog says by itself speak the system's language, as the platform's own buttons do.
+    /// The captions a dialog says by itself speak the system's language, as the platform's own buttons do - every
+    /// question's buttons alike, its sentence empty where none is given.
     func testADialogsOwnCaptionsSpeakTheSystemsLanguage() async throws {
         HostBoundary.setLocaleInfo(HostLocaleInfo(
             language: "pl", region: "PL", name: "pl-PL", timeZone: "Europe/Warsaw", uses24HourClock: true,
@@ -154,6 +155,14 @@ final class ActCallShapeTests: XCTestCase {
         }
         try await check("alert", Self.usersWindow + [.string("Zapisano"), .string("Szkic jest bezpieczny"), .string("OK")]) {
             try await WindowSession().alert("Zapisano", message: "Szkic jest bezpieczny")
+        }
+        try await check("alert", Self.usersWindow + [.string("Zapisano"), .string(""), .string("OK")]) {
+            try await WindowSession().alert("Zapisano")
+        }
+        try await check("confirm", Self.usersWindow + [
+            .string("Usunąć szkic?"), .string(""), .string("OK"), .string("Anuluj"),
+        ]) {
+            _ = try await WindowSession().confirm("Usunąć szkic?")
         }
 
         HostBoundary.setLocaleInfo(HostLocaleInfo(
@@ -346,14 +355,14 @@ final class ActCallShapeTests: XCTestCase {
     /// Words for the clipboard, and a handler waiting until they are on it.
     func testWordsForTheClipboardCrossWithTheirArgumentsInPlace() async throws {
         try await check("writeClipboard", [.string("Copied")]) {
-            try await StandardEnvironment.application.clipboard.write(text: "Copied")
+            try await StandardEnvironment.application.clipboard.write("Copied")
         }
     }
 
     /// The clipboard read, asked with no arguments, a handler waiting for its words.
     func testReadingTheClipboardCrossesWithItsArgumentsInPlace() async throws {
         try await check("readClipboard", []) {
-            _ = try? await StandardEnvironment.application.clipboard.text()
+            _ = try? await StandardEnvironment.application.clipboard.read()
         }
     }
 

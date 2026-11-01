@@ -13,7 +13,7 @@ struct MotionSample: SampleContent, ExampleContent {
     static func law(_ index: Int) -> Motion {
         switch index {
         case 1: .spring(response: .milliseconds(320))
-        case 2: .eased(.milliseconds(900), .sineInOut)
+        case 2: .eased(.milliseconds(900), curve: .sineInOut)
         case 3: .none
         default: .standard
         }
@@ -76,7 +76,7 @@ struct MotionSample: SampleContent, ExampleContent {
             HStack {
                 // The law given here is this move's alone...
                 Button("Slow move").onClicked {
-                    $reach.journey.move(to: 300, .eased(.milliseconds(2000), .sineInOut))
+                    $reach.journey.move(to: 300, .eased(.milliseconds(2000), curve: .sineInOut))
                 }
                 // ...and a plain write travels on the value's own spring.
                 Button("Back").onClicked { reach = 120 }

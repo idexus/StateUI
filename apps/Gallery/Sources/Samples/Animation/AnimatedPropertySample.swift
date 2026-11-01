@@ -55,7 +55,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                 button("Size") {
                     wide.toggle()
                     try await $panelHeight.journey.move(to: wide ? 160 : 90,
-                                                     .eased(.milliseconds(400), .cubicInOut)).arrived()
+                                                     .eased(.milliseconds(400), curve: .cubicInOut)).arrived()
                 }
 
                 button("Padding") {
@@ -68,8 +68,8 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
 
             HStack {
                 button("Text size") {
-                    try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), .cubicOut)).arrived()
-                    try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), .cubicIn)).arrived()
+                    try await $captionSize.journey.move(to: 28, .eased(.milliseconds(400), curve: .cubicOut)).arrived()
+                    try await $captionSize.journey.move(to: 17, .eased(.milliseconds(400), curve: .cubicIn)).arrived()
                 }
 
                 button("Back") {
@@ -80,7 +80,7 @@ struct AnimatedPropertySample: SampleContent, ExampleContent {
                     // of Size would ask for the value it already has.
                     wide = false
 
-                    try await $panelHeight.journey.move(to: 90, .eased(.milliseconds(400), .cubicInOut)).arrived()
+                    try await $panelHeight.journey.move(to: 90, .eased(.milliseconds(400), curve: .cubicInOut)).arrived()
                     try await $panelColor.journey.move(to: AppColors.lineDark, .eased(.milliseconds(400))).arrived()
                     try await $captionColor.journey.move(to: AppColors.ink, .eased(.milliseconds(400))).arrived()
                 }
