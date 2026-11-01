@@ -277,6 +277,47 @@ extension MultiBinding {
         }
     }
 
+    /// The one value two states make, and the way back: a control's report lands
+    /// on both, each in its own type.
+    ///
+    ///     Slider(.multi($hours, $minutes).convert { h, m in h * 60 + m } back: { total in
+    ///         ((total / 60).rounded(.down), total.truncatingRemainder(dividingBy: 60))
+    ///     })
+    ///
+    /// - Parameters:
+    ///   - transform: the derived value, from each source in turn.
+    ///   - back: both sources' values, from a reported derived one.
+    ///   - file: where the conversion is written - which, with the line, is
+    ///     what keeps the derived state one object across renders.
+    ///   - line: the same.
+    ///   - column: the same.
+    /// - Returns: the derived state, to hand on.
+    public func convert<A: StateValue, B: StateValue>(
+        _ transform: @escaping (A, B) -> Out,
+        back: @escaping (Out) -> (A, B),
+        file: StaticString = #fileID,
+        line: UInt = #line,
+        column: UInt = #column
+    ) -> Binding<Out> where Sources == (A, B) {
+        let converted = convert(transform, file: file, line: line, column: column)
+        // The two states `multi` was handed, in their own types.
+        guard let conversion = converted.conversion,
+              let first = parts[0] as? State<A>.Storage, let second = parts[1] as? State<B>.Storage
+        else { return converted }
+
+        let derived = converted.storage
+        conversion.declareBack { [weak first, weak second, weak derived] in
+            guard let first, let second, let derived else { return }
+
+            let (one, two) = back(derived.value)
+            first.settle(one, asking: true)
+            second.settle(two, asking: true)
+            first.conversion?.back?()
+            second.conversion?.back?()
+        }
+        return converted
+    }
+
     /// The one value `a`, `b`, `c` make, worked out by an engine the differ writes -
     /// so it costs the arithmetic on the host's own frames and no render.
     ///

@@ -3,7 +3,7 @@
 
 // A BINDING CONVERTED ON ITS WAY TO A CONTROL: a second state the host
 // carries, worked out from the first by an engine the differ writes, and - with
-// `convertBack` - worked back from a report. Held here end to end: the derived
+// a way back - worked back from a report. Held here end to end: the derived
 // image, the engines each way, the one object across renders, and the read at
 // build that makes a body a reader of the sources.
 
@@ -46,8 +46,7 @@ private struct Editable: View {
     let editable: Bool
 
     var body: some View {
-        let percent = volume.projectedValue.convert { $0 * 100 }
-        return Slider(editable ? percent.convertBack { $0 / 100 } : percent).maximum(100)
+        Slider(volume.projectedValue.convert({ $0 * 100 }, back: editable ? { $0 / 100 } : nil)).maximum(100)
     }
 }
 
@@ -57,7 +56,7 @@ private struct Twice: View {
     let volume: State<Double>
 
     var body: some View {
-        Slider(volume.projectedValue.convert { $0 * 100 }.convertBack { $0 / 100 })
+        Slider(volume.projectedValue.convert { $0 * 100 } back: { $0 / 100 })
     }
 }
 
@@ -125,14 +124,14 @@ final class ConversionTests: XCTestCase {
 
     /// A converted binding is a second state the host carries: the control is
     /// tied to the DERIVED image, the forward engine settles it from the
-    /// source, a report on it comes back through `convertBack`, and a write to
+    /// source, a report on it comes back through the way back, and a write to
     /// the source goes forward again.
     func testAConvertedBindingIsASecondStateTheHostCarries() throws {
         let volume = State(wrappedValue: 0.2)
         let renders = Renders()
 
         let patch = renders.render(
-            Slider(volume.projectedValue.convert { $0 * 100 }.convertBack { $0 / 100 })
+            Slider(volume.projectedValue.convert { $0 * 100 } back: { $0 / 100 })
                 .maximum(100)
                 .node)
 
@@ -146,7 +145,7 @@ final class ConversionTests: XCTestCase {
         board.cycle(now: 0, reducesMotion: false)
         board.cycle(now: 16, reducesMotion: false)
 
-        // A drag on the derived image comes back through convertBack.
+        // A drag on the derived image comes back through the way back.
         dragged(number, to: 50)
         board.cycle(now: 32, reducesMotion: false)
 
@@ -268,8 +267,8 @@ final class ConversionTests: XCTestCase {
 
         let patch = renders.render(
             Slider(
-                volume.projectedValue.convert { $0 * 100 }.convertBack { $0 / 100 }
-                    .convert { $0 * 10 }.convertBack { $0 / 10 })
+                volume.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })
+                    .convert({ $0 * 10 }, back: { $0 / 10 }))
                 .maximum(1000)
                 .node)
 
@@ -285,7 +284,7 @@ final class ConversionTests: XCTestCase {
         XCTAssertEqual(volume.wrappedValue, 0.5, accuracy: 1e-9, "the report landed on the first source")
     }
 
-    /// A conversion declared again is the new declaration's alone: written without `convertBack`, a report goes back
+    /// A conversion declared again is the new declaration's alone: written without a way back, a report goes back
     /// to nobody; written with it again, only reports made since land.
     func testAConversionDeclaredAgainKeepsNoWayBackItNoLongerWrites() throws {
         let volume = State(wrappedValue: 0.2)
@@ -422,7 +421,7 @@ final class ConversionTests: XCTestCase {
         let renders = Renders()
 
         let patch = renders.render(
-            Slider(volume.projectedValue.convert { ($0 * 100).rounded() }.convertBack { $0 / 100 })
+            Slider(volume.projectedValue.convert({ ($0 * 100).rounded() }, back: { $0 / 100 }))
                 .maximum(100)
                 .node)
 
@@ -454,8 +453,8 @@ final class ConversionTests: XCTestCase {
         let patch = renders.render(
             Slider(
                 Binding<Double>.multi(hours.projectedValue, minutes.projectedValue)
-                    .convert { h, m in h * 60 + m }
-                    .convertBack { total in ((total / 60).rounded(.down), total.truncatingRemainder(dividingBy: 60)) })
+                    .convert({ h, m in h * 60 + m },
+                             back: { total in ((total / 60).rounded(.down), total.truncatingRemainder(dividingBy: 60)) }))
             .maximum(600)
             .node)
 

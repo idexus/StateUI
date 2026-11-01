@@ -2030,9 +2030,7 @@ swift.method BarElement.toolbarStyle(_:): @MainActor func toolbarStyle(_ value: 
 swift.method BarItemElement.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method BarItemElement.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method BarItemElement.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Binding.convert(_:file:line:column:): @MainActor func convert<Out>(_ transform: @escaping (Value) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Out : StateValue
-swift.method Binding.convertBack(_:): @MainActor func convertBack<First, Second>(_ transform: @escaping (Value) -> (First, Second)) -> Binding<Value> where First : StateValue, Second : StateValue
-swift.method Binding.convertBack(_:): @MainActor func convertBack<Source>(_ transform: @escaping (Value) -> Source) -> Binding<Value> where Source : StateValue
+swift.method Binding.convert(_:back:file:line:column:): @MainActor func convert<Out>(_ transform: @escaping (Value) -> Out, back: ((Out) -> Value)? = nil, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Out : StateValue
 swift.method Binding.post(_:): nonisolated func post(_ transform: @escaping @Sendable (Value) -> Value)
 swift.method Binding.post(_:): nonisolated func post(_ value: Value)
 swift.method Blur.tint(_:): func tint(_ color: Color) -> Blur
@@ -6973,6 +6971,7 @@ swift.method MotionLayout.translationY(_:): @MainActor func translationY(_ state
 swift.method MotionLayout.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method MotionLayout.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
+swift.method MultiBinding.convert(_:back:file:line:column:): @MainActor func convert<A, B>(_ transform: @escaping (A, B) -> Out, back: @escaping (Out) -> (A, B), file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B), A : StateValue, B : StateValue
 swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G, H, I, J>(_ transform: @escaping (A, B, C, D, E, F, G, H, I, J) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I, J)
 swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G, H, I>(_ transform: @escaping (A, B, C, D, E, F, G, H, I) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H, I)
 swift.method MultiBinding.convert(_:file:line:column:): @MainActor func convert<A, B, C, D, E, F, G, H>(_ transform: @escaping (A, B, C, D, E, F, G, H) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B, C, D, E, F, G, H)

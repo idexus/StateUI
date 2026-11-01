@@ -114,6 +114,10 @@ final class ContractRoadsTests: XCTestCase {
             closed: "_ = try Aim(TextField.self).target",
             open: "try await Aim(TextField.self).call(FocusElementContract.unfocus)"),
         Road(
+            name: "a conversion's way back answering another type than its source's",
+            closed: #"let volume = State(wrappedValue: 0.2); _ = volume.projectedValue.convert({ $0 * 100 }, back: { String($0) })"#,
+            open: "let volume = State(wrappedValue: 0.2); _ = volume.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })"),
+        Road(
             name: "a list scrolled to an identity of another type",
             closed: #"try await Aim(ItemsView<Int>.self).scrollTo("500")"#,
             open: "try await Aim(ItemsView<Int>.self).scrollTo(500)"),

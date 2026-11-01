@@ -2492,8 +2492,8 @@ enum Listings {
                 row("2 · the same state in percent") {
                     // THE SAME STATE IN PERCENT: a second state the host carries,
                     // worked out by an engine following `volume` - and a drag comes
-                    // back through `convertBack`, in the source's own terms.
-                    Slider($volume.convert { $0 * 100 }.convertBack { $0 / 100 })
+                    // back through `back`, in the source's own terms and type.
+                    Slider($volume.convert { $0 * 100 } back: { $0 / 100 })
                         .minimum(0)
                         .maximum(100)
                     DebugInfoLabel()
@@ -2522,7 +2522,7 @@ enum Listings {
                             .text($celsius.convert { "\(Int($0)) °C" })
                     }
                     HStack {
-                        Stepper($celsius.convert { $0 * 9 / 5 + 32 }.convertBack { ($0 - 32) * 5 / 9 })
+                        Stepper($celsius.convert { $0 * 9 / 5 + 32 } back: { ($0 - 32) * 5 / 9 })
                             .step(9)
                             .minimum(-4)
                             .maximum(140)
