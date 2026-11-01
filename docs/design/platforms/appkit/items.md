@@ -48,6 +48,15 @@ another size than its cell stands at, and invalidates that item alone: a
 whole invalidation makes AppKit ask for every item again, and the measure
 that follows loops until AppKit gives up on the window's constraint passes.
 
+## A row to accessibility
+
+Each cell stands in the list's accessibility tree as a group holding the
+row's own elements, below the section AppKit puts between the collection
+and its cells: VoiceOver reads a row's words, and a driver presses a row by
+them. A row stands about eight levels below its window, so a reader that
+stops shallower - `axtree` stops at six unless told - shows the cells as
+empty groups.
+
 ## Scrolling to an item
 
 AppKit's own scroll to an item goes by the sizes it estimated, and lands
