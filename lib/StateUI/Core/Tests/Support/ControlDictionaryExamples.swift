@@ -878,7 +878,7 @@ extension ControlDictionary {
             """#),
 
         (LinkContract.self, #"""
-            Link("Terms of use", destination: "https://stateui.dev/terms")
+            Link("Terms of use", address: "https://stateui.dev/terms")
             """#),
 
         (ButtonMenuElementContract.self, #"""

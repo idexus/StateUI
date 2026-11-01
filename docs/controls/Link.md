@@ -5,7 +5,7 @@
 Words that open an address - a page, a mail, a call - in the application the system gives it.
 
 ```swift
-Link("Terms of use", destination: "https://stateui.dev/terms")
+Link("Terms of use", address: "https://stateui.dev/terms")
 ```
 
 Layer: `adaptive`. Every base host presents it by its platform's conventions, keeping StateUI's state contract.
@@ -44,9 +44,9 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Controls/LinkContract.s
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>destination</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>address</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit: only through the host's own: read what was launched: the host's own record of what it handed macOS, which a test holds back from launching<br>UIKit: only through the host's own: read what was launched: the host's own record of what it handed iOS, which a test holds back from launching<br>Android Views: only through the host's own: read what was launched: the relay's own record of what it handed the system, which a test holds back from launching<br>WinUI 3: only through the host's own: read what was launched: the host's own record of what it handed Windows, which a test holds back from launching<br>GTK 4: only through the host's own: read what was launched: the host's own record of what it handed the desktop, which a test holds back<br>Web: only through the host's own: read what was launched: the relay's own record of what it would open, which a test holds back</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>onClicked</code> (<code>clicked</code>)</td><td>event</td><td></td><td>native</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)

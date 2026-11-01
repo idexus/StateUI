@@ -401,10 +401,10 @@ final class ActCallShapeTests: XCTestCase {
     /// The window, then the words and the link - absent ones as nothing, in place.
     func testWhatIsSharedCrossesWithItsArgumentsInPlace() async throws {
         try await check("share", Self.usersWindow + [.string("Notes"), .string("https://www.swift.org")]) {
-            _ = try await WindowSession().share(text: "Notes", link: "https://www.swift.org")
+            _ = try await WindowSession().share(text: "Notes", address: "https://www.swift.org")
         }
         try await check("share", Self.usersWindow + [.nothing, .string("https://www.swift.org")]) {
-            _ = try await WindowSession().share(link: "https://www.swift.org")
+            _ = try await WindowSession().share(address: "https://www.swift.org")
         }
     }
 

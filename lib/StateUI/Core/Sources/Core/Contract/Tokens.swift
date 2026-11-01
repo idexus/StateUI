@@ -127,7 +127,7 @@ extension NodeType {
     static let shape = BorderElementContract.shape.token
     static let showsClearButton = TextFieldContract.showsClearButton.token
     static let showsText = TextAndIconElementContract.showsText.token
-    static let destination = LinkContract.destination.token
+    static let address = LinkContract.address.token
     static let columns = GridContract.columns.token
     static let columnSpacing = GridContract.columnSpacing.token
     static let iconPosition = ButtonContract.iconPosition.token

@@ -6407,17 +6407,17 @@ enum Listings {
 
         var body: some View {
             VStack {
-                Link("Swift's home page", destination: "https://www.swift.org")
+                Link("Swift's home page", address: "https://www.swift.org")
                     .isEnabled(enabled)
                     .onClicked { opened += 1 }
 
-                Link("Write to us", destination: "mailto:hello@example.com")
+                Link("Write to us", address: "mailto:hello@example.com")
                     .isEnabled(enabled)
                     .onClicked { opened += 1 }
 
                 // The address is carried from the state: choosing another page
                 // changes where the link leads, with no render of this view.
-                Link("The page chosen below", destination: $page)
+                Link("The page chosen below", address: $page)
                     .isEnabled(enabled)
                     .onClicked { opened += 1 }
 
@@ -6442,7 +6442,7 @@ enum Listings {
             return VStack {
                 DebugInfoLabel()
 
-                Link("Open the Tap sample", destination: GalleryLink.sample("tap"))
+                Link("Open the Tap sample", address: GalleryLink.sample("tap"))
                     .horizontalAlignment(.center)
 
                 SectionTitle("Given to this window")
@@ -10626,19 +10626,19 @@ enum Listings {
         // Sources/Samples/Navigation/ShareSample.swift
         @Environment(\.window) private var window
         @State private var words = "The language I mentioned"
-        @State private var link = "https://www.swift.org"
+        @State private var address = "https://www.swift.org"
         @State private var answer = "nothing shared yet"
 
         var body: some View {
             VStack {
                 TextField($words)
-                TextField($link)
+                TextField($address)
 
                 // False is a cancel; a platform with no share sheet throws why.
                 Button("Share")
                     .onClicked(.ignoreWhileRunning) {
                         do {
-                            let shared = try await window.share(text: words, link: link)
+                            let shared = try await window.share(text: words, address: address)
                             answer = shared ? "shared" : "cancelled"
                         } catch {
                             answer = "\(error)"
@@ -12779,10 +12779,10 @@ enum Listings {
                     .canGoBack($hasBack)
                     .canGoForward($hasForward)
                     .onNavigating { report in
-                        status = "fetching \(report.url)"
+                        status = "fetching \(report.address)"
                     }
                     .onNavigated { report in
-                        status = "\(report.result): \(report.url)"
+                        status = "\(report.result): \(report.address)"
                     }
                     // The platform killed the web content process and left the
                     // view blank. Nothing else reports it.

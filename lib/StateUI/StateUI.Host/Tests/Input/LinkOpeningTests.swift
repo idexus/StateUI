@@ -24,7 +24,7 @@ final class LinkOpeningTests: XCTestCase {
         runtime.presenter = presenter
         var root = HostPatch(id: .manual("root"), type: .vStack)
         var link = HostPatch(id: .manual("link"), type: .link)
-        link.properties = [.destination: .string("https://www.swift.org"), .text: .string("Swift")]
+        link.properties = [.address: .string("https://www.swift.org"), .text: .string("Swift")]
         var button = HostPatch(id: .manual("button"), type: .button)
         button.properties = [.text: .string("Swift")]
         root.children = .arranged([link, button])

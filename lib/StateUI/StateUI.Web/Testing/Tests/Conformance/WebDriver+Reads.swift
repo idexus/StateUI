@@ -623,7 +623,7 @@ extension WebDriver {
             + " const x = new XMLHttpRequest(); x.open('GET', a, false); x.send(); return 'html ' + x.responseText; })"
             + "(e.querySelector('iframe'))"
         guard let said = try WebBrowser.evaluate(script, on: frame.node) else { return nil }
-        if said.hasPrefix("url ") { return WebViewSource.url(String(said.dropFirst(4))).propValue }
+        if said.hasPrefix("url ") { return WebViewSource.address(String(said.dropFirst(4))).propValue }
         var document = Substring(said.dropFirst(5))
         var base: String?
         if document.hasPrefix("<base href=\""), let end = document.firstIndex(of: ">") {
@@ -631,7 +631,7 @@ extension WebDriver {
             base = String(written).replacingAll("&quot;", with: "\"")
             document = document[document.index(after: end)...]
         }
-        return WebViewSource.html(String(document), baseURL: base).propValue
+        return WebViewSource.html(String(document), baseAddress: base).propValue
     }
 
     /// The shortcut the element of `node` names to assistive technology (`aria-keyshortcuts`); nil for none.

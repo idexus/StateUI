@@ -138,7 +138,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// the window, the words, the link - answering whether the user shared
     /// them.
     ///
-    /// See `WindowSession.share(text:link:)`.
+    /// See `WindowSession.share(text:address:)`.
     public static let share = ElementAct<Self, (Name, Name, String?, String?), Bool>("share")
 
     /// How far a zone is from UTC on a day, in minutes: the zone's identifier,

@@ -429,7 +429,7 @@ the user refuses, and a page served over plain http has no clipboard.
 ## Sharing
 
 A window offers what the user shares to the platform's share sheet:
-`share(text:)`, `share(link:)`, or both together with `share(text:link:)`. The
+`share(text:)`, `share(address:)`, or both together with `share(text:address:)`. The
 call answers whether the user shared it, `false` where they cancelled.
 
 ```swift
@@ -439,7 +439,7 @@ struct TalkPage: View {
 
     var body: some View {
         Button("Share the talk").onClicked(.ignoreWhileRunning) {
-            try await window.share(text: "The talk I mentioned", link: talk)
+            try await window.share(text: "The talk I mentioned", address: talk)
         }
     }
 }

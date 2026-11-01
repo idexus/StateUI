@@ -432,7 +432,7 @@ final class UIKitDriver: HostDriver {
     /// `data:` address holding it.
     private static func shown(by web: WebKitView) -> WebViewSource? {
         guard let address = web.url?.absoluteString else { return nil }
-        return WebDocument.document(at: address).map { .html($0, baseURL: nil) } ?? .url(address)
+        return WebDocument.document(at: address).map { .html($0, baseAddress: nil) } ?? .address(address)
     }
 
     /// Where the element's view stands in its window once UIKit has laid it out, as the display's next pass shows it.

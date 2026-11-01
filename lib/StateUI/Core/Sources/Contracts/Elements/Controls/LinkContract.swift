@@ -18,8 +18,8 @@ public enum LinkContract: ElementContract {
     public static let clicked = ElementEvent<Self, Void>("clicked", layer: .native)
 
     /// The address it opens, handed to the system as `application.launch` hands one.
-    public static let destination = ElementProperty<Self, String>("destination", layer: .native)
+    public static let address = ElementProperty<Self, String>("address", layer: .native)
 
     /// The element's own members.
-    public static let members: [any ContractMember] = [clicked, destination]
+    public static let members: [any ContractMember] = [address, clicked]
 }

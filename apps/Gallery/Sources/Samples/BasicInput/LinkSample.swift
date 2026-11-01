@@ -17,17 +17,17 @@ struct LinkSample: SampleContent, ExampleContent {
     // listing: LinkSample
     var body: some View {
         VStack {
-            Link("Swift's home page", destination: "https://www.swift.org")
+            Link("Swift's home page", address: "https://www.swift.org")
                 .isEnabled(enabled)
                 .onClicked { opened += 1 }
 
-            Link("Write to us", destination: "mailto:hello@example.com")
+            Link("Write to us", address: "mailto:hello@example.com")
                 .isEnabled(enabled)
                 .onClicked { opened += 1 }
 
             // The address is carried from the state: choosing another page
             // changes where the link leads, with no render of this view.
-            Link("The page chosen below", destination: $page)
+            Link("The page chosen below", address: $page)
                 .isEnabled(enabled)
                 .onClicked { opened += 1 }
 

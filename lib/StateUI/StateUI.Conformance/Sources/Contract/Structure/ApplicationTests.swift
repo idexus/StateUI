@@ -442,7 +442,7 @@
                     WithSessions { window, _ in
                         VStack {
                             Button("Share").onClicked(.ignoreWhileRunning) {
-                                said.values.append(try await window.share(text: "Notes", link: "https://www.swift.org"))
+                                said.values.append(try await window.share(text: "Notes", address: "https://www.swift.org"))
                             }.id("share")
                         }
                     }

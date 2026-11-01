@@ -28,7 +28,7 @@ extension MountedElement {
     /// its address as a launched one opens; a field submitted whose return says Next hands the keyboard on
     /// (`NextField`).
     public func send(_ event: Event, _ values: [HostValue], in runtime: HostRuntime) {
-        if event == .clicked, type == .link { runtime.presenter?.open(link: string(.destination) ?? "") }
+        if event == .clicked, type == .link { runtime.presenter?.open(link: string(.address) ?? "") }
         if let handler = handler(event) { runtime.dispatch(handler, payload: values) }
         if event == .submitted, let next = NextField.after(self) { runtime.presenter?.focus(next) }
     }

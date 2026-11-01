@@ -102,7 +102,7 @@ Line
   stroke
   to
 Link
-  destination
+  address
   text
   textCase
   textColor

@@ -595,9 +595,9 @@ application the system gives it, as `application.launch` does:
 @State var help = "https://www.swift.org"
 
 VStack {
-    Link("Terms of use", destination: "https://www.swift.org/legal")
-    Link("Write to us", destination: "mailto:hello@example.com")
-    Link("Help", destination: $help)
+    Link("Terms of use", address: "https://www.swift.org/legal")
+    Link("Write to us", address: "mailto:hello@example.com")
+    Link("Help", address: $help)
         .onClicked { print("Help opened") }
 }
 ```
@@ -672,8 +672,8 @@ is heard too, and `reload()` brings the page back:
 @State var status = "nothing has loaded yet"
 
 WebView("https://example.com")
-    .onNavigating { navigation in status = "going to \(navigation.url)" }
-    .onNavigated { navigated in status = "\(navigated.result): \(navigated.url)" }
+    .onNavigating { navigation in status = "going to \(navigation.address)" }
+    .onNavigated { navigated in status = "\(navigated.result): \(navigated.address)" }
     .onProcessTerminated { status = "the page's process ended" }
 ```
 

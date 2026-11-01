@@ -222,7 +222,7 @@ final class ControlTests: XCTestCase {
                     .onColorChanged { _ in }),
 
             ControlCase("Link", source: "Link.swift",
-                Link("Terms", destination: "https://www.swift.org/legal")
+                Link("Terms", address: "https://www.swift.org/legal")
                     .text("Terms of use")
                     .textCase(.uppercase)
                     .textColor(.firebrick)
@@ -1378,7 +1378,7 @@ final class ControlTests: XCTestCase {
         XCTAssertEqual(seen.count, 1)
         XCTAssertEqual(seen.first?.result, .success)
         XCTAssertEqual(seen.first?.type, .unknown)
-        XCTAssertEqual(seen.first?.url, "https://example.com/")
+        XCTAssertEqual(seen.first?.address, "https://example.com/")
 
         // `.unknown` is what this platform actually reports, and it has a case
         // of its own; the RULE is wider than that one member, so a number

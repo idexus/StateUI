@@ -4,8 +4,8 @@
 /// Words that open an address - a page in the browser, a mail, a call - in
 /// the application the system gives it, as `application.launch` does.
 ///
-///     Link("Terms of use", destination: "https://stateui.dev/terms")
-///     Link("Write to us", destination: "mailto:hello@stateui.dev")
+///     Link("Terms of use", address: "https://stateui.dev/terms")
+///     Link("Write to us", address: "mailto:hello@stateui.dev")
 ///
 /// It stands as the platform's own link where it has one, and as a button
 /// drawn as one elsewhere; a screen reader names it by its words, and calls
@@ -21,11 +21,11 @@ public struct Link: ElementView, TextualElement, FocusElement {
         node = Node(contract: LinkContract.self)
     }
 
-    /// A link saying `text` and opening `destination`.
-    public init(_ text: String, destination: String) {
+    /// A link saying `text` and opening `address`.
+    public init(_ text: String, address: String) {
         node = Node(contract: LinkContract.self)
         node.write(TextualElementContract.text, text)
-        node.write(LinkContract.destination, destination)
+        node.write(LinkContract.address, address)
     }
 
     /// A link saying `text` and opening the address a state holds, written by
@@ -33,11 +33,11 @@ public struct Link: ElementView, TextualElement, FocusElement {
     ///
     /// - Parameters:
     ///   - text: its words.
-    ///   - destination: the state the address is read from.
-    public init(_ text: String, destination: Binding<String>) {
+    ///   - address: the state the address is read from.
+    public init(_ text: String, address: Binding<String>) {
         node = Node(contract: LinkContract.self)
         node.write(TextualElementContract.text, text)
-        self = words(LinkContract.destination, by: destination)
+        self = words(LinkContract.address, by: address)
     }
 
     /// Runs as the user chooses the link, its address already on its way to

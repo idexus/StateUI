@@ -58,7 +58,7 @@ final class GTKWebView: GTKControl {
         self.source = source
         guard let source else { return }
         switch source {
-        case .url(let address): webkit_web_view_load_uri(webView, address)
+        case .address(let address): webkit_web_view_load_uri(webView, address)
         case .html(let document, let baseURL?): webkit_web_view_load_html(webView, document, baseURL)
         case .html(let document, nil): webkit_web_view_load_uri(webView, WebDocument.address(of: document))
         }

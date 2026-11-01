@@ -2727,8 +2727,8 @@ swift.enum.case WebNavigationType.forward: case forward
 swift.enum.case WebNavigationType.newPage: case newPage
 swift.enum.case WebNavigationType.reload: case reload
 swift.enum.case WebNavigationType.unknown: case unknown
-swift.enum.case WebViewSource.html(_:baseURL:): case html(String, baseURL: String?)
-swift.enum.case WebViewSource.url(_:): case url(String)
+swift.enum.case WebViewSource.address(_:): case address(String)
+swift.enum.case WebViewSource.html(_:baseAddress:): case html(String, baseAddress: String?)
 swift.enum.case Weekday.friday: case friday
 swift.enum.case Weekday.monday: case monday
 swift.enum.case Weekday.saturday: case saturday
@@ -2968,8 +2968,8 @@ swift.init LineJoin.init(carried:): init?(carried: StateCarried)
 swift.init LineJoin.init(propValue:): init?(propValue: PropValue)
 swift.init LineJoin.init(rawValue:): init?(rawValue: Int32)
 swift.init Link.init(): @MainActor init()
-swift.init Link.init(_:destination:): @MainActor init(_ text: String, destination: Binding<String>)
-swift.init Link.init(_:destination:): @MainActor init(_ text: String, destination: String)
+swift.init Link.init(_:address:): @MainActor init(_ text: String, address: Binding<String>)
+swift.init Link.init(_:address:): @MainActor init(_ text: String, address: String)
 swift.init LocaleInfo.init(language:timeZone:uses24HourClock:firstDayOfWeek:isMetric:layoutDirection:languages:): @MainActor init(language: LocaleTag? = nil, timeZone: TimeZoneName? = nil, uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = [])
 swift.init LocaleTag.init(_:): init(_ text: String)
 swift.init LocaleTag.init(stringLiteral:): init(stringLiteral value: String)
@@ -3158,7 +3158,7 @@ swift.init WebNavigationResult.init(rawValue:): init?(rawValue: Int32)
 swift.init WebNavigationType.init(propValue:): init?(propValue: PropValue)
 swift.init WebNavigationType.init(rawValue:): init?(rawValue: Int32)
 swift.init WebView.init(): @MainActor init()
-swift.init WebView.init(_:): @MainActor init(_ url: String)
+swift.init WebView.init(_:): @MainActor init(_ address: String)
 swift.init WebViewSource.init(propValue:): init?(propValue: PropValue)
 swift.init Weekday.init(rawValue:): init?(rawValue: Int32)
 swift.init Window.init(_:content:): @MainActor init<Content>(_ type: WindowType<Void>, @ViewBuilder content: @escaping () -> Content) where Content : View
@@ -13417,8 +13417,8 @@ swift.method StyleBag.showsMenuArrow(_:): @MainActor func showsMenuArrow(_ value
 swift.method StyleBag.showsText(_:): @MainActor func showsText(_ value: Bool) -> Self.Modified
 swift.method StyleBag.showsTraffic(_:): @MainActor func showsTraffic(_ value: Bool) -> Self.Modified
 swift.method StyleBag.showsUserLocation(_:): @MainActor func showsUserLocation(_ value: Bool) -> Self.Modified
-swift.method StyleBag.source(_:): @MainActor func source(_ url: String) -> Self.Modified
-swift.method StyleBag.source(html:baseURL:): @MainActor func source(html: String, baseURL: String? = nil) -> Self.Modified
+swift.method StyleBag.source(_:): @MainActor func source(_ address: String) -> Self.Modified
+swift.method StyleBag.source(html:baseAddress:): @MainActor func source(html: String, baseAddress: String? = nil) -> Self.Modified
 swift.method StyleBag.spacing(_:): @MainActor func spacing(_ value: Double) -> Self.Modified
 swift.method StyleBag.step(_:): @MainActor func step(_ value: Double) -> Self.Modified
 swift.method StyleBag.stroke(_:): @MainActor func stroke(_ value: Brush) -> Self.Modified
@@ -15872,8 +15872,8 @@ swift.method WebView.showsNavigationBar(_:): @MainActor func showsNavigationBar(
 swift.method WebView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method WebView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
-swift.method WebView.source(_:): @MainActor func source(_ url: String) -> Self.Modified
-swift.method WebView.source(html:baseURL:): @MainActor func source(html: String, baseURL: String? = nil) -> Self.Modified
+swift.method WebView.source(_:): @MainActor func source(_ address: String) -> Self.Modified
+swift.method WebView.source(html:baseAddress:): @MainActor func source(html: String, baseAddress: String? = nil) -> Self.Modified
 swift.method WebView.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method WebView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method WebView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
@@ -15892,8 +15892,8 @@ swift.method WebView.visualState(_:): @MainActor func visualState(_ state: Visua
 swift.method WebView.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (StyleBag<Self, StyleState>) -> StyleBag<Self, StyleState>) -> Self.Modified
 swift.method WebView.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method WebView.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
-swift.method WebViewProperties.source(_:): @MainActor func source(_ url: String) -> Self.Modified
-swift.method WebViewProperties.source(html:baseURL:): @MainActor func source(html: String, baseURL: String? = nil) -> Self.Modified
+swift.method WebViewProperties.source(_:): @MainActor func source(_ address: String) -> Self.Modified
+swift.method WebViewProperties.source(html:baseAddress:): @MainActor func source(html: String, baseAddress: String? = nil) -> Self.Modified
 swift.method WebViewProperties.userAgent(_:): @MainActor func userAgent(_ value: String) -> Self.Modified
 swift.method Window.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Window where Value : AnyObject
 swift.method Window.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject
@@ -15914,9 +15914,9 @@ swift.method WindowSession.openFiles(types:): @MainActor func openFiles(types: [
 swift.method WindowSession.openInspector(_:): @MainActor func openInspector(_ place: Inspector.Place? = nil)
 swift.method WindowSession.prompt(_:message:accept:cancel:placeholder:initialValue:maximumLength:inputPurpose:): @MainActor func prompt(_ title: String, message: String = "", accept: String? = nil, cancel: String? = nil, placeholder: String? = nil, initialValue: String = "", maximumLength: Int? = nil, inputPurpose: InputPurpose = .default) async throws -> String?
 swift.method WindowSession.saveFile(_:name:types:): @discardableResult @MainActor func saveFile(_ contents: [UInt8], name: String, types: [FileType] = []) async throws -> ChosenFile?
-swift.method WindowSession.share(link:): @discardableResult @MainActor func share(link: String) async throws -> Bool
+swift.method WindowSession.share(address:): @discardableResult @MainActor func share(address: String) async throws -> Bool
 swift.method WindowSession.share(text:): @discardableResult @MainActor func share(text: String) async throws -> Bool
-swift.method WindowSession.share(text:link:): @discardableResult @MainActor func share(text: String, link: String) async throws -> Bool
+swift.method WindowSession.share(text:address:): @discardableResult @MainActor func share(text: String, address: String) async throws -> Bool
 swift.method WindowSession.toggleInspector(): @MainActor func toggleInspector()
 swift.method Windows.environment(_:): @MainActor func environment<Value>(_ object: Value) -> some Scene where Value : AnyObject
 swift.method ZStack.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
@@ -16681,11 +16681,11 @@ swift.property View.nodes: @MainActor var nodes: [Node] { get }
 swift.property ViewTransform.propValue: var propValue: PropValue { get }
 swift.property Views.nodes: @MainActor var nodes: [Node] { get }
 swift.property VisualState.name: var name: String { get }
+swift.property WebNavigated.address: var address: String
 swift.property WebNavigated.result: var result: WebNavigationResult
 swift.property WebNavigated.type: var type: WebNavigationType
-swift.property WebNavigated.url: var url: String
+swift.property WebNavigation.address: var address: String
 swift.property WebNavigation.type: var type: WebNavigationType
-swift.property WebNavigation.url: var url: String
 swift.property WebNavigationResult.propValue: var propValue: PropValue { get }
 swift.property WebNavigationType.propValue: var propValue: PropValue { get }
 swift.property WebView.body: @MainActor var body: Never { get }
@@ -17746,8 +17746,8 @@ swift.type.property LineHeightElementContract.tiers: static var tiers: [any Cont
 swift.type.property LineJoin.laneKind: static var laneKind: LaneKind { get }
 swift.type.property LineJoin.lanes: static var lanes: Int { get }
 swift.type.property LineJoin.moving: static var moving: MotionValues { get }
+swift.type.property LinkContract.address: static let address: ElementProperty<LinkContract, String>
 swift.type.property LinkContract.clicked: static let clicked: ElementEvent<LinkContract, Void>
-swift.type.property LinkContract.destination: static let destination: ElementProperty<LinkContract, String>
 swift.type.property LinkContract.layer: static let layer: ElementLayer
 swift.type.property LinkContract.layer: static var layer: ElementLayer { get }
 swift.type.property LinkContract.members: static let members: [any ContractMember]

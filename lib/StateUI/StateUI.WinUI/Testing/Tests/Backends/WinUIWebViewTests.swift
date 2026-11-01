@@ -22,7 +22,7 @@ final class WinUIWebViewTests: XCTestCase {
     func testADocumentWrittenInPlaceStandsAtItsOwnAddress() throws {
         try onUIThread {
             let (host, said) = try Self.asking(
-                { WebView().source(html: "<p>Based</p>", baseURL: "https://example.invalid/dir/") },
+                { WebView().source(html: "<p>Based</p>", baseAddress: "https://example.invalid/dir/") },
                 "document.body.innerText + ' ' + new URL('next', document.baseURI).href")
             XCTAssertEqual(said.values, ["Based https://example.invalid/dir/next"])
             _ = host
@@ -34,7 +34,7 @@ final class WinUIWebViewTests: XCTestCase {
     func testADocumentAtAnAddressOfNoPathStandsThere() throws {
         try onUIThread {
             let (host, said) = try Self.asking(
-                { WebView().source(html: "<p>Based</p>", baseURL: "https://Example.invalid") },
+                { WebView().source(html: "<p>Based</p>", baseAddress: "https://Example.invalid") },
                 "document.body.innerText + ' ' + location.href")
             XCTAssertEqual(said.values, ["Based https://example.invalid/"])
             _ = host

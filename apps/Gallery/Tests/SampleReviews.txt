@@ -71,8 +71,8 @@ LayoutParametersSample.swift bc6aaab299025571
 LifecycleSample.swift ba0a75804664098e
 LifetimeSample.swift 388647e356facd79
 LightTableSample.swift 48baf9117951b39a
-LinkSample.swift 422f6cbd2a97bec3
-LinksSample.swift 0a56aa238fa05ea9
+LinkSample.swift cc33621097f3922b
+LinksSample.swift d378f8277977311d
 LivingLayoutSample.swift 9027b77224ed6a31
 LoadingItemsSample.swift 1d396ac70557a258
 LocaleInfoSample.swift 9fc2eaefb116c92c
@@ -115,7 +115,7 @@ SearchSample.swift 679d1baa31dfcd8b
 SelectableTextSample.swift 32194d184067f26d
 SemanticsSample.swift ac141f1987df5139
 ShapesSample.swift da1878eaf2de52e6
-ShareSample.swift 514696636f8032bd
+ShareSample.swift 5eff4f5bca43b92b
 SheetsSample.swift bfa0e4b1ababf2b6
 ShortcutSample.swift 613e9bc5911f4fc5
 SizingSample.swift 505216705d5b9909
@@ -147,7 +147,7 @@ TransformSample.swift 42f89ce8b8c4c513
 TwoFingersSample.swift 29139635b31a98e2
 TwoLayersSample.swift 80cbb745c5e4b044
 VisualStateSample.swift 891a200246efca50
-WebViewSample.swift caa32b2a32e3da7b
+WebViewSample.swift b2ae9044202584d5
 WindowBarSample.swift 86548368f9561118
 WindowOverlaySample.swift 3b04f6f7e650de7f
 WindowPhaseSample.swift 17d57d2502b6ba90

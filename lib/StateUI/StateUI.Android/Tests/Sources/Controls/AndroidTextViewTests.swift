@@ -53,8 +53,8 @@ final class AndroidTextViewTests: XCTestCase {
         onMainActor {
             let host = AndroidRenderer.running {
                 VStack {
-                    Link("On", destination: "https://www.swift.org")
-                    Link("Off", destination: "https://www.swift.org").isEnabled(false)
+                    Link("On", address: "https://www.swift.org")
+                    Link("Off", address: "https://www.swift.org").isEnabled(false)
                 }
             }
             host.layOut()

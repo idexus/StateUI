@@ -14,13 +14,13 @@ final class ControlValuesTests: XCTestCase {
             reading: { key in
                 switch key {
                 case WebViewContract.userAgent.token: .string("Probe/1")
-                case WebViewContract.source.token: WebViewSource.url("https://example.com/").propValue
+                case WebViewContract.source.token: WebViewSource.address("https://example.com/").propValue
                 default: nil
                 }
             }))
 
         XCTAssertEqual(values[WebViewContract.userAgent], "Probe/1")
-        XCTAssertEqual(values[WebViewContract.source], .url("https://example.com/"))
+        XCTAssertEqual(values[WebViewContract.source], .address("https://example.com/"))
         XCTAssertTrue(values.changed(WebViewContract.source))
         XCTAssertFalse(values.changed(WebViewContract.userAgent))
     }

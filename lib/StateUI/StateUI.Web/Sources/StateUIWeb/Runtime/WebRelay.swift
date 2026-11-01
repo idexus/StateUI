@@ -329,7 +329,7 @@ enum WebRelay {
     @discardableResult
     static func showInFrame(_ element: Int32, _ source: WebViewSource) -> String? {
         switch source {
-        case .url(let address):
+        case .address(let address):
             utf8(address) { _ = stateui_web_frame_show(element, FrameSource.address.rawValue, $0, $1) }
             return nil
         case .html(let words, let base):
@@ -561,7 +561,7 @@ enum WebRelay {
 
     /// Offers `text` and `link` - each where given - to the browser's share sheet, `listener` told once it answers:
     /// event 1 and "1" shared or "0" cancelled, or 0 and why not, read by `file_words`.
-    static func share(text: String?, link: String?, _ listener: Int32) {
+    static func share(text: String?, address: String?, _ listener: Int32) {
         utf8(text ?? "") { words, wordsLength in
             utf8(link ?? "") { address, addressLength in
                 stateui_web_share(words, text == nil ? -1 : wordsLength, address, link == nil ? -1 : addressLength, listener)

@@ -132,10 +132,10 @@ final class ContractTests: XCTestCase {
             [GridLength.auto, .fixed(100)].propValue,
             .values([.values([.enumeration(2), .number(1)]), .values([.enumeration(0), .number(100)])]))
         XCTAssertEqual(
-            WebViewSource.url("https://example.com").propValue,
+            WebViewSource.address("https://example.com").propValue,
             .values([.enumeration(0), .string("https://example.com")]))
         XCTAssertEqual(
-            WebViewSource.html("<p>Hi</p>", baseURL: nil).propValue,
+            WebViewSource.html("<p>Hi</p>", baseAddress: nil).propValue,
             .values([.enumeration(1), .string("<p>Hi</p>"), .nothing]))
         XCTAssertEqual(
             [Draw.fillColor(.gold)].propValue,
@@ -190,8 +190,8 @@ final class ContractTests: XCTestCase {
             ViewTransform.rotate(15).scaleX(1.2),
             SafeAreaEdges.all, SafeAreaEdges([.start, .bottom]),
             CornerRadius.uniform(8), CornerRadius.corners(topLeft: 1, topRight: 2, bottomLeft: 3, bottomRight: 4),
-            WebViewSource.url("https://example.com"), WebViewSource.html("<p/>", baseURL: nil),
-            WebViewSource.html("<p/>", baseURL: "https://example.com"),
+            WebViewSource.address("https://example.com"), WebViewSource.html("<p/>", baseAddress: nil),
+            WebViewSource.html("<p/>", baseAddress: "https://example.com"),
             MapRegion(center: Location(latitude: 52.25, longitude: 21.01), radiusMeters: 1500),
             Location(latitude: 52.25, longitude: 21.01),
             CalendarDate(year: 2026, month: 9, day: 15), ClockTime(hour: 9, minute: 30, second: 5),

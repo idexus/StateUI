@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// What the user shares from a window: words or a link handed to the platform's share sheet.
+// What the user shares from a window: words or an address handed to the platform's share sheet.
 // Design: docs/design/core/acts.md#sharing
 
 extension WindowSession {
@@ -17,20 +17,20 @@ extension WindowSession {
         try await shared(text, nil)
     }
 
-    /// Offers a link to the platform's share sheet over this window.
+    /// Offers an address to the platform's share sheet over this window.
     ///
-    ///     try await window.share(link: "https://www.swift.org")
+    ///     try await window.share(address: "https://www.swift.org")
     @discardableResult
-    public func share(link: String) async throws -> Bool {
-        try await shared(nil, link)
+    public func share(address: String) async throws -> Bool {
+        try await shared(nil, address)
     }
 
-    /// Offers words and the link they speak of, together, to the platform's share sheet over this window.
+    /// Offers words and the address they speak of, together, to the platform's share sheet over this window.
     ///
-    ///     try await window.share(text: "The talk I mentioned", link: talk)
+    ///     try await window.share(text: "The talk I mentioned", address: talk)
     @discardableResult
-    public func share(text: String, link: String) async throws -> Bool {
-        try await shared(text, link)
+    public func share(text: String, address: String) async throws -> Bool {
+        try await shared(text, address)
     }
 
     /// Offers what is given to the share sheet; at least one of them is, as the overloads take it.

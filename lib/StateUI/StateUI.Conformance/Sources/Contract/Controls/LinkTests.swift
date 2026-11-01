@@ -16,7 +16,7 @@
                 let heard = Received<Bool>()
                 s.start {
                     VStack {
-                        Link("Swift", destination: "https://www.swift.org/about")
+                        Link("Swift", address: "https://www.swift.org/about")
                             .onClicked { heard.values.append(true) }
                             .id("link")
                     }
@@ -27,21 +27,21 @@
                 s.expect(heard.values, [true], "its handler ran once")
             },
             ConformanceCase("aChosenLinkOpensItsAddress", proves: [
-                Covered(LinkContract.destination),
+                Covered(LinkContract.address),
             ], needs: [Covered(LinkContract.clicked)]) { s in
-                s.start { VStack { Link("Swift", destination: "https://www.swift.org/about").id("link") } }
+                s.start { VStack { Link("Swift", address: "https://www.swift.org/about").id("link") } }
 
                 try s.perform(.activate, on: s.element("link"))
                 try s.settle { try s.launched() == ["https://www.swift.org/about"] }
                 s.expect(try s.launched(), ["https://www.swift.org/about"], "its address opened")
             },
             ConformanceCase("aDisabledLinkOpensNothing", proves: [
-                Covered(LinkContract.clicked), Covered(LinkContract.destination),
+                Covered(LinkContract.clicked), Covered(LinkContract.address),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let heard = Received<Bool>()
                 s.start {
                     VStack {
-                        Link("Swift", destination: "https://www.swift.org/about")
+                        Link("Swift", address: "https://www.swift.org/about")
                             .isEnabled(false)
                             .onClicked { heard.values.append(true) }
                             .id("link")
@@ -57,12 +57,12 @@
                 s.expect(try s.launched(), [], "and its address never opened")
             },
             ConformanceCase("aLinkOpensTheAddressItsStateHolds", proves: [
-                Covered(LinkContract.destination),
+                Covered(LinkContract.address),
             ], needs: [Covered(LinkContract.clicked), Covered(ButtonContract.clicked)]) { s in
                 let address = State(wrappedValue: "https://www.swift.org")
                 s.start {
                     VStack {
-                        Link("Swift", destination: address.projectedValue).id("link")
+                        Link("Swift", address: address.projectedValue).id("link")
                         Button("Blog").onClicked { address.wrappedValue = "https://www.swift.org/blog" }.id("change")
                     }
                 }
