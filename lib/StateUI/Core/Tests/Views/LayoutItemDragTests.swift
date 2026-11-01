@@ -232,10 +232,10 @@ final class LayoutItemDragTests: XCTestCase {
         _ = bench.laid(renders, tree)
 
         bench.item(renders, tree, .began, at: Point(25, 50))
-        bench.item(renders, tree, .changed, at: Point(125, 50), speed: Point(300, 0))
-        bench.item(renders, tree, .changed, at: Point(225, 25), speed: Point(200, -50))
+        bench.item(renders, tree, .changed, at: Point(125, 50), velocity: Point(300, 0))
+        bench.item(renders, tree, .changed, at: Point(225, 25), velocity: Point(200, -50))
         bench.item(renders, tree, .changed, at: Point(400, 300))
-        bench.item(renders, tree, .ended, at: Point(400, 300), speed: Point(-500, 0))
+        bench.item(renders, tree, .ended, at: Point(400, 300), velocity: Point(-500, 0))
 
         XCTAssertEqual(told.drags.map(\.id), ["A", "A", "A", "A", "A"])
         XCTAssertEqual(told.drags.map(\.over), [nil, "B", "C", nil, nil], "B over A's place, C turned, then none")

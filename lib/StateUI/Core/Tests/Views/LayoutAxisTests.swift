@@ -102,7 +102,7 @@ final class LayoutAxisTests: XCTestCase {
             // Two units a second: 3.2 points, three hundredths of a unit, a frame.
             bench.hand(renders, built, .began)
             for _ in 0..<10 { bench.hand(renders, built, .changed, moved: Point(-3.2, 0)) }
-            bench.hand(renders, built, .ended, speed: Point(-200, 0))
+            bench.hand(renders, built, .ended, velocity: Point(-200, 0))
 
             var shown = [handed.tables.last?.x ?? 0]
             for _ in 0..<40 {
@@ -131,7 +131,7 @@ final class LayoutAxisTests: XCTestCase {
         // Across, and a little down: thrown across, let go still down.
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-140, -30))
-        bench.hand(renders, built, .ended, speed: Point(-300, -10))
+        bench.hand(renders, built, .ended, velocity: Point(-300, -10))
 
         let lanes = try XCTUnwrap(standing(worn, as: JourneyLanes<Table>.self))
         XCTAssertEqual(lanes.value.x, 1.4, accuracy: 0.000_1, "from where the hand left it")
@@ -170,12 +170,12 @@ final class LayoutAxisTests: XCTestCase {
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-20, 0))
         // A unit a second, for 400 ms over the cubic's steepness at its start, three: two fifteenths on.
-        bench.hand(renders, built, .ended, speed: Point(-100, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-100, 0))
         frames(60)
         XCTAssertEqual(table.wrappedValue.x, 0.2 + 0.4 / 3, accuracy: 0.001)
 
         bench.hand(renders, built, .began)
-        bench.hand(renders, built, .ended, speed: Point(-3_000, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-3_000, 0))
         frames(60)
         XCTAssertEqual(table.wrappedValue.x, 3, "held to the end")
     }
@@ -325,7 +325,7 @@ final class LayoutAxisTests: XCTestCase {
 
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-40, 0))
-        bench.hand(renders, built, .ended, speed: Point(-300, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-300, 0))
         frames(60)
 
         XCTAssertEqual(table.wrappedValue.x, 3)

@@ -542,13 +542,13 @@ final class GalleryViewTests: XCTestCase {
 
     /// The hand over the gallery `tree` describes, as a host reports it, and a cycle after it.
     private func hand(
-        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, moved: Point = .zero, speed: Point = .zero
+        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, moved: Point = .zero, velocity: Point = .zero
     ) {
         guard let heard = find(.motionLayout, in: renders.renderFromScratch(tree()))?.events?[.translationUpdated] else {
             return XCTFail("the gallery hears no hand")
         }
 
-        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, moved, speed)))
+        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, moved, velocity)))
         turned += 16
         _ = HostBoundary.cycle(now: turned, reducesMotion: false)
     }
@@ -692,7 +692,7 @@ final class GalleryViewTests: XCTestCase {
 
             hand(renders, tree, .began)
             hand(renders, tree, .changed, moved: Point(-0.1 * reach, 0))
-            hand(renders, tree, .ended, speed: Point(-200, 0))
+            hand(renders, tree, .ended, velocity: Point(-200, 0))
 
             XCTAssertEqual(shown.wrappedValue, card, "thrown \(throwing.map { "\($0.kind)" } ?? "as a gallery is")")
         }

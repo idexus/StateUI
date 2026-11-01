@@ -76,7 +76,7 @@ final class LayoutApproachTests: XCTestCase {
 
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-60, 0))
-        bench.hand(renders, built, .ended, speed: Point(-60, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-60, 0))
         XCTAssertEqual(phase.wrappedValue, 1)
 
         let flown = flight(handed)
@@ -113,7 +113,7 @@ final class LayoutApproachTests: XCTestCase {
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-60, 0))
         // 12 units a second carries the run 1.6 on: past 1 and 2 to the end, 1.4 of throw.
-        bench.hand(renders, built, .ended, speed: Point(-1_200, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-1_200, 0))
         XCTAssertEqual(phase.wrappedValue, 2)
 
         let flown = flight(handed)
@@ -132,7 +132,7 @@ final class LayoutApproachTests: XCTestCase {
 
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-60, 0))
-        bench.hand(renders, built, .ended, speed: Point(-1_200, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-1_200, 0))
         let journey = phase.projectedValue.journey
         XCTAssertEqual(journey.velocity, 12, accuracy: 0.000_1, "setting out at the hand's speed")
         XCTAssertEqual(journey.value, 0.6, accuracy: 0.000_1, "from where it left it")
@@ -175,7 +175,7 @@ final class LayoutApproachTests: XCTestCase {
 
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-60, 0))
-        bench.hand(renders, built, .ended, speed: Point(-1_200, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-1_200, 0))
         for _ in 0..<4 { bench.cycle() }
         let shown = handed.phases.last ?? 0
 

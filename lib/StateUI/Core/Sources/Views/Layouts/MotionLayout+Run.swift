@@ -218,8 +218,8 @@ extension MotionLayout {
         }
 
         /// The run travels on from `start` to `target` as a journey of the parameters, under the layout's motion, the
-        /// hand's axis setting out at `speed` units a second.
-        func send(to target: Parameters, from start: Parameters, speed: Double) {
+        /// hand's axis setting out at `velocity` units a second.
+        func send(to target: Parameters, from start: Parameters, velocity: Double) {
             let along = onAxis(target)
             let journey = parameters.journey
 
@@ -229,7 +229,7 @@ extension MotionLayout {
 
             named?(target)
             journey.value = start
-            if speed != 0 { journey.velocity = placing(speed, in: journey.velocity) }
+            if velocity != 0 { journey.velocity = placing(velocity, in: journey.velocity) }
             _ = journey.move(to: target)
         }
 
@@ -381,14 +381,14 @@ extension MotionLayout {
         /// The hand over the element, along the layout or - a pan - every way: each axis it moves goes with it, and
         /// let go they go on together, each with its part of the speed.
         /// Design: docs/design/views/motion-layout.md#a-pan
-        func translationUpdated(_ gesture: GesturePhase, moved: Point, speed: Point) {
+        func translationUpdated(_ gesture: GesturePhase, moved: Point, velocity: Point) {
             let runs = hands.filter { $0.way != nil }.map(on)
 
             switch gesture {
             case .began, .changed:
                 for run in runs { run.hand(gesture, moved: moved) }
             case .ended, .cancelled:
-                letGo(together: runs.compactMap { run in run.thrown(gesture, speed: speed).map { (run, $0) } })
+                letGo(together: runs.compactMap { run in run.thrown(gesture, velocity: velocity).map { (run, $0) } })
             }
         }
 
@@ -430,31 +430,31 @@ extension MotionLayout {
             if !stops.isEmpty { name(nearest(next)) }
         }
 
-        /// The hand in focus letting go at `speed`, per second: where it held the axis, the unit there, how fast it
+        /// The hand in focus letting go at `velocity`, per second: where it held the axis, the unit there, how fast it
         /// went and where its throw would end; nil where it held nothing.
-        func thrown(_ gesture: GesturePhase, speed: Point) -> Letting? {
+        func thrown(_ gesture: GesturePhase, velocity: Point) -> Letting? {
             guard let held else { return nil }
 
             let measured = unit(at: held)
             let per = measured ?? 1
-            let thrown = gesture == .ended && measured != nil ? -(across ? speed.x : speed.y) / per : 0
-            return letting(at: held, per: per, speed: thrown)
+            let thrown = gesture == .ended && measured != nil ? -(across ? velocity.x : velocity.y) / per : 0
+            return letting(at: held, per: per, velocity: thrown)
         }
 
-        /// The axis in focus let go at `value`, going `speed` units a second where the hand works on it, a unit
+        /// The axis in focus let go at `value`, going `velocity` units a second where the hand works on it, a unit
         /// standing for `per` device units or degrees: where its throw would end - inside the range of an axis that
         /// does not come round, and where it was let go for a hand too slow to throw.
-        func letting(at value: Double, per: Double, speed: Double) -> Letting {
+        func letting(at value: Double, per: Double, velocity: Double) -> Letting {
             let point = toHand(value)
-            let carried = abs(speed) * per >= Self.throwing ? point + Self.carried(speed, by: throwing) : point
+            let carried = abs(velocity) * per >= Self.throwing ? point + Self.carried(velocity, by: throwing) : point
             let end = period == nil ? min(max(carried, toHand(low)), toHand(high)) : carried
-            return Letting(point: point, per: per, speed: speed, end: end)
+            return Letting(point: point, per: per, velocity: velocity, end: end)
         }
 
         /// Where the axis in focus comes to rest let go as `letting` says: a swipe thrown, the next snap of its reach
         /// that way; otherwise where the throw ends, onto the snap nearest it.
         func rest(of letting: Letting) -> Double {
-            let thrown = abs(letting.speed) * letting.per >= Self.throwing ? letting.speed : 0
+            let thrown = abs(letting.velocity) * letting.per >= Self.throwing ? letting.velocity : 0
             return swiped(from: fromHand(letting.point), thrown: thrown) ?? resting(at: fromHand(letting.end))
         }
 
@@ -482,7 +482,7 @@ extension MotionLayout {
 
             let journey = parameters.journey
             var velocity = journey.velocity
-            for (run, going) in goings { velocity = run.placing(going.speed, in: velocity) }
+            for (run, going) in goings { velocity = run.placing(going.velocity, in: velocity) }
             journey.value = start
             journey.velocity = velocity
             _ = journey.move(to: journey.destination, law)
@@ -495,29 +495,29 @@ extension MotionLayout {
         /// that motion over as much of its length as the way left is of a unit. Its law, and its speed in units of the
         /// parameters a second; nil where it stands there already, or has no law to go by.
         /// Design: docs/design/views/motion-layout.md#coming-onto-a-target
-        func going(_ letting: Letting, to value: Double) -> (law: Motion, speed: Double, thrown: Bool, left: Double)? {
+        func going(_ letting: Letting, to value: Double) -> (law: Motion, velocity: Double, thrown: Bool, left: Double)? {
             let along = toHand(value)
             let left = along - letting.point
             let motion = resolvedLaw
-            let flight = Self.flight(left, at: letting.speed, by: throwing)
+            let flight = Self.flight(left, at: letting.velocity, by: throwing)
             let onward = stops.isEmpty || !next(from: fromHand(letting.point), to: value)
                 || flight <= abs(left) * Double(motion.milliseconds)
-            let isThrow = abs(letting.speed) * letting.per >= Self.throwing && left * letting.speed > 0 && onward
+            let isThrow = abs(letting.velocity) * letting.per >= Self.throwing && left * letting.velocity > 0 && onward
 
             guard abs(left) * letting.per > Self.settled, motion.kind != .custom || isThrow else { return nil }
 
             // The hand's speed as the parameters go: its axis's slope where it let go - a magnification's, by the
             // scale. An eased approach sets out on its own curve, never slower than the motion; a spring takes the
             // hand's speed toward the target.
-            let speed = (fromHand(letting.point + letting.speed / 1_000) - fromHand(letting.point)) * 1_000
+            let velocity = (fromHand(letting.point + letting.velocity / 1_000) - fromHand(letting.point)) * 1_000
             guard isThrow else {
                 let approach = Self.approach(motion, over: left)
                 let springs = if case .spring = approach.kind { true } else { false }
-                return (approach, springs && left * letting.speed > 0 ? speed : 0, false, left)
+                return (approach, springs && left * letting.velocity > 0 ? velocity : 0, false, left)
             }
-            if case .spring = throwing.kind { return (throwing, speed, true, left) }
+            if case .spring = throwing.kind { return (throwing, velocity, true, left) }
             let longest = max(Double(Self.timing(of: throwing).milliseconds) * 2, Self.shortest)
-            return (.glide(longest: .milliseconds(Int(longest.rounded()))), speed, true, left)
+            return (.glide(longest: .milliseconds(Int(longest.rounded()))), velocity, true, left)
         }
 
         /// An axis letting go, where the hand works on it - a magnification's logarithm: where it held the run, how
@@ -525,7 +525,7 @@ extension MotionLayout {
         struct Letting {
             let point: Double
             let per: Double
-            let speed: Double
+            let velocity: Double
             let end: Double
         }
 
@@ -533,7 +533,7 @@ extension MotionLayout {
         /// magnification by how far they spread, a rotation by how far they turned - and let go, they go on together
         /// to where each would end. A view held by itself keeps the hand.
         /// Design: docs/design/views/motion-layout.md#two-fingers
-        func pinch(_ gesture: GesturePhase, scale: Double, degrees: Double, speed: Point) {
+        func pinch(_ gesture: GesturePhase, scale: Double, degrees: Double, velocity: Point) {
             guard states.item.wrappedValue == nil else { return }
 
             var lettings: [(run: Run, letting: Letting)] = []
@@ -541,8 +541,8 @@ extension MotionLayout {
                 // How far the fingers moved the axis, how fast in units a second, and how many of theirs a unit is.
                 let (step, rate, per): (Double, Double, Double)
                 switch hand.gesture {
-                case .magnification?: (step, rate, per) = (scale > 0 ? log(scale) : 0, speed.x, 100)
-                case .rotation(let unit)?: (step, rate, per) = (degrees / unit, speed.y / unit, unit)
+                case .magnification?: (step, rate, per) = (scale > 0 ? log(scale) : 0, velocity.x, 100)
+                case .rotation(let unit)?: (step, rate, per) = (degrees / unit, velocity.y / unit, unit)
                 case .hand?, nil: continue
                 }
 
@@ -554,7 +554,7 @@ extension MotionLayout {
                     run.move(by: step)
                 case .ended, .cancelled:
                     guard let held = run.held else { continue }
-                    lettings.append((run, run.letting(at: held, per: per, speed: gesture == .ended ? rate : 0)))
+                    lettings.append((run, run.letting(at: held, per: per, velocity: gesture == .ended ? rate : 0)))
                 }
             }
             if !lettings.isEmpty { letGo(together: lettings) }
@@ -664,7 +664,7 @@ extension MotionLayout {
             let along = stops.isEmpty ? notched(from, by: count) : stepped(from, by: swipes ? count.signum() : count)
 
             held = nil
-            send(to: placing(along, in: journey.destination), from: start, speed: 0)
+            send(to: placing(along, in: journey.destination), from: start, velocity: 0)
         }
 
         /// The snap `count` on from the one nearest `value` - back for fewer than nought - held to the ends of a run
@@ -736,11 +736,11 @@ extension MotionLayout {
             return (thrown > 0 ? ahead.min() : ahead.max()) ?? nearest(of: targets, to: held)
         }
 
-        /// How much farther a throw at `speed` units a second carries under `throwing`: eased, the hand's speed for
+        /// How much farther a throw at `velocity` units a second carries under `throwing`: eased, the hand's speed for
         /// its length over how steeply its curve sets out; a spring, for a third of its response - as far as a
         /// `cubicOut` of that length.
-        static func carried(_ speed: Double, by throwing: Motion) -> Double {
-            HostMotionLaw.carried(speed, under: timing(of: throwing))
+        static func carried(_ velocity: Double, by throwing: Motion) -> Double {
+            HostMotionLaw.carried(velocity, under: timing(of: throwing))
         }
 
         /// The law a throw is timed by: its own, the inherited one 400 milliseconds on `cubicOut`.
@@ -748,13 +748,13 @@ extension MotionLayout {
             throwing.kind == .inherited ? .eased(.milliseconds(400)) : throwing
         }
 
-        /// How long a throw at `speed` units a second takes to go `left` on under `throwing`, in milliseconds: the
+        /// How long a throw at `velocity` units a second takes to go `left` on under `throwing`, in milliseconds: the
         /// length that sets it out at the hand's speed - a spring's as a `cubicOut` of its response would - never
         /// shorter than `shortest`, nor longer than twice the motion's length.
-        static func flight(_ left: Double, at speed: Double, by throwing: Motion) -> Double {
+        static func flight(_ left: Double, at velocity: Double, by throwing: Motion) -> Double {
             let timing = timing(of: throwing)
             let length = Double(timing.milliseconds)
-            let setting = speed == 0 ? .infinity : abs(left / speed) * HostMotionLaw.setsOut(timing) * 1_000
+            let setting = velocity == 0 ? .infinity : abs(left / velocity) * HostMotionLaw.setsOut(timing) * 1_000
 
             return min(max(setting, shortest), max(length * 2, shortest))
         }

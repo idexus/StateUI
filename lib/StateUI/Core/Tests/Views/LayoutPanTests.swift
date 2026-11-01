@@ -94,7 +94,7 @@ final class LayoutPanTests: XCTestCase {
         bench.hand(renders, built, .changed, moved: Point(-20, -10))
         // 600 points a second across is six units: half a second's light friction carries it to the far square; the
         // same throw down is not one.
-        bench.hand(renders, built, .ended, speed: Point(-600, -10))
+        bench.hand(renders, built, .ended, velocity: Point(-600, -10))
         frames(60)
         XCTAssertEqual(board.wrappedValue, Board(x: 1, y: 0), "across thrown on, down let go still")
     }
@@ -109,7 +109,7 @@ final class LayoutPanTests: XCTestCase {
             _ = bench.laid(renders, built)
             bench.hand(renders, built, .began)
             bench.hand(renders, built, .changed, moved: Point(-20, -30))
-            bench.hand(renders, built, .ended, speed: Point(-600, 0))
+            bench.hand(renders, built, .ended, velocity: Point(-600, 0))
             handed.boards.removeAll()
             frames(8)
             return handed.boards

@@ -139,7 +139,7 @@ final class LayoutPinchTests: XCTestCase {
         bench.pinch(renders, built, .began)
         bench.pinch(renders, built, .changed, degrees: 18)
         // 360 degrees a second is four units: a light friction carries it some half a unit on, past halfway.
-        bench.pinch(renders, built, .ended, speed: Point(0, 360))
+        bench.pinch(renders, built, .ended, velocity: Point(0, 360))
         frames()
         XCTAssertEqual(handed.dials.last?.turn ?? 0, 1, accuracy: 0.000_1, "flicked on")
 

@@ -275,7 +275,7 @@ final class MotionLayoutTests: XCTestCase {
 
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-80, 0))
-        bench.hand(renders, tree, .ended, speed: Point(-2_000, 0))
+        bench.hand(renders, tree, .ended, velocity: Point(-2_000, 0))
 
         XCTAssertEqual(phase.wrappedValue, 0, "no card named, none thrown to")
     }
@@ -338,7 +338,7 @@ final class MotionLayoutTests: XCTestCase {
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-10, 0))
         // 1500 points a second to the left is 15 units a second, which the throw carries 2 units on.
-        bench.hand(renders, tree, .ended, speed: Point(-1_500, 0))
+        bench.hand(renders, tree, .ended, velocity: Point(-1_500, 0))
         XCTAssertEqual(phase.wrappedValue, 2, "0.1 and 2 on is nearest 2, named at once")
 
         let start = handed.phases.count
@@ -353,7 +353,7 @@ final class MotionLayoutTests: XCTestCase {
                       "never faster than the hand let go")
 
         bench.hand(renders, tree, .began)
-        bench.hand(renders, tree, .ended, speed: Point(-100_000, 0))
+        bench.hand(renders, tree, .ended, velocity: Point(-100_000, 0))
         XCTAssertEqual(phase.wrappedValue, 6, "the last target, however hard the throw")
     }
 
@@ -374,7 +374,7 @@ final class MotionLayoutTests: XCTestCase {
             _ = bench.laid(renders, tree)
             bench.hand(renders, tree, .began)
             bench.hand(renders, tree, .changed, moved: Point(-10, 0))
-            bench.hand(renders, tree, .ended, speed: Point(-300, 0))
+            bench.hand(renders, tree, .ended, velocity: Point(-300, 0))
 
             XCTAssertEqual(phase.wrappedValue, 3, "3 units a second for a second: 0.1 and 3 on, \(throwing.kind)")
         }
@@ -394,7 +394,7 @@ final class MotionLayoutTests: XCTestCase {
         bench.hand(renders, tree, .began)
         bench.hand(renders, tree, .changed, moved: Point(-105, 0))
         // 120 points a second carries the run 0.16 on: from 1.05 to 1.21, still nearest 1, behind the hand.
-        bench.hand(renders, tree, .ended, speed: Point(-120, 0))
+        bench.hand(renders, tree, .ended, velocity: Point(-120, 0))
         XCTAssertEqual(phase.wrappedValue, 1, "the nearest")
 
         let start = handed.phases.count

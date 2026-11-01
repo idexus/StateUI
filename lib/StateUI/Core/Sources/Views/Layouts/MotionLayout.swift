@@ -585,8 +585,8 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             if run.dismissal != nil { element.destroying.append { run.states.dismissals.orphan() } }
             if run.settled != nil { element.destroying.append { run.states.settles.orphan() } }
             if run.moves {
-                element.addHandler(MotionLayoutContract.translationUpdated) { gesture, moved, speed in
-                    run.translationUpdated(gesture, moved: moved, speed: speed)
+                element.addHandler(MotionLayoutContract.translationUpdated) { gesture, moved, velocity in
+                    run.translationUpdated(gesture, moved: moved, velocity: velocity)
                 }
                 element.addHandler(MotionLayoutContract.wheelStepped) { notches in run.stepped(notches) }
             }
@@ -598,14 +598,14 @@ public struct MotionLayout<Items: RandomAccessCollection, ID: Hashable, Paramete
             element.describe(MotionLayoutContract.magnifies, magnifies ? true : nil)
             element.describe(MotionLayoutContract.rotates, rotates ? true : nil)
             if magnifies || rotates {
-                element.addHandler(MotionLayoutContract.pinchRotationUpdated) { gesture, scale, degrees, speed in
-                    run.pinch(gesture, scale: scale, degrees: degrees, speed: speed)
+                element.addHandler(MotionLayoutContract.pinchRotationUpdated) { gesture, scale, degrees, velocity in
+                    run.pinch(gesture, scale: scale, degrees: degrees, velocity: velocity)
                 }
             }
             element.describe(MotionLayoutContract.itemDrag, run.itemStart)
             if run.itemStart != nil {
-                element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, speed, still in
-                    try run.item(gesture, at: at, speed: speed, still: still)
+                element.addHandler(MotionLayoutContract.itemDragUpdated) { gesture, at, velocity, still in
+                    try run.item(gesture, at: at, velocity: velocity, still: still)
                 }
             }
         }

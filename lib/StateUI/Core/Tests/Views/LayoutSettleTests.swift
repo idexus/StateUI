@@ -55,7 +55,7 @@ final class LayoutSettleTests: XCTestCase {
 
         bench.hand(renders, built, .began)
         bench.hand(renders, built, .changed, moved: Point(-60, 0))
-        bench.hand(renders, built, .ended, speed: Point(-1_200, 0))
+        bench.hand(renders, built, .ended, velocity: Point(-1_200, 0))
         for _ in 0..<3 { bench.cycle() }
         _ = await settle()
         XCTAssertEqual(told.phases, [], "not while it goes on")

@@ -74,7 +74,7 @@ final class LayoutBench {
     /// The hand over the layout `tree` describes, as a host reports it - its phase, how far it moved what is under
     /// it since the last report, and the speed it lets go at, per second - and a cycle after it.
     func hand(
-        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, moved: Point = .zero, speed: Point = .zero,
+        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, moved: Point = .zero, velocity: Point = .zero,
         file: StaticString = #filePath, line: UInt = #line
     ) {
         // The whole description: a patch says nothing of a handler that did not change.
@@ -82,7 +82,7 @@ final class LayoutBench {
             return XCTFail("the layout hears no hand", file: file, line: line)
         }
 
-        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, moved, speed)), file: file, line: line)
+        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, moved, velocity)), file: file, line: line)
         cycle()
     }
 
@@ -90,28 +90,28 @@ final class LayoutBench {
     /// degrees since the last report, and their speed as they lift - and a cycle after it.
     func pinch(
         _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, scale: Double = 1, degrees: Double = 0,
-        speed: Point = .zero, file: StaticString = #filePath, line: UInt = #line
+        velocity: Point = .zero, file: StaticString = #filePath, line: UInt = #line
     ) {
         guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.pinchRotationUpdated] else {
             return XCTFail("the layout hears no fingers", file: file, line: line)
         }
 
         XCTAssertTrue(
-            renders.fire(heard, with: MemberValues.encode(phase, scale, degrees, speed)), file: file, line: line)
+            renders.fire(heard, with: MemberValues.encode(phase, scale, degrees, velocity)), file: file, line: line)
         cycle()
     }
 
     /// The hand holding one view of the layout `tree` describes, as the host layer reports it - its phase, where it is
     /// in the room, its speed as it lets go, per second, and how long it has stood still - and a cycle after it.
     func item(
-        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, at: Point, speed: Point = .zero,
+        _ renders: Renders, _ tree: () -> Node, _ phase: GesturePhase, at: Point, velocity: Point = .zero,
         still: Double = 0, file: StaticString = #filePath, line: UInt = #line
     ) {
         guard let heard = renders.renderFromScratch(tree()).first(.motionLayout)?.events?[.itemDragUpdated] else {
             return XCTFail("the layout hears no hand on its views", file: file, line: line)
         }
 
-        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, at, speed, still)), file: file, line: line)
+        XCTAssertTrue(renders.fire(heard, with: MemberValues.encode(phase, at, velocity, still)), file: file, line: line)
         cycle()
     }
 
