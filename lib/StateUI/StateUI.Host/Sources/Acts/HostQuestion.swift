@@ -29,7 +29,7 @@
     public let message: String?
 
     /// The caption of the button accepting it: the library's own word in the system's language where the act says
-    /// none (`HostBoundary.questionWords`); a choice has none.
+    /// none (`CoreLink.questionWords`); a choice has none.
     public let accept: String
 
     /// The caption of the button cancelling it, which every question but an alert offers: the library's own word in
@@ -76,7 +76,7 @@
         case .prompt: kind = .prompt
         default: return nil
         }
-        let own = HostBoundary.questionWords
+        let own = CoreLink().questionWords
         standingCancel = own.cancel
         title = text(0)
         if kind == .chooseAction {

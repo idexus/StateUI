@@ -106,7 +106,7 @@ routes ⌘C, ⌘V and ⌘Z through the menu bar's key equivalents, so a field in
 application with no Edit menu copies and pastes nothing. File, Edit and
 Window carry their `StandardMenu` identity as their item's identifier. Their
 titles and entries are the library's own words in the system's language
-(`HostBoundary.menuWords`, Edit's `editWords`), as AppKit translates no title
+(`CoreLink.menuWords`, Edit's `editWords`), as AppKit translates no title
 set in code: the host tells the core the user's locale before it builds the
 bar, and a page's menus join by identity, never by title.
 

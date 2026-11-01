@@ -62,7 +62,8 @@ public enum StateUIAppKit {
     static func mainMenu(newWindow: AnyObject?) -> NSMenu {
         let main = AppKitMainMenu()
         let name = ProcessInfo.processInfo.processName
-        let (words, edit) = (HostBoundary.menuWords, HostBoundary.editWords)
+        let core = CoreLink()
+        let (words, edit) = (core.menuWords, core.editWords)
 
         let applicationMenu = NSMenu()
         applicationMenu.addItem(
