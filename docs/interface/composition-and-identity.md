@@ -136,7 +136,8 @@ three names solve different problems and do not replace one another.
 
 ## Builders and conditional identity
 
-`ViewBuilder` records the statement and branch that produced each child. A
+`ViewBuilder` records the statement and branch that produced each child, and
+several statements are `Statements`, each keyed by its number. A
 view after an optional branch therefore keeps its identity when that branch
 appears or disappears:
 

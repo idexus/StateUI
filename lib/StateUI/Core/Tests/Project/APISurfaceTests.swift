@@ -99,6 +99,26 @@ final class APISurfaceTests: XCTestCase {
         XCTAssertEqual(missing, [], "a See names a declaration the API record holds")
     }
 
+    /// The handbook names every public type of both surfaces - README and docs/, the design notes left out: what 1.0
+    /// freezes is what the handbook promised, so a type no page names is a promise nobody made.
+    func testTheHandbookNamesEveryPublicType() throws {
+        let declared = try Self.recorded().split(separator: "\n").compactMap { line -> String? in
+            let fields = line.split(separator: " ", maxSplits: 2)
+            guard fields.count > 1, ["swift.struct", "swift.class", "swift.enum", "swift.protocol", "swift.typealias"]
+                .contains(String(fields[0])), fields[1].hasSuffix(":"), !fields[1].contains(".") else { return nil }
+            return String(fields[1].dropLast())
+        }
+        let docs = SourceTree.repository.appendingPathComponent("docs")
+        var handbook = try String(contentsOf: SourceTree.repository.appendingPathComponent("README.md"), encoding: .utf8)
+        for page in try SourceTree.files(under: docs, entering: { $0 != "design" }) where page.hasSuffix(".md") {
+            handbook += try String(contentsOf: docs.appendingPathComponent(page), encoding: .utf8)
+        }
+        let words = Set(handbook.split { !($0.isLetter || $0.isNumber || $0 == "_") }.map(String.init))
+
+        XCTAssertGreaterThan(declared.count, 300, "the records hold almost no type")
+        XCTAssertEqual(Set(declared).subtracting(words).sorted(), [], "public types no handbook page names")
+    }
+
     /// The module this run built says what the records say, each line in the record of its surface.
     func testThePublicSurfaceIsTheRecordedOne() throws {
         let surface = try Self.surface()

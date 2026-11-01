@@ -159,6 +159,10 @@ and every line goes to exactly one file. Both are frozen alike at 1.0: an
 application's own control is an extension of the protocol every library
 control wears, so the plumbing stays on the views and the second file names
 it. The handbook's [Extending StateUI](../interface/extending.md) teaches it.
+Every public type of either file is named on a handbook page - README and
+`docs/`, the design notes left out, the control dictionary in -
+which `APISurfaceTests` holds: what 1.0 freezes is what the handbook
+promised.
 
 ## Where to read next
 

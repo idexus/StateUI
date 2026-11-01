@@ -402,7 +402,7 @@ struct NotePage: View {
 
 ## The clipboard
 
-The system's clipboard is the application's `clipboard`: `write(_:)` puts
+The system's clipboard is the application's `clipboard`, a `Clipboard`: `write(_:)` puts
 words on it in place of what it held, and `read()` reads the words it holds,
 `nil` where it holds none.
 
@@ -475,8 +475,9 @@ struct WeatherPage: View {
 
 Any status is an answer - a 404 is the server's word; what throws is no
 answer at all: no connection, no server, an address the platform cannot
-read. A request carries a method, headers and a body
-(`HTTPRequest(address, method: .post, headers:, body:)`), and a header's
+read. A request carries a method - an `HTTPMethod`, `.get` unless said -
+headers and a body (`HTTPRequest(address, method: .post, headers:, body:)`),
+and a header's
 name is read in any case (`response.header("Content-Type")`). The platform
 keeps the cookies a server sets, as a browser does, so a session a server
 opens holds for the requests after it. A request ends with the run that sent

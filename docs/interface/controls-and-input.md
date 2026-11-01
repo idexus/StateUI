@@ -128,6 +128,7 @@ Text()
     }
 ```
 
+A label's runs are written as statements, which a `TextSpanBuilder` collects.
 `TextSpan` is structural text content, not a `View`: it stands among a label's
 runs and nowhere else. It can carry text, font, decoration, line-height,
 foreground, and run background properties, but it has no independent frame,
@@ -581,7 +582,7 @@ VStack {
 StateUI composes it of rectangles in a row, so it looks and behaves the same
 on every platform. `maximumVisible` caps the dots, the current one kept among
 them; one lone dot is hidden unless `hidesForSinglePage(false)` asks for it;
-`dotShape(.square)` draws squares. Given items,
+`dotShape(.square)` draws squares - a `DotShape`, `.circle` unless said. Given items,
 `PositionDots(items) { … }` shows each item's own mark, the current one
 whole and the others faded. Its look is written on it: being StateUI's own
 composition, it takes no `Style`.
@@ -664,8 +665,8 @@ Grid {
 
 A script answers what it evaluated to as text: words as they are, a number as
 it is written, anything else as JSON, and an empty string for no value. A
-navigation is heard as it starts, with why - a new page, back, forward, the
-page again - and as it ends, with how; the web process ending under the view
+navigation is heard as it starts, a `WebNavigation` with why - a new page, back, forward, the
+page again - and as it ends, a `WebNavigated` with how; the web process ending under the view
 is heard too, and `reload()` brings the page back:
 
 ```swift
@@ -734,6 +735,7 @@ Map(region: MapRegion(center: Location(latitude: 50.0617, longitude: 19.9373), r
     .height(300)
 ```
 
+A map's markers are written as statements, which a `MarkerBuilder` collects.
 Markers drawn from data are each given an id - `places.map { Marker(at: $0.location).id($0.name) }`
 - so a marker put before them leaves the others themselves, each pin and its
 open callout where it stood; without one a marker is matched by its position.

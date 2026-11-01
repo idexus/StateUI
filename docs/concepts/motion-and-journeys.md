@@ -134,7 +134,8 @@ to walk; move the complete state instead.
 A move is a write of the destination, under a law of its choosing: the state
 reads the new value at once and every body that read it is built again, as
 after an assignment, while the host walks the value there on the move's law.
-It returns at once; its `arrived()` awaits the outcome:
+It returns at once, answering an `Arrival`, whose `arrived()` awaits the
+outcome:
 
 ```swift
 @State private var opacity = 1.0

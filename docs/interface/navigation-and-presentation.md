@@ -550,7 +550,10 @@ there that declares none of its own; the innermost declaration wins.
 ## Toolbars
 
 A page's actions are declared where the state they follow lives, with
-`.toolbar { }` on the page's view:
+`.toolbar { }` on the page's view. Each `ToolbarItem` - a `ToolbarButton` or a
+`ToolbarToggle` - stands alone or in a `ToolbarGroup`; a `ToolbarBuilder`
+collects the bar's `ToolbarContent`, and a `ToolbarGroupBuilder` a group's
+`ToolbarGroupContent`, items only, so a group holds no group:
 
 ```swift
 @State private var hasChanges = false
@@ -937,7 +940,10 @@ NavigationStack($path) {
 ## Menu bars and context menus
 
 A page's menus are declared like its actions, with `.menuBar { }` on the
-page's view, and stand on the desktop menu bar while the page is shown:
+page's view, and stand on the desktop menu bar while the page is shown. A
+`MenuBarBuilder` collects the bar's menus and a `MenuBuilder` each menu's
+entries, its `MenuEntries` - what a menu, a context menu and a button's menu
+hold:
 
 ```swift
 struct RecentFile: Identifiable {

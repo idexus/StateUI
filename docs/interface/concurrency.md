@@ -12,7 +12,9 @@ event loop.
 Every StateUI event, change, lifetime, ticker, and host-event handler runs on
 `MainActor`. It can read and write state directly and may call an asynchronous
 function; an event, change or host-event handler that does names a policy,
-which says what happens when its event comes again while it is still running:
+which says what happens when its event comes again while it is still running.
+Such a handler is an `EventHandler`, or a `ValueEventHandler` where its event
+carries values, one parameter each:
 
 ```swift
 @State var status = "Idle"

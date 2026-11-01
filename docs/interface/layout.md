@@ -270,7 +270,8 @@ Grid {
 
 Rows or columns alike are written once, with their count:
 `.rows(.fill, .auto(count: 2), .fill(count: 5), .fixed(80))` is nine rows, and
-`.columns(.fill(count: 4))` four equal columns. Each spelling takes `count:`.
+`.columns(.fill(count: 4))` four equal columns. Each spelling takes `count:`,
+and each is a `GridTracks`: a run of tracks as long as one `GridLength` says.
 
 A grid's own width, where its room does not decide it, is the least at which
 every child fits its cell - a child spanning several tracks asks its room of
@@ -497,7 +498,9 @@ because it does not alter the layout rectangle; an animated layout property
 reports the rectangles that the host actually settles.
 
 `GeometryReader` owns the measured rectangle as its own state and rebuilds only
-its content from that value. Its closure runs once the first native frame report
+its content from that value. A `CoordinateSpace` says what the rectangle is
+measured against - `.parent`, `.safeArea` or `.global` - as `.onFrameChanged(in:)`
+takes it too. Its closure runs once the first native frame report
 supplies the measured rectangle; until then the reader holds nothing:
 
 ```swift
@@ -619,7 +622,7 @@ struct AlbumsPage: View {
 
 The initializer builds a card's face, one card per item, identified by `id:`
 or by the item itself where it is `Hashable`. Where a card stands and which
-way it faces is the arrangement's - `.wheel`, the one it stands in unless
+way it faces is the arrangement's, a `GalleryArrangement` - `.wheel`, the one it stands in unless
 said otherwise, `.fan`, `.row` or
 `.deck`, a pile swiped a card at a time, the card in front going out the way
 the hand goes and under the next - and changing it animates every card to the
@@ -731,7 +734,7 @@ carousel above, so marked, brings the next name in from the left in Arabic.
 
 An axis's range is how far the hand moves it: past an end, less and less,
 and let go there, it comes back onto the end. Its snaps are where it may rest
-beside the range's ends, which it always may: `[1, 2]` lists them,
+beside the range's ends, which it always may - its `AxisValues`: `[1, 2]` lists them,
 `.every(1)` puts one every unit from the lower end, `.at(stops)` takes a list
 worked out, and `.endpoints` leaves the ends alone - a drawer is open or closed,
 nothing between. Given no snaps, the axis rests wherever the hand leaves it
@@ -781,7 +784,7 @@ joining fades in where the arithmetic puts it; one leaving goes at once and
 the others close up; a new order slides; and a value read in the body - a
 switch between a fan and a pile - takes every view from where it was to its
 new place as a body of the layout's world, while the parameters go on as they
-go. `.dynamics(_:)` says how: each view on a spring to its place,
+go. `.dynamics(_:)` says how, a `LayoutDynamics`: each view on a spring to its place,
 `.standard` - 300 milliseconds, never past it - unless said, `.none` for
 views standing at their places at once - the parameters still travel; `.motion(_:)`
 is the parameters' law alone, moving between the views' rests, and `.dynamics`
@@ -948,7 +951,7 @@ lifted off a board - and `.itemDrag(begins: .perpendicular)` the view under a pr
 whose first move runs across the layout's axis - a card pulled up out of a
 deck that scrolls sideways; a hand that begins any other way moves the run
 as before. The held view follows the hand over the others, and
-`.onItemDragged` is told whether the hand takes it, moves it or lets it go,
+`.onItemDragged` is told, as an `ItemDrag`, whether the hand takes it, moves it or lets it go,
 the identity of its item (`drag.id`), where the hand is in the room, how long
 it has stood still, how fast the hand goes (`drag.velocity`), and the
 identity of the item whose view it is over (`drag.over`) - each
@@ -1170,9 +1173,10 @@ struct Contacts: View {
 
 Given keyframes, an axis has its arithmetic asked only there - at them, at
 its range's ends and at its snaps - and every view goes from its pose at one
-keyframe to its pose at the next along `.interpolation(_:)`: straight unless
-said, `.catmullRom` a smooth curve through them, `.monotone` one that never
-swings past them. So quite different layouts, one at each keyframe, are one
+keyframe to its pose at the next along `.interpolation(_:)`, a
+`LayoutInterpolation` - the library's are each a `LayoutCurve`: straight
+unless said, `.catmullRom` a smooth curve through them, `.monotone` one that
+never swings past them. So quite different layouts, one at each keyframe, are one
 the hand moves through - here a row, a column and a pile:
 
 ```swift

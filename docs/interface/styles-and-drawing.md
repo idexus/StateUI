@@ -6,7 +6,11 @@ properties it must apply; it does not run a second style cascade.
 
 ## Style sheets
 
-A `StyleSheet` contains typed styles. An unkeyed style applies implicitly to
+A `StyleSheet` contains typed styles, collected by a `StyleBuilder` - so `if`,
+`else` and `for` work in it - each forgetting its target as an `AnyStyle`.
+`Style<Target>` is `Styling` in its whole scope, `StyleScope.Whole`; a visual
+state's setters stand in `StyleScope.VisualState`, where a state cannot hold
+another. An unkeyed style applies implicitly to
 every control of its target type. A keyed style is selected with `.style(...)`
 and its key: a `StyleKey` typed by the control it is for and declared once, so
 a key misspelled, or asked of another kind of control, does not compile. A
