@@ -368,9 +368,11 @@ thing and are not. Both report writes, to different listeners. A `@State` calls
 the renderer; `@Observable` notifies whoever armed an observation scope around
 the read, and nothing here arms one. A write to such a model would leave the
 interface showing the old value with nothing failing anywhere. Holding one in a
-`@State` is therefore deprecated with a message naming the line - a warning, not
-a refusal, because the model still works as an object and an application that
-arms the tracking itself may hold one. A model declared elsewhere is bridged
+`@State` is therefore deprecated with a message naming the line - a warning,
+because no refusal can be written: an overload marked unavailable is passed over
+for the general `init(wrappedValue:)`, which fits every value, and the line
+compiles silently. `ContractRoadsTests` holds the warning, compiling that line
+with warnings as errors. A model declared elsewhere is bridged
 in the application by an adapter whose properties are `@State`: it copies the
 model's values inside `withObservationTracking` and again from its change
 handler, which arms the tracking anew - one way to tell a change, a write to a
