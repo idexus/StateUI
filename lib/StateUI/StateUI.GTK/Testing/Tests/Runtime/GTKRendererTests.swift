@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import CStateUIGTK
+import Glibc
 @_spi(Host) @testable import StateUI
 @_spi(Host) @testable import StateUIHost
 @testable import StateUIGTK
@@ -238,6 +239,22 @@ extension GTKRendererTests {
             XCTAssertFalse(said[1].isEmpty, "a time zone")
             XCTAssertNotEqual(said[2], "\(BatteryState.unknown)", "the power")
             XCTAssertNotEqual(said[3], "\(NetworkAccess.unknown)", "the network")
+        }
+    }
+
+    /// A zone the machine changed while the application stood behind - which the desktop tells no change of - is read
+    /// again as it comes back to the front.
+    func testAZoneChangedMeanwhileIsReadAgainAtTheFront() {
+        onUIThread {
+            let was = getenv("TZ").map { String(cString: $0) }
+            defer { if let was { setenv("TZ", was, 1) } else { unsetenv("TZ") } }
+            setenv("TZ", "Europe/Warsaw", 1)
+            let host = GTKRenderer.running { Text("Zone") }
+            XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
+
+            setenv("TZ", "Asia/Tokyo", 1)
+            host.readEnvironmentAgain()
+            XCTAssertEqual(StandardEnvironment.locale.timeZone, "Asia/Tokyo")
         }
     }
 

@@ -16,7 +16,9 @@ extension GTKEnvironment {
         let name = g_get_language_names()?.pointee.map { String(cString: $0) } ?? "C"
         let tag = name.split(whereSeparator: { $0 == "." || $0 == "@" }).first.map(String.init) ?? name
         let parts = tag.split(separator: "_").map(String.init)
-        let zone = g_time_zone_new_local()!
+        // The zone `TZ` names, else the machine's as it stands now: GLib's local zone follows the machine's alone.
+        let named = g_getenv("TZ").map { String(cString: $0) }.flatMap { $0.isEmpty ? nil : g_time_zone_new_identifier($0) }
+        let zone = named ?? g_time_zone_new_identifier(nil) ?? g_time_zone_new_local()!
         defer { g_time_zone_unref(zone) }
         let time = String(cString: nl_langinfo(nl_item(T_FMT)))
         return HostLocaleInfo(

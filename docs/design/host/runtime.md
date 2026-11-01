@@ -280,6 +280,20 @@ pull ends stays only where something will end it - a state carrying
 once where nothing would. A value of `isRefreshing` the application writes
 shows or ends the spinner and reports nothing back.
 
+## Facts read again at the front
+
+Some of the environment's facts change with no notice a host can hear: the
+time zone on GTK, WinUI and the Web, and the languages on WinUI. As the
+application comes back to the front from behind another or out of sight, the
+host layer asks its presenter to read the environment again
+(`HostPresenter.readEnvironmentAgain`), so a zone the user changed meanwhile
+stands before they look; its first activation reads nothing, the host having
+reported every fact as it started. A host whose platform tells each change -
+AppKit, UIKit and Android watch the zone and the locale, the Web hears
+`languagechange` - reports it as it comes, and the presenter's default reads
+nothing. The core writes only what differs, so a fact read again unchanged
+renders nothing.
+
 ## The runtime's parts
 
 `HostRuntime` builds the parts every host holds alike and wires them once: the

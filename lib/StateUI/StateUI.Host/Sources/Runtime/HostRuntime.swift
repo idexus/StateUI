@@ -201,8 +201,12 @@
     /// means for them, each rendered before the next, and the windows stand again where their standing moved.
     public func settlePhases() {
         settling = false
+        let before = lifecycle.phase
         let moves = lifecycle.settle(windows: tree.root?.windows ?? [])
         if let phase = moves.phase { core.setApplicationPhase(phase) }
+        // Back at the front from behind or out of sight: what changed meanwhile is read before the user looks.
+        // Design: docs/design/host/runtime.md#facts-read-again-at-the-front
+        if moves.phase == .active, let before, before != .active { presenter?.readEnvironmentAgain() }
         tell(moves.told)
         if moves.standing { presenter?.presentRendered(touchedChrome: true) }
     }

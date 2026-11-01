@@ -239,6 +239,34 @@ final class ApplicationLifecycleTests: XCTestCase {
         XCTAssertEqual(window.phase, .active)
     }
 
+    /// The application back at the front from out of sight reads its environment again - the zone and the languages
+    /// a platform tells no change of - and its first activation, or a move between its windows, does not.
+    func testTheEnvironmentIsReadAgainBackAtTheFront() throws {
+        PhasesApplication.register()
+        let runtime = HostRuntime.still()
+        let presenter = ReadingAgain()
+        runtime.presenter = presenter
+        runtime.connectWindow()
+        runtime.pump.turn()
+        defer { HostBoundary.setApplicationPhase(.active) }
+        let element = try XCTUnwrap(runtime.tree.root?.windows.first)
+
+        runtime.windowStateChanged(element, minimized: false, activated: true)
+        runtime.settlePhases()
+        XCTAssertEqual(presenter.read, 0, "the first activation reads what the host reported as it started")
+
+        runtime.windowStateChanged(element, minimized: true, activated: false)
+        runtime.settlePhases()
+        XCTAssertEqual(presenter.read, 0, "out of sight")
+
+        runtime.windowStateChanged(element, minimized: false, activated: true)
+        runtime.settlePhases()
+        XCTAssertEqual(presenter.read, 1, "back at the front")
+
+        runtime.settlePhases()
+        XCTAssertEqual(presenter.read, 1, "a settling that moves nothing reads nothing")
+    }
+
     /// A phase settled in the middle of the user's transaction - as a toolkit tells one while the host shows a
     /// window - is heard once it is over.
     func testAPhaseSettledInsideATransactionWaitsForItsEnd() throws {
@@ -303,4 +331,17 @@ final class ApplicationLifecycleTests: XCTestCase {
 
 private struct PhasesApplication: Application {
     var body: some Scene { WindowGroup { Text("phases") } }
+}
+
+/// A presenter counting how often the environment is read again.
+@MainActor
+private final class ReadingAgain: HostPresenter {
+    private(set) var read = 0
+
+    func presentRendered(touchedChrome: Bool) {}
+    func presentFrame(movedChrome: Bool) {}
+    func perform(_ call: HostActCall) {}
+    func open(link address: String) {}
+    func focus(_ element: MountedElement) {}
+    func readEnvironmentAgain() { read += 1 }
 }

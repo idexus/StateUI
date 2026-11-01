@@ -25,4 +25,14 @@
     /// Puts the keyboard on `element` as the focus act does (`ActToolkit.focus`): a field the keyboard is handed on
     /// to (`NextField`).
     func focus(_ element: MountedElement)
+
+    /// Reads again what the platform tells no change of - the time zone, the languages - as the application comes
+    /// back to the front: what the user changed meanwhile stands in the environment before they look.
+    /// Design: docs/design/host/runtime.md#facts-read-again-at-the-front
+    func readEnvironmentAgain()
+}
+
+extension HostPresenter {
+    /// Nothing: a platform that tells every change of its facts reports each as it comes.
+    public func readEnvironmentAgain() {}
 }

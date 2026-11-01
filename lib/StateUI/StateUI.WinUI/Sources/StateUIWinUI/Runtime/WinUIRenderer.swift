@@ -207,6 +207,12 @@ final class WinUIRenderer {
 }
 
 extension WinUIRenderer: HostPresenter {
+    /// The zone and the languages Windows tells no change of, read again as the application comes back to the front.
+    /// Design: docs/design/host/runtime.md#facts-read-again-at-the-front
+    func readEnvironmentAgain() {
+        environmentChanged()
+    }
+
     func presentRendered(touchedChrome: Bool) {
         if touchedChrome {
             showWindows()
