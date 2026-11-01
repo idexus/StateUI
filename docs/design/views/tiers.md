@@ -111,7 +111,7 @@ nothing a positioned view adds.
 
 A control's own properties are a protocol beside it, such as
 `ButtonProperties`. The control conforms on the element side and its style on
-the property side (`extension StyleBag: ButtonProperties where Target ==
+the property side (`extension Styling: ButtonProperties where Target ==
 Button`), which is what makes the same modifiers compile on both. The modifiers
 are written once and serve the control and the style alike.
 
@@ -120,7 +120,7 @@ are written once and serve the control and the style alike.
 `TextInputProperties` is a `ViewProperties`: it stands for a kind of control, a
 positioned view the user types into. `TextInput` is its element half, as
 `Layout` and `Shape` are theirs, and the element half is what a style is told
-apart by: the conditional conformances in `StyleBag+Properties.swift` name the
+apart by: the conditional conformances in `Styling+Properties.swift` name the
 element protocol, so a tier with only a property half could not be given to a
 style without also giving it the modifiers of `View`.
 

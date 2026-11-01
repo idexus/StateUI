@@ -717,10 +717,10 @@ final class StyleTests: XCTestCase {
 
     /// And the other half of the same rule: a control's OWN property surface
     /// is a `<Name>Properties` protocol, and the style wears it. A protocol
-    /// declared without its `StyleBag` conformance would compile and quietly
+    /// declared without its `Styling` conformance would compile and quietly
     /// leave `Style<Name>` without the control's own setters.
     func testEveryPropertySurfaceReachesTheStyle() throws {
-        let declared = try SourceTree.text(in: "StyleBag+Properties.swift")
+        let declared = try SourceTree.text(in: "Styling+Properties.swift")
         var read = 0
 
         // The shared tier's files declare the TIER surfaces, which reach the
@@ -737,10 +737,10 @@ final class StyleTests: XCTestCase {
 
                 XCTAssertTrue(
                     declared.contains(
-                        "extension StyleBag: \(surface) where Target == \(target) {}"),
+                        "extension Styling: \(surface) where Target == \(target) {}"),
                     """
-                    \(source) declares \(surface), which StyleBag+Properties.swift \
-                    does not hand to StyleBag - Style<\(target)> is missing the \
+                    \(source) declares \(surface), which Styling+Properties.swift \
+                    does not hand to Styling - Style<\(target)> is missing the \
                     control's own setters.
                     """)
             }

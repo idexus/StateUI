@@ -41,11 +41,16 @@ not compile. The conformances are one line per tier and one per control's own
 properties, and the modifiers themselves are written once for both.
 
 The style takes its node type from its target's blank initializer, so the
-target is named once, by the control itself. `StyleBag<Target, Context>` has a
-phantom context - the style itself, or one of its states - whose one job is to
-keep `visualState` and `basedOn`, which only the style itself says, out of its
-states: a state cannot hold a state. `Style<Target>` is a typealias with the
-context filled in, since Swift has no default generic arguments.
+target is named once, by the control itself. `Styling<Target, Scope>` has a
+phantom scope - the whole style, `StyleScope.Whole`, or one of its states,
+`StyleScope.VisualState` - whose one job is to keep `visualState` and
+`basedOn`, which only the style itself says, out of its states: a state cannot
+hold a state. `Style<Target>` is a typealias with the scope filled in, since
+Swift has no default generic arguments. One generic type rather than a style
+and a nested state type: every property surface - the library's and an
+application's own control's - conforms once, `extension Styling:
+RatingBarProperties where Target == RatingBar {}`, for the style and its states
+alike.
 
 ## Precedence
 

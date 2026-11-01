@@ -121,4 +121,4 @@ extension Aim where Target == RatingBar {
 extension RatingBar: StyleTarget {}
 
 /// A style of the bar offers the bar's own setters.
-extension StyleBag: RatingBarProperties where Target == RatingBar {}
+extension Styling: RatingBarProperties where Target == RatingBar {}

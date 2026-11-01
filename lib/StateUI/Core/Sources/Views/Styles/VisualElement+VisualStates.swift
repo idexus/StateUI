@@ -19,9 +19,9 @@ extension StyleTarget {
     ///   - setters: the property values in force while the control is there.
     public func visualState(
         _ state: VisualState<Self>,
-        _ setters: (StyleBag<Self, StyleState>) -> StyleBag<Self, StyleState>
+        _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>
     ) -> Modified {
-        let values = setters(StyleBag<Self, StyleState>(key: nil)).node.props
+        let values = setters(Styling<Self, StyleScope.VisualState>(key: nil)).node.props
         return declare(DeclaredState(key: state.key, setters: values))
     }
 

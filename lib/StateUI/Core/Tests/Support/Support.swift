@@ -837,7 +837,7 @@ enum SourceTree {
         let views = sources.appendingPathComponent("Views")
         let skipped: Set = [
             "Application.swift", "Node+Page.swift", "Node+Window.swift", "ViewBuilder.swift",
-            "Style.swift", "StyleBag+Properties.swift", "StyleBuilder.swift", "StyleSheet.swift",
+            "Style.swift", "Styling+Properties.swift", "StyleBuilder.swift", "StyleSheet.swift",
             "StyleTarget.swift", "VisualState.swift", "VisualStateList.swift",
             "VisualElement+VisualStates.swift",
             "NavigationStack.swift", "TabView.swift", "SplitView.swift",
