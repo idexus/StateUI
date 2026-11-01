@@ -10,7 +10,7 @@ An element that can hold the keyboard - a control taking the focus, or a layout 
 VStack {
     Text("Row \(row)")
 }
-.onKeyPressed(.upArrow, .downArrow) { press in
+.onKeyPressed([.upArrow, .downArrow]) { press in
     row += press.key == .upArrow ? -1 : 1
 }
 ```

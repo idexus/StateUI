@@ -13,7 +13,7 @@ extension VisualElement {
     ///         .accessibilityAction("Delete") { delete(message) }
     ///
     /// A reader offers the actions in the order they are written; a name stands once on a view.
-    public func accessibilityAction(_ name: String, perform handler: @escaping @MainActor () throws -> Void) -> Modified {
+    public func accessibilityAction(_ name: String, _ handler: @escaping @MainActor () throws -> Void) -> Modified {
         modified {
             $0.offersAction(name)
             $0.addHandler(VisualElementContract.accessibilityActionPerformed) { if $0 == name { try handler() } }
@@ -24,7 +24,7 @@ extension VisualElement {
     /// under way.
     ///
     ///     MessageRow(message).accessibilityAction("Archive", policy: .ignoreWhileRunning) { try await archive(message) }
-    public func accessibilityAction(_ name: String, policy: GatePolicy, perform handler: @escaping EventHandler) -> Modified {
+    public func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Modified {
         modified {
             $0.offersAction(name)
             $0.addHandler(VisualElementContract.accessibilityActionPerformed, policy: policy) {
@@ -34,7 +34,7 @@ extension VisualElement {
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
-    public func accessibilityAction(_ name: String, gate: Gate, perform handler: @escaping EventHandler) -> Modified {
+    public func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Modified {
         modified {
             $0.offersAction(name)
             $0.addHandler(VisualElementContract.accessibilityActionPerformed, gate: gate) {
@@ -50,7 +50,7 @@ extension VisualElement {
     ///         .accessibilityRole(.adjustable)
     ///         .accessibilityValue("\(stars) of 5")
     ///         .onAccessibilityAdjusted { step in stars = min(5, max(0, stars + (step == .increment ? 1 : -1))) }
-    public func onAccessibilityAdjusted(perform handler: @escaping @MainActor (AccessibilityAdjustment) throws -> Void)
+    public func onAccessibilityAdjusted(_ handler: @escaping @MainActor (AccessibilityAdjustment) throws -> Void)
         -> Modified {
         modified { $0.addHandler(VisualElementContract.accessibilityAdjusted, handler) }
     }
@@ -58,14 +58,14 @@ extension VisualElement {
     /// The same, with a handler that awaits: its `policy` says what a step does when it comes again while a run is
     /// under way.
     public func onAccessibilityAdjusted(
-        _ policy: GatePolicy, perform handler: @escaping ValueEventHandler<AccessibilityAdjustment>
+        _ policy: GatePolicy, _ handler: @escaping ValueEventHandler<AccessibilityAdjustment>
     ) -> Modified {
         modified { $0.addHandler(VisualElementContract.accessibilityAdjusted, policy: policy, handler) }
     }
 
     /// The same, through `gate`, which every handler and task written with it shares.
     public func onAccessibilityAdjusted(
-        gate: Gate, perform handler: @escaping ValueEventHandler<AccessibilityAdjustment>
+        gate: Gate, _ handler: @escaping ValueEventHandler<AccessibilityAdjustment>
     ) -> Modified {
         modified { $0.addHandler(VisualElementContract.accessibilityAdjusted, gate: gate, handler) }
     }

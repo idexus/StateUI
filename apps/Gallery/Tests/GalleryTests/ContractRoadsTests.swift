@@ -223,8 +223,8 @@ final class ContractRoadsTests: XCTestCase {
             open: #"_ = Menu("File") { MenuItem("New") }"#),
         Road(
             name: "keys taken by a view that never holds the keyboard",
-            closed: #"_ = Text("Row").onKeyPressed(.upArrow) { _ in }"#,
-            open: #"_ = VStack { Text("Row") }.onKeyPressed(.upArrow) { _ in }"#),
+            closed: #"_ = Text("Row").onKeyPressed([.upArrow]) { _ in }"#,
+            open: #"_ = VStack { Text("Row") }.onKeyPressed([.upArrow]) { _ in }"#),
         Road(
             name: "the keyboard heard on a view that never takes it",
             closed: """

@@ -3,7 +3,7 @@
 
 /// A key a view takes, pressed, and the keys held with it (`onKeyPressed`).
 ///
-///     .onKeyPressed(.tab) { press in press.modifiers.contains(.shift) ? focusPrevious() : focusNext() }
+///     .onKeyPressed([.tab]) { press in press.modifiers.contains(.shift) ? focusPrevious() : focusNext() }
 public struct KeyPress: Hashable, Sendable {
     /// The key pressed.
     public let key: Key

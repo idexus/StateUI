@@ -5501,7 +5501,7 @@ enum Listings {
                 }
                 // The stack holds the field, so these keys are its while the field holds the keyboard. Page Up and
                 // Page Down go to the ends; Tab goes down a row, and back up with Shift held.
-                .onKeyPressed(.upArrow, .downArrow, .pageUp, .pageDown, .tab, .escape) { press in
+                .onKeyPressed([.upArrow, .downArrow, .pageUp, .pageDown, .tab, .escape]) { press in
                     switch press.key {
                     case .escape: query = ""
                     case .pageUp: row = 0

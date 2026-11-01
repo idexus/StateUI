@@ -240,13 +240,13 @@ final class VisualStateTests: XCTestCase {
 
     /// Naming states declares them without changing the look, and only they are heard - as the typed state.
     func testAListenerDeclaresTheStatesItNamesAndHearsOnlyThem() throws {
-        let node = Button("Save").onVisualStateChanged(.pressed) { _ in }.node
+        let node = Button("Save").onVisualStateChanged([.pressed]) { _ in }.node
         XCTAssertEqual(node.visualStates, [DeclaredState(key: KeyName("Pressed"))])
 
         let renders = Renders()
         var heard: [String] = []
         let button = try XCTUnwrap(render(renders, Button("Save")
-            .onVisualStateChanged(.pressed) { heard.append($0 == .pressed ? "pressed" : $0.name) }
+            .onVisualStateChanged([.pressed]) { heard.append($0 == .pressed ? "pressed" : $0.name) }
             .id("c")
             .node))
 
@@ -262,7 +262,7 @@ final class VisualStateTests: XCTestCase {
         let renders = Renders()
         var heard: [String] = []
         let button = try XCTUnwrap(renders.render(
-            stack([Button("Save").onVisualStateChanged(.pressed) { heard.append($0.name) }.id("c").node], id: "root"),
+            stack([Button("Save").onVisualStateChanged([.pressed]) { heard.append($0.name) }.id("c").node], id: "root"),
             styles: sheet).child("c"))
 
         Renderer.shared.clearInvalidation()

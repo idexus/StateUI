@@ -748,7 +748,7 @@ struct Search: View {
             TextField($query)
             Text("Row \(row)")
         }
-        .onKeyPressed(.upArrow, .downArrow, .tab, .escape) { press in
+        .onKeyPressed([.upArrow, .downArrow, .tab, .escape]) { press in
             switch press.key {
             case .escape: query = ""
             case .tab: row += press.modifiers.contains(.shift) ? -1 : 1
@@ -768,7 +768,7 @@ and the keys held with it (`KeyPress`): Shift, where it was - Tab and
 Shift-Tab are one key told apart by it. A key held with the platform's own key
 or Alt belongs to shortcuts. Besides letters, digits, Return, Escape, Delete,
 the arrows and F1 to F12, a view takes Tab, Space, Home, End, Page Up and Page
-Down. `.onKeyPressed(.escape, policy:
+Down. `.onKeyPressed([.escape], policy:
 .ignoreWhileRunning) { _ in try await close() }` takes a handler that awaits.
 
 ## Tooltips

@@ -90,10 +90,10 @@
             s.start {
                 VStack {
                     TextField("")
-                        .onKeyPressed(.upArrow) { heard.values.append("field \($0.key == .upArrow)") }
+                        .onKeyPressed([.upArrow]) { heard.values.append("field \($0.key == .upArrow)") }
                         .id("field")
                 }
-                .onKeyPressed(.escape, .upArrow) { heard.values.append("stack \($0.key == .escape)") }
+                .onKeyPressed([.escape, .upArrow]) { heard.values.append("stack \($0.key == .escape)") }
                 .id("stack")
             }
             let field = try s.element("field")

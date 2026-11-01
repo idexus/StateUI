@@ -158,7 +158,7 @@ final class ControlTests: XCTestCase {
                     .showsClearButton(true)
                     .onTextChanged { _ in }
                     .onSubmitted {}
-                    .onKeyPressed(.upArrow) { _ in }),
+                    .onKeyPressed([.upArrow]) { _ in }),
 
             ControlCase("TextEditor", source: "TextEditor.swift",
                 TextEditor("Notes")
@@ -318,7 +318,8 @@ final class ControlTests: XCTestCase {
                 .stroke(.lightGray)
                 .lineWidth(1)
                 .shape(.roundedRectangle(12))
-                .clipsContent(true)),
+                .clipsContent(true)
+                .bottomBar(scrollEdge: .hard) { Text("At the foot") }),
 
             ControlCase("ScrollView", source: "ScrollView.swift",
                 ScrollView {
