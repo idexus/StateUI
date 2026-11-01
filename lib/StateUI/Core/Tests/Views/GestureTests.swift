@@ -311,7 +311,7 @@ final class GestureTests: XCTestCase {
         let patch = renders.render(
             VStack {
                 Text("Alpha")
-                    .draggable(text: "Alpha")
+                    .dragText("Alpha")
                     .id("source")
 
                 ZStack {
@@ -324,7 +324,7 @@ final class GestureTests: XCTestCase {
 
         let source = patch.child("source")
         XCTAssertEqual(source?.props["dragText"], .string("Alpha"))
-        XCTAssertEqual(source?.props["canDrag"], .bool(true))
+        XCTAssertNil(source?.props["isDraggable"], "a view carrying text is draggable unless it says otherwise")
 
         let target = patch.child("target")
         XCTAssertEqual(target?.props["allowsDrop"], .bool(true),

@@ -329,7 +329,6 @@ WebView
   accessibilityValue
   allowsDrop
   area
-  canDrag
   dragText
   droppedFileTypes
   frame
@@ -343,6 +342,7 @@ WebView
   horizontalAlignment
   ignoresInput
   isAccessibilityHidden
+  isDraggable
   isEnabled
   isVisible
   keysTaken

@@ -390,7 +390,6 @@ ZStack
   allowsDrop
   area
   background
-  canDrag
   dragText
   droppedFileTypes
   frame
@@ -403,6 +402,7 @@ ZStack
   holdDuration
   horizontalAlignment
   isAccessibilityHidden
+  isDraggable
   isEnabled
   isVisible
   keysTaken

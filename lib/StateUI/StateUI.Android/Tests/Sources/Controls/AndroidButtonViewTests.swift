@@ -229,7 +229,7 @@ final class AndroidButtonViewTests: XCTestCase {
             let heard = Received<String>()
             let host = AndroidRenderer.running {
                 Button("Save").onClicked {}.menu { MenuItem("Save as") }
-                    .draggable(text: "Save", canDrag: drags.wrappedValue) { heard.values.append("drag") }
+                    .dragText("Save").isDraggable(drags.wrappedValue).onDragStarting { heard.values.append("drag") }
             }
             host.layOut()
             let save = try XCTUnwrap(host.views(AndroidButtonView.self).first)

@@ -203,7 +203,7 @@ let item = Item(id: "note-1", title: "Shopping")
 func receive(_ text: String) {}
 
 Text(item.title)
-    .draggable(text: item.id)
+    .dragText(item.id)
     .onDragEnded { dragging = nil }
 
 ZStack { Text("Drop here") }

@@ -660,7 +660,7 @@
     @MainActor
     static func dragged(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aDragFromItCarriesItsWords", proves: [
-            Covered(ViewContract.canDrag, on: element), Covered(ViewContract.dragText, on: element),
+            Covered(ViewContract.isDraggable, on: element), Covered(ViewContract.dragText, on: element),
             Covered(ViewContract.dragStarting, on: element), Covered(ViewContract.dragEnded, on: element),
         ]) { s in
             let heard = Received<String>()
@@ -668,7 +668,7 @@
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),
-                        Write(ViewContract.canDrag, true), Write(ViewContract.dragText, "words"),
+                        Write(ViewContract.isDraggable, true), Write(ViewContract.dragText, "words"),
                         HearDone(ViewContract.dragStarting) { heard.values.append("starting") },
                         HearDone(ViewContract.dragEnded) { heard.values.append("completed") },
                     ])
@@ -702,7 +702,6 @@
                         .fill(.red)
                         .width(80)
                         .height(40)
-                        .setValue(ViewContract.canDrag, true)
                         .setValue(ViewContract.dragText, "words").id("source")
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 80), Write(VisualElementContract.height, 40),

@@ -1,7 +1,6 @@
 # revision 20.1
 Button.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.area: ✅
-Button.canDrag: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.dragEnded: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -18,6 +17,7 @@ Button.gridRowSpan: ✅
 Button.held: ✅
 Button.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Button.horizontalAlignment: ✅
+Button.isDraggable: ✓ dragAndDrop on Button: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Button.layoutBody: ✅
 Button.margin: ✅
 Button.panTouchCount: ✅
@@ -39,7 +39,6 @@ Button.tapped: ✅
 Button.verticalAlignment: ✅
 Canvas.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.area: ✅
-Canvas.canDrag: ✓ dragAndDrop on Canvas: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.dragEnded: ✓ dragAndDrop on Canvas: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -56,6 +55,7 @@ Canvas.gridRowSpan: ✅
 Canvas.held: ✅
 Canvas.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Canvas.horizontalAlignment: ✅
+Canvas.isDraggable: ✓ dragAndDrop on Canvas: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Canvas.layoutBody: ✅
 Canvas.margin: ✅
 Canvas.panTouchCount: ✅
@@ -77,7 +77,6 @@ Canvas.tapped: ✅
 Canvas.verticalAlignment: ✅
 Capsule.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.area: ✅
-Capsule.canDrag: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.dragEnded: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -94,6 +93,7 @@ Capsule.gridRowSpan: ✅
 Capsule.held: ✅
 Capsule.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Capsule.horizontalAlignment: ✅
+Capsule.isDraggable: ✓ dragAndDrop on Capsule: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Capsule.layoutBody: ✅
 Capsule.margin: ✅
 Capsule.panTouchCount: ✅
@@ -115,7 +115,6 @@ Capsule.tapped: ✅
 Capsule.verticalAlignment: ✅
 CheckBox.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.area: ✅
-CheckBox.canDrag: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.dragEnded: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -132,6 +131,7 @@ CheckBox.gridRowSpan: ✅
 CheckBox.held: ✅
 CheckBox.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 CheckBox.horizontalAlignment: ✅
+CheckBox.isDraggable: ✓ dragAndDrop on CheckBox: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 CheckBox.layoutBody: ✅
 CheckBox.margin: ✅
 CheckBox.panTouchCount: ✅
@@ -153,7 +153,6 @@ CheckBox.tapped: ✅
 CheckBox.verticalAlignment: ✅
 ColorPicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.area: ✅
-ColorPicker.canDrag: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -170,6 +169,7 @@ ColorPicker.gridRowSpan: ✅
 ColorPicker.held: ✅
 ColorPicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ColorPicker.horizontalAlignment: ✅
+ColorPicker.isDraggable: ✓ dragAndDrop on ColorPicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ColorPicker.layoutBody: ✅
 ColorPicker.margin: ✅
 ColorPicker.panTouchCount: ✅
@@ -191,7 +191,6 @@ ColorPicker.tapped: ✅
 ColorPicker.verticalAlignment: ✅
 DatePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.area: ✅
-DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -208,6 +207,7 @@ DatePicker.gridRowSpan: ✅
 DatePicker.held: ✅
 DatePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 DatePicker.horizontalAlignment: ✅
+DatePicker.isDraggable: ✓ dragAndDrop on DatePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 DatePicker.layoutBody: ✅
 DatePicker.margin: ✅
 DatePicker.panTouchCount: ✅
@@ -229,7 +229,6 @@ DatePicker.tapped: ✅
 DatePicker.verticalAlignment: ✅
 Ellipse.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.area: ✅
-Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -246,6 +245,7 @@ Ellipse.gridRowSpan: ✅
 Ellipse.held: ✅
 Ellipse.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Ellipse.horizontalAlignment: ✅
+Ellipse.isDraggable: ✓ dragAndDrop on Ellipse: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Ellipse.layoutBody: ✅
 Ellipse.margin: ✅
 Ellipse.panTouchCount: ✅
@@ -267,7 +267,6 @@ Ellipse.tapped: ✅
 Ellipse.verticalAlignment: ✅
 Fill.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.area: ✅
-Fill.canDrag: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.dragEnded: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -284,6 +283,7 @@ Fill.gridRowSpan: ✅
 Fill.held: ✅
 Fill.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Fill.horizontalAlignment: ✅
+Fill.isDraggable: ✓ dragAndDrop on Fill: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Fill.layoutBody: ✅
 Fill.margin: ✅
 Fill.panTouchCount: ✅
@@ -305,7 +305,6 @@ Fill.tapped: ✅
 Fill.verticalAlignment: ✅
 Grid.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.area: ✅
-Grid.canDrag: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.dragEnded: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -322,6 +321,7 @@ Grid.gridRowSpan: ✅
 Grid.held: ✅
 Grid.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Grid.horizontalAlignment: ✅
+Grid.isDraggable: ✓ dragAndDrop on Grid: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Grid.layoutBody: ✅
 Grid.margin: ✅
 Grid.panTouchCount: ✅
@@ -343,7 +343,6 @@ Grid.tapped: ✅
 Grid.verticalAlignment: ✅
 HStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.area: ✅
-HStack.canDrag: ✓ dragAndDrop on HStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.dragEnded: ✓ dragAndDrop on HStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -360,6 +359,7 @@ HStack.gridRowSpan: ✅
 HStack.held: ✅
 HStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 HStack.horizontalAlignment: ✅
+HStack.isDraggable: ✓ dragAndDrop on HStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 HStack.layoutBody: ✅
 HStack.margin: ✅
 HStack.panTouchCount: ✅
@@ -381,7 +381,6 @@ HStack.tapped: ✅
 HStack.verticalAlignment: ✅
 Image.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.area: ✅
-Image.canDrag: ✓ dragAndDrop on Image: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.dragEnded: ✓ dragAndDrop on Image: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -398,6 +397,7 @@ Image.gridRowSpan: ✅
 Image.held: ✅
 Image.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Image.horizontalAlignment: ✅
+Image.isDraggable: ✓ dragAndDrop on Image: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Image.layoutBody: ✅
 Image.margin: ✅
 Image.panTouchCount: ✅
@@ -419,7 +419,6 @@ Image.tapped: ✅
 Image.verticalAlignment: ✅
 ItemsView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.area: ✅
-ItemsView.canDrag: ✓ dragAndDrop on ItemsView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.dragEnded: ✓ dragAndDrop on ItemsView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -436,6 +435,7 @@ ItemsView.gridRowSpan: ✅
 ItemsView.held: ✅
 ItemsView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ItemsView.horizontalAlignment: ✅
+ItemsView.isDraggable: ✓ dragAndDrop on ItemsView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ItemsView.layoutBody: ✅
 ItemsView.margin: ✅
 ItemsView.panTouchCount: ✅
@@ -457,7 +457,6 @@ ItemsView.tapped: ✅
 ItemsView.verticalAlignment: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.area: ✅
-Line.canDrag: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.dragEnded: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -474,6 +473,7 @@ Line.gridRowSpan: ✅
 Line.held: ✅
 Line.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Line.horizontalAlignment: ✅
+Line.isDraggable: ✓ dragAndDrop on Line: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Line.layoutBody: ✅
 Line.margin: ✅
 Line.panTouchCount: ✅
@@ -495,7 +495,6 @@ Line.tapped: ✅
 Line.verticalAlignment: ✅
 Link.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.area: ✅
-Link.canDrag: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.dragEnded: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -512,6 +511,7 @@ Link.gridRowSpan: ✅
 Link.held: ✅
 Link.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Link.horizontalAlignment: ✅
+Link.isDraggable: ✓ dragAndDrop on Link: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Link.layoutBody: ✅
 Link.margin: ✅
 Link.panTouchCount: ✅
@@ -533,7 +533,6 @@ Link.tapped: ✅
 Link.verticalAlignment: ✅
 Map.allowsDrop: 🧩
 Map.area: 🧩
-Map.canDrag: 🧩
 Map.dragEnded: 🧩
 Map.dragLeave: 🧩
 Map.dragOver: 🧩
@@ -550,6 +549,7 @@ Map.gridRowSpan: 🧩
 Map.held: 🧩
 Map.holdDuration: 🧩
 Map.horizontalAlignment: 🧩
+Map.isDraggable: 🧩
 Map.layoutBody: 🧩
 Map.margin: 🧩
 Map.panTouchCount: 🧩
@@ -571,7 +571,6 @@ Map.tapped: 🧩
 Map.verticalAlignment: 🧩
 MotionLayout.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.area: ✅
-MotionLayout.canDrag: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.dragEnded: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -588,6 +587,7 @@ MotionLayout.gridRowSpan: ✅
 MotionLayout.held: ✅
 MotionLayout.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 MotionLayout.horizontalAlignment: ✅
+MotionLayout.isDraggable: ✓ dragAndDrop on MotionLayout: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 MotionLayout.layoutBody: ✅
 MotionLayout.margin: ✅
 MotionLayout.panTouchCount: ✅
@@ -609,7 +609,6 @@ MotionLayout.tapped: ✅
 MotionLayout.verticalAlignment: ✅
 Path.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.area: ✅
-Path.canDrag: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.dragEnded: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -626,6 +625,7 @@ Path.gridRowSpan: ✅
 Path.held: ✅
 Path.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Path.horizontalAlignment: ✅
+Path.isDraggable: ✓ dragAndDrop on Path: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Path.layoutBody: ✅
 Path.margin: ✅
 Path.panTouchCount: ✅
@@ -647,7 +647,6 @@ Path.tapped: ✅
 Path.verticalAlignment: ✅
 Picker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.area: ✅
-Picker.canDrag: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.dragEnded: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -664,6 +663,7 @@ Picker.gridRowSpan: ✅
 Picker.held: ✅
 Picker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Picker.horizontalAlignment: ✅
+Picker.isDraggable: ✓ dragAndDrop on Picker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Picker.layoutBody: ✅
 Picker.margin: ✅
 Picker.panTouchCount: ✅
@@ -685,7 +685,6 @@ Picker.tapped: ✅
 Picker.verticalAlignment: ✅
 Polygon.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.area: ✅
-Polygon.canDrag: ✓ dragAndDrop on Polygon: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.dragEnded: ✓ dragAndDrop on Polygon: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -702,6 +701,7 @@ Polygon.gridRowSpan: ✅
 Polygon.held: ✅
 Polygon.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polygon.horizontalAlignment: ✅
+Polygon.isDraggable: ✓ dragAndDrop on Polygon: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polygon.layoutBody: ✅
 Polygon.margin: ✅
 Polygon.panTouchCount: ✅
@@ -723,7 +723,6 @@ Polygon.tapped: ✅
 Polygon.verticalAlignment: ✅
 Polyline.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.area: ✅
-Polyline.canDrag: ✓ dragAndDrop on Polyline: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.dragEnded: ✓ dragAndDrop on Polyline: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -740,6 +739,7 @@ Polyline.gridRowSpan: ✅
 Polyline.held: ✅
 Polyline.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Polyline.horizontalAlignment: ✅
+Polyline.isDraggable: ✓ dragAndDrop on Polyline: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Polyline.layoutBody: ✅
 Polyline.margin: ✅
 Polyline.panTouchCount: ✅
@@ -761,7 +761,6 @@ Polyline.tapped: ✅
 Polyline.verticalAlignment: ✅
 ProgressBar.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.area: ✅
-ProgressBar.canDrag: ✓ dragAndDrop on ProgressBar: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.dragEnded: ✓ dragAndDrop on ProgressBar: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -778,6 +777,7 @@ ProgressBar.gridRowSpan: ✅
 ProgressBar.held: ✅
 ProgressBar.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ProgressBar.horizontalAlignment: ✅
+ProgressBar.isDraggable: ✓ dragAndDrop on ProgressBar: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ProgressBar.layoutBody: ✅
 ProgressBar.margin: ✅
 ProgressBar.panTouchCount: ✅
@@ -799,7 +799,6 @@ ProgressBar.tapped: ✅
 ProgressBar.verticalAlignment: ✅
 Rectangle.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.area: ✅
-Rectangle.canDrag: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.dragEnded: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -816,6 +815,7 @@ Rectangle.gridRowSpan: ✅
 Rectangle.held: ✅
 Rectangle.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Rectangle.horizontalAlignment: ✅
+Rectangle.isDraggable: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Rectangle.layoutBody: ✅
 Rectangle.margin: ✅
 Rectangle.panTouchCount: ✅
@@ -837,7 +837,6 @@ Rectangle.tapped: ✅
 Rectangle.verticalAlignment: ✅
 ScrollView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.area: ✅
-ScrollView.canDrag: ✓ dragAndDrop on ScrollView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.dragEnded: ✓ dragAndDrop on ScrollView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -854,6 +853,7 @@ ScrollView.gridRowSpan: ✅
 ScrollView.held: ✅
 ScrollView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ScrollView.horizontalAlignment: ✅
+ScrollView.isDraggable: ✓ dragAndDrop on ScrollView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ScrollView.layoutBody: ✅
 ScrollView.margin: ✅
 ScrollView.panTouchCount: ✅
@@ -875,7 +875,6 @@ ScrollView.tapped: ✅
 ScrollView.verticalAlignment: ✅
 SearchField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.area: ✅
-SearchField.canDrag: ✓ dragAndDrop on SearchField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.dragEnded: ✓ dragAndDrop on SearchField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -892,6 +891,7 @@ SearchField.gridRowSpan: ✅
 SearchField.held: ✅
 SearchField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 SearchField.horizontalAlignment: ✅
+SearchField.isDraggable: ✓ dragAndDrop on SearchField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 SearchField.layoutBody: ✅
 SearchField.margin: ✅
 SearchField.panTouchCount: ✅
@@ -913,7 +913,6 @@ SearchField.tapped: ✅
 SearchField.verticalAlignment: ✅
 Separator.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.area: ✅
-Separator.canDrag: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.dragEnded: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -930,6 +929,7 @@ Separator.gridRowSpan: ✅
 Separator.held: ✅
 Separator.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Separator.horizontalAlignment: ✅
+Separator.isDraggable: ✓ dragAndDrop on Separator: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Separator.layoutBody: ✅
 Separator.margin: ✅
 Separator.panTouchCount: ✅
@@ -951,7 +951,6 @@ Separator.tapped: ✅
 Separator.verticalAlignment: ✅
 Slider.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.area: ✅
-Slider.canDrag: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.dragEnded: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -968,6 +967,7 @@ Slider.gridRowSpan: ✅
 Slider.held: ✅
 Slider.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Slider.horizontalAlignment: ✅
+Slider.isDraggable: ✓ dragAndDrop on Slider: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Slider.layoutBody: ✅
 Slider.margin: ✅
 Slider.panTouchCount: ✅
@@ -989,7 +989,6 @@ Slider.tapped: ✅
 Slider.verticalAlignment: ✅
 Space.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.area: ✅
-Space.canDrag: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.dragEnded: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1006,6 +1005,7 @@ Space.gridRowSpan: ✅
 Space.held: ✅
 Space.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Space.horizontalAlignment: ✅
+Space.isDraggable: ✓ dragAndDrop on Space: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Space.layoutBody: ✅
 Space.margin: ✅
 Space.panTouchCount: ✅
@@ -1027,7 +1027,6 @@ Space.tapped: ✅
 Space.verticalAlignment: ✅
 Spinner.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.area: ✅
-Spinner.canDrag: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1044,6 +1043,7 @@ Spinner.gridRowSpan: ✅
 Spinner.held: ✅
 Spinner.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Spinner.horizontalAlignment: ✅
+Spinner.isDraggable: ✓ dragAndDrop on Spinner: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Spinner.layoutBody: ✅
 Spinner.margin: ✅
 Spinner.panTouchCount: ✅
@@ -1065,7 +1065,6 @@ Spinner.tapped: ✅
 Spinner.verticalAlignment: ✅
 Stepper.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.area: ✅
-Stepper.canDrag: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1082,6 +1081,7 @@ Stepper.gridRowSpan: ✅
 Stepper.held: ✅
 Stepper.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Stepper.horizontalAlignment: ✅
+Stepper.isDraggable: ✓ dragAndDrop on Stepper: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Stepper.layoutBody: ✅
 Stepper.margin: ✅
 Stepper.panTouchCount: ✅
@@ -1103,7 +1103,6 @@ Stepper.tapped: ✅
 Stepper.verticalAlignment: ✅
 Switch.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.area: ✅
-Switch.canDrag: ✓ dragAndDrop on Switch: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.dragEnded: ✓ dragAndDrop on Switch: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1120,6 +1119,7 @@ Switch.gridRowSpan: ✅
 Switch.held: ✅
 Switch.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Switch.horizontalAlignment: ✅
+Switch.isDraggable: ✓ dragAndDrop on Switch: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Switch.layoutBody: ✅
 Switch.margin: ✅
 Switch.panTouchCount: ✅
@@ -1141,7 +1141,6 @@ Switch.tapped: ✅
 Switch.verticalAlignment: ✅
 Text.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.area: ✅
-Text.canDrag: ✓ dragAndDrop on Text: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.dragEnded: ✓ dragAndDrop on Text: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1158,6 +1157,7 @@ Text.gridRowSpan: ✅
 Text.held: ✅
 Text.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 Text.horizontalAlignment: ✅
+Text.isDraggable: ✓ dragAndDrop on Text: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 Text.layoutBody: ✅
 Text.margin: ✅
 Text.panTouchCount: ✅
@@ -1179,7 +1179,6 @@ Text.tapped: ✅
 Text.verticalAlignment: ✅
 TextEditor.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.area: ✅
-TextEditor.canDrag: ✓ dragAndDrop on TextEditor: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1196,6 +1195,7 @@ TextEditor.gridRowSpan: ✅
 TextEditor.held: ✅
 TextEditor.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextEditor.horizontalAlignment: ✅
+TextEditor.isDraggable: ✓ dragAndDrop on TextEditor: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextEditor.layoutBody: ✅
 TextEditor.margin: ✅
 TextEditor.panTouchCount: ✅
@@ -1217,7 +1217,6 @@ TextEditor.tapped: ✅
 TextEditor.verticalAlignment: ✅
 TextField.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.area: ✅
-TextField.canDrag: ✓ dragAndDrop on TextField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.dragEnded: ✓ dragAndDrop on TextField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1234,6 +1233,7 @@ TextField.gridRowSpan: ✅
 TextField.held: ✅
 TextField.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TextField.horizontalAlignment: ✅
+TextField.isDraggable: ✓ dragAndDrop on TextField: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TextField.layoutBody: ✅
 TextField.margin: ✅
 TextField.panTouchCount: ✅
@@ -1255,7 +1255,6 @@ TextField.tapped: ✅
 TextField.verticalAlignment: ✅
 TimePicker.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.area: ✅
-TimePicker.canDrag: ✓ dragAndDrop on TimePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1272,6 +1271,7 @@ TimePicker.gridRowSpan: ✅
 TimePicker.held: ✅
 TimePicker.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 TimePicker.horizontalAlignment: ✅
+TimePicker.isDraggable: ✓ dragAndDrop on TimePicker: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 TimePicker.layoutBody: ✅
 TimePicker.margin: ✅
 TimePicker.panTouchCount: ✅
@@ -1293,7 +1293,6 @@ TimePicker.tapped: ✅
 TimePicker.verticalAlignment: ✅
 VStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.area: ✅
-VStack.canDrag: ✓ dragAndDrop on VStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.dragEnded: ✓ dragAndDrop on VStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1310,6 +1309,7 @@ VStack.gridRowSpan: ✅
 VStack.held: ✅
 VStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 VStack.horizontalAlignment: ✅
+VStack.isDraggable: ✓ dragAndDrop on VStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 VStack.layoutBody: ✅
 VStack.margin: ✅
 VStack.panTouchCount: ✅
@@ -1331,7 +1331,6 @@ VStack.tapped: ✅
 VStack.verticalAlignment: ✅
 WebView.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.area: ✅
-WebView.canDrag: ✓ dragAndDrop on WebView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.dragEnded: ✓ dragAndDrop on WebView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1348,6 +1347,7 @@ WebView.gridRowSpan: ✅
 WebView.held: ✅
 WebView.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 WebView.horizontalAlignment: ✅
+WebView.isDraggable: ✓ dragAndDrop on WebView: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 WebView.layoutBody: ✅
 WebView.margin: ✅
 WebView.panTouchCount: ✅
@@ -1369,7 +1369,6 @@ WebView.tapped: ✅
 WebView.verticalAlignment: ✅
 ZStack.allowsDrop: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.area: ✅
-ZStack.canDrag: ✓ dragAndDrop on ZStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.dragEnded: ✓ dragAndDrop on ZStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.dragLeave: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.dragOver: ✓ dragAndDrop on Rectangle: the drag source's and the drop targets' signals told by the driver, no drag GTK began
@@ -1386,6 +1385,7 @@ ZStack.gridRowSpan: ✅
 ZStack.held: ✅
 ZStack.holdDuration: ☑️ GTK waits from half to twice its long-press time: a time beyond either stands at that end.
 ZStack.horizontalAlignment: ✅
+ZStack.isDraggable: ✓ dragAndDrop on ZStack: the drag source's and the drop targets' signals told by the driver, no drag GTK began
 ZStack.layoutBody: ✅
 ZStack.margin: ✅
 ZStack.panTouchCount: ✅

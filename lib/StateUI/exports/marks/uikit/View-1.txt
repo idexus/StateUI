@@ -17,13 +17,13 @@ CheckBox.frameChanged: ✅
 CheckBox.horizontalAlignment: ✅
 CheckBox.pinchUpdated: ✓ pinch on CheckBox: the view's listening handed the recognizer's states, no touch sent
 CheckBox.verticalAlignment: ✅
-ColorPicker.canDrag: ✓ dragAndDrop on ColorPicker: the drag and drop interactions' handlers called, no drag session
 ColorPicker.dragEnded: ✓ dragAndDrop on ColorPicker: the drag and drop interactions' handlers called, no drag session
 ColorPicker.dragStarting: ✓ dragAndDrop on ColorPicker: the drag and drop interactions' handlers called, no drag session
 ColorPicker.dragText: ✓ dragAndDrop on ColorPicker: the drag and drop interactions' handlers called, no drag session
 ColorPicker.frameChanged: ✅
 ColorPicker.gridColumnSpan: ✅
 ColorPicker.gridRowSpan: ✅
+ColorPicker.isDraggable: ✓ dragAndDrop on ColorPicker: the drag and drop interactions' handlers called, no drag session
 DatePicker.held: ✓ hold on DatePicker: the view's listening handed the recognizer's states, no touch sent
 DatePicker.layoutBody: ✅
 Ellipse.panYChannel: ✓ pan on Ellipse: the view's listening handed the recognizer's states, no touch sent
@@ -54,13 +54,13 @@ Line.frameChanged: ✅
 Line.horizontalAlignment: ✅
 Line.pinchUpdated: ✓ pinch on Line: the view's listening handed the recognizer's states, no touch sent
 Line.verticalAlignment: ✅
-Link.canDrag: ✓ dragAndDrop on Link: the drag and drop interactions' handlers called, no drag session
 Link.dragEnded: ✓ dragAndDrop on Link: the drag and drop interactions' handlers called, no drag session
 Link.dragStarting: ✓ dragAndDrop on Link: the drag and drop interactions' handlers called, no drag session
 Link.dragText: ✓ dragAndDrop on Link: the drag and drop interactions' handlers called, no drag session
 Link.frameChanged: ✅
 Link.gridColumnSpan: ✅
 Link.gridRowSpan: ✅
+Link.isDraggable: ✓ dragAndDrop on Link: the drag and drop interactions' handlers called, no drag session
 Map.held: ✓ hold on Map: the view's listening handed the recognizer's states, no touch sent
 Map.layoutBody: ✅
 MotionLayout.panTouchCount: ✓ pan on MotionLayout: the view's listening handed the recognizer's states, no touch sent
@@ -101,13 +101,13 @@ SearchField.horizontalAlignment: ✅
 SearchField.pinchUpdated: ✓ pinch on SearchField: the view's listening handed the recognizer's states, no touch sent
 SearchField.verticalAlignment: ✅
 Separator.panYChannel: ✓ pan on Separator: the view's listening handed the recognizer's states, no touch sent
-Slider.canDrag: ✓ dragAndDrop on Slider: the drag and drop interactions' handlers called, no drag session
 Slider.dragEnded: ✓ dragAndDrop on Slider: the drag and drop interactions' handlers called, no drag session
 Slider.dragStarting: ✓ dragAndDrop on Slider: the drag and drop interactions' handlers called, no drag session
 Slider.dragText: ✓ dragAndDrop on Slider: the drag and drop interactions' handlers called, no drag session
 Slider.frameChanged: ✅
 Slider.gridColumnSpan: ✅
 Slider.gridRowSpan: ✅
+Slider.isDraggable: ✓ dragAndDrop on Slider: the drag and drop interactions' handlers called, no drag session
 Space.held: ✓ hold on Space: the view's listening handed the recognizer's states, no touch sent
 Space.layoutBody: ✅
 Spinner.frameChanged: ✅

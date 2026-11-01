@@ -3191,7 +3191,8 @@ swift.method @SwiftNever.background(_:): @MainActor func background(_ value: Mat
 swift.method @SwiftNever.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method @SwiftNever.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method @SwiftNever.debugInfo(): @MainActor func debugInfo() -> String
-swift.method @SwiftNever.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method @SwiftNever.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method @SwiftNever.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method @SwiftNever.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method @SwiftNever.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method @SwiftNever.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -3209,6 +3210,8 @@ swift.method @SwiftNever.icon(_:): @MainActor func icon(_ value: ImageSource) ->
 swift.method @SwiftNever.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method @SwiftNever.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method @SwiftNever.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method @SwiftNever.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method @SwiftNever.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method @SwiftNever.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -3250,6 +3253,9 @@ swift.method @SwiftNever.onDragLeave(gate:_:): @MainActor func onDragLeave(gate:
 swift.method @SwiftNever.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method @SwiftNever.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method @SwiftNever.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method @SwiftNever.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method @SwiftNever.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method @SwiftNever.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method @SwiftNever.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -3424,7 +3430,8 @@ swift.method AnyView.background(_:): @MainActor func background(_ value: Materia
 swift.method AnyView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method AnyView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method AnyView.debugInfo(): @MainActor func debugInfo() -> String
-swift.method AnyView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method AnyView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method AnyView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method AnyView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method AnyView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method AnyView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -3441,6 +3448,8 @@ swift.method AnyView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Sel
 swift.method AnyView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method AnyView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method AnyView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method AnyView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method AnyView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method AnyView.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -3482,6 +3491,9 @@ swift.method AnyView.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gat
 swift.method AnyView.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method AnyView.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method AnyView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method AnyView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method AnyView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method AnyView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method AnyView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -3674,7 +3686,8 @@ swift.method Button.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>
 swift.method Button.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Button.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Button.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Button.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Button.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Button.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Button.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Button.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Button.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -3697,6 +3710,8 @@ swift.method Button.iconSpacing(_:): @MainActor func iconSpacing(_ state: Bindin
 swift.method Button.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Button.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Button.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Button.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Button.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method Button.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -3747,6 +3762,9 @@ swift.method Button.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method Button.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Button.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Button.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Button.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Button.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Button.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Button.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Button.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -3941,7 +3959,8 @@ swift.method Canvas.background(_:): @MainActor func background(_ value: Material
 swift.method Canvas.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Canvas.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Canvas.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Canvas.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Canvas.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Canvas.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Canvas.drawing(_:): @MainActor func drawing(@DrawingBuilder _ drawing: () -> [DrawCommand]) -> Self.Modified
 swift.method Canvas.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Canvas.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
@@ -3959,6 +3978,8 @@ swift.method Canvas.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self
 swift.method Canvas.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Canvas.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Canvas.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Canvas.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Canvas.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Canvas.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -4000,6 +4021,9 @@ swift.method Canvas.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method Canvas.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Canvas.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Canvas.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Canvas.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Canvas.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Canvas.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Canvas.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -4169,7 +4193,8 @@ swift.method Capsule.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _
 swift.method Capsule.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Capsule.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
 swift.method Capsule.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Capsule.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Capsule.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Capsule.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Capsule.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Capsule.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Capsule.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -4192,6 +4217,8 @@ swift.method Capsule.icon(_:): @MainActor func icon(_ value: ImageSource) -> Sel
 swift.method Capsule.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Capsule.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Capsule.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Capsule.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Capsule.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Capsule.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -4235,6 +4262,9 @@ swift.method Capsule.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gat
 swift.method Capsule.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Capsule.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Capsule.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Capsule.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Capsule.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Capsule.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Capsule.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Capsule.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -4401,7 +4431,8 @@ swift.method CheckBox.background(_:): @MainActor func background(_ value: Materi
 swift.method CheckBox.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method CheckBox.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method CheckBox.debugInfo(): @MainActor func debugInfo() -> String
-swift.method CheckBox.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method CheckBox.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method CheckBox.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method CheckBox.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method CheckBox.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method CheckBox.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -4418,6 +4449,8 @@ swift.method CheckBox.icon(_:): @MainActor func icon(_ value: ImageSource) -> Se
 swift.method CheckBox.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method CheckBox.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method CheckBox.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method CheckBox.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method CheckBox.isOn(_:): @MainActor func isOn(_ state: Binding<Bool>) -> CheckBox.Modified
@@ -4461,6 +4494,9 @@ swift.method CheckBox.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Ga
 swift.method CheckBox.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method CheckBox.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method CheckBox.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method CheckBox.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method CheckBox.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method CheckBox.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method CheckBox.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method CheckBox.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -4646,7 +4682,8 @@ swift.method ColorPicker.choosesOpacity(_:): @MainActor func choosesOpacity(_ va
 swift.method ColorPicker.color(_:): @MainActor func color(_ state: Binding<Color>) -> ColorPicker.Modified
 swift.method ColorPicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ColorPicker.debugInfo(): @MainActor func debugInfo() -> String
-swift.method ColorPicker.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method ColorPicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method ColorPicker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method ColorPicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ColorPicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ColorPicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -4663,6 +4700,8 @@ swift.method ColorPicker.icon(_:): @MainActor func icon(_ value: ImageSource) ->
 swift.method ColorPicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ColorPicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method ColorPicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method ColorPicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ColorPicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -4708,6 +4747,9 @@ swift.method ColorPicker.onDragLeave(gate:_:): @MainActor func onDragLeave(gate:
 swift.method ColorPicker.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ColorPicker.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ColorPicker.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ColorPicker.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ColorPicker.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ColorPicker.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ColorPicker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ColorPicker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -4885,7 +4927,8 @@ swift.method DatePicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Cont
 swift.method DatePicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method DatePicker.date(_:): @MainActor func date(_ state: Binding<CalendarDate>) -> DatePicker.Modified
 swift.method DatePicker.debugInfo(): @MainActor func debugInfo() -> String
-swift.method DatePicker.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method DatePicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method DatePicker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method DatePicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method DatePicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DatePicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -4907,6 +4950,8 @@ swift.method DatePicker.icon(_:): @MainActor func icon(_ value: ImageSource) -> 
 swift.method DatePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DatePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method DatePicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method DatePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method DatePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method DatePicker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -4959,6 +5004,9 @@ swift.method DatePicker.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: 
 swift.method DatePicker.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DatePicker.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DatePicker.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DatePicker.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DatePicker.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DatePicker.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method DatePicker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DatePicker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -5137,7 +5185,8 @@ swift.method DebugInspector.background(_:): @MainActor func background(_ value: 
 swift.method DebugInspector.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DebugInspector.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method DebugInspector.debugInfo(): @MainActor func debugInfo() -> String
-swift.method DebugInspector.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method DebugInspector.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method DebugInspector.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method DebugInspector.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method DebugInspector.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method DebugInspector.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -5154,6 +5203,8 @@ swift.method DebugInspector.icon(_:): @MainActor func icon(_ value: ImageSource)
 swift.method DebugInspector.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method DebugInspector.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspector.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method DebugInspector.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method DebugInspector.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method DebugInspector.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -5195,6 +5246,9 @@ swift.method DebugInspector.onDragLeave(gate:_:): @MainActor func onDragLeave(ga
 swift.method DebugInspector.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method DebugInspector.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspector.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method DebugInspector.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method DebugInspector.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method DebugInspector.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method DebugInspector.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method DebugInspector.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -5364,7 +5418,8 @@ swift.method Either.background(_:): @MainActor func background(_ value: Material
 swift.method Either.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Either.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Either.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Either.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Either.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Either.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Either.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Either.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Either.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -5390,6 +5445,8 @@ swift.method Either.ignoresInput(_:): @MainActor func ignoresInput(_ state: Bind
 swift.method Either.ignoresInput(_:): @MainActor func ignoresInput(_ value: Bool) -> Self.Modified
 swift.method Either.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Either.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ value: Bool) -> Self.Modified
+swift.method Either.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Either.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Either.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Either.isEnabled(_:): @MainActor func isEnabled(_ value: Bool) -> Self.Modified
 swift.method Either.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -5440,6 +5497,9 @@ swift.method Either.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method Either.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Either.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Either.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Either.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Either.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Either.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Either.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Either.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -5620,7 +5680,8 @@ swift.method Ellipse.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _
 swift.method Ellipse.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Ellipse.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
 swift.method Ellipse.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Ellipse.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Ellipse.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Ellipse.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Ellipse.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Ellipse.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Ellipse.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -5643,6 +5704,8 @@ swift.method Ellipse.icon(_:): @MainActor func icon(_ value: ImageSource) -> Sel
 swift.method Ellipse.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Ellipse.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Ellipse.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Ellipse.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Ellipse.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Ellipse.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -5686,6 +5749,9 @@ swift.method Ellipse.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gat
 swift.method Ellipse.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Ellipse.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Ellipse.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Ellipse.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Ellipse.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Ellipse.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Ellipse.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Ellipse.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -5852,7 +5918,8 @@ swift.method Fill.background(_:): @MainActor func background(_ value: Material) 
 swift.method Fill.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Fill.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Fill.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Fill.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Fill.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Fill.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Fill.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Fill.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Fill.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -5869,6 +5936,8 @@ swift.method Fill.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.M
 swift.method Fill.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Fill.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Fill.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Fill.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Fill.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Fill.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -5911,6 +5980,9 @@ swift.method Fill.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate, 
 swift.method Fill.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Fill.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Fill.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Fill.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Fill.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Fill.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Fill.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Fill.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -6097,7 +6169,8 @@ swift.method GalleryView.background(_:): @MainActor func background(_ value: Mat
 swift.method GalleryView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method GalleryView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method GalleryView.debugInfo(): @MainActor func debugInfo() -> String
-swift.method GalleryView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method GalleryView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method GalleryView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method GalleryView.emptyView(_:): @MainActor func emptyView(_ view: some View) -> GalleryView<Items, ID>
 swift.method GalleryView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method GalleryView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
@@ -6116,6 +6189,8 @@ swift.method GalleryView.icon(_:): @MainActor func icon(_ value: ImageSource) ->
 swift.method GalleryView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GalleryView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method GalleryView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method GalleryView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method GalleryView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method GalleryView.isSwipeEnabled(_:): @MainActor func isSwipeEnabled(_ value: Bool) -> GalleryView<Items, ID>
 swift.method GalleryView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -6160,6 +6235,9 @@ swift.method GalleryView.onDragLeave(gate:_:): @MainActor func onDragLeave(gate:
 swift.method GalleryView.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GalleryView.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GalleryView.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method GalleryView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method GalleryView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method GalleryView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GalleryView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method GalleryView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method GalleryView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -6327,7 +6405,8 @@ swift.method GeometryReader.background(_:): @MainActor func background(_ value: 
 swift.method GeometryReader.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method GeometryReader.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method GeometryReader.debugInfo(): @MainActor func debugInfo() -> String
-swift.method GeometryReader.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method GeometryReader.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method GeometryReader.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method GeometryReader.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method GeometryReader.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method GeometryReader.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -6344,6 +6423,8 @@ swift.method GeometryReader.icon(_:): @MainActor func icon(_ value: ImageSource)
 swift.method GeometryReader.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method GeometryReader.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method GeometryReader.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method GeometryReader.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method GeometryReader.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method GeometryReader.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -6385,6 +6466,9 @@ swift.method GeometryReader.onDragLeave(gate:_:): @MainActor func onDragLeave(ga
 swift.method GeometryReader.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method GeometryReader.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GeometryReader.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method GeometryReader.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method GeometryReader.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method GeometryReader.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method GeometryReader.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method GeometryReader.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method GeometryReader.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -6548,7 +6632,8 @@ swift.method Grid.columnSpacing(_:): @MainActor func columnSpacing(_ state: Bind
 swift.method Grid.columns(_:): @MainActor func columns(_ runs: GridTracks...) -> Self.Modified
 swift.method Grid.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Grid.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Grid.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Grid.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Grid.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Grid.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Grid.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Grid.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -6566,6 +6651,8 @@ swift.method Grid.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Mod
 swift.method Grid.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
 swift.method Grid.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Grid.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Grid.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Grid.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -6609,6 +6696,9 @@ swift.method Grid.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate, 
 swift.method Grid.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Grid.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Grid.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Grid.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Grid.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Grid.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Grid.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Grid.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -6789,7 +6879,8 @@ swift.method Group.background(_:): @MainActor func background(_ value: Material)
 swift.method Group.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Group.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Group.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Group.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Group.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Group.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Group.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Group.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Group.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -6806,6 +6897,8 @@ swift.method Group.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.
 swift.method Group.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Group.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Group.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Group.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Group.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Group.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -6847,6 +6940,9 @@ swift.method Group.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate,
 swift.method Group.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Group.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Group.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Group.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Group.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Group.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Group.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Group.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Group.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -7006,7 +7102,8 @@ swift.method HStack.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>
 swift.method HStack.clipsContent(_:): @MainActor func clipsContent(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method HStack.debugInfo(): @MainActor func debugInfo() -> String
-swift.method HStack.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method HStack.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method HStack.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method HStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method HStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method HStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -7024,6 +7121,8 @@ swift.method HStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.M
 swift.method HStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
 swift.method HStack.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method HStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method HStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method HStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -7068,6 +7167,9 @@ swift.method HStack.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method HStack.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method HStack.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method HStack.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method HStack.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method HStack.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method HStack.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method HStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method HStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -7251,7 +7353,8 @@ swift.method Image.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(
 swift.method Image.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Image.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Image.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Image.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Image.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Image.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Image.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Image.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Image.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -7269,6 +7372,8 @@ swift.method Image.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Mo
 swift.method Image.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.isAnimating(_:): @MainActor func isAnimating(_ state: Binding<Bool>) -> Image.Modified
+swift.method Image.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Image.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Image.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Image.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -7310,6 +7415,9 @@ swift.method Image.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate,
 swift.method Image.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Image.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Image.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Image.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Image.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Image.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Image.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Image.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -7478,7 +7586,8 @@ swift.method InspectorButton.background(_:): @MainActor func background(_ value:
 swift.method InspectorButton.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method InspectorButton.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method InspectorButton.debugInfo(): @MainActor func debugInfo() -> String
-swift.method InspectorButton.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method InspectorButton.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method InspectorButton.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method InspectorButton.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method InspectorButton.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method InspectorButton.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -7495,6 +7604,8 @@ swift.method InspectorButton.icon(_:): @MainActor func icon(_ value: ImageSource
 swift.method InspectorButton.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method InspectorButton.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method InspectorButton.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method InspectorButton.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method InspectorButton.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method InspectorButton.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method InspectorButton.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method InspectorButton.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -7536,6 +7647,9 @@ swift.method InspectorButton.onDragLeave(gate:_:): @MainActor func onDragLeave(g
 swift.method InspectorButton.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method InspectorButton.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method InspectorButton.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method InspectorButton.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method InspectorButton.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method InspectorButton.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method InspectorButton.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method InspectorButton.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method InspectorButton.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -7694,7 +7808,8 @@ swift.method ItemsView.background(_:): @MainActor func background(_ value: Mater
 swift.method ItemsView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ItemsView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ItemsView.debugInfo(): @MainActor func debugInfo() -> String
-swift.method ItemsView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method ItemsView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method ItemsView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method ItemsView.emptyView(_:): @MainActor func emptyView(_ view: some View) -> ItemsView<ID>
 swift.method ItemsView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ItemsView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
@@ -7714,6 +7829,8 @@ swift.method ItemsView.icon(_:): @MainActor func icon(_ value: ImageSource) -> S
 swift.method ItemsView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ItemsView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method ItemsView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method ItemsView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ItemsView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> ItemsView<ID>
@@ -7760,6 +7877,9 @@ swift.method ItemsView.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: G
 swift.method ItemsView.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ItemsView.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ItemsView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ItemsView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ItemsView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ItemsView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ItemsView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -7956,7 +8076,8 @@ swift.method Line.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ it
 swift.method Line.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Line.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
 swift.method Line.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Line.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Line.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Line.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Line.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Line.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Line.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -7975,6 +8096,8 @@ swift.method Line.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.M
 swift.method Line.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Line.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Line.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Line.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Line.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Line.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -8018,6 +8141,9 @@ swift.method Line.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate, 
 swift.method Line.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Line.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Line.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Line.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Line.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Line.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Line.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Line.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -8189,7 +8315,8 @@ swift.method Link.background(_:): @MainActor func background(_ value: Material) 
 swift.method Link.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Link.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Link.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Link.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Link.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Link.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Link.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Link.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Link.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -8206,6 +8333,8 @@ swift.method Link.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.M
 swift.method Link.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Link.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Link.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Link.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Link.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method Link.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -8251,6 +8380,9 @@ swift.method Link.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate, 
 swift.method Link.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Link.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Link.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Link.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Link.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Link.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Link.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -8432,7 +8564,8 @@ swift.method Map.background(_:): @MainActor func background(_ value: Material) -
 swift.method Map.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Map.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Map.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Map.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Map.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Map.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Map.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Map.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Map.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -8449,6 +8582,8 @@ swift.method Map.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Mo
 swift.method Map.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Map.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Map.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Map.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Map.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Map.isScrollEnabled(_:): @MainActor func isScrollEnabled(_ value: Bool) -> Self.Modified
 swift.method Map.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -8493,6 +8628,9 @@ swift.method Map.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate, _
 swift.method Map.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Map.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Map.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Map.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Map.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Map.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Map.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Map.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -8761,7 +8899,8 @@ swift.method ModifiedContent.background(_:): @MainActor func background(_ value:
 swift.method ModifiedContent.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ModifiedContent.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ModifiedContent.debugInfo(): @MainActor func debugInfo() -> String
-swift.method ModifiedContent.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method ModifiedContent.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method ModifiedContent.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method ModifiedContent.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ModifiedContent.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ModifiedContent.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -8778,6 +8917,8 @@ swift.method ModifiedContent.icon(_:): @MainActor func icon(_ value: ImageSource
 swift.method ModifiedContent.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ModifiedContent.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method ModifiedContent.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method ModifiedContent.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ModifiedContent.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method ModifiedContent.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -8819,6 +8960,9 @@ swift.method ModifiedContent.onDragLeave(gate:_:): @MainActor func onDragLeave(g
 swift.method ModifiedContent.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ModifiedContent.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ModifiedContent.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ModifiedContent.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ModifiedContent.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ModifiedContent.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ModifiedContent.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ModifiedContent.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -8979,7 +9123,8 @@ swift.method MotionLayout.background(_:): @MainActor func background(_ value: Ma
 swift.method MotionLayout.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method MotionLayout.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method MotionLayout.debugInfo(): @MainActor func debugInfo() -> String
-swift.method MotionLayout.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method MotionLayout.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method MotionLayout.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method MotionLayout.dynamics(_:): @MainActor func dynamics(_ dynamics: LayoutDynamics) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method MotionLayout.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
@@ -8999,6 +9144,8 @@ swift.method MotionLayout.id(_:): @MainActor func id(_ value: some Hashable) -> 
 swift.method MotionLayout.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.interpolation(_:): @MainActor func interpolation(_ curve: some LayoutInterpolation) -> MotionLayout<Items, ID, Parameters>
 swift.method MotionLayout.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method MotionLayout.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method MotionLayout.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method MotionLayout.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.itemDrag(begins:): @MainActor func itemDrag(begins start: ItemDragStart) -> MotionLayout<Items, ID, Parameters>
@@ -9042,6 +9189,9 @@ swift.method MotionLayout.onDragLeave(gate:_:): @MainActor func onDragLeave(gate
 swift.method MotionLayout.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method MotionLayout.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method MotionLayout.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method MotionLayout.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method MotionLayout.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method MotionLayout.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method MotionLayout.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -9227,7 +9377,8 @@ swift.method NavigationStack.barScrollEdge(_:): @MainActor func barScrollEdge(_ 
 swift.method NavigationStack.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method NavigationStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method NavigationStack.debugInfo(): @MainActor func debugInfo() -> String
-swift.method NavigationStack.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method NavigationStack.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method NavigationStack.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method NavigationStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method NavigationStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method NavigationStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -9244,6 +9395,8 @@ swift.method NavigationStack.icon(_:): @MainActor func icon(_ value: ImageSource
 swift.method NavigationStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method NavigationStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method NavigationStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method NavigationStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method NavigationStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method NavigationStack.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -9285,6 +9438,9 @@ swift.method NavigationStack.onDragLeave(gate:_:): @MainActor func onDragLeave(g
 swift.method NavigationStack.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method NavigationStack.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method NavigationStack.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method NavigationStack.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method NavigationStack.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method NavigationStack.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method NavigationStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method NavigationStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -9471,7 +9627,8 @@ swift.method Path.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modi
 swift.method Path.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
 swift.method Path.data(_:): @MainActor func data(_ value: String) -> Self.Modified
 swift.method Path.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Path.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Path.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Path.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Path.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Path.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Path.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -9494,6 +9651,8 @@ swift.method Path.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.M
 swift.method Path.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Path.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Path.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Path.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Path.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Path.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -9539,6 +9698,9 @@ swift.method Path.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate, 
 swift.method Path.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Path.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Path.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Path.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Path.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Path.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Path.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Path.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -9706,7 +9868,8 @@ swift.method Picker.background(_:): @MainActor func background(_ value: Material
 swift.method Picker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Picker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Picker.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Picker.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Picker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Picker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Picker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Picker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Picker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -9728,6 +9891,8 @@ swift.method Picker.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self
 swift.method Picker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Picker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Picker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Picker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Picker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method Picker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -9775,6 +9940,9 @@ swift.method Picker.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method Picker.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Picker.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Picker.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Picker.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Picker.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Picker.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Picker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Picker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -9960,7 +10128,8 @@ swift.method Polygon.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _
 swift.method Polygon.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Polygon.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
 swift.method Polygon.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Polygon.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Polygon.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Polygon.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Polygon.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Polygon.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Polygon.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -9984,6 +10153,8 @@ swift.method Polygon.icon(_:): @MainActor func icon(_ value: ImageSource) -> Sel
 swift.method Polygon.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polygon.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Polygon.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Polygon.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Polygon.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polygon.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -10029,6 +10200,9 @@ swift.method Polygon.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gat
 swift.method Polygon.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polygon.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polygon.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Polygon.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polygon.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polygon.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Polygon.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Polygon.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -10201,7 +10375,8 @@ swift.method Polyline.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder 
 swift.method Polyline.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Polyline.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
 swift.method Polyline.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Polyline.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Polyline.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Polyline.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Polyline.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Polyline.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Polyline.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -10225,6 +10400,8 @@ swift.method Polyline.icon(_:): @MainActor func icon(_ value: ImageSource) -> Se
 swift.method Polyline.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Polyline.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Polyline.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Polyline.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Polyline.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Polyline.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -10270,6 +10447,9 @@ swift.method Polyline.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Ga
 swift.method Polyline.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Polyline.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polyline.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Polyline.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Polyline.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Polyline.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Polyline.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Polyline.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -10449,7 +10629,8 @@ swift.method PositionDots.dotShape(_:): @MainActor func dotShape(_ state: Bindin
 swift.method PositionDots.dotShape(_:): @MainActor func dotShape(_ value: DotShape) -> PositionDots
 swift.method PositionDots.dotSize(_:): @MainActor func dotSize(_ state: Binding<Double>) -> PositionDots
 swift.method PositionDots.dotSize(_:): @MainActor func dotSize(_ value: Double) -> PositionDots
-swift.method PositionDots.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method PositionDots.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method PositionDots.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method PositionDots.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method PositionDots.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method PositionDots.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -10468,6 +10649,8 @@ swift.method PositionDots.icon(_:): @MainActor func icon(_ value: ImageSource) -
 swift.method PositionDots.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method PositionDots.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method PositionDots.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method PositionDots.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method PositionDots.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method PositionDots.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -10511,6 +10694,9 @@ swift.method PositionDots.onDragLeave(gate:_:): @MainActor func onDragLeave(gate
 swift.method PositionDots.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method PositionDots.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PositionDots.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method PositionDots.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method PositionDots.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method PositionDots.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method PositionDots.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method PositionDots.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -10671,7 +10857,8 @@ swift.method ProgressBar.background(_:): @MainActor func background(_ value: Mat
 swift.method ProgressBar.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ProgressBar.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ProgressBar.debugInfo(): @MainActor func debugInfo() -> String
-swift.method ProgressBar.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method ProgressBar.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method ProgressBar.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method ProgressBar.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ProgressBar.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ProgressBar.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -10688,6 +10875,8 @@ swift.method ProgressBar.icon(_:): @MainActor func icon(_ value: ImageSource) ->
 swift.method ProgressBar.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ProgressBar.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method ProgressBar.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method ProgressBar.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ProgressBar.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method ProgressBar.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -10729,6 +10918,9 @@ swift.method ProgressBar.onDragLeave(gate:_:): @MainActor func onDragLeave(gate:
 swift.method ProgressBar.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ProgressBar.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ProgressBar.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ProgressBar.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ProgressBar.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ProgressBar.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ProgressBar.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ProgressBar.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -10908,7 +11100,8 @@ swift.method Rectangle.cornerRadius(topLeft:topRight:bottomLeft:bottomRight:): @
 swift.method Rectangle.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
 swift.method Rectangle.dashPhase(_:): @MainActor func dashPhase(_ state: Binding<Double>) -> Self.Modified
 swift.method Rectangle.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Rectangle.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Rectangle.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Rectangle.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Rectangle.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Rectangle.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Rectangle.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -10931,6 +11124,8 @@ swift.method Rectangle.icon(_:): @MainActor func icon(_ value: ImageSource) -> S
 swift.method Rectangle.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Rectangle.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Rectangle.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Rectangle.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Rectangle.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Rectangle.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -10976,6 +11171,9 @@ swift.method Rectangle.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: G
 swift.method Rectangle.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Rectangle.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Rectangle.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Rectangle.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Rectangle.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Rectangle.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Rectangle.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Rectangle.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -11153,7 +11351,8 @@ swift.method ScrollView.background(_:): @MainActor func background(_ value: Mate
 swift.method ScrollView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ScrollView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ScrollView.debugInfo(): @MainActor func debugInfo() -> String
-swift.method ScrollView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method ScrollView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method ScrollView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method ScrollView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ScrollView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ScrollView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -11171,6 +11370,8 @@ swift.method ScrollView.icon(_:): @MainActor func icon(_ value: ImageSource) -> 
 swift.method ScrollView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method ScrollView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method ScrollView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method ScrollView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ScrollView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method ScrollView.isRefreshEnabled(_:): @MainActor func isRefreshEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11217,6 +11418,9 @@ swift.method ScrollView.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: 
 swift.method ScrollView.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ScrollView.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ScrollView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ScrollView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ScrollView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ScrollView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ScrollView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ScrollView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -11404,7 +11608,8 @@ swift.method SearchField.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Con
 swift.method SearchField.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method SearchField.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.debugInfo(): @MainActor func debugInfo() -> String
-swift.method SearchField.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method SearchField.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method SearchField.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method SearchField.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method SearchField.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method SearchField.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -11427,6 +11632,8 @@ swift.method SearchField.id(_:): @MainActor func id(_ value: some Hashable) -> S
 swift.method SearchField.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
 swift.method SearchField.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method SearchField.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method SearchField.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method SearchField.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method SearchField.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -11475,6 +11682,9 @@ swift.method SearchField.onDragLeave(gate:_:): @MainActor func onDragLeave(gate:
 swift.method SearchField.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SearchField.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SearchField.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method SearchField.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SearchField.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SearchField.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method SearchField.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method SearchField.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -11664,7 +11874,8 @@ swift.method Separator.background(_:): @MainActor func background(_ value: Mater
 swift.method Separator.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Separator.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Separator.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Separator.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Separator.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Separator.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Separator.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Separator.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Separator.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -11681,6 +11892,8 @@ swift.method Separator.icon(_:): @MainActor func icon(_ value: ImageSource) -> S
 swift.method Separator.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Separator.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Separator.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Separator.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Separator.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Separator.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -11722,6 +11935,9 @@ swift.method Separator.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: G
 swift.method Separator.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Separator.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Separator.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Separator.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Separator.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Separator.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Separator.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Separator.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -11900,7 +12116,8 @@ swift.method Slider.background(_:): @MainActor func background(_ value: Material
 swift.method Slider.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Slider.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Slider.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Slider.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Slider.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Slider.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Slider.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Slider.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Slider.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -11917,6 +12134,8 @@ swift.method Slider.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self
 swift.method Slider.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Slider.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Slider.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Slider.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Slider.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method Slider.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -11961,6 +12180,9 @@ swift.method Slider.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method Slider.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Slider.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Slider.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Slider.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Slider.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Slider.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Slider.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Slider.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -12143,7 +12365,8 @@ swift.method Space.background(_:): @MainActor func background(_ value: Material)
 swift.method Space.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Space.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Space.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Space.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Space.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Space.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Space.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Space.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Space.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -12160,6 +12383,8 @@ swift.method Space.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.
 swift.method Space.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Space.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Space.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Space.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Space.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Space.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -12202,6 +12427,9 @@ swift.method Space.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate,
 swift.method Space.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Space.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Space.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Space.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Space.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Space.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Space.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Space.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -12370,7 +12598,8 @@ swift.method Spinner.background(_:): @MainActor func background(_ value: Materia
 swift.method Spinner.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Spinner.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Spinner.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Spinner.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Spinner.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Spinner.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Spinner.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Spinner.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Spinner.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -12388,6 +12617,8 @@ swift.method Spinner.id(_:): @MainActor func id(_ value: some Hashable) -> Self.
 swift.method Spinner.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.isAnimating(_:): @MainActor func isAnimating(_ state: Binding<Bool>) -> Spinner.Modified
+swift.method Spinner.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Spinner.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Spinner.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method Spinner.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -12429,6 +12660,9 @@ swift.method Spinner.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gat
 swift.method Spinner.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Spinner.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Spinner.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Spinner.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Spinner.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Spinner.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Spinner.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Spinner.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -12602,7 +12836,8 @@ swift.method SplitView.barScrollEdge(_:): @MainActor func barScrollEdge(_ value:
 swift.method SplitView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method SplitView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method SplitView.debugInfo(): @MainActor func debugInfo() -> String
-swift.method SplitView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method SplitView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method SplitView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method SplitView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method SplitView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method SplitView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -12619,6 +12854,8 @@ swift.method SplitView.icon(_:): @MainActor func icon(_ value: ImageSource) -> S
 swift.method SplitView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method SplitView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method SplitView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method SplitView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method SplitView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method SplitView.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -12660,6 +12897,9 @@ swift.method SplitView.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: G
 swift.method SplitView.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method SplitView.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SplitView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method SplitView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method SplitView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method SplitView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method SplitView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method SplitView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -12833,7 +13073,8 @@ swift.method Stepper.background(_:): @MainActor func background(_ value: Materia
 swift.method Stepper.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Stepper.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Stepper.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Stepper.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Stepper.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Stepper.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Stepper.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Stepper.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Stepper.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -12850,6 +13091,8 @@ swift.method Stepper.icon(_:): @MainActor func icon(_ value: ImageSource) -> Sel
 swift.method Stepper.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Stepper.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Stepper.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Stepper.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Stepper.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method Stepper.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -12894,6 +13137,9 @@ swift.method Stepper.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gat
 swift.method Stepper.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Stepper.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Stepper.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Stepper.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Stepper.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Stepper.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Stepper.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Stepper.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -13230,7 +13476,8 @@ swift.method Switch.background(_:): @MainActor func background(_ value: Material
 swift.method Switch.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Switch.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Switch.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Switch.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Switch.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Switch.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Switch.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Switch.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Switch.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -13247,6 +13494,8 @@ swift.method Switch.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self
 swift.method Switch.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Switch.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Switch.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Switch.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method Switch.isOn(_:): @MainActor func isOn(_ state: Binding<Bool>) -> Switch.Modified
@@ -13290,6 +13539,9 @@ swift.method Switch.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method Switch.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Switch.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Switch.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Switch.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Switch.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Switch.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Switch.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Switch.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -13472,7 +13724,8 @@ swift.method TabView.barScrollEdge(_:): @MainActor func barScrollEdge(_ value: S
 swift.method TabView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TabView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TabView.debugInfo(): @MainActor func debugInfo() -> String
-swift.method TabView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method TabView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method TabView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method TabView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TabView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TabView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -13489,6 +13742,8 @@ swift.method TabView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Sel
 swift.method TabView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TabView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method TabView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method TabView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TabView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method TabView.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -13530,6 +13785,9 @@ swift.method TabView.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gat
 swift.method TabView.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TabView.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TabView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TabView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TabView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TabView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TabView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TabView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -13692,7 +13950,8 @@ swift.method Text.background(_:): @MainActor func background(_ value: Material) 
 swift.method Text.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Text.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Text.debugInfo(): @MainActor func debugInfo() -> String
-swift.method Text.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method Text.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method Text.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method Text.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method Text.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method Text.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -13714,6 +13973,8 @@ swift.method Text.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.M
 swift.method Text.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method Text.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method Text.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method Text.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method Text.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method Text.isSelectable(_:): @MainActor func isSelectable(_ value: Bool) -> Self.Modified
@@ -13760,6 +14021,9 @@ swift.method Text.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate, 
 swift.method Text.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Text.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Text.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method Text.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method Text.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Text.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Text.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Text.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -13943,7 +14207,8 @@ swift.method TextEditor.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Cont
 swift.method TextEditor.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TextEditor.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
 swift.method TextEditor.debugInfo(): @MainActor func debugInfo() -> String
-swift.method TextEditor.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method TextEditor.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method TextEditor.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method TextEditor.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TextEditor.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TextEditor.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -13967,6 +14232,8 @@ swift.method TextEditor.id(_:): @MainActor func id(_ value: some Hashable) -> Se
 swift.method TextEditor.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
 swift.method TextEditor.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method TextEditor.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method TextEditor.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TextEditor.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextEditor.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -14015,6 +14282,9 @@ swift.method TextEditor.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: 
 swift.method TextEditor.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextEditor.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextEditor.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TextEditor.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TextEditor.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TextEditor.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextEditor.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TextEditor.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextEditor.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -14198,7 +14468,8 @@ swift.method TextField.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Conte
 swift.method TextField.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TextField.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.debugInfo(): @MainActor func debugInfo() -> String
-swift.method TextField.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method TextField.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method TextField.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method TextField.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TextField.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TextField.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -14221,6 +14492,8 @@ swift.method TextField.id(_:): @MainActor func id(_ value: some Hashable) -> Sel
 swift.method TextField.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.inputPurpose(_:): @MainActor func inputPurpose(_ state: Binding<InputPurpose>) -> Self.Modified
 swift.method TextField.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method TextField.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method TextField.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TextField.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method TextField.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -14270,6 +14543,9 @@ swift.method TextField.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: G
 swift.method TextField.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TextField.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TextField.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TextField.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TextField.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TextField.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TextField.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TextField.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -14544,7 +14820,8 @@ swift.method TimePicker.background(_:): @MainActor func background(_ value: Mate
 swift.method TimePicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TimePicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TimePicker.debugInfo(): @MainActor func debugInfo() -> String
-swift.method TimePicker.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method TimePicker.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method TimePicker.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method TimePicker.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method TimePicker.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method TimePicker.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -14566,6 +14843,8 @@ swift.method TimePicker.icon(_:): @MainActor func icon(_ value: ImageSource) -> 
 swift.method TimePicker.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method TimePicker.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method TimePicker.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method TimePicker.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method TimePicker.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method TimePicker.isFontAutoScalingEnabled(_:): @MainActor func isFontAutoScalingEnabled(_ state: Binding<Bool>) -> Self.Modified
@@ -14613,6 +14892,9 @@ swift.method TimePicker.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: 
 swift.method TimePicker.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method TimePicker.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TimePicker.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method TimePicker.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method TimePicker.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method TimePicker.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method TimePicker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method TimePicker.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -14913,7 +15195,8 @@ swift.method VStack.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>
 swift.method VStack.clipsContent(_:): @MainActor func clipsContent(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method VStack.debugInfo(): @MainActor func debugInfo() -> String
-swift.method VStack.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method VStack.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method VStack.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method VStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method VStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method VStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -14931,6 +15214,8 @@ swift.method VStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.M
 swift.method VStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
 swift.method VStack.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method VStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method VStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method VStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -14974,6 +15259,9 @@ swift.method VStack.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method VStack.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method VStack.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method VStack.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method VStack.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method VStack.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method VStack.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method VStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method VStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -15132,13 +15420,16 @@ swift.method View.backButtonTitle(_:): @MainActor func backButtonTitle(_ state: 
 swift.method View.backButtonTitle(_:): @MainActor func backButtonTitle(_ value: String) -> Self.Modified
 swift.method View.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method View.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
-swift.method View.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method View.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method View.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method View.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method View.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method View.gridRow(_:): @MainActor func gridRow(_ state: Binding<Int>) -> Self.Modified
 swift.method View.gridRowSpan(_:): @MainActor func gridRowSpan(_ state: Binding<Int>) -> Self.Modified
 swift.method View.horizontalAlignment(_:): @MainActor func horizontalAlignment(_ state: Binding<Alignment>) -> Self.Modified
 swift.method View.icon(_:): @MainActor func icon(_ value: ImageSource) -> Self.Modified
+swift.method View.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method View.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method View.margin(_:): @MainActor func margin(_ state: Binding<Insets>) -> Self.Modified
 swift.method View.menuBar(order:_:): @MainActor func menuBar(order: Int = 0, @MenuBarBuilder _ menus: () -> [Menu]) -> Self.Modified
 swift.method View.modified(_:): @MainActor func modified(_ change: (inout Node) -> Void) -> ModifiedContent<Self>
@@ -15157,6 +15448,9 @@ swift.method View.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate, 
 swift.method View.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method View.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method View.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method View.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method View.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method View.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method View.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method View.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method View.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -15374,7 +15668,8 @@ swift.method WebView.canGoBack(_:): @MainActor func canGoBack(_ state: Binding<B
 swift.method WebView.canGoForward(_:): @MainActor func canGoForward(_ state: Binding<Bool>) -> WebView.Modified
 swift.method WebView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method WebView.debugInfo(): @MainActor func debugInfo() -> String
-swift.method WebView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method WebView.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method WebView.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method WebView.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method WebView.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method WebView.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -15391,6 +15686,8 @@ swift.method WebView.icon(_:): @MainActor func icon(_ value: ImageSource) -> Sel
 swift.method WebView.id(_:): @MainActor func id(_ value: some Hashable) -> Self.Modified
 swift.method WebView.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method WebView.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method WebView.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method WebView.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.isFocused(_:): @MainActor func isFocused(_ state: Binding<Bool>) -> Self.Modified
 swift.method WebView.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
@@ -15433,6 +15730,9 @@ swift.method WebView.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gat
 swift.method WebView.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method WebView.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method WebView.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method WebView.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method WebView.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method WebView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method WebView.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -15641,7 +15941,8 @@ swift.method ZStack.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>
 swift.method ZStack.clipsContent(_:): @MainActor func clipsContent(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ZStack.debugInfo(): @MainActor func debugInfo() -> String
-swift.method ZStack.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
+swift.method ZStack.dragText(_:): @MainActor func dragText(_ state: Binding<String>) -> Self.Modified
+swift.method ZStack.dragText(_:): @MainActor func dragText(_ value: String) -> Self.Modified
 swift.method ZStack.engine(following:_:priority:_:): @MainActor func engine<First, each More>(following first: Binding<First>, _ more: repeat Binding<each More>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> Void) -> Self.Modified
 swift.method ZStack.engine(tracking:priority:_:): @MainActor func engine<each Value>(tracking: repeat Binding<each Value>, priority: Double = 0, _ run: @escaping @MainActor @Sendable (EngineCycle) -> EngineAnswer) -> Self.Modified
 swift.method ZStack.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
@@ -15659,6 +15960,8 @@ swift.method ZStack.id(_:): @MainActor func id(_ value: some Hashable) -> Self.M
 swift.method ZStack.ignoresInput(_:): @MainActor func ignoresInput(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.ignoresSafeArea(_:): @MainActor func ignoresSafeArea(_ state: Binding<SafeAreaEdges>) -> Self.Modified
 swift.method ZStack.isAccessibilityHidden(_:): @MainActor func isAccessibilityHidden(_ state: Binding<Bool>) -> Self.Modified
+swift.method ZStack.isDraggable(_:): @MainActor func isDraggable(_ state: Binding<Bool>) -> Self.Modified
+swift.method ZStack.isDraggable(_:): @MainActor func isDraggable(_ value: Bool) -> Self.Modified
 swift.method ZStack.isEnabled(_:): @MainActor func isEnabled(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.isVisible(_:): @MainActor func isVisible(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.layoutBody(_:): @MainActor func layoutBody(_ body: LayoutBody) -> Self.Modified
@@ -15702,6 +16005,9 @@ swift.method ZStack.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method ZStack.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method ZStack.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ZStack.onDragStarting(_:): @MainActor func onDragStarting(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
+swift.method ZStack.onDragStarting(_:_:): @MainActor func onDragStarting(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ZStack.onDragStarting(gate:_:): @MainActor func onDragStarting(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ZStack.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method ZStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method ZStack.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -18025,7 +18331,6 @@ swift.type.property VStackContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property VStackContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ViewContract.allowsDrop: static let allowsDrop: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.area: static let area: ElementProperty<ViewContract, Area>
-swift.type.property ViewContract.canDrag: static let canDrag: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.dragEnded: static let dragEnded: ElementEvent<ViewContract, Void>
 swift.type.property ViewContract.dragLeave: static let dragLeave: ElementEvent<ViewContract, Void>
 swift.type.property ViewContract.dragOver: static let dragOver: ElementEvent<ViewContract, Void>
@@ -18042,6 +18347,7 @@ swift.type.property ViewContract.gridRowSpan: static let gridRowSpan: ElementPro
 swift.type.property ViewContract.held: static let held: ElementEvent<ViewContract, Void>
 swift.type.property ViewContract.holdDuration: static let holdDuration: ElementProperty<ViewContract, Double>
 swift.type.property ViewContract.horizontalAlignment: static let horizontalAlignment: ElementProperty<ViewContract, Alignment>
+swift.type.property ViewContract.isDraggable: static let isDraggable: ElementProperty<ViewContract, Bool>
 swift.type.property ViewContract.layoutBody: static let layoutBody: ElementProperty<ViewContract, LayoutBody>
 swift.type.property ViewContract.margin: static let margin: ElementProperty<ViewContract, Insets>
 swift.type.property ViewContract.members: static let members: [any ContractMember]

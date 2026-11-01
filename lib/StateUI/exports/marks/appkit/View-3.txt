@@ -29,13 +29,13 @@ Ellipse.frameChanged: ✅
 Ellipse.horizontalAlignment: ✅
 Ellipse.pinchUpdated: ✓ pinch on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.verticalAlignment: ✅
-Fill.canDrag: ✓ dragAndDrop on Fill: the drag source and the window's drop routing told by the driver, no dragging session
 Fill.dragEnded: ✓ dragAndDrop on Fill: the drag source and the window's drop routing told by the driver, no dragging session
 Fill.dragStarting: ✓ dragAndDrop on Fill: the drag source and the window's drop routing told by the driver, no dragging session
 Fill.dragText: ✓ dragAndDrop on Fill: the drag source and the window's drop routing told by the driver, no dragging session
 Fill.frameChanged: ✅
 Fill.gridColumnSpan: ✅
 Fill.gridRowSpan: ✅
+Fill.isDraggable: ✓ dragAndDrop on Fill: the drag source and the window's drop routing told by the driver, no dragging session
 Grid.held: ✓ hold on Grid: handed to the host's recognizer or handler, no NSEvent sent
 Grid.layoutBody: ✅
 HStack.panYChannel: ✓ pan on HStack: handed to the host's recognizer or handler, no NSEvent sent
@@ -67,13 +67,13 @@ MotionLayout.margin: ✅
 MotionLayout.swipeDirection: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.swipeThreshold: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
 MotionLayout.swiped: ✓ pan on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
-Path.canDrag: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
 Path.dragEnded: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
 Path.dragStarting: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
 Path.dragText: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
 Path.frameChanged: ✅
 Path.gridColumnSpan: ✅
 Path.gridRowSpan: ✅
+Path.isDraggable: ✓ dragAndDrop on Path: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.held: ✓ hold on Picker: handed to the host's recognizer or handler, no NSEvent sent
 Picker.layoutBody: ✅
 Polygon.panYChannel: ✓ pan on Polygon: handed to the host's recognizer or handler, no NSEvent sent
@@ -117,13 +117,13 @@ Stepper.frameChanged: ✅
 Stepper.horizontalAlignment: ✅
 Stepper.pinchUpdated: ✓ pinch on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.verticalAlignment: ✅
-Switch.canDrag: ✓ dragAndDrop on Switch: the drag source and the window's drop routing told by the driver, no dragging session
 Switch.dragEnded: ✓ dragAndDrop on Switch: the drag source and the window's drop routing told by the driver, no dragging session
 Switch.dragStarting: ✓ dragAndDrop on Switch: the drag source and the window's drop routing told by the driver, no dragging session
 Switch.dragText: ✓ dragAndDrop on Switch: the drag source and the window's drop routing told by the driver, no dragging session
 Switch.frameChanged: ✅
 Switch.gridColumnSpan: ✅
 Switch.gridRowSpan: ✅
+Switch.isDraggable: ✓ dragAndDrop on Switch: the drag source and the window's drop routing told by the driver, no dragging session
 Text.holdDuration: ✅
 Text.verticalAlignment: ✅
 TextEditor.held: ✓ hold on TextEditor: handed to the host's recognizer or handler, no NSEvent sent

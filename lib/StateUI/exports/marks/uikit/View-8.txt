@@ -33,13 +33,13 @@ Grid.frameChanged: ✅
 Grid.horizontalAlignment: ✅
 Grid.pinchUpdated: ✓ pinch on Grid: the view's listening handed the recognizer's states, no touch sent
 Grid.verticalAlignment: ✅
-HStack.canDrag: ✓ dragAndDrop on HStack: the drag and drop interactions' handlers called, no drag session
 HStack.dragEnded: ✓ dragAndDrop on HStack: the drag and drop interactions' handlers called, no drag session
 HStack.dragStarting: ✓ dragAndDrop on HStack: the drag and drop interactions' handlers called, no drag session
 HStack.dragText: ✓ dragAndDrop on HStack: the drag and drop interactions' handlers called, no drag session
 HStack.frameChanged: ✅
 HStack.gridColumnSpan: ✅
 HStack.gridRowSpan: ✅
+HStack.isDraggable: ✓ dragAndDrop on HStack: the drag and drop interactions' handlers called, no drag session
 Image.held: ✓ hold on Image: the view's listening handed the recognizer's states, no touch sent
 Image.layoutBody: ✅
 ItemsView.panYChannel: ✓ pan on ItemsView: the view's listening handed the recognizer's states, no touch sent
@@ -70,13 +70,13 @@ Picker.frameChanged: ✅
 Picker.horizontalAlignment: ✅
 Picker.pinchUpdated: ✓ pinch on Picker: the view's listening handed the recognizer's states, no touch sent
 Picker.verticalAlignment: ✅
-Polygon.canDrag: ✓ dragAndDrop on Polygon: the drag and drop interactions' handlers called, no drag session
 Polygon.dragEnded: ✓ dragAndDrop on Polygon: the drag and drop interactions' handlers called, no drag session
 Polygon.dragStarting: ✓ dragAndDrop on Polygon: the drag and drop interactions' handlers called, no drag session
 Polygon.dragText: ✓ dragAndDrop on Polygon: the drag and drop interactions' handlers called, no drag session
 Polygon.frameChanged: ✅
 Polygon.gridColumnSpan: ✅
 Polygon.gridRowSpan: ✅
+Polygon.isDraggable: ✓ dragAndDrop on Polygon: the drag and drop interactions' handlers called, no drag session
 Polyline.held: ✓ hold on Polyline: the view's listening handed the recognizer's states, no touch sent
 Polyline.layoutBody: ✅
 ProgressBar.panYChannel: ✓ pan on ProgressBar: the view's listening handed the recognizer's states, no touch sent
@@ -121,13 +121,13 @@ TextEditor.frameChanged: ✅
 TextEditor.horizontalAlignment: ✅
 TextEditor.pinchUpdated: ✓ pinch on TextEditor: the view's listening handed the recognizer's states, no touch sent
 TextEditor.verticalAlignment: ✅
-TextField.canDrag: ✓ dragAndDrop on TextField: the drag and drop interactions' handlers called, no drag session
 TextField.dragEnded: ✓ dragAndDrop on TextField: the drag and drop interactions' handlers called, no drag session
 TextField.dragStarting: ✓ dragAndDrop on TextField: the drag and drop interactions' handlers called, no drag session
 TextField.dragText: ✓ dragAndDrop on TextField: the drag and drop interactions' handlers called, no drag session
 TextField.frameChanged: ✅
 TextField.gridColumnSpan: ✅
 TextField.gridRowSpan: ✅
+TextField.isDraggable: ✓ dragAndDrop on TextField: the drag and drop interactions' handlers called, no drag session
 TimePicker.held: ✓ hold on TimePicker: the view's listening handed the recognizer's states, no touch sent
 TimePicker.layoutBody: ✅
 VStack.panYChannel: ✓ pan on VStack: the view's listening handed the recognizer's states, no touch sent

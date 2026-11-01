@@ -628,7 +628,9 @@ final class ControlTests: XCTestCase {
                 .onPointerMoved { _ in }
                 .onPointerPressed { _ in }
                 .onPointerReleased { _ in }
-                .draggable(text: "Alpha", canDrag: true) {}
+                .dragText("Alpha")
+                .isDraggable(true)
+                .onDragStarting {}
                 .onDragEnded {}
                 .onDrop { _ in }
                 .onDrop(files: [FileType("Text", extensions: ["txt"])]) { _ in }

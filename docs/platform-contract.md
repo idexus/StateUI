@@ -430,10 +430,9 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 | `zIndex` | [VisualElement](controls/tiers/VisualElement.md) | property |
 | `allowsDrop` | [View](controls/tiers/View.md) | property |
 | `area` | [View](controls/tiers/View.md) | property |
-| `canDrag` | [View](controls/tiers/View.md) | property |
 | `onDragLeave` (`dragLeave`) | [View](controls/tiers/View.md) | event |
 | `onDragOver` (`dragOver`) | [View](controls/tiers/View.md) | event |
-| `dragStarting` | [View](controls/tiers/View.md) | event |
+| `onDragStarting` (`dragStarting`) | [View](controls/tiers/View.md) | event |
 | `dragText` | [View](controls/tiers/View.md) | property |
 | `onDrop` (`drop`) | [View](controls/tiers/View.md) | event |
 | `droppedFileTypes` | [View](controls/tiers/View.md) | property |
@@ -447,6 +446,7 @@ of its own; no case gives them a verdict of their own, so no page marks them:
 | `onHeld` (`held`) | [View](controls/tiers/View.md) | event |
 | `holdDuration` | [View](controls/tiers/View.md) | property |
 | `horizontalAlignment` | [View](controls/tiers/View.md) | property |
+| `isDraggable` | [View](controls/tiers/View.md) | property |
 | `margin` | [View](controls/tiers/View.md) | property |
 | `panTouchCount` | [View](controls/tiers/View.md) | property |
 | `onPanUpdated` (`panUpdated`) | [View](controls/tiers/View.md) | event |
@@ -575,7 +575,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | --- | --- | --- |
 | [AutomationElement](controls/tiers/AutomationElement.md) | `accessibilityIdentifier` | 1 |
 | [VisualElement](controls/tiers/VisualElement.md) | `accessibilityActionPerformed`, `accessibilityActions`, `onAccessibilityAdjusted` (`accessibilityAdjusted`), `accessibilityHeading`, `accessibilityHint`, `accessibilityLabel`, `accessibilityRole`, `accessibilityValue`, `background`, `frame`, `height`, `hidesChildrenFromAccessibility`, `ignoresInput`, `isAccessibilityHidden`, `isEnabled`, `isVisible`, `layoutDirection`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `opacity`, `pivotX`, `pivotY`, `rotation`, `rotationX`, `rotationY`, `scale`, `scaleX`, `scaleY`, `style`, `tooltip`, `translationX`, `translationY`, `width`, `zIndex` | 36 |
-| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `canDrag`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `dragStarting`, `dragText`, `onDrop` (`drop`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDrop` (`filesDropped`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onHeld` (`held`), `holdDuration`, `horizontalAlignment`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `layoutBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 38 |
+| [View](controls/tiers/View.md) | `allowsDrop`, `area`, `onDragLeave` (`dragLeave`), `onDragOver` (`dragOver`), `onDragStarting` (`dragStarting`), `dragText`, `onDrop` (`drop`), `droppedFileTypes`, `onDragEnded` (`dragEnded`), `onDrop` (`filesDropped`), `onFrameChanged` (`frameChanged`), `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `onHeld` (`held`), `holdDuration`, `horizontalAlignment`, `isDraggable`, `margin`, `panTouchCount`, `onPanUpdated` (`panUpdated`), `panXChannel`, `panYChannel`, `layoutBody`, `onPinchUpdated` (`pinchUpdated`), `onPointerEntered` (`pointerEntered`), `onPointerExited` (`pointerExited`), `onPointerMoved` (`pointerMoved`), `onPointerPressed` (`pointerPressed`), `onPointerReleased` (`pointerReleased`), `onRotationUpdated` (`rotationUpdated`), `swipeDirection`, `swipeThreshold`, `onSwiped` (`swiped`), `tapCount`, `onTapped` (`tapped`), `verticalAlignment` | 38 |
 | [Layout](controls/tiers/Layout.md) | `ignoresSafeArea`, `clipsContent`, `letsInputThrough` | 3 |
 | [Stack](controls/tiers/Stack.md) | `spacing` | 1 |
 | [TextInput](controls/tiers/TextInput.md) | `cursorPosition`, `inputPurpose`, `isReadOnly`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `maximumLength`, `placeholder`, `placeholderColor`, `selectionLength`, `onTextChanged` (`textChanged`) | 10 |
@@ -689,7 +689,7 @@ realizes the element and each of its members.
 `accessibilityActions`, `accessibilityHeading`, `accessibilityHint`,
 `accessibilityIdentifier`, `accessibilityLabel`, `accessibilityRole`,
 `accessibilityValue`, `allowsDrop`, `area`, `backButtonTitle`, `background`,
-`barBackground`, `barEdge`, `barForegroundColor`, `barScrollEdge`, `canDrag`,
+`barBackground`, `barEdge`, `barForegroundColor`, `barScrollEdge`,
 `choosesOpacity`, `clipsContent`, `color`, `columns`, `columnSpacing`,
 `contentMode`, `cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`,
 `date`, `destination`, `dragText`, `drawing`, `droppedFileTypes`,
@@ -700,23 +700,23 @@ realizes the element and each of its members.
 `hidesWhenInactive`, `hidesWithSidebar`, `holdDuration`, `horizontalAlignment`,
 `horizontalScrollIndicator`, `horizontalTextAlignment`, `icon`, `iconPosition`,
 `iconSpacing`, `ignoresInput`, `ignoresSafeArea`, `inputPurpose`,
-`isAccessibilityHidden`, `isAnimating`, `isEnabled`, `isFontAutoScalingEnabled`,
-`isMaximizable`, `isMinimizable`, `isOn`, `isOpen`, `isPassword`, `isPresented`,
-`isReadOnly`, `isRefreshEnabled`, `isRefreshing`, `isScrollEnabled`,
-`isSelectable`, `isSpellCheckEnabled`, `isTextPredictionEnabled`, `isVisible`,
-`isZoomEnabled`, `itemDrag`, `items`, `itemsLayout`, `keyboardShortcut`,
-`keysTaken`, `layoutBody`, `layoutDirection`, `letsInputThrough`,
-`lineAlignment`, `lineBreak`, `lineCap`, `lineHeight`, `lineJoin`, `lineWidth`,
-`location`, `magnifies`, `margin`, `maximum`, `maximumDate`, `maximumHeight`,
-`maximumLength`, `maximumLines`, `maximumWidth`, `menuKind`, `minimum`,
-`minimumDate`, `minimumHeight`, `minimumWidth`, `mirrorsRightToLeft`,
-`miterLimit`, `onIcon`, `opacity`, `options`, `order`, `orientation`, `padding`,
-`pans`, `panTouchCount`, `panXChannel`, `panYChannel`, `parameters`, `part`,
-`pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
-`presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
-`rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
-`scrollEdge`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
-`selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
+`isAccessibilityHidden`, `isAnimating`, `isDraggable`, `isEnabled`,
+`isFontAutoScalingEnabled`, `isMaximizable`, `isMinimizable`, `isOn`, `isOpen`,
+`isPassword`, `isPresented`, `isReadOnly`, `isRefreshEnabled`, `isRefreshing`,
+`isScrollEnabled`, `isSelectable`, `isSpellCheckEnabled`,
+`isTextPredictionEnabled`, `isVisible`, `isZoomEnabled`, `itemDrag`, `items`,
+`itemsLayout`, `keyboardShortcut`, `keysTaken`, `layoutBody`, `layoutDirection`,
+`letsInputThrough`, `lineAlignment`, `lineBreak`, `lineCap`, `lineHeight`,
+`lineJoin`, `lineWidth`, `location`, `magnifies`, `margin`, `maximum`,
+`maximumDate`, `maximumHeight`, `maximumLength`, `maximumLines`, `maximumWidth`,
+`menuKind`, `minimum`, `minimumDate`, `minimumHeight`, `minimumWidth`,
+`mirrorsRightToLeft`, `miterLimit`, `onIcon`, `opacity`, `options`, `order`,
+`orientation`, `padding`, `pans`, `panTouchCount`, `panXChannel`, `panYChannel`,
+`parameters`, `part`, `pivotX`, `pivotY`, `placeholder`, `placeholderColor`,
+`points`, `position`, `presentation`, `progress`, `region`, `role`, `rotates`,
+`rotation`, `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`,
+`scaleY`, `scrollEdge`, `scrollOffset`, `selectedIndex`, `selectedItems`,
+`selectedTab`, `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
 `showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
 `showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,
 `showsUserLocation`, `sidebarBackground`, `sidebarOverlayBackground`,

@@ -6,11 +6,11 @@ Canvas.area: ✅
 Canvas.frameChanged: ✅
 Canvas.layoutBody: ✅
 Canvas.panYChannel: ✅
-Capsule.canDrag: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
 Capsule.dragEnded: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
 Capsule.dragStarting: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
 Capsule.dragText: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
 Capsule.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Capsule.isDraggable: ✓ dragAndDrop on Capsule: the relay's drag reports told by the driver, no drag WinUI began
 CheckBox.frameChanged: ✅
 CheckBox.gridColumnSpan: ✅
 CheckBox.gridRowSpan: ✅
@@ -49,11 +49,11 @@ HStack.area: ✅
 HStack.frameChanged: ✅
 HStack.layoutBody: ✅
 HStack.panYChannel: ✅
-Image.canDrag: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
 Image.dragEnded: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
 Image.dragStarting: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
 Image.dragText: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
 Image.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Image.isDraggable: ✓ dragAndDrop on Image: the relay's drag reports told by the driver, no drag WinUI began
 ItemsView.frameChanged: ✅
 ItemsView.gridColumnSpan: ✅
 ItemsView.gridRowSpan: ✅
@@ -80,11 +80,11 @@ MotionLayout.pointerMoved: ✓ pressDown on MotionLayout: the relay's report of 
 MotionLayout.pointerPressed: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
 MotionLayout.pointerReleased: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
 MotionLayout.tapped: ✓ pressDown on MotionLayout: the relay's report of the press over the layout handed to the host, no pointer sent
-Path.canDrag: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
 Path.dragEnded: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
 Path.dragStarting: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
 Path.dragText: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
 Path.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Path.isDraggable: ✓ dragAndDrop on Path: the relay's drag reports told by the driver, no drag WinUI began
 Picker.frameChanged: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRowSpan: ✅
@@ -127,11 +127,11 @@ Separator.area: ✅
 Separator.frameChanged: ✅
 Separator.layoutBody: ✅
 Separator.panYChannel: ✅
-Slider.canDrag: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
 Slider.dragEnded: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
 Slider.dragStarting: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
 Slider.dragText: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
 Slider.held: ☑️ WinUI tells a hold of a finger or a pen: a mouse button held is no hold.
+Slider.isDraggable: ✓ dragAndDrop on Slider: the relay's drag reports told by the driver, no drag WinUI began
 Space.frameChanged: ✅
 Space.gridColumnSpan: ✅
 Space.gridRowSpan: ✅
@@ -185,11 +185,11 @@ VStack.area: ✅
 VStack.frameChanged: ✅
 VStack.layoutBody: ✅
 VStack.panYChannel: ✅
-WebView.canDrag: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
 WebView.dragEnded: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
 WebView.dragStarting: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
 WebView.dragText: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
 WebView.held: – WebView2 gives the user's hand to its page: listened to by WinUI, it ends the process (fail-fast in Microsoft.UI.Xaml.Controls).
+WebView.isDraggable: ✓ dragAndDrop on WebView: the relay's drag reports told by the driver, no drag WinUI began
 ZStack.frameChanged: ✅
 ZStack.gridColumnSpan: ✅
 ZStack.gridRowSpan: ✅

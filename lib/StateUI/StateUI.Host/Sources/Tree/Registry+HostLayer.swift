@@ -116,7 +116,7 @@ extension Registry {
     /// (`DragAndDrop`, `DropTarget`).
     /// Design: docs/design/host/runtime.md#a-drag-between-views
     public func everyElementDragsAndDrops() {
-        everyElementRealizes(ViewContract.canDrag)
+        everyElementRealizes(ViewContract.isDraggable)
         everyElementRealizes(ViewContract.dragText)
         everyElementRealizes(ViewContract.allowsDrop)
         everyElementRaises(ViewContract.dragStarting)

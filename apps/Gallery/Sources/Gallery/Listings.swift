@@ -2894,7 +2894,7 @@ enum Listings {
                         .lineWidth(1)
                         // What travels is decided before the drag starts: a
                         // native drag session needs its payload at once.
-                        .draggable(text: item)
+                        .dragText(item)
                         // The view that was DRAGGED hears when its own drag ends,
                         // wherever it ended.
                         .onDragEnded { finished = "\(item): drop finished" }

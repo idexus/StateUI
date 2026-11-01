@@ -32,13 +32,13 @@ Fill.frameChanged: ✅
 Fill.horizontalAlignment: ✅
 Fill.pinchUpdated: ✓ pinch on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Fill.verticalAlignment: ✅
-Grid.canDrag: ✓ dragAndDrop on Grid: the drag source and the window's drop routing told by the driver, no dragging session
 Grid.dragEnded: ✓ dragAndDrop on Grid: the drag source and the window's drop routing told by the driver, no dragging session
 Grid.dragStarting: ✓ dragAndDrop on Grid: the drag source and the window's drop routing told by the driver, no dragging session
 Grid.dragText: ✓ dragAndDrop on Grid: the drag source and the window's drop routing told by the driver, no dragging session
 Grid.frameChanged: ✅
 Grid.gridColumnSpan: ✅
 Grid.gridRowSpan: ✅
+Grid.isDraggable: ✓ dragAndDrop on Grid: the drag source and the window's drop routing told by the driver, no dragging session
 HStack.held: ✓ hold on HStack: handed to the host's recognizer or handler, no NSEvent sent
 HStack.layoutBody: ✅
 Image.panYChannel: ✓ pan on Image: handed to the host's recognizer or handler, no NSEvent sent
@@ -66,13 +66,13 @@ Path.frameChanged: ✅
 Path.horizontalAlignment: ✅
 Path.pinchUpdated: ✓ pinch on Path: handed to the host's recognizer or handler, no NSEvent sent
 Path.verticalAlignment: ✅
-Picker.canDrag: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.dragEnded: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.dragStarting: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.dragText: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
 Picker.frameChanged: ✅
 Picker.gridColumnSpan: ✅
 Picker.gridRowSpan: ✅
+Picker.isDraggable: ✓ dragAndDrop on Picker: the drag source and the window's drop routing told by the driver, no dragging session
 Polygon.held: ✓ hold on Polygon: handed to the host's recognizer or handler, no NSEvent sent
 Polygon.layoutBody: ✅
 Polyline.panYChannel: ✓ pan on Polyline: handed to the host's recognizer or handler, no NSEvent sent
@@ -120,13 +120,13 @@ Text.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's dr
 Text.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Text.tapCount: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
 Text.tapped: ✓ tap on Text: handed to the host's recognizer or handler, no NSEvent sent
-TextEditor.canDrag: ✓ dragAndDrop on TextEditor: the drag source and the window's drop routing told by the driver, no dragging session
 TextEditor.dragEnded: ✓ dragAndDrop on TextEditor: the drag source and the window's drop routing told by the driver, no dragging session
 TextEditor.dragStarting: ✓ dragAndDrop on TextEditor: the drag source and the window's drop routing told by the driver, no dragging session
 TextEditor.dragText: ✓ dragAndDrop on TextEditor: the drag source and the window's drop routing told by the driver, no dragging session
 TextEditor.frameChanged: ✅
 TextEditor.gridColumnSpan: ✅
 TextEditor.gridRowSpan: ✅
+TextEditor.isDraggable: ✓ dragAndDrop on TextEditor: the drag source and the window's drop routing told by the driver, no dragging session
 TextField.held: ✓ hold on TextField: handed to the host's recognizer or handler, no NSEvent sent
 TextField.layoutBody: ✅
 TimePicker.panYChannel: ✓ pan on TimePicker: handed to the host's recognizer or handler, no NSEvent sent

@@ -35,13 +35,13 @@ HStack.frameChanged: ✅
 HStack.horizontalAlignment: ✅
 HStack.pinchUpdated: ✓ pinch on HStack: the view's listening handed the recognizer's states, no touch sent
 HStack.verticalAlignment: ✅
-Image.canDrag: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session
 Image.dragEnded: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session
 Image.dragStarting: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session
 Image.dragText: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session
 Image.frameChanged: ✅
 Image.gridColumnSpan: ✅
 Image.gridRowSpan: ✅
+Image.isDraggable: ✓ dragAndDrop on Image: the drag and drop interactions' handlers called, no drag session
 ItemsView.held: ✓ hold on ItemsView: the view's listening handed the recognizer's states, no touch sent
 ItemsView.layoutBody: ✅
 Line.allowsDrop: ✓ dragAndDrop on Rectangle: the drag and drop interactions' handlers called, no drag session
@@ -69,13 +69,13 @@ Polygon.frameChanged: ✅
 Polygon.horizontalAlignment: ✅
 Polygon.pinchUpdated: ✓ pinch on Polygon: the view's listening handed the recognizer's states, no touch sent
 Polygon.verticalAlignment: ✅
-Polyline.canDrag: ✓ dragAndDrop on Polyline: the drag and drop interactions' handlers called, no drag session
 Polyline.dragEnded: ✓ dragAndDrop on Polyline: the drag and drop interactions' handlers called, no drag session
 Polyline.dragStarting: ✓ dragAndDrop on Polyline: the drag and drop interactions' handlers called, no drag session
 Polyline.dragText: ✓ dragAndDrop on Polyline: the drag and drop interactions' handlers called, no drag session
 Polyline.frameChanged: ✅
 Polyline.gridColumnSpan: ✅
 Polyline.gridRowSpan: ✅
+Polyline.isDraggable: ✓ dragAndDrop on Polyline: the drag and drop interactions' handlers called, no drag session
 ProgressBar.held: ✓ hold on ProgressBar: the view's listening handed the recognizer's states, no touch sent
 ProgressBar.layoutBody: ✅
 Rectangle.panYChannel: ✓ pan on Rectangle: the view's listening handed the recognizer's states, no touch sent
@@ -102,13 +102,13 @@ Space.margin: ✅
 Space.swipeDirection: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.swipeThreshold: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
 Space.swiped: ✓ pan on Space: the view's listening handed the recognizer's states, no touch sent
-Spinner.canDrag: ✓ dragAndDrop on Spinner: the drag and drop interactions' handlers called, no drag session
 Spinner.dragEnded: ✓ dragAndDrop on Spinner: the drag and drop interactions' handlers called, no drag session
 Spinner.dragStarting: ✓ dragAndDrop on Spinner: the drag and drop interactions' handlers called, no drag session
 Spinner.dragText: ✓ dragAndDrop on Spinner: the drag and drop interactions' handlers called, no drag session
 Spinner.frameChanged: ✅
 Spinner.gridColumnSpan: ✅
 Spinner.gridRowSpan: ✅
+Spinner.isDraggable: ✓ dragAndDrop on Spinner: the drag and drop interactions' handlers called, no drag session
 Stepper.frameChanged: ✅
 Stepper.gridColumn: ✅
 Stepper.gridRow: ✅
@@ -128,13 +128,13 @@ TextField.frameChanged: ✅
 TextField.horizontalAlignment: ✅
 TextField.pinchUpdated: ✓ pinch on TextField: the view's listening handed the recognizer's states, no touch sent
 TextField.verticalAlignment: ✅
-TimePicker.canDrag: ✓ dragAndDrop on TimePicker: the drag and drop interactions' handlers called, no drag session
 TimePicker.dragEnded: ✓ dragAndDrop on TimePicker: the drag and drop interactions' handlers called, no drag session
 TimePicker.dragStarting: ✓ dragAndDrop on TimePicker: the drag and drop interactions' handlers called, no drag session
 TimePicker.dragText: ✓ dragAndDrop on TimePicker: the drag and drop interactions' handlers called, no drag session
 TimePicker.frameChanged: ✅
 TimePicker.gridColumnSpan: ✅
 TimePicker.gridRowSpan: ✅
+TimePicker.isDraggable: ✓ dragAndDrop on TimePicker: the drag and drop interactions' handlers called, no drag session
 VStack.held: ✓ hold on VStack: the view's listening handed the recognizer's states, no touch sent
 VStack.layoutBody: ✅
 WebView.panYChannel: ✓ pan on WebView: the view's listening handed the recognizer's states, no touch sent

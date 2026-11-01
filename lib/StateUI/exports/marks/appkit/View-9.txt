@@ -22,13 +22,13 @@ ColorPicker.frameChanged: ✅
 ColorPicker.horizontalAlignment: ✅
 ColorPicker.pinchUpdated: ✓ pinch on ColorPicker: handed to the host's recognizer or handler, no NSEvent sent
 ColorPicker.verticalAlignment: ✅
-DatePicker.canDrag: ✓ dragAndDrop on DatePicker: the drag source and the window's drop routing told by the driver, no dragging session
 DatePicker.dragEnded: ✓ dragAndDrop on DatePicker: the drag source and the window's drop routing told by the driver, no dragging session
 DatePicker.dragStarting: ✓ dragAndDrop on DatePicker: the drag source and the window's drop routing told by the driver, no dragging session
 DatePicker.dragText: ✓ dragAndDrop on DatePicker: the drag source and the window's drop routing told by the driver, no dragging session
 DatePicker.frameChanged: ✅
 DatePicker.gridColumnSpan: ✅
 DatePicker.gridRowSpan: ✅
+DatePicker.isDraggable: ✓ dragAndDrop on DatePicker: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.held: ✓ hold on Ellipse: handed to the host's recognizer or handler, no NSEvent sent
 Ellipse.layoutBody: ✅
 Fill.panYChannel: ✓ pan on Fill: handed to the host's recognizer or handler, no NSEvent sent
@@ -54,13 +54,13 @@ Link.frameChanged: ✅
 Link.horizontalAlignment: ✅
 Link.pinchUpdated: ✓ pinch on Link: handed to the host's recognizer or handler, no NSEvent sent
 Link.verticalAlignment: ✅
-Map.canDrag: ✓ dragAndDrop on Map: the drag source and the window's drop routing told by the driver, no dragging session
 Map.dragEnded: ✓ dragAndDrop on Map: the drag source and the window's drop routing told by the driver, no dragging session
 Map.dragStarting: ✓ dragAndDrop on Map: the drag source and the window's drop routing told by the driver, no dragging session
 Map.dragText: ✓ dragAndDrop on Map: the drag source and the window's drop routing told by the driver, no dragging session
 Map.frameChanged: ✅
 Map.gridColumnSpan: ✅
 Map.gridRowSpan: ✅
+Map.isDraggable: ✓ dragAndDrop on Map: the drag source and the window's drop routing told by the driver, no dragging session
 MotionLayout.droppedFileTypes: ✓ dropFiles on MotionLayout: the window's drop routing told the driver's files, no dragging session
 MotionLayout.filesDropped: ✓ dropFiles on MotionLayout: the window's drop routing told the driver's files, no dragging session
 MotionLayout.tapped: ✓ pressDown on MotionLayout: handed to the host's recognizer or handler, no NSEvent sent
@@ -100,13 +100,13 @@ Slider.frameChanged: ✅
 Slider.horizontalAlignment: ✅
 Slider.pinchUpdated: ✓ pinch on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.verticalAlignment: ✅
-Space.canDrag: ✓ dragAndDrop on Space: the drag source and the window's drop routing told by the driver, no dragging session
 Space.dragEnded: ✓ dragAndDrop on Space: the drag source and the window's drop routing told by the driver, no dragging session
 Space.dragStarting: ✓ dragAndDrop on Space: the drag source and the window's drop routing told by the driver, no dragging session
 Space.dragText: ✓ dragAndDrop on Space: the drag source and the window's drop routing told by the driver, no dragging session
 Space.frameChanged: ✅
 Space.gridColumnSpan: ✅
 Space.gridRowSpan: ✅
+Space.isDraggable: ✓ dragAndDrop on Space: the drag source and the window's drop routing told by the driver, no dragging session
 Spinner.holdDuration: ✅
 Stepper.held: ✓ hold on Stepper: handed to the host's recognizer or handler, no NSEvent sent
 Stepper.layoutBody: ✅

@@ -23,13 +23,13 @@ DatePicker.frameChanged: ✅
 DatePicker.horizontalAlignment: ✅
 DatePicker.pinchUpdated: ✓ pinch on DatePicker: handed to the host's recognizer or handler, no NSEvent sent
 DatePicker.verticalAlignment: ✅
-Ellipse.canDrag: ✓ dragAndDrop on Ellipse: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.dragEnded: ✓ dragAndDrop on Ellipse: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.dragStarting: ✓ dragAndDrop on Ellipse: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.dragText: ✓ dragAndDrop on Ellipse: the drag source and the window's drop routing told by the driver, no dragging session
 Ellipse.frameChanged: ✅
 Ellipse.gridColumnSpan: ✅
 Ellipse.gridRowSpan: ✅
+Ellipse.isDraggable: ✓ dragAndDrop on Ellipse: the drag source and the window's drop routing told by the driver, no dragging session
 Fill.held: ✓ hold on Fill: handed to the host's recognizer or handler, no NSEvent sent
 Fill.layoutBody: ✅
 Grid.panYChannel: ✓ pan on Grid: handed to the host's recognizer or handler, no NSEvent sent
@@ -90,13 +90,13 @@ ScrollView.pointerReleased: ✓ hover on ScrollView: handed to the host's recogn
 SearchField.droppedFileTypes: ✓ dropFiles on SearchField: the window's drop routing told the driver's files, no dragging session
 SearchField.filesDropped: ✓ dropFiles on SearchField: the window's drop routing told the driver's files, no dragging session
 SearchField.tapped: ✓ pressDown on SearchField: handed to the host's recognizer or handler, no NSEvent sent
-Separator.canDrag: ✓ dragAndDrop on Separator: the drag source and the window's drop routing told by the driver, no dragging session
 Separator.dragEnded: ✓ dragAndDrop on Separator: the drag source and the window's drop routing told by the driver, no dragging session
 Separator.dragStarting: ✓ dragAndDrop on Separator: the drag source and the window's drop routing told by the driver, no dragging session
 Separator.dragText: ✓ dragAndDrop on Separator: the drag source and the window's drop routing told by the driver, no dragging session
 Separator.frameChanged: ✅
 Separator.gridColumnSpan: ✅
 Separator.gridRowSpan: ✅
+Separator.isDraggable: ✓ dragAndDrop on Separator: the drag source and the window's drop routing told by the driver, no dragging session
 Slider.panTouchCount: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.panUpdated: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
 Slider.panXChannel: ✓ pan on Slider: handed to the host's recognizer or handler, no NSEvent sent
@@ -110,13 +110,13 @@ Spinner.dragOver: ✓ dragAndDrop on Rectangle: the drag source and the window's
 Spinner.drop: ✓ dragAndDrop on Rectangle: the drag source and the window's drop routing told by the driver, no dragging session
 Spinner.tapCount: ✓ tap on Spinner: handed to the host's recognizer or handler, no NSEvent sent
 Spinner.tapped: ✓ tap on Spinner: handed to the host's recognizer or handler, no NSEvent sent
-Stepper.canDrag: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.dragEnded: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.dragStarting: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.dragText: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session
 Stepper.frameChanged: ✅
 Stepper.gridColumnSpan: ✅
 Stepper.gridRowSpan: ✅
+Stepper.isDraggable: ✓ dragAndDrop on Stepper: the drag source and the window's drop routing told by the driver, no dragging session
 Switch.held: ✓ hold on Switch: handed to the host's recognizer or handler, no NSEvent sent
 Switch.layoutBody: ✅
 Text.frameChanged: ✅

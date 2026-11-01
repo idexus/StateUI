@@ -676,8 +676,8 @@ along the other axis: the dominant way decides, never a second one.
 
 ## A drag between views
 
-A view offers a drag where `canDrag` holds, carrying its `dragText` - empty
-where it gives none - and takes one where `allowsDrop` holds
+A view offers a drag where it carries `dragText` and `isDraggable` does not
+say false, and takes one where `allowsDrop` holds
 (`DragAndDrop`): what travels is fixed before the drag starts, as a native
 drag needs its payload at once. A toolkit tells a drag over a view in its
 own way - again and again while it moves, a leave after a drop on some, a
