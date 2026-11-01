@@ -1,8 +1,8 @@
 # The Web host's suite: its own tests in Node over a page with just enough of a
-# DOM, then, in a headless Google Chrome, the host's tests that run a host. The
-# conformance families join it once the Web's verdicts hold no ❌: until then
-# its column is written on a Mac (`test-web.sh --browser`), and a family's
-# failures are the host's open work, not a broken build.
+# DOM, then, in a headless Google Chrome, every conformance family and the
+# host's tests that run a host - each verdict held to the marks the Mac wrote
+# (`STATEUI_UPDATE_EXPORTS=1 test-web.sh --browser`), so a family whose verdicts
+# changed fails here as on every other host.
 #
 # ON A MAC, as the marks are written there: a case reads frames, and words stand
 # at the sizes the system's fonts give them.
@@ -76,8 +76,8 @@ jobs:
       - name: Web host tests, in Node
         run: .scripts/Web/test-web.sh
 
-      - name: The host's tests that run a host, in a browser
-        run: .scripts/Web/test-web.sh --browser --host
+      - name: The conformance families and the host's tests that run a host, in a browser
+        run: .scripts/Web/test-web.sh --browser
 
       # Each application's release module, gzipped, within its budget.
       - name: Size budgets of the release modules
