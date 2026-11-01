@@ -233,7 +233,7 @@ final class MotionTests: XCTestCase {
 
         func row(_ y: Double, _ opacity: Double) -> Node {
             ZStack { Text("x") }
-                .area(.absolute(0, y, 1, 40))
+                .area(.absolute(Rect(0, y, 1, 40)))
                 .opacity(opacity)
                 .id("row")
                 .node

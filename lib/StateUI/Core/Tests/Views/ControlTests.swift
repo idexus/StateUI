@@ -309,7 +309,7 @@ final class ControlTests: XCTestCase {
                 ZStack {
                     Rectangle()
                         .fill(.cornflowerBlue)
-                        .area(.proportional(0, 0, 1, 0.5))
+                        .area(.proportional(Rect(0, 0, 1, 0.5)))
 
                     Text("Bottom right")
                         .horizontalAlignment(.end)
@@ -559,7 +559,7 @@ final class ControlTests: XCTestCase {
                         // The other layout that asks a child where it goes.
                         // Harmless on a view in none: an area means something
                         // only to the layout that asks for it.
-                        .area(.absolute(0, 0, 120, 40))
+                        .area(.absolute(Rect(0, 0, 120, 40)))
                         // A drag written into states rather than reported -
                         // the path that describes nothing.
                         .panX(followed.projectedValue)

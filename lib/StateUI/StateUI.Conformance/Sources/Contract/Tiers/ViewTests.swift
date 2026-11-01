@@ -289,7 +289,7 @@
                     ZStack {
                         reporting(element, frames, [
                             Write(ViewContract.area, shared.wrappedValue
-                                  ? Area.proportional(0.5, 0.5, 0.5, 0.5) : Area.absolute(10, 20, 30, 40)),
+                                  ? Area.proportional(Rect(0.5, 0.5, 0.5, 0.5)) : Area.absolute(Rect(10, 20, 30, 40))),
                         ])
                     }
                     .width(200).height(200)

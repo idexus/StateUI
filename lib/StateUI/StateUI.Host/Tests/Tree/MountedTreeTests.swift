@@ -570,12 +570,12 @@ final class MountedTreeTests: XCTestCase {
     func testAChildsAreaReachesItsLayout() {
         let (tree, _) = Self.tree()
         var half = HostPatch(id: .manual("half"), type: .text)
-        half.properties[.area] = Area.proportional(0.5, 0, 0.5, 1).propValue
+        half.properties[.area] = Area.proportional(Rect(0.5, 0, 0.5, 1)).propValue
         var layers = HostPatch(id: .manual("layers"), type: .zStack)
         layers.children = .arranged([half, HostPatch(id: .manual("whole"), type: .text)])
         tree.apply(layers, complete: true)
 
-        XCTAssertEqual(tree.root?.children.first?.layoutValues.area, .proportional(0.5, 0, 0.5, 1))
+        XCTAssertEqual(tree.root?.children.first?.layoutValues.area, .proportional(Rect(0.5, 0, 0.5, 1)))
         XCTAssertNil(tree.root?.children.last?.layoutValues.area)
     }
 

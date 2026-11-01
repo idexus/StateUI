@@ -2430,8 +2430,8 @@ swift.enum.case Alignment.start: case start
 swift.enum.case ApplicationPhase.active: case active
 swift.enum.case ApplicationPhase.background: case background
 swift.enum.case ApplicationPhase.inactive: case inactive
-swift.enum.case Area.absolute(_:_:_:_:): case absolute(Double, Double, Double, Double)
-swift.enum.case Area.proportional(_:_:_:_:): case proportional(Double, Double, Double, Double)
+swift.enum.case Area.absolute(_:): case absolute(Rect)
+swift.enum.case Area.proportional(_:): case proportional(Rect)
 swift.enum.case BatteryPowerSource.ac: case ac
 swift.enum.case BatteryPowerSource.battery: case battery
 swift.enum.case BatteryPowerSource.unknown: case unknown

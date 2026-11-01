@@ -1,21 +1,21 @@
 // SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-/// The part of a `ZStack`'s room a child stands in: x, y, width and height,
-/// in device units or in fractions of the room.
+/// The part of a `ZStack`'s room a child stands in: a rectangle in device
+/// units or in fractions of the room.
 ///
-///     Text("Badge").area(.absolute(16, 16, 120, 40))
+///     Text("Badge").area(.absolute(Rect(16, 16, 120, 40)))
 ///     Rectangle()
 ///         .fill(.red)
-///         .area(.proportional(0.5, 0, 0.5, 1))
+///         .area(.proportional(Rect(0.5, 0, 0.5, 1)))
 ///
 /// A child that names no area stands in the whole room.
 public enum Area: Equatable, Sendable, HostRepresentable {
-    /// Device units from the room's top left: x, y, width, height.
-    case absolute(Double, Double, Double, Double)
+    /// A rectangle in device units from the room's top left.
+    case absolute(Rect)
 
-    /// Fractions of the room: `.proportional(0.5, 0, 0.5, 1)` is its right half.
-    case proportional(Double, Double, Double, Double)
+    /// A rectangle in fractions of the room: `.proportional(Rect(0.5, 0, 0.5, 1))` is its right half.
+    case proportional(Rect)
 
     /// Which of the two kinds an area is, as the number that crosses.
     /// Design: docs/design/types/vocabularies.md#a-kind-first
@@ -27,10 +27,12 @@ public enum Area: Equatable, Sendable, HostRepresentable {
     /// The kind, then the four numbers.
     public var propValue: PropValue {
         switch self {
-        case let .absolute(x, y, width, height):
-            return .values([.enumeration(Kind.absolute.rawValue), .numbers([x, y, width, height])])
-        case let .proportional(x, y, width, height):
-            return .values([.enumeration(Kind.proportional.rawValue), .numbers([x, y, width, height])])
+        case .absolute(let area):
+            return .values([.enumeration(Kind.absolute.rawValue), .numbers([area.x, area.y, area.width, area.height])])
+        case .proportional(let area):
+            return .values([
+                .enumeration(Kind.proportional.rawValue), .numbers([area.x, area.y, area.width, area.height]),
+            ])
         }
     }
 
@@ -42,9 +44,10 @@ public enum Area: Equatable, Sendable, HostRepresentable {
               case .numbers(let numbers) = parts[1], numbers.count == 4
         else { return nil }
 
+        let area = Rect(numbers[0], numbers[1], numbers[2], numbers[3])
         switch kind {
-        case .absolute: self = .absolute(numbers[0], numbers[1], numbers[2], numbers[3])
-        case .proportional: self = .proportional(numbers[0], numbers[1], numbers[2], numbers[3])
+        case .absolute: self = .absolute(area)
+        case .proportional: self = .proportional(area)
         }
     }
 }

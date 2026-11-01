@@ -154,11 +154,11 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testAZStackRightToLeftCountsItsAreasFromTheRight() {
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.area = .absolute(Rect(10, 5, 40, 30))
         badge.values.horizontal = 0
         badge.values.vertical = 0
         var half = Child(width: 20, height: 10)
-        half.values.area = .proportional(0, 0, 0.5, 1)
+        half.values.area = .proportional(Rect(0, 0, 0.5, 1))
 
         let places = ZStackArithmetic.places(
             of: [badge, half], in: Rect(0, 0, 100, 50), padding: Insets(0), direction: .rightToLeft)
@@ -462,11 +462,11 @@ final class LayoutArithmeticTests: XCTestCase {
         corner.values.horizontal = 2
         corner.values.vertical = 2
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.area = .absolute(Rect(10, 5, 40, 30))
         badge.values.horizontal = 0
         badge.values.vertical = 0
         var half = Child(width: 20, height: 10)
-        half.values.area = .proportional(0.5, 0, 0.5, 1)
+        half.values.area = .proportional(Rect(0.5, 0, 0.5, 1))
         let items = [Child(width: 20, height: 10), corner, badge, half, Child(width: 20, height: 10, shown: false)]
 
         let places = ZStackArithmetic.places(
@@ -486,9 +486,9 @@ final class LayoutArithmeticTests: XCTestCase {
         var margined = Child(width: 30, height: 10)
         margined.values.margin = Insets(start: 5, top: 0, end: 5, bottom: 0)
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.area = .absolute(Rect(10, 5, 40, 30))
         var half = Child(width: 30, height: 20)
-        half.values.area = .proportional(0.5, 0, 0.5, 0.5)
+        half.values.area = .proportional(Rect(0.5, 0, 0.5, 0.5))
 
         XCTAssertEqual(ZStackArithmetic.size(of: [margined], padding: Insets(2), width: nil), LayoutSize(width: 44, height: 14))
         XCTAssertEqual(ZStackArithmetic.size(of: [badge], padding: Insets(0), width: nil), LayoutSize(width: 50, height: 35))
@@ -502,7 +502,7 @@ final class LayoutArithmeticTests: XCTestCase {
     @MainActor
     func testAMotionLayoutHasNoSizeOfItsOwn() {
         var badge = Child(width: 20, height: 10)
-        badge.values.area = .absolute(10, 5, 40, 30)
+        badge.values.area = .absolute(Rect(10, 5, 40, 30))
         let views = [Child(width: 30, height: 20), badge]
 
         XCTAssertEqual(ZStackArithmetic.size(of: views, padding: Insets(0), width: 100, motionLayout: true), LayoutSize(width: 0, height: 0))
@@ -530,7 +530,7 @@ final class LayoutArithmeticTests: XCTestCase {
         child.values.horizontal = 0
         child.offers = offers
         var half = child
-        half.values.area = .proportional(0, 0, 0.5, 1)
+        half.values.area = .proportional(Rect(0, 0, 0.5, 1))
         let room = Rect(0, 0, 100, 100)
 
         func offered(_ layout: () -> Void) -> [Double?] {
