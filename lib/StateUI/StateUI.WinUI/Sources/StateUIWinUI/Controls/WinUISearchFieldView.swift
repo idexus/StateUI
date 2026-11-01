@@ -16,6 +16,10 @@ final class WinUISearchFieldView: WinUITextInputView {
     private var alignment = TextAlignment.start
     private var traits = InputTraits(spellChecked: true, predicted: true, purpose: nil)
 
+    override func measure(width: Double?, height: Double?) -> LayoutSize {
+        measuredOnOneLine(width: width, height: height)
+    }
+
     init() {
         super.init { number in stateui_winui_search_make(number) }
     }

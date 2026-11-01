@@ -62,6 +62,38 @@
             Aspects.holds(TextFieldContract.submitLabel, on: "TextField", .done, then: .send),
             handsTheKeyboardOn(from: "TextField", saying: TextFieldContract.submitLabel),
             Aspects.holds(TextFieldContract.showsClearButton, on: "TextField", true, then: false),
+            standsAsWideAsItsWords("TextField"),
         ]
+    }
+
+    /// A field nothing sizes stands at least as wide as its placeholder, and with none as twenty digits - the words
+    /// beside it in a `Text` the measure - whatever the platform's own field asks for.
+    /// Design: docs/design/host/layout.md#a-fields-own-width
+    @MainActor
+    static func standsAsWideAsItsWords(_ element: String) -> ConformanceCase {
+        ConformanceCase("\(element).standsAsWideAsItsWords", proves: [
+            Covered(TextInputContract.placeholder, on: element),
+        ], needs: [
+            Covered(ViewContract.frameChanged, on: element), Covered(ViewContract.frameChanged, on: "Text"),
+        ]) { s in
+            for words in ["Search every note, folder and tag", nil] {
+                let field = Received<[Double]>(), measure = Received<[Double]>()
+                let said = words.map { [Write(TextInputContract.placeholder, $0)] as [any Worn] } ?? []
+                s.start {
+                    VStack {
+                        HStack { ViewTests.reporting(element, field, said) }
+                        HStack { ViewTests.reporting("Text", measure, [
+                            Write(TextualElementContract.text, words ?? String(repeating: "0", count: 20)),
+                        ], id: "measure") }
+                    }
+                    .horizontalAlignment(.start)
+                }
+
+                s.settle { (field.values.last.map(FrameReport.size)?.first ?? 0) > 0 && !measure.values.isEmpty }
+                let width = field.values.last.map(FrameReport.size)?.first ?? 0
+                let least = measure.values.last.map(FrameReport.size)?.first ?? .infinity
+                s.expect(width >= least, true, "\(width) wide beside words \(least) wide - \(words ?? "twenty digits")")
+            }
+        }
     }
 }

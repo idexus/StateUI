@@ -55,7 +55,23 @@ class WinUITextInputView: WinUIView {
 
     /// The words shown while there are none.
     func setPlaceholder(_ placeholder: String?) {
+        self.placeholder = placeholder
         stateui_winui_field_set_placeholder(handle, placeholder ?? "")
+    }
+
+    /// The words shown while there are none - which a field nothing sizes is at least as wide as.
+    private var placeholder: String?
+
+    /// A one-line field as WinUI measures it, at least twenty digits and its placeholder wide in its font, with its
+    /// padding and border (`FieldWidth`); no wider than offered.
+    /// Design: docs/design/host/layout.md#a-fields-own-width
+    func measuredOnOneLine(width: Double?, height: Double?) -> LayoutSize {
+        let own = super.measure(width: nil, height: height)
+        let measured = FieldWidth.leastWords(placeholder: placeholder).map {
+            stateui_winui_field_words_width(handle, $0).rounded(.up)
+        }
+        let wide = FieldWidth.width(own: own.width, measured: measured, chrome: stateui_winui_field_chrome(handle))
+        return LayoutSize(width: width.map { min(wide, $0) } ?? wide, height: own.height)
     }
 
     /// How the words are taken: read only, and with `traits` - spell checked, predicted, and the keyboard's scope.

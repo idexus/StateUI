@@ -994,6 +994,11 @@ StateUIObjectRef stateui_winui_search_make(int64_t view);
 void stateui_winui_field_set_text(StateUIObjectRef field, char const *utf8);
 void stateui_winui_field_set_placeholder(StateUIObjectRef field, char const *utf8);
 
+/// How wide `utf8` stands on one line in a field's font, and what its text box draws around its words - its padding
+/// and its border across: what StateUI measures the width a field asks for with.
+double stateui_winui_field_words_width(StateUIObjectRef field, char const *utf8);
+double stateui_winui_field_chrome(StateUIObjectRef field);
+
 /// How a field or an editor takes words: read only, spell checked, predicting the next word, and its input scope
 /// (a `StateUIInputScope`), which picks the keyboard a screen offers.
 void stateui_winui_field_set_behavior(StateUIObjectRef field, bool readOnly, bool spellChecked, bool predicted,

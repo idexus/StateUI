@@ -192,6 +192,36 @@ extern "C" void stateui_winui_field_set_text(StateUIObjectRef handle, char const
     }
 }
 
+extern "C" double stateui_winui_field_words_width(StateUIObjectRef handle, char const *utf8) {
+    try {
+        auto field = as<controls::Control>(handle);
+        controls::TextBlock words;
+        words.FontFamily(field.FontFamily());
+        words.FontSize(field.FontSize());
+        words.FontWeight(field.FontWeight());
+        words.FontStyle(field.FontStyle());
+        words.Text(text(utf8));
+        words.Measure({INFINITY, INFINITY});
+        return words.DesiredSize().Width;
+    } catch (...) {
+        report("measuring a field's words");
+        return 0;
+    }
+}
+
+extern "C" double stateui_winui_field_chrome(StateUIObjectRef handle) {
+    try {
+        controls::Control box = boxOf(handle);
+        if (!box) box = as<controls::Control>(handle);
+        auto padding = box.Padding();
+        auto border = box.BorderThickness();
+        return padding.Left + padding.Right + border.Left + border.Right;
+    } catch (...) {
+        report("reading a field's padding");
+        return 0;
+    }
+}
+
 extern "C" void stateui_winui_field_set_placeholder(StateUIObjectRef handle, char const *utf8) {
     try {
         auto control = as<IInspectable>(handle);

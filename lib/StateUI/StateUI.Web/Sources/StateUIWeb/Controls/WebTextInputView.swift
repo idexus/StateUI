@@ -188,8 +188,8 @@ final class WebTextInputView: WebDOMView, WebWordsView {
     /// A field counts its words or its placeholder as wide as it is; an editor growing with its words stands as tall
     /// as they are.
     private func fit() {
-        // A field is as wide as its words or its placeholder, not the browser's twenty characters: where the browser
-        // sizes no field by its content, the characters it counts say it.
+        // A field is as wide as its words or its placeholder, and the stylesheet's twenty digits at least
+        // (FieldWidth): where the browser sizes no field by its content, the characters it counts say it.
         if kind != .editor {
             return attribute("size", String(max(1, WebRelay.value(of: node).count, placeholder.count)))
         }

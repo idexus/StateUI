@@ -57,14 +57,16 @@ final class UIKitTextFieldView: UITextField, UIKitTextInputView {
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
         let fitted = super.sizeThatFits(size)
-        guard outline.isDrawn else { return fitted }
-        return CGSize(width: fitted.width, height: max(fitted.height, measuredOwnFrame().height))
+        let width = leastWidth(own: fitted.width)
+        guard outline.isDrawn else { return CGSize(width: width, height: fitted.height) }
+        return CGSize(width: width, height: max(fitted.height, measuredOwnFrame().height))
     }
 
     override var intrinsicContentSize: CGSize {
         let own = super.intrinsicContentSize
-        guard outline.isDrawn else { return own }
-        return CGSize(width: own.width, height: max(own.height, measuredOwnFrame().height))
+        let width = leastWidth(own: own.width)
+        guard outline.isDrawn else { return CGSize(width: width, height: own.height) }
+        return CGSize(width: width, height: max(own.height, measuredOwnFrame().height))
     }
 
     @available(*, unavailable)

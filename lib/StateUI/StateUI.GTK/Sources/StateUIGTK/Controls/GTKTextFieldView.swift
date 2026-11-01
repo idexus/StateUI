@@ -72,7 +72,33 @@ class GTKTextFieldView: GTKView, GTKTextInputView {
     }
 
     func setPlaceholder(_ placeholder: String?) {
+        self.placeholder = placeholder
         gtk_text_set_placeholder_text(words, placeholder)
+        invalidateMeasure()
+    }
+
+    /// The words shown while there are none - which a field nothing sizes is at least as wide as.
+    private var placeholder: String?
+
+    /// GTK's entry, at least twenty digits and its placeholder wide in its font, with what the entry draws around
+    /// its words (`FieldWidth`); no wider than offered nor narrower than GTK's least.
+    /// Design: docs/design/host/layout.md#a-fields-own-width
+    override func measure(width: Double?, height: Double?) -> LayoutSize {
+        let measured = super.measure(width: nil, height: height)
+        var (least, natural): (Int32, Int32) = (0, 0)
+        gtk_widget_measure(widget, GTK_ORIENTATION_HORIZONTAL, -1, &least, &natural, nil, nil)
+        var (wordsLeast, wordsNatural): (Int32, Int32) = (0, 0)
+        gtk_widget_measure(words.of(GtkWidget.self), GTK_ORIENTATION_HORIZONTAL, -1, &wordsLeast, &wordsNatural, nil, nil)
+        let leastWords = FieldWidth.leastWords(placeholder: placeholder).map { said -> Double in
+            let layout = gtk_widget_create_pango_layout(words.of(GtkWidget.self), said)
+            defer { g_object_unref(layout.map(UnsafeMutableRawPointer.init)) }
+            var pixels: Int32 = 0
+            pango_layout_get_pixel_size(layout, &pixels, nil)
+            return Double(pixels)
+        }
+        let wide = FieldWidth.width(own: Double(natural), measured: leastWords, chrome: Double(natural - wordsNatural))
+        let across = width.map { max(Double(least), min(wide, $0.rounded(.down))) } ?? wide
+        return LayoutSize(width: across, height: measured.height)
     }
 
     /// The most characters the words take. GTK's own bound counts code points, so the host cuts what goes in.

@@ -57,6 +57,7 @@
                 s.expect(heard.values, ["s", "s"], "each submission once")
             },
             Aspects.holds(SearchFieldContract.submitLabel, on: "SearchField", .search, then: .go),
+            TextFieldTests.standsAsWideAsItsWords("SearchField"),
             TextFieldTests.handsTheKeyboardOn(from: "SearchField", saying: SearchFieldContract.submitLabel),
         ]
     }

@@ -49,10 +49,10 @@ final class AppKitTextFieldView: NSView, NSTextFieldDelegate {
     static let inset = NSSize(width: 6, height: 4)
 
     override var intrinsicContentSize: NSSize {
-        let own = textField.intrinsicContentSize
+        var own = textField.intrinsicContentSize
+        own.width = textField.leastWidth(own: own.width)
         guard boxed else { return own }
-        let width = own.width == NSView.noIntrinsicMetric ? own.width : own.width + Self.inset.width * 2
-        return NSSize(width: width, height: own.height + Self.inset.height * 2)
+        return NSSize(width: own.width + Self.inset.width * 2, height: own.height + Self.inset.height * 2)
     }
 
     override func layout() {

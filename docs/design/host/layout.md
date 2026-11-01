@@ -307,6 +307,18 @@ its natural size places it - on an axis it does not fill and states no size
 for - so a child that fills both ways takes the room whatever it would measure.
 A container with no shown child takes no room.
 
+## A field's own width
+
+A one-line field nothing sizes - a `TextField` or a `SearchField` in a row -
+asks for at least the width of twenty digits and of its placeholder, each
+measured in the field's own font with what it draws around its words
+(`FieldWidth`). A platform whose field asks for more keeps its own width -
+one growing with its words grows on. Twenty characters is what GTK's entry
+and the Web's input ask for by themselves; an editable `NSTextField` asks for
+no width, and a field two points wide is never what an author meant. Where
+the layout gives the field a size - a width, a `.fill` column, an area -
+that size stands.
+
 ## A button's picture and words
 
 A button's picture beside its words stands with them, the two together in the
