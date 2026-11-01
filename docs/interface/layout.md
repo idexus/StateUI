@@ -95,7 +95,7 @@ then moves it right in parent coordinates, while
 | `rotate(degrees)` | turns clockwise in the screen plane |
 | `scale(factor)` | scales both axes about the center |
 | `scaleX(factor)`, `scaleY(factor)` | scales one axis |
-| `turn(degrees)`, `tilt(degrees)` | draws a deterministic flat view of a vertical or horizontal turn |
+| `turn(degrees)`, `tilt(degrees)` | draws a deterministic flat view of a vertical or horizontal turn - not `.rotationY`/`.rotationX`, the platform's own three-dimensional turn |
 | `skew(x, y)` | adds an ordered shear to the transform matrix |
 
 The core composes the matrix before it reaches a host. A native view surface is

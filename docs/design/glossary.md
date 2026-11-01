@@ -103,6 +103,7 @@ and this table maps the two.
 | snap | jump | a change applied at once, with no animation |
 | travels, cleared, moves (member facts) | animatable, reset when unset, animation group | what a member's contract says about how its value changes |
 | travel, traveling layout | layout animation | a layout's children animating to their new places |
+| turn, tilt (`ViewTransform`) | foreshortening | a view turned away about its vertical or horizontal axis drawn flat - as narrow or as short as the angle leaves it, the same picture on every platform; `rotationX` and `rotationY` are the platform's own three-dimensional turn, which each projects its own way |
 | state channel | animated state source | the one place a runtime animates a bound state for every control tied to it |
 | described motion | property animation | the animation a patch describes for a property |
 
