@@ -817,8 +817,8 @@ An item is as tall as it asks in a list and as wide as it asks in a row; a
 size written on its view is kept. A list has no height of its own: give it
 one, or a row of a grid that fills.
 
-`ItemsView(groups:)` takes `Section`s, each named with `.id` - so two
-groups may hold equal items - and each with a `.header` and a `.footer`;
+`ItemsView(sections:)` takes `Section`s, each named with `.id` - so two
+sections may hold equal items - and each with a `.header` and a `.footer`;
 `.header` and `.footer` on the list stand before and after everything.
 `.onEndReached(within:)` hears the user come within so many items of the
 end - once, until they scroll away or the number of items changes - and

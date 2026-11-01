@@ -128,7 +128,7 @@ final class UIKitItemsViewTests: XCTestCase {
     func testAGroupAddedOnTopBringsItsOwnHeader() throws {
         let days = State(wrappedValue: ["Yesterday"])
         let host = UIKitRenderer.running(reducesMotion: true) {
-            ItemsView(groups: days.wrappedValue.map { day in
+            ItemsView(sections: days.wrappedValue.map { day in
                 Section([day + " note"]) { Text($0) }.id(day).header(Text(day))
             })
             .width(300).height(400)

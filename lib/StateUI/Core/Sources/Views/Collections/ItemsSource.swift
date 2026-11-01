@@ -8,7 +8,7 @@ protocol ItemsViews: AnyObject {
     func view(for identity: String) -> (any View)?
 }
 
-/// What one build of an ItemsView holds: its groups, every identity they show
+/// What one build of an ItemsView holds: its sections, every identity they show
 /// in order, and how each entry is made. A new one for every build its parent
 /// makes; the same one while only the host's cells change, so an entry built
 /// from it is carried whole.
@@ -19,13 +19,13 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
     private enum Place {
         case header
         case footer
-        case groupHeader(Int)
-        case groupFooter(Int)
+        case sectionHeader(Int)
+        case sectionFooter(Int)
         case item(Int, Int)
     }
 
-    private let groups: [Section<ID>]
-    private let grouped: Bool
+    private let sections: [Section<ID>]
+    private let sectioned: Bool
     private var header: (any View)?
     private var footer: (any View)?
     private var finished = false
@@ -38,10 +38,10 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
     private var ordered: [String] = []
     private var identities: [ID: [String]] = [:]
 
-    /// The source of `groups`; a list with no groups is one group standing for none.
-    init(groups: [Section<ID>], grouped: Bool) {
-        self.groups = groups
-        self.grouped = grouped
+    /// The source of `sections`; a list with no sections is one section standing for none.
+    init(sections: [Section<ID>], sectioned: Bool) {
+        self.sections = sections
+        self.sectioned = sectioned
     }
 
     /// Takes the list's own header and footer and names every entry - once for
@@ -53,30 +53,30 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         self.header = header
         self.footer = footer
 
-        var sections: [ItemsEntries.Section] = []
+        var built: [ItemsEntries.Section] = []
         var names: Set<String> = []
-        for (number, group) in groups.enumerated() {
-            let name = uniqueName(group.name ?? String(number), among: &names)
+        for (number, section) in sections.enumerated() {
+            let name = uniqueName(section.name ?? String(number), among: &names)
             var items: [String] = []
-            for place in 0..<group.count {
-                let id = group.identify(place)
-                let written = grouped ? name + "\u{1F}" + String(describing: id) : String(describing: id)
+            for place in 0..<section.count {
+                let id = section.identify(place)
+                let written = sectioned ? name + "\u{1F}" + String(describing: id) : String(describing: id)
                 Renderer.shared.texts += 1
                 let identity = unique(written)
                 places[identity] = .item(number, place)
                 identities[id, default: []].append(identity)
                 items.append(identity)
             }
-            sections.append(ItemsEntries.Section(
+            built.append(ItemsEntries.Section(
                 name,
-                header: group.header.map { _ in named(name + "\u{1E}header", .groupHeader(number)) },
-                footer: group.footer.map { _ in named(name + "\u{1E}footer", .groupFooter(number)) },
+                header: section.header.map { _ in named(name + "\u{1E}header", .sectionHeader(number)) },
+                footer: section.footer.map { _ in named(name + "\u{1E}footer", .sectionFooter(number)) },
                 items: items))
         }
         entries = ItemsEntries(
             header: header.map { _ in named("\u{1E}header", .header) },
             footer: footer.map { _ in named("\u{1E}footer", .footer) },
-            sections: sections)
+            sections: built)
 
         ordered = entries.identities
         for (position, identity) in ordered.enumerated() {
@@ -84,11 +84,11 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         }
     }
 
-    /// A group's `name`, told apart from one `names` holds already, and held.
+    /// A section's `name`, told apart from one `names` holds already, and held.
     private func uniqueName(_ name: String, among names: inout Set<String>) -> String {
         var told = name
         if names.contains(name) {
-            complain("two groups of an ItemsView are named \"\(name)\"; give each its own name")
+            complain("two sections of an ItemsView are named \"\(name)\"; give each its own name")
             var variant = 1
             while names.contains("\(name)\u{0}\(variant)") { variant += 1 }
             told = "\(name)\u{0}\(variant)"
@@ -119,17 +119,17 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         switch places[identity] {
         case .header: header
         case .footer: footer
-        case .groupHeader(let group): groups[group].header
-        case .groupFooter(let group): groups[group].footer
-        case .item(let group, let place): groups[group].content(place)
+        case .sectionHeader(let section): sections[section].header
+        case .sectionFooter(let section): sections[section].footer
+        case .item(let section, let place): sections[section].content(place)
         case nil: nil
         }
     }
 
     /// The item an identity names; nil for a header, a footer or none.
     func id(for identity: String) -> ID? {
-        guard case .item(let group, let place) = places[identity] else { return nil }
-        return groups[group].identify(place)
+        guard case .item(let section, let place) = places[identity] else { return nil }
+        return sections[section].identify(place)
     }
 
     /// Every identity holding one of `ids`, in the order they show.

@@ -220,7 +220,7 @@ final class ActCallShapeTests: XCTestCase {
             try await named("list", ItemsView<Int>.self).scrollTo(500, anchor: .start)
         }
         try await check("scrollTo", [.string("list"), .string("Fruit\u{1F}Pear"), .enumeration(ScrollAnchor.nearest.rawValue)]) {
-            try await named("list", ItemsView<String>.self).scrollTo("Pear", inGroup: "Fruit")
+            try await named("list", ItemsView<String>.self).scrollTo("Pear", inSection: "Fruit")
         }
     }
 
@@ -229,7 +229,7 @@ final class ActCallShapeTests: XCTestCase {
     func testScrollingAGroupedListFindsTheItemsGroup() async throws {
         let list = Aim(ItemsView<String>.self)
         let fruit = Section(["Apple", "Pear"]) { Text($0) }.id("Fruit")
-        Renders().render(stack([ItemsView(groups: [fruit]).aim(list).node], id: "root"))
+        Renders().render(stack([ItemsView(sections: [fruit]).aim(list).node], id: "root"))
         drain()
 
         let task = Self.begin { try await list.scrollTo("Pear") }

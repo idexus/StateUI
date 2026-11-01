@@ -5,21 +5,21 @@ extension Aim {
     /// Scrolls the list until `item` stands where `anchor` says, as the
     /// platform scrolls.
     ///
-    /// The list finds the item itself - in a list of groups, the first group holding it - and throws where it
+    /// The list finds the item itself - in a list of sections, the first section holding it - and throws where it
     /// holds no such item.
     public func scrollTo<ID>(_ item: ID, anchor: ScrollAnchor = .nearest) async throws
     where Target == ItemsView<ID> {
         try await call(ItemsViewContract.scrollTo, try identity(of: item, unbuilt: "\(item)", where: { _ in true }), anchor)
     }
 
-    /// Scrolls a list of groups until `item` of the group named `group` stands
+    /// Scrolls a list of sections until `item` of the section named `section` stands
     /// where `anchor` says.
     public func scrollTo<ID>(
-        _ item: ID, inGroup group: some Hashable, anchor: ScrollAnchor = .nearest
+        _ item: ID, inSection section: some Hashable, anchor: ScrollAnchor = .nearest
     ) async throws where Target == ItemsView<ID> {
         try await call(
             ItemsViewContract.scrollTo,
-            try identity(of: item, unbuilt: "\(group)\u{1F}\(item)", where: { $0.hasPrefix("\(group)\u{1F}") }),
+            try identity(of: item, unbuilt: "\(section)\u{1F}\(item)", where: { $0.hasPrefix("\(section)\u{1F}") }),
             anchor)
     }
 

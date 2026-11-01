@@ -212,17 +212,17 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(ends.values, [true])
     }
 
-    /// Groups name their items apart - two groups may hold equal items - and
+    /// Sections name their items apart - two sections may hold equal items - and
     /// each header and footer is an entry of its own.
-    func testGroupsNameTheirItemsApart() throws {
+    func testSectionsNameTheirItemsApart() throws {
         let renders = Renders()
-        let list = try list(in: renders.render(ItemsView(groups: [
+        let list = try list(in: renders.render(ItemsView(sections: [
             Section(["Apple", "Pear"]) { Text($0) }.id("Fruit").header(Text("Fruit")),
             Section(["Apple"]) { Text($0) }.id("Cider").footer(Text("1 item")),
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
-        XCTAssertEqual(entries.sections.map(\.identity), ["Fruit", "Cider"], "each group by its name")
+        XCTAssertEqual(entries.sections.map(\.identity), ["Fruit", "Cider"], "each section by its name")
         XCTAssertEqual(entries.sections.map(\.header), ["Fruit\u{1E}header", nil])
         XCTAssertEqual(entries.sections.map(\.footer), [nil, "Cider\u{1E}footer"])
         XCTAssertEqual(entries.sections.map(\.items), [
@@ -243,11 +243,11 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(entries.sections[0].items, ["a", "b", "a\u{0}1"])
     }
 
-    /// Two groups of one name are told apart - a group named as another's place too - so a host knowing each group
+    /// Two sections of one name are told apart - a section named as another's place too - so a host knowing each section
     /// by its name finds two.
-    func testTwoGroupsOfOneNameAreToldApart() throws {
+    func testTwoSectionsOfOneNameAreToldApart() throws {
         let renders = Renders()
-        let list = try list(in: renders.render(ItemsView(groups: [
+        let list = try list(in: renders.render(ItemsView(sections: [
             Section(["a"]) { Text($0) }, Section(["b"]) { Text($0) }.id("0"), Section(["c"]) { Text($0) }.id("0"),
         ]).node))
 

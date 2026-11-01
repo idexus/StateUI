@@ -49,7 +49,7 @@ final class AppKitItemsViewTests: XCTestCase {
         let days = State(wrappedValue: ["Yesterday"])
         let renderer = autoreleasepool {
             AppKitRenderer.running {
-                ItemsView(groups: days.wrappedValue.map { day in
+                ItemsView(sections: days.wrappedValue.map { day in
                     Section([day + " note"]) { Text($0) }.id(day).header(Text(day))
                 })
                 .width(300).height(400)

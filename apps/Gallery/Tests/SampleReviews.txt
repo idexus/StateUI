@@ -61,7 +61,7 @@ InteropActsSample.swift 55949476a7fb481e
 InteropControlSample.swift b139c0a32f33f926
 InteropEventsSample.swift 28725267c691bbe5
 ItemActionsSample.swift 33deb2472b783b81
-ItemsViewSample.swift ad7bb28667c10afe
+ItemsViewSample.swift 7bdf13d3ea66d89a
 KeyPressSample.swift 0bc3f571522ec49a
 KeyboardSample.swift 438179d36c0ead1c
 LayoutAxesSample.swift 726ca137373d0038

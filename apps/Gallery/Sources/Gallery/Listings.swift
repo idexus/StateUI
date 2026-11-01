@@ -4655,9 +4655,9 @@ enum Listings {
                 SwitchRow("Counts", $counts)
                     .gridRow(0)
 
-                // A group per shelf, named so two shelves may hold the same item.
-                ItemsView(groups: Self.shelves.map { (shelf: Shelf) -> Section<String> in
-                    let group = Section(shelf.items) { item in
+                // A section per shelf, named so two shelves may hold the same item.
+                ItemsView(sections: Self.shelves.map { (shelf: Shelf) -> Section<String> in
+                    let section = Section(shelf.items) { item in
                         Text(item)
                     }
                     .id(shelf.name)
@@ -4665,8 +4665,8 @@ enum Listings {
                         .fontWeight(.bold))
 
                     return counts
-                        ? group.footer(Text("\(shelf.items.count) items"))
-                        : group
+                        ? section.footer(Text("\(shelf.items.count) items"))
+                        : section
                 })
                 .gridRow(1)
 

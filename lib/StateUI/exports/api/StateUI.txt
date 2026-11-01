@@ -2939,7 +2939,7 @@ swift.init ItemsEntries.init(propValue:): init?(propValue: PropValue)
 swift.init ItemsLayout.init(propValue:): init?(propValue: PropValue)
 swift.init ItemsView.init(_:content:): @MainActor init<Items, Content>(_ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content) where ID == Items.Element, Items : RandomAccessCollection, Content : View
 swift.init ItemsView.init(_:id:content:): @MainActor init<Items, Content>(_ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content) where Items : RandomAccessCollection, Content : View
-swift.init ItemsView.init(groups:): @MainActor init(groups: [Section<ID>])
+swift.init ItemsView.init(sections:): @MainActor init(sections: [Section<ID>])
 swift.init Key.init(_:): init(_ character: Character)
 swift.init Key.init(extendedGraphemeClusterLiteral:): init(extendedGraphemeClusterLiteral value: Character)
 swift.init Key.init(propValue:): init?(propValue: PropValue)
@@ -3398,7 +3398,7 @@ swift.method Aim.goForward(): @MainActor func goForward() async throws
 swift.method Aim.moveToRegion(_:): @MainActor func moveToRegion(_ region: MapRegion) async throws
 swift.method Aim.reload(): @MainActor func reload() async throws
 swift.method Aim.scrollTo(_:anchor:): @MainActor func scrollTo<ID>(_ item: ID, anchor: ScrollAnchor = .nearest) async throws where Target == ItemsView<ID>, ID : Hashable
-swift.method Aim.scrollTo(_:inGroup:anchor:): @MainActor func scrollTo<ID>(_ item: ID, inGroup group: some Hashable, anchor: ScrollAnchor = .nearest) async throws where Target == ItemsView<ID>, ID : Hashable
+swift.method Aim.scrollTo(_:inSection:anchor:): @MainActor func scrollTo<ID>(_ item: ID, inSection section: some Hashable, anchor: ScrollAnchor = .nearest) async throws where Target == ItemsView<ID>, ID : Hashable
 swift.method Aim.unfocus(): @MainActor func unfocus() async throws
 swift.method AnyView.accessibilityAction(_:gate:perform:): @MainActor func accessibilityAction(_ name: String, gate: Gate, perform handler: @escaping EventHandler) -> Self.Modified
 swift.method AnyView.accessibilityAction(_:perform:): @MainActor func accessibilityAction(_ name: String, perform handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
