@@ -105,6 +105,13 @@ assignment, or a move without a law - lays the value's own back with its
 destination, so a plain assignment after `move(to: 0,
 .eased(.milliseconds(2000)))` travels on the value's own law.
 
+Each waiter waits under a number of its own. A task cancelled while it waits
+stops waiting with `CancellationError` - its run may be superseded, its element
+gone - and leaves alone: the movement goes on for every other waiter, and
+`stop()` is what ends it. Every resume - the end, a failure, a cancellation -
+is counted as it is made and taken back as the waiter runs again, so a host
+waiting for the queue to go quiet never waits on a failure answered.
+
 A state nothing wears lands at once and answers true: nobody would ever answer a
 waiter booked on it. Under `.custom` the destination is written and the answer
 is true at once, because the engine alone knows when it is done.
