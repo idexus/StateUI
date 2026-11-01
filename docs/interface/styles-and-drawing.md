@@ -491,8 +491,9 @@ Commands execute in order. The color commands, `lineWidth`, `fontSize`,
 `scaleBy`) change the state used by later drawing commands. `saveState` and
 `restoreState` bound temporary transform or paint changes.
 
-The interaction handlers report points in the canvas's own coordinate space:
-`onPressed`, `onDragged`, and `onReleased`. A state change that alters the
+A canvas hears a press as every view does, in its own points - the ones its
+drawing uses: `onPointerPressed`, the pan's `at` as the press moves
+(`onPanUpdated`), and `onPointerReleased`. A state change that alters the
 command list describes the drawing again, and the host replays the new list
 whole; nothing in a drawing animates.
 

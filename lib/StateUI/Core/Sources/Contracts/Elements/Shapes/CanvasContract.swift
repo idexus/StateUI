@@ -12,20 +12,9 @@ public enum CanvasContract: ElementContract {
     /// A canvas is a view.
     public static let tiers: [any Contract.Type] = [ViewContract.self]
 
-    /// A press moved - a finger down, or the mouse with its button held - to
-    /// where it is now, in the canvas's coordinates.
-    public static let dragged = ElementEvent<Self, Point>("dragged", layer: .native)
-
     /// What the canvas draws: its instructions, in order.
     public static let drawing = ElementProperty<Self, [DrawCommand]>("drawing", layer: .structure)
 
-    /// A finger went down, or a mouse button was pressed, at a point in the
-    /// canvas.
-    public static let pressed = ElementEvent<Self, Point>("pressed", layer: .native)
-
-    /// It was lifted, where it left off.
-    public static let released = ElementEvent<Self, Point>("released", layer: .native)
-
     /// The element's own members.
-    public static let members: [any ContractMember] = [dragged, drawing, pressed, released]
+    public static let members: [any ContractMember] = [drawing]
 }

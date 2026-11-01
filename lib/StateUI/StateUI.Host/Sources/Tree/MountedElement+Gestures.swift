@@ -58,8 +58,8 @@ extension MountedElement {
             let said: [HostValue] = event == .pointerEntered || event == .pointerExited ? [] : [.numbers([point.x, point.y])]
             if event == .pointerEntered || event == .pointerExited { pointerIsOver = event == .pointerEntered }
             send(event, said, in: runtime)
-        case .drag(let phase, let x, let y):
-            dragged(phase, x: x, y: y, in: runtime)
+        case .drag(let phase, let x, let y, let from):
+            dragged(phase, x: x, y: y, from: from, in: runtime)
         case .pinch(let phase, let scale, let at):
             guard hearsFingers else {
                 pinched(phase, scale: scale, at: at, in: runtime)
@@ -354,7 +354,7 @@ extension MountedElement {
         for child in children { child.takePresses(in: runtime) }
     }
 
-    private func dragged(_ phase: GesturePhase, x: Double, y: Double, in runtime: HostRuntime) {
+    private func dragged(_ phase: GesturePhase, x: Double, y: Double, from: Point, in runtime: HostRuntime) {
         let across = channel(.panXChannel)
         let down = channel(.panYChannel)
         if phase == .began {
@@ -380,6 +380,7 @@ extension MountedElement {
             }
             send(.panUpdated, [
                 .enumeration(phase.rawValue), .numbers([panFromStart.x, panFromStart.y]), .numbers([speed.x, speed.y]),
+                .numbers([from.x + panFromStart.x, from.y + panFromStart.y]),
             ], in: runtime)
         }
 

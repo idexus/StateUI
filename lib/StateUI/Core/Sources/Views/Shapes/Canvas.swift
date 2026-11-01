@@ -37,7 +37,12 @@ extension CanvasProperties {
 ///
 /// The drawing travels as data - the canvas calls `Draw` offers, in order -
 /// and the host replays them on the platform's own canvas. A drawing that
-/// reads a state is drawn again when the state changes.
+/// reads a state is drawn again when the state changes. A canvas hears a
+/// press as every view does, in its own points - the ones the drawing uses:
+///
+///     Canvas { strokes(trail) }
+///         .onPointerPressed { point in trail = [point] }
+///         .onPanUpdated { pan in trail.append(pan.at) }
 public struct Canvas: ElementView, CanvasProperties {
     /// The node this control describes.
     public var node: Node
@@ -51,57 +56,5 @@ public struct Canvas: ElementView, CanvasProperties {
     public init(@DrawingBuilder _ drawing: () -> [DrawCommand]) {
         node = Node(contract: CanvasContract.self)
         node.write(CanvasContract.drawing, drawing())
-    }
-
-    /// A finger went down, or a mouse button was pressed.
-    ///
-    /// The point is in the canvas's own coordinates - the same ones the drawing
-    /// instructions use, so what arrives can be drawn where it happened.
-    public func onPressed(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
-        onEvent(CanvasContract.pressed, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onPressed(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        onEvent(CanvasContract.pressed, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onPressed(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        onEvent(CanvasContract.pressed, gate: gate, handler)
-    }
-
-    /// It moved while still down, with where it is now - the canvas's own
-    /// coordinates again.
-    public func onDragged(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
-        onEvent(CanvasContract.dragged, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onDragged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        onEvent(CanvasContract.dragged, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onDragged(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        onEvent(CanvasContract.dragged, gate: gate, handler)
-    }
-
-    /// It was lifted, with where it left off.
-    public func onReleased(_ handler: @escaping @MainActor (Point) throws -> Void) -> Modified {
-        onEvent(CanvasContract.released, handler)
-    }
-
-    /// The same, with a handler that awaits: its `policy` says what the event does when it comes
-    /// again while a run is under way.
-    public func onReleased(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        onEvent(CanvasContract.released, policy: policy, handler)
-    }
-
-    /// The same, through `gate`, which every handler and task written with it shares.
-    public func onReleased(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Modified {
-        onEvent(CanvasContract.released, gate: gate, handler)
     }
 }

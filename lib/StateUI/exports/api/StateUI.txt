@@ -3997,9 +3997,6 @@ swift.method Canvas.onDragLeave(gate:_:): @MainActor func onDragLeave(gate: Gate
 swift.method Canvas.onDragOver(_:): @MainActor func onDragOver(_ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Canvas.onDragOver(_:_:): @MainActor func onDragOver(_ policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Canvas.onDragOver(gate:_:): @MainActor func onDragOver(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
-swift.method Canvas.onDragged(_:): @MainActor func onDragged(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Canvas.Modified
-swift.method Canvas.onDragged(_:_:): @MainActor func onDragged(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Canvas.Modified
-swift.method Canvas.onDragged(gate:_:): @MainActor func onDragged(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Canvas.Modified
 swift.method Canvas.onDrop(_:): @MainActor func onDrop(_ handler: @escaping @MainActor @Sendable (String) throws -> Void) -> Self.Modified
 swift.method Canvas.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<String>) -> Self.Modified
 swift.method Canvas.onDrop(_:_:): @MainActor func onDrop(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<[ChosenFile]>) -> Self.Modified
@@ -4078,12 +4075,6 @@ swift.method Canvas.onPointerPressed(gate:_:): @MainActor func onPointerPressed(
 swift.method Canvas.onPointerReleased(_:): @MainActor func onPointerReleased(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Self.Modified
 swift.method Canvas.onPointerReleased(_:_:): @MainActor func onPointerReleased(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
 swift.method Canvas.onPointerReleased(gate:_:): @MainActor func onPointerReleased(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Self.Modified
-swift.method Canvas.onPressed(_:): @MainActor func onPressed(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Canvas.Modified
-swift.method Canvas.onPressed(_:_:): @MainActor func onPressed(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Canvas.Modified
-swift.method Canvas.onPressed(gate:_:): @MainActor func onPressed(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Canvas.Modified
-swift.method Canvas.onReleased(_:): @MainActor func onReleased(_ handler: @escaping @MainActor @Sendable (Point) throws -> Void) -> Canvas.Modified
-swift.method Canvas.onReleased(_:_:): @MainActor func onReleased(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<Point>) -> Canvas.Modified
-swift.method Canvas.onReleased(gate:_:): @MainActor func onReleased(gate: Gate, _ handler: @escaping ValueEventHandler<Point>) -> Canvas.Modified
 swift.method Canvas.onRotationUpdated(_:): @MainActor func onRotationUpdated(_ handler: @escaping @MainActor @Sendable (RotationUpdate) throws -> Void) -> Self.Modified
 swift.method Canvas.onRotationUpdated(_:_:): @MainActor func onRotationUpdated(_ policy: GatePolicy, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
 swift.method Canvas.onRotationUpdated(gate:_:): @MainActor func onRotationUpdated(gate: Gate, _ handler: @escaping ValueEventHandler<RotationUpdate>) -> Self.Modified
@@ -16214,11 +16205,10 @@ swift.property Node.node: @MainActor var node: Node { get }
 swift.property Node.type: @MainActor var type: NodeType { get }
 swift.property NodeType.description: var description: String { get }
 swift.property NodeType.name: var name: String { get }
+swift.property PanUpdate.at: var at: Point
 swift.property PanUpdate.phase: var phase: GesturePhase
-swift.property PanUpdate.totalX: var totalX: Double
-swift.property PanUpdate.totalY: var totalY: Double
-swift.property PanUpdate.velocityX: var velocityX: Double
-swift.property PanUpdate.velocityY: var velocityY: Double
+swift.property PanUpdate.total: var total: Point
+swift.property PanUpdate.velocity: var velocity: Point
 swift.property Path.body: @MainActor var body: Never { get }
 swift.property Path.node: @MainActor var node: Node
 swift.property Path.nodes: @MainActor var nodes: [Node] { get }
@@ -16230,8 +16220,8 @@ swift.property Picker.node: @MainActor var node: Node
 swift.property Picker.nodes: @MainActor var nodes: [Node] { get }
 swift.property PickerPresentation.propValue: var propValue: PropValue { get }
 swift.property PinchUpdate.phase: var phase: GesturePhase
+swift.property PinchUpdate.pivot: var pivot: Point
 swift.property PinchUpdate.scale: var scale: Double
-swift.property PinchUpdate.scaleOrigin: var scaleOrigin: Point
 swift.property PinchUpdate.velocity: var velocity: Double
 swift.property Placement.bounds: var bounds: Rect
 swift.property Placement.carried: var carried: StateCarried { get }
@@ -17138,15 +17128,12 @@ swift.type.property ButtonMenuElementContract.tiers: static var tiers: [any Cont
 swift.type.property CalendarDate.laneKind: static var laneKind: LaneKind { get }
 swift.type.property CalendarDate.lanes: static var lanes: Int { get }
 swift.type.property CalendarDate.moving: static var moving: MotionValues { get }
-swift.type.property CanvasContract.dragged: static let dragged: ElementEvent<CanvasContract, Point>
 swift.type.property CanvasContract.drawing: static let drawing: ElementProperty<CanvasContract, [DrawCommand]>
 swift.type.property CanvasContract.layer: static let layer: ElementLayer
 swift.type.property CanvasContract.layer: static var layer: ElementLayer { get }
 swift.type.property CanvasContract.members: static let members: [any ContractMember]
 swift.type.property CanvasContract.name: static var name: String { get }
 swift.type.property CanvasContract.nodeType: static let nodeType: NodeType
-swift.type.property CanvasContract.pressed: static let pressed: ElementEvent<CanvasContract, Point>
-swift.type.property CanvasContract.released: static let released: ElementEvent<CanvasContract, Point>
 swift.type.property CanvasContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property CanvasContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property CapsuleContract.layer: static let layer: ElementLayer
@@ -18068,7 +18055,7 @@ swift.type.property ViewContract.margin: static let margin: ElementProperty<View
 swift.type.property ViewContract.members: static let members: [any ContractMember]
 swift.type.property ViewContract.name: static let name: String
 swift.type.property ViewContract.panTouchCount: static let panTouchCount: ElementProperty<ViewContract, Int>
-swift.type.property ViewContract.panUpdated: static let panUpdated: ElementEvent<ViewContract, (GesturePhase, Point, Point)>
+swift.type.property ViewContract.panUpdated: static let panUpdated: ElementEvent<ViewContract, (GesturePhase, Point, Point, Point)>
 swift.type.property ViewContract.panXChannel: static let panXChannel: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.panYChannel: static let panYChannel: ElementProperty<ViewContract, Int>
 swift.type.property ViewContract.pinchUpdated: static let pinchUpdated: ElementEvent<ViewContract, (GesturePhase, Double, Point, Double)>

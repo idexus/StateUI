@@ -241,7 +241,7 @@ public struct Journey<Value: Walked> {
     /// is, at the speed it has, alone - what a throw reaches, to send it to
     /// the nearest place it may rest at:
     ///
-    ///     $offset.journey.velocity = pan.velocityY
+    ///     $offset.journey.velocity = pan.velocity.y
     ///     let glide = Motion.glide(longest: .milliseconds(800))
     ///     $offset.journey.move(to: rows.nearest(to: $offset.journey.reach(glide)), glide)
     ///

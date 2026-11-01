@@ -127,7 +127,7 @@ public struct Motion: Equatable, Sendable {
     /// destination, as long as that speed takes to get there - what a value
     /// thrown by the hand goes on with.
     ///
-    ///     $offset.journey.velocity = pan.velocityX
+    ///     $offset.journey.velocity = pan.velocity.x
     ///     $offset.journey.move(to: 0, .glide(longest: .milliseconds(800)))
     ///
     /// It always lands where it is sent, never sooner than 80 milliseconds nor

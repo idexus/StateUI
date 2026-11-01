@@ -53,7 +53,7 @@ final class AndroidGestureTests: XCTestCase {
             let across = State(wrappedValue: 5.0)
             let (host, box) = try Self.box {
                 $0.panX(across.projectedValue)
-                    .onPanUpdated { heard.values.append("\($0.phase) \(Int($0.totalX)) \(Int($0.totalY))") }
+                    .onPanUpdated { heard.values.append("\($0.phase) \(Int($0.total.x)) \(Int($0.total.y))") }
             }
 
             box.touch(0, x: 10, y: 10, at: 0)
@@ -95,7 +95,7 @@ final class AndroidGestureTests: XCTestCase {
             let scales = Received<Double>()
             let (host, box) = try Self.box {
                 $0.onPinchUpdated { pinch in
-                    phases.values.append("\(pinch.phase) \(pinch.scaleOrigin.x) \(pinch.scaleOrigin.y)")
+                    phases.values.append("\(pinch.phase) \(pinch.pivot.x) \(pinch.pivot.y)")
                     if pinch.phase == .changed { scales.values.append(pinch.scale) }
                 }
             }

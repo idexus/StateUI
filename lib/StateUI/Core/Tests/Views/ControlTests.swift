@@ -497,10 +497,7 @@ final class ControlTests: XCTestCase {
                     Draw.rotate(by: 45)
                     Draw.scaleBy(x: 2, y: 2)
                     Draw.restoreState()
-                }
-                .onPressed { _ in }
-                .onDragged { _ in }
-                .onReleased { _ in }),
+                }),
 
             // The protocol tiers, once, on the four controls it takes to reach all
             // of them: a stack for spacing and padding, a label for text, font and

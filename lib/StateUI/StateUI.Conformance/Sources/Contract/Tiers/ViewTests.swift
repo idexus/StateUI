@@ -485,13 +485,15 @@
             let x = State(wrappedValue: 10.0)
             let heard = Received<String>()
             let lifted = Received<Point>()
+            let began = Received<Point>()
             s.start {
                 VStack {
                     Opened.pannedAcross(Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
                         Write(ViewContract.panTouchCount, 1),
-                        HearThree(ViewContract.panUpdated) { phase, total, velocity in
+                        HearFour(ViewContract.panUpdated) { phase, total, velocity, at in
                             heard.values.append("\(phase) \(Int(total.x)) \(Int(total.y))")
+                            began.values.append(Point(at.x - total.x, at.y - total.y))
                             if phase == .ended { lifted.values.append(velocity) }
                         },
                     ]), carrying: x.projectedValue)
@@ -506,6 +508,11 @@
             s.expect(heard.values.last, "ended -60 20", "and as it ends, where it reached")
             // How fast is the driver's pace; which way is the hand's.
             s.expect(lifted.values.last.map { $0.x < 0 && $0.y > 0 }, true, "lifted going left and down")
+            // Where the press is, less how far it came, is where it began - one place, on the view.
+            let start = began.values.first ?? Point(-1, -1)
+            s.expect(began.values.allSatisfy { abs($0.x - start.x) < 1 && abs($0.y - start.y) < 1 }, true,
+                     "where the press is moves with it: \(began.values)")
+            s.expect((0...100).contains(start.x) && (0...100).contains(start.y), true, "it began on the view: \(start)")
             s.expect(x.wrappedValue, -50, "the state carried as far as the hand went across")
         }
     }
@@ -571,8 +578,8 @@
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
-                        HearFour(ViewContract.pinchUpdated) { _, scale, origin, _ in
-                            heard.values.append("\(scale) at \(origin.x),\(origin.y)")
+                        HearFour(ViewContract.pinchUpdated) { _, scale, pivot, _ in
+                            heard.values.append("\(scale) at \(pivot.x),\(pivot.y)")
                         },
                     ])
                 }

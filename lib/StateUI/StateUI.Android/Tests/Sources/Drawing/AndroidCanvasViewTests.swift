@@ -83,27 +83,6 @@ final class AndroidCanvasViewTests: XCTestCase {
         }
     }
 
-    func testAFingersPressDragAndReleaseArriveInPoints() throws {
-        try onMainActor {
-            let heard = Received<String>()
-            let host = AndroidRenderer.running {
-                Canvas {}
-                    .onPressed { heard.values.append("pressed \(Int($0.x)),\(Int($0.y))") }
-                    .onDragged { heard.values.append("dragged \(Int($0.x)),\(Int($0.y))") }
-                    .onReleased { heard.values.append("released \(Int($0.x)),\(Int($0.y))") }
-                    .width(50).height(50).horizontalAlignment(.start)
-            }
-            host.layOut()
-            let canvas = try XCTUnwrap(host.views(AndroidCanvasView.self).first)
-
-            canvas.touch(0, x: 20, y: 40)
-            canvas.touch(2, x: 30, y: 40)
-            canvas.touch(1, x: 30, y: 40)
-
-            XCTAssertEqual(heard.values, ["pressed 10,20", "dragged 15,20", "released 15,20"])
-        }
-    }
-
     /// Words at the start of their box stand at its left, words read right to left too: a canvas draws in its own
     /// coordinates.
     func testWordsAtABoxsStartStandAtItsLeft() throws {

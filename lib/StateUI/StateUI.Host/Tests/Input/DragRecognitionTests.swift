@@ -15,11 +15,14 @@ final class DragRecognitionTests: XCTestCase {
 
         XCTAssertEqual(drag.moved(to: Point(x: 104, y: 97)), [], "at the distance, still a press")
         XCTAssertFalse(drag.isDragging)
-        XCTAssertEqual(drag.moved(to: Point(x: 102, y: 96)), [.drag(.began, x: 0, y: 0), .drag(.changed, x: 2, y: -4)],
+        let from = Point(x: 100, y: 100)
+        XCTAssertEqual(drag.moved(to: Point(x: 102, y: 96)),
+                       [.drag(.began, x: 0, y: 0, from: from), .drag(.changed, x: 2, y: -4, from: from)],
                        "past it down, though not across")
         XCTAssertTrue(drag.isDragging)
-        XCTAssertEqual(drag.moved(to: Point(x: 101, y: 100)), [.drag(.changed, x: 1, y: 0)], "back near, still dragging")
-        XCTAssertEqual(drag.ended(letGo: true), .drag(.ended, x: 1, y: 0))
+        XCTAssertEqual(drag.moved(to: Point(x: 101, y: 100)), [.drag(.changed, x: 1, y: 0, from: from)],
+                       "back near, still dragging")
+        XCTAssertEqual(drag.ended(letGo: true), .drag(.ended, x: 1, y: 0, from: from))
         XCTAssertFalse(drag.isDragging)
     }
 
@@ -29,7 +32,7 @@ final class DragRecognitionTests: XCTestCase {
         drag.pressed(at: Point(x: 0, y: 0))
 
         XCTAssertEqual(drag.moved(to: Point(x: 3, y: 4)), [], "five away is still the press")
-        XCTAssertEqual(drag.moved(to: Point(x: 4, y: 4)).first, .drag(.began, x: 0, y: 0))
+        XCTAssertEqual(drag.moved(to: Point(x: 4, y: 4)).first, .drag(.began, x: 0, y: 0, from: Point(x: 0, y: 0)))
     }
 
     /// A press that never became a drag ends with nothing; one the platform takes away is cancelled; a move with no
@@ -44,8 +47,11 @@ final class DragRecognitionTests: XCTestCase {
         XCTAssertEqual(drag.moved(to: Point(x: 20, y: 0)), [], "after the press let go")
 
         drag.pressed(at: Point(x: 10, y: 10))
-        XCTAssertEqual(drag.moved(to: Point(x: 30, y: 10)).last, .drag(.changed, x: 20, y: 0), "from the new press")
-        XCTAssertEqual(drag.ended(letGo: false), .drag(.cancelled, x: 20, y: 0))
+        XCTAssertEqual(drag.moved(to: Point(x: 30, y: 10)).last,
+                       .drag(.changed, x: 20, y: 0, from: Point(x: 10, y: 10)),
+                       "from the new press")
+        XCTAssertEqual(drag.ended(letGo: false), .drag(.cancelled, x: 20, y: 0, from: Point(x: 10, y: 10)),
+                       "taken away")
     }
 
     /// A press held before it passed the distance is the hold's: it drags nothing after, however far it moves, and
@@ -75,6 +81,7 @@ final class DragRecognitionTests: XCTestCase {
         _ = drag.moved(to: Point(x: 10, y: 0))
         XCTAssertFalse(drag.held())
         XCTAssertFalse(drag.isHeld)
-        XCTAssertEqual(drag.moved(to: Point(x: 12, y: 0)), [.drag(.changed, x: 12, y: 0)], "the drag goes on")
+        XCTAssertEqual(drag.moved(to: Point(x: 12, y: 0)), [.drag(.changed, x: 12, y: 0, from: Point(x: 0, y: 0))],
+                       "the drag goes on")
     }
 }

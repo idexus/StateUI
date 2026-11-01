@@ -73,7 +73,6 @@ extension AppKitDriver {
         case (.lift, _) where native?.handReader != nil: native?.handReader?.dragging.released()
         case (.pressDown(let point), let view?): try press(view, native, down: true, at: point, element)
         case (.lift(let point), let view?): try press(view, native, down: false, at: point, element)
-        case (.drag(let point), let canvas as AppKitCanvasView): canvas.dragForTesting(at: NSPoint(point))
         case (.drag(let point), _) where native?.pressRecognizer != nil || native?.pointerRecognizer != nil:
             native?.pressRecognizer?.press(.changed, at: point)
             native?.pointerRecognizer?.pointed(.pointerMoved, at: point)
@@ -86,9 +85,12 @@ extension AppKitDriver {
         case (.hold, _) where native?.holdRecognizer != nil:
             native?.holdRecognizer?.held()
         case (.pan(let offset), _) where native?.panRecognizer != nil:
-            native?.panRecognizer?.dragged(.began, x: 0, y: 0)
-            native?.panRecognizer?.dragged(.changed, x: offset.x, y: offset.y)
-            native?.panRecognizer?.dragged(.ended, x: offset.x, y: offset.y)
+            // Pressed in the view's middle, as a hand does.
+            let size = native?.view?.bounds.size ?? .zero
+            let middle = Point(x: Double(size.width) / 2, y: Double(size.height) / 2)
+            native?.panRecognizer?.dragged(.began, x: 0, y: 0, from: middle)
+            native?.panRecognizer?.dragged(.changed, x: offset.x, y: offset.y, from: middle)
+            native?.panRecognizer?.dragged(.ended, x: offset.x, y: offset.y, from: middle)
         case (.sweep(let offset, let speed), _) where native?.handReader != nil:
             native?.handReader?.hand(.began, moved: .zero)
             native?.handReader?.hand(.changed, moved: offset)
@@ -245,9 +247,6 @@ extension AppKitDriver {
             done = true
         case let slider as AppKitSliderView:
             down ? slider.beginDrag() : slider.endDrag()
-            done = true
-        case let canvas as AppKitCanvasView:
-            down ? canvas.pressForTesting(at: NSPoint(point)) : canvas.releaseForTesting(at: NSPoint(point))
             done = true
         default: break
         }

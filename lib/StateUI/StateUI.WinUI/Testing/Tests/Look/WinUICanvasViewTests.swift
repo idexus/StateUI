@@ -8,15 +8,13 @@ import CStateUIWinUI
 @testable import StateUIWinUIDriver
 import XCTest
 
-/// A canvas that says where a press on it went, a button that widens it, and one that takes it away.
+/// A canvas, a button that widens it, and one that takes it away.
 private struct PressPage: View {
-    @State private var said = ""
     @State private var wide = false
     @State private var shown = true
 
     var body: some View {
         VStack {
-            Text(said)
             if shown {
                 Canvas {
                     Draw.fillColor(Color(hex: 0xFF0000))
@@ -25,9 +23,6 @@ private struct PressPage: View {
                 .width(wide ? 200 : 100)
                 .height(20)
                 .horizontalAlignment(.start)
-                .onPressed { point in said += "pressed \(Int(point.x)),\(Int(point.y)); " }
-                .onDragged { point in said += "dragged \(Int(point.x)),\(Int(point.y)); " }
-                .onReleased { point in said += "released \(Int(point.x)),\(Int(point.y)); " }
             }
             Button("Widen").onClicked { wide = true }
             Button("Hide").onClicked { shown = false }

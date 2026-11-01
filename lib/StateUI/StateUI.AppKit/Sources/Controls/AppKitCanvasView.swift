@@ -10,10 +10,6 @@ import AppKit
 /// (`CanvasInstruction`, `CanvasPen`), its arcs the host layer's curves - within its own frame.
 @MainActor
 final class AppKitCanvasView: AppKitHitTestView {
-    var onPressed: ((NSPoint) -> Void)?
-    var onDragged: ((NSPoint) -> Void)?
-    var onReleased: ((NSPoint) -> Void)?
-
     private var instructions: [CanvasInstruction] = []
 
     override var isFlipped: Bool { true }
@@ -76,22 +72,7 @@ final class AppKitCanvasView: AppKitHitTestView {
         }
     }
 
-    override func mouseDown(with event: NSEvent) {
-        onPressed?(convert(event.locationInWindow, from: nil))
-    }
-
-    override func mouseDragged(with event: NSEvent) {
-        onDragged?(convert(event.locationInWindow, from: nil))
-    }
-
-    override func mouseUp(with event: NSEvent) {
-        onReleased?(convert(event.locationInWindow, from: nil))
-    }
-
     var instructionsForTesting: [CanvasInstruction] { instructions }
-    func pressForTesting(at point: NSPoint) { onPressed?(point) }
-    func dragForTesting(at point: NSPoint) { onDragged?(point) }
-    func releaseForTesting(at point: NSPoint) { onReleased?(point) }
 
     private static func rect(_ room: Rect) -> NSRect {
         NSRect(x: room.x, y: room.y, width: room.width, height: room.height)

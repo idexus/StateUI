@@ -258,12 +258,6 @@ enum JavaNatives {
                 AndroidView.find(number)?.chose(Int(index))
             }
         }
-        let canvasTouched: @convention(c) (Environment, jclass?, jlong, jint, jfloat, jfloat) -> Void = {
-            _, _, number, phase, x, y in
-            MainActor.assumeIsolated {
-                (AndroidView.find(number) as? AndroidCanvasView)?.touched(phase: phase, at: Point(Double(x), Double(y)))
-            }
-        }
         let answered: @convention(c) (Environment, jclass?, jlong, jboolean, jstring?) -> Void = {
             _, _, ticket, accepted, words in
             nonisolated(unsafe) let words = words
@@ -449,7 +443,6 @@ enum JavaNatives {
             ("closed", "(J)V", unsafeBitCast(closed, to: UnsafeMutableRawPointer.self)),
             ("fieldChose", "(JIII)V", unsafeBitCast(fieldChose, to: UnsafeMutableRawPointer.self)),
             ("chose", "(JI)V", unsafeBitCast(chose, to: UnsafeMutableRawPointer.self)),
-            ("canvasTouched", "(JIFF)V", unsafeBitCast(canvasTouched, to: UnsafeMutableRawPointer.self)),
             ("answered", "(JZLjava/lang/String;)V", unsafeBitCast(answered, to: UnsafeMutableRawPointer.self)),
             ("actionChosen", "(JI)V", unsafeBitCast(actionChosen, to: UnsafeMutableRawPointer.self)),
             ("filesChosen", "(J[Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)V",

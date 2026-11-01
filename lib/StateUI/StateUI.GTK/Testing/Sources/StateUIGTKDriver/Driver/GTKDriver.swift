@@ -243,11 +243,6 @@ final class GTKDriver: HostDriver {
         }
         let view = (element.native as? GTKElement)?.view
         if let picker = view as? GTKPopoverPickerView, perform(act, on: picker) { return }
-        if let canvas = view as? GTKCanvasView, ["pressDown", "drag", "lift"].contains(act.description) {
-            try press(act, on: canvas, element)
-            _ = input(act, on: canvas)
-            return
-        }
         if let view, input(act, on: view) { return }
         if act == .activate, let items = element.enclosing(type: .itemsView), try activateItem(element, in: items) { return }
         switch (act, view) {
@@ -278,9 +273,6 @@ final class GTKDriver: HostDriver {
         case (.choose(let place), let picker as any GTKChoosing): picker.choose(place)
         case (.scroll(let offset), let items as GTKItemsView): try scroll(items, to: offset, on: element, act)
         case (.scroll(let offset), let scrollView as GTKScrollView): try scroll(scrollView, to: offset, on: element, act)
-        case (.pressDown, let canvas as GTKCanvasView), (.drag, let canvas as GTKCanvasView),
-             (.lift, let canvas as GTKCanvasView):
-            try press(act, on: canvas, element)
         case (.choose(let place), let items as GTKItemsView): try choose(place, in: items, on: element)
         default: throw DriverCannot(act, on: element)
         }

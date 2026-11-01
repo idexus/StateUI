@@ -44,7 +44,7 @@ How each of them realizes these members is on its own page.
 | `horizontalAlignment` | property | `Alignment` | native |
 | `margin` | property | `Insets` | native |
 | `panTouchCount` | property | `Int` | structure |
-| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Point, Point)` | native |
+| `onPanUpdated` (`panUpdated`) | event | `(GesturePhase, Point, Point, Point)` | native |
 | `panXChannel` | property | `Int` | structure |
 | `panYChannel` | property | `Int` | structure |
 | `layoutBody` | property | `LayoutBody` | stateUI |

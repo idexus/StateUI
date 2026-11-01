@@ -3421,8 +3421,9 @@ enum Listings {
         // Sources/Samples/Shapes/CanvasSample.swift
         @State private var trail: [Point] = []
 
-        // Where a finger went, drawn where it went: the canvas reports in
-        // its own coordinates, which is what the instructions use.
+        // Where a finger went, drawn where it went: the canvas hears it as
+        // every view does - pressed, then the pan's `at` - in its own
+        // coordinates, which is what the instructions use.
         var body: some View {
             VStack {
                 // The trail is read by the drawing, so every report the
@@ -3444,9 +3445,8 @@ enum Listings {
                 .width(300)
                 .height(120)
                 .horizontalAlignment(.center)
-                .onPressed { trail = [$0] }
-                .onDragged { trail = Array((trail + [$0]).suffix(120)) }
-                .onReleased { _ in }
+                .onPointerPressed { trail = [$0] }
+                .onPanUpdated { pan in trail = Array((trail + [pan.at]).suffix(120)) }
 
                 Button("Clear")
                     .horizontalAlignment(.center)
@@ -8695,21 +8695,21 @@ enum Listings {
                         .onPanUpdated { update in
                             switch update.phase {
                             case .changed:
-                                follow(panX + update.totalX, panY + update.totalY)
+                                follow(panX + update.total.x, panY + update.total.y)
                             case .ended where letting == "Springs home":
                                 // The hand's speed is the box's as it lets go: it
                                 // goes on that way, and the spring brings it home.
                                 (panX, panY) = (0, 0)
-                                $liveX.journey.velocity = update.velocityX
-                                $liveY.journey.velocity = update.velocityY
+                                $liveX.journey.velocity = update.velocity.x
+                                $liveY.journey.velocity = update.velocity.y
                                 $liveX.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                                 $liveY.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
                             case .ended where letting == "Glides on":
                                 // It glides on from the hand's speed to where that
                                 // throw carries it, kept inside the box.
                                 let glide = Motion.glide(longest: .milliseconds(900))
-                                $liveX.journey.velocity = update.velocityX
-                                $liveY.journey.velocity = update.velocityY
+                                $liveX.journey.velocity = update.velocity.x
+                                $liveY.journey.velocity = update.velocity.y
                                 panX = min(max($liveX.journey.reach(glide), -140), 140)
                                 panY = min(max($liveY.journey.reach(glide), -60), 60)
                                 $liveX.journey.move(to: panX, glide)

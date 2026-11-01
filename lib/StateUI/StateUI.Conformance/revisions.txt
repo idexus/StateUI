@@ -45,7 +45,7 @@ Picker 4
 Image 3
 Page 9
 PageElement 4
-View 19
+View 20
 VisualElement 22
 Shape 5
 BorderElement 14
@@ -53,7 +53,7 @@ TextInput 7
 Application 13
 TextSpan 4
 Separator 4
-Canvas 3
+Canvas 4
 Rectangle 3
 Stepper 5
 KeyboardElement 6

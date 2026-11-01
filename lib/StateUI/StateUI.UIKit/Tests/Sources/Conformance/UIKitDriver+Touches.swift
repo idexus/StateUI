@@ -80,7 +80,6 @@ extension UIKitDriver {
 
     func pressDown(_ listening: UIKitListening?, on view: UIView, at point: Point) {
         (view as? UIControl)?.sendActions(for: .touchDown)
-        (view as? UIKitCanvasView)?.pressed(at: CGPoint(x: point.x, y: point.y))
         let pan = DrivenPan(on: view)
         pan.start = CGPoint(x: point.x, y: point.y)
         pan.point = pan.start
@@ -113,7 +112,6 @@ extension UIKitDriver {
         // A slider's thumb stands under the finger as it lifts; UIKit says no other move then.
         if pan.on is UIKitSliderView { Self.track(pan.on, to: point) }
         (pan.on as? UIControl)?.sendActions(for: .touchUpInside)
-        (pan.on as? UIKitCanvasView)?.released(at: CGPoint(x: point.x, y: point.y))
         if let listening, listening.hearing.contains(.hand) { listening.hand(.ended, moved: .zero) }
         if let listening, listening.hearing.contains(.taps) { listening.press(.ended, at: CGPoint(x: point.x, y: point.y)) }
         pan.point = CGPoint(x: point.x, y: point.y)
@@ -130,7 +128,6 @@ extension UIKitDriver {
 
     /// A control following a finger held on it, as its own tracking does: a slider's thumb under the finger.
     private static func track(_ view: UIView, to point: Point) {
-        if let canvas = view as? UIKitCanvasView { return canvas.dragged(to: CGPoint(x: point.x, y: point.y)) }
         guard let slider = view as? UIKitSliderView, slider.bounds.width > 0 else {
             (view as? UIControl)?.sendActions(for: .touchDragInside)
             return

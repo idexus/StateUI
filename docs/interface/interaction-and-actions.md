@@ -140,7 +140,7 @@ Rectangle()
     .scale(scale)
     .rotation(angle)
     .onPanUpdated { update in
-        if update.phase == .changed { x = update.totalX }
+        if update.phase == .changed { x = update.total.x }
     }
     .onPinchUpdated { update in
         if update.phase == .began { scaled = scale }
@@ -167,9 +167,9 @@ Rectangle()
     .onPanUpdated { update in
         switch update.phase {
         case .changed:
-            $x.journey.snap(to: update.totalX)
+            $x.journey.snap(to: update.total.x)
         case .ended:
-            $x.journey.velocity = update.velocityX
+            $x.journey.velocity = update.velocity.x
             $x.journey.move(to: 0, .spring(response: .milliseconds(600), damping: 0.5))
         default:
             break

@@ -4,7 +4,7 @@
 // A canvas: StateUI's drawing replayed with Direct2D, which WinUI itself draws
 // with, into the SurfaceImageSource the canvas is painted with - again for each
 // size and scale it is shown at, and for a surface that lost what it held. A
-// press on it is followed from down to up, the pointer held.
+// press on it is a view's, heard as every view hears one.
 // Design: docs/design/platforms/winui/drawing.md#a-canvas
 
 #include "Figure.h"
@@ -24,7 +24,6 @@
 #include <winrt/Microsoft.UI.Xaml.Media.Imaging.h>
 
 using namespace stateui;
-using winrt::Windows::Foundation::Point;
 using winrt::Windows::Foundation::Size;
 namespace input = winrt::Microsoft::UI::Xaml::Input;
 namespace media = winrt::Microsoft::UI::Xaml::Media;
@@ -335,12 +334,6 @@ namespace {
             canvases += 1;
             // A clear background: the whole canvas is hit, drawn on or not.
             Background(media::SolidColorBrush(winrt::Windows::UI::Color{0, 0, 0, 0}));
-            // The canvas's own events: the handlers go with it, so they hold it as it is.
-            PointerPressed(guarded("handling PointerPressed", [this](auto const &s, auto const &a) { pressed(s, a); }));
-            PointerMoved(guarded("handling PointerMoved", [this](auto const &s, auto const &a) { moved(s, a); }));
-            PointerReleased(guarded("handling PointerReleased", [this](auto const &s, auto const &a) { released(s, a); }));
-            PointerCaptureLost(guarded("handling PointerCaptureLost", [this](auto const &s, auto const &a) { lostPress(s, a); }));
-            PointerCanceled(guarded("handling PointerCanceled", [this](auto const &s, auto const &a) { lostPress(s, a); }));
             // A canvas put in a tree draws; WinUI's unloading is not heard: it can come after the canvas is loaded
             // again elsewhere, and would stop the drawing that waits.
             Loaded(guarded("handling Loaded", [this](auto &&, auto &&) { invalidate(); }));
@@ -466,44 +459,6 @@ namespace {
             return native->EndDraw();
         }
 
-        void pressed(IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
-            auto element = sender.as<xaml::UIElement>();
-            auto at = args.GetCurrentPoint(element);
-            if (holding || !at.Properties().IsLeftButtonPressed() || !element.CapturePointer(args.Pointer())) return;
-            holding = true;
-            pointer = args.Pointer().PointerId();
-            args.Handled(true);
-            tell(StateUIPressPhaseDown, at.Position());
-        }
-
-        void moved(IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
-            if (!holding || args.Pointer().PointerId() != pointer) return;
-            args.Handled(true);
-            tell(StateUIPressPhaseMoved, args.GetCurrentPoint(sender.as<xaml::UIElement>()).Position());
-        }
-
-        void released(IInspectable const &sender, input::PointerRoutedEventArgs const &args) {
-            if (!holding || args.Pointer().PointerId() != pointer) return;
-            args.Handled(true);
-            auto element = sender.as<xaml::UIElement>();
-            auto at = args.GetCurrentPoint(element).Position();
-            holding = false;
-            element.ReleasePointerCapture(args.Pointer());
-            tell(StateUIPressPhaseLetGo, at);
-        }
-
-        /// The press ends where it last was: its pointer taken away, or the input cancelled.
-        void lostPress(IInspectable const &, input::PointerRoutedEventArgs const &args) {
-            if (!holding || args.Pointer().PointerId() != pointer) return;
-            holding = false;
-            tell(StateUIPressPhaseTakenAway, last);
-        }
-
-        void tell(StateUIPressPhase phase, Point at) {
-            last = at;
-            callbacks.canvasPressed(view, phase, at.X, at.Y);
-        }
-
         /// Drawn again when the scale of the root it draws in changes, and whenever WinUI's surfaces lose what
         /// they held: both heard for as long as the canvas lives, and neither holds it.
         void watch(xaml::XamlRoot const &root) {
@@ -536,9 +491,6 @@ namespace {
         float drawnScale = 0;
         uint32_t made = 0;
 
-        bool holding = false;
-        uint32_t pointer = 0;
-        Point last{};
 
         media::CompositionTarget::Rendering_revoker rendering;
         media::CompositionTarget::SurfaceContentsLost_revoker contentsLost;

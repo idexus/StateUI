@@ -19,10 +19,6 @@ final class UIKitCanvasView: UIView, UIKitSteppable {
 
     override func accessibilityDecrement() { stepAction?(.decrement) }
 
-    var onPressed: ((CGPoint) -> Void)?
-    var onDragged: ((CGPoint) -> Void)?
-    var onReleased: ((CGPoint) -> Void)?
-
     private var instructions: [CanvasInstruction] = []
 
     init() {
@@ -136,28 +132,6 @@ final class UIKitCanvasView: UIView, UIKitSteppable {
 
     private static func rounded(_ room: Rect, _ radius: Double) -> CGPath {
         CGPath(roundedRect: rect(room), cornerWidth: radius, cornerHeight: radius, transform: nil)
-    }
-
-    // MARK: - A finger on it
-
-    func pressed(at point: CGPoint) { onPressed?(point) }
-    func dragged(to point: CGPoint) { onDragged?(point) }
-    func released(at point: CGPoint) { onReleased?(point) }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.first.map { pressed(at: $0.location(in: self)) }
-    }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.first.map { dragged(to: $0.location(in: self)) }
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.first.map { released(at: $0.location(in: self)) }
-    }
-
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.first.map { released(at: $0.location(in: self)) }
     }
 }
 #endif

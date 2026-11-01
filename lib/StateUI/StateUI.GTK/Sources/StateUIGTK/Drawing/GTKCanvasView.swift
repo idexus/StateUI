@@ -6,55 +6,16 @@
 import CStateUIGTK
 
 /// A Canvas: a panel replaying its drawing in order on GTK's snapshot - the instructions and the pen the host layer
-/// reads (`CanvasInstruction`, `CanvasPen`), its arcs the host layer's curves - within its own room; a press, its
-/// drag and its release told where they are.
+/// reads (`CanvasInstruction`, `CanvasPen`), its arcs the host layer's curves - within its own room.
 /// Design: docs/design/platforms/gtk/drawing.md#a-canvas
 @MainActor
 final class GTKCanvasView: GTKPanelView {
-    var onPressed: ((Point) -> Void)?
-    var onDragged: ((Point) -> Void)?
-    var onReleased: ((Point) -> Void)?
-
     private(set) var instructions: [CanvasInstruction] = []
-
-    /// Where the press its drag follows went down.
-    private(set) var pressedAt = Point(x: 0, y: 0)
-
-    /// The gesture a press, its drag and its release come through.
-    let drag: OpaquePointer
-
-    override init() {
-        drag = gtk_gesture_drag_new()!
-        super.init()
-        connectSignal(UnsafeMutableRawPointer(drag), "drag-begin", number: number) { _, x, y, data in
-            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKCanvasView)?.pressed(x, y) }
-        }
-        connectSignal(UnsafeMutableRawPointer(drag), "drag-update", number: number) { _, x, y, data in
-            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKCanvasView)?.dragged(by: x, y) }
-        }
-        connectSignal(UnsafeMutableRawPointer(drag), "drag-end", number: number) { _, x, y, data in
-            MainActor.assumeIsolated { (GTKView.find(viewNumber(data)) as? GTKCanvasView)?.released(by: x, y) }
-        }
-        gtk_widget_add_controller(widget, drag)
-    }
 
     /// The drawing, as its contract declares it; none draws nothing.
     func apply(_ drawing: [DrawCommand]?) {
         instructions = CanvasInstruction.instructions(drawing)
         gtk_widget_queue_draw(widget)
-    }
-
-    private func pressed(_ x: Double, _ y: Double) {
-        pressedAt = Point(x: x, y: y)
-        onPressed?(pressedAt)
-    }
-
-    private func dragged(by x: Double, _ y: Double) {
-        onDragged?(Point(x: pressedAt.x + x, y: pressedAt.y + y))
-    }
-
-    private func released(by x: Double, _ y: Double) {
-        onReleased?(Point(x: pressedAt.x + x, y: pressedAt.y + y))
     }
 
     /// A canvas has no size of its own: it takes the room its layout gives it.
@@ -199,10 +160,5 @@ final class GTKCanvasView: GTKPanelView {
             }
         }
         return gsk_path_builder_free_to_path(builder)
-    }
-
-    override func detach() {
-        super.detach()
-        (onPressed, onDragged, onReleased) = (nil, nil, nil)
     }
 }

@@ -64,19 +64,10 @@ extension UIKitRegistrations {
         }
     }
 
-    /// A Canvas: its drawing, and a finger on it as it goes down, moves and lifts.
+    /// A Canvas: its drawing; a finger on it is a view's, heard as every view hears one.
     static func canvas(_ registry: Registry<UIView>) {
-        registry.add(CanvasContract.self, create: { reports in
-            let canvas = UIKitCanvasView()
-            canvas.onPressed = { point in reports.raise(CanvasContract.pressed, Point(x: point.x, y: point.y)) }
-            canvas.onDragged = { point in reports.raise(CanvasContract.dragged, Point(x: point.x, y: point.y)) }
-            canvas.onReleased = { point in reports.raise(CanvasContract.released, Point(x: point.x, y: point.y)) }
-            return canvas
-        }, members: { canvas in
+        registry.add(CanvasContract.self, create: { _ in UIKitCanvasView() }, members: { canvas in
             canvas.property(CanvasContract.drawing) { view, drawing in view.apply(drawing) }
-            canvas.raises(CanvasContract.pressed)
-            canvas.raises(CanvasContract.dragged)
-            canvas.raises(CanvasContract.released)
         })
     }
 

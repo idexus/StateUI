@@ -404,9 +404,6 @@ typedef struct {
     /// Files dropped on a view from the system: their `count` paths and names, in UTF-8.
     void (*filesDragged)(int64_t view, int32_t count, char const *const *paths, char const *const *names);
 
-    /// A press on a canvas, followed from down to up, at (x, y) DIPs of it.
-    void (*canvasPressed)(int64_t view, StateUIPressPhase phase, double x, double y);
-
     /// The user picked a day - its year, month and day - or a time of day - its hour, minute and 0.
     void (*picked)(int64_t view, int32_t first, int32_t second, int32_t third);
 
@@ -1077,8 +1074,7 @@ void stateui_winui_path_draw(StateUIObjectRef path, StateUIFigureKind figure, do
                              int32_t count, bool evenOdd, double const *placement, double width, double height,
                              double inset);
 
-/// A canvas: a panel its drawing is replayed on, again for each size and scale it is shown at; a press on it is
-/// told through `canvasPressed` for the view `view`.
+/// A canvas: a panel its drawing is replayed on, again for each size and scale it is shown at.
 StateUIObjectRef stateui_winui_canvas_make(int64_t view);
 
 /// The canvas's drawing, as StateUI's `HostDrawing` lays it out: each instruction's kind and whole numbers in

@@ -221,10 +221,10 @@ struct Strip: View {
             .onPanUpdated { pan in
                 switch pan.phase {
                 case .changed:
-                    $offset.journey.snap(to: pan.totalX)
+                    $offset.journey.snap(to: pan.total.x)
                 case .ended:
                     let glide = Motion.glide(longest: .milliseconds(800))
-                    $offset.journey.velocity = pan.velocityX
+                    $offset.journey.velocity = pan.velocity.x
                     // The nearest stop of every hundred points to where the throw would land.
                     let stop = ($offset.journey.reach(glide) / 100).rounded() * 100
                     $offset.journey.move(to: stop, glide)

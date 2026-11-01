@@ -84,8 +84,9 @@ public enum ViewContract: Contract {
         "panTouchCount", layer: .structure, travels: false, cleared: false)
 
     /// The view is being dragged: the phase, how far across and down since the
-    /// pan began, and how fast, a second.
-    public static let panUpdated = ElementEvent<Self, (GesturePhase, Point, Point)>(
+    /// pan began, how fast, a second, and where the press is now, in the view's
+    /// own points.
+    public static let panUpdated = ElementEvent<Self, (GesturePhase, Point, Point, Point)>(
         "panUpdated", layer: .native)
 
     /// The number of the state a drag's distance across is written into.

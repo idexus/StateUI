@@ -20,8 +20,8 @@
     /// is the pointer - which presses and lets go, and hovers over nothing.
     case pointer(Event, Point, byFinger: Bool = false)
 
-    /// A press dragged: its phase, and how far it has moved since it began.
-    case drag(GesturePhase, x: Double, y: Double)
+    /// A press dragged: its phase, how far it has moved since it began, and where it began, in the view's points.
+    case drag(GesturePhase, x: Double, y: Double, from: Point)
 
     /// A pinch: its phase, its scale since the last step, and where, as shares of the view's size.
     case pinch(GesturePhase, scale: Double, at: Point)

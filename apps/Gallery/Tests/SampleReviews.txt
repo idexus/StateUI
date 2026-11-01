@@ -20,7 +20,7 @@ BuilderSample.swift eda47ffd0dda692b
 ButtonMenuSample.swift d4e17af0531f4452
 ButtonRoleSample.swift 36d33f316a462966
 ButtonSample.swift 07e87a36914e4779
-CanvasSample.swift 52db70adead39b9b
+CanvasSample.swift b31634f0ee2057b2
 ChangingDeckSample.swift ff5ace01e23a5f5c
 CheckBoxSample.swift 70837379658f7ee0
 ChoosingItemsSample.swift 1a8449147a34b6dc
@@ -90,10 +90,10 @@ NextFieldSample.swift b365cbd1626b4437
 OnChangedSample.swift dc1582b9377c772d
 OutlineSample.swift 4ee91e4fde45645c
 PacedStateSample.swift e821a58ecd748f76
-PanSample.swift 6fdd4eb9a5672208
+PanSample.swift 08349554ebc29a65
 PersistentStateSample.swift 4be06bf5d5e98ef8
 PickerSample.swift 86c5cbb290e05823
-PinchSample.swift f823ba30caa5eafa
+PinchSample.swift e56e5f964acfbeee
 PlatformSupportSample.swift 24107a58da1308fc
 PointerSample.swift 3306b3b76379bc70
 PollSample.swift 29d40feb24ecaa77

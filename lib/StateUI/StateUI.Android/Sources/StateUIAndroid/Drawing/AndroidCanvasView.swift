@@ -10,11 +10,6 @@ import CStateUIAndroid
 /// Design: docs/design/platforms/android/drawing.md#a-canvas
 @MainActor
 final class AndroidCanvasView: AndroidView {
-    /// What the canvas does as a finger goes down on it, moves, and is lifted, at a point in points.
-    var onPressed: ((Point) -> Void)?
-    var onDragged: ((Point) -> Void)?
-    var onReleased: ((Point) -> Void)?
-
     init() {
         super.init { number in
             Java.new(
@@ -33,21 +28,5 @@ final class AndroidCanvasView: AndroidView {
                 .object(Java.floats(drawing.numbers.map(Float.init))),
                 .object(Java.strings(drawing.strings)))
         }
-    }
-
-    /// A finger's phase - down, moved, lifted - at `point`.
-    func touched(phase: Int32, at point: Point) {
-        switch AndroidCanvasTouch(rawValue: phase) {
-        case .pressed: onPressed?(point)
-        case .dragged: onDragged?(point)
-        case .released, nil: onReleased?(point)
-        }
-    }
-
-    override func detach() {
-        super.detach()
-        onPressed = nil
-        onDragged = nil
-        onReleased = nil
     }
 }

@@ -5,19 +5,10 @@
 @_spi(Host) import StateUIHost
 
 extension WinUIRegistrations {
-    /// A Canvas: its drawing, and a press on it - down, dragged, lifted - in its own coordinates.
+    /// A Canvas: its drawing; a press on it is a view's, heard as every view hears one.
     static func drawing(_ registry: Registry<WinUIView>) {
-        registry.add(CanvasContract.self, create: { reports in
-            let canvas = WinUICanvasView()
-            canvas.onPressed = { reports.raise(CanvasContract.pressed, $0) }
-            canvas.onDragged = { reports.raise(CanvasContract.dragged, $0) }
-            canvas.onReleased = { reports.raise(CanvasContract.released, $0) }
-            return canvas
-        }, members: { canvas in
+        registry.add(CanvasContract.self, create: { _ in WinUICanvasView() }, members: { canvas in
             canvas.property(CanvasContract.drawing) { view, drawing in view.draw(drawing) }
-            canvas.raises(CanvasContract.pressed)
-            canvas.raises(CanvasContract.dragged)
-            canvas.raises(CanvasContract.released)
         })
     }
 }
