@@ -538,6 +538,7 @@ overflow is its `on:` picture while it stands on, else its own
 (`MountedElement.itemPicture`, which every host's entry reads).
 
 A menu is walked from the tree, never a channel of its own, so the two-way
-`MenuToggle(_:isOn: $state)` reads its state where the menu is built: the state turning
-builds that body again, and the walk shows the new mark on every host the
-same way a caption changing does.
+`MenuToggle(_:isOn: $state)` reads its state as its entry is described ([an
+element reads what it was handed](../core/invalidation.md#an-element-reads-what-it-was-handed)):
+the state turning describes that entry alone again, and the walk shows the new
+mark on every host the same way a caption changing does.
