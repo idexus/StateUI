@@ -256,10 +256,13 @@ number back when the element goes, and the binding it was made for.
 `.multi($a, $b).convert { a, b in … }` is the same machinery over two to ten
 states. `.multi` is a static member of `Binding`, so the leading dot resolves
 against the type the control takes, and the call reads as the states and then
-the arithmetic. The arities are written out one overload each: a parameter pack
-captured in the escaping closure that reads the sources crashes the compiler,
-and shorthand closure arguments have no arity to bind to over a pack. The
-sources are read off their storage, not through their bindings, so the line
+the arithmetic. The arities are written out one overload each, because no
+parameter pack says "two or more" (measured on Swift 6.4): a pack alone reads
+every spelling, `$0` included, but takes `.multi()` - no source, a stop at run
+time - and `.multi($a)`, a second road to `$a.convert`, and nothing refuses
+either; a pack after two named sources leaves its empty tail uninferred, so
+the commonest call, two sources, does not compile. The overloads refuse both
+at compile time. The sources are read off their storage, not through their bindings, so the line
 that wrote the conversion does not become a reader of every source.
 
 ## Motion laws
