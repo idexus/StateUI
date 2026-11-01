@@ -134,8 +134,8 @@ public struct GeometryReader: View {
     ///
     /// - Parameter content: What to show, built again as each measurement
     ///   settles.
-    public init<Content: Views>(@ViewBuilder _ content: @escaping (Rect) -> Content) {
-        self.init(in: .parent, content)
+    public init<Content: Views>(@ViewBuilder content: @escaping (Rect) -> Content) {
+        self.init(in: .parent, content: content)
     }
 
     /// The same, in the coordinates named - `.global` for where this sits in
@@ -146,7 +146,7 @@ public struct GeometryReader: View {
     ///   - content: What to show, built again as each measurement settles.
     public init<Content: Views>(
         in space: CoordinateSpace,
-        @ViewBuilder _ content: @escaping (Rect) -> Content
+        @ViewBuilder content: @escaping (Rect) -> Content
     ) {
         self.space = space
         self.build = { content($0).nodes }

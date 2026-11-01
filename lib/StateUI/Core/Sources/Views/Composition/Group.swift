@@ -22,7 +22,7 @@ public struct Group<Content: View>: View {
     /// A group of `content`.
     ///
     /// - Parameter content: the view it holds.
-    public init(@ViewBuilder _ content: () -> Content) {
+    public init(@ViewBuilder content: () -> Content) {
         self.content = content()
     }
 

@@ -53,7 +53,7 @@ public struct Canvas: ElementView, CanvasProperties {
     }
 
     /// A canvas showing what the closure draws.
-    public init(@DrawingBuilder _ drawing: () -> [DrawCommand]) {
+    public init(@DrawingBuilder drawing: () -> [DrawCommand]) {
         node = Node(contract: CanvasContract.self)
         node.write(CanvasContract.drawing, drawing())
     }
