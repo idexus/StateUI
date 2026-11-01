@@ -149,6 +149,39 @@ final class LayoutArithmeticTests: XCTestCase {
         XCTAssertEqual(places.map { $0?.x }, [80, 50])
     }
 
+    /// A cell no grid has - a row or a column before the first, a span of none, an index or a span past any grid -
+    /// stands in the nearest one there is: measured and placed alike, the grid holding a track for every child.
+    @MainActor
+    func testACellNoGridHasStandsInTheNearestThereIs() {
+        var above = Child(width: 10, height: 10)
+        above.values.row = -1
+        var before = Child(width: 10, height: 10)
+        before.values.column = -3
+        before.values.rowSpan = -2
+        var far = Child(width: 10, height: 10)
+        far.values.row = Int.max
+        far.values.column = Int.max - 1
+        far.values.rowSpan = Int.max
+        far.values.columnSpan = Int.max
+
+        for children in [[above], [before], [far], [above, before, far]] {
+            let size = GridArithmetic.size(
+                of: children, rows: [], columns: [], rowSpacing: 0, columnSpacing: 0, padding: Insets(0),
+                width: 100)
+            let places = GridArithmetic.places(
+                of: children, rows: [], columns: [], rowSpacing: 0, columnSpacing: 0, padding: Insets(0),
+                in: Rect(0, 0, 100, 100), direction: .leftToRight)
+            XCTAssertTrue(size.width.isFinite && size.height.isFinite)
+            XCTAssertEqual(places.count, children.count)
+            XCTAssertTrue(places.allSatisfy { $0 != nil }, "every child stands somewhere")
+        }
+
+        let places = GridArithmetic.places(
+            of: [above], rows: [.fixed(30)], columns: [.fixed(40)], rowSpacing: 0, columnSpacing: 0,
+            padding: Insets(0), in: Rect(0, 0, 100, 100), direction: .leftToRight)
+        XCTAssertEqual(places.first??.y, 0, "a row before the first is the first")
+    }
+
     /// Right to left, a ZStack's areas count from the right edge, and a child at its area's start stands at
     /// the area's right.
     @MainActor

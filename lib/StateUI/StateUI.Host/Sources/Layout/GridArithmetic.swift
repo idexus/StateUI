@@ -71,10 +71,11 @@
             guard item.isShown else { return nil }
             let values = item.values
             let margin = values.margin
-            let row = min(max(values.row, 0), rowCount - 1)
-            let column = min(max(values.column, 0), columnCount - 1)
-            let rowEnd = min(row + max(values.rowSpan, 1), rowCount)
-            let columnEnd = min(column + max(values.columnSpan, 1), columnCount)
+            let standing = cell(of: values)
+            let row = min(standing.row, rowCount - 1)
+            let column = min(standing.column, columnCount - 1)
+            let rowEnd = min(row + standing.rowSpan, rowCount)
+            let columnEnd = min(column + standing.columnSpan, columnCount)
             let cellWidth = columnSizes[column..<columnEnd].reduce(0, +)
                 + columnSpacing * Double(max(columnEnd - column - 1, 0))
             let cellHeight = rowSizes[row..<rowEnd].reduce(0, +)
@@ -101,13 +102,27 @@
         }
     }
 
-    /// How many rows and columns the grid has: its definitions, or as many as its children reach.
+    /// How many rows and columns the grid has: its definitions, or as many as its children reach - one at least.
     @MainActor
     private static func counts<Child: LayoutChild>(
         _ items: [Child], rows: [GridLength], columns: [GridLength]
     ) -> (rows: Int, columns: Int) {
-        (max(rows.count, items.map { $0.values.row + $0.values.rowSpan }.max() ?? 1),
-         max(columns.count, items.map { $0.values.column + $0.values.columnSpan }.max() ?? 1))
+        let cells = items.map { cell(of: $0.values) }
+        return (max(rows.count, cells.map { $0.row + $0.rowSpan }.max() ?? 1, 1),
+                max(columns.count, cells.map { $0.column + $0.columnSpan }.max() ?? 1, 1))
+    }
+
+    /// The most tracks a grid reaches by its children's cells: a row or a column past them stands in the last.
+    static let mostTracks = 1000
+
+    /// The cell a child stands in, within a grid: a row or a column before the first is the first, a span of none
+    /// is one, and nothing reaches past the most tracks - so measuring and placing read one cell.
+    /// Design: docs/design/host/layout.md#grids
+    static func cell(of values: LayoutValues) -> (row: Int, column: Int, rowSpan: Int, columnSpan: Int) {
+        let row = min(max(values.row, 0), mostTracks - 1)
+        let column = min(max(values.column, 0), mostTracks - 1)
+        return (row, column, min(max(values.rowSpan, 1), mostTracks - row),
+                min(max(values.columnSpan, 1), mostTracks - column))
     }
 
     /// `definitions`, with a proportional track of one share for every track they do not define.
@@ -134,11 +149,12 @@
         func extent(_ item: Child) -> Double {
             let margin = item.values.margin
             let measured = item.size(offered: columns.map { columns in
-                let first = min(max(item.values.column, 0), columns.sizes.count - 1)
-                let last = min(first + max(item.values.columnSpan, 1), columns.sizes.count)
-                let cell = columns.sizes[first..<last].reduce(0, +)
+                let standing = cell(of: item.values)
+                let first = min(standing.column, columns.sizes.count - 1)
+                let last = min(first + standing.columnSpan, columns.sizes.count)
+                let room = columns.sizes[first..<last].reduce(0, +)
                     + columns.spacing * Double(max(last - first - 1, 0))
-                return max(0, cell - margin.start - margin.end)
+                return max(0, room - margin.start - margin.end)
             })
             return vertical
                 ? measured.height + margin.top + margin.bottom
@@ -155,9 +171,9 @@
         }
 
         let shown = items.enumerated().filter { $0.element.isShown }.map { order, item in
-            let index = vertical ? item.values.row : item.values.column
-            let first = min(max(index, 0), count - 1)
-            let span = max(vertical ? item.values.rowSpan : item.values.columnSpan, 1)
+            let standing = cell(of: item.values)
+            let first = min(vertical ? standing.row : standing.column, count - 1)
+            let span = vertical ? standing.rowSpan : standing.columnSpan
             return (item: item, tracks: first..<min(first + span, count), order: order)
         }
 

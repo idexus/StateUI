@@ -52,4 +52,15 @@ final class ComplaintsTests: XCTestCase {
         XCTAssertEqual(lines.count, 3, "the two, then one line saying the rest is not said")
         XCTAssertTrue(lines.last?.contains("not said") == true, lines.last ?? "")
     }
+
+    /// A grid's cell that names none - a row or a column before the first, a span of none - is said once; the host
+    /// stands the view in the nearest cell there is.
+    func testACellNoGridHasIsSaid() {
+        _ = Text("Before").gridRow(-1).gridColumn(-2).gridRowSpan(0).gridColumnSpan(-1)
+
+        XCTAssertTrue(hasComplained("`gridRow(-1)` names none of a grid's rows"))
+        XCTAssertTrue(hasComplained("`gridColumn(-2)` names none of a grid's columns"))
+        XCTAssertTrue(hasComplained("`gridRowSpan(0)` spans no row"))
+        XCTAssertTrue(hasComplained("`gridColumnSpan(-1)` spans no column"))
+    }
 }

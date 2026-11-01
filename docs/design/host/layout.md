@@ -217,7 +217,11 @@ a test reads its thickness unrounded.
 A grid has as many rows and columns as it defines, or as its children reach,
 whichever is more; an undefined track is a proportional track of one share.
 A child's cell is its row and column, clamped into the grid, spanning its
-spans.
+spans - read once for measuring and placing alike (`GridArithmetic.cell`): a
+row or a column before the first is the first, a span of none is one, and no
+cell reaches past a thousand tracks, so a grid always holds a track for every
+child and no index runs past its tracks; the core says such a cell once as it
+is written.
 
 ## Tracks
 
