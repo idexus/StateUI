@@ -215,6 +215,9 @@ namespace {
     /// The SVG sources standing, each read once and shared by every picture and window showing it.
     std::map<Drawn, winrt::weak_ref<imaging::SvgImageSource>> drawn;
 
+    /// How many SVG sources were made - each a rasterization the picture stands blank through; what a test counts.
+    int32_t svgsMade = 0;
+
     /// Where the SVG `file` stands with its proportions let go: a copy of its text with `preserveAspectRatio="none"`
     /// on its root among the system's temporary files, named by what it holds - every run showing the picture shares
     /// it, and none is left behind a run - written where it is missing, whole before it takes its name.
@@ -252,6 +255,7 @@ namespace {
         for (auto each = drawn.begin(); each != drawn.end();) each = each->second.get() ? std::next(each) : drawn.erase(each);
 
         imaging::SvgImageSource source(address(stretched ? stretchedCopy(file) : pictures() + file));
+        ++svgsMade;
         if (width > 0 && height > 0) {
             source.RasterizePixelWidth(width);
             source.RasterizePixelHeight(height);
@@ -507,10 +511,11 @@ extern "C" bool stateui_winui_image_set(
             image.Width(own.Width);
             image.Height(own.Height);
         }
-        // Drawn at WinUI's own size until it is drawn at the size it shows at; a stretched one, its proportions let
-        // go, at the room's.
+        // An SVG declaring its size is drawn once, at the size it shows at, as its layout places it
+        // (`stateui_winui_image_draw`) - not at WinUI's own size first and again, each a rasterization it stands blank
+        // through; one declaring none, at WinUI's own. A stretched one lets its proportions go, at the room's.
         // Design: docs/design/platforms/winui/controls.md#pictures
-        image.Source(svg(file, 0, 0, aspect == 2));
+        image.Source(own.Width > 0 && own.Height > 0 ? nullptr : svg(file, 0, 0, aspect == 2));
         return true;
     } catch (...) {
         report("showing a picture");
@@ -547,6 +552,10 @@ extern "C" void stateui_winui_svgs_read(StateUIObjectRef handle, int32_t *counts
     } catch (...) {
         report("counting the SVGs an element shows");
     }
+}
+
+extern "C" int32_t stateui_winui_svgs_made(void) {
+    return svgsMade;
 }
 
 extern "C" void stateui_winui_image_draw(StateUIObjectRef handle, double width, double height) {

@@ -99,6 +99,27 @@ final class WinUIImageViewTests: XCTestCase {
         }
     }
 
+    /// A picture opened is drawn once, at the size it shows at - not at its own size first and again: each drawing of
+    /// an SVG is a rasterization the picture stands blank through.
+    func testAPictureOpenedIsDrawnOnceAtItsSize() throws {
+        try onUIThread {
+            let folder = FileManager.default.temporaryDirectory.appendingPathComponent("stateui-winui-drawn-once")
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+            let name = "card-\(UUID().uuidString).svg"
+            try "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"30\" height=\"20\"><rect width=\"30\" height=\"20\"/></svg>"
+                .write(to: folder.appendingPathComponent(name), atomically: true, encoding: .utf8)
+            stateui_winui_set_pictures(folder.path)
+            defer { stateui_winui_set_pictures("") }
+
+            let before = stateui_winui_svgs_made()
+            let host = WinUIRenderer.running { Image(ImageSource(name)).width(90).height(60) }
+            host.settle { stateui_winui_svgs_made() > before }
+            WinUITestHost.pump(4)
+
+            XCTAssertEqual(stateui_winui_svgs_made() - before, 1, "drawn at its own size, then again at the one it shows at")
+        }
+    }
+
     /// An SVG stands at the size it declares: its width and height, the one it leaves out taken from its viewBox's
     /// proportions, or its viewBox alone.
     func testAnSVGStandsAtTheSizeItDeclares() throws {

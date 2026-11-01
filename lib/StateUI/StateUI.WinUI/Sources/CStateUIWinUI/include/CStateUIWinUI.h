@@ -1510,6 +1510,9 @@ void stateui_winui_image_draw(StateUIObjectRef image, double width, double heigh
 /// How many SVGs the pictures and icons under an element show read by their file's address, and how many not.
 void stateui_winui_svgs_read(StateUIObjectRef element, int32_t *counts);
 
+/// How many SVG sources the relay has made - each a rasterization - what a test counts.
+int32_t stateui_winui_svgs_made(void);
+
 /// What WinUI holds of `element`'s property named `what`, in UTF-8, as far as `capacity` goes - a color as #AARRGGBB,
 /// a number, 0 or 1, words, sides and corners as four numbers - answering its whole length; -1 for a property the
 /// element has none of. What a test reads.
