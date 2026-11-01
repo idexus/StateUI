@@ -155,16 +155,18 @@ final class GTKActsTests: XCTestCase {
         try onUIThread {
             let host = GTKRenderer.running { QuestionsPage() }
 
-            try host.press("Confirm")
-            try host.answer(.cancel)
-            try host.press("Choose")
-            try host.answer(.cancel)
-            try host.press("Prompt")
-            try host.answer(.cancel)
-            try host.press("Choose")
-            try host.dismiss()
-            let expected = "confirmed false; chose nothing; typed nothing; chose nothing; "
-            host.settle { host.said == expected }
+            // Each answer lands before the next press, as a user's does: a press while the button's run still waits
+            // for its answer is ignored, as `.ignoreWhileRunning` says.
+            var expected = ""
+            for (button, answers, said) in [
+                ("Confirm", true, "confirmed false; "), ("Choose", true, "chose nothing; "),
+                ("Prompt", true, "typed nothing; "), ("Choose", false, "chose nothing; "),
+            ] {
+                try host.press(button)
+                if answers { try host.answer(.cancel) } else { try host.dismiss() }
+                expected += said
+                host.settle { host.said == expected }
+            }
 
             XCTAssertEqual(host.said, expected)
         }
