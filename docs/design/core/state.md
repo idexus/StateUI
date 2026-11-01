@@ -136,6 +136,18 @@ by its element (invalidation.md, an element reads what it was handed). There is 
 no wrapper for a part, and no part made of closures: a value the library does
 not own reaches a control through a class of `@State` fields that follows it.
 
+## An element gone
+
+A part of a collection's element - `$rows[2]`, `$rows[2].title` - may outlive
+the element: a handler keeps it while the list shrinks under it. Every road
+through it answers alike, said once: a write and a post are dropped, and a
+read answers the element as it stood the last time the part reached it - at
+its making or at its last read - so the caller carries on, as with any value
+the library could not use. A part made for an index the collection never had
+has nothing to answer: its read stops the program, naming the part. Handing
+an element's identity rather than its index is what keeps a part from going
+stale.
+
 ## Reading without recording
 
 `Binding.standing` and `StatePart.standing` read the value without

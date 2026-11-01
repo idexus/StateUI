@@ -500,6 +500,22 @@ final class StateTests: XCTestCase {
         XCTAssertEqual(items.wrappedValue, [1], "the post wrote past the end")
     }
 
+    /// A READ THROUGH A PART OF AN ELEMENT GONE answers the element as it stood
+    /// the last time the part reached it, said once - as a write is dropped, said
+    /// once - its property's part too; the list shrinking traps nothing.
+    func testAReadOfAnElementGoneAnswersItAsItStoodLast() {
+        let rows = State([PostedRow(title: "a"), PostedRow(title: "b")])
+        let second = rows.projectedValue[1]
+        let secondTitle = rows.projectedValue[1].title
+        XCTAssertEqual(second.wrappedValue.title, "b")
+
+        rows.wrappedValue = [PostedRow(title: "a")]
+
+        XCTAssertEqual(second.wrappedValue.title, "b", "the element as it stood last")
+        XCTAssertEqual(secondTitle.wrappedValue, "b", "its property, through it")
+        XCTAssertTrue(hasComplained("A read through a part of a state of an element its collection no longer has"))
+    }
+
     /// A WRITE THROUGH A BINDING TO AN ELEMENT GONE is dropped, said once - its
     /// property's binding too.
     func testAWriteToAnElementGoneIsDropped() {
