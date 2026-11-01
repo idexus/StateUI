@@ -4,6 +4,21 @@
 import Foundation
 import XCTest
 
+    /// GTK's local zone is read in one place, as it stands: GLib keeps its own from its first reading, so the
+    /// locale, the clock and a local offset would part after the user changes the zone.
+    /// Design: docs/design/platforms/gtk/runtime.md#the-environment
+    func testGTKReadsItsLocalZoneInOnePlace() throws {
+        var read = 0
+        for (path, text) in try SourceTree.runtimeSources() where path.contains("StateUI.GTK/") {
+            read += 1
+            XCTAssertFalse(text.contains("g_date_time_new_now_local"), "\(path) reads GLib's kept local zone")
+            if !path.hasSuffix("/GTKEnvironment+Machine.swift") {
+                XCTAssertFalse(text.contains("g_time_zone_new_local"), "\(path) reads a local zone of its own")
+            }
+        }
+        XCTAssertGreaterThan(read, 10, "the scan read almost nothing of GTK's sources")
+    }
+
 /// Every Swift runtime keeps one architecture: the host layer holds
 /// the elements every toolkit shares, each host holds only what its toolkit
 /// makes it write, and no host does again what an element of the layer does.

@@ -21,7 +21,9 @@ final class GTKActToolkit: ActToolkit {
     let host = "GTK"
 
     func localTime() -> LocalTime {
-        let now = g_date_time_new_now_local()!
+        let zone = GTKEnvironment.localZone()
+        defer { g_time_zone_unref(zone) }
+        let now = g_date_time_new_now(zone)!
         defer { g_date_time_unref(now) }
         return LocalTime(
             year: Int(g_date_time_get_year(now)), month: Int(g_date_time_get_month(now)),
@@ -32,7 +34,7 @@ final class GTKActToolkit: ActToolkit {
 
     /// Taken at the day's noon, or now where no day is given; nil for a zone GLib does not know, or no such day.
     func utcOffset(of name: String?, on day: CalendarDate?) -> Int? {
-        guard let zone = name.map({ g_time_zone_new_identifier($0) }) ?? g_time_zone_new_local() else { return nil }
+        guard let zone = name.map({ g_time_zone_new_identifier($0) }) ?? GTKEnvironment.localZone() else { return nil }
         defer { g_time_zone_unref(zone) }
 
         let moment = day.map { g_date_time_new(zone, Int32($0.year), Int32($0.month), Int32($0.day), 12, 0, 0) }
