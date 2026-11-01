@@ -1,7 +1,8 @@
 # Dates and time
 
-`CalendarDate` is a day, `ClockTime` a time of day, and `TimeZoneInfo` asks
-the host about time zones. None of them uses Foundation.
+`CalendarDate` is a day, `ClockTime` a time of day, and `TimeZoneName` names
+a zone; the application's `clock` asks the host for the time and a zone's
+offset. None of them uses Foundation.
 
 ## Without Foundation
 
@@ -37,7 +38,7 @@ reaches a picker as 02:39 rather than being refused.
 A `TimePicker` picks hours and minutes on every platform and keeps nothing
 finer than a second, so a host is handed whole seconds: a time that crosses,
 or rides a carried state, comes back with a millisecond of 0. The
-millisecond is there for `ClockTime.now()`.
+millisecond is there for `application.clock.now()`.
 
 ## Text is not a display format
 

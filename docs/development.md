@@ -32,6 +32,7 @@ lib/StateUI.VSCode/                the editor extension
 .scripts/Marks/                    the revision a conformance family's verdicts stand at
 .scripts/new-app.sh                a new application in apps/ (new-app.ps1 on Windows)
 .scripts/test-native.sh            the Swift suites on macOS, the AppKit host's among them
+.scripts/rasterize-images.swift    an application's SVGs drawn as PNGs for a head whose toolkit draws none
 apps/Gallery/Sources/              platform-neutral Gallery application
 apps/Gallery/Platforms/AppKit/     Gallery AppKit entry point
 apps/Gallery/Platforms/UIKit/      Gallery UIKit head
@@ -447,6 +448,8 @@ copyable application examples as plain `swift` so API drift fails visibly.
 The core's suite also guards the project itself, in
 `lib/StateUI/Core/Tests/Project/`:
 
+- `APISurfaceTests` - the public API stands as its two records say, what an
+  application writes and what an extension writes;
 - `AppsTests` - every path an application's manifest names resolves, and the
   scaffolder makes a new application from `apps/HelloWorld`;
 - `ConformanceCaseTests` - a conformance case sees that nothing happened only
@@ -459,6 +462,8 @@ The core's suite also guards the project itself, in
 - `LicenseTests` - every source under `lib/` starts with the two SPDX lines;
 - `DocumentationTests` - every public declaration of the library has its
   `///`;
+- `FoundationSurfaceTests` - `StateUIFoundation` offers the platform's C
+  library and nothing of its own;
 - `HeldByNumberTests` - every number a host hands out is the process's one
   count's, and what a host holds by number stands in the shared tables;
 - `DesignNotesTests` - every `Design:` reference in a source names a note and
@@ -475,6 +480,7 @@ The core's suite also guards the project itself, in
   NDK and the oldest system names the same one;
 - `VsCodeTests` - every name the VS Code configurations point at, in another
   file or a script, exists;
+- `WaitTests` - a wait asks its condition once a step and stops as it holds;
 - `WebPageTests` - the page `.scripts/Web/page.sh` lays out for a Web head
   holds the application's names and what its `Page` folder adds.
 

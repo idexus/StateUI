@@ -896,7 +896,7 @@ bar grows or the keyboard rises, so the last message stays in sight; one
 elsewhere stays where it is.
 
 The bar stands on the page while nothing passes under it. While the rows go on
-past it, its `edge` says how they show there: `.automatic`, what it is unsaid,
+past it, its `scrollEdge` says how they show there: `.automatic`, what it is unsaid,
 is the platform's own edge, `.hard` cuts them off at the bar on a blur with a
 line along it, and `.none` shows them as they are:
 

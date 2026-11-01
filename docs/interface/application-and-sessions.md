@@ -294,8 +294,8 @@ Both default to `false` and are independent.
 Changing either policy updates windows that are already open. In particular,
 turning `hidesWhenInactive` off while a window is hidden by its scene makes that window
 visible again. Window lifecycle reports follow effective visibility: overlapping
-scene and application hiding produces one `stopped`, and `resumed` arrives only
-after neither cause keeps the window hidden.
+scene and application hiding produces one `stopped`, and the window is active
+again only after neither cause keeps it hidden.
 
 Both policies are adaptive: a host implements them with its native window
 relationships when that platform exposes the capability. A declaration is not
@@ -303,22 +303,24 @@ evidence that a particular host implements the policy; the
 [platform matrix](../platform-contract.md#contract-members) is the
 support authority.
 
-## Application and scene phases
+## Application, scene and window phases
 
-`ApplicationSession.phase` and `SceneSession.phase` use the same three words
-at different ownership scopes:
+`ApplicationSession.phase`, `SceneSession.phase` and `WindowSession.phase` are
+one `SessionPhase` at three ownership scopes:
 
-| Phase | Application | Scene |
-| --- | --- | --- |
-| `.active` | one of the application's windows is in use | one of this scene's windows is in use |
-| `.inactive` | application windows remain visible while another application is in front | this scene remains visible while another scene is in front |
-| `.background` | none of the application's windows can be seen | every window of the scene is out of sight, or the application is hidden |
+| Phase | Application | Scene | Window |
+| --- | --- | --- | --- |
+| `.active` | one of the application's windows is in use | one of this scene's windows is in use | the window is in use |
+| `.inactive` | application windows remain visible while another application is in front | this scene remains visible while another scene is in front | the window shows behind another |
+| `.background` | none of the application's windows can be seen | every window of the scene is out of sight, or the application is hidden | the window is minimized, hidden or going away |
 
 A multi-window application can therefore be `.active` while one of its scenes
-is `.inactive`. `SceneSession.phase` starts at `.active` when a new scene is
-being brought up and then follows reports for that scene. Neither value
-replaces `WindowSession.phase`, which records the more detailed lifecycle of
-one particular window.
+is `.inactive`, and a scene `.active` while one of its windows is `.inactive`.
+`SceneSession.phase` starts at `.active` when a new scene is being brought up
+and then follows reports for that scene. A window starts in `.background`,
+before the platform has made it, and is `.inactive` once made until it is the
+one in use. Coming back from out of sight is no phase of its own: the window
+is active again.
 
 The scene node has four host reports. `activated`, `deactivated`, and
 `stopped` move `SceneSession.phase`. `windowClosed` - the user closed one of
@@ -328,7 +330,7 @@ tree already owns that decision.
 
 Lifecycle is an effective state, not a count of native callbacks. If a scene's
 only window is minimized and the application is then hidden, showing the
-application again does not resume either the window or its scene. They
+application again makes neither the window nor its scene active. They
 advance only after the remaining minimized cause ends. The same rule prevents
 duplicate phase changes when callbacks overlap.
 

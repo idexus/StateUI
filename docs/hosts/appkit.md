@@ -240,7 +240,7 @@ StateUIControls.add(RatingBarContract.self, create: { reports -> RatingBarView i
 A view may draw the children of one contract itself - a map draws its markers.
 `children` names their contract and what of each the view realizes, and hands
 it every such child, in the tree's order, whenever the element's children
-change: one added, moved, taken away, or given another value. A child is a
+change: one added, moved, taken away, or given another value. A child is an
 `AppKitChild` - its values read as the types its contract declares, and its own
 `reports` to raise its events on it - and stays the same child for as long as
 it lives, so the view keeps what it drew for one by it. Such a child has no

@@ -84,7 +84,7 @@ recognized.
 
 A view that answers a tap is a button to assistive technology. The platform's
 accessibility press runs the same handler a tap runs, so a screen reader or an
-automation script activates the row without a pointer. Give such a view a
+automation script activates the row without a pointer. Give such a view an
 `accessibilityLabel` so the button has a name.
 
 ### Hold
@@ -152,8 +152,8 @@ Rectangle()
     }
 ```
 
-Each report also says how fast the gesture goes, a second - `velocityX` and
-`velocityY` for a pan, `velocity` for a pinch's scale and a rotation's angle -
+Each report also says how fast the gesture goes, a second - `velocity`, a
+`Point`, for a pan, and for a pinch's scale and a rotation's angle a number -
 nought as it begins and, at its end, as fast as it lifted, beside where it
 reached. Handing that to a state's journey lets the value go on at the hand's
 speed:
@@ -424,7 +424,8 @@ struct LinkRow: View {
 
 A platform may ask the user before the application reads what another
 application put there - iOS and a browser do. A browser's read throws where
-the user refuses, and a page served over plain http has no clipboard.
+the user refuses, and a page served over plain http has no clipboard. Android
+lets only the window in focus read it: a read from elsewhere throws.
 
 ## Sharing
 

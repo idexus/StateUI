@@ -321,7 +321,13 @@ or a simulator's name or UDID; with none named it is the simulator booted,
 else an iPhone. A simulator is booted where it is not running and the
 Simulator opened; a device is reached over USB or Wi-Fi, its build signed for
 it. `--no-log` returns once the application has started. Everything a build
-writes stays in the application's `.build/uikit/`.
+writes stays in the application's `.build/uikit/`. On a simulator a switch
+such as `STATEUI_TALLY=1` reaches the application under the prefix `simctl`
+gives what its children are handed:
+
+```bash
+SIMCTL_CHILD_STATEUI_TALLY=1 .scripts/UIKit/run-app.sh apps/Gallery release "iPhone 18 Pro"
+```
 
 In VS Code, choose **UIKit** as the host and an iPhone, an iPad or a
 simulator, and press **F5**.

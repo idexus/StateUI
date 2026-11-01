@@ -429,7 +429,7 @@ inside it - a word typed into its field - shows no chrome again; the bar's
 coming and going does.
 
 A bar stands on the page while nothing stands under it, and shows its edge
-(`ScrollEdge`, the bar's `edge`) while its page's rows go on past it - under it
+(`ScrollEdge`, the bar's `scrollEdge`) while its page's rows go on past it - under it
 where they run under the room's foot (`BottomBarPlace.covers`), beyond its top
 where it stands beside the page (`continues`), its scroller short of its end.
 `.automatic` is the platform's: UIKit's own scroll edge effect under the bar

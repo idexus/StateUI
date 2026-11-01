@@ -267,6 +267,11 @@ SearchField($query)
     }
 ```
 
+A one-line field nothing sizes - a `TextField` or a `SearchField` in a row -
+stands at least as wide as twenty digits and as its placeholder, in its own
+font, on every platform; a width, a `.fill` column or an area given to it
+stands instead.
+
 `cursorPosition` and `selectionLength` place the native caret and selection;
 the host does not report them back. The host remains responsible for valid
 positions after native text normalization. `maximumLength` limits accepted

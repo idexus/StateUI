@@ -19,7 +19,7 @@ its room, and in it a document the host layer's scroll arithmetic sizes -
 never smaller than the viewport, as wide as it where the scroller moves only
 down - with the content standing in it; several children are stacked down in
 one. A page's scroller let under the strip at its bottom or right keeps
-that strip clear at its content's end (`keepEndClear`); its start and
+that strip clear at its content's end (`UIKitScrollClearance.keep`); its start and
 offsets stay as they are.
 
 What the user does to it is said on the display's frames by the host layer's

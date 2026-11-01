@@ -42,8 +42,10 @@ lib/StateUI/StateUI.Web/
   deploy.sh                  builds it for release and lays the page in a folder of its own
   test-web.sh                runs the host's suite, or what of it needs a browser
   swift-sdk.sh               names the Swift SDK for WebAssembly of the compiler's release
+  size-budgets.sh            builds each application's release module and holds it within its budget
 apps/<App>/Platforms/Web/
   main.swift                 the application's Web head
+  Host/                      what this host answers for the application
   Page/                      what the application adds to its page: its scripts, and head.html
 ```
 
