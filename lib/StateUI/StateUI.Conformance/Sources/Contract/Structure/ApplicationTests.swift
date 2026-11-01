@@ -505,51 +505,61 @@
                 s.expect(try s.accent(), own, "the platform's own again")
                 s.expect(try inForce(), "own")
             },
-            ConformanceCase("theHostTellsTheTimeOfDay", proves: [
+            ConformanceCase("theHostTellsTheDayAndTheTimeOfDay", proves: [
                 Covered(ApplicationContract.currentTime),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let said = Received<ClockTime>()
-                s.start { VStack { Button("Time").onClicked(.ignoreWhileRunning) { said.values.append(try await ClockTime.now()) }.id("ask") } }
-
-                try s.perform(.activate, on: s.element("ask"))
-                s.settle { !said.values.isEmpty }
-                let time = said.values.first
-                s.expect(time.map { (0..<24).contains($0.hour) && (0..<60).contains($0.minute) }, true, "a time of day")
-                s.expect(time.map { (0..<60).contains($0.second) && (0..<1000).contains($0.millisecond) }, true)
-            },
-            ConformanceCase("theHostTellsItsZoneAndItsDistanceFromUTC", proves: [
-                Covered(ApplicationContract.currentTimeZone), Covered(ApplicationContract.utcOffset),
-            ], needs: [Covered(ButtonContract.clicked)]) { s in
-                let said = Received<String>()
+                let said = Received<(CalendarDate, ClockTime)>()
                 s.start {
-                    VStack {
-                        Button("Zones").onClicked(.ignoreWhileRunning) {
-                            let zone = try await TimeZoneInfo.local()
-                            let local = try await TimeZoneInfo.utcOffset(of: zone)
-                            let own = try await TimeZoneInfo.utcOffset()
-                            said.values.append("\(!zone.isEmpty) \(local == own)")
-                        }.id("ask")
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Time").onClicked(.ignoreWhileRunning) {
+                                said.values.append((try await application.clock.today(), try await application.clock.now()))
+                            }.id("ask")
+                        }
                     }
                 }
 
                 try s.perform(.activate, on: s.element("ask"))
                 s.settle { !said.values.isEmpty }
-                s.expect(said.values, ["true true"], "a zone named, and its distance the host's own")
+                let (day, time) = (said.values.first?.0, said.values.first?.1)
+                s.expect(day.map { $0.year >= 2026 && (1...12).contains($0.month) && (1...31).contains($0.day) }, true, "a day")
+                s.expect(time.map { (0..<24).contains($0.hour) && (0..<60).contains($0.minute) }, true, "a time of day")
+                s.expect(time.map { (0..<60).contains($0.second) && (0..<1000).contains($0.millisecond) }, true)
+            },
+            ConformanceCase("theUsersOwnZoneIsAnsweredWhereNoneIsNamed", proves: [
+                Covered(ApplicationContract.utcOffset),
+            ], needs: [Covered(ButtonContract.clicked)]) { s in
+                let said = Received<Int64>()
+                s.start {
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Here").onClicked(.ignoreWhileRunning) {
+                                said.values.append(try await application.clock.utcOffset().components.seconds / 60)
+                            }.id("ask")
+                        }
+                    }
+                }
+
+                try s.perform(.activate, on: s.element("ask"))
+                s.settle { !said.values.isEmpty }
+                s.expect(said.values.first.map { (-12 * 60...14 * 60).contains($0) }, true, "a distance some zone keeps")
             },
             ConformanceCase("aZonesDistanceFromUTCIsItsOwnOnTheDayAsked", proves: [
                 Covered(ApplicationContract.utcOffset),
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<[Int64]>()
                 s.start {
-                    VStack {
-                        Button("Offsets").onClicked(.ignoreWhileRunning) {
-                            let tokyo = try await TimeZoneInfo.utcOffset(of: "Asia/Tokyo")
-                            let winter = try await TimeZoneInfo.utcOffset(
-                                of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 1, day: 15))
-                            let summer = try await TimeZoneInfo.utcOffset(
-                                of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 7, day: 15))
-                            said.values.append([tokyo, winter, summer].map { $0.components.seconds / 60 })
-                        }.id("ask")
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Offsets").onClicked(.ignoreWhileRunning) {
+                                let tokyo = try await application.clock.utcOffset(of: "Asia/Tokyo")
+                                let winter = try await application.clock.utcOffset(
+                                    of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 1, day: 15))
+                                let summer = try await application.clock.utcOffset(
+                                    of: "Europe/Warsaw", on: CalendarDate(year: 2026, month: 7, day: 15))
+                                said.values.append([tokyo, winter, summer].map { $0.components.seconds / 60 })
+                            }.id("ask")
+                        }
                     }
                 }
 
@@ -562,15 +572,17 @@
             ], needs: [Covered(ButtonContract.clicked)]) { s in
                 let said = Received<String>()
                 s.start {
-                    VStack {
-                        Button("Nowhere").onClicked(.ignoreWhileRunning) {
-                            do {
-                                _ = try await TimeZoneInfo.utcOffset(of: "Nowhere/Else")
-                                said.values.append("answered")
-                            } catch {
-                                said.values.append("refused")
-                            }
-                        }.id("ask")
+                    WithSessions { _, application in
+                        VStack {
+                            Button("Nowhere").onClicked(.ignoreWhileRunning) {
+                                do {
+                                    _ = try await application.clock.utcOffset(of: "Nowhere/Else")
+                                    said.values.append("answered")
+                                } catch {
+                                    said.values.append("refused")
+                                }
+                            }.id("ask")
+                        }
                     }
                 }
 

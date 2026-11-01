@@ -15,7 +15,7 @@
         FocusElementContract.focus, FocusElementContract.unfocus,
         ApplicationContract.alert, ApplicationContract.announce, ApplicationContract.cancelCall,
         ApplicationContract.chooseAction,
-        ApplicationContract.confirm, ApplicationContract.currentTime, ApplicationContract.currentTimeZone,
+        ApplicationContract.confirm, ApplicationContract.currentTime,
         ApplicationContract.handlerFailed, ApplicationContract.hideOnScreenKeyboard,
         ApplicationContract.persistSceneValue, ApplicationContract.persistValue, ApplicationContract.prompt,
         ApplicationContract.readClipboard, ApplicationContract.share, ApplicationContract.useAccentColor,
@@ -33,9 +33,10 @@
     /// The acts a host with a `NetworkToolkit` performs: the requests the application sends.
     public static let network: [any ContractMember] = [ApplicationContract.sendRequest]
 
-    /// The answer to `currentTime`: the hour, the minute, the second and the millisecond of the local time.
-    public static func currentTime(hour: Int, minute: Int, second: Int, millisecond: Int) -> [HostValue] {
-        [[Double(hour), Double(minute), Double(second), Double(millisecond)].propValue]
+    /// The answer to `currentTime`: the local day - its year, month and day - and the hour, the minute, the second
+    /// and the millisecond of the local time.
+    public static func currentTime(_ now: LocalTime) -> [HostValue] {
+        [[now.year, now.month, now.day, now.hour, now.minute, now.second, now.millisecond].map(Double.init).propValue]
     }
 
     /// What `utcOffset` asks of: a zone by its name - nil for the local one - on a day - nil for now.

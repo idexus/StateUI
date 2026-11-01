@@ -30,8 +30,9 @@ private final class Toolkit: ActToolkit {
     var registered: Set<Act> = []
     var logged: [String] = []
 
-    func localTime() -> (hour: Int, minute: Int, second: Int, millisecond: Int) { (9, 30, 5, 250) }
-    func localZone() -> String { "Europe/Warsaw" }
+    func localTime() -> LocalTime {
+        LocalTime(year: 2026, month: 11, day: 1, hour: 9, minute: 30, second: 5, millisecond: 250)
+    }
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? { zones[zone ?? "Europe/Warsaw"] }
 
     func show(
@@ -224,12 +225,10 @@ final class HostActPerformerTests: XCTestCase {
         let acts = performer(toolkit, answers)
 
         acts.perform(HostActCall(act: .currentTime, arguments: [], completion: 1))
-        acts.perform(HostActCall(act: .currentTimeZone, arguments: [], completion: 2))
         acts.perform(HostActCall(act: .utcOffset, arguments: [.string("Europe/Warsaw")], completion: 3))
         acts.perform(HostActCall(act: .utcOffset, arguments: [.string("Nowhere/Else")], completion: 4))
 
-        XCTAssertEqual(answers.replies[1], HostActs.currentTime(hour: 9, minute: 30, second: 5, millisecond: 250))
-        XCTAssertEqual(answers.replies[2], [.string("Europe/Warsaw")])
+        XCTAssertEqual(answers.replies[1], [.numbers([2026, 11, 1, 9, 30, 5, 250])])
         XCTAssertEqual(answers.replies[3], [.number(120)])
         XCTAssertEqual(answers.failures[4], "no time zone 'Nowhere/Else' is known")
     }

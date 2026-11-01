@@ -81,7 +81,7 @@ The scene, the window and the page an application is made of, the arrangements a
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Anchor](Anchor.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Application](Application.md) | 24 | 12 ✅ · 11 ✓ · 1 – | 14 ✅ · 10 ✓ | 12 ✅ · 11 ✓ · 1 – | 19 ✅ · 4 ✓ · 1 – | 16 ✅ · 6 ✓ · 1 – | 18 ✅ · 6 ✓ |
+| [Application](Application.md) | 23 | 11 ✅ · 11 ✓ · 1 – |  |  |  |  |  |
 | [BottomBar](BottomBar.md) | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
 | [ButtonMenu](ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -107,10 +107,10 @@ The scene, the window and the page an application is made of, the arrangements a
 | [ToolbarLabel](ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 111 | 117 | 96 | 142 | 103 | 172 |
-| ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
-| – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 215 | **193** | **203** | **192** | **203** | **198** | **202** |
+| ✅ |  | 110 | 103 | 84 | 123 | 87 | 154 |
+| ✓ |  | 27 | 15 | 13 | 5 | 16 | 8 |
+| – |  | 55 | 61 | 71 | 51 | 72 | 16 |
+| **Met** | 214 | **192** | **179** | **168** | **179** | **175** | **178** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- structure:end -->
 

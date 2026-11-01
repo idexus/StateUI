@@ -310,11 +310,8 @@ STATEUI_WEB(offer_drag) void stateui_web_offer_drag(
     int32_t listener);
 STATEUI_WEB(drag_words) int32_t stateui_web_drag_words(void);
 
-/// The local time of day into `into`: hour, minute, second, millisecond.
+/// The local day and time of day into `into`: year, month, day, hour, minute, second, millisecond.
 STATEUI_WEB(local_time) void stateui_web_local_time(double *into);
-
-/// The local time zone's name, read in two steps: its length in bytes, then `copy_read`.
-STATEUI_WEB(local_zone) int32_t stateui_web_local_zone(void);
 
 /// How far the zone named - the local one for none - is from UTC at noon on the day - now for a year of 0 - in
 /// minutes; NaN for a zone the browser does not know.

@@ -252,19 +252,19 @@ final class ActCallShapeTests: XCTestCase {
 
     func testAskingTheTimeCrossesWithItsArgumentsInPlace() async throws {
         try await check("currentTime", []) {
-            _ = try? await ClockTime.now()
+            _ = try? await StandardEnvironment.application.clock.now()
         }
     }
 
-    func testAskingTheZoneCrossesWithItsArgumentsInPlace() async throws {
-        try await check("currentTimeZone", []) {
-            _ = try? await TimeZoneInfo.local()
+    func testAskingTheDayCrossesAsTheTimeDoes() async throws {
+        try await check("currentTime", []) {
+            _ = try? await StandardEnvironment.application.clock.today()
         }
     }
 
     func testAskingForAnOffsetCrossesWithItsArgumentsInPlace() async throws {
         try await check("utcOffset", [.string("Europe/Warsaw"), .numbers([2026, 1, 15])]) {
-            _ = try? await TimeZoneInfo.utcOffset(
+            _ = try? await StandardEnvironment.application.clock.utcOffset(
                 of: "Europe/Warsaw",
                 on: CalendarDate(year: 2026, month: 1, day: 15))
         }
@@ -276,7 +276,7 @@ final class ActCallShapeTests: XCTestCase {
     /// loud, and this is the test that says it.
     func testAskingForAnOffsetWithNoDayCrossesWithItsArgumentsInPlace() async throws {
         try await check("utcOffset", [.string("Europe/Warsaw"), .nothing]) {
-            _ = try? await TimeZoneInfo.utcOffset(of: "Europe/Warsaw")
+            _ = try? await StandardEnvironment.application.clock.utcOffset(of: "Europe/Warsaw")
         }
     }
 

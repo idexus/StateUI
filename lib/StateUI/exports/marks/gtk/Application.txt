@@ -6,7 +6,6 @@ Application.cancelCall: ✅
 Application.chooseAction: ✅
 Application.confirm: ✅
 Application.currentTime: ✅
-Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
 Application.launchFile: ✓ read a file dialog: the dialog the host holds, which a test never shows

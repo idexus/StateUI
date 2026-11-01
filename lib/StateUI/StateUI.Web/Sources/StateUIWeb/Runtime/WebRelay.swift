@@ -537,14 +537,13 @@ enum WebRelay {
         }
     }
 
-    /// The local time of day.
-    static var localTime: (hour: Int, minute: Int, second: Int, millisecond: Int) {
-        let read = numbers(4) { stateui_web_local_time($0) }
-        return (Int(read[0]), Int(read[1]), Int(read[2]), Int(read[3]))
+    /// The local day and time of day.
+    static var localTime: LocalTime {
+        let read = numbers(7) { stateui_web_local_time($0) }.map { Int($0) }
+        return LocalTime(
+            year: read[0], month: read[1], day: read[2], hour: read[3], minute: read[4], second: read[5],
+            millisecond: read[6])
     }
-
-    /// The local time zone's name.
-    static var localZone: String { copyRead(length: stateui_web_local_zone()) }
 
     /// How far `zone` - the local one where nil - is from UTC at noon on `day` - now where nil - in minutes; nil
     /// for a zone the browser does not know.

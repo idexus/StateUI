@@ -19,12 +19,8 @@ final class WebActToolkit: ActToolkit {
 
     let host = "Web"
 
-    func localTime() -> (hour: Int, minute: Int, second: Int, millisecond: Int) {
+    func localTime() -> LocalTime {
         WebRelay.localTime
-    }
-
-    func localZone() -> String {
-        WebRelay.localZone
     }
 
     func utcOffset(of zone: String?, on day: CalendarDate?) -> Int? {

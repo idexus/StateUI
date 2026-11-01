@@ -151,7 +151,7 @@ final class UIKitEnvironmentTests: XCTestCase {
     func testTheLocaleReportedIsTheUsers() {
         let locale = StandardEnvironment.locale
         let before = HostLocaleInfo(
-            language: locale.language, region: locale.region, name: locale.name, timeZone: locale.timeZone,
+            language: locale.language, region: locale.region, name: locale.name, timeZone: locale.timeZone?.identifier ?? "",
             uses24HourClock: locale.uses24HourClock, firstDayOfWeek: locale.firstDayOfWeek,
             isMetric: locale.isMetric, layoutDirection: locale.layoutDirection)
         defer { HostBoundary.setLocaleInfo(before) }
@@ -162,7 +162,7 @@ final class UIKitEnvironmentTests: XCTestCase {
 
         XCTAssertEqual(locale.name, Locale.current.identifier(.bcp47))
         XCTAssertEqual(locale.language, Locale.current.language.languageCode?.identifier ?? "")
-        XCTAssertEqual(locale.timeZone, TimeZone.current.identifier)
+        XCTAssertEqual(locale.timeZone?.identifier, TimeZone.current.identifier)
         XCTAssertEqual(
             locale.layoutDirection,
             Locale.current.language.characterDirection == .rightToLeft ? .rightToLeft : .leftToRight)

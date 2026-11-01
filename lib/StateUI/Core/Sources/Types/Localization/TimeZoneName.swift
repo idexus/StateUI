@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// A time zone, by its IANA name: `"Europe/Warsaw"`. The host holds the zone database, so it is the host that
-/// knows a name's offsets (`TimeZoneInfo.utcOffset(of:on:)`).
+/// knows a name's offsets (`application.clock.utcOffset(of:on:)`).
 ///
 /// Design: docs/design/types/localization.md#three-choices
 public struct TimeZoneName: Hashable, Sendable, ExpressibleByStringLiteral, CustomStringConvertible {

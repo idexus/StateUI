@@ -6,7 +6,6 @@ Application.cancelCall: ✅
 Application.chooseAction: ✅
 Application.confirm: ✅
 Application.currentTime: ✅
-Application.currentTimeZone: ✅
 Application.handlerFailed: ✅
 Application.hideOnScreenKeyboard: ✅
 Application.launchFile: ✓ read what was launched: the host's own record of what it handed Windows, which a test holds back from launching

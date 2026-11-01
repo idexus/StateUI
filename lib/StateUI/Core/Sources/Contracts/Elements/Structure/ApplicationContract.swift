@@ -44,16 +44,11 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// See `WindowSession.confirm`.
     public static let confirm = ElementAct<Self, (Name, Name, String, String, String, String), Bool>("confirm")
 
-    /// The host's local time of day, as four numbers: hour, minute, second,
+    /// The host's local date and time of day, as seven numbers: year, month, day, hour, minute, second,
     /// millisecond.
     ///
-    /// See `ClockTime.now()`.
+    /// See `WallClock.now()` and `WallClock.today()`.
     public static let currentTime = ElementAct<Self, Void, [Double]>("currentTime")
-
-    /// The IANA identifier of the host's local time zone.
-    ///
-    /// See `TimeZoneInfo.local()`.
-    public static let currentTimeZone = ElementAct<Self, Void, String>("currentTimeZone")
 
     /// A handler's escaped error, reported to the host.
     public static let handlerFailed = ElementAct<Self, String, Void>("handlerFailed")
@@ -150,7 +145,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
     /// the local one where there is none, and the day, now where there is
     /// none.
     ///
-    /// See `TimeZoneInfo.utcOffset`.
+    /// See `WallClock.utcOffset(of:on:)`.
     public static let utcOffset = ElementAct<Self, (String?, CalendarDate?), Int>("utcOffset")
 
     /// Puts words on the system's clipboard, in place of whatever it held.
@@ -160,7 +155,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
 
     /// The element's own members.
     public static let members: [any ContractMember] = [
-        alert, announce, cancelCall, chooseAction, confirm, currentTime, currentTimeZone, handlerFailed,
+        alert, announce, cancelCall, chooseAction, confirm, currentTime, handlerFailed,
         hideOnScreenKeyboard, launchFile, launchLink, openFiles, persistSceneValue, persistValue, prompt,
         readClipboard, readFile, saveFile, sendRequest, share, useAccentColor, useColorScheme, utcOffset,
         writeClipboard,

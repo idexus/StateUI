@@ -407,7 +407,6 @@ WebView
   chooseAction()
   confirm()
   currentTime()
-  currentTimeZone()
   evaluateJavaScript()
   focus()
   goBack()

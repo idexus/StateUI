@@ -20,18 +20,14 @@ final class GTKActToolkit: ActToolkit {
 
     let host = "GTK"
 
-    func localTime() -> (hour: Int, minute: Int, second: Int, millisecond: Int) {
+    func localTime() -> LocalTime {
         let now = g_date_time_new_now_local()!
         defer { g_date_time_unref(now) }
-        return (
-            Int(g_date_time_get_hour(now)), Int(g_date_time_get_minute(now)), Int(g_date_time_get_second(now)),
-            Int(g_date_time_get_microsecond(now) / 1000))
-    }
-
-    func localZone() -> String {
-        let zone = g_time_zone_new_local()!
-        defer { g_time_zone_unref(zone) }
-        return String(cString: g_time_zone_get_identifier(zone))
+        return LocalTime(
+            year: Int(g_date_time_get_year(now)), month: Int(g_date_time_get_month(now)),
+            day: Int(g_date_time_get_day_of_month(now)), hour: Int(g_date_time_get_hour(now)),
+            minute: Int(g_date_time_get_minute(now)), second: Int(g_date_time_get_second(now)),
+            millisecond: Int(g_date_time_get_microsecond(now) / 1000))
     }
 
     /// Taken at the day's noon, or now where no day is given; nil for a zone GLib does not know, or no such day.

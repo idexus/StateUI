@@ -543,8 +543,8 @@ on every host.
   reason, so no caller waits on an act nobody performs; an act aimed at a view
   names it by its first argument. ([Acts](../design/host/runtime.md#acts))
 - **`HostActs`** lists the acts every host performs itself (`performed`): the
-  focus, the questions for the user, a word to a screen reader, the time and
-  the zones, the on-screen keyboard, a kept value, a handler's failure and the
+  focus, the questions for the user, a word to a screen reader, the day, the
+  time and the zones' offsets, the on-screen keyboard, a kept value, a handler's failure and the
   theme the application holds; and it reads and answers `currentTime` and
   `utcOffset`.
 - **`HostQuestion`** and **`QuestionQueue`** read a question for the user

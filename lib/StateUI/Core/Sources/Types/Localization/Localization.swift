@@ -70,10 +70,11 @@ public final class Localization<Catalog: LocalizationCatalog> {
         return Self.matching(Self.preferences(of: StandardEnvironment.locale)) ?? Catalog.defaultLanguage
     }
 
-    /// The zone in use, for the host's zone acts: `TimeZoneInfo.utcOffset(of: localization.resolvedTimeZone.identifier)`.
-    public var resolvedTimeZone: TimeZoneName {
+    /// The zone in use, for the clock's acts - `application.clock.utcOffset(of: localization.resolvedTimeZone)`: the
+    /// fixed one, else the user's; nil while the host has not said, which the clock reads as the user's own.
+    public var resolvedTimeZone: TimeZoneName? {
         if case .fixed(let zone) = timeZone { return zone }
-        return TimeZoneName(StandardEnvironment.locale.timeZone)
+        return StandardEnvironment.locale.timeZone
     }
 
     /// The same localization speaking `language`, for a part of the screen: one stable object for each language,

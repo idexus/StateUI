@@ -2130,6 +2130,7 @@ swift.conformance Walked: StateUI.LaneValue
 swift.conformance Walked: StateUI.StateValue
 swift.conformance Walked: Swift.Equatable
 swift.conformance Walked: Swift.Sendable
+swift.conformance WallClock: Swift.Sendable
 swift.conformance WebNavigated: Swift.Equatable
 swift.conformance WebNavigated: Swift.Sendable
 swift.conformance WebNavigation: Swift.Equatable
@@ -2375,7 +2376,6 @@ swift.enum TextSpansContract: enum TextSpansContract
 swift.enum TextStyle: enum TextStyle
 swift.enum TextualElementContract: enum TextualElementContract
 swift.enum TimePickerContract: enum TimePickerContract
-swift.enum TimeZoneInfo: enum TimeZoneInfo
 swift.enum TintElementContract: enum TintElementContract
 swift.enum TitleViewContract: enum TitleViewContract
 swift.enum ToolbarBuilder: @MainActor @resultBuilder enum ToolbarBuilder
@@ -2969,7 +2969,7 @@ swift.init LineJoin.init(rawValue:): init?(rawValue: Int32)
 swift.init Link.init(): @MainActor init()
 swift.init Link.init(_:destination:): @MainActor init(_ text: String, destination: Binding<String>)
 swift.init Link.init(_:destination:): @MainActor init(_ text: String, destination: String)
-swift.init LocaleInfo.init(language:region:name:timeZone:uses24HourClock:firstDayOfWeek:isMetric:layoutDirection:languages:): @MainActor init(language: String = "", region: String = "", name: String = "", timeZone: String = "", uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = [])
+swift.init LocaleInfo.init(language:region:name:timeZone:uses24HourClock:firstDayOfWeek:isMetric:layoutDirection:languages:): @MainActor init(language: String = "", region: String = "", name: String = "", timeZone: TimeZoneName? = nil, uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true, layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = [])
 swift.init LocaleTag.init(_:): init(_ text: String)
 swift.init LocaleTag.init(stringLiteral:): init(stringLiteral value: String)
 swift.init Localization.init(_:language:formatLocale:timeZone:): @MainActor init(_ catalog: Catalog.Type, language: LocaleChoice<Catalog.CatalogLanguage> = .system, formatLocale: LocaleChoice<LocaleTag> = .system, timeZone: LocaleChoice<TimeZoneName> = .system)
@@ -15361,6 +15361,9 @@ swift.method VisualElementProperties.translationX(_:): @MainActor func translati
 swift.method VisualElementProperties.translationY(_:): @MainActor func translationY(_ value: Double) -> Self.Modified
 swift.method VisualElementProperties.width(_:): @MainActor func width(_ value: Double) -> Self.Modified
 swift.method VisualElementProperties.zIndex(_:): @MainActor func zIndex(_ value: Int) -> Self.Modified
+swift.method WallClock.now(): @MainActor func now() async throws -> ClockTime
+swift.method WallClock.today(): @MainActor func today() async throws -> CalendarDate
+swift.method WallClock.utcOffset(of:on:): @MainActor func utcOffset(of zone: TimeZoneName? = nil, on date: CalendarDate? = nil) async throws -> Duration
 swift.method WebView.accessibilityAction(_:gate:perform:): @MainActor func accessibilityAction(_ name: String, gate: Gate, perform handler: @escaping EventHandler) -> Self.Modified
 swift.method WebView.accessibilityAction(_:perform:): @MainActor func accessibilityAction(_ name: String, perform handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method WebView.accessibilityAction(_:policy:perform:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, perform handler: @escaping EventHandler) -> Self.Modified
@@ -15912,6 +15915,7 @@ swift.property ApplicationInfo.packageName: @State @MainActor var packageName: S
 swift.property ApplicationInfo.versionString: @State @MainActor var versionString: String { get set }
 swift.property ApplicationSession.accentColor: @State @MainActor var accentColor: Color? { get set }
 swift.property ApplicationSession.clipboard: @MainActor var clipboard: Clipboard { get }
+swift.property ApplicationSession.clock: @MainActor var clock: WallClock { get }
 swift.property ApplicationSession.colorScheme: @State @MainActor var colorScheme: ColorScheme { get set }
 swift.property ApplicationSession.info: @MainActor let info: ApplicationInfo
 swift.property ApplicationSession.motion: @State @MainActor var motion: Motion { get set }
@@ -16156,7 +16160,7 @@ swift.property LocaleInfo.languages: @State @MainActor var languages: [LocaleTag
 swift.property LocaleInfo.layoutDirection: @State @MainActor var layoutDirection: LayoutDirection { get set }
 swift.property LocaleInfo.name: @State @MainActor var name: String { get set }
 swift.property LocaleInfo.region: @State @MainActor var region: String { get set }
-swift.property LocaleInfo.timeZone: @State @MainActor var timeZone: String { get set }
+swift.property LocaleInfo.timeZone: @State @MainActor var timeZone: TimeZoneName? { get set }
 swift.property LocaleInfo.uses24HourClock: @State @MainActor var uses24HourClock: Bool { get set }
 swift.property LocaleTag.description: var description: String { get }
 swift.property LocaleTag.direction: var direction: LayoutDirection { get }
@@ -16169,7 +16173,7 @@ swift.property LocaleTag.script: let script: String?
 swift.property Localization.formatLocale: @MainActor var formatLocale: LocaleChoice<LocaleTag> { get set }
 swift.property Localization.language: @MainActor var language: LocaleChoice<Catalog.CatalogLanguage> { get set }
 swift.property Localization.resolvedLanguage: @MainActor var resolvedLanguage: Catalog.CatalogLanguage { get }
-swift.property Localization.resolvedTimeZone: @MainActor var resolvedTimeZone: TimeZoneName { get }
+swift.property Localization.resolvedTimeZone: @MainActor var resolvedTimeZone: TimeZoneName? { get }
 swift.property Localization.timeZone: @MainActor var timeZone: LocaleChoice<TimeZoneName> { get set }
 swift.property Location.latitude: var latitude: Double
 swift.property Location.longitude: var longitude: Double
@@ -16650,6 +16654,7 @@ swift.struct ToolbarToggle: @MainActor struct ToolbarToggle
 swift.struct VStack: @MainActor struct VStack
 swift.struct ViewTransform: struct ViewTransform
 swift.struct VisualState: struct VisualState<Target>
+swift.struct WallClock: @MainActor struct WallClock
 swift.struct WebNavigated: struct WebNavigated
 swift.struct WebNavigation: struct WebNavigation
 swift.struct WebView: @MainActor struct WebView
@@ -16729,7 +16734,6 @@ swift.type.method CalendarDate.propValue(of:): static func propValue(of list: [S
 swift.type.method ChosenFile.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method ChosenFile.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method ClockTime.list(from:): static func list(from value: PropValue) -> [Self]?
-swift.type.method ClockTime.now(): static func now() async throws -> ClockTime
 swift.type.method ClockTime.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Color.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Color.propValue(of:): static func propValue(of list: [Self]) -> PropValue
@@ -16950,8 +16954,6 @@ swift.type.method TextSpanBuilder.buildExpression(_:): static func buildExpressi
 swift.type.method TextSpanBuilder.buildOptional(_:): static func buildOptional(_ component: [TextSpan]?) -> [TextSpan]
 swift.type.method TextStyle.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method TextStyle.propValue(of:): static func propValue(of list: [Self]) -> PropValue
-swift.type.method TimeZoneInfo.local(): static func local() async throws -> String
-swift.type.method TimeZoneInfo.utcOffset(of:on:): static func utcOffset(of zone: String? = nil, on date: CalendarDate? = nil) async throws -> Duration
 swift.type.method ToolbarBuilder.buildBlock(_:): @MainActor static func buildBlock(_ components: ToolbarContent...) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildEither(first:): @MainActor static func buildEither(first component: ToolbarContent) -> ToolbarContent
 swift.type.method ToolbarBuilder.buildEither(second:): @MainActor static func buildEither(second component: ToolbarContent) -> ToolbarContent
@@ -17039,7 +17041,6 @@ swift.type.property ApplicationContract.cancelCall: static let cancelCall: Eleme
 swift.type.property ApplicationContract.chooseAction: static let chooseAction: ElementAct<ApplicationContract, (Name, Name, String, [String], Int?, String), Int?>
 swift.type.property ApplicationContract.confirm: static let confirm: ElementAct<ApplicationContract, (Name, Name, String, String, String, String), Bool>
 swift.type.property ApplicationContract.currentTime: static let currentTime: ElementAct<ApplicationContract, Void, [Double]>
-swift.type.property ApplicationContract.currentTimeZone: static let currentTimeZone: ElementAct<ApplicationContract, Void, String>
 swift.type.property ApplicationContract.handlerFailed: static let handlerFailed: ElementAct<ApplicationContract, String, Void>
 swift.type.property ApplicationContract.hideOnScreenKeyboard: static let hideOnScreenKeyboard: ElementAct<ApplicationContract, (Name, Name), Bool>
 swift.type.property ApplicationContract.launchFile: static let launchFile: ElementAct<ApplicationContract, ChosenFile, Bool>

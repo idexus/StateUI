@@ -30,13 +30,12 @@ final class AppKitActToolkit: ActToolkit {
 
     let host = "AppKit"
 
-    func localTime() -> (hour: Int, minute: Int, second: Int, millisecond: Int) {
-        let now = Calendar.current.dateComponents([.hour, .minute, .second, .nanosecond], from: Date())
-        return (now.hour ?? 0, now.minute ?? 0, now.second ?? 0, (now.nanosecond ?? 0) / 1_000_000)
-    }
-
-    func localZone() -> String {
-        TimeZone.current.identifier
+    func localTime() -> LocalTime {
+        let now = Calendar.current.dateComponents(
+            [.year, .month, .day, .hour, .minute, .second, .nanosecond], from: Date())
+        return LocalTime(
+            year: now.year ?? 0, month: now.month ?? 0, day: now.day ?? 0, hour: now.hour ?? 0,
+            minute: now.minute ?? 0, second: now.second ?? 0, millisecond: (now.nanosecond ?? 0) / 1_000_000)
     }
 
     func utcOffset(of name: String?, on day: CalendarDate?) -> Int? {

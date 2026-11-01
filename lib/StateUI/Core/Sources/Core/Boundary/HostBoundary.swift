@@ -101,7 +101,7 @@
         update(locale, \.language, info.language)
         update(locale, \.region, info.region)
         update(locale, \.name, info.name)
-        update(locale, \.timeZone, info.timeZone)
+        update(locale, \.timeZone, info.timeZone.isEmpty ? nil : TimeZoneName(info.timeZone))
         update(locale, \.uses24HourClock, info.uses24HourClock)
         update(locale, \.firstDayOfWeek, info.firstDayOfWeek)
         update(locale, \.isMetric, info.isMetric)

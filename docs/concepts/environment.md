@@ -179,7 +179,7 @@ struct RuntimeSummary: View {
             Text("StateUI \(stateUIVersion()) for \(stateUIPlatform())")
             Text("\(device.info.platform) · \(device.info.formFactor)")
             Text("\(Int(device.display.width / max(device.display.density, 1))) points wide")
-            Text("\(locale.language)-\(locale.region) · \(locale.timeZone)")
+            Text("\(locale.language)-\(locale.region) · \(locale.timeZone?.identifier ?? "no zone said")")
         }
     }
 }
@@ -294,40 +294,46 @@ not validate whether the components form a real calendar day or normalized
 time. Validate authored or external data before handing it to a native picker.
 
 A `ClockTime` carried through a picker uses hour, minute, and second. The
-millisecond is retained by direct values such as `ClockTime.now()`, but a picker
+millisecond is retained by direct values such as `application.clock.now()`, but a picker
 does not display or report it.
 
 ## Host clock and time zones
 
-Portable local-time questions are host acts because the host owns the active
-clock, locale, and zone database:
+The zone the user is in is a fact of the locale, `locale.timeZone` - an IANA
+name the host keeps, nil until it has said. The clock is the application's,
+`application.clock`: its acts ask the host, which owns the clock and the zone
+database, so the answer is the same on every platform:
 
 ```swift
-let zone = try await TimeZoneInfo.local()
-let now = try await ClockTime.now()
-let localOffset = try await TimeZoneInfo.utcOffset()
-let winterOffset = try await TimeZoneInfo.utcOffset(
-    of: zone,
-    on: CalendarDate(year: 2027, month: 1, day: 15))
+struct WorldClock: View {
+    @Environment(\.application) private var application
+    @Environment(\.locale) private var locale
+    @State private var said = ""
 
-Text("\(zone) · \(now.text) · \(localOffset.components.seconds) seconds from UTC")
-Text("Winter: \(winterOffset.components.seconds) seconds from UTC")
+    var body: some View {
+        Text(said).onCreated {
+            let today = try await application.clock.today()
+            let now = try await application.clock.now()
+            let here = try await application.clock.utcOffset()
+            let winter = try await application.clock.utcOffset(
+                of: locale.timeZone, on: CalendarDate(year: 2027, month: 1, day: 15))
+            said = "\(today.text) \(now.text) · \(here.components.seconds) seconds from UTC, "
+                + "\(winter.components.seconds) in winter"
+        }
+    }
+}
 ```
 
-`TimeZoneInfo.local()` returns an IANA identifier. `utcOffset(of:on:)`
-returns a Swift `Duration`, negative west of UTC; omit the zone for the local
-zone and omit the date for the offset in effect now. Supplying a date makes
-daylight-saving differences explicit. Offset transport uses signed minutes, so
-half-hour and quarter-hour zones need no special representation.
+`utcOffset(of:on:)` returns a Swift `Duration`, negative west of UTC; omit the
+zone for the user's own and omit the day for the offset in effect now.
+Supplying a day makes daylight-saving differences explicit. Offset transport
+uses signed minutes, so half-hour and quarter-hour zones need no special
+representation.
 
 These calls throw when the host does not implement the act or returns a value
 of the wrong shape. Treat the active host's checked support as part of the
 platform contract rather than replacing a failed clock answer with guessed
 locale data.
-
-`LocaleInfo.timeZone` is the host's last reported zone and is useful for
-reactive display or branching. `TimeZoneInfo.local()` is an explicit fresh
-question for work that already runs asynchronously.
 
 ## Foundation boundary
 
@@ -348,8 +354,7 @@ Keep portable interface decisions on StateUI's host-normalized boundary:
   and IANA zone;
 - use `Localization` for words, messages and formats in the user's language
   ([Localization](localization.md)), written in Swift on every platform;
-- use `ClockTime.now()` and `TimeZoneInfo` for portable local-clock and offset
-  questions;
+- use `application.clock` for portable local-clock and offset questions;
 - use `CalendarDate` and `ClockTime` at control and state boundaries;
 - use `Task.sleep` or `Ticker` for application timing, not Foundation
   `Timer` or `RunLoop`;

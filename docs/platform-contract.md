@@ -92,7 +92,7 @@ of its members each meets, and why a cell is empty.
 | Element | Layer | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Anchor](controls/Anchor.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Application](controls/Application.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| [Application](controls/Application.md) | structure | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
 | [BottomBar](controls/BottomBar.md) | adaptive | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [Button](controls/Button.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ButtonMenu](controls/ButtonMenu.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -325,14 +325,14 @@ say what each host supplies.
 ## Host acts
 
 An act is what the application asks a host to do rather than describes: ask
-the user a question or for a file, launch an address, read the clock or the
-time zone, keep a value, take a web view back or move a map. An act of the
+the user a question or for a file, launch an address, read the clock or a
+zone's offset, keep a value, take a web view back or move a map. An act of the
 application's contract aims at nothing; an element's act aims at one element
 of its kind. Calendar values are
-portable StateUI values; reading the current clock or time zone is a host act
-because the host owns the active locale and zone database - `currentTime` is
-`ClockTime.now()`, `currentTimeZone` is `TimeZoneInfo.local()`, and `utcOffset`
-is `TimeZoneInfo.utcOffset(of:on:)`. The table names each act; its marks are
+portable StateUI values; reading the clock or a zone's offset is a host act
+because the host owns the clock and the zone database - `currentTime` is
+`application.clock.now()` and `.today()`, and `utcOffset` is
+`application.clock.utcOffset(of:on:)`. The table names each act; its marks are
 on the page of its element - a tier's act on the page of each element wearing
 the tier.
 
@@ -347,7 +347,6 @@ the tier.
 | `chooseAction` | [Application](controls/Application.md) |
 | `confirm` | [Application](controls/Application.md) |
 | `currentTime` | [Application](controls/Application.md) |
-| `currentTimeZone` | [Application](controls/Application.md) |
 | `handlerFailed` | [Application](controls/Application.md) |
 | `hideOnScreenKeyboard` | [Application](controls/Application.md) |
 | `launchFile` | [Application](controls/Application.md) |
@@ -526,7 +525,7 @@ Every control, and every part an application, its windows and its pages are made
 | Part | Members | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | ---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | [Anchor](controls/Anchor.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Application](controls/Application.md) | 24 | 12 ✅ · 11 ✓ · 1 – | 14 ✅ · 10 ✓ | 12 ✅ · 11 ✓ · 1 – | 19 ✅ · 4 ✓ · 1 – | 16 ✅ · 6 ✓ · 1 – | 18 ✅ · 6 ✓ |
+| [Application](controls/Application.md) | 23 | 11 ✅ · 11 ✓ · 1 – |  |  |  |  |  |
 | [BottomBar](controls/BottomBar.md) | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
 | [ButtonMenu](controls/ButtonMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ContextMenu](controls/ContextMenu.md) | 0 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -552,10 +551,10 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarLabel](controls/ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
 | [Window](controls/Window.md) | 22 | 14 ✅ · 1 ☑️ · 6 ✓ | 3 ✅ · 1 ☑️ · 4 ✓ · 8 – | 3 ✅ · 1 ☑️ · 4 ✓ · 12 – | 21 ✅ · 1 ☑️ | 8 ✅ · 7 ✓ · 7 – | 3 ✅ · 1 ☑️ · 4 ✓ · 14 – |
-| ✅ |  | 111 | 117 | 96 | 142 | 103 | 172 |
-| ✓ |  | 27 | 25 | 24 | 9 | 22 | 14 |
-| – |  | 55 | 61 | 72 | 52 | 73 | 16 |
-| **Met** | 215 | **193** | **203** | **192** | **203** | **198** | **202** |
+| ✅ |  | 110 | 103 | 84 | 123 | 87 | 154 |
+| ✓ |  | 27 | 15 | 13 | 5 | 16 | 8 |
+| – |  | 55 | 61 | 71 | 51 | 72 | 16 |
+| **Met** | 214 | **192** | **179** | **168** | **179** | **175** | **178** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -752,10 +751,9 @@ realizes the element and each of its members.
 ### Acts
 
 `alert`, `announce`, `cancelCall`, `chooseAction`, `confirm`, `currentTime`,
-`currentTimeZone`, `evaluateJavaScript`, `focus`, `goBack`, `goForward`,
-`handlerFailed`, `hideOnScreenKeyboard`, `launchFile`, `launchLink`,
-`moveToRegion`, `openFiles`, `persistSceneValue`, `persistValue`, `prompt`,
-`readClipboard`, `readFile`, `reload`, `saveFile`, `scrollTo`, `sendRequest`,
-`share`, `unfocus`, `useAccentColor`, `useColorScheme`, `utcOffset`,
-`writeClipboard`.
+`evaluateJavaScript`, `focus`, `goBack`, `goForward`, `handlerFailed`,
+`hideOnScreenKeyboard`, `launchFile`, `launchLink`, `moveToRegion`, `openFiles`,
+`persistSceneValue`, `persistValue`, `prompt`, `readClipboard`, `readFile`,
+`reload`, `saveFile`, `scrollTo`, `sendRequest`, `share`, `unfocus`,
+`useAccentColor`, `useColorScheme`, `utcOffset`, `writeClipboard`.
 <!-- vocabulary:end -->

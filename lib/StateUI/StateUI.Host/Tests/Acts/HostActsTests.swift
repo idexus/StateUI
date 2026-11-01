@@ -9,10 +9,12 @@ import XCTest
 /// the lines a host's log writes.
 @MainActor
 final class HostActsTests: XCTestCase {
-    /// The time of day is four numbers; a zone's distance from UTC is asked of a zone and a day, answered in
-    /// minutes, and a zone nobody knows fails with its name.
+    /// The local day and time of day are seven numbers; a zone's distance from UTC is asked of a zone and a day,
+    /// answered in minutes, and a zone nobody knows fails with its name.
     func testTheTimeIsAskedAndAnsweredAlike() {
-        XCTAssertEqual(HostActs.currentTime(hour: 9, minute: 5, second: 30, millisecond: 250), [.numbers([9, 5, 30, 250])])
+        XCTAssertEqual(
+            HostActs.currentTime(LocalTime(year: 2026, month: 7, day: 1, hour: 9, minute: 5, second: 30, millisecond: 250)),
+            [.numbers([2026, 7, 1, 9, 5, 30, 250])])
         let asked = HostActs.utcOffsetQuestion(HostActCall(
             act: .utcOffset, arguments: [.string("Europe/Warsaw"), CalendarDate(year: 2026, month: 7, day: 1).propValue],
             completion: 1))

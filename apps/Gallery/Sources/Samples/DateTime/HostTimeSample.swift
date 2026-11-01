@@ -3,7 +3,9 @@ import StateUI
 /// The library's own way to tell the time: acts, not Foundation.
 struct HostTimeSample: SampleContent, ExampleContent {
     // listing: HostTimeSample
-    @State private var zone = ""
+    @Environment(\.application) private var application
+    @Environment(\.locale) private var locale
+    @State private var today = ""
     @State private var clocks: [(String, String)] = []
     @State private var season = ""
 
@@ -27,7 +29,7 @@ struct HostTimeSample: SampleContent, ExampleContent {
             // closure again.
             DebugInfoLabel()
 
-            Text("Here: \(zone.isEmpty ? "…" : zone)")
+            Text("Here: \(locale.timeZone?.identifier ?? "…") \(today)")
                 .fontSize(17)
                 .fontWeight(.bold)
 
@@ -61,10 +63,10 @@ struct HostTimeSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("Every line above crossed the boundary as an act - `ClockTime.now()`, "
-                + "`TimeZoneInfo.local()`, `TimeZoneInfo.utcOffset` - and came back as "
-                + "a zone's name, a `ClockTime` and a `Duration`. No Foundation is "
-                + "involved: the host answers, the same way on every platform.")
+            Text("The zone is the locale's - `locale.timeZone` - and every time and offset above is "
+                + "the platform's clock answering - `application.clock.now()`, `.today()`, "
+                + "`.utcOffset(of:on:)` - as a `ClockTime`, a `CalendarDate` and a `Duration`, "
+                + "the same way on every platform.")
                 .fontSize(12)
                 .textColor(Palette.subtle)
 
@@ -78,20 +80,21 @@ struct HostTimeSample: SampleContent, ExampleContent {
     }
 
     // listing: HostTimeSample
-    /// One reading: the zone, the host's clock, and each city seen from it.
+    /// One reading: the host's clock, and each city seen from the user's zone.
     private func read() async throws {
-        zone = try await TimeZoneInfo.local()
+        let clock = application.clock
+        today = try await clock.today().text
 
-        let now = try await ClockTime.now()
-        let here = try await TimeZoneInfo.utcOffset()
-        let winter = try await TimeZoneInfo.utcOffset(
+        let now = try await clock.now()
+        let here = try await clock.utcOffset()
+        let winter = try await clock.utcOffset(
             on: CalendarDate(year: 2026, month: 1, day: 15))
 
         season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter))"
 
         var found: [(String, String)] = []
         for city in Self.cities {
-            let there = try await TimeZoneInfo.utcOffset(of: city)
+            let there = try await clock.utcOffset(of: TimeZoneName(city))
             found.append((city, "\(shifted(now, by: there - here).text)  \(offsetText(there))"))
         }
 

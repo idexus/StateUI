@@ -1414,11 +1414,8 @@ void stateui_winui_automation_facts(StateUIObjectRef element, int32_t *facts);
 /// How many canvases WinUI holds - what a test counts to see every one let go.
 int32_t stateui_winui_canvases(void);
 
-/// The local time of day: hour, minute, second and millisecond, into `time`.
+/// The local day and time of day: year, month, day, hour, minute, second and millisecond, into `time`.
 void stateui_winui_clock(int32_t *time);
-
-/// The IANA identifier of the local time zone, in UTF-8, as far as `capacity` goes; answers its whole length.
-int32_t stateui_winui_time_zone(char *utf8, int32_t capacity);
 
 /// How far `zone` - an IANA identifier, the local zone for null - stands from UTC on a day, in minutes; year 0
 /// for now. Answers false for a zone ICU does not know.

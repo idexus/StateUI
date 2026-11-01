@@ -448,7 +448,6 @@ ZStack
   chooseAction()
   confirm()
   currentTime()
-  currentTimeZone()
   focus()
   handlerFailed()
   hideOnScreenKeyboard()

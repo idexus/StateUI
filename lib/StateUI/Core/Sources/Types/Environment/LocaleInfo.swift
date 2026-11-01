@@ -19,9 +19,9 @@ public final class LocaleInfo {
     /// `["pl-PL", "en-GB"]`. Empty where the host gives only `language`.
     @State public internal(set) var languages: [LocaleTag] = []
 
-    /// The current zone's IANA identifier, such as "Europe/Warsaw". The host
-    /// normalizes its native identifier; empty means it has not said.
-    @State public internal(set) var timeZone = ""
+    /// The zone the user is in, such as "Europe/Warsaw" - the host normalizes its native name to the IANA one; nil
+    /// until the host has said. `application.clock` answers its distance from UTC.
+    @State public internal(set) var timeZone: TimeZoneName?
 
     /// Whether the locale writes times as 14:30 rather than 2:30 PM.
     @State public internal(set) var uses24HourClock = false
@@ -39,7 +39,7 @@ public final class LocaleInfo {
     /// A locale as a test or a preview fakes it, for one branch with `.environment(...)`; what is not said starts as a
     /// headless host's does.
     public init(
-        language: String = "", region: String = "", name: String = "", timeZone: String = "",
+        language: String = "", region: String = "", name: String = "", timeZone: TimeZoneName? = nil,
         uses24HourClock: Bool = false, firstDayOfWeek: Weekday = .sunday, isMetric: Bool = true,
         layoutDirection: LayoutDirection = .leftToRight, languages: [LocaleTag] = []
     ) {

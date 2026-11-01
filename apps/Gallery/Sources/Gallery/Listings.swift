@@ -144,6 +144,7 @@ enum Listings {
         """#,
         "AnalogClockSample": #"""
         // Sources/Samples/Animation/AnalogClockSample.swift
+        @Environment(\.application) private var application
         @State private var ticking = false
 
         /// Whether the first reading of this visit has SET the clock. Traveling
@@ -232,7 +233,7 @@ enum Listings {
 
                 while ticking && visit == mine {
                     let lap = ContinuousClock.now
-                    let time = try await ClockTime.now()
+                    let time = try await application.clock.now()
 
                     // Where each hand should POINT, within one turn.
                     let second = Double(time.second) * 6
@@ -3496,6 +3497,8 @@ enum Listings {
         import Android
         #endif
 
+        @Environment(\.locale) private var locale
+        @Environment(\.application) private var application
         @State private var rows: [(String, String)] = []
 
         var body: some View {
@@ -3513,7 +3516,7 @@ enum Listings {
                 }
             }
             .onCreated {
-                let hostZone = try await TimeZoneInfo.local()
+                let hostZone = locale.timeZone?.identifier ?? ""
 
                 #if canImport(Android)
                 // Android's tz database is packed in a format Foundation cannot
@@ -3525,7 +3528,7 @@ enum Listings {
                 #endif
 
                 var found: [(String, String)] = []
-                found.append(("Host TimeZoneInfo.local()", hostZone))
+                found.append(("Host locale.timeZone", hostZone))
 
                 let now = Date()
                 let zone = TimeZone.current
@@ -3540,8 +3543,8 @@ enum Listings {
                     "\(parts.year ?? 0)-\(pad(parts.month))-\(pad(parts.day)) "
                     + "\(pad(parts.hour)):\(pad(parts.minute)):\(pad(parts.second))"))
 
-                let host = try await ClockTime.now()
-                found.append(("Host ClockTime.now()", host.text))
+                let host = try await application.clock.now()
+                found.append(("Host application.clock.now()", host.text))
 
                 found.append(("ISO8601Format", now.ISO8601Format()))
 
@@ -5018,7 +5021,9 @@ enum Listings {
         """#,
         "HostTimeSample": #"""
         // Sources/Samples/DateTime/HostTimeSample.swift
-        @State private var zone = ""
+        @Environment(\.application) private var application
+        @Environment(\.locale) private var locale
+        @State private var today = ""
         @State private var clocks: [(String, String)] = []
         @State private var season = ""
 
@@ -5035,7 +5040,7 @@ enum Listings {
                 // closure again.
                 DebugInfoLabel()
 
-                Text("Here: \(zone.isEmpty ? "…" : zone)")
+                Text("Here: \(locale.timeZone?.identifier ?? "…") \(today)")
                     .fontWeight(.bold)
 
                 Text(season)
@@ -5057,20 +5062,21 @@ enum Listings {
             .onCreated { try await read() }
         }
 
-        /// One reading: the zone, the host's clock, and each city seen from it.
+        /// One reading: the host's clock, and each city seen from the user's zone.
         private func read() async throws {
-            zone = try await TimeZoneInfo.local()
+            let clock = application.clock
+            today = try await clock.today().text
 
-            let now = try await ClockTime.now()
-            let here = try await TimeZoneInfo.utcOffset()
-            let winter = try await TimeZoneInfo.utcOffset(
+            let now = try await clock.now()
+            let here = try await clock.utcOffset()
+            let winter = try await clock.utcOffset(
                 on: CalendarDate(year: 2026, month: 1, day: 15))
 
             season = "Offset now \(offsetText(here)), on 15 January \(offsetText(winter))"
 
             var found: [(String, String)] = []
             for city in Self.cities {
-                let there = try await TimeZoneInfo.utcOffset(of: city)
+                let there = try await clock.utcOffset(of: TimeZoneName(city))
                 found.append((city, "\(shifted(now, by: there - here).text)  \(offsetText(there))"))
             }
 
@@ -6595,7 +6601,7 @@ enum Listings {
 
                 Text("language · \(locale.language)")
                 Text("region · \(locale.region.isEmpty ? "none" : locale.region)")
-                Text("zone · \(locale.timeZone)")
+                Text("zone · \(locale.timeZone?.identifier ?? "not said")")
                 Text("clock · \(locale.uses24HourClock ? "24-hour" : "12-hour")")
                 Text("week starts · \(locale.firstDayOfWeek)")
                 Text(locale.isMetric ? "metric" : "not metric")

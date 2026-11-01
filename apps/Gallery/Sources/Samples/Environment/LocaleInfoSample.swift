@@ -30,7 +30,7 @@ struct LocaleInfoSample: SampleContent, ExampleContent {
                 .fontSize(15)
             Text("region · \(locale.region.isEmpty ? "none" : locale.region)")
                 .fontSize(15)
-            Text("zone · \(locale.timeZone)")
+            Text("zone · \(locale.timeZone?.identifier ?? "not said")")
                 .fontSize(15)
             Text("clock · \(locale.uses24HourClock ? "24-hour" : "12-hour")")
                 .fontSize(15)

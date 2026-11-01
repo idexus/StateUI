@@ -19,6 +19,8 @@ import Android
 // the handler are the fix; on Windows the host's rows are the answer.
 struct FoundationProbeSample: SampleContent, ExampleContent {
     // listing: FoundationProbeSample
+    @Environment(\.locale) private var locale
+    @Environment(\.application) private var application
     @State private var rows: [(String, String)] = []
     // listing: end
 
@@ -48,7 +50,7 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
         }
         .spacing(10)
         .onCreated {
-            let hostZone = try await TimeZoneInfo.local()
+            let hostZone = locale.timeZone?.identifier ?? ""
 
             #if canImport(Android)
             // Android's tz database is packed in a format Foundation cannot
@@ -60,7 +62,7 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
             #endif
 
             var found: [(String, String)] = []
-            found.append(("Host TimeZoneInfo.local()", hostZone))
+            found.append(("Host locale.timeZone", hostZone))
 
             let now = Date()
             let zone = TimeZone.current
@@ -75,8 +77,8 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
                 "\(parts.year ?? 0)-\(pad(parts.month))-\(pad(parts.day)) "
                 + "\(pad(parts.hour)):\(pad(parts.minute)):\(pad(parts.second))"))
 
-            let host = try await ClockTime.now()
-            found.append(("Host ClockTime.now()", host.text))
+            let host = try await application.clock.now()
+            found.append(("Host application.clock.now()", host.text))
 
             found.append(("ISO8601Format", now.ISO8601Format()))
 
@@ -128,7 +130,7 @@ struct FoundationProbeSample: SampleContent, ExampleContent {
 
             Text("Android cannot detect the current zone - its tz database is packed "
                 + "in a format Foundation does not read, so TimeZone.current starts as "
-                + "GMT. The host knows the zone, so the handler asks it and sets TZ "
+                + "GMT. The host knows the zone, so the handler reads it from the locale and sets TZ "
                 + "before Foundation first looks. Every row that reads the current zone "
                 + "depends on that one line.")
                 .fontSize(12)

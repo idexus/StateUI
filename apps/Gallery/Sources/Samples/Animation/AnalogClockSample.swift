@@ -4,6 +4,7 @@ import StateUI
 @MainActor
 struct AnalogClockSample: SampleContent, ExampleContent {
     // listing: AnalogClockSample
+    @Environment(\.application) private var application
     @State private var ticking = false
 
     /// Whether the first reading of this visit has SET the clock. Traveling
@@ -104,7 +105,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
             while ticking && visit == mine {
                 let lap = ContinuousClock.now
-                let time = try await ClockTime.now()
+                let time = try await application.clock.now()
 
                 // Where each hand should POINT, within one turn.
                 let second = Double(time.second) * 6
@@ -165,7 +166,7 @@ struct AnalogClockSample: SampleContent, ExampleContent {
 
     var notes: (any View)? {
         VStack {
-            Text("The time comes from the platform - `ClockTime.now()` - and the wait is "
+            Text("The time comes from the platform - `application.clock.now()` - and the wait is "
                 + "plain `Task.sleep`, which resumes on time on every platform. Every tick "
                 + "sleeps to the NEXT whole second rather than for a fixed while - the "
                 + "reading carries milliseconds, so each tick lands just past a "

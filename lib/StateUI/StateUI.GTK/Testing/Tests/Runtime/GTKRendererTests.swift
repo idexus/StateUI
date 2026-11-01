@@ -266,7 +266,7 @@ private struct MachinePage: View {
     @Environment(\.device) private var device
 
     var body: some View {
-        Text("\(locale.name) \(locale.timeZone) \(device.battery.state) \(device.connectivity.networkAccess)")
+        Text("\(locale.name) \(locale.timeZone?.identifier ?? "") \(device.battery.state) \(device.connectivity.networkAccess)")
     }
 }
 

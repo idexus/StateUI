@@ -58,10 +58,13 @@ becoming a silent midnight.
 ## The clock is an act
 
 Reading a clock is the platform's business, and the core has none of its
-own: Foundation's calendar machinery arrives with ICU. `ClockTime.now()` is
-an act the host answers with the local time as four numbers - hour, minute,
-second, millisecond - with nothing formatted or parsed. The millisecond lets
-a clock sleep to the next whole second instead of drifting past it.
+own: Foundation's calendar machinery arrives with ICU. The application's
+`clock` asks the host: one act answers the local day and time of day as seven
+numbers - year, month, day, hour, minute, second, millisecond - with nothing
+formatted or parsed, and `now()` and `today()` each read their part of it. The
+millisecond lets a clock sleep to the next whole second instead of drifting
+past it. The clock is a part of the application's session, as the clipboard
+is: an act belongs to a session, never to a type's static namespace.
 
 ## Time zones come from the host
 
@@ -72,12 +75,14 @@ read, so `TimeZone.current` comes up GMT, while a named zone resolves from
 ICU's own copy. Windows links only FoundationEssentials, which carries no
 zone database, so a named zone is nil there and nothing sets it.
 
-`TimeZoneInfo` asks the host instead, so a zone reached through it is the
-same answer everywhere, the way `ClockTime.now()` is the same clock
-everywhere. The Gallery's Foundation probe sample shows each platform's
-answers side by side. On Android, an application that wants Foundation's own
-zones sets `TZ` to `TimeZoneInfo.local()` before its first `TimeZone` use,
-since the variable is read ahead of any detection.
+StateUI asks the host instead: the user's zone is a fact of the locale,
+`locale.timeZone`, which the host reports as it reports the language, and a
+zone's distance from UTC is the clock's act, so either is the same answer
+everywhere, the way `application.clock.now()` is the same clock everywhere. The
+Gallery's Foundation probe sample shows each platform's answers side by side.
+On Android, an application that wants Foundation's own zones sets `TZ` to
+`locale.timeZone` before its first `TimeZone` use, since the variable is read
+ahead of any detection.
 
 ## An offset on a day
 

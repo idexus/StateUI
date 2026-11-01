@@ -24,9 +24,8 @@ contract declares them.
   launchLink             application.launch         answers whether an application took the address
   announce               application.announce       the screen reader says a text
   hideOnScreenKeyboard   window.hideOnScreenKeyboard()  answers whether a view held the focus
-  currentTime            ClockTime.now()            hour, minute, second, millisecond
-  currentTimeZone        TimeZoneInfo.local()       an IANA identifier
-  utcOffset              TimeZoneInfo.utcOffset     minutes, for a zone and a day
+  currentTime            application.clock.now(), .today()  year, month, day, hour, minute, second, millisecond
+  utcOffset              application.clock.utcOffset  minutes, for a zone and a day
   persistValue           a kept state's write       a key's new value, to its store
   persistSceneValue      a scene state's write      a scene key's new value, to the platform's scene record
   useColorScheme         application.colorScheme    the theme the application shows in

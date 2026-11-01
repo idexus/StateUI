@@ -107,7 +107,7 @@ final class HostEnvironmentTests: XCTestCase {
         StandardEnvironment.locale.language = ""
         StandardEnvironment.locale.region = ""
         StandardEnvironment.locale.name = ""
-        StandardEnvironment.locale.timeZone = ""
+        StandardEnvironment.locale.timeZone = nil
         StandardEnvironment.locale.uses24HourClock = false
         StandardEnvironment.locale.firstDayOfWeek = .sunday
         StandardEnvironment.locale.isMetric = true
@@ -286,6 +286,11 @@ final class HostEnvironmentTests: XCTestCase {
         XCTAssertEqual(StandardEnvironment.locale.region, "PL")
         XCTAssertEqual(StandardEnvironment.locale.name, "pl-PL")
         XCTAssertEqual(StandardEnvironment.locale.timeZone, "Europe/Warsaw")
+
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: "pl", region: "PL", name: "pl-PL", timeZone: "",
+            uses24HourClock: true, firstDayOfWeek: .monday, isMetric: true, layoutDirection: .rightToLeft))
+        XCTAssertNil(StandardEnvironment.locale.timeZone, "a zone the host has not said is none, never an empty name")
         XCTAssertTrue(StandardEnvironment.locale.uses24HourClock)
         XCTAssertEqual(StandardEnvironment.locale.firstDayOfWeek, .monday)
         XCTAssertTrue(StandardEnvironment.locale.isMetric)
