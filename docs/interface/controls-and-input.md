@@ -432,7 +432,7 @@ says how far along measurable work is:
 @State var done = 3.0
 
 VStack {
-    Spinner(loading)
+    Spinner($loading)
         .height(48)
 
     Switch($loading)
@@ -449,13 +449,13 @@ VStack {
 ```
 
 `isAnimating`, the spinner's one property, says whether it turns. A still
-spinner is invisible on most platforms, so `Spinner(loading)` shows it only
+spinner is invisible on most platforms, so `Spinner($loading)` shows it only
 while the work runs. `progress` is a fraction from 0 to 1, not a
 percentage or a count: work counted in steps divides by their total itself, and
 the host clamps a value outside that range. The initializer's argument is the
 same property as the modifier: `ProgressBar().progress(0.4)` sets what
-`ProgressBar(0.4)` sets, `.progress($done)` carries a state the host animates
-to each new value, and `.isAnimating($loading)` one it sets as it stands. Both
+`ProgressBar(0.4)` sets, `ProgressBar($done)` carries a state the host animates
+to each new value, and `Spinner($loading)` one it sets as it stands. Both
 take `.tint`. Nothing about either is the user's to change, so neither reports
 anything back.
 

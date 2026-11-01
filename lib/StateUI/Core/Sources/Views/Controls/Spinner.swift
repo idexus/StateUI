@@ -17,7 +17,7 @@ extension SpinnerProperties {
 ///
 ///     @State private var loading = false
 ///     …
-///     Spinner(loading)
+///     Spinner($loading)
 ///         .tint(.firebrick)
 ///
 /// For work whose progress can be measured, use a `ProgressBar`: a spinner
@@ -36,6 +36,14 @@ public struct Spinner: ElementView, TintElement, SpinnerProperties {
     public init(_ isAnimating: Bool) {
         node = Node(contract: SpinnerContract.self)
         node.write(SpinnerContract.isAnimating, isAnimating)
+    }
+
+    /// A spinner turning while `state` is true: the host sets each new value as it stands, and no view is rebuilt
+    /// for it.
+    ///
+    ///     Spinner($loading)
+    public init(_ state: Binding<Bool>) {
+        self = Spinner().isAnimating(state)
     }
 }
 

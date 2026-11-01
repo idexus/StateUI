@@ -515,6 +515,10 @@ final class DrivenPatchTests: XCTestCase {
              Switch().isOn(flag.projectedValue).node, "Switch.isOn")
         same(CheckBox(flag.projectedValue).node,
              CheckBox().isOn(flag.projectedValue).node, "CheckBox.isOn")
+        same(ProgressBar(number.projectedValue).node,
+             ProgressBar().progress(number.projectedValue).node, "ProgressBar.progress")
+        same(Spinner(flag.projectedValue).node,
+             Spinner().isAnimating(flag.projectedValue).node, "Spinner.isAnimating")
     }
 
     /// AND SO IS A DRIVEN ONE: `Slider($level)` says exactly what

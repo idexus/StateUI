@@ -24,7 +24,7 @@ extension ProgressBarProperties {
 /// way through, so a job counting files divides by the total itself. For work with no measurable length, use an
 /// `Spinner`.
 ///
-/// `.progress($done)` carries it from a state, animated to each new value.
+/// `ProgressBar($done)` carries it from a state, animated to each new value.
 public struct ProgressBar: ElementView, TintElement, ProgressBarProperties {
     /// The node this control describes.
     public var node: Node
@@ -39,6 +39,14 @@ public struct ProgressBar: ElementView, TintElement, ProgressBarProperties {
     public init(_ progress: Double) {
         node = Node(contract: ProgressBarContract.self)
         node.write(ProgressBarContract.progress, progress)
+    }
+
+    /// A bar filled as far as `state` says, from 0 to 1: the host animates it to each new value, and no view is
+    /// rebuilt for it.
+    ///
+    ///     ProgressBar($done)
+    public init(_ state: Binding<Double>) {
+        self = ProgressBar().progress(state)
     }
 }
 

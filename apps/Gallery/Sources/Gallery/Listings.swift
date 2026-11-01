@@ -10816,11 +10816,11 @@ enum Listings {
 
         var body: some View {
             VStack {
-                // The flag is read here, so starting and stopping builds this
-                // closure - the spinner itself costs nothing to keep running.
+                // The flag is handed over, `$loading`, so starting and stopping
+                // builds nothing: the host turns the spinner on and off.
                 DebugInfoLabel()
 
-                Spinner(loading)
+                Spinner($loading)
                     .height(48)
 
                 Switch($loading)
