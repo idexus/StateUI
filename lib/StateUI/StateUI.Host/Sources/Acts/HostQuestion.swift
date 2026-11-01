@@ -28,19 +28,19 @@
     /// Its message; a choice has none.
     public let message: String?
 
-    /// The caption of the button accepting it: "OK" where the act says none; a choice has none.
+    /// The caption of the button accepting it: the library's own word in the system's language where the act says
+    /// none (`HostBoundary.questionWords`); a choice has none.
     public let accept: String
 
-    /// The caption of the button cancelling it, which every question but an alert offers: "Cancel" where the act
-    /// says none; nil for an alert.
+    /// The caption of the button cancelling it, which every question but an alert offers: the library's own word in
+    /// the system's language where the act says none; nil for an alert.
     public let cancel: String?
 
     /// The caption of the button cancelling a confirmation, a choice or a prompt, which always offer one: `cancel`.
-    public var cancelling: String { cancel ?? Self.cancelWord }
+    public var cancelling: String { cancel ?? standingCancel }
 
-    /// The cancelling caption of a question whose act names none - the core sends the library's own words in the
-    /// system's language, so this stands only for an act that came without them.
-    private static let cancelWord = "Cancel"
+    /// The library's own cancelling word, as the question was asked.
+    private let standingCancel: String
 
     /// The actions a choice offers, in order.
     public let choices: [String]
@@ -65,6 +65,7 @@
     public let words: String
 
     /// The question `call` asks; nil for an act that is no question.
+    @MainActor
     public init?(_ call: HostActCall) {
         let arguments = AskedWindow.arguments(of: call)
         func text(_ index: Int) -> String? { index < arguments.count ? arguments[index].string : nil }
@@ -75,19 +76,21 @@
         case .prompt: kind = .prompt
         default: return nil
         }
+        let own = HostBoundary.questionWords
+        standingCancel = own.cancel
         title = text(0)
         if kind == .chooseAction {
             message = nil
-            accept = "OK"
+            accept = own.accept
             let offered = arguments.count > 1 ? [String](propValue: arguments[1]) ?? [] : []
             let dangerous = arguments.count > 2 ? arguments[2].number.map(Int.init) : nil
             choices = offered
             destructive = dangerous.flatMap { offered.indices.contains($0) ? $0 : nil }
-            cancel = text(3) ?? Self.cancelWord
+            cancel = text(3) ?? own.cancel
         } else {
             message = text(1)
-            accept = text(2) ?? "OK"
-            cancel = kind == .alert ? nil : text(3) ?? Self.cancelWord
+            accept = text(2) ?? own.accept
+            cancel = kind == .alert ? nil : text(3) ?? own.cancel
             choices = []
             destructive = nil
         }

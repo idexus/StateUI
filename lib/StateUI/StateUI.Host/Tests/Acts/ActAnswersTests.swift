@@ -40,6 +40,22 @@ final class ActAnswersTests: XCTestCase {
         XCTAssertNil(HostQuestion(HostActCall(act: .announce, arguments: [], completion: nil)))
     }
 
+    /// A caption the act leaves out is the library's own word in the system's language, as the platform's own
+    /// buttons are - never one fixed English word.
+    func testAQuestionsOwnCaptionsSpeakTheSystemsLanguage() throws {
+        HostBoundary.setLocaleInfo(HostLocaleInfo(
+            language: "pl", region: "PL", name: "pl-PL", timeZone: "", uses24HourClock: true, firstDayOfWeek: .monday,
+            isMetric: true, layoutDirection: .leftToRight))
+        defer {
+            HostBoundary.setLocaleInfo(HostLocaleInfo(
+                language: "", region: "", name: "", timeZone: "", uses24HourClock: false, firstDayOfWeek: .sunday,
+                isMetric: true, layoutDirection: .leftToRight))
+        }
+        let confirm = try XCTUnwrap(HostQuestion(HostActCall(
+            act: .confirm, arguments: HostActCall.usersWindow + [.string("Usunąć?")], completion: 1)))
+        XCTAssertEqual(confirm.buttons.map(\.caption), ["OK", "Anuluj"])
+    }
+
     /// A prompt's field takes the typing of its purpose, as a field of that purpose does: a plain one checks no
     /// spelling, predicts nothing and writes no capitals.
     func testAPromptsFieldTypesForItsPurpose() throws {

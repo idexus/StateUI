@@ -19,6 +19,9 @@ struct LibraryWords: LocalizedResources {
     /// What a control a host composes says of its own parts.
     let control: ControlWords
 
+    /// What a question says on its own buttons.
+    var question: QuestionWords { QuestionWords(accept: ok, cancel: cancel) }
+
     static func resources(for language: LibraryLanguage) -> LibraryWords {
         switch language {
         case .english: .english
@@ -75,6 +78,16 @@ struct LibraryWords: LocalizedResources {
 
     /// Select All.
     public let selectAll: String
+}
+
+/// What a question for the user says on its own buttons where the application names none - the one accepting it and
+/// the one cancelling it - in the system's language, as the platform's own buttons do.
+@_spi(Host) public struct QuestionWords: Equatable, Sendable {
+    /// The accepting button's caption: "OK".
+    public let accept: String
+
+    /// The cancelling button's caption: "Cancel".
+    public let cancel: String
 }
 
 /// What a control a host composes itself, where its platform has none, says of its own parts to a screen reader - a

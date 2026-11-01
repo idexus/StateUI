@@ -109,7 +109,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
 
     /// The words on the system's clipboard; nothing where it holds none.
     ///
-    /// See `Clipboard.text()`.
+    /// See `Clipboard.read()`.
     public static let readClipboard = ElementAct<Self, Void, String?>("readClipboard")
 
     /// Reads a file the user chose: whole where nothing more is said, else at
@@ -150,7 +150,7 @@ public enum ApplicationContract: ElementContract, ApplicationTier {
 
     /// Puts words on the system's clipboard, in place of whatever it held.
     ///
-    /// See `Clipboard.write(text:)`.
+    /// See `Clipboard.write(_:)`.
     public static let writeClipboard = ElementAct<Self, String, Void>("writeClipboard")
 
     /// The element's own members.

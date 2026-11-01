@@ -11,6 +11,27 @@ final class APISurfaceTests: XCTestCase {
     /// The record of the module's public declarations.
     private static let record = SourceTree.repository.appendingPathComponent("lib/StateUI/exports/api/StateUI.txt")
 
+    /// A contract member's documentation sends the reader to the API that uses it - `See `Clipboard.read()``: every
+    /// such name is a declaration the record holds, so a renamed one cannot leave the pointer behind.
+    func testEveryContractsSeeNamesARecordedDeclaration() throws {
+        let record = try String(contentsOf: Self.record, encoding: .utf8)
+        let named = try NSRegularExpression(pattern: #"`([A-Z][A-Za-z]*\.[a-z][A-Za-z]*\([A-Za-z_:]*\))`"#)
+        var missing: [String] = []
+
+        for (path, text) in try SourceTree.allSources() where path.contains("Contracts/") {
+            for line in text.split(separator: "\n") where line.contains("/// See `") {
+                let line = String(line)
+                for match in named.matches(in: line, range: NSRange(line.startIndex..., in: line)) {
+                    guard let range = Range(match.range(at: 1), in: line) else { continue }
+                    let name = String(line[range])
+                    if !record.contains(" \(name): ") { missing.append("\(path): \(name)") }
+                }
+            }
+        }
+
+        XCTAssertEqual(missing, [], "a See names a declaration the API record holds")
+    }
+
     /// The module this run built says what the record says.
     func testThePublicSurfaceIsTheRecordedOne() throws {
         let surface = try Self.surface()
