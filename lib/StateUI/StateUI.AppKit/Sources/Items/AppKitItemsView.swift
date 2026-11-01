@@ -413,10 +413,10 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         let (start, length, side, now) = across
             ? (item.minX, item.width, visible.width, visible.minX)
             : (item.minY, item.height, visible.height, visible.minY)
-        let room = side - before - after
-        guard let place = anchor.place(of: start, length: length, in: room, at: now + before) else { return nil }
         let content = across ? size.width : size.height
-        let offset = min(max(-before, place - before), max(-before, content + after - side))
+        guard let offset = anchor.offset(
+            of: start, length: length, side: side, content: content, before: before, after: after, at: now)
+        else { return nil }
         return across ? NSPoint(x: offset, y: visible.minY) : NSPoint(x: visible.minX, y: offset)
     }
 
@@ -460,8 +460,8 @@ final class AppKitItemsView: NSView, AppKitRoom, AppKitWidthConstrainedMeasuring
         let size = collection.frame.size
         let visible = scroller.contentView.bounds.size
         scroller.contentView.scroll(to: NSPoint(
-            x: min(max(0, target.x), max(0, size.width - visible.width)),
-            y: min(max(0, target.y), max(0, size.height - visible.height))))
+            x: ValueArithmetic.clamped(target.x, lower: 0, upper: max(0, size.width - visible.width)),
+            y: ValueArithmetic.clamped(target.y, lower: 0, upper: max(0, size.height - visible.height))))
         scroller.reflectScrolledClipView(scroller.contentView)
         layoutSubtreeIfNeeded()
         scrolled()

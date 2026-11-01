@@ -57,7 +57,7 @@ final class GTKStepperView: GTKView {
         let (low, high) = ValueArithmetic.range(minimum, maximum)
         let step = ValueArithmetic.step(step)
         self.step = step
-        shown = min(max(value, low), high)
+        shown = ValueArithmetic.clamped(value, lower: low, upper: high)
         gtk_spin_button_set_digits(button, guint(ValueArithmetic.decimals(of: [step, low, high, value])))
         gtk_spin_button_set_range(button, low, high)
         gtk_spin_button_set_increments(button, step, step * 10)

@@ -36,7 +36,7 @@ final class AppKitSliderView: NSSlider {
 
     /// Writes a value from StateUI without turning it into a user report.
     func setValue(_ value: Double) {
-        doubleValue = min(max(value, minValue), maxValue)
+        doubleValue = ValueArithmetic.clamped(value, lower: minValue, upper: maxValue)
     }
 
     @objc func valueChanged(_ sender: NSSlider) {
@@ -60,7 +60,7 @@ final class AppKitSliderView: NSSlider {
     private func step(by amount: Double, forward: Bool) {
         guard isEnabled else { return }
         let way = forward && userInterfaceLayoutDirection == .rightToLeft ? -amount : amount
-        let moved = min(max(doubleValue + way, minValue), maxValue)
+        let moved = ValueArithmetic.clamped(doubleValue + way, lower: minValue, upper: maxValue)
         guard moved != doubleValue else { return }
         doubleValue = moved
         sendAction(action, to: target)

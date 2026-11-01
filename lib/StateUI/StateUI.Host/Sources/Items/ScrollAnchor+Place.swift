@@ -18,4 +18,17 @@ extension ScrollAnchor {
             return start < now ? start : start + length - room
         }
     }
+
+    /// Where a scroller `side` long over `content`, `before` and `after` covered at its ends by the bars over it and
+    /// standing at `now`, stands for an item from `start`, `length` long: the anchor's place in the room the bars
+    /// leave, held within the scroller's reach; nil where the anchor is nearest and the item stands in view.
+    /// Design: docs/design/host/items.md#scrolling-to-an-item
+    @_spi(Host) public func offset(
+        of start: Double, length: Double, side: Double, content: Double, before: Double, after: Double, at now: Double
+    ) -> Double? {
+        guard let place = place(of: start, length: length, in: side - before - after, at: now + before) else {
+            return nil
+        }
+        return ValueArithmetic.clamped(place - before, lower: -before, upper: Swift.max(-before, content + after - side))
+    }
 }

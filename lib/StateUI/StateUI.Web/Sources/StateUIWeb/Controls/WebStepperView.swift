@@ -77,7 +77,7 @@ final class WebStepperView: WebDOMView {
     }
 
     private func within(_ number: Double) -> Double {
-        min(max(number, range.lower), range.upper)
+        ValueArithmetic.clamped(number, lower: range.lower, upper: range.upper)
     }
 
     private func stepped(up: Bool) {

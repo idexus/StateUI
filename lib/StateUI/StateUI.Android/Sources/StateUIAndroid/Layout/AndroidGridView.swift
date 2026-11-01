@@ -33,7 +33,7 @@ final class AndroidGridView: AndroidTravelingLayout {
     /// Design: docs/design/platforms/android/drawing.md#a-placed-child
     func setShadeOpacity(_ opacity: Double) {
         guard items.count > 1 else { return }
-        items[1].view.setOpacity(min(max(opacity, 0), 1))
+        items[1].view.setOpacity(ValueArithmetic.clamped(opacity, lower: 0, upper: 1))
     }
 
     override func contentSize(width: Double?) -> LayoutSize {

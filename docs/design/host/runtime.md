@@ -1019,9 +1019,12 @@ take the keys and the checking alone.
 
 A value a control holds inside a range - a slider's, a stepper's, a progress
 bar's - follows one arithmetic on every host (`ValueArithmetic`): the range's
-ends stand in order whichever the tree gave first; a step that does not move
-is 1; a share of work past an end stands at that end, one that is no number
-at the start; a slider's key moves a hundredth of its range and a page a
+ends stand in order whichever the tree gave first; a value past an end stands
+at that end, one that is no number at the lower (`ValueArithmetic.clamped`,
+which a host's stepper, slider, grid shade and list offset take rather than
+their own `min(max(...))` - `RuntimeArchitectureTests` reads their sources);
+a step that does not move is 1; a share of work past an end stands at that
+end, one that is no number at the start; a slider's key moves a hundredth of its range and a page a
 tenth; a stepped number is written with as many decimals as its step,
 its ends and its value take, so each reads exactly, and no more than six;
 and a stepper's step moves only away from the range's end it stands at

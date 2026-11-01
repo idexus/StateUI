@@ -95,6 +95,20 @@ final class RuntimeArchitectureTests: XCTestCase {
         XCTAssertEqual(found, [], "a program's write is marked by ProgramWrite alone")
     }
 
+    /// A value in a range is held there by the host layer's arithmetic alone: no stepper, slider, grid or list of a
+    /// host holds a number between two ends by its own `min(max(...))`, so every host clamps alike.
+    /// Design: docs/design/host/runtime.md#a-value-in-a-range
+    func testOnlyTheHostLayerHoldsAValueInItsRange() throws {
+        let ranged = try NSRegularExpression(pattern: #"(Stepper|Slider|Grid|Items)View\.swift$"#)
+        let found = try SourceTree.runtimeSources()
+            .filter { !$0.path.hasPrefix("StateUI.Host/") }
+            .filter { ranged.firstMatch(in: $0.path, range: NSRange($0.path.startIndex..., in: $0.path)) != nil }
+            .filter { $0.text.contains("min(max(") }
+            .map(\.path)
+
+        XCTAssertEqual(found, [], "ValueArithmetic.clamped holds a value in its range")
+    }
+
     /// A scroller rests on the frame clock's time alone: no timer and no second clock in any runtime's scrolling
     /// decides when a movement is over, so a hand-wound clock reproduces every rest.
     func testAScrollersRestIsTimedByTheFrameClockAlone() throws {
