@@ -116,7 +116,7 @@
     static func small(_ element: String) -> [any Worn] {
         switch element {
         case "Line":
-            [Write(LineContract.x1, 0), Write(LineContract.y1, 0), Write(LineContract.x2, 10), Write(LineContract.y2, 10)]
+            [Write(LineContract.from, Point(0, 0)), Write(LineContract.to, Point(10, 10))]
         case "Polygon": [Write(PolygonContract.points, [Point(0, 0), Point(10, 0), Point(10, 10)])]
         case "Polyline": [Write(PolylineContract.points, [Point(0, 0), Point(10, 10)])]
         case "Path": [Write(PathContract.data, "M 0 0 L 10 0 L 10 10 Z")]
@@ -129,7 +129,7 @@
     static func figure(_ element: String) -> [any Worn] {
         switch element {
         case "Line":
-            [Write(LineContract.x1, 0), Write(LineContract.y1, 20), Write(LineContract.x2, 40), Write(LineContract.y2, 20)]
+            [Write(LineContract.from, Point(0, 20)), Write(LineContract.to, Point(40, 20))]
         case "Polygon":
             [Write(PolygonContract.points, [Point(0, 0), Point(40, 0), Point(40, 40), Point(0, 40)])]
         case "Polyline":

@@ -95,14 +95,12 @@ Line
   contentMode
   dash
   dashPhase
+  from
   geometryTransform
   lineCap
   lineWidth
   stroke
-  x1
-  x2
-  y1
-  y2
+  to
 Link
   destination
   text

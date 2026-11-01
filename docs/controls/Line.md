@@ -5,9 +5,7 @@
 A straight line between two points, in device units from the top left of the space the line is given.
 
 ```swift
-Line()
-    .x1(0).y1(0)
-    .x2(240).y2(0)
+Line(from: Point(0, 0), to: Point(240, 0))
     .stroke(.lightGray)
     .lineWidth(1)
 ```
@@ -33,13 +31,13 @@ Inherits: [AutomationElement](tiers/AutomationElement.md) · [VisualElement](tie
 See [the dictionary](README.md) for how a mark is given.
 
 <table>
-<thead><tr><th>Host</th><th>Created</th><th>Members (86)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>47 ✅ · 2 ☑️ · 37 ✓</td><td>custom <code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>46 ✅ · 2 ☑️ · 37 ✓ · 1 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 10 ✓ · 1 –</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 15 ✓ · 7 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>55 ✅ · 2 ☑️ · 23 ✓ · 6 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>61 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>
+<thead><tr><th>Host</th><th>Created</th><th>Members (84)</th><th>Realization</th></tr></thead>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 2 ☑️ · 37 ✓</td><td>custom <code>NSView</code> drawing <code>NSBezierPath</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">⌛</td><td>42 ✅ · 2 ☑️ · 37 ✓ · 1 –</td><td>custom <code>UIView</code> masked by a <code>CAShapeLayer</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">⌛</td><td>65 ✅ · 5 ☑️ · 10 ✓ · 1 –</td><td>custom <code>View</code> drawing <code>Path</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">⌛</td><td>59 ✅ · 1 ☑️ · 15 ✓ · 7 –</td><td><code>Shapes.Path</code> in a custom <code>Grid</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">⌛</td><td>51 ✅ · 2 ☑️ · 23 ✓ · 6 –</td><td><code>GskPath</code> in a snapshot</td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">⌛</td><td>57 ✅ · 1 ☑️ · 21 ✓ · 3 –</td><td>inline SVG <code>&lt;path&gt;</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/LineContract.swift`.
@@ -48,10 +46,8 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Shapes/LineContract.swi
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td><code>x1</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>x2</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>y1</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
-<tbody><tr></tr><tr><td><code>y2</code></td><td>property</td><td><code>Double</code></td><td>stateUI</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>from</code></td><td>property</td><td><code>Point</code></td><td>stateUI</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>to</code></td><td>property</td><td><code>Point</code></td><td>stateUI</td><td align="center">✅</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td><td align="center">⌛</td></tr></tbody>
 </table>
 
 ## From [AutomationElement](tiers/AutomationElement.md)

@@ -98,7 +98,7 @@ a host writes by hand and what its runtime registers - and by the case:
   Map: – <why>                     the host's family never has it
   Marker.label: 🧩                    the host leaves it to the application, which
                                    registers its own control for it
-  Line.x1: not realized            empty: the host has no realization yet
+  Line.from: not realized           empty: the host has no realization yet
   TextField.submitted: cannot ...  ·: the driver cannot do or read it, and why
   Text.isEnabled: does not apply - ...
                                    ·: the host's platform holds nothing the case

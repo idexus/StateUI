@@ -2957,6 +2957,7 @@ swift.init LayoutInput.Orientation.init(rawValue:): init?(rawValue: Int32)
 swift.init LayoutParameters.init(): init()
 swift.init LayoutParameters.init(carried:): init?(carried: StateCarried)
 swift.init Line.init(): @MainActor init()
+swift.init Line.init(from:to:): @MainActor init(from start: Point, to end: Point)
 swift.init LineBreak.init(carried:): init?(carried: StateCarried)
 swift.init LineBreak.init(propValue:): init?(propValue: PropValue)
 swift.init LineBreak.init(rawValue:): init?(rawValue: Int32)
@@ -7959,6 +7960,7 @@ swift.method Line.engine(tracking:priority:_:): @MainActor func engine<each Valu
 swift.method Line.environment(_:): @MainActor func environment<Value>(_ object: Value) -> Self.Modified where Value : AnyObject
 swift.method Line.followsLayout(response:damping:): @MainActor func followsLayout(response: Duration = .milliseconds(300), damping: Double = 1) -> Self.Modified
 swift.method Line.frame(_:): @MainActor func frame(_ state: Binding<Rect>) -> Self.Modified
+swift.method Line.from(_:): @MainActor func from(_ state: Binding<Point>) -> Line.Modified
 swift.method Line.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method Line.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
 swift.method Line.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ state: Binding<Int>) -> Self.Modified
@@ -8148,6 +8150,7 @@ swift.method Line.subtitle(_:): @MainActor func subtitle(_ value: String) -> Sel
 swift.method Line.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
 swift.method Line.title(_:): @MainActor func title(_ value: String) -> Self.Modified
 swift.method Line.titleView(_:): @MainActor func titleView<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Line.to(_:): @MainActor func to(_ state: Binding<Point>) -> Line.Modified
 swift.method Line.toolbar(_:_:): @MainActor func toolbar(_ edge: ToolbarEdge = .top, @ToolbarBuilder _ content: () -> ToolbarContent) -> Self.Modified
 swift.method Line.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method Line.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
@@ -8158,17 +8161,11 @@ swift.method Line.verticalAlignment(_:): @MainActor func verticalAlignment(_ sta
 swift.method Line.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
 swift.method Line.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (StyleBag<Self, StyleState>) -> StyleBag<Self, StyleState>) -> Self.Modified
 swift.method Line.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
-swift.method Line.x1(_:): @MainActor func x1(_ state: Binding<Double>) -> Line.Modified
-swift.method Line.x2(_:): @MainActor func x2(_ state: Binding<Double>) -> Line.Modified
-swift.method Line.y1(_:): @MainActor func y1(_ state: Binding<Double>) -> Line.Modified
-swift.method Line.y2(_:): @MainActor func y2(_ state: Binding<Double>) -> Line.Modified
 swift.method Line.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method LineHeightElement.lineHeight(_:): @MainActor func lineHeight(_ state: Binding<Double>) -> Self.Modified
 swift.method LineHeightElement.lineHeight(_:): @MainActor func lineHeight(_ value: Double) -> Self.Modified
-swift.method LineProperties.x1(_:): @MainActor func x1(_ value: Double) -> Self.Modified
-swift.method LineProperties.x2(_:): @MainActor func x2(_ value: Double) -> Self.Modified
-swift.method LineProperties.y1(_:): @MainActor func y1(_ value: Double) -> Self.Modified
-swift.method LineProperties.y2(_:): @MainActor func y2(_ value: Double) -> Self.Modified
+swift.method LineProperties.from(_:): @MainActor func from(_ value: Point) -> Self.Modified
+swift.method LineProperties.to(_:): @MainActor func to(_ value: Point) -> Self.Modified
 swift.method Link.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method Link.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method Link.accessibilityAction(_:policy:_:): @MainActor func accessibilityAction(_ name: String, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
@@ -13087,6 +13084,7 @@ swift.method StyleBag.fontSize(_:): @MainActor func fontSize(_ value: Double) ->
 swift.method StyleBag.fontWeight(_:): @MainActor func fontWeight(_ value: FontWeight) -> Self.Modified
 swift.method StyleBag.format(_:): @MainActor func format(_ style: DateStyle) -> Self.Modified
 swift.method StyleBag.format(_:): @MainActor func format(_ value: String) -> Self.Modified
+swift.method StyleBag.from(_:): @MainActor func from(_ value: Point) -> Self.Modified
 swift.method StyleBag.geometryTransform(_:): @MainActor func geometryTransform(_ value: ViewTransform) -> Self.Modified
 swift.method StyleBag.gridColumn(_:): @MainActor func gridColumn(_ value: Int) -> Self.Modified
 swift.method StyleBag.gridColumnSpan(_:): @MainActor func gridColumnSpan(_ value: Int) -> Self.Modified
@@ -13185,6 +13183,7 @@ swift.method StyleBag.textDecorations(_:): @MainActor func textDecorations(_ val
 swift.method StyleBag.textStyle(_:): @MainActor func textStyle(_ value: TextStyle) -> Self.Modified
 swift.method StyleBag.time(_:): @MainActor func time(_ value: ClockTime) -> Self.Modified
 swift.method StyleBag.tint(_:): @MainActor func tint(_ value: Color) -> Self.Modified
+swift.method StyleBag.to(_:): @MainActor func to(_ value: Point) -> Self.Modified
 swift.method StyleBag.tooltip(_:): @MainActor func tooltip(_ state: Binding<String>) -> Self.Modified
 swift.method StyleBag.tooltip(_:): @MainActor func tooltip(_ text: String) -> Self.Modified
 swift.method StyleBag.tracking(_:): @MainActor func tracking(_ value: Double) -> Self.Modified
@@ -13201,10 +13200,6 @@ swift.method StyleBag.visualState(_:): @MainActor func visualState(_ state: Visu
 swift.method StyleBag.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Target>, _ setters: (StyleBag<Target, StyleState>) -> StyleBag<Target, StyleState>) -> StyleBag<Target, Context>
 swift.method StyleBag.width(_:): @MainActor func width(_ value: Double) -> Self.Modified
 swift.method StyleBag.wraps(_:): @MainActor func wraps(_ value: Bool) -> Self.Modified
-swift.method StyleBag.x1(_:): @MainActor func x1(_ value: Double) -> Self.Modified
-swift.method StyleBag.x2(_:): @MainActor func x2(_ value: Double) -> Self.Modified
-swift.method StyleBag.y1(_:): @MainActor func y1(_ value: Double) -> Self.Modified
-swift.method StyleBag.y2(_:): @MainActor func y2(_ value: Double) -> Self.Modified
 swift.method StyleBag.zIndex(_:): @MainActor func zIndex(_ value: Int) -> Self.Modified
 swift.method StyleTarget.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
 swift.method StyleTarget.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
@@ -17429,6 +17424,7 @@ swift.type.property LineBreak.moving: static var moving: MotionValues { get }
 swift.type.property LineCap.laneKind: static var laneKind: LaneKind { get }
 swift.type.property LineCap.lanes: static var lanes: Int { get }
 swift.type.property LineCap.moving: static var moving: MotionValues { get }
+swift.type.property LineContract.from: static let from: ElementProperty<LineContract, Point>
 swift.type.property LineContract.layer: static let layer: ElementLayer
 swift.type.property LineContract.layer: static var layer: ElementLayer { get }
 swift.type.property LineContract.members: static let members: [any ContractMember]
@@ -17436,10 +17432,7 @@ swift.type.property LineContract.name: static var name: String { get }
 swift.type.property LineContract.nodeType: static let nodeType: NodeType
 swift.type.property LineContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property LineContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property LineContract.x1: static let x1: ElementProperty<LineContract, Double>
-swift.type.property LineContract.x2: static let x2: ElementProperty<LineContract, Double>
-swift.type.property LineContract.y1: static let y1: ElementProperty<LineContract, Double>
-swift.type.property LineContract.y2: static let y2: ElementProperty<LineContract, Double>
+swift.type.property LineContract.to: static let to: ElementProperty<LineContract, Point>
 swift.type.property LineHeightElementContract.lineHeight: static let lineHeight: ElementProperty<LineHeightElementContract, Double>
 swift.type.property LineHeightElementContract.members: static let members: [any ContractMember]
 swift.type.property LineHeightElementContract.name: static let name: String

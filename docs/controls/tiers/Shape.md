@@ -6,7 +6,7 @@ What every drawn shape has: the line along it, how it fits its room, and a trans
 
 ```swift
 Line()
-    .x2(120)
+    .to(Point(120, 0))
     .stroke(.black)
     .lineWidth(2)
     .dash([4, 2])

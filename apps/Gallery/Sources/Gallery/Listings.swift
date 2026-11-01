@@ -10468,18 +10468,14 @@ enum Listings {
                 // Two rows of three: six shapes side by side stand wider than a phone.
                 VStack {
                     HStack {
-                        Line()
-                            .x1(0).y1(0)
-                            .x2(56).y2(56)
+                        Line(from: Point(0, 0), to: Point(56, 56))
                             .stroke(Palette.accent)
                             .lineWidth(4)
                             .lineCap(.round)
                             .width(56)
                             .height(56)
 
-                        Line()
-                            .x1(0).y1(28)
-                            .x2(56).y2(28)
+                        Line(from: Point(0, 28), to: Point(56, 28))
                             .stroke(Palette.accent)
                             .lineWidth(4)
                             .dash([3, 2])
@@ -10530,9 +10526,7 @@ enum Listings {
                 // The same dashes twice, half a pattern apart: the offset, like
                 // the pattern itself, is counted in stroke widths.
                 VStack {
-                    Line()
-                        .x1(0).y1(4)
-                        .x2(200).y2(4)
+                    Line(from: Point(0, 4), to: Point(200, 4))
                         .stroke(Palette.accent)
                         .lineWidth(4)
                         .dash([3, 2])
@@ -10540,9 +10534,7 @@ enum Listings {
                         .width(200)
                         .height(8)
 
-                    Line()
-                        .x1(0).y1(4)
-                        .x2(200).y2(4)
+                    Line(from: Point(0, 4), to: Point(200, 4))
                         .stroke(Palette.accent)
                         .lineWidth(4)
                         .dash([3, 2])

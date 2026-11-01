@@ -174,9 +174,7 @@ extension ControlDictionary {
             """#),
 
         (LineContract.self, #"""
-            Line()
-                .x1(0).y1(0)
-                .x2(240).y2(0)
+            Line(from: Point(0, 0), to: Point(240, 0))
                 .stroke(.lightGray)
                 .lineWidth(1)
             """#),
@@ -703,7 +701,7 @@ extension ControlDictionary {
 
         (ShapeContract.self, #"""
             Line()
-                .x2(120)
+                .to(Point(120, 0))
                 .stroke(.black)
                 .lineWidth(2)
                 .dash([4, 2])

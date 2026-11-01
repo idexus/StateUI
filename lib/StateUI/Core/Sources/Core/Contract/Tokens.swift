@@ -155,6 +155,7 @@ extension NodeType {
     static let fontSize = FontElementContract.fontSize.token
     static let format = DatePickerContract.format.token
     static let frame = VisualElementContract.frame.token
+    static let from = LineContract.from.token
     static let gridColumn = ViewContract.gridColumn.token
     static let gridColumnSpan = ViewContract.gridColumnSpan.token
     static let gridRow = ViewContract.gridRow.token
@@ -275,6 +276,7 @@ extension NodeType {
     static let textCase = TextualElementContract.textCase.token
     static let time = TimePickerContract.time.token
     static let tint = TintElementContract.tint.token
+    static let to = LineContract.to.token
     static let title = PageElementContract.title.token
     static let translationX = VisualElementContract.translationX.token
     static let translationY = VisualElementContract.translationY.token
@@ -290,11 +292,7 @@ extension NodeType {
     static let windowValue = WindowContract.windowValue.token
     static let wraps = HStackContract.wraps.token
     static let x = WindowContract.x.token
-    static let x1 = LineContract.x1.token
-    static let x2 = LineContract.x2.token
     static let y = WindowContract.y.token
-    static let y1 = LineContract.y1.token
-    static let y2 = LineContract.y2.token
     static let zIndex = VisualElementContract.zIndex.token
 }
 

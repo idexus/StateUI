@@ -85,7 +85,7 @@ Ellipse 2
 Grid 2
 HStack 5
 ItemsView 5
-Line 2
+Line 3
 Map 3
 Path 2
 Polygon 2

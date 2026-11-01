@@ -157,10 +157,8 @@ final class AppKitShapeViewTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var line = HostPatch(id: .manual("line"), type: .line)
-        line.properties[.x1] = .number(1)
-        line.properties[.y1] = .number(2)
-        line.properties[.x2] = .number(41)
-        line.properties[.y2] = .number(22)
+        line.properties[.from] = .numbers([1, 2])
+        line.properties[.to] = .numbers([41, 22])
         line.properties[.stroke] = brush(.black)
         line.properties[.lineWidth] = .number(3)
         line.properties[.dash] = .numbers([2, 1])
@@ -182,10 +180,8 @@ final class AppKitShapeViewTests: XCTestCase {
         defer { renderer.closeForTesting() }
 
         var line = HostPatch(id: .manual("line"), type: .line)
-        line.properties[.x1] = .number(1)
-        line.properties[.y1] = .number(2)
-        line.properties[.x2] = .number(21)
-        line.properties[.y2] = .number(12)
+        line.properties[.from] = .numbers([1, 2])
+        line.properties[.to] = .numbers([21, 12])
         line.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
         line.properties[.geometryTransform] = .values([
             .number(1), .number(0), .number(0),
@@ -269,7 +265,7 @@ final class AppKitShapeViewTests: XCTestCase {
     @MainActor
     func testHostPatchPlacesAndMovesEveryAuthoredGeometry() throws {
         let authored: [(NodeType, [Prop: HostValue])] = [
-            (.line, [.x1: .number(0), .y1: .number(0), .x2: .number(100), .y2: .number(50)]),
+            (.line, [.from: .numbers([0, 0]), .to: .numbers([100, 50])]),
             (.path, [.data: .string("M 0 0 L 100 50")]),
             (.polygon, [
                 .points: .numbers([0, 0, 100, 0, 100, 50]),
@@ -342,7 +338,7 @@ final class AppKitShapeViewTests: XCTestCase {
     private static let shapes: [(NodeType, [Prop: HostValue])] = [
         (.rectangle, [:]),
         (.ellipse, [:]),
-        (.line, [.x1: .number(0), .y1: .number(10), .x2: .number(40), .y2: .number(10)]),
+        (.line, [.from: .numbers([0, 10]), .to: .numbers([40, 10])]),
         (.path, [.data: .string("M 0 0 L 40 0 L 40 20 L 0 20 Z")]),
         (.polygon, [.points: .numbers([0, 0, 40, 0, 40, 20, 0, 20])]),
         (.polyline, [.points: .numbers([0, 0, 40, 0, 40, 20, 0, 20])]),

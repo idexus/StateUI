@@ -882,10 +882,8 @@ final class AppKitMotionTests: XCTestCase {
         }
 
         var initial = HostPatch(id: .manual("line"), type: .line)
-        initial.properties[.x1] = .number(1)
-        initial.properties[.y1] = .number(2)
-        initial.properties[.x2] = .number(21)
-        initial.properties[.y2] = .number(12)
+        initial.properties[.from] = .numbers([1, 2])
+        initial.properties[.to] = .numbers([21, 12])
         initial.properties[.contentMode] = .enumeration(ContentMode.center.rawValue)
         renderer.applyForTesting(initial)
 
@@ -928,13 +926,12 @@ final class AppKitMotionTests: XCTestCase {
         renderer.applyForTesting(initial)
 
         var changed = HostPatch(id: .manual("line"), type: .line)
-        changed.properties[.x2] = .number(20)
-        changed.properties[.y2] = .number(10)
+        changed.properties[.to] = .numbers([20, 10])
         changed.properties[.lineWidth] = .number(3)
         changed.properties[.dashPhase] = .number(3)
         changed.properties[.miterLimit] = .number(4)
         for property in [
-            Prop.x2, .y2, .lineWidth, .dashPhase, .miterLimit,
+            Prop.to, .lineWidth, .dashPhase, .miterLimit,
         ] {
             changed.transitions[property] = HostTransition(motion: .eased(.milliseconds(200), curve: .linear))
         }

@@ -21,11 +21,8 @@ extension AndroidRegistrations {
                 ShapeMembers.filledMembers) { view, values in draw(view, values, .rectangle(BoxArithmetic.capsule)) }
         }
         registry.add(LineContract.self, create: { _ in AndroidShapeView() }) { shape in
-            shape.applies(ShapeMembers.members, LineContract.x1, LineContract.y1, LineContract.x2, LineContract.y2) {
-                view, values in
-                draw(view, values, .line(
-                    Point(values[LineContract.x1] ?? 0, values[LineContract.y1] ?? 0),
-                    Point(values[LineContract.x2] ?? 0, values[LineContract.y2] ?? 0)))
+            shape.applies(ShapeMembers.members, LineContract.from, LineContract.to) { view, values in
+                draw(view, values, .line(values[LineContract.from] ?? .zero, values[LineContract.to] ?? .zero))
             }
         }
         registry.add(PathContract.self, create: { _ in AndroidShapeView() }) { shape in

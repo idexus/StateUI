@@ -489,7 +489,7 @@
         return switch element {
         case "Rectangle", "Ellipse", "Capsule": [Write(FilledShapeContract.fill, redFill)]
         case "Line": [
-            Write(LineContract.x1, 0), Write(LineContract.y1, 20), Write(LineContract.x2, 80), Write(LineContract.y2, 20),
+            Write(LineContract.from, Point(0, 20)), Write(LineContract.to, Point(80, 20)),
             Write(ShapeContract.stroke, red), Write(ShapeContract.lineWidth, 8),
         ]
         case "Polygon": [Write(PolygonContract.points, figure), Write(FilledShapeContract.fill, redFill), atItsSize]

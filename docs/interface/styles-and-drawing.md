@@ -393,7 +393,7 @@ Shape controls are retained native drawing surfaces with a shared shape
 vocabulary:
 
 - `Rectangle`, `Capsule` and `Ellipse`;
-- `Line`;
+- `Line` from one `Point` to another, `Line(from:to:)`;
 - `Path` with path data;
 - `Polygon` and `Polyline` with `Point` values.
 
