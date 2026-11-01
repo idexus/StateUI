@@ -201,7 +201,7 @@ final class WinUICanvasViewTests: XCTestCase {
         try onUIThread {
             let host = WinUIRenderer.running {
                 VStack {
-                    Canvas(drawing)
+                    Canvas(drawing: drawing)
                         .width(width)
                         .height(height)
                         .horizontalAlignment(.start)
