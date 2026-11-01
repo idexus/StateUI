@@ -33,8 +33,9 @@ final class APISurfaceTests: XCTestCase {
             """)
     }
 
-    /// Every public declaration of the module this run built - its kind, its path and its declaration - sorted, from
-    /// the symbol graph the toolchain beside `swift` extracts: the module's own and its extensions of other modules'.
+    /// Every public declaration of the module this run built - its kind, its path and its declaration - and every
+    /// type's conformances, sorted, from the symbol graph the toolchain beside `swift` extracts: the module's own and
+    /// its extensions of other modules'.
     private static func surface() throws -> [String] {
         // Never a skip: a check that did not run reads as one that passed.
         guard let modules = builtModules() else {
@@ -51,16 +52,37 @@ final class APISurfaceTests: XCTestCase {
         let graphs = try FileManager.default.contentsOfDirectory(atPath: output.path).filter { $0.hasSuffix(".json") }
         guard !graphs.isEmpty else { throw CocoaError(.fileReadNoSuchFile, userInfo: [NSDebugDescriptionErrorKey: said]) }
 
-        var lines: Set<String> = []
-        for graph in graphs {
+        let read = try graphs.map { graph -> (extended: Substring, json: [String: Any]) in
             // A graph named `StateUI@Swift` holds what the module adds to the standard library's types.
-            let extended = graph.dropFirst("StateUI".count).dropLast(".symbols.json".count)
             let json = try JSONSerialization.jsonObject(with: Data(contentsOf: output.appendingPathComponent(graph)))
-            for symbol in (json as? [String: Any])?["symbols"] as? [[String: Any]] ?? [] {
-                // A member the regex parser's own extension lends is the standard library's, loaded on Windows alone.
+            return (graph.dropFirst("StateUI".count).dropLast(".symbols.json".count), json as? [String: Any] ?? [:])
+        }
+
+        // Where each symbol stands, by its identifier - a type another module declares by what its members say.
+        var paths: [String: String] = [:]
+        for (extended, json) in read {
+            let symbols = json["symbols"] as? [[String: Any]] ?? []
+            var byIdentifier: [String: [String]] = [:]
+            for symbol in symbols {
+                let components = symbol["pathComponents"] as? [String] ?? []
+                byIdentifier[Self.identifier(of: symbol)] = components
+                paths[Self.identifier(of: symbol)] = extended + components.joined(separator: ".")
+            }
+            for relationship in json["relationships"] as? [[String: Any]] ?? [] where relationship["kind"] as? String == "memberOf" {
+                guard let target = relationship["target"] as? String, paths[target] == nil,
+                      let member = byIdentifier[relationship["source"] as? String ?? ""] else { continue }
+                paths[target] = extended + member.dropLast().joined(separator: ".")
+            }
+        }
+
+        var lines: Set<String> = []
+        for (extended, json) in read {
+            for symbol in json["symbols"] as? [[String: Any]] ?? [] {
+                // A member another module's protocol lends a StateUI type - `!=`, `hashValue`, an integer's
+                // `init(bigEndian:)` - is that module's: the conformance below records it, toolchain by toolchain alike.
                 // Design: docs/design/architecture.md#the-public-surface
-                let precise = (symbol["identifier"] as? [String: Any])?["precise"] as? String ?? ""
-                if precise.contains("::SYNTHESIZED::"), precise.contains("12_RegexParserE") { continue }
+                let lent = Self.identifier(of: symbol).components(separatedBy: "::SYNTHESIZED::")
+                if lent.count > 1, !lent[0].contains("7StateUI") { continue }
                 let kind = (symbol["kind"] as? [String: Any])?["identifier"] as? String ?? "?"
                 let path = (symbol["pathComponents"] as? [String] ?? []).joined(separator: ".")
                 let fragments = symbol["declarationFragments"] as? [[String: Any]] ?? []
@@ -69,8 +91,26 @@ final class APISurfaceTests: XCTestCase {
                     .split(whereSeparator: \.isWhitespace).joined(separator: " ")
                 lines.insert("\(kind) \(extended)\(path): \(declaration)")
             }
+            for relationship in json["relationships"] as? [[String: Any]] ?? [] where relationship["kind"] as? String == "conformsTo" {
+                guard let source = paths[relationship["source"] as? String ?? ""] else { continue }
+                let target = relationship["targetFallback"] as? String ?? paths[relationship["target"] as? String ?? ""]
+                    .map { "StateUI." + $0 } ?? "?"
+                // What every type is unless it says otherwise, and what another module's type was before StateUI.
+                if ["Swift.Copyable", "Swift.Escapable", "Swift.SendableMetatype"].contains(target) { continue }
+                if !extended.isEmpty, !target.hasPrefix("StateUI.") { continue }
+                let constraints = (relationship["swiftConstraints"] as? [[String: Any]] ?? []).map { constraint in
+                    "\(constraint["lhs"] as? String ?? "?") \(constraint["kind"] as? String == "sameType" ? "==" : ":") \(constraint["rhs"] as? String ?? "?")"
+                }
+                lines.insert("swift.conformance \(source): \(target)"
+                    + (constraints.isEmpty ? "" : " where " + constraints.sorted().joined(separator: ", ")))
+            }
         }
         return lines.sorted()
+    }
+
+    /// A symbol's identifier in the graph.
+    private static func identifier(of symbol: [String: Any]) -> String {
+        (symbol["identifier"] as? [String: Any])?["precise"] as? String ?? ""
     }
 
     /// Where the build that made this test put the module, beside the test bundle or in a Modules folder there.
