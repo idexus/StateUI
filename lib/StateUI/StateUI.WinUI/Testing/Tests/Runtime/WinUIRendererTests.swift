@@ -179,7 +179,7 @@ private struct DisplayPage: View {
     @Environment(\.device) private var device
 
     var body: some View {
-        Text("\(Int(device.display.width)) \(device.display.rotation)")
+        Text("\(Int(device.display.width ?? 0)) \(device.display.rotation)")
     }
 }
 

@@ -23,7 +23,7 @@ private struct BatteryLabel: View {
     @Environment(\.device) var device
 
     var body: some View {
-        AnyView(node: label("\(Int(device.battery.chargeLevel * 100))% \(device.battery.state)"))
+        AnyView(node: label("\(device.battery.chargeLevel.map { "\(Int($0 * 100))%" } ?? "no charge") \(device.battery.state)"))
     }
 }
 
@@ -71,11 +71,23 @@ final class HostEnvironmentTests: XCTestCase {
         Renderer.shared.clearInvalidation()
     }
 
+    /// WHAT THE HOST HAS NOT SAID IS NONE: a battery's charge and a screen's numbers start as nil - never a number
+    /// that reads as a fact - and so does a charge where no battery stands.
+    func testWhatTheHostHasNotSaidIsNone() {
+        XCTAssertNil(Battery().chargeLevel)
+        let display = DeviceDisplay()
+        XCTAssertEqual([display.width, display.height, display.density, display.refreshRate], [nil, nil, nil, nil])
+
+        HostBoundary.setBatteryInfo(HostBatteryInfo(
+            chargeLevel: nil, state: .notPresent, powerSource: .ac, energySaverStatus: .off))
+        XCTAssertNil(StandardEnvironment.device.battery.chargeLevel)
+    }
+
     override func tearDown() async throws {
         // The providers are process-wide on purpose, so every mutation here
         // is put back - a later test reading the headless defaults must find
         // them.
-        StandardEnvironment.device.battery.chargeLevel = -1
+        StandardEnvironment.device.battery.chargeLevel = nil
         StandardEnvironment.device.battery.state = .unknown
         StandardEnvironment.device.battery.powerSource = .unknown
         StandardEnvironment.device.battery.energySaverStatus = .unknown
@@ -98,12 +110,12 @@ final class HostEnvironmentTests: XCTestCase {
         // Display providers are process-wide. Restore every field so a later
         // test starts from the headless environment rather than this test's
         // screen.
-        StandardEnvironment.device.display.width = 0
-        StandardEnvironment.device.display.height = 0
-        StandardEnvironment.device.display.density = 0
+        StandardEnvironment.device.display.width = nil
+        StandardEnvironment.device.display.height = nil
+        StandardEnvironment.device.display.density = nil
         StandardEnvironment.device.display.orientation = .unknown
         StandardEnvironment.device.display.rotation = .unknown
-        StandardEnvironment.device.display.refreshRate = 0
+        StandardEnvironment.device.display.refreshRate = nil
         StandardEnvironment.locale.language = ""
         StandardEnvironment.locale.region = ""
         StandardEnvironment.locale.name = ""
@@ -125,7 +137,7 @@ final class HostEnvironmentTests: XCTestCase {
         let patch = renders.render(stack([BatteryLabel().node], id: "root"))
 
         XCTAssertEqual(
-            patch.child(.auto(1))?.props["text"], .string("-100% unknown"),
+            patch.child(.auto(1))?.props["text"], .string("no charge unknown"),
             "the headless defaults - nothing was provided anywhere")
     }
 
@@ -218,7 +230,7 @@ final class HostEnvironmentTests: XCTestCase {
     func testTheStructuralBuiltResolvesTheStandardProviders() {
         let tree = stack([BatteryLabel().node], id: "root").built
 
-        XCTAssertEqual(tree.children[0].props[.text], .string("-100% unknown"))
+        XCTAssertEqual(tree.children[0].props[.text], .string("no charge unknown"))
     }
 
     func testAnUnfilledSlotOfAStandardTypeAnswersTheProvider() {

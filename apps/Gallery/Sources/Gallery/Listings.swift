@@ -1211,9 +1211,7 @@ enum Listings {
                 // builds this closure - and nothing else on the page.
                 DebugInfoLabel()
 
-                Text(device.battery.chargeLevel <= 0
-                    ? "the host has not said"
-                    : "\(Int(device.battery.chargeLevel * 100))%")
+                Text(device.battery.chargeLevel.map { "\(Int($0 * 100))%" } ?? "the host has not said")
                     .fontWeight(.bold)
 
                 Text("state · \(device.battery.state)")
@@ -2760,20 +2758,17 @@ enum Listings {
                 // builds this closure.
                 DebugInfoLabel()
 
-                Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
+                Text("\(Int(device.display.width ?? 0)) × \(Int(device.display.height ?? 0)) px")
                     .fontWeight(.bold)
 
-                Text(device.display.density > 0
-                    ? "\(Int(device.display.width / device.display.density)) × "
-                        + "\(Int(device.display.height / device.display.density)) pt at "
-                        + "\(device.display.density)x"
-                    : "density not said")
+                Text(device.display.density.map { density in
+                    "\(Int((device.display.width ?? 0) / density)) × "
+                        + "\(Int((device.display.height ?? 0) / density)) pt at \(density)x"
+                } ?? "density not said")
 
                 Text("orientation · \(device.display.orientation)")
                 Text("rotation · \(device.display.rotation)")
-                Text(device.display.refreshRate > 0
-                    ? "refresh · \(Int(device.display.refreshRate)) Hz"
-                    : "refresh · not said")
+                Text(device.display.refreshRate.map { "refresh · \(Int($0)) Hz" } ?? "refresh · not said")
             }
         }
         """#,

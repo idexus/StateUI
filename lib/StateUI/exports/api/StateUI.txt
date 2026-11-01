@@ -2795,7 +2795,7 @@ swift.init ApplicationPhase.init(rawValue:): init?(rawValue: Int32)
 swift.init ApplicationSession.init(): @MainActor init()
 swift.init Area.init(propValue:): init?(propValue: PropValue)
 swift.init AxisValues.init(arrayLiteral:): init(arrayLiteral values: Double...)
-swift.init Battery.init(chargeLevel:state:powerSource:energySaverStatus:): @MainActor init(chargeLevel: Double = -1, state: BatteryState = .unknown, powerSource: BatteryPowerSource = .unknown, energySaverStatus: EnergySaverStatus = .unknown)
+swift.init Battery.init(chargeLevel:state:powerSource:energySaverStatus:): @MainActor init(chargeLevel: Double? = nil, state: BatteryState = .unknown, powerSource: BatteryPowerSource = .unknown, energySaverStatus: EnergySaverStatus = .unknown)
 swift.init BatteryPowerSource.init(rawValue:): init?(rawValue: Int32)
 swift.init BatteryState.init(rawValue:): init?(rawValue: Int32)
 swift.init Binding.init(_:): @MainActor init(_ state: State<Value>)
@@ -2850,7 +2850,7 @@ swift.init DateStyle.init(propValue:): init?(propValue: PropValue)
 swift.init DateStyle.init(rawValue:): init?(rawValue: Int32)
 swift.init DebugInspector.init(): @MainActor init()
 swift.init Device.init(info:display:battery:connectivity:accessibility:): @MainActor init(info: DeviceInfo = DeviceInfo(), display: DeviceDisplay = DeviceDisplay(), battery: Battery = Battery(), connectivity: Connectivity = Connectivity(), accessibility: AccessibilitySettings = AccessibilitySettings())
-swift.init DeviceDisplay.init(width:height:density:orientation:rotation:refreshRate:): @MainActor init(width: Double = 0, height: Double = 0, density: Double = 0, orientation: DisplayOrientation = .unknown, rotation: DisplayRotation = .unknown, refreshRate: Double = 0)
+swift.init DeviceDisplay.init(width:height:density:orientation:rotation:refreshRate:): @MainActor init(width: Double? = nil, height: Double? = nil, density: Double? = nil, orientation: DisplayOrientation = .unknown, rotation: DisplayRotation = .unknown, refreshRate: Double? = nil)
 swift.init DeviceInfo.init(formFactor:platform:model:manufacturer:name:versionString:isVirtual:): @MainActor init(formFactor: FormFactor = .unknown, platform: String = "", model: String = "", manufacturer: String = "", name: String = "", versionString: String = "", isVirtual: Bool? = nil)
 swift.init DisplayOrientation.init(rawValue:): init?(rawValue: Int32)
 swift.init DisplayRotation.init(rawValue:): init?(rawValue: Int32)
@@ -15908,7 +15908,7 @@ swift.property ApplicationSession.phase: @State @MainActor var phase: Applicatio
 swift.property ApplicationSession.scenes: @MainActor var scenes: [SceneSession] { get }
 swift.property ApplicationSession.styles: @State @MainActor var styles: StyleSheet? { get set }
 swift.property Area.propValue: var propValue: PropValue { get }
-swift.property Battery.chargeLevel: @State @MainActor var chargeLevel: Double { get set }
+swift.property Battery.chargeLevel: @State @MainActor var chargeLevel: Double? { get set }
 swift.property Battery.energySaverStatus: @State @MainActor var energySaverStatus: EnergySaverStatus { get set }
 swift.property Battery.powerSource: @State @MainActor var powerSource: BatteryPowerSource { get set }
 swift.property Battery.state: @State @MainActor var state: BatteryState { get set }
@@ -15973,12 +15973,12 @@ swift.property Device.battery: @MainActor let battery: Battery
 swift.property Device.connectivity: @MainActor let connectivity: Connectivity
 swift.property Device.display: @MainActor let display: DeviceDisplay
 swift.property Device.info: @MainActor let info: DeviceInfo
-swift.property DeviceDisplay.density: @State @MainActor var density: Double { get set }
-swift.property DeviceDisplay.height: @State @MainActor var height: Double { get set }
+swift.property DeviceDisplay.density: @State @MainActor var density: Double? { get set }
+swift.property DeviceDisplay.height: @State @MainActor var height: Double? { get set }
 swift.property DeviceDisplay.orientation: @State @MainActor var orientation: DisplayOrientation { get set }
-swift.property DeviceDisplay.refreshRate: @State @MainActor var refreshRate: Double { get set }
+swift.property DeviceDisplay.refreshRate: @State @MainActor var refreshRate: Double? { get set }
 swift.property DeviceDisplay.rotation: @State @MainActor var rotation: DisplayRotation { get set }
-swift.property DeviceDisplay.width: @State @MainActor var width: Double { get set }
+swift.property DeviceDisplay.width: @State @MainActor var width: Double? { get set }
 swift.property DeviceInfo.formFactor: @State @MainActor var formFactor: FormFactor { get set }
 swift.property DeviceInfo.isVirtual: @State @MainActor var isVirtual: Bool? { get set }
 swift.property DeviceInfo.manufacturer: @State @MainActor var manufacturer: String { get set }

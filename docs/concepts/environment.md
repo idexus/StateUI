@@ -123,10 +123,10 @@ contract:
 
 | Read as - type | Properties | Meaning and initial fallback |
 | --- | --- | --- |
-| `device.battery` - `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | charge and power state; level is `-1`, enums are `.unknown` until reported |
+| `device.battery` - `Battery` | `chargeLevel`, `state`, `powerSource`, `energySaverStatus` | charge and power state; the level is nil until reported and where no battery stands, enums are `.unknown` until reported |
 | `device.accessibility` - `AccessibilitySettings` | `reducesMotion`, `prefersHigherContrast`, `isScreenReaderOn`, `textScale` | what the user asked of the system - less motion, more contrast, a screen reader, larger words; `false` and a scale of `1` until reported, and where a platform cannot tell |
 | `device.connectivity` - `Connectivity` | `networkAccess`, `connectionProfiles` | reachability and all active connection kinds; `.unknown` and `[]` until reported |
-| `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numeric values are `0` and enums `.unknown` until reported |
+| `device.display` - `DeviceDisplay` | `width`, `height`, `density`, `orientation`, `rotation`, `refreshRate` | main display pixels, pixels per layout point, orientation, rotation, and rate; numbers are nil and enums `.unknown` until reported, the rate nil where the platform does not say |
 | `device.info` - `DeviceInfo` | `formFactor`, `platform`, `model`, `manufacturer`, `name`, `versionString`, `isVirtual` | form factor, open platform name, hardware and system facts, and whether the device is an emulator, a simulator or a virtual machine; text starts empty, closed values `.unknown` and `isVirtual` nil |
 | `locale` - `LocaleInfo` | `language`, `region`, `name`, `languages`, `timeZone`, `uses24HourClock`, `firstDayOfWeek`, `isMetric`, `layoutDirection` | host-normalized language, region, the user's languages in order (`LocaleTag`), IANA zone, clock and calendar conventions, and the way the language is written; text starts empty, the list empty, the clock starts 12-hour, the week on Sunday, units metric, and the direction left to right |
 | `application.info` - `ApplicationInfo` | `name`, `packageName`, `versionString`, `buildString`, `colorScheme`, `accentColor` | manifest identity, live requested appearance and the user's accent; text starts empty, theme `.system` and accent `#0A84FF` until reported |
@@ -178,7 +178,7 @@ struct RuntimeSummary: View {
             Text("\(app.info.name) \(app.info.versionString)")
             Text("StateUI \(stateUIVersion()) for \(stateUIPlatform())")
             Text("\(device.info.platform) · \(device.info.formFactor)")
-            Text("\(Int(device.display.width / max(device.display.density, 1))) points wide")
+            Text("\(Int((device.display.width ?? 0) / (device.display.density ?? 1))) points wide")
             Text("\(locale.language)-\(locale.region) · \(locale.timeZone?.identifier ?? "no zone said")")
         }
     }
@@ -193,7 +193,7 @@ Use `device.info.formFactor` for a semantic form-factor decision, never for
 layout: a window can be smaller than its display, and resized. Lay out by the
 room a view is given - `.onFrameChanged` and `GeometryReader`
 ([layout](../interface/layout.md)) - and read display points (`pixels / density`) for the
-screen itself, handling zero density before the first host report. Use `app.info.colorScheme` only when logic itself branches on the
+screen itself, whose numbers are nil before the first host report. Use `app.info.colorScheme` only when logic itself branches on the
 theme; themed colors resolve through the style and color system directly.
 
 ### What the platform honors

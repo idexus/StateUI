@@ -13,7 +13,7 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
         + "is turned - live through a rotation."
 
     /// Listed where the host reports it: one that says nothing of it would show placeholders alone.
-    static func shows(_ device: Device) -> Bool { device.display.width > 0 }
+    static func shows(_ device: Device) -> Bool { device.display.width != nil }
 
     // listing: DeviceDisplaySample
     var body: some View {
@@ -22,25 +22,22 @@ struct DeviceDisplaySample: SampleContent, ExampleContent {
             // builds this closure.
             DebugInfoLabel()
 
-            Text("\(Int(device.display.width)) × \(Int(device.display.height)) px")
+            Text("\(Int(device.display.width ?? 0)) × \(Int(device.display.height ?? 0)) px")
                 .fontSize(28)
                 .fontWeight(.bold)
                 .horizontalTextAlignment(.center)
 
-            Text(device.display.density > 0
-                ? "\(Int(device.display.width / device.display.density)) × "
-                    + "\(Int(device.display.height / device.display.density)) pt at "
-                    + "\(device.display.density)x"
-                : "density not said")
+            Text(device.display.density.map { density in
+                "\(Int((device.display.width ?? 0) / density)) × "
+                    + "\(Int((device.display.height ?? 0) / density)) pt at \(density)x"
+            } ?? "density not said")
                 .fontSize(15)
 
             Text("orientation · \(device.display.orientation)")
                 .fontSize(15)
             Text("rotation · \(device.display.rotation)")
                 .fontSize(15)
-            Text(device.display.refreshRate > 0
-                ? "refresh · \(Int(device.display.refreshRate)) Hz"
-                : "refresh · not said")
+            Text(device.display.refreshRate.map { "refresh · \(Int($0)) Hz" } ?? "refresh · not said")
                 .fontSize(15)
         }
         .spacing(10)

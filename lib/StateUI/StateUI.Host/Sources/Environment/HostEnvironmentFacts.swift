@@ -50,12 +50,12 @@ extension HostConnectivityInfo {
 }
 
 extension HostBatteryInfo {
-    /// A desktop's power: no battery - the machine on mains, as full as it gets - or one charged to `level`, 0 to
-    /// 1: charging, else discharging off mains, else full where it says so and waiting on mains where not.
+    /// A desktop's power: no battery - the machine on mains, no charge to tell - or one charged to `level`, 0 to 1:
+    /// charging, else discharging off mains, else full where it says so and waiting on mains where not.
     public init(present: Bool, level: Double, charging: Bool, onMains: Bool, full: Bool, saving: Bool) {
         let saver: EnergySaverStatus = saving ? .on : .off
         guard present else {
-            self.init(chargeLevel: 1, state: .notPresent, powerSource: .ac, energySaverStatus: saver)
+            self.init(chargeLevel: nil, state: .notPresent, powerSource: .ac, energySaverStatus: saver)
             return
         }
         let state: BatteryState = charging ? .charging : !onMains ? .discharging : full ? .full : .notCharging
@@ -67,12 +67,13 @@ extension HostBatteryInfo {
 
 extension HostDisplayInfo {
     /// A screen `width` by `height` pixels as it stands now, turned `quarterTurns` quarters from its natural
-    /// orientation: landscape where it is at least as wide as it is tall.
+    /// orientation: landscape where it is at least as wide as it is tall. A `refreshRate` of nought - the
+    /// platform not saying - is none.
     public init(width: Double, height: Double, density: Double, quarterTurns: Int, refreshRate: Double) {
         let rotations: [DisplayRotation] = [.rotation0, .rotation90, .rotation180, .rotation270]
         self.init(
             width: width, height: height, density: density, orientation: width >= height ? .landscape : .portrait,
-            rotation: rotations[(quarterTurns % 4 + 4) % 4], refreshRate: refreshRate)
+            rotation: rotations[(quarterTurns % 4 + 4) % 4], refreshRate: refreshRate > 0 ? refreshRate : nil)
     }
 
     /// A screen `width` by `height` pixels that turns with nothing.

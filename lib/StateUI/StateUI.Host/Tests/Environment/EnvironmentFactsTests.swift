@@ -47,8 +47,8 @@ final class EnvironmentFactsTests: XCTestCase {
         XCTAssertEqual(HostConnectivityInfo(access: 99, connections: 0).networkAccess, .unknown)
     }
 
-    /// A desktop's power: no battery is mains and full; one charging charges, one off mains discharges, one on
-    /// mains is full or waits.
+    /// A desktop's power: no battery is mains, with no charge to tell; one charging charges, one off mains
+    /// discharges, one on mains is full or waits.
     func testADesktopsPowerIsItsBatterysState() {
         func state(charging: Bool, onMains: Bool, full: Bool) -> BatteryState {
             HostBatteryInfo(present: true, level: 0.5, charging: charging, onMains: onMains, full: full, saving: false)
@@ -57,7 +57,7 @@ final class EnvironmentFactsTests: XCTestCase {
         let none = HostBatteryInfo(present: false, level: 0.2, charging: false, onMains: false, full: false, saving: true)
         XCTAssertEqual(none.state, .notPresent)
         XCTAssertEqual(none.powerSource, .ac)
-        XCTAssertEqual(none.chargeLevel, 1)
+        XCTAssertNil(none.chargeLevel)
         XCTAssertEqual(none.energySaverStatus, .on)
         XCTAssertEqual(state(charging: true, onMains: true, full: false), .charging)
         XCTAssertEqual(state(charging: false, onMains: false, full: false), .discharging)
@@ -72,6 +72,12 @@ final class EnvironmentFactsTests: XCTestCase {
     func testAScreenAsWideAsItIsTallIsLandscape() {
         XCTAssertEqual(HostDisplayInfo(width: 100, height: 100, density: 2, refreshRate: 60).orientation, .landscape)
         XCTAssertEqual(HostDisplayInfo(width: 90, height: 100, density: 2, refreshRate: 60).orientation, .portrait)
+    }
+
+    /// A screen's rate the platform does not say - nought - is none, and a rate it says stands.
+    func testARateThePlatformDoesNotSayIsNone() {
+        XCTAssertNil(HostDisplayInfo(width: 100, height: 100, density: 2, refreshRate: 0).refreshRate)
+        XCTAssertEqual(HostDisplayInfo(width: 100, height: 100, density: 2, refreshRate: 120).refreshRate, 120)
     }
 
     /// A screen turned by quarters from its natural orientation says each turn, whichever way it stands.
