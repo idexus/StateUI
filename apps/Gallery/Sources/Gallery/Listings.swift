@@ -13140,9 +13140,11 @@ enum Listings {
             }
         }
 
-        /// A style can target the bar: a style target is a control with an empty
-        /// initializer, and a style resolves by the node type `RatingBar()` makes.
-        extension RatingBar: StyleTarget {}
+        /// A style can target the bar: a style target names the node type a style
+        /// resolves by - the bar's contract's.
+        extension RatingBar: StyleTarget {
+            public static var nodeType: NodeType { RatingBarContract.nodeType }
+        }
 
         /// A style of the bar offers the bar's own setters.
         extension Styling: RatingBarProperties where Target == RatingBar {}

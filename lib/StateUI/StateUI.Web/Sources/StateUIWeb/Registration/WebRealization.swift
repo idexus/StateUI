@@ -56,9 +56,6 @@ enum WebRealization {
         .partial(FilledShapeContract.fill, missing: "A page has no glass: a figure of glass is drawn as the blur as clear as it is, a filter under its color."),
         .partial(VisualElementContract.background,
             missing: "A brush fills the view with its first color alone; a blur and glass are drawn by a layout, and elsewhere a blur's color stands in."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
 
         // MARK: Entries - a control's or a part's own
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),

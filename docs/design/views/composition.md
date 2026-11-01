@@ -56,9 +56,9 @@ value that gives it its purpose - goes in the initializer and has no default.
 Everything a caller may leave out is a modifier returning `Self`: one copy, one
 assignment into a `private` field, which also keeps the memberwise initializer
 from being a second way in. An optional purpose value is a second initializer
-delegating to the first, never a defaulted parameter. Every control also has
-an initializer that sets nothing, which is what a `Style` of it is written
-against.
+delegating to the first, never a defaulted parameter. A `Style` of a control
+is written against its node type, which the control names
+(`StyleTarget.nodeType`).
 
 ## Container content runs when the differ reaches it
 

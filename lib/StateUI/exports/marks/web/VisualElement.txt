@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 24.1
 Button.accessibilityActionPerformed: – ARIA offers no action of an application's own words.
 Button.accessibilityActions: – ARIA offers no action of an application's own words.
 Button.accessibilityAdjusted: – A browser's screen reader steps a slider by the keys it sends the page, not by a step of its own.
@@ -425,7 +425,7 @@ ItemsView.rotationY: ✓ read rotationY of ItemsView: the host's own transform: 
 ItemsView.scale: ✓ read scale of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.scaleX: ✓ read scaleX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.scaleY: ✓ read scaleY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-ItemsView.style: not realized
+ItemsView.style: ✅
 ItemsView.tooltip: ✅
 ItemsView.translationX: ✓ read translationX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 ItemsView.translationY: ✓ read translationY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart
@@ -569,7 +569,7 @@ MotionLayout.rotationY: ✓ read rotationY of MotionLayout: the host's own trans
 MotionLayout.scale: ✓ read scale of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 MotionLayout.scaleX: ✓ read scaleX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 MotionLayout.scaleY: ✓ read scaleY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
-MotionLayout.style: not realized
+MotionLayout.style: ✅
 MotionLayout.tooltip: ✅
 MotionLayout.translationX: ✓ read translationX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart
 MotionLayout.translationY: ✓ read translationY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart

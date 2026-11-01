@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 24.1
 Button.isAccessibilityHidden: ✅
 Canvas.accessibilityHeading: ☑️ UIKit marks a heading, not its level: every level is a heading.
 Capsule.opacity: ✅

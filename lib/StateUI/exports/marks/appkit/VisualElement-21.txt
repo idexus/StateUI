@@ -1,4 +1,4 @@
-# revision 22.1
+# revision 24.1
 Button.accessibilityHint: ✅
 Canvas.isEnabled: ✅
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own transform, checked against the layer it composed itself

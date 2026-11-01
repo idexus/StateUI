@@ -133,16 +133,19 @@ extension RatingBarProperties {
     }
 }
 
-/// A style can target the bar: a style target is a control with an empty
-/// initializer, and a style resolves by the node type `RatingBar()` makes.
-extension RatingBar: StyleTarget {}
+/// A style can target the bar: a style target names the node type a style
+/// resolves by - the bar's contract's.
+extension RatingBar: StyleTarget {
+    public static var nodeType: NodeType { RatingBarContract.nodeType }
+}
 
 /// A style of the bar offers the bar's own setters.
 extension Styling: RatingBarProperties where Target == RatingBar {}
 ```
 
 `PropertyContainer` is what holds properties: a control, or a style.
-`StyleTarget` is a control a style can be written for. `Styling` is the type
+`StyleTarget` is a control a style can be written for, named by the node
+type a style resolves by (`nodeType`, its contract's). `Styling` is the type
 behind `Style<Target>`. Every library control has a protocol of this kind:
 `ButtonProperties`, `CanvasProperties`, `CheckBoxProperties`,
 `ColorPickerProperties`, `DatePickerProperties`, `GridProperties`,

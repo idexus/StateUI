@@ -80,9 +80,6 @@ enum AndroidRealization {
             missing: "Android's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .notPlanned(VisualElementContract.zIndex, on: ButtonContract.self,
             reason: "Android draws a raised button over the flat views beside it whatever their depth: its elevation is the native button's own."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .complete(MenuContract.isEnabled),
         .complete(MenuContract.text),
         .complete(MenuBarContract.order),

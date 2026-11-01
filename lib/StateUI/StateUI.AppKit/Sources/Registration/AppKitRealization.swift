@@ -109,9 +109,6 @@ enum AppKitRealization {
             + "hands the keyboard on all the same."),
         .notPlanned(TextFieldContract.showsClearButton,
             reason: "AppKit's text field has no button of its own that empties it."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .partial(ImageElementContract.contentMode, on: ButtonContract.self,
             missing: "AppKit's button has no covering scale: `.fill` fits the icon, as `.fit` does."),
         .complete(ButtonMenuElementContract.menuKind, on: ButtonContract.self),

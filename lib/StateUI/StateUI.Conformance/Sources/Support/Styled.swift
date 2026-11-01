@@ -28,6 +28,8 @@ enum Styled {
             dimmed(Grid.self)
             dimmed(HStack.self)
             dimmed(Image.self)
+            dimmed(ItemsView<String>.self)
+            dimmed(MotionLayout<[Int], Int, Double>.self)
             dimmed(Text.self)
             dimmed(Line.self)
             dimmed(Link.self)
@@ -60,13 +62,13 @@ enum Styled {
     /// The style for a bar's item `Target`, on a background of steel blue.
     static func onSteelBlue<Target: StyleTarget & BarItemElement>(_ target: Target.Type) -> [AnyStyle] {
         StyleBuilder.buildExpression(
-            Style(StyleKey<Target>(key(Target().node.type.name))).setValue(BarItemElementContract.background, Material.color(.steelBlue)))
+            Style(StyleKey<Target>(key(Target.nodeType.name))).setValue(BarItemElementContract.background, Material.color(.steelBlue)))
     }
 
     /// The style for `Target`, dimming it to half its opacity.
     static func dimmed<Target: StyleTarget>(_ target: Target.Type) -> [AnyStyle] {
         StyleBuilder.buildExpression(
-            Style(StyleKey<Target>(key(Target().node.type.name))).setValue(VisualElementContract.opacity, 0.5))
+            Style(StyleKey<Target>(key(Target.nodeType.name))).setValue(VisualElementContract.opacity, 0.5))
     }
 }
 

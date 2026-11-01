@@ -108,9 +108,6 @@ enum UIKitRealization {
         .complete(MotionLayoutContract.pans),
         .complete(MotionLayoutContract.rotates),
         .complete(MotionLayoutContract.pinchRotationUpdated),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .partial(MenuContract.isEnabled, missing: "UIKit holds no menu out of reach itself: each of its entries is."),
         .partial(LayoutContract.ignoresSafeArea, missing: "The safe area holds no keyboard: a page stands under it "
             + "whatever edges it ignores."),

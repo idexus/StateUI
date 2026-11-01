@@ -1,4 +1,4 @@
-# revision 22.2
+# revision 24.2
 Button.accessibilityValue: – A WinUI control says its own value to assistive technology; a stack or a grid StateUI draws says another.
 Button.translationY: ✅
 Canvas.tooltip: ✅

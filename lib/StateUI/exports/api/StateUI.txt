@@ -1550,7 +1550,6 @@ swift.init Stepper.init(_:): @MainActor init(_ state: Binding<Double>)
 swift.init Stepper.init(_:): @MainActor init(_ value: Double)
 swift.init StyleKey.init(_:): init(_ name: String)
 swift.init StyleSheet.init(styles:): init(@StyleBuilder styles: () -> [AnyStyle])
-swift.init StyleTarget.init(): @MainActor init()
 swift.init Styling.init(): @MainActor init()
 swift.init Styling.init(_:): @MainActor init(_ key: StyleKey<Target>)
 swift.init Styling.init(presentation:): @MainActor init(presentation: PickerPresentation)
@@ -5807,6 +5806,9 @@ swift.method ItemsView.onTapped(count:_:): @MainActor func onTapped(count: Int, 
 swift.method ItemsView.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method ItemsView.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method ItemsView.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
+swift.method ItemsView.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method ItemsView.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method ItemsView.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method ItemsView.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -5838,6 +5840,7 @@ swift.method ItemsView.showsNavigationBar(_:): @MainActor func showsNavigationBa
 swift.method ItemsView.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method ItemsView.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method ItemsView.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
+swift.method ItemsView.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method ItemsView.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method ItemsView.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method ItemsView.title(_:): @MainActor func title(_ state: Binding<String>) -> Self.Modified
@@ -5850,6 +5853,8 @@ swift.method ItemsView.transform(_:): @MainActor func transform(_ transform: Vie
 swift.method ItemsView.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
+swift.method ItemsView.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
+swift.method ItemsView.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method ItemsView.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method ItemsView.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method Journey.convert(_:file:line:column:): @MainActor func convert<Out>(_ transform: @escaping (Journey<Value>) -> Out, file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Out : StateValue
@@ -6926,6 +6931,9 @@ swift.method MotionLayout.onTapped(count:_:): @MainActor func onTapped(count: In
 swift.method MotionLayout.onTapped(count:gate:_:): @MainActor func onTapped(count: Int, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onTapped(count:policy:_:): @MainActor func onTapped(count: Int, policy: GatePolicy, _ handler: @escaping EventHandler) -> Self.Modified
 swift.method MotionLayout.onTapped(gate:_:): @MainActor func onTapped(gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified
+swift.method MotionLayout.onVisualStateChanged(_:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], _ handler: @escaping @MainActor @Sendable (VisualState<Self>) throws -> Void) -> Self.Modified
+swift.method MotionLayout.onVisualStateChanged(_:gate:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], gate: Gate, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
+swift.method MotionLayout.onVisualStateChanged(_:policy:_:): @MainActor func onVisualStateChanged(_ states: [VisualState<Self>] = [], policy: GatePolicy, _ handler: @escaping ValueEventHandler<VisualState<Self>>) -> Self.Modified
 swift.method MotionLayout.opacity(_:): @MainActor func opacity(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.overlays(_:): @MainActor func overlays<Content>(@ViewBuilder _ content: () -> Content) -> Self.Modified where Content : Views
 swift.method MotionLayout.pageBackground(_:): @MainActor func pageBackground(_ state: Binding<Color>) -> Self.Modified
@@ -6956,6 +6964,7 @@ swift.method MotionLayout.showsNavigationBar(_:): @MainActor func showsNavigatio
 swift.method MotionLayout.showsNavigationBar(_:): @MainActor func showsNavigationBar(_ value: Bool) -> Self.Modified
 swift.method MotionLayout.showsTitle(_:): @MainActor func showsTitle(_ state: Binding<Bool>) -> Self.Modified
 swift.method MotionLayout.showsTitle(_:): @MainActor func showsTitle(_ value: Bool) -> Self.Modified
+swift.method MotionLayout.style(_:): @MainActor func style(_ key: StyleKey<Self>?) -> Self.Modified
 swift.method MotionLayout.subtitle(_:): @MainActor func subtitle(_ state: Binding<String>) -> Self.Modified
 swift.method MotionLayout.subtitle(_:): @MainActor func subtitle(_ value: String) -> Self.Modified
 swift.method MotionLayout.throwMotion(_:): @MainActor func throwMotion(_ motion: Motion) -> MotionLayout<Items, ID, Parameters>
@@ -6969,6 +6978,8 @@ swift.method MotionLayout.transform(_:): @MainActor func transform(_ transform: 
 swift.method MotionLayout.translationX(_:): @MainActor func translationX(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.translationY(_:): @MainActor func translationY(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.verticalAlignment(_:): @MainActor func verticalAlignment(_ state: Binding<Alignment>) -> Self.Modified
+swift.method MotionLayout.visualState(_:): @MainActor func visualState(_ state: VisualState<Self>) -> Self.Modified
+swift.method MotionLayout.visualState(_:_:): @MainActor func visualState(_ state: VisualState<Self>, _ setters: (Styling<Self, StyleScope.VisualState>) -> Styling<Self, StyleScope.VisualState>) -> Self.Modified
 swift.method MotionLayout.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method MotionLayout.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method MultiBinding.convert(_:back:file:line:column:): @MainActor func convert<A, B>(_ transform: @escaping (A, B) -> Out, back: @escaping (Out) -> (A, B), file: StaticString = #fileID, line: UInt = #line, column: UInt = #column) -> Binding<Out> where Sources == (A, B), A : StateValue, B : StateValue
@@ -13703,6 +13714,7 @@ swift.type.property BottomBarContract.name: static var name: String { get }
 swift.type.property BottomBarContract.nodeType: static let nodeType: NodeType
 swift.type.property BottomBarContract.scrollEdge: static let scrollEdge: ElementProperty<BottomBarContract, ScrollEdge>
 swift.type.property BottomBarContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Button.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ButtonContract.clicked: static let clicked: ElementEvent<ButtonContract, Void>
 swift.type.property ButtonContract.icon: static let icon: ElementProperty<ButtonContract, ImageSource>
 swift.type.property ButtonContract.iconPosition: static let iconPosition: ElementProperty<ButtonContract, IconPosition>
@@ -13730,6 +13742,7 @@ swift.type.property ButtonMenuElementContract.menuKind: static let menuKind: Ele
 swift.type.property ButtonMenuElementContract.name: static let name: String
 swift.type.property ButtonMenuElementContract.showsMenuArrow: static let showsMenuArrow: ElementProperty<ButtonMenuElementContract, Bool>
 swift.type.property ButtonMenuElementContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Canvas.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property CanvasContract.drawing: static let drawing: ElementProperty<CanvasContract, [DrawCommand]>
 swift.type.property CanvasContract.layer: static let layer: ElementLayer
 swift.type.property CanvasContract.layer: static var layer: ElementLayer { get }
@@ -13738,6 +13751,7 @@ swift.type.property CanvasContract.name: static var name: String { get }
 swift.type.property CanvasContract.nodeType: static let nodeType: NodeType
 swift.type.property CanvasContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property CanvasContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Capsule.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property CapsuleContract.layer: static let layer: ElementLayer
 swift.type.property CapsuleContract.layer: static var layer: ElementLayer { get }
 swift.type.property CapsuleContract.members: static let members: [any ContractMember]
@@ -13745,6 +13759,7 @@ swift.type.property CapsuleContract.name: static var name: String { get }
 swift.type.property CapsuleContract.nodeType: static let nodeType: NodeType
 swift.type.property CapsuleContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property CapsuleContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property CheckBox.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property CheckBoxContract.isOn: static let isOn: ElementProperty<CheckBoxContract, Bool>
 swift.type.property CheckBoxContract.layer: static let layer: ElementLayer
 swift.type.property CheckBoxContract.layer: static var layer: ElementLayer { get }
@@ -13789,6 +13804,7 @@ swift.type.property Color.violet: static let violet: Color
 swift.type.property Color.white: static let white: Color
 swift.type.property Color.whiteSmoke: static let whiteSmoke: Color
 swift.type.property Color.yellow: static let yellow: Color
+swift.type.property ColorPicker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ColorPickerContract.choosesOpacity: static let choosesOpacity: ElementProperty<ColorPickerContract, Bool>
 swift.type.property ColorPickerContract.color: static let color: ElementProperty<ColorPickerContract, Color>
 swift.type.property ColorPickerContract.colorChanged: static let colorChanged: ElementEvent<ColorPickerContract, Color>
@@ -13811,6 +13827,7 @@ swift.type.property CorneredShapeContract.miterLimit: static let miterLimit: Ele
 swift.type.property CorneredShapeContract.name: static let name: String
 swift.type.property CorneredShapeContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property CorneredShapeContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property DatePicker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property DatePickerContract.closed: static let closed: ElementEvent<DatePickerContract, Void>
 swift.type.property DatePickerContract.date: static let date: ElementProperty<DatePickerContract, CalendarDate>
 swift.type.property DatePickerContract.dateChanged: static let dateChanged: ElementEvent<DatePickerContract, CalendarDate>
@@ -13830,6 +13847,7 @@ swift.type.property DecorableTextElementContract.members: static let members: [a
 swift.type.property DecorableTextElementContract.name: static let name: String
 swift.type.property DecorableTextElementContract.textDecorations: static let textDecorations: ElementProperty<DecorableTextElementContract, TextDecorations>
 swift.type.property DecorableTextElementContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Ellipse.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property EllipseContract.layer: static let layer: ElementLayer
 swift.type.property EllipseContract.layer: static var layer: ElementLayer { get }
 swift.type.property EllipseContract.members: static let members: [any ContractMember]
@@ -13838,6 +13856,7 @@ swift.type.property EllipseContract.nodeType: static let nodeType: NodeType
 swift.type.property EllipseContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property EllipseContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property EngineCycle.mostElapsed: static let mostElapsed: Double
+swift.type.property Fill.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property FillContract.layer: static let layer: ElementLayer
 swift.type.property FillContract.layer: static var layer: ElementLayer { get }
 swift.type.property FillContract.members: static let members: [any ContractMember]
@@ -13875,6 +13894,7 @@ swift.type.property GatePolicy.runConcurrently: static var runConcurrently: Gate
 swift.type.property GatePolicy.waitForPrevious: static var waitForPrevious: GatePolicy { get }
 swift.type.property Glass.clear: static let clear: Glass
 swift.type.property Glass.regular: static let regular: Glass
+swift.type.property Grid.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property GridContract.columnSpacing: static let columnSpacing: ElementProperty<GridContract, Double>
 swift.type.property GridContract.columns: static let columns: ElementProperty<GridContract, [GridLength]>
 swift.type.property GridContract.layer: static let layer: ElementLayer
@@ -13889,6 +13909,7 @@ swift.type.property GridContract.tiers: static var tiers: [any Contract.Type] { 
 swift.type.property GridLength.fill: static var fill: GridLength { get }
 swift.type.property GridTracks.auto: static var auto: GridTracks { get }
 swift.type.property GridTracks.fill: static var fill: GridTracks { get }
+swift.type.property HStack.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property HStackContract.layer: static let layer: ElementLayer
 swift.type.property HStackContract.layer: static var layer: ElementLayer { get }
 swift.type.property HStackContract.lineAlignment: static let lineAlignment: ElementProperty<HStackContract, TextAlignment>
@@ -13905,6 +13926,7 @@ swift.type.property HTTPMethod.head: static let head: HTTPMethod
 swift.type.property HTTPMethod.patch: static let patch: HTTPMethod
 swift.type.property HTTPMethod.post: static let post: HTTPMethod
 swift.type.property HTTPMethod.put: static let put: HTTPMethod
+swift.type.property Image.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ImageContract.isAnimating: static let isAnimating: ElementProperty<ImageContract, Bool>
 swift.type.property ImageContract.layer: static let layer: ElementLayer
 swift.type.property ImageContract.layer: static var layer: ElementLayer { get }
@@ -13918,6 +13940,7 @@ swift.type.property ImageElementContract.contentMode: static let contentMode: El
 swift.type.property ImageElementContract.members: static let members: [any ContractMember]
 swift.type.property ImageElementContract.name: static let name: String
 swift.type.property ImageElementContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property ItemsView.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ItemsViewContract.endReached: static let endReached: ElementEvent<ItemsViewContract, Void>
 swift.type.property ItemsViewContract.endReachedWithin: static let endReachedWithin: ElementProperty<ItemsViewContract, Int>
 swift.type.property ItemsViewContract.itemActivated: static let itemActivated: ElementEvent<ItemsViewContract, String>
@@ -13985,6 +14008,7 @@ swift.type.property LayoutInterpolation.catmullRom: static var catmullRom: Layou
 swift.type.property LayoutInterpolation.linear: static var linear: LayoutCurve { get }
 swift.type.property LayoutInterpolation.monotone: static var monotone: LayoutCurve { get }
 swift.type.property LayoutParameters.axes: static var axes: [WritableKeyPath<Self, Double>] { get }
+swift.type.property Line.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property LineContract.from: static let from: ElementProperty<LineContract, Point>
 swift.type.property LineContract.layer: static let layer: ElementLayer
 swift.type.property LineContract.layer: static var layer: ElementLayer { get }
@@ -13998,6 +14022,7 @@ swift.type.property LineHeightElementContract.lineHeight: static let lineHeight:
 swift.type.property LineHeightElementContract.members: static let members: [any ContractMember]
 swift.type.property LineHeightElementContract.name: static let name: String
 swift.type.property LineHeightElementContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Link.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property LinkContract.address: static let address: ElementProperty<LinkContract, String>
 swift.type.property LinkContract.clicked: static let clicked: ElementEvent<LinkContract, Void>
 swift.type.property LinkContract.layer: static let layer: ElementLayer
@@ -14008,6 +14033,7 @@ swift.type.property LinkContract.nodeType: static let nodeType: NodeType
 swift.type.property LinkContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property LinkContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property LocalizationCatalog.defaultLanguage: static var defaultLanguage: Self.CatalogLanguage { get }
+swift.type.property Map.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property MapContract.isScrollEnabled: static let isScrollEnabled: ElementProperty<MapContract, Bool>
 swift.type.property MapContract.isZoomEnabled: static let isZoomEnabled: ElementProperty<MapContract, Bool>
 swift.type.property MapContract.layer: static let layer: ElementLayer
@@ -14090,6 +14116,7 @@ swift.type.property MotionLanes.place: static let place: MotionLanes
 swift.type.property MotionLanes.width: static let width: MotionLanes
 swift.type.property MotionLanes.x: static let x: MotionLanes
 swift.type.property MotionLanes.y: static let y: MotionLanes
+swift.type.property MotionLayout.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property MotionLayoutContract.itemDrag: static let itemDrag: ElementProperty<MotionLayoutContract, ItemDragStart>
 swift.type.property MotionLayoutContract.itemDragUpdated: static let itemDragUpdated: ElementEvent<MotionLayoutContract, (GesturePhase, Point, Point, Double)>
 swift.type.property MotionLayoutContract.layer: static let layer: ElementLayer
@@ -14162,6 +14189,7 @@ swift.type.property PageElementContract.members: static let members: [any Contra
 swift.type.property PageElementContract.name: static let name: String
 swift.type.property PageElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property PageElementContract.title: static let title: ElementProperty<PageElementContract, String>
+swift.type.property Path.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PathContract.data: static let data: ElementProperty<PathContract, String>
 swift.type.property PathContract.layer: static let layer: ElementLayer
 swift.type.property PathContract.layer: static var layer: ElementLayer { get }
@@ -14171,6 +14199,7 @@ swift.type.property PathContract.nodeType: static let nodeType: NodeType
 swift.type.property PathContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property PathContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property PersistentValue.persistentKind: static var persistentKind: PersistentKind { get }
+swift.type.property Picker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PickerContract.closed: static let closed: ElementEvent<PickerContract, Void>
 swift.type.property PickerContract.isOpen: static let isOpen: ElementProperty<PickerContract, Bool>
 swift.type.property PickerContract.layer: static let layer: ElementLayer
@@ -14187,6 +14216,7 @@ swift.type.property PickerContract.selectedIndexChanged: static let selectedInde
 swift.type.property PickerContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property PickerContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property Point.zero: static let zero: Point
+swift.type.property Polygon.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PolygonContract.fillRule: static let fillRule: ElementProperty<PolygonContract, FillRule>
 swift.type.property PolygonContract.layer: static let layer: ElementLayer
 swift.type.property PolygonContract.layer: static var layer: ElementLayer { get }
@@ -14196,6 +14226,7 @@ swift.type.property PolygonContract.nodeType: static let nodeType: NodeType
 swift.type.property PolygonContract.points: static let points: ElementProperty<PolygonContract, [Point]>
 swift.type.property PolygonContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property PolygonContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Polyline.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property PolylineContract.fillRule: static let fillRule: ElementProperty<PolylineContract, FillRule>
 swift.type.property PolylineContract.layer: static let layer: ElementLayer
 swift.type.property PolylineContract.layer: static var layer: ElementLayer { get }
@@ -14213,6 +14244,7 @@ swift.type.property PopoverContract.members: static let members: [any ContractMe
 swift.type.property PopoverContract.name: static var name: String { get }
 swift.type.property PopoverContract.nodeType: static let nodeType: NodeType
 swift.type.property PopoverContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property ProgressBar.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ProgressBarContract.layer: static let layer: ElementLayer
 swift.type.property ProgressBarContract.layer: static var layer: ElementLayer { get }
 swift.type.property ProgressBarContract.members: static let members: [any ContractMember]
@@ -14222,6 +14254,7 @@ swift.type.property ProgressBarContract.progress: static let progress: ElementPr
 swift.type.property ProgressBarContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property ProgressBarContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property Rect.zero: static let zero: Rect
+swift.type.property Rectangle.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property RectangleContract.cornerRadius: static let cornerRadius: ElementProperty<RectangleContract, CornerRadius>
 swift.type.property RectangleContract.layer: static let layer: ElementLayer
 swift.type.property RectangleContract.layer: static var layer: ElementLayer { get }
@@ -14257,6 +14290,7 @@ swift.type.property SceneContract.windowClosed: static let windowClosed: Element
 swift.type.property ScrollAxes.all: static let all: ScrollAxes
 swift.type.property ScrollAxes.horizontal: static let horizontal: ScrollAxes
 swift.type.property ScrollAxes.vertical: static let vertical: ScrollAxes
+swift.type.property ScrollView.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ScrollViewContract.axes: static let axes: ElementProperty<ScrollViewContract, ScrollAxes>
 swift.type.property ScrollViewContract.horizontalScrollIndicator: static let horizontalScrollIndicator: ElementProperty<ScrollViewContract, ScrollIndicatorVisibility>
 swift.type.property ScrollViewContract.layer: static let layer: ElementLayer
@@ -14269,6 +14303,7 @@ swift.type.property ScrollViewContract.scrollStopped: static let scrollStopped: 
 swift.type.property ScrollViewContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property ScrollViewContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ScrollViewContract.verticalScrollIndicator: static let verticalScrollIndicator: ElementProperty<ScrollViewContract, ScrollIndicatorVisibility>
+swift.type.property SearchField.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SearchFieldContract.layer: static let layer: ElementLayer
 swift.type.property SearchFieldContract.layer: static var layer: ElementLayer { get }
 swift.type.property SearchFieldContract.members: static let members: [any ContractMember]
@@ -14278,6 +14313,7 @@ swift.type.property SearchFieldContract.submitLabel: static let submitLabel: Ele
 swift.type.property SearchFieldContract.submitted: static let submitted: ElementEvent<SearchFieldContract, Void>
 swift.type.property SearchFieldContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property SearchFieldContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Separator.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SeparatorContract.layer: static let layer: ElementLayer
 swift.type.property SeparatorContract.layer: static var layer: ElementLayer { get }
 swift.type.property SeparatorContract.members: static let members: [any ContractMember]
@@ -14304,6 +14340,7 @@ swift.type.property SheetContract.members: static let members: [any ContractMemb
 swift.type.property SheetContract.name: static var name: String { get }
 swift.type.property SheetContract.nodeType: static let nodeType: NodeType
 swift.type.property SheetContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Slider.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SliderContract.layer: static let layer: ElementLayer
 swift.type.property SliderContract.layer: static var layer: ElementLayer { get }
 swift.type.property SliderContract.maximum: static let maximum: ElementProperty<SliderContract, Double>
@@ -14317,6 +14354,7 @@ swift.type.property SliderContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property SliderContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property SliderContract.value: static let value: ElementProperty<SliderContract, Double>
 swift.type.property SliderContract.valueChanged: static let valueChanged: ElementEvent<SliderContract, Double>
+swift.type.property Space.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SpaceContract.layer: static let layer: ElementLayer
 swift.type.property SpaceContract.layer: static var layer: ElementLayer { get }
 swift.type.property SpaceContract.members: static let members: [any ContractMember]
@@ -14324,6 +14362,7 @@ swift.type.property SpaceContract.name: static var name: String { get }
 swift.type.property SpaceContract.nodeType: static let nodeType: NodeType
 swift.type.property SpaceContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property SpaceContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Spinner.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SpinnerContract.isAnimating: static let isAnimating: ElementProperty<SpinnerContract, Bool>
 swift.type.property SpinnerContract.layer: static let layer: ElementLayer
 swift.type.property SpinnerContract.layer: static var layer: ElementLayer { get }
@@ -14350,6 +14389,7 @@ swift.type.property StackContract.name: static let name: String
 swift.type.property StackContract.spacing: static let spacing: ElementProperty<StackContract, Double>
 swift.type.property StackContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property StackContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Stepper.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property StepperContract.layer: static let layer: ElementLayer
 swift.type.property StepperContract.layer: static var layer: ElementLayer { get }
 swift.type.property StepperContract.maximum: static let maximum: ElementProperty<StepperContract, Double>
@@ -14363,11 +14403,13 @@ swift.type.property StepperContract.tiers: static var tiers: [any Contract.Type]
 swift.type.property StepperContract.value: static let value: ElementProperty<StepperContract, Double>
 swift.type.property StepperContract.valueChanged: static let valueChanged: ElementEvent<StepperContract, Double>
 swift.type.property StyleKey.platform: static var platform: StyleKey<Target> { get }
+swift.type.property StyleTarget.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SwipeDirection.all: static let all: SwipeDirection
 swift.type.property SwipeDirection.down: static let down: SwipeDirection
 swift.type.property SwipeDirection.left: static let left: SwipeDirection
 swift.type.property SwipeDirection.right: static let right: SwipeDirection
 swift.type.property SwipeDirection.up: static let up: SwipeDirection
+swift.type.property Switch.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property SwitchContract.isOn: static let isOn: ElementProperty<SwitchContract, Bool>
 swift.type.property SwitchContract.layer: static let layer: ElementLayer
 swift.type.property SwitchContract.layer: static var layer: ElementLayer { get }
@@ -14386,6 +14428,7 @@ swift.type.property TabViewContract.selectedTab: static let selectedTab: Element
 swift.type.property TabViewContract.selectedTabChanged: static let selectedTabChanged: ElementEvent<TabViewContract, Int>
 swift.type.property TabViewContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property TabViewContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property Text.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TextAlignmentElementContract.horizontalTextAlignment: static let horizontalTextAlignment: ElementProperty<TextAlignmentElementContract, TextAlignment>
 swift.type.property TextAlignmentElementContract.members: static let members: [any ContractMember]
 swift.type.property TextAlignmentElementContract.name: static let name: String
@@ -14413,6 +14456,7 @@ swift.type.property TextContract.verticalTextAlignment: static let verticalTextA
 swift.type.property TextDecorations.none: static let none: TextDecorations
 swift.type.property TextDecorations.strikethrough: static let strikethrough: TextDecorations
 swift.type.property TextDecorations.underline: static let underline: TextDecorations
+swift.type.property TextEditor.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TextEditorContract.growsWithText: static let growsWithText: ElementProperty<TextEditorContract, Bool>
 swift.type.property TextEditorContract.layer: static let layer: ElementLayer
 swift.type.property TextEditorContract.layer: static var layer: ElementLayer { get }
@@ -14421,6 +14465,7 @@ swift.type.property TextEditorContract.name: static var name: String { get }
 swift.type.property TextEditorContract.nodeType: static let nodeType: NodeType
 swift.type.property TextEditorContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property TextEditorContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property TextField.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TextFieldContract.isPassword: static let isPassword: ElementProperty<TextFieldContract, Bool>
 swift.type.property TextFieldContract.layer: static let layer: ElementLayer
 swift.type.property TextFieldContract.layer: static var layer: ElementLayer { get }
@@ -14466,6 +14511,7 @@ swift.type.property TextualElementContract.text: static let text: ElementPropert
 swift.type.property TextualElementContract.textCase: static let textCase: ElementProperty<TextualElementContract, TextCase>
 swift.type.property TextualElementContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property TextualElementContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property TimePicker.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property TimePickerContract.closed: static let closed: ElementEvent<TimePickerContract, Void>
 swift.type.property TimePickerContract.format: static let format: ElementProperty<TimePickerContract, String>
 swift.type.property TimePickerContract.isOpen: static let isOpen: ElementProperty<TimePickerContract, Bool>
@@ -14489,6 +14535,7 @@ swift.type.property TitleViewContract.members: static let members: [any Contract
 swift.type.property TitleViewContract.name: static var name: String { get }
 swift.type.property TitleViewContract.nodeType: static let nodeType: NodeType
 swift.type.property TitleViewContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property ToolbarButton.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ToolbarButtonContract.layer: static let layer: ElementLayer
 swift.type.property ToolbarButtonContract.layer: static var layer: ElementLayer { get }
 swift.type.property ToolbarButtonContract.members: static let members: [any ContractMember]
@@ -14496,6 +14543,7 @@ swift.type.property ToolbarButtonContract.name: static var name: String { get }
 swift.type.property ToolbarButtonContract.nodeType: static let nodeType: NodeType
 swift.type.property ToolbarButtonContract.tiers: static let tiers: [any Contract.Type]
 swift.type.property ToolbarButtonContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property ToolbarGroup.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ToolbarGroupContract.barEdge: static let barEdge: ElementProperty<ToolbarGroupContract, ToolbarEdge>
 swift.type.property ToolbarGroupContract.hidesWithSidebar: static let hidesWithSidebar: ElementProperty<ToolbarGroupContract, Bool>
 swift.type.property ToolbarGroupContract.isEnabled: static let isEnabled: ElementProperty<ToolbarGroupContract, Bool>
@@ -14519,6 +14567,7 @@ swift.type.property ToolbarLabelContract.name: static var name: String { get }
 swift.type.property ToolbarLabelContract.nodeType: static let nodeType: NodeType
 swift.type.property ToolbarLabelContract.text: static let text: ElementProperty<ToolbarLabelContract, String>
 swift.type.property ToolbarLabelContract.tiers: static var tiers: [any Contract.Type] { get }
+swift.type.property ToolbarToggle.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ToolbarToggleContract.isOn: static let isOn: ElementProperty<ToolbarToggleContract, Bool>
 swift.type.property ToolbarToggleContract.layer: static let layer: ElementLayer
 swift.type.property ToolbarToggleContract.layer: static var layer: ElementLayer { get }
@@ -14533,6 +14582,7 @@ swift.type.property TrackingElementContract.members: static let members: [any Co
 swift.type.property TrackingElementContract.name: static let name: String
 swift.type.property TrackingElementContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property TrackingElementContract.tracking: static let tracking: ElementProperty<TrackingElementContract, Double>
+swift.type.property VStack.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property VStackContract.layer: static let layer: ElementLayer
 swift.type.property VStackContract.layer: static var layer: ElementLayer { get }
 swift.type.property VStackContract.members: static let members: [any ContractMember]
@@ -14633,6 +14683,7 @@ swift.type.property VisualState.on: static var on: VisualState<Switch> { get }
 swift.type.property VisualState.on: static var on: VisualState<ToolbarToggle> { get }
 swift.type.property VisualState.pointerOver: static var pointerOver: VisualState<Target> { get }
 swift.type.property VisualState.pressed: static var pressed: VisualState<Target> { get }
+swift.type.property WebView.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property WebViewContract.canGoBackChanged: static let canGoBackChanged: ElementEvent<WebViewContract, Bool>
 swift.type.property WebViewContract.canGoForwardChanged: static let canGoForwardChanged: ElementEvent<WebViewContract, Bool>
 swift.type.property WebViewContract.evaluateJavaScript: static let evaluateJavaScript: ElementAct<WebViewContract, String, String?>
@@ -14679,6 +14730,7 @@ swift.type.property WindowContract.windowValue: static let windowValue: ElementP
 swift.type.property WindowContract.x: static let x: ElementProperty<WindowContract, Double>
 swift.type.property WindowContract.y: static let y: ElementProperty<WindowContract, Double>
 swift.type.property WindowType.debugInspector: static let debugInspector: WindowType<()>
+swift.type.property ZStack.nodeType: @MainActor static var nodeType: NodeType { get }
 swift.type.property ZStackContract.layer: static let layer: ElementLayer
 swift.type.property ZStackContract.layer: static var layer: ElementLayer { get }
 swift.type.property ZStackContract.members: static let members: [any ContractMember]

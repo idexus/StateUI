@@ -1,4 +1,4 @@
-# revision 22.2
+# revision 24.2
 Button.ignoresInput: ✅
 Button.pivotY: ✅
 Canvas.rotationY: ✓ read rotationY of Canvas: the host's own tip, checked against the projection it laid on the element

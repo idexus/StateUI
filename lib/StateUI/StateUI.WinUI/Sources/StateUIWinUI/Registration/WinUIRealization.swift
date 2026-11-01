@@ -148,9 +148,6 @@ enum WinUIRealization {
         .unrealized(VisualElementContract.ignoresInput, on: SpinnerContract.self, why: hitOnlyWherePainted),
         .partial(DatePickerContract.format,
             missing: "WinUI writes the long and the short day in the user's own way, and the medium as the short."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .complete(MotionLayoutContract.translationOrientation),
         .complete(MotionLayoutContract.translationUpdated),
         .notPlanned(MotionLayoutContract.wheelStepped,

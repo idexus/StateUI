@@ -36,12 +36,12 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (93)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>45 ✅ · 2 ☑️ · 41 ✓ · 4 –</td><td><code>NSCollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>42 ✅ · 2 ☑️ · 43 ✓ · 5 –</td><td><code>UICollectionView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>71 ✅ · 5 ☑️ · 13 ✓ · 2 –</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>67 ✅ · 2 ☑️ · 14 ✓ · 9 –</td><td><code>ItemsView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>56 ✅ · 2 ☑️ · 24 ✓ · 9 –</td><td><code>GtkListView</code> / <code>GtkGridView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>63 ✅ · 1 ☑️ · 22 ✓ · 6 –</td><td>ARIA <code>list</code> or <code>listbox</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>46 ✅ · 2 ☑️ · 41 ✓ · 4 –</td><td><code>NSCollectionView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>43 ✅ · 2 ☑️ · 43 ✓ · 5 –</td><td><code>UICollectionView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>72 ✅ · 5 ☑️ · 13 ✓ · 2 –</td><td>AndroidX <code>RecyclerView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>68 ✅ · 2 ☑️ · 14 ✓ · 9 –</td><td><code>ItemsView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>57 ✅ · 2 ☑️ · 24 ✓ · 9 –</td><td><code>GtkListView</code> / <code>GtkGridView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>64 ✅ · 1 ☑️ · 22 ✓ · 6 –</td><td>ARIA <code>list</code> or <code>listbox</code></td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Collections/ItemsViewContract.swift`.
@@ -128,8 +128,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleX of ItemsView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleX of ItemsView: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleX of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of ItemsView: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of ItemsView: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleY of ItemsView: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>

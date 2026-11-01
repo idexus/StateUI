@@ -43,7 +43,7 @@ public struct Styling<Target: StyleTarget, Scope> {
     var states: [DeclaredState] = []
 
     init(key: String?) {
-        node = Node(type: Target().node.type)
+        node = Node(type: Target.nodeType)
         self.key = key
     }
 }

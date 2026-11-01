@@ -439,6 +439,8 @@ swift.conformance ItemsView: StateUI.FocusElement
 swift.conformance ItemsView: StateUI.KeyboardElement
 swift.conformance ItemsView: StateUI.ModifiableElement
 swift.conformance ItemsView: StateUI.PropertyContainer
+swift.conformance ItemsView: StateUI.PropertyContainer where ID : Hashable
+swift.conformance ItemsView: StateUI.StyleTarget where ID : Hashable
 swift.conformance ItemsView: StateUI.ViewProperties
 swift.conformance ItemsView: StateUI.VisualElement
 swift.conformance ItemsView: StateUI.VisualElementProperties
@@ -592,6 +594,8 @@ swift.conformance MotionLayout: StateUI.AutomationElement
 swift.conformance MotionLayout: StateUI.Element
 swift.conformance MotionLayout: StateUI.ModifiableElement
 swift.conformance MotionLayout: StateUI.PropertyContainer
+swift.conformance MotionLayout: StateUI.PropertyContainer where ID : Hashable, Items : RandomAccessCollection, Parameters : LayoutParameters
+swift.conformance MotionLayout: StateUI.StyleTarget where ID : Hashable, Items : RandomAccessCollection, Parameters : LayoutParameters
 swift.conformance MotionLayout: StateUI.ViewProperties
 swift.conformance MotionLayout: StateUI.VisualElement
 swift.conformance MotionLayout: StateUI.VisualElementProperties

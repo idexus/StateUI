@@ -137,9 +137,6 @@ enum GTKRealization {
             missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
         .partial(DatePickerContract.minimumDate,
             missing: "GtkCalendar offers every day: one the user picks past the range stands at its end."),
-        .unrealized(VisualElementContract.style, on: ItemsViewContract.self,
-            why: "No style can name an ItemsView: a style names its control by an "
-            + "initializer that sets nothing, which a list of some items has not."),
         .notPlanned(MenuItemElementContract.icon, on: MenuItemContract.self,
             reason: "GNOME's menus show words alone, no picture beside them."),
         .notPlanned(MenuItemElementContract.icon, on: MenuToggleContract.self,

@@ -50,8 +50,8 @@ private struct Home: View {
 final class StyleTests: XCTestCase {
     // MARK: - What a style is
 
-    /// The target type is not written twice. It comes from the target's own
-    /// blank initializer, which is the same place a node's type comes from.
+    /// The target type is not written twice. It comes from the node type the
+    /// target names, its contract's - where its node's type comes from.
     func testAStyleNamesTheTypeItsSettersWereWrittenAgainst() {
         let style = Style<Text>()
             .textColor(.black)
@@ -693,26 +693,50 @@ final class StyleTests: XCTestCase {
         let declared = try SourceTree.text(in: "StyleTarget.swift")
         var read = 0
 
-        // A style names its control by an initializer that sets nothing, which a
-        // generic composed view has not: an ItemsView is a list OF something, a
-        // MotionLayout a layout of something.
-        let unnamed: Set<String> = ["ItemsView", "MotionLayout"]
+        // A MotionLayout is a layout of views its arithmetic places, worn by no style.
+        let unnamed: Set<String> = ["MotionLayout"]
 
         for source in try SourceTree.controlSources() {
             for type in try SourceTree.nodeTypes(in: source).sorted()
             where !SourceTree.notViews.contains(type) && !unnamed.contains(type) {
                 read += 1
-                XCTAssertTrue(declared.contains("extension \(type): StyleTarget {}"), """
+                XCTAssertTrue(declared.contains("extension \(type): StyleTarget {"), """
                     \(source) describes \(type), which StyleTarget.swift does \
                     not declare a style target.
 
-                    Every control can be styled. Give it an initializer that \
-                    sets nothing, if it has none, and add the conformance.
+                    Every control can be styled: add the conformance, naming \
+                    the control's node type.
                     """)
             }
         }
 
         XCTAssertGreaterThan(read, 30, "the scan read almost nothing")
+    }
+
+    /// A style target names the node type its control is described with, the one a style resolves by.
+    func testEveryTargetNamesItsControlsNodeType() {
+        let named: [(NodeType, NodeType)] = [
+            (Text.nodeType, Text().node.type), (Button.nodeType, Button().node.type),
+            (TextField.nodeType, TextField().node.type), (Slider.nodeType, Slider().node.type),
+            (Grid.nodeType, Grid().node.type), (VStack.nodeType, VStack().node.type),
+            (HStack.nodeType, HStack().node.type), (ZStack.nodeType, ZStack().node.type),
+            (ToolbarButton.nodeType, ToolbarButton().node.type), (ToolbarToggle.nodeType, ToolbarToggle().node.type),
+            (ToolbarGroup.nodeType, ToolbarGroup().node.type), (Rectangle.nodeType, Rectangle().node.type),
+            (ItemsView<String>.nodeType, Renders().render(ItemsView(["one"]) { Text($0) }.node).type),
+            (MotionLayout<[Int], Int, Double>.nodeType, Renders().render(
+                MotionLayout([0], parameters: State(wrappedValue: 0.0).projectedValue) { _ in Space() }
+                    placements: { _, _ in [] }.node).type),
+        ]
+        for (named, made) in named { XCTAssertEqual(named, made) }
+    }
+
+    /// A list is styled as any control is: an ItemsView of any identities wears the style of its kind.
+    func testAListWearsTheStyleOfItsKind() {
+        let sheet = StyleSheet { Style<ItemsView<String>>().opacity(0.5) }
+        let patch = Renders().render(ItemsView([1, 2]) { Text("\($0)") }.node, styles: sheet)
+
+        XCTAssertEqual(patch.type, ItemsView<Int>.nodeType)
+        XCTAssertEqual(patch.props["opacity"], .number(0.5), "the list wore its kind's style")
     }
 
     /// And the other half of the same rule: a control's OWN property surface

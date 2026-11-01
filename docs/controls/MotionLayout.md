@@ -40,12 +40,12 @@ See [the dictionary](README.md) for how a mark is given.
 
 <table>
 <thead><tr><th>Host</th><th>Created</th><th>Members (95)</th><th>Realization</th></tr></thead>
-<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>42 ✅ · 1 ☑️ · 46 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>39 ✅ · 3 ☑️ · 48 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>68 ✅ · 5 ☑️ · 16 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>55 ✅ · 2 ☑️ · 27 ✓ · 9 –</td><td>custom <code>Panel</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>49 ✅ · 2 ☑️ · 31 ✓ · 8 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
-<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>63 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr></tbody>
+<tbody><tr></tr><tr><td>AppKit</td><td align="center">✅</td><td>43 ✅ · 1 ☑️ · 46 ✓ · 1 –</td><td>custom <code>NSView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>UIKit</td><td align="center">✅</td><td>40 ✅ · 3 ☑️ · 48 ✓ · 2 –</td><td>custom <code>UIView</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Android Views</td><td align="center">✅</td><td>69 ✅ · 5 ☑️ · 16 ✓ · 2 –</td><td>custom <code>ViewGroup</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>WinUI 3</td><td align="center">✅</td><td>56 ✅ · 2 ☑️ · 27 ✓ · 9 –</td><td>custom <code>Panel</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>GTK 4</td><td align="center">✅</td><td>50 ✅ · 2 ☑️ · 31 ✓ · 8 –</td><td>custom <code>GtkWidget</code></td></tr></tbody>
+<tbody><tr></tr><tr><td>Web</td><td align="center">✅</td><td>64 ✅ · 2 ☑️ · 25 ✓ · 4 –</td><td>CSS grid, one shared cell</td></tr></tbody>
 </table>
 
 Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Layouts/MotionLayoutContract.swift`.
@@ -137,8 +137,7 @@ What every drawn element has: its size and its bounds, how it is shown and turne
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleX of MotionLayout: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleX of MotionLayout: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleX of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>scaleY</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>
 <tr><td colspan="9">AppKit, UIKit: only through the host's own: read scaleY of MotionLayout: the host's own transform, checked against the layer it composed itself<br>GTK 4: only through the host's own: read scaleY of MotionLayout: the host's own transform: GTK reads back no part of one<br>Web: only through the host's own: read scaleY of MotionLayout: the host's own transform: the page holds one matrix of it, its parts no longer told apart</td></tr></tbody>
-<tbody><tr></tr><tr><td rowspan="2"><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td><td align="center"></td></tr>
-<tr><td colspan="9">AppKit, UIKit, Android Views, WinUI 3, GTK 4, Web: not realized</td></tr></tbody>
+<tbody><tr></tr><tr><td><code>style</code></td><td>property</td><td><code>Name</code></td><td>structure</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>tooltip</code></td><td>property</td><td><code>String</code></td><td>native</td><td align="center">✅</td><td align="center">–</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td></tr>
 <tr><td colspan="9">UIKit: UIKit shows a tool tip on the Mac and on visionOS only: an iPhone and an iPad show none.</td></tr></tbody>
 <tbody><tr></tr><tr><td rowspan="2"><code>translationX</code></td><td>property</td><td><code>Double</code></td><td>native</td><td align="center">✓</td><td align="center">✓</td><td align="center">✅</td><td align="center">✅</td><td align="center">✓</td><td align="center">✓</td></tr>

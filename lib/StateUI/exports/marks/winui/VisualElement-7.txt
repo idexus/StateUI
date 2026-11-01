@@ -1,4 +1,4 @@
-# revision 22.2
+# revision 24.2
 Button.accessibilityHeading: ✅
 Button.scale: ✅
 Canvas.accessibilityRole: – A WinUI control is its own kind to assistive technology; a stack or a grid StateUI draws says another.
@@ -28,7 +28,7 @@ Link.scaleX: ✅
 Map.accessibilityActionPerformed: 🧩
 Map.accessibilityActions: 🧩
 MotionLayout.rotationX: ✓ read rotationX of MotionLayout: the host's own tip, checked against the projection it laid on the element
-MotionLayout.style: not realized
+MotionLayout.style: ✅
 Path.maximumHeight: ✅
 Path.maximumWidth: ✅
 Path.minimumHeight: ✅
