@@ -82,6 +82,15 @@ parameters stand](#a-change-where-the-parameters-stand)); a state the arithmetic
 that moves on the host's frames - a finger's - is named in `following(_:)`
 instead, or its writes run nothing.
 
+## An answer made to fit
+
+The placements are the application's arithmetic, and the run takes what it
+answers as it can: one placement a view, in the items' order - fewer stand
+the rest at the top left, more let the extra go - and every number finite: a
+division by nothing or an infinity stands as a placement at the top left
+holds that number, its bounds at nought and its opacity at one. Each is said
+once (`complain`), and no host is handed a number it cannot place.
+
 ## A view in its holder
 
 Each item's view stands in a holder the run places, so a frame of the

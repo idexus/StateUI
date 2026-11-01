@@ -139,6 +139,21 @@ final class MotionLayoutTests: XCTestCase {
         XCTAssertTrue(hasComplained("placements answered 1 placements for 3 views"))
     }
 
+    /// A NUMBER THAT IS NOT FINITE IS SAID AND STANDS NEUTRAL: an answer the arithmetic got wrong - a division by
+    /// nothing, an infinity - reaches no host; each such number is the one a placement at the top left holds.
+    func testANumberThatIsNotFiniteIsSaidAndStandsNeutral() {
+        var turned = Placement(Rect(5, .nan, .infinity, 10))
+        turned.opacity = .nan
+        let placed = turned
+        let (_, run) = bench.laid(Renders(), {
+            MotionLayout([1], parameters: State(wrappedValue: 0.0).projectedValue) { Text("\($0)") } placements: { _, _ in [placed] }.node
+        })
+
+        XCTAssertEqual(run.first?.bounds, Rect(5, 0, 0, 10))
+        XCTAssertEqual(run.first?.opacity, 1)
+        XCTAssertTrue(hasComplained("A MotionLayout's placements answered a number that is not finite"))
+    }
+
     // MARK: - The phase
 
     /// THE LAYOUT'S ELEMENT WEARS ITS PHASE, both ways, so the host walks it under the layout's motion and says where

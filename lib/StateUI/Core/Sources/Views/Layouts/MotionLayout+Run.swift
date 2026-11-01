@@ -345,15 +345,35 @@ extension MotionLayout {
             return make(slot.item)
         }
 
-        /// One placement a view: a run that answered fewer or more is said once and made to fit.
+        /// One placement a view, every number of it finite: a run that answered fewer or more, or a number that is
+        /// not finite, is said once and made to fit.
+        /// Design: docs/design/views/motion-layout.md#an-answer-made-to-fit
         func fitted(_ answered: [Placement]) -> [Placement] {
-            guard answered.count != items.count else { return answered }
+            let finite = answered.map(Self.finite)
+            guard finite.count != items.count else { return finite }
 
             complain("A MotionLayout's placements answered \(answered.count) placements for \(items.count) views. "
                 + "One placement a view, in the items' order: the rest stand at the top left, the extra go.")
 
-            let missing = max(items.count - answered.count, 0)
-            return Array(answered.prefix(items.count)) + Array(repeating: Placement(.zero), count: missing)
+            let missing = max(items.count - finite.count, 0)
+            return Array(finite.prefix(items.count)) + Array(repeating: Placement(.zero), count: missing)
+        }
+
+        /// `placement` with each number that is not finite the one a placement at the top left holds, said once;
+        /// a placement whose every number is finite - every frame's - is looked at and handed on as it is.
+        private static func finite(_ placement: Placement) -> Placement {
+            let (bounds, turn) = (placement.bounds, placement.transform)
+            let isFinite = bounds.x.isFinite && bounds.y.isFinite && bounds.width.isFinite && bounds.height.isFinite
+                && turn.a.isFinite && turn.b.isFinite && turn.c.isFinite && turn.d.isFinite && turn.tx.isFinite
+                && turn.ty.isFinite && placement.opacity.isFinite && placement.shade.isFinite
+            guard !isFinite,
+                  case .lanes(let lanes) = placement.carried, case .lanes(let neutral) = Placement(.zero).carried,
+                  neutral.count == lanes.count
+            else { return placement }
+            complain("A MotionLayout's placements answered a number that is not finite - a division by nothing, an "
+                + "infinity: each stands as a placement at the top left holds it.")
+            let held = zip(lanes, neutral).map { $0.isFinite ? $0 : $1 }
+            return Placement(carried: .lanes(held)) ?? Placement(.zero)
         }
 
         // MARK: - The hand
