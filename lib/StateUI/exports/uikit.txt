@@ -127,6 +127,7 @@ Map
   showsTraffic
   showsUserLocation
   type
+  locationTapped()
 Marker
   location
   subtitle

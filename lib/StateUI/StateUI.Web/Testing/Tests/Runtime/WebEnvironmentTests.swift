@@ -20,9 +20,8 @@ final class WebEnvironmentTests: XCTestCase {
         defer { WebBrowser.ask([("languages", .words(""))]) }
 
         let polish = try locale(languages: "pl-PL,en-US", zone: "Europe/Warsaw")
-        XCTAssertEqual(polish.language, "pl")
-        XCTAssertEqual(polish.region, "PL")
-        XCTAssertEqual(polish.name, "pl-PL")
+        XCTAssertEqual(polish.language, "pl-PL")
+        XCTAssertEqual(polish.language?.region, "PL")
         XCTAssertEqual(polish.timeZone, "Europe/Warsaw")
         XCTAssertTrue(polish.uses24HourClock)
         XCTAssertEqual(polish.firstDayOfWeek, .monday)
@@ -30,8 +29,7 @@ final class WebEnvironmentTests: XCTestCase {
         XCTAssertEqual(polish.languages.map(\.identifier), ["pl-PL", "en-US"])
 
         let american = try locale(languages: "en-US", zone: "America/New_York")
-        XCTAssertEqual(american.language, "en")
-        XCTAssertEqual(american.region, "US")
+        XCTAssertEqual(american.language, "en-US")
         XCTAssertEqual(american.timeZone, "America/New_York")
         XCTAssertFalse(american.uses24HourClock)
         XCTAssertEqual(american.firstDayOfWeek, .sunday)
