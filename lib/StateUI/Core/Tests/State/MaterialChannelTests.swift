@@ -68,4 +68,20 @@ final class MaterialChannelTests: XCTestCase {
         guard case .lanes(let lanes) = material.carried(in: .current) else { return [] }
         return lanes
     }
+
+    /// Lanes that are no material read as nil - a kind, a brush, a count, a thickness or a clarity that is no whole
+    /// number, or one past what its type holds, and a count longer than the lanes - never a stop of the process.
+    func testLanesThatAreNoMaterialReadAsNil() {
+        let malformed: [[Double]] = [
+            [.nan], [.infinity], [1e300],
+            [2, .nan, 0], [2, 1e12, 0], [2, 0, .nan], [2, 0, .infinity], [2, 0, Double(Int.max)], [2, 0, 1e300],
+            [2, 0, 3, 0, 0],
+            [3, .nan, 0, 0, 0, 0, 0, 0, 0, 0, 0], [3, 1e12, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [4, .nan, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [4, -1e12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        ]
+        for lanes in malformed {
+            XCTAssertNil(Material.propValue(lanes: lanes), "\(lanes)")
+            XCTAssertNil(Material(carried: .lanes(lanes)), "\(lanes)")
+        }
+    }
 }
