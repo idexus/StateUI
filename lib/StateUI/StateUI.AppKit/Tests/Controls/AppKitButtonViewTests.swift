@@ -163,7 +163,7 @@ final class AppKitButtonViewTests: XCTestCase {
     /// inside the padding, not the whole button.
     @MainActor
     func testAButtonsPaddingKeepsItsPictureClearOfItsEdges() throws {
-        stateUIUseApp(OneWindowApplication(page: {
+        Renderer.shared.setApplication(OneWindowApplication(page: {
             VStack {
                 Button().icon(ImageSource("test_wide.svg")).contentMode(.fit).width(64).height(64).padding(12)
                     .background(Color(hex: 0xFFFFFF)).shape(.roundedRectangle(12))

@@ -41,7 +41,7 @@ final class PinchHearingTests: XCTestCase {
     /// A runtime of the page and its box.
     private func running() throws -> (HostRuntime, MountedElement) {
         told = []
-        stateUIUseApp(PinchApplication())
+        PinchApplication.register()
         let runtime = HostRuntime(
             clock: PinchClock(), reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()

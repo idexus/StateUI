@@ -505,18 +505,19 @@ enum NotesContract: ApplicationTier {
     static let members: [any ContractMember] = [exportDocument]
 }
 
+@Environment(\.application) var application
 @State var location = ""
 
 Button("Export").onClicked(.ignoreWhileRunning) {
-    location = try await stateUICall(NotesContract.exportDocument, "draft-7")
+    location = try await application.call(NotesContract.exportDocument, "draft-7")
 }
 ```
 
-`stateUICall` hands the act the arguments its contract declares, waits for the
+`application.call` hands the act the arguments its contract declares, waits for the
 answer it declares, and throws `StateUIError` - `.notPerformed(act:reason:)` on
 a host failure, `.unreadableAnswer(act:answered:declared:)` on an answer of
 another shape. Each reason is a case to tell apart in a `catch` or a `switch`,
-which keeps a `default`: a later version may name another. `stateUISend` is
+which keeps a `default`: a later version may name another. `application.tell` is
 fire-and-forget and therefore has no error
 result; use it only when no later decision depends on success.
 

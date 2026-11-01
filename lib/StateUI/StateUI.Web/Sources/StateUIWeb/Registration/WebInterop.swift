@@ -101,13 +101,13 @@ public enum StateUIScripts {
     }
 }
 
-/// The acts an application performs on this host - what its own calls, `stateUICall` and an `Aim`, reach.
+/// The acts an application performs on this host - what its own calls, `application.call` and an `Aim`, reach.
 ///
 /// Said once, from the application's Web head, before `StateUIWeb.run(name:)`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
-    /// `stateUICall`. A performer may await - a page's script answers through a promise - and the call is
+    /// `application.call`. A performer may await - a page's script answers through a promise - and the call is
     /// answered once it returns; what it throws fails the call. A second registration replaces the first.
     ///
     ///     StateUIActs.add(GalleryContract.log) { line in

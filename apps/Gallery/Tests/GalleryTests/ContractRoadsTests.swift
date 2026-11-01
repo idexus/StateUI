@@ -99,12 +99,12 @@ final class ContractRoadsTests: XCTestCase {
             open: "_ = Beacon().onEvent(BeaconContract.tapped) { index in _ = index }"),
         Road(
             name: "an act called by its token",
-            closed: #"_ = try await stateUICall(Act("Notes.Export"), [.string("draft")])"#,
-            open: #"_ = try await stateUICall(NotesContract.export, "draft")"#),
+            closed: #"_ = try await Environment(\.application).wrappedValue.call(Act("Notes.Export"), [.string("draft")])"#,
+            open: #"_ = try await Environment(\.application).wrappedValue.call(NotesContract.export, "draft")"#),
         Road(
             name: "an act sent by its token",
-            closed: #"stateUISend(Act("Notes.Log"), [.string("opened")])"#,
-            open: #"stateUISend(NotesContract.log, "opened")"#),
+            closed: #"Environment(\.application).wrappedValue.tell(Act("Notes.Log"), [.string("opened")])"#,
+            open: #"Environment(\.application).wrappedValue.tell(NotesContract.log, "opened")"#),
         Road(
             name: "an application's event heard by its token",
             closed: #"_ = HostEvents.on(Event("Notes.Changed")) { payload in _ = payload }"#,

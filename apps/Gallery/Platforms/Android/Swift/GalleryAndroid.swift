@@ -13,7 +13,7 @@ import StateUIAndroid
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
     MainActor.assumeIsolated {
-        registerApplication()
+        GalleryApp.register()
         GalleryControls.register()
         GalleryActs.register()
         GalleryEventSources.register()

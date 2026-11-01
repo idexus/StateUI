@@ -25,7 +25,7 @@ extension WindowSession {
     public func alert(_ title: String, message: String = "", accept: String? = nil) async throws {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
-        try await stateUICall(ApplicationContract.alert, scene, window, title, message, accept ?? words.ok)
+        try await callAct(ApplicationContract.alert, scene, window, title, message, accept ?? words.ok)
     }
 
     /// Asks the user a yes-or-no question over this window.
@@ -47,7 +47,7 @@ extension WindowSession {
     ) async throws -> Bool {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
-        return try await stateUICall(
+        return try await callAct(
             ApplicationContract.confirm, scene, window, title, message, accept ?? words.ok, cancel ?? words.cancel)
     }
 
@@ -81,7 +81,7 @@ extension WindowSession {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
         let dangerous = destructive.flatMap { choices.firstIndex(of: $0) }
-        let chosen = try await stateUICall(
+        let chosen = try await callAct(
             ApplicationContract.chooseAction, scene, window, title, choices.map(caption), dangerous,
             cancel ?? words.cancel)
         guard let chosen else { return nil }
@@ -121,7 +121,7 @@ extension WindowSession {
     ) async throws -> String? {
         let (scene, window) = try address
         let words = LibraryWords.inSystemLanguage
-        return try await stateUICall(
+        return try await callAct(
             ApplicationContract.prompt, scene, window, title, message, accept ?? words.ok, cancel ?? words.cancel,
             placeholder, maximumLength, inputPurpose, initialValue)
     }

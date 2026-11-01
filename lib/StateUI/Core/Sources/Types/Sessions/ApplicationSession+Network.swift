@@ -23,7 +23,7 @@ extension ApplicationSession {
     /// - Returns: what the server answered.
     public func send(_ request: HTTPRequest) async throws -> HTTPResponse {
         let headers = request.headers.sorted { $0.key < $1.key }.flatMap { [$0.key, $0.value] }
-        let (status, said, body) = try await stateUICall(
+        let (status, said, body) = try await callAct(
             ApplicationContract.sendRequest, request.address, Name(request.method.name), headers, request.body)
         let pairs = stride(from: 0, to: said.count - 1, by: 2).map { (said[$0], said[$0 + 1]) }
         return HTTPResponse(status: status, headers: Dictionary(pairs) { "\($0), \($1)" }, body: body)

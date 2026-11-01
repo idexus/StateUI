@@ -8,6 +8,6 @@ import StateUIAndroid
 // the host, and the host registers the native methods its activity calls.
 @_cdecl("JNI_OnLoad")
 public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-    MainActor.assumeIsolated { registerApplication() }
+    MainActor.assumeIsolated { HelloWorldApp.register() }
     return StateUIAndroid.load(machine)
 }

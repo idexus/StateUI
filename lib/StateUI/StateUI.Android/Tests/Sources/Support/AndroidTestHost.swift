@@ -220,7 +220,7 @@ extension AndroidRenderer {
     static func running(
         clock: TestClock? = nil, reducesMotion: Bool = false, @ViewBuilder _ page: @escaping @MainActor () -> any View
     ) -> AndroidRenderer {
-        stateUIUseApp(OneWindowApplication(page: page))
+        Renderer.shared.setApplication(OneWindowApplication(page: page))
         let renderer = bare(clock: clock, reducesMotion: reducesMotion)
         AndroidPersistence.writeScenes("", context: TestContext.context.reference)  // no scenes an earlier test kept
         renderer.start()

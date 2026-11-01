@@ -532,7 +532,7 @@ honest about that state until both products have a supported versioned route.
 A release has one version, stated in the editor extension's
 `lib/StateUI.VSCode/package.json`. Every other place that names it - the
 published-package line in the root `Package.swift`, the library's own
-`stateUIVersion()`, each application's Android
+`application.info.libraryVersion`, each application's Android
 head's version and the Android host's test head's, the Gallery's AppKit
 bundle, every UIKit bundle (`.scripts/UIKit/tools.sh`), the bug report's
 example - names the same one, and `ReleaseTests` holds them to it.

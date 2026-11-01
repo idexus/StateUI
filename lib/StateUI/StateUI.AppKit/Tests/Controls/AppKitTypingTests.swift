@@ -17,7 +17,7 @@ final class AppKitTypingTests: XCTestCase {
     @MainActor
     func testEveryBoundTextControlKeepsEachKeystroke() throws {
         let form = TypingForm()
-        stateUIUseApp(TypingApp(form: form))
+        Renderer.shared.setApplication(TypingApp(form: form))
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
@@ -77,7 +77,7 @@ private struct TypingPage: View {
 }
 
 private struct TypingApp: Application {
-    let form: TypingForm
+    var form = TypingForm()
 
     var body: some Scene { WindowGroup { TypingPage(form: form) } }
 }

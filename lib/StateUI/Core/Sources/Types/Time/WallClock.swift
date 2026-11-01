@@ -43,13 +43,13 @@ public struct WallClock {
     ///
     /// - Throws: `StateUIError` for a zone the platform does not know.
     public func utcOffset(of zone: TimeZoneName? = nil, on date: CalendarDate? = nil) async throws -> Duration {
-        let minutes = try await stateUICall(ApplicationContract.utcOffset, zone?.identifier, date)
+        let minutes = try await callAct(ApplicationContract.utcOffset, zone?.identifier, date)
         return .seconds(minutes * 60)
     }
 
     /// The host's local date and time of day: year, month, day, hour, minute, second, millisecond.
     private func local() async throws -> [Int] {
-        let numbers = try await stateUICall(ApplicationContract.currentTime)
+        let numbers = try await callAct(ApplicationContract.currentTime)
         guard numbers.count == 7 else {
             throw StateUIError.unreadableAnswer(
                 act: ApplicationContract.currentTime.name, answered: "\(numbers.count) numbers",

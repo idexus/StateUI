@@ -40,8 +40,8 @@ A dialog opens over the window that asked, on the page it shows. The application
 `ApplicationTier` is a contract of acts and events with no control behind
 them, which belong to the application: `ApplicationContract` is one, and no
 element lists one among the tiers it wears. An application declares one
-exactly as the library declares its contracts: its acts are called with `stateUICall`,
-which awaits the answer as the declared types, or with `stateUISend`, which
+exactly as the library declares its contracts: its acts are called with `application.call`,
+which awaits the answer as the declared types, or with `application.tell`, which
 does not wait; its events are heard with `HostEvents.on`. None of them aims
 at a control.
 

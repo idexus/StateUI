@@ -122,7 +122,7 @@ final class DisplayCycleTests: XCTestCase {
     /// page again in the same pass, and its report step it on again, until the slide rests within one frame.
     @MainActor
     func testWhatALayoutPassSaysTakesNoTime() throws {
-        stateUIUseApp(ReadTravelApplication())
+        ReadTravelApplication.register()
         let clock = WoundClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
@@ -153,7 +153,7 @@ final class DisplayCycleTests: XCTestCase {
     /// walks it and tells the core every frame - a motion layout's phase, which no view draws, included.
     @MainActor
     func testAWornStateOpensItsChannelThoughNoViewReadsIt() throws {
-        stateUIUseApp(WornApplication())
+        WornApplication.register()
         let runtime = HostRuntime(clock: WoundClock(), reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
         runtime.pump.turn()
@@ -175,7 +175,7 @@ final class DisplayCycleTests: XCTestCase {
     /// reports the destination before the write, which stands and crosses in the same frame.
     @MainActor
     func testAWriteInTheTurnATravelLandsSendsItOn() throws {
-        stateUIUseApp(TravelApplication())
+        TravelApplication.register()
         let clock = WoundClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()

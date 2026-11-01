@@ -9,7 +9,7 @@
 ///
 /// Declared in an element's contract, it is performed on one element of that
 /// kind: `Aim.call` puts the aimed element first. Declared in an
-/// `ApplicationTier`, it aims at nothing: `stateUICall`.
+/// `ApplicationTier`, it aims at nothing: `application.call`.
 public struct ElementAct<Owner: Contract, Arguments, Answer>: ContractMember {
     /// The act's name: what crosses the boundary.
     public let name: String

@@ -409,7 +409,7 @@ public API keeps to these rules:
 
 - **One road.** A concept has one spelling and one way in: a property its
   member's modifier, several states read together `.multi`, a scroller's
-  offset `.scrollOffset($offset)`, the application `registerApplication()`. A
+  offset `.scrollOffset($offset)`, the application `NotesApp.register()`. A
   second road to the same place - an alias, a shortcut, an event repeating a
   state - is removed, not kept beside the first.
 - **Through the contract.** A property, an event and an act are written with

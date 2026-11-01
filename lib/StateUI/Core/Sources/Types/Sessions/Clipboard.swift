@@ -13,7 +13,7 @@
 public struct Clipboard {
     /// Puts `text` on the clipboard, in place of whatever it held.
     public func write(_ text: String) async throws {
-        try await stateUICall(ApplicationContract.writeClipboard, text)
+        try await callAct(ApplicationContract.writeClipboard, text)
     }
 
     /// The words on the clipboard; nil where it holds none. A browser asks the user before a page reads it, and
@@ -21,7 +21,7 @@ public struct Clipboard {
     ///
     ///     let pasted = try await application.clipboard.read()
     public func read() async throws -> String? {
-        try await stateUICall(ApplicationContract.readClipboard)
+        try await callAct(ApplicationContract.readClipboard)
     }
 }
 

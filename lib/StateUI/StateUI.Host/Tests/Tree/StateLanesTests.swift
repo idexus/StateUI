@@ -11,7 +11,7 @@ final class StateLanesTests: XCTestCase {
     /// An application's own element said from a state reaches the host as its member's type - a Boolean as a
     /// Boolean, a choice as its case - which no name the library knows could say.
     func testAnApplicationsOwnValuesFromAStateArriveAsTheirType() throws {
-        stateUIUseApp(LampApplication())
+        LampApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -25,7 +25,7 @@ final class StateLanesTests: XCTestCase {
     /// at each as its value: the walked state's lanes lay a journey, and the one wearing it as it stands reads where
     /// that journey stands.
     func testAStateWalkedBesideReachesTheControlWearingItAsItStands() throws {
-        stateUIUseApp(TintApplication())
+        TintApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

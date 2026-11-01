@@ -13,7 +13,7 @@ final class PagePointerTests: XCTestCase {
     /// already hears nothing more.
     func testAPageLeavingTakesThePointerOffWhatItHolds() throws {
         exited = []
-        stateUIUseApp(PointerApplication())
+        PointerApplication.register()
         let runtime = HostRuntime(
             clock: StillClock(), reducesMotion: { false }, makeNative: { StillView(id: $0.id) }, log: { _ in })
         runtime.connectWindow()

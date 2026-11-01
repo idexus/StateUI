@@ -220,7 +220,7 @@ final class ApplicationLifecycleTests: XCTestCase {
 
     /// The core hears the phase the runtime settles, and the window's session moves with it.
     func testTheCoreAndTheWindowHearThePhase() throws {
-        stateUIUseApp(PhasesApplication())
+        PhasesApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()
@@ -242,7 +242,7 @@ final class ApplicationLifecycleTests: XCTestCase {
     /// A phase settled in the middle of the user's transaction - as a toolkit tells one while the host shows a
     /// window - is heard once it is over.
     func testAPhaseSettledInsideATransactionWaitsForItsEnd() throws {
-        stateUIUseApp(PhasesApplication())
+        PhasesApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

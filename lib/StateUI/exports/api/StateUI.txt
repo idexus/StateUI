@@ -2736,11 +2736,6 @@ swift.enum.case WindowError.notOpen: case notOpen
 swift.enum.case WindowError.undeclared(_:): case undeclared(Name)
 swift.enum.case WindowError.unsupported: case unsupported
 swift.enum.case WindowError.wrongValue(_:): case wrongValue(Name)
-swift.func stateUICall(_:_:): @discardableResult func stateUICall<Owner, each Argument, each Answer>(_ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>, _ arguments: repeat each Argument) async throws -> (repeat each Answer) where Owner : ApplicationTier, repeat each Argument : HostRepresentable, repeat each Answer : HostRepresentable
-swift.func stateUIPlatform(): func stateUIPlatform() -> String
-swift.func stateUISend(_:_:): @MainActor func stateUISend<Owner, each Argument, Answer>(_ act: ElementAct<Owner, (repeat each Argument), Answer>, _ arguments: repeat each Argument) where Owner : ApplicationTier, repeat each Argument : HostRepresentable
-swift.func stateUIUseApp(_:): @MainActor func stateUIUseApp<Declared>(_ application: @autoclosure @escaping () -> Declared) where Declared : Application
-swift.func stateUIVersion(): func stateUIVersion() -> String
 swift.func.op CalendarDate.<(_:_:): static func < (left: CalendarDate, right: CalendarDate) -> Bool
 swift.func.op ClockTime.<(_:_:): static func < (left: ClockTime, right: ClockTime) -> Bool
 swift.func.op Event.<(_:_:): static func < (lhs: Event, rhs: Event) -> Bool
@@ -2778,6 +2773,7 @@ swift.init Alignment.init(carried:): init?(carried: StateCarried)
 swift.init Alignment.init(propValue:): init?(propValue: PropValue)
 swift.init Alignment.init(rawValue:): init?(rawValue: Int32)
 swift.init AnyView.init(_:): @MainActor init<Held>(_ view: Held) where Held : View
+swift.init Application.init(): @MainActor init()
 swift.init ApplicationInfo.init(name:packageName:versionString:buildString:colorScheme:accentColor:): @MainActor init(name: String = "", packageName: String = "", versionString: String = "", buildString: String = "", colorScheme: ColorScheme = .system, accentColor: Color? = nil)
 swift.init ApplicationSession.init(): @MainActor init()
 swift.init Area.init(propValue:): init?(propValue: PropValue)
@@ -3620,6 +3616,7 @@ swift.method AnyView.verticalAlignment(_:): @MainActor func verticalAlignment(_ 
 swift.method AnyView.width(_:): @MainActor func width(_ state: Binding<Double>) -> Self.Modified
 swift.method AnyView.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method ApplicationSession.announce(_:): @MainActor func announce(_ text: String) async throws
+swift.method ApplicationSession.call(_:_:): @discardableResult func call<Owner, each Argument, each Answer>(_ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>, _ arguments: repeat each Argument) async throws -> (repeat each Answer) where Owner : ApplicationTier, repeat each Argument : HostRepresentable, repeat each Answer : HostRepresentable
 swift.method ApplicationSession.closeWindow(_:): @MainActor func closeWindow(_ type: WindowType<Void>) async throws
 swift.method ApplicationSession.closeWindow(_:value:): @MainActor func closeWindow<Value>(_ type: WindowType<Value>, value: Value) async throws where Value : Decodable, Value : Encodable, Value : Hashable
 swift.method ApplicationSession.launch(_:): @discardableResult @MainActor func launch(_ address: String) async throws -> Bool
@@ -3627,6 +3624,7 @@ swift.method ApplicationSession.openWindow(): @MainActor func openWindow() async
 swift.method ApplicationSession.openWindow(_:): @MainActor func openWindow(_ type: WindowType<Void>) async throws
 swift.method ApplicationSession.openWindow(_:value:): @MainActor func openWindow<Value>(_ type: WindowType<Value>, value: Value) async throws where Value : Decodable, Value : Encodable, Value : Hashable
 swift.method ApplicationSession.send(_:): @MainActor func send(_ request: HTTPRequest) async throws -> HTTPResponse
+swift.method ApplicationSession.tell(_:_:): @MainActor func tell<Owner, each Argument, Answer>(_ act: ElementAct<Owner, (repeat each Argument), Answer>, _ arguments: repeat each Argument) where Owner : ApplicationTier, repeat each Argument : HostRepresentable
 swift.method Arrival.arrived(): @discardableResult @MainActor func arrived() async throws -> Bool
 swift.method AutomationElement.accessibilityIdentifier(_:): @MainActor func accessibilityIdentifier(_ value: String) -> Self.Modified
 swift.method BarElement.barBackground(_:): @MainActor func barBackground(_ state: Binding<Color>) -> Self.Modified
@@ -16190,6 +16188,7 @@ swift.property Application.body: @ApplicationBuilder @MainActor var body: Self.B
 swift.property ApplicationInfo.accentColor: @State @MainActor var accentColor: Color { get set }
 swift.property ApplicationInfo.buildString: @State @MainActor var buildString: String { get set }
 swift.property ApplicationInfo.colorScheme: @State @MainActor var colorScheme: ColorScheme { get set }
+swift.property ApplicationInfo.libraryVersion: @MainActor let libraryVersion: String
 swift.property ApplicationInfo.name: @State @MainActor var name: String { get set }
 swift.property ApplicationInfo.packageName: @State @MainActor var packageName: String { get set }
 swift.property ApplicationInfo.versionString: @State @MainActor var versionString: String { get set }
@@ -16274,6 +16273,7 @@ swift.property DeviceDisplay.orientation: @State @MainActor var orientation: Dis
 swift.property DeviceDisplay.refreshRate: @State @MainActor var refreshRate: Double? { get set }
 swift.property DeviceDisplay.rotation: @State @MainActor var rotation: DisplayRotation { get set }
 swift.property DeviceDisplay.width: @State @MainActor var width: Double? { get set }
+swift.property DeviceInfo.architecture: @MainActor let architecture: String
 swift.property DeviceInfo.formFactor: @State @MainActor var formFactor: FormFactor { get set }
 swift.property DeviceInfo.isVirtual: @State @MainActor var isVirtual: Bool? { get set }
 swift.property DeviceInfo.manufacturer: @State @MainActor var manufacturer: String { get set }
@@ -16977,6 +16977,7 @@ swift.type.method ActionRole.list(from:): static func list(from value: PropValue
 swift.type.method ActionRole.propValue(of:): static func propValue(of list: [Self]) -> PropValue
 swift.type.method Alignment.list(from:): static func list(from value: PropValue) -> [Self]?
 swift.type.method Alignment.propValue(of:): static func propValue(of list: [Self]) -> PropValue
+swift.type.method Application.register(): @MainActor static func register()
 swift.type.method ApplicationBuilder.buildExpression(_:): @MainActor static func buildExpression<Declared>(_ scene: Declared) -> ApplicationBuilder.Declared where Declared : Scene
 swift.type.method ApplicationBuilder.buildFinalResult(_:): @MainActor static func buildFinalResult(_ declared: ApplicationBuilder.Declared) -> Scenes
 swift.type.method ApplicationBuilder.buildPartialBlock(accumulated:next:): @MainActor static func buildPartialBlock(accumulated: ApplicationBuilder.Declared, next: ApplicationBuilder.Declared) -> ApplicationBuilder.Declared

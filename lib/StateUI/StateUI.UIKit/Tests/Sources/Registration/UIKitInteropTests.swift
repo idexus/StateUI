@@ -76,6 +76,7 @@ extension Aim where Target == Lamp {
 
 /// A page calling the application's acts, hearing its event, and holding one lamp - saying what came back.
 private struct Calling: View {
+    @Environment(\.application) private var application
     @State private var said = "-"
     @State private var heard: [HostEventSubscription] = []
     @Aim(Lamp.self) private var lamp
@@ -84,7 +85,7 @@ private struct Calling: View {
         VStack {
             Button("Ask").onClicked(.ignoreWhileRunning) {
                 do {
-                    let doubled = try await stateUICall(InteropTestContract.doubled, 21)
+                    let doubled = try await application.call(InteropTestContract.doubled, 21)
                     said = "\(doubled)"
                 } catch {
                     said = "thrown: \(error)"
@@ -92,7 +93,7 @@ private struct Calling: View {
             }
             Button("Ask nobody").onClicked(.ignoreWhileRunning) {
                 do {
-                    try await stateUICall(InteropTestContract.unregistered)
+                    try await application.call(InteropTestContract.unregistered)
                     said = "that should have thrown"
                 } catch {
                     said = "thrown: \(error)"

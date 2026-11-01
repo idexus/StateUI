@@ -57,9 +57,9 @@ IconButtonSample.swift 3becb5bca84feb1e
 IconSample.swift b1a55d5d263b6a6e
 IdentitySample.swift acf3e514f8ce470d
 ImageSample.swift 798ac3475ce4ff0a
-InteropActsSample.swift 3b96ec93b89f0509
+InteropActsSample.swift cd15a8ec0cdabe2a
 InteropControlSample.swift b139c0a32f33f926
-InteropEventsSample.swift 28725267c691bbe5
+InteropEventsSample.swift 5f60d63da7992122
 ItemActionsSample.swift 33deb2472b783b81
 ItemsViewSample.swift 7bdf13d3ea66d89a
 KeyPressSample.swift ad88b26f05db34d4
@@ -108,7 +108,7 @@ RefreshSample.swift 889d8e4b627756e6
 RemovingRowSample.swift 3737dc3829abfd1c
 SafeAreaSample.swift 1056f5df9698d8db
 SameInputsSample.swift 11581f61c6c4343c
-ScenesSample.swift cc901e528f78746f
+ScenesSample.swift 75f4d63d5affdc09
 ScrollViewSample.swift 12abb5ee5b9ad52f
 SearchFieldSample.swift 32903a70f555dea0
 SearchSample.swift 679d1baa31dfcd8b
@@ -121,12 +121,12 @@ ShortcutSample.swift 613e9bc5911f4fc5
 SizingSample.swift 505216705d5b9909
 SliderSample.swift de5c388891de8278
 SpinnerSample.swift 99ef01dbff45072f
-SplitViewSample.swift 9b0a9c768b227924
+SplitViewSample.swift 86e6524a34cd1dbb
 StackLayoutSample.swift 5f82478083f9d4fe
 StateClassSample.swift 1aafda814ae33894
 StateSample.swift abfc1c415e278290
 StepperSample.swift a1eb96147d1526c6
-StyleSample.swift 878e5a8b95e5799e
+StyleSample.swift 43ab66cb4f3728d4
 SwipeSample.swift 66a58baed064554c
 SwitchSample.swift ae41f144fd9164ad
 TabsSample.swift a1544754bdf571ab

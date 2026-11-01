@@ -35,7 +35,7 @@ final class PointerHoverTests: XCTestCase {
 
     private func running() throws -> (HostRuntime, MountedElement) {
         heard = []
-        stateUIUseApp(PointerApplication())
+        PointerApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

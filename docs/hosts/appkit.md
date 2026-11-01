@@ -42,7 +42,7 @@ the Gallery's:
 import GalleryUI
 import StateUIAppKit
 
-registerApplication()
+GalleryApp.register()
 
 // What this host answers for the application, said before it runs: the
 // controls it realizes, the acts it performs, and the pushes it reports. Each

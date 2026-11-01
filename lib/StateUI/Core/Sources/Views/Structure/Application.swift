@@ -6,8 +6,8 @@
 
 /// The application at the root of a StateUI tree.
 ///
-/// Handed to `stateUIUseApp` once, at startup; the host then connects the
-/// platform's application and scene lifecycle to it.
+/// Named to the host once, at startup, with `register()`; the host then
+/// connects the platform's application and scene lifecycle to it.
 ///
 /// Its `body` is the scene it is made of, and nothing else. What the whole
 /// application is - its styles, how its values move, what it keeps between
@@ -34,6 +34,9 @@ public protocol Application {
     /// The scenes the application is made of.
     associatedtype Body: Scene
 
+    /// Makes the application, at its first need - see `register()`.
+    init()
+
     /// The application's scenes, each standing at most once, with the
     /// windows it declares. See `Scene`.
     ///
@@ -47,23 +50,15 @@ public protocol Application {
     @ApplicationBuilder var body: Body { get }
 }
 
-// Design: docs/design/views/pages.md#the-application-is-named-once
-/// Names the application to the host.
-///
-/// The one line an app writes outside its own interface, in a function of its
-/// own module that every head calls before its host runs. The library
-/// cannot declare that function, as the dependency runs app -> library:
-///
-///     @MainActor
-///     public func registerApplication() {
-///         stateUIUseApp(HelloWorldApp())
-///     }
-///
-/// - Parameter application: the application, made at its first need - once
-///   the host has told what the device is - with a fresh application session,
-///   and kept for the life of the process, so `@State` declared on it
-///   outlives every window.
-@MainActor
-public func stateUIUseApp<Declared: Application>(_ application: @escaping @autoclosure () -> Declared) {
-    Renderer.shared.setApplication(application())
+extension Application {
+    // Design: docs/design/views/pages.md#the-application-is-named-once
+    /// Names the application to the host: every head calls it before its host runs.
+    ///
+    ///     NotesApp.register()
+    ///
+    /// The application is made at its first need - once the host has told what the device is - with a fresh
+    /// application session, and kept for the life of the process, so `@State` declared on it outlives every window.
+    public static func register() {
+        Renderer.shared.setApplication(Self())
+    }
 }

@@ -199,7 +199,7 @@ final class AppKitImageViewTests: XCTestCase {
     /// megabytes.
     @MainActor
     func testASecondWindowShowingSVGsCostsLittle() async throws {
-        stateUIUseApp(PicturesApplication())
+        PicturesApplication.register()
         let renderer = testRenderer(resourceDirectory: AppKitDriver.pictures, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()

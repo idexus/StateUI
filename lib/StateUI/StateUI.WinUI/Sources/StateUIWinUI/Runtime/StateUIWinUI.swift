@@ -14,7 +14,7 @@ import StateUIFoundation
 ///     import HelloWorldUI
 ///     import StateUIWinUI
 ///
-///     registerApplication()
+///     HelloWorldApp.register()
 ///     StateUIWinUI.run()
 ///
 /// `.scripts/WinUI/run-app.ps1` builds the head and lays the Windows App SDK

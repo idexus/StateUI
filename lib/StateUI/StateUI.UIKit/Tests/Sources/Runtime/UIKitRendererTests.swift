@@ -118,7 +118,7 @@ final class UIKitRendererTests: XCTestCase {
         let log = UIKitRenderer.log
         UIKitRenderer.log = HostLog(host: "UIKit") { logged.append($0) }
         defer { UIKitRenderer.log = log }
-        stateUIUseApp(OneWindowApplication { Greeting() })
+        Renderer.shared.setApplication(OneWindowApplication { Greeting() })
         TestScene.scene?.session.userInfo = nil
         let host = UIKitRenderer(preferences: TestScene.preferences, reducesMotion: { true })
         defer { host.finish() }
@@ -137,7 +137,7 @@ final class UIKitRendererTests: XCTestCase {
     @MainActor
     func testASceneIOSKeptComesBackAsTheWindowItKept() throws {
         let scene = try XCTUnwrap(TestScene.scene)
-        stateUIUseApp(KeptApplication())
+        KeptApplication.register()
         let kept = WindowRecord(identifier: "kept", kind: "uikit.kept.note", value: "7", kept: ["uikit.section": .string("2")])
         scene.session.userInfo = [UIKitRenderer.recordKey: kept.text]
         let host = UIKitRenderer(preferences: TestScene.preferences, reducesMotion: { true })
@@ -166,7 +166,7 @@ final class UIKitRendererTests: XCTestCase {
     @MainActor
     func testAKeptWindowNoSceneDeclaresComesAsANewWindow() throws {
         let scene = try XCTUnwrap(TestScene.scene)
-        stateUIUseApp(KeptApplication())
+        KeptApplication.register()
         scene.session.userInfo = [UIKitRenderer.recordKey: WindowRecord(identifier: "gone", kind: "uikit.gone").text]
         let host = UIKitRenderer(preferences: TestScene.preferences, reducesMotion: { true })
         host.ownsScenes = false

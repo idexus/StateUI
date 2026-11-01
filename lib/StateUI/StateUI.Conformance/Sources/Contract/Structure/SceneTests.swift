@@ -118,7 +118,7 @@ struct AskingApplication: Application {
     /// The kind of the draft's window.
     static let draft = WindowType<Void>("conformance.draft")
 
-    let said: Received<Bool>
+    var said = Received<Bool>()
 
     var body: some Scene {
         AskingScene(said: said)

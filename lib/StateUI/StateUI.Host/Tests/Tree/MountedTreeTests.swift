@@ -123,7 +123,7 @@ final class MountedTreeTests: XCTestCase {
     /// the elements walked, made and kept, and each scene's part by its place in the application.
     @MainActor
     func testAMessageAppliedTellsTheInspectorWhatItCost() throws {
-        stateUIUseApp(TwoScenes())
+        TwoScenes.register()
         HostBoundary.connectWindow()
         HostBoundary.connectWindow(kind: "tree.second")
         Inspection.start()

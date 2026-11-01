@@ -288,10 +288,10 @@ struct HomePage: View {
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)
 
-                // The platform is compiled in; the formFactor - phone, tablet,
-                // desktop - is the host's answer, which is what lets the
+                // The architecture is compiled in; the platform and the formFactor - phone, tablet,
+                // desktop - are the host's answer, which is what lets the
                 // catalog list desktop chrome only where it draws.
-                Text("native: \(stateUIPlatform()) · \(device.info.formFactor)")
+                Text("native: \(device.info.platform) (\(device.info.architecture)) · \(device.info.formFactor)")
                     .fontSize(11)
                     .textColor(Palette.subtle)
                     .horizontalTextAlignment(.center)

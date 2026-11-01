@@ -284,7 +284,7 @@ private final class TurnRuntime: TurnPresenter, FramePresenter, FrameClock {
     }
 
     init(_ application: some Application) {
-        stateUIUseApp(application)
+        Renderer.shared.setApplication(application)
         let animator = Animator()
         let stateChannels = StateChannels(animator: animator)
         let describedMotion = DescribedMotion(animator: animator)

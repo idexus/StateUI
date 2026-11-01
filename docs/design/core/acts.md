@@ -29,7 +29,7 @@ its elements' - whose documentation says what the host does for it. A host
 takes it as its name and the values it declares. An act of an element is aimed
 through an
 `@Aim`; an act of the application aims at nothing and is called with
-`stateUICall` or `stateUISend`. Arguments and answers are the values the
+`application.call` or `application.tell`. Arguments and answers are the values the
 member declares, checked on the way back: an answer of another shape throws.
 
 ## The act queue
@@ -99,7 +99,7 @@ awaits the first queues the second only once the answer is in.
 
 A host takes typed calls and answers each by its id: `HostBoundary.reply` with
 the values the act came to, or `HostBoundary.fail` with the reason it could not
-perform it, which the awaiting `stateUICall` throws. There is no timeout: an
+perform it, which the awaiting `application.call` throws. There is no timeout: an
 act may wait without bound - a dialog waits for the user - so a failure is
 causal, told by the side that failed. An id answered twice resumes nobody
 twice, `dispatch` answering false for a completion already gone.

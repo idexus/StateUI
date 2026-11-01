@@ -1951,7 +1951,11 @@ private func occurrences(of needle: String, in text: String) -> Int {
 /// An application of one window - what a test registers to have the renderer's
 /// own first message about that window.
 private struct OneWindow: Application {
-    let page: MainPage
+    var page: MainPage?
 
-    var body: some Scene { WindowGroup { page } }
+    var body: some Scene {
+        WindowGroup {
+            if let page { page } else { VStack {} }
+        }
+    }
 }

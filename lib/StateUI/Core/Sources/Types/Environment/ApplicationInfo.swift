@@ -19,6 +19,9 @@ public final class ApplicationInfo {
     /// The build number behind it.
     @State public internal(set) var buildString = ""
 
+    /// The StateUI release the application runs on, as its tag names it - compiled in, never from a host.
+    public let libraryVersion = "0.8.0"
+
     /// The theme in force - the one `application.colorScheme` holds, else the
     /// one the system asks for - updated live. A `Color(light:dark:)` follows
     /// the theme by itself; read this for logic that branches on the theme.

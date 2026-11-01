@@ -379,12 +379,13 @@ placement on groups alone (`ToolbarGroupContract`), never on an item.
 
 ## The application is named once
 
-`stateUIUseApp` is the one line an application writes outside its interface,
-in `registerApplication()`, a Swift function in the application's own
-module. Each platform's head calls it at startup: its `main.swift`, or on
+`NotesApp.register()` is the one line an application writes outside its
+interface. Each platform's head calls it at startup: its `main.swift`, or on
 Android `JNI_OnLoad`, which Android calls by name as it loads the
 application's library. The application exports no C function to be named:
-its heads are Swift and call it as Swift calls a function.
+its heads are Swift and call it as Swift calls a function. It is a static of
+`Application`, which is why the protocol asks for `init()`: the library makes
+the application itself, at its first need, so the type is all a head names.
 
 The application is made at its first need - the first render, or the host
 reading the keys it keeps - after anything an earlier one wrote into the

@@ -71,7 +71,7 @@ final class AppKitSessionTests: XCTestCase {
     /// whatever order the system restores them in; one of a kind no scene declares is not restored.
     @MainActor
     func testAWindowTheSystemRestoredComesBackInThatVeryWindow() async throws {
-        stateUIUseApp(AppKitSessionApp())
+        AppKitSessionApp.register()
         let firstHost = testRenderer(resourceDirectory: nil, presentsWindows: false)
         firstHost.startForTesting()
         try await StandardEnvironment.application.openWindow(.appKitTestTool)
@@ -82,7 +82,7 @@ final class AppKitSessionTests: XCTestCase {
         firstHost.closeForTesting()
         XCTAssertEqual(records.map(\.kind), [nil, "appkit.test.tool"])
 
-        stateUIUseApp(AppKitSessionApp())
+        AppKitSessionApp.register()
         let restoredHost = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { restoredHost.closeForTesting() }
         let tool = try XCTUnwrap(restoredHost.acceptRestoredWindow(records[1]))
@@ -101,7 +101,7 @@ final class AppKitSessionTests: XCTestCase {
 
     @MainActor
     func testARestoredWindowKeepsItsFrameWhenNoGeometryIsRequested() throws {
-        stateUIUseApp(AppKitSessionApp())
+        AppKitSessionApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         let record = WindowRecord(identifier: UUID().uuidString)
@@ -311,7 +311,7 @@ final class AppKitSessionTests: XCTestCase {
     /// system kept is what stands, in the very window it restored.
     @MainActor
     func testARestoredWindowOfAnotherSceneTakesTheLaunchWindowsPlace() throws {
-        stateUIUseApp(AppKitKindsApp())
+        AppKitKindsApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         let restored = renderer.acceptRestoredWindow(
@@ -329,7 +329,7 @@ final class AppKitSessionTests: XCTestCase {
     /// standing; a window another scene declares opens that scene.
     @MainActor
     func testNewWindowAndOpenWindowEachOpenOneMore() async throws {
-        stateUIUseApp(AppKitKindsApp())
+        AppKitKindsApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
@@ -352,7 +352,7 @@ final class AppKitSessionTests: XCTestCase {
     /// the last ends the scene.
     @MainActor
     func testClosingANativeWindowEndsItsSceneWithTheLast() async throws {
-        stateUIUseApp(AppKitSessionApp())
+        AppKitSessionApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
@@ -374,7 +374,7 @@ final class AppKitSessionTests: XCTestCase {
     /// A window the user closes lets go of everything it rendered: the core's elements of it and the host's views.
     @MainActor
     func testAWindowTheUserClosesLeavesNothingAlive() throws {
-        stateUIUseApp(AppKitSessionApp())
+        AppKitSessionApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
@@ -402,7 +402,7 @@ final class AppKitSessionTests: XCTestCase {
     /// A scene's session closing it closes every native window of it.
     @MainActor
     func testClosingASceneClosesEveryNativeWindowOfIt() async throws {
-        stateUIUseApp(AppKitSessionApp())
+        AppKitSessionApp.register()
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()

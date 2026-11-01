@@ -117,7 +117,7 @@ final class AppKitToggleRegistrationTests: XCTestCase {
     func testASwitchsWordsStandWholeOnceItsWidthLands() throws {
         var now = 0.0
         let words = State(wrappedValue: "Wi-Fi")
-        stateUIUseApp(OneWindowApplication {
+        Renderer.shared.setApplication(OneWindowApplication {
             VStack {
                 Switch(true).text(words.wrappedValue).horizontalAlignment(.start)
             }

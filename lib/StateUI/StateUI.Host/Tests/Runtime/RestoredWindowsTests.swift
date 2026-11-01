@@ -57,7 +57,7 @@ final class RestoredWindowsTests: XCTestCase {
     /// scene opens with it - in the core and in the host's - and is the one the window of that kind and value takes;
     /// one of a kind no scene declares is refused - the host closes it.
     func testARestoredWindowComesInAsItsKindAndIsTakenByItsWindow() throws {
-        stateUIUseApp(RestoredApplication())
+        RestoredApplication.register()
         RestoredApplication.sections = []
         let runtime = HostRuntime.still()
         let restored = RestoredWindows<Shown>()
@@ -99,7 +99,7 @@ final class RestoredWindowsTests: XCTestCase {
     /// Turns held for the platform's first window render nothing until it comes, so the scene a window the platform
     /// kept opens is built with what it kept.
     func testTheFirstRenderWaitsForThePlatformsFirstWindow() throws {
-        stateUIUseApp(RestoredApplication())
+        RestoredApplication.register()
         RestoredApplication.sections = []
         let runtime = HostRuntime.still()
         let restored = RestoredWindows<Shown>()

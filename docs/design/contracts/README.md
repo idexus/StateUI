@@ -67,7 +67,7 @@ dictionary shows and what a host is held to.
       +--> views           Node(contract: TextContract.self)
       |                    setValue(TextContract.maximumLines, 3)       a modifier writes a member
       |                    onEvent(DatePickerContract.dateChanged) {...}  a handler hears it typed
-      |                    Aim.call, stateUICall, HostEvents.on           acts and application events
+      |                    Aim.call, application.call, HostEvents.on      acts and application events
       |
       +--> the differ      Prop.facts, read by name from LibraryContracts:
       |                    whether a change animates, whether a lost value is

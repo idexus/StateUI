@@ -76,7 +76,7 @@ final class KeptScenesTests: XCTestCase {
     /// A scene kept comes back with its windows, each connected as its kind for its value, the scene's values landing
     /// before its first render; a window of a kind no scene declares is kept no more.
     func testAKeptSceneComesBackWithItsValuesAndWindows() throws {
-        stateUIUseApp(KeptApplication())
+        KeptApplication.register()
         KeptApplication.sections = []
         let runtime = HostRuntime.still()
         let keeper = SceneKeeper()
@@ -114,7 +114,7 @@ final class KeptScenesTests: XCTestCase {
     /// once no scene stands - the last one ended - nothing is kept again, so the next start finds the scenes as they
     /// stood.
     func testTheLastScenesEndKeepsTheScenesAsTheyStood() throws {
-        stateUIUseApp(KeptApplication())
+        KeptApplication.register()
         let runtime = HostRuntime.still()
         let keeper = SceneKeeper()
 

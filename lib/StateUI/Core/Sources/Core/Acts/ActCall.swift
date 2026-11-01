@@ -35,7 +35,7 @@ extension ActCall {
 /// the words to show or to log.
 ///
 ///     do {
-///         try await stateUICall(NotesContract.export, text)
+///         try await application.call(NotesContract.export, text)
 ///     } catch StateUIError.notPerformed(_, let reason) {
 ///         said = reason
 ///     }
@@ -82,30 +82,9 @@ public enum StateUIError: Error, CustomStringConvertible, Equatable {
     }
 }
 
-/// Performs an act of the application's - one with no control behind it -
-/// handing it the arguments its contract declares and answering with the values
-/// it declares.
-///
-///     let level = try await stateUICall(NotesContract.batteryLevel)
-///     try await stateUICall(NotesContract.log, "note")
-///
-/// Throws `StateUIError.notPerformed` when the host could not perform it - including when no
-/// host answers its name - and `.unreadableAnswer` when the answer is not what the contract
-/// declares. In a run a later event, its task's cancellation or its element
-/// leaving superseded, it throws `CancellationError` and the act never leaves.
-/// It resumes where it was called, and may be called from a handler, a
-/// child task or a detached task. Acts queued without an `await` between them
-/// start in order and finish in whatever order the host's work does. An act of
-/// an element is called through its aim: `Aim.call`.
-///
-/// - Parameters:
-///   - act: the member, written with its contract.
-///   - arguments: its arguments, in the order the contract declares them.
-/// - Returns: the answer, as the contract declares it.
-@discardableResult
-public func stateUICall<
-    Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable
->(
+/// Performs an act of the application's and answers as its contract declares: `ApplicationSession.call(_:_:)`, which
+/// the library's own acts call too.
+func callAct<Owner: ApplicationTier, each Argument: HostRepresentable, each Answer: HostRepresentable>(
     _ act: ElementAct<Owner, (repeat each Argument), (repeat each Answer)>,
     _ arguments: repeat each Argument
 ) async throws -> (repeat each Answer) {
@@ -113,22 +92,9 @@ public func stateUICall<
     return try MemberValues.answer(reply, of: act.name, as: repeat (each Answer).self)
 }
 
-/// Asks the host to perform an act of the application's without waiting for
-/// it - for an act whose outcome nothing depends on. What it answers, and
-/// whether it failed, reaches nothing here.
-///
-///     stateUISend(NotesContract.logEvent, "opened the sample")
-///
-/// It returns at once, and the host performs the act on its next drain. A
-/// name the host has no case for is logged there and never told here - the
-/// difference from `stateUICall`, and the reason to reach for that one
-/// instead.
-///
-/// - Parameters:
-///   - act: the member, written with its contract.
-///   - arguments: its arguments, in the order the contract declares them.
+/// Asks the host to perform an act of the application's without waiting for it: `ApplicationSession.tell(_:_:)`.
 @MainActor
-public func stateUISend<Owner: ApplicationTier, each Argument: HostRepresentable, Answer>(
+func tellAct<Owner: ApplicationTier, each Argument: HostRepresentable, Answer>(
     _ act: ElementAct<Owner, (repeat each Argument), Answer>,
     _ arguments: repeat each Argument
 ) {

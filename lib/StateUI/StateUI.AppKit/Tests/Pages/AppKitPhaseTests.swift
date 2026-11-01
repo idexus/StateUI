@@ -16,7 +16,7 @@ final class AppKitPhaseTests: XCTestCase {
     @MainActor
     func testAPushedPageSeesItsArrivalAndItsNavigation() {
         let stack = PhaseStack()
-        stateUIUseApp(PhaseApp(stack: stack))
+        Renderer.shared.setApplication(PhaseApp(stack: stack))
         let renderer = testRenderer(resourceDirectory: nil, presentsWindows: false)
         defer { renderer.closeForTesting() }
         renderer.startForTesting()
@@ -59,7 +59,7 @@ private struct MainPage: View {
 }
 
 private struct PhaseApp: Application {
-    let stack: PhaseStack
+    var stack = PhaseStack()
 
     var body: some Scene { WindowGroup { MainPage(stack: stack) } }
 }

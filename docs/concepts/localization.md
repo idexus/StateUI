@@ -72,11 +72,6 @@ struct FilesApp: Application {
     }
 }
 
-@MainActor
-public func registerApplication() {
-    stateUIUseApp(FilesApp())
-}
-
 // AppLanguage.swift
 
 /// The languages Files speaks, in its interface and in its documents.

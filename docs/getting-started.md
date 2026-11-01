@@ -266,14 +266,18 @@ state and styles            starts the AppKit host
 no toolkit imports          contains no application UI
 ```
 
-The UI module exports one stable registration function. Registration names the
-application type to the host; it does not build native controls itself. It
-runs on the UI thread, where every head calls it before the host starts - it is
-`@MainActor`, as everything that touches the interface is.
+The UI module exports its application type, which every head registers:
+`RegisteredApp.register()` names the application to the host, which makes it
+at its first need - so an application has an `init()` taking nothing. It does
+not build native controls itself. It runs on the UI thread, where every head
+calls it before the host starts - it is `@MainActor`, as everything that
+touches the interface is.
 
 ```swift
-struct RegisteredApp: Application {
-    var body: some Scene {
+public struct RegisteredApp: Application {
+    public init() {}
+
+    public var body: some Scene {
         WindowGroup { RegisteredPage() }
     }
 }
@@ -281,14 +285,9 @@ struct RegisteredApp: Application {
 struct RegisteredPage: View {
     var body: some View { Text("Hello, StateUI") }
 }
-
-@MainActor
-public func registerApplication() {
-    stateUIUseApp(RegisteredApp())
-}
 ```
 
-The AppKit executable registers the module and starts the host - the
+The AppKit executable registers the application and starts the host - the
 starter's `Platforms/AppKit/main.swift` does that and finds its artwork; the
 Gallery's head, which also registers its own controls, reads:
 
@@ -297,7 +296,7 @@ Gallery's head, which also registers its own controls, reads:
 import GalleryUI
 import StateUIAppKit
 
-registerApplication()
+GalleryApp.register()
 
 // What this host answers for the application, said before it runs: the
 // controls it realizes, the acts it performs, and the pushes it reports. Each
@@ -319,13 +318,13 @@ belong to one application tree, renderer generation, and native host. Opening a
 new scene does not start another host; it asks that host to materialize another
 native scene session.
 
-The UIKit, WinUI, GTK and Web heads call the same `registerApplication()`
+The UIKit, WinUI, GTK and Web heads call the same `register()`
 before their host's `run`, and the Android head when Android loads its
 library; each host's page describes its head: [UIKit](hosts/uikit.md),
 [Android Views](hosts/android.md), [WinUI](hosts/winui.md),
 [GTK](hosts/gtk.md), [Web](hosts/web.md).
 
-Between `registerApplication()` and `run`, a head registers what this host
+Between `register()` and `run`, a head registers what this host
 answers for the application beyond the library:
 
 - the application's own controls, acts and event sources, through the host's
@@ -346,9 +345,9 @@ import GalleryUI
 import StateUIGTK
 import StateUIWebViewGTK
 
-// Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+// Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
 // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-registerApplication()
+GalleryApp.register()
 // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
 GalleryControls.register()
 GalleryActs.register()

@@ -33,7 +33,7 @@ final class MountStackTests: XCTestCase {
     /// tablet browser's stack there once the differ no longer did.
     func testALevelOfTheTreeCostsTheMountLittleStack() {
         marks = [:]
-        stateUIUseApp(DeepApplication())
+        DeepApplication.register()
         let runtime = HostRuntime(clock: StillClock(), reducesMotion: { false }, makeNative: { element in
             var depth = 0
             var above = element.parent

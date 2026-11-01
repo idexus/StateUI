@@ -126,8 +126,8 @@ turns the nodes into the patch.
   `WindowGroup`, `Window`, `Windows`, `WindowType` and
   `WindowError` are a scene's windows, and `Node.page` and `Node.window`,
   internal, the page a view stands on and the window around it.
-  `stateUIUseApp` names the application
-  to the host from the application's own registration function.
+  `Application.register()` names the application
+  to the host from each of its heads.
   *Application.* ([Pages and windows](../design/views/pages.md);
   [applications and sessions](../interface/application-and-sessions.md))
 - **`NavigationStack`**, **`TabView`** and **`SplitView`** (`Navigation/`)
@@ -341,7 +341,7 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
   readers, the generation, the act queue and the completions, and takes one
   of three roads - the clean walk, a build, or the complete tree. It is host
   SPI (`@_spi(Host)`): an application reaches `setApplication` through
-  `stateUIUseApp` and tells every change by writing a state; a host reaches
+  `Application.register()` and tells every change by writing a state; a host reaches
   the rest through `HostBoundary`.
   ([Three roads](../design/core/render.md#three-roads),
   [generations and baseline](../design/core/render.md#generations-and-baseline))
@@ -384,8 +384,8 @@ the type's own ([where things live](../design/core/README.md#where-things-live))
 
 ### Acts
 
-- **`stateUICall`**, **`stateUISend`** and **`StateUIError`** call an act of
-  the application's - one with no control behind it - awaited or sent, and
+- **`ApplicationSession.call`**, **`tell`** and **`StateUIError`** call an act of
+  the application's - one with no control behind it - awaited or not, and
   throw what a host could not do. *Application.*
   ([An act is a member](../design/core/acts.md#an-act-is-a-member);
   [host-extension actions](../interface/interaction-and-actions.md#host-extension-actions))

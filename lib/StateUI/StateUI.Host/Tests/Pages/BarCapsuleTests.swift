@@ -24,7 +24,7 @@ final class BarCapsuleTests: XCTestCase {
     /// A page's toolbar: the group it declares, of one, stands on a capsule; the item standing alone beside it,
     /// in the group StateUI stands it in, stands bare.
     func testTheGroupsOfAPagesToolbarAreToldApart() throws {
-        stateUIUseApp(ToolbarApplication())
+        ToolbarApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

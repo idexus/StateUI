@@ -16,7 +16,7 @@ import CStateUIAndroid
 ///
 ///     @_cdecl("JNI_OnLoad")
 ///     public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
-///         registerApplication()
+///         HelloWorldApp.register()
 ///         return StateUIAndroid.load(machine)
 ///     }
 ///

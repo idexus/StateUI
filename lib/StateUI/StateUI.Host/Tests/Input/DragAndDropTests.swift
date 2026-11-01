@@ -76,7 +76,7 @@ final class DragAndDropTests: XCTestCase {
 
     private func running() -> HostRuntime {
         said = []
-        stateUIUseApp(BasketApplication())
+        BasketApplication.register()
         let runtime = HostRuntime.still()
         runtime.connectWindow()
         runtime.pump.turn()

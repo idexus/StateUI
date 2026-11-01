@@ -439,7 +439,7 @@
 
     /// Answers a performed act call with the values it came to.
     ///
-    /// The awaiting `stateUICall` resumes with exactly these values - none
+    /// The awaiting `application.call` resumes with exactly these values - none
     /// for an act that returns nothing.
     ///
     /// - Parameters:
@@ -455,7 +455,7 @@
 
     /// Fails an act call the host could not perform.
     ///
-    /// The awaiting `stateUICall` throws `StateUIError` carrying `reason`.
+    /// The awaiting `application.call` throws `StateUIError` carrying `reason`.
     ///
     /// - Parameters:
     ///   - completion: The negative id the act call carried.

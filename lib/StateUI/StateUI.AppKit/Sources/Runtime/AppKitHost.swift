@@ -17,7 +17,7 @@ import QuartzCore
 @MainActor
 public enum StateUIAppKit {
     /// Starts `NSApplication`, displays the application already registered
-    /// with `stateUIUseApp(_:)`, and ends the process as the application ends.
+    /// with `Application.register()`, and ends the process as the application ends.
     ///
     /// - Parameters:
     ///   - resourceDirectory: where the application's pictures are; nil shows the `Images` the program carries -

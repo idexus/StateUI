@@ -308,7 +308,7 @@ final class AndroidRendererTests: XCTestCase {
             XCTAssertEqual(first.views(AndroidTextView.self).map(\.text), ["section 2"])
             first.runtime.tree.root?.leave()
 
-            stateUIUseApp(OneWindowApplication { KeptSectionPage() })
+            Renderer.shared.setApplication(OneWindowApplication { KeptSectionPage() })
             let next = AndroidRenderer.bare()
             next.start()
 
@@ -351,7 +351,7 @@ final class AndroidRendererTests: XCTestCase {
     func testTheDeviceIsCalledWhatItsUserNamedIt() throws {
         try onMainActor {
             let named = try XCTUnwrap(Self.nameInSettings)
-            stateUIUseApp(OneWindowApplication(page: { DevicePage() }))
+            Renderer.shared.setApplication(OneWindowApplication(page: { DevicePage() }))
             let host = AndroidRenderer.start(context: TestContext.window, root: TestJava.root(), density: 2)
 
             XCTAssertEqual(host.views(AndroidTextView.self).map(\.text), ["device \(named)"])

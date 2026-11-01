@@ -13,9 +13,9 @@
 ///         static let members: [any ContractMember] = [batteryLevel, batteryChanged]
 ///     }
 ///
-///     let level = try await stateUICall(NotesContract.batteryLevel)
+///     let level = try await application.call(NotesContract.batteryLevel)
 ///
-/// Its acts are called with `stateUICall` and `stateUISend` and its events
+/// Its acts are called with `application.call` and `application.tell` and its events
 /// heard with `HostEvents.on`: none of them aims at a control. An act of an
 /// element's own is called through the element's aim instead, `Aim.call`.
 public protocol ApplicationTier: Contract {}

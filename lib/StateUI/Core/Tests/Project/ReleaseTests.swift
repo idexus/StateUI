@@ -9,7 +9,7 @@ final class ReleaseTests: XCTestCase {
     /// Every place that names the release names the one the editor
     /// extension's `package.json` states, the release's only home: the
     /// published-package line in the root's Package.swift, the library's own
-    /// `stateUIVersion()`, each Android head's version, the Gallery's AppKit
+    /// `application.info.libraryVersion`, each Android head's version, the Gallery's AppKit
     /// bundle, every UIKit bundle, the bug report's example, and the newest section of the changes. A reader copying
     /// any of them gets this release, not the one before.
     func testEveryMentionOfTheReleaseNamesThisOne() throws {
@@ -20,7 +20,7 @@ final class ReleaseTests: XCTestCase {
 
         var mentions: [(file: String, before: String, after: String)] = [
             ("Package.swift", "exact: \"", "\""),
-            ("lib/StateUI/Core/Sources/Types/Environment/StateUIVersion.swift", "-> String { \"", "\" }"),
+            ("lib/StateUI/Core/Sources/Types/Environment/ApplicationInfo.swift", "libraryVersion = \"", "\""),
             (".github/ISSUE_TEMPLATE/bug.yml", "placeholder: StateUI ", ","),
             (".scripts/AppKit/build-gallery-appkit.sh", "CFBundleShortVersionString -string ", " "),
             (".scripts/UIKit/tools.sh", "CFBundleShortVersionString -string ", " "),

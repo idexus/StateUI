@@ -45,7 +45,7 @@ public struct ChosenFile: Equatable, Hashable, Sendable, HostRepresentable {
     /// - Throws: `StateUIError` where the platform cannot read it - gone,
     ///   or no longer the application's to read.
     public func read() async throws -> [UInt8] {
-        try await stateUICall(ApplicationContract.readFile, self, nil)
+        try await callAct(ApplicationContract.readFile, self, nil)
     }
 
     /// Reads at most `maximum` bytes from the file's start - a file longer
@@ -59,7 +59,7 @@ public struct ChosenFile: Equatable, Hashable, Sendable, HostRepresentable {
     /// - Throws: `StateUIError` where the platform cannot read it - gone,
     ///   or no longer the application's to read.
     public func read(atMost maximum: Int) async throws -> [UInt8] {
-        try await stateUICall(ApplicationContract.readFile, self, max(0, maximum))
+        try await callAct(ApplicationContract.readFile, self, max(0, maximum))
     }
 
     /// Opens the file in the application the system gives its kind - a page
@@ -71,6 +71,6 @@ public struct ChosenFile: Equatable, Hashable, Sendable, HostRepresentable {
     ///   kind.
     @discardableResult
     public func launch() async throws -> Bool {
-        try await stateUICall(ApplicationContract.launchFile, self)
+        try await callAct(ApplicationContract.launchFile, self)
     }
 }

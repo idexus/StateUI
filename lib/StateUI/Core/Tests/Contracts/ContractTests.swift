@@ -313,7 +313,7 @@ final class ContractTests: XCTestCase {
     func testAnApplicationActIsCalledAndAnsweredAsItsDeclaredValues() async throws {
         _ = drainedActs()
 
-        let asked = Self.begin { try await stateUICall(TestDevice.battery) }
+        let asked = Self.begin { try await StandardEnvironment.application.call(TestDevice.battery) }
         let acts = drainedActs()
         XCTAssertEqual(acts.first?.name, "Test.Battery")
         XCTAssertEqual(acts.first?.arguments, [])
@@ -323,7 +323,7 @@ final class ContractTests: XCTestCase {
         XCTAssertEqual(level, 0.5)
         XCTAssertTrue(charging)
 
-        let copied = Self.begin { try await stateUICall(TestDevice.copy, "note") }
+        let copied = Self.begin { try await StandardEnvironment.application.call(TestDevice.copy, "note") }
         let copy = drainedActs()
         XCTAssertEqual(copy.first?.name, "Test.Copy")
         XCTAssertEqual(copy.first?.arguments, [.string("note")])
@@ -337,7 +337,7 @@ final class ContractTests: XCTestCase {
     func testAnAnswerOfAnotherShapeThrowsNamingTheAct() async throws {
         _ = drainedActs()
 
-        let asked = Self.begin { try await stateUICall(TestDevice.battery) }
+        let asked = Self.begin { try await StandardEnvironment.application.call(TestDevice.battery) }
         await report(try completionId(in: drainedActs()), .finished([.string("full")]))
 
         do {

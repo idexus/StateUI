@@ -63,14 +63,14 @@ public enum StateUIControls {
     }
 }
 
-/// The acts an application performs on this host - what its own `stateUICall` reaches.
+/// The acts an application performs on this host - what its own `application.call` reaches.
 ///
 /// Said once, from the application's Android head as its library loads - `JNI_OnLoad` runs on the UI thread -
 /// before `StateUIAndroid.load(_:)`.
 @MainActor
 public enum StateUIActs {
     /// Performs an act of the application's - one no control stands behind - when the application calls it with
-    /// `stateUICall`.
+    /// `application.call`.
     ///
     /// The values are the act's own, as its contract declares them, so a performer of another shape does not
     /// compile and a call carrying anything else fails with the reason rather than running on a guess. A second

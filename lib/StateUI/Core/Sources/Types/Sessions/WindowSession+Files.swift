@@ -17,7 +17,7 @@ extension WindowSession {
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
     public func openFile(types: [FileType] = []) async throws -> ChosenFile? {
         let (scene, window) = try address
-        return try await stateUICall(ApplicationContract.openFiles, scene, window, types, false).first
+        return try await callAct(ApplicationContract.openFiles, scene, window, types, false).first
     }
 
     /// Asks the user for files to open, as many as they choose, over this window.
@@ -32,7 +32,7 @@ extension WindowSession {
     /// - Throws: `WindowError` for a window no longer open, and `StateUIError` when there is no window to show it.
     public func openFiles(types: [FileType] = []) async throws -> [ChosenFile] {
         let (scene, window) = try address
-        return try await stateUICall(ApplicationContract.openFiles, scene, window, types, true)
+        return try await callAct(ApplicationContract.openFiles, scene, window, types, true)
     }
 
     /// Asks the user where to save `contents`, over this window, and writes them there.
@@ -57,6 +57,6 @@ extension WindowSession {
     @discardableResult
     public func saveFile(_ contents: [UInt8], name: String, types: [FileType] = []) async throws -> ChosenFile? {
         let (scene, window) = try address
-        return try await stateUICall(ApplicationContract.saveFile, scene, window, contents, name, types)
+        return try await callAct(ApplicationContract.saveFile, scene, window, contents, name, types)
     }
 }

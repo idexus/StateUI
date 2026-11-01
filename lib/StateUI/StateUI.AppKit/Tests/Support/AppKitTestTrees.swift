@@ -50,7 +50,7 @@ extension AppKitRenderer {
     /// main actor never runs when its event is dispatched.
     @MainActor
     static func running(@ViewBuilder _ page: @escaping @MainActor () -> any View) -> AppKitRenderer {
-        stateUIUseApp(OneWindowApplication(page: page))
+        Renderer.shared.setApplication(OneWindowApplication(page: page))
         let renderer = testRenderer(resourceDirectory: TestPictures.directory, presentsWindows: false)
         renderer.startForTesting()
         return renderer

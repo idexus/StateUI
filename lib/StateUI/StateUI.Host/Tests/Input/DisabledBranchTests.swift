@@ -63,7 +63,7 @@ final class DisabledBranchTests: XCTestCase {
         heard = []
         told = []
         born = []
-        stateUIUseApp(BranchApplication())
+        BranchApplication.register()
         let runtime = HostRuntime(
             clock: StillClock(), reducesMotion: { false }, makeNative: { TellingView(id: $0.id) }, log: { _ in })
         runtime.connectWindow()

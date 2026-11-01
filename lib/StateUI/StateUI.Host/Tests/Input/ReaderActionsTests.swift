@@ -38,7 +38,7 @@ final class ReaderActionsTests: XCTestCase {
 
     private func running() -> HostRuntime {
         said = []
-        stateUIUseApp(ReaderApplication())
+        ReaderApplication.register()
         let runtime = HostRuntime(
             clock: StillClock(), reducesMotion: { false }, makeNative: { ReaderView(id: $0.id) }, log: { _ in })
         runtime.connectWindow()

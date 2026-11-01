@@ -169,7 +169,7 @@ final class ActCallTests: XCTestCase {
     func testAnActNobodyIsWaitingForCarriesNoCompletion() {
         drain()
 
-        stateUISend(TestActs.copy, "note")
+        StandardEnvironment.application.tell(TestActs.copy, "note")
 
         let acts = drain()
         XCTAssertEqual(acts.first?.name, "Test.Copy")
@@ -187,7 +187,7 @@ final class ActCallTests: XCTestCase {
     func testANumberThatIsNotFiniteCrossesAsItsOwnBits() throws {
         drain()
 
-        stateUISend(TestActs.numbers, Double.nan, Double.infinity, -Double.infinity, 1)
+        StandardEnvironment.application.tell(TestActs.numbers, Double.nan, Double.infinity, -Double.infinity, 1)
 
         let acts = drain()
         let arguments = try XCTUnwrap(acts.first?.arguments)
@@ -229,7 +229,7 @@ final class ActCallTests: XCTestCase {
     func testTheResultOfAnActReachesTheCaller() async throws {
         drain()
 
-        let asked = Self.begin { try await stateUICall(TestActs.choose, "Delete?") }
+        let asked = Self.begin { try await StandardEnvironment.application.call(TestActs.choose, "Delete?") }
 
         await report(try completionId(in: drain()), .finished([.string("Delete")]))
 
@@ -309,7 +309,7 @@ final class ActCallTests: XCTestCase {
     func testAnEmptyResultIsNotAFailure() async throws {
         drain()
 
-        let asked = Self.begin { try await stateUICall(TestActs.nothing) }
+        let asked = Self.begin { try await StandardEnvironment.application.call(TestActs.nothing) }
         await report(try completionId(in: drain()), .finished([]))
 
         try await asked.value
@@ -388,7 +388,7 @@ final class ActCallTests: XCTestCase {
     func testATypedReplyReachesTheCaller() async throws {
         drain()
 
-        let asked = Self.begin { try await stateUICall(TestActs.choose, "Delete?") }
+        let asked = Self.begin { try await StandardEnvironment.application.call(TestActs.choose, "Delete?") }
         let call = try XCTUnwrap(HostBoundary.takeActCalls().first)
         let id = try XCTUnwrap(call.completion)
 

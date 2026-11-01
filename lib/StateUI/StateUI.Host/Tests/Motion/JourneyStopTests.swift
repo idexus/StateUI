@@ -58,7 +58,7 @@ final class JourneyStopTests: XCTestCase {
     /// The stage shown, with nothing moving yet, on a clock the test turns.
     private func start() -> (HostRuntime, TurnedClock) {
         Stage.held = Stage()
-        stateUIUseApp(StageApplication())
+        StageApplication.register()
         let clock = TurnedClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()

@@ -108,7 +108,7 @@ final class AndroidPagesTests: XCTestCase {
     /// A page that paints no background of its own stands on its window's color.
     func testAPageStandsOnItsWindowsColor() throws {
         try onMainActor {
-            stateUIUseApp(OneWindowApplication {
+            Renderer.shared.setApplication(OneWindowApplication {
                 WindowPainted(color: Color(red: 51, green: 102, blue: 153)) {
                     NavigationStack(State(wrappedValue: [Int]()).projectedValue) {
                         TitledPage(title: "Root")
@@ -606,7 +606,7 @@ final class AndroidPagesTests: XCTestCase {
     /// window painted clear leaves the drawer opaque, the detail hidden behind a sidebar page that paints nothing.
     func testADrawerUnderAClearWindowStandsOnASurfaceOfItsOwn() throws {
         try onMainActor {
-            stateUIUseApp(OneWindowApplication {
+            Renderer.shared.setApplication(OneWindowApplication {
                 WindowPainted(color: .transparent) {
                     drawerOverStack(sidebar: TitledPage(title: "Menu", icon: "test_dot.png"))
                 }

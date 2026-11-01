@@ -4092,13 +4092,14 @@ enum Listings {
         ///
         /// An application is what every scene SHARES - here its styles. The galleries
         /// are one scene, its windows as many as the user opens: see
-        /// Gallery/GalleryScene.swift.
-        struct GalleryApp: Application {
+        /// Gallery/GalleryScene.swift. Every head names it to its host with
+        /// `GalleryApp.register()` - Platforms/<Host>.
+        public struct GalleryApp: Application {
             /// The application as it runs - where its styles go.
             @Environment(\.application) private var application
 
             /// What every gallery shares, written as the application is made.
-            init() {
+            public init() {
                 // The styles a control of the gallery asks for by name. A color in a
                 // style follows the theme by itself. See Styles/AppStyles.swift.
                 application.styles = AppStyles.sheet
@@ -4112,7 +4113,7 @@ enum Listings {
 
             /// The galleries - launch opens a gallery window, and *File ▸ New Window* one more; the scratchpads; and one
             /// About window for the whole application, in a scene of its own. See `ScenesSample`.
-            var body: some Scene {
+            public var body: some Scene {
                 GalleryScene()
                 ScratchpadScene()
                 AboutScene()
@@ -5376,6 +5377,7 @@ enum Listings {
         """#,
         "InteropActsSample": #"""
         // Sources/Samples/Interop/InteropActsSample.swift
+        @Environment(\.application) private var application
         @State private var line = "Hello from StateUI"
         @State private var status = "nothing asked yet"
         @State private var tenStars = false
@@ -5389,13 +5391,13 @@ enum Listings {
 
                 Button("Write it to the system's log")
                     .onClicked(.ignoreWhileRunning) {
-                        try await stateUICall(GalleryContract.log, line)
+                        try await application.call(GalleryContract.log, line)
                         status = "logged"
                     }
 
                 Button("Ask about the battery")
                     .onClicked(.ignoreWhileRunning) {
-                        let (level, charging) = try await stateUICall(GalleryContract.batteryLevel)
+                        let (level, charging) = try await application.call(GalleryContract.batteryLevel)
 
                         // A desktop without a battery answers 0, so only a level
                         // above zero counts.
@@ -5407,7 +5409,7 @@ enum Listings {
                 Button("Call something nobody registered")
                     .onClicked(.ignoreWhileRunning) {
                         do {
-                            try await stateUICall(GalleryContract.nobody)
+                            try await application.call(GalleryContract.nobody)
                             status = "that should have thrown"
                         } catch {
                             status = "thrown: \(error)"
@@ -7356,6 +7358,9 @@ enum Listings {
             /// at the bottom.
             @Environment(\.device) private var device
 
+            /// The StateUI release the line at the bottom names.
+            @Environment(\.application) private var application
+
             var body: some View {
                 // The rows run under the bars, the first and the last stopping clear
                 // of them.
@@ -7412,10 +7417,12 @@ enum Listings {
                 // Clear of the pane's edges, so the chosen row's fill stands inside it.
             }
 
-            /// What is underneath: the platform compiled in, the formFactor the host
-            /// answered before the first render, and the StateUI release it is built on.
+            /// What is underneath: the platform and form factor the host answered before the first render, the
+            /// architecture compiled in, and the StateUI release it is built on.
             private var footer: some View {
-                Text("native: \(stateUIPlatform()) · \(device.info.formFactor)\nStateUI \(stateUIVersion())")
+                Text(
+                    "native: \(device.info.platform) (\(device.info.architecture)) · \(device.info.formFactor)"
+                        + "\nStateUI \(application.info.libraryVersion)")
                     #if UIKIT
                     // Above the home indicator's strip, which stands under it: none
                     // of its own beneath.
@@ -14381,7 +14388,7 @@ extension Listings {
         @_cdecl("JNI_OnLoad")
         public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
             MainActor.assumeIsolated {
-                registerApplication()
+                GalleryApp.register()
                 GalleryControls.register()
                 GalleryActs.register()
                 GalleryEventSources.register()
@@ -14542,9 +14549,9 @@ extension Listings {
                 }
 
         // Platforms/GTK/main.swift
-        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+        // Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        registerApplication()
+        GalleryApp.register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()
@@ -15678,9 +15685,9 @@ extension Listings {
         }
 
         // Platforms/GTK/main.swift
-        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+        // Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        registerApplication()
+        GalleryApp.register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()
@@ -15973,7 +15980,7 @@ extension Listings {
         @_cdecl("JNI_OnLoad")
         public func JNI_OnLoad(_ machine: UnsafeMutableRawPointer?, _ reserved: UnsafeMutableRawPointer?) -> Int32 {
             MainActor.assumeIsolated {
-                registerApplication()
+                GalleryApp.register()
                 GalleryControls.register()
                 GalleryActs.register()
                 GalleryEventSources.register()
@@ -16095,7 +16102,7 @@ extension Listings {
         import GalleryUI
         import StateUIAppKit
 
-        registerApplication()
+        GalleryApp.register()
 
         // What this host answers for the application, said before it runs: the
         // controls it realizes, the acts it performs, and the pushes it reports. Each
@@ -16203,9 +16210,9 @@ extension Listings {
         import StateUIGTK
         import StateUIWebViewGTK
 
-        // Register the gallery module, then say what this host answers for it before it runs: the controls it realizes,
+        // Name the gallery to the host, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file.
-        registerApplication()
+        GalleryApp.register()
         // Each control's own register(), at the end of its file: its widget, and any act aimed at it.
         GalleryControls.register()
         GalleryActs.register()
@@ -16314,7 +16321,7 @@ extension Listings {
         import GalleryUI
         import StateUIUIKit
 
-        registerApplication()
+        GalleryApp.register()
 
         // What this host answers for the application, said before it runs: the
         // controls it realizes, the acts it performs, and the pushes it reports. Each
@@ -16422,11 +16429,11 @@ extension Listings {
         import GalleryUI
         import StateUIWeb
 
-        // Register the application module, then say what this host answers for it
+        // Name the application to the host, then say what this host answers for it
         // before it runs - the controls it realizes, the acts it performs and the
         // pushes it reports, each in Host/ beside this file, their scripts in Page/ -
         // and show it in the page; the browser calls it from then on.
-        registerApplication()
+        GalleryApp.register()
         GalleryControls.register()
         GalleryActs.register()
         GalleryEventSources.start()
@@ -16521,10 +16528,10 @@ extension Listings {
         import StateUIWebViewWinUI
         import StateUIWinUI
 
-        // Register the application module, then say what this host answers for it before it runs: the controls it realizes,
+        // Name the application to the host, then say what this host answers for it before it runs: the controls it realizes,
         // the acts it performs, and the pushes it reports - each in Host/ beside this file, the elements made by the gallery's
         // relay in Relay/. Then hand WinUI this thread until the last window closes.
-        registerApplication()
+        GalleryApp.register()
         // Before StateUIWinUI.run(): every control - RatingBarControl.register() among them - and every act.
         GalleryControls.register()
         GalleryActs.register()

@@ -109,7 +109,7 @@ final class FingersHearingTests: XCTestCase {
 
     private func running(_ application: some Application = FingersApplication()) -> (HostRuntime, FingersClock) {
         handed = []
-        stateUIUseApp(application)
+        Renderer.shared.setApplication(application)
         let clock = FingersClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
@@ -177,7 +177,7 @@ private struct TurnedPage: View {
 }
 
 private struct TurnedApplication: Application {
-    let mirrors: Bool
+    var mirrors = false
 
     var body: some Scene { WindowGroup { TurnedPage(mirrors: mirrors) } }
 }

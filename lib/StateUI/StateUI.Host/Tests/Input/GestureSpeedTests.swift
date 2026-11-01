@@ -72,7 +72,7 @@ final class GestureSpeedTests: XCTestCase {
     /// A runtime of the page, its box, and the clock a test winds.
     private func running() throws -> (HostRuntime, MountedElement, WoundClock) {
         (pans, pinches, turns) = ([], [], [])
-        stateUIUseApp(TurnedApplication())
+        TurnedApplication.register()
         let clock = WoundClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()

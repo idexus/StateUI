@@ -134,7 +134,7 @@ final class HandHearingTests: XCTestCase {
         handed = []
         tapped = 0
         dragged = []
-        stateUIUseApp(application)
+        Renderer.shared.setApplication(application)
         let clock = HandClock()
         let runtime = HostRuntime(clock: clock, reducesMotion: { false }, makeNative: { _ in NoView() }, log: { _ in })
         runtime.connectWindow()
@@ -258,7 +258,7 @@ private struct RightToLeftPage: View {
 }
 
 private struct RightToLeftApplication: Application {
-    let mirrors: Bool
+    var mirrors = false
 
     var body: some Scene { WindowGroup { RightToLeftPage(mirrors: mirrors) } }
 }

@@ -88,4 +88,4 @@ UI thread, which is why the instances are `MainActor`'s.
 `device.info.platform` is text, not a vocabulary: the set of platforms is
 open, and a host may name one this release does not know. `FormFactor`
 tells apart devices that share an operating system, such as a phone and a
-tablet, which `stateUIPlatform()`, compiled in, never can.
+tablet, which `device.info.platform` alone never can.
