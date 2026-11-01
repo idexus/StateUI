@@ -494,14 +494,17 @@ under an element that left.
 ## Engines on an element
 
 An element's engines are registered under numbers it keeps, so a render hands
-the newest closure - this render's captures - to the engine that already has
-a number. A different count is a different set of engines and starts over, as
+the newest closure - this render's captures - to the engine that already has a
+number. A different count is a different set of engines and starts over, as
 with watches. The engines a conversion needs are armed beside the author's
-own, ahead of them, in property order. A board that has forgotten an element's
-engines, as after a session claimed afresh, gets them again under fresh
-numbers, which the element keeps from then on. A replaced element arms its engines
-only after the old one is let go, under fresh numbers: armed first, they
-would be the very numbers the old element's release disarms.
+own, ahead of them, in property order: every conversion of its chain, the one
+nearest the sources first, each once however many properties share it ([a
+chain of conversions](journeys.md#a-chain-of-conversions)). A board that has
+forgotten an element's engines, as after a session claimed afresh, gets them
+again under fresh numbers, which the element keeps from then on. A replaced
+element arms its engines only after the old one is let go, under fresh
+numbers: armed first, they would be the very numbers the old element's release
+disarms.
 
 ## Driven properties
 

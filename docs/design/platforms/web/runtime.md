@@ -204,15 +204,15 @@ reason.
 A file dialog is the browser's own, waiting its turn among the questions
 ([files](../../host/runtime.md#files)). One that opens is a file input of
 every kind's extensions, clicked while the user's press lets the page ask -
-its `change` answers the files, its `cancel` none. A save takes its
-contents first: where the browser has a save dialog (`showSaveFilePicker`)
-it offers each kind under its caption with the act's name, writes the
-contents where the user said and answers the file - none where they
-cancelled; elsewhere the browser downloads the file under the act's name,
-which no dialog answers, and the act answers the file at once. A chosen
-file is kept by the relay under a number of its own - a `File`, or the
-handle of the one saved - which is its address; the page holds it while it
-runs, and reads it as the browser hands it.
+its `change` answers the files, its `cancel` none. A save takes its contents
+first: where the browser has a save dialog (`showSaveFilePicker`) it offers
+each kind under its caption with the act's name, writes the contents where the
+user said and answers the file - none where they cancelled, and a write that
+fails fails the act with its reason, never as a cancel; elsewhere the browser
+downloads the file under the act's name, which no dialog answers, and the act
+answers the file at once. A chosen file is kept by the relay under a number of
+its own - a `File`, or the handle of the one saved - which is its address; the
+page holds it while it runs, and reads it as the browser hands it.
 
 A file or an address is launched in a window of the browser's own, opened at
 once while the user's press lets the page open one - a file's sent there as

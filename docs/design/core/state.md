@@ -282,6 +282,9 @@ wearing the theme (`ThemeWearing`): the storage keeps it whole and the
 element handing it on reads the theme, as for a color pair above. A material
 is shown as it stands, never walked: `.background($material)` is a plain
 channel, while `.background($color)` stays a journey the host animates.
+Lanes that are no material - a kind, a count or a choice that is no whole
+number, or none a material has, or more than the lanes hold - read as nil, so
+a host shows nothing of them rather than trapping.
 
 ## A write that lands
 
