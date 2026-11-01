@@ -312,20 +312,23 @@ final class StateChannelsTests: XCTestCase {
         XCTAssertEqual(runtime.stateChannels.count, 0, "the last one took it with it")
     }
 
-    /// A channel still moving when its last control leaves runs to where it was sent, and only then goes.
+    /// A channel still moving when its last control leaves runs to where it was sent, and only then goes - what
+    /// awaited its arrival answered as it lands, never left waiting for a control that is gone.
     @MainActor
     func testAMovingChannelWhoseLastControlLeftLandsAndThenGoes() {
         let runtime = HostRuntime.still()
         runtime.tree.apply(Self.labels(["a"]), complete: true)
-        Self.open(Self.worn, in: runtime, from: 0, to: 1)
+        Self.open(Self.worn, in: runtime, from: 0, to: 1, completion: 7)
         XCTAssertTrue(runtime.stateChannels.isActive)
 
         runtime.tree.apply(Self.labels([]), complete: false)
         runtime.stateChannels.follow(runtime.animator.advance(to: 100))
         XCTAssertEqual(runtime.stateChannels.count, 1, "it goes on to where it was sent")
+        XCTAssertEqual(runtime.stateChannels.takeCompletions().map(\.id), [], "not there yet")
 
         runtime.stateChannels.follow(runtime.animator.advance(to: 200))
         XCTAssertEqual(runtime.stateChannels.count, 0, "and goes once it has landed")
+        XCTAssertEqual(runtime.stateChannels.takeCompletions().map(\.succeeded), [true], "its arrival answered")
     }
 
     /// A control whose patch binds none of its properties any more lets go of every state it wore.
@@ -369,10 +372,12 @@ final class StateChannelsTests: XCTestCase {
 
     /// Opens the channel of `state` on a 200 ms linear journey from `value` to `destination`.
     @MainActor
-    private static func open(_ state: Int32, in runtime: HostRuntime, from value: Double, to destination: Double) {
+    private static func open(
+        _ state: Int32, in runtime: HostRuntime, from value: Double, to destination: Double, completion: Int? = nil
+    ) {
         let journey = HostJourney(
-            value: [value], destination: [destination], velocity: [0], motion: .eased(.milliseconds(200), curve: .linear), completion: nil,
-            stopped: 0)
+            value: [value], destination: [destination], velocity: [0], motion: .eased(.milliseconds(200), curve: .linear),
+            completion: completion, stopped: 0)
         _ = runtime.stateChannels.presentedValue(
             for: HostStateBinding(state: state, mode: .out, kind: .property, laneKind: .number),
             from: HostBoundary.value(of: journey),
