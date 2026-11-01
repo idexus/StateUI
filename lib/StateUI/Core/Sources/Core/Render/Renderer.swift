@@ -354,12 +354,7 @@ public final class Renderer {
             if selfDirtied >= Renderer.selfDirtyLimit {
                 clearInvalidation()
                 selfDirtied = 0
-                report(StateUIError(message: """
-                    A view writes state while it is being built - every one of \
-                    \(Renderer.selfDirtyLimit) consecutive renders ended with the \
-                    tree dirty again. A body reads state; a handler writes it. \
-                    The pending change was dropped to stop the render loop.
-                    """))
+                report(StateUIError.writesWhileBuilding)
             }
         } else {
             selfDirtied = 0

@@ -393,7 +393,7 @@ final class UIThreadTests: XCTestCase {
 
         let patch = renders.render(
             Button("Break")
-                .onClicked { throw StateUIError(message: "no route") }
+                .onClicked { throw NoRoute() }
                 .node)
 
         let id = try XCTUnwrap(patch.events?["clicked"])
@@ -886,4 +886,9 @@ private extension String {
     var trimmed: String {
         trimmingCharacters(in: .whitespaces)
     }
+}
+
+/// An application's own failure, which a handler throws.
+private struct NoRoute: Error, CustomStringConvertible {
+    var description: String { "no route" }
 }

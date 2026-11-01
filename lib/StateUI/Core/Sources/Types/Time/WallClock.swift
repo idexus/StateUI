@@ -51,9 +51,9 @@ public struct WallClock {
     private func local() async throws -> [Int] {
         let numbers = try await stateUICall(ApplicationContract.currentTime)
         guard numbers.count == 7 else {
-            throw StateUIError(
-                message: "the host's reply does not read as a date and a time of day. Usually "
-                    + "a native library and a runtime built from different versions.")
+            throw StateUIError.unreadableAnswer(
+                act: ApplicationContract.currentTime.name, answered: "\(numbers.count) numbers",
+                declared: "seven: a date and a time of day")
         }
         return numbers.map { Int($0) }
     }

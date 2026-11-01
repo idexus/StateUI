@@ -28,7 +28,7 @@ extension Aim {
     where Target == ItemsView<ID> {
         guard let resolves = box.resolves else { return unbuilt }
         guard let identity = resolves(item).first(where: matches) else {
-            throw StateUIError(message: "the list holds no item \(item) to scroll to")
+            throw StateUIError.noItem("\(item)")
         }
         return identity
     }

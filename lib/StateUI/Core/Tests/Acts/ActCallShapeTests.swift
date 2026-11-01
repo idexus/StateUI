@@ -339,7 +339,7 @@ final class ActCallShapeTests: XCTestCase {
 
     func testAFailedHandlerCrossesWithItsArgumentsInPlace() throws {
         drain()
-        Renderer.shared.report(StateUIError(message: "boom"))
+        Renderer.shared.report(StateUIError.notPerformed(act: "export", reason: "boom"))
 
         taken(drain(), "handlerFailed", [.string("boom")], awaited: false)
     }

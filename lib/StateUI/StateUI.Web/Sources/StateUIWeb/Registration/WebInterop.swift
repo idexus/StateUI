@@ -88,7 +88,7 @@ public enum StateUIScripts {
                 if WebRelay.scriptKept {
                     settled.resume(returning: words)
                 } else {
-                    settled.resume(throwing: StateUIError(message: words))
+                    settled.resume(throwing: StateUIError.notPerformed(act: name, reason: words))
                 }
             })
         }

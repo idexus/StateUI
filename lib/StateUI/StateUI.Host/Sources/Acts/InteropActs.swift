@@ -55,7 +55,7 @@
     ) {
         performers[act.token] = .aimed { view, values in
             guard let made = control(view) else {
-                throw StateUIError(message: "`\(act.name)` is aimed at an element this host shows otherwise, "
+                throw ActFailure("`\(act.name)` is aimed at an element this host shows otherwise, "
                     + "and it performs on \(Made.self)")
             }
             guard let arguments = MemberValues.decode(values, as: repeat (each Argument).self) else {
@@ -104,7 +104,7 @@
     }
 
     /// Why a call carrying other values than its act declares fails.
-    private static func miscalled(_ name: String, _ values: [HostValue], declaring declared: String) -> StateUIError {
-        StateUIError(message: "`\(name)` was called with \(values.count) value(s), and its contract declares " + declared)
+    private static func miscalled(_ name: String, _ values: [HostValue], declaring declared: String) -> ActFailure {
+        ActFailure("`\(name)` was called with \(values.count) value(s), and its contract declares " + declared)
     }
 }

@@ -343,9 +343,9 @@ final class ContractTests: XCTestCase {
         do {
             _ = try await asked.value
             XCTFail("an answer of another shape was taken")
-        } catch let error as StateUIError {
-            XCTAssertTrue(error.message.contains("Test.Battery"), error.message)
-            XCTAssertTrue(error.message.contains("(Double, Bool)"), error.message)
+        } catch StateUIError.unreadableAnswer(let act, _, let declared) {
+            XCTAssertEqual(act, "Test.Battery")
+            XCTAssertEqual(declared, "(Double, Bool)")
         }
     }
 

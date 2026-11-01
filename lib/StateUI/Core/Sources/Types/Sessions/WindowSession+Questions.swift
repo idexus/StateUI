@@ -86,7 +86,9 @@ extension WindowSession {
             cancel ?? words.cancel)
         guard let chosen else { return nil }
         guard choices.indices.contains(chosen) else {
-            throw StateUIError(message: "the host answered action \(chosen) of \(choices.count) offered")
+            throw StateUIError.unreadableAnswer(
+                act: ApplicationContract.chooseAction.name, answered: "action \(chosen)",
+                declared: "one of the \(choices.count) offered")
         }
         return choices[chosen]
     }

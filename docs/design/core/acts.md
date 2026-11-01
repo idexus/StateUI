@@ -66,7 +66,7 @@ rebuilt.
 handlers awaiting them do: they run, and resume, on the UI thread, between the
 host's turns, never beside a render the host is running. The reply
 crosses as tagged values, so nothing is parsed: `focus` reads one bool, the
-clock its numbers, and a failure throws `StateUIError` with the host's reason.
+clock its numbers, and a failure throws `StateUIError.notPerformed` with the host's reason.
 
 A resume is counted the moment the continuation is resumed and uncounted by the
 handler as the first thing after its `await`. The job a resume produces does not

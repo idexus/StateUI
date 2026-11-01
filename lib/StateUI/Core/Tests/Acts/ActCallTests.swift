@@ -261,7 +261,7 @@ final class ActCallTests: XCTestCase {
             _ = try await beyond.value
             XCTFail("a place no action stands at is the host's mistake")
         } catch let error as StateUIError {
-            XCTAssertEqual(error.message, "the host answered action 4 of 1 offered")
+            XCTAssertEqual(error, .unreadableAnswer(act: "chooseAction", answered: "action 4", declared: "one of the 1 offered"))
         }
 
         let accepted = Self.begin { try await WindowSession().prompt("Rename") }
@@ -299,7 +299,7 @@ final class ActCallTests: XCTestCase {
             try await navigation.value
             XCTFail("a failed act should throw")
         } catch let error as StateUIError {
-            XCTAssertEqual(error.message, "there is no page to show a dialog on")
+            XCTAssertEqual(error, .notPerformed(act: "alert", reason: "there is no page to show a dialog on"))
         }
     }
 
@@ -417,7 +417,7 @@ final class ActCallTests: XCTestCase {
             try await navigation.value
             XCTFail("a failed act should throw")
         } catch let error as StateUIError {
-            XCTAssertEqual(error.message, "there is no page to show a dialog on")
+            XCTAssertEqual(error, .notPerformed(act: "alert", reason: "there is no page to show a dialog on"))
         }
     }
 

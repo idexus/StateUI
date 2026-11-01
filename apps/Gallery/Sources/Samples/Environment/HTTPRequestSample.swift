@@ -33,8 +33,8 @@ struct HTTPRequestSample: SampleContent, ExampleContent {
                         let temperature = Self.number("temperature_2m", in: response.text)
                         let wind = Self.number("wind_speed_10m", in: response.text)
                         said = "\(temperature) °C, wind \(wind) km/h"
-                    } catch let failure as StateUIError {
-                        said = "No answer: \(failure.message)"
+                    } catch StateUIError.notPerformed(_, let reason) {
+                        said = "No answer: \(reason)"
                     }
                 }
                 .horizontalAlignment(.center)

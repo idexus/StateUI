@@ -513,8 +513,11 @@ Button("Export").onClicked(.ignoreWhileRunning) {
 ```
 
 `stateUICall` hands the act the arguments its contract declares, waits for the
-answer it declares, and throws `StateUIError` on a host failure or an answer
-of another shape. `stateUISend` is fire-and-forget and therefore has no error
+answer it declares, and throws `StateUIError` - `.notPerformed(act:reason:)` on
+a host failure, `.unreadableAnswer(act:answered:declared:)` on an answer of
+another shape. Each reason is a case to tell apart in a `catch` or a `switch`,
+which keeps a `default`: a later version may name another. `stateUISend` is
+fire-and-forget and therefore has no error
 result; use it only when no later decision depends on success.
 
 A batch of actions is not a transaction. Use ordinary Swift control flow and

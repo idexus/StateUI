@@ -84,8 +84,8 @@
         as type: repeat (each Value).Type
     ) throws -> (repeat each Value) {
         guard let values = decode(reply, as: repeat (each Value).self) else {
-            throw StateUIError(message: "`\(act)` answered \(describe(reply)), and its contract "
-                + "declares \(describe(repeat (each Value).self))")
+            throw StateUIError.unreadableAnswer(
+                act: act, answered: describe(reply), declared: describe(repeat (each Value).self))
         }
 
         return values

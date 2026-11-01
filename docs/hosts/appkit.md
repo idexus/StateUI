@@ -295,7 +295,7 @@ StateUIActs.add(RatingBarContract.flash, on: RatingBarView.self) { bar in
 - **Its values.** The arguments and the answer are the act's own types. A call
   carrying anything else fails with the reason rather than running on a guess.
 - **Failure.** A thrown error fails the act: the awaiting Swift handler throws
-  `StateUIError` with the reason. An aim at nothing, or at an element no longer
+  `StateUIError.notPerformed` with the reason. An aim at nothing, or at an element no longer
   on screen, fails the same way.
 - **Scope.** An act nobody registered fails with that reason, named.
 

@@ -53,7 +53,7 @@ public final class Arrival {
         case .finished(let values):
             outcome = .success(values.first?.bool ?? true)
         case .failed(let message):
-            outcome = .failure(StateUIError(message: message))
+            outcome = .failure(StateUIError.notPerformed(act: "move", reason: message))
         case .cancelled:
             outcome = .failure(CancellationError())
         }

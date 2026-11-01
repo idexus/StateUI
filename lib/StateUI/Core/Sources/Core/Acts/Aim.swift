@@ -150,9 +150,7 @@ final class AimBox: Hashable {
     var target: PropValue {
         get throws {
             if conflicted {
-                throw StateUIError(
-                    message: "this aim is on two views - an aim names ONE; "
-                        + "declare one for each view")
+                throw StateUIError.aimOnTwoViews
             }
 
             switch identity {
@@ -162,9 +160,7 @@ final class AimBox: Hashable {
                 // The author's name, as text - as an element's own manual id crosses.
                 return .string(name)
             case nil:
-                throw StateUIError(
-                    message: "this aim is on no view - write .aim(...) on the "
-                        + "view, and act after it has rendered")
+                throw StateUIError.aimOnNoView
             }
         }
     }

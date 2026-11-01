@@ -2354,6 +2354,7 @@ swift.enum StandardMenu: enum StandardMenu
 swift.enum StateCarried: enum StateCarried
 swift.enum StateKind: enum StateKind
 swift.enum StateMode: enum StateMode
+swift.enum StateUIError: enum StateUIError
 swift.enum StepperContract: enum StepperContract
 swift.enum StyleBase: enum StyleBase
 swift.enum StyleBuilder: @MainActor @resultBuilder enum StyleBuilder
@@ -2687,6 +2688,12 @@ swift.enum.case StateKind.text: case text
 swift.enum.case StateMode.in: case `in`
 swift.enum.case StateMode.inOut: case inOut
 swift.enum.case StateMode.out: case out
+swift.enum.case StateUIError.aimOnNoView: case aimOnNoView
+swift.enum.case StateUIError.aimOnTwoViews: case aimOnTwoViews
+swift.enum.case StateUIError.noItem(_:): case noItem(String)
+swift.enum.case StateUIError.notPerformed(act:reason:): case notPerformed(act: String, reason: String)
+swift.enum.case StateUIError.unreadableAnswer(act:answered:declared:): case unreadableAnswer(act: String, answered: String, declared: String)
+swift.enum.case StateUIError.writesWhileBuilding: case writesWhileBuilding
 swift.enum.case SubmitLabel.default: case `default`
 swift.enum.case SubmitLabel.done: case done
 swift.enum.case SubmitLabel.go: case go
@@ -3083,7 +3090,6 @@ swift.init State.init(wrappedValue:sceneKey:): @MainActor convenience init(wrapp
 swift.init StateChoice.init(carried:): init?(carried: StateCarried)
 swift.init StateKind.init(rawValue:): init?(rawValue: Int32)
 swift.init StateMode.init(rawValue:): init?(rawValue: Int32)
-swift.init StateUIError.init(message:): init(message: String)
 swift.init StateValue.init(carried:): init?(carried: StateCarried)
 swift.init Stepper.init(): @MainActor init()
 swift.init Stepper.init(_:): @MainActor init(_ state: Binding<Double>)
@@ -16615,7 +16621,6 @@ swift.property State.wrappedValue: @MainActor var wrappedValue: Value { get set 
 swift.property StateChoice.carried: var carried: StateCarried { get }
 swift.property StatePart.wrappedValue: @MainActor var wrappedValue: Value { get nonmutating set }
 swift.property StateUIError.description: var description: String { get }
-swift.property StateUIError.message: let message: String
 swift.property StateValue.carried: var carried: StateCarried { get }
 swift.property Statements.nodes: @MainActor var nodes: [Node] { get }
 swift.property Stepper.body: @MainActor var body: Never { get }
@@ -16919,7 +16924,6 @@ swift.struct Space: @MainActor struct Space
 swift.struct Spinner: @MainActor struct Spinner
 swift.struct SplitView: @MainActor struct SplitView
 swift.struct StatePart: @MainActor @dynamicMemberLookup struct StatePart<Value>
-swift.struct StateUIError: struct StateUIError
 swift.struct Statements: @MainActor struct Statements<each Part> where repeat each Part : Views
 swift.struct Stepper: @MainActor struct Stepper
 swift.struct StyleBag: @MainActor struct StyleBag<Target, Context> where Target : StyleTarget

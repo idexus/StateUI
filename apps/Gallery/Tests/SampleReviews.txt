@@ -49,7 +49,7 @@ GalleryViewSample.swift c39c4b4fe216aa69
 GateSample.swift d61b45a8fb209a3d
 GeometryReaderSample.swift 4e6226814b27d935
 GridSample.swift ab50747c056b3832
-HTTPRequestSample.swift 78608735f89f533f
+HTTPRequestSample.swift 053e4f95d17e957d
 HoldSample.swift 3179a83bed36f2d7
 HomeScreenSample.swift 3b4dc906e5d19d61
 HostTimeSample.swift 5d3479731742a1f9
