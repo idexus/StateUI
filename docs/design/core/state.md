@@ -206,6 +206,20 @@ Text is no `LaneValue`: it has no lanes, and it goes through the text door
 alone. `plain` and the lane form of `setValue(_:on:mode:kind:)` refuse it by
 type; its own form takes the mode alone.
 
+## Three protocols, three capabilities
+
+A value's protocols are what the API refuses it by, each a capability the
+compiler checks: `StateValue` rides a state - lanes or text, what
+`Binding.convert` makes; `LaneValue` lies as lanes - what a lane property and
+a twin take, so text cannot reach the lane door; `Walked` has a half way -
+what a journey, `samples` and `@State(motion:)` take, so a `Bool` asked for
+its journey does not compile. Folding the first two into one protocol with a
+text kind would leave a generic caller to choose the door at run time, by a
+value a type decides now. An application's own value conforms to `LaneValue`,
+or `Walked` to move by a journey; text is `String`'s alone. Every conversion
+reads alike: `carried` and `init?(carried:)`, `propValue` and
+`init?(propValue:)`, `persistentValue` and `init?(persistentValue:)`.
+
 ## What the host writes back
 
 A host write is a write: it ends where this side's do, and the storage decides

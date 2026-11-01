@@ -45,8 +45,8 @@ public protocol PersistentValue {
     /// The value back from the host, or nil when the store held something
     /// else - an entry written by an older version of the application under
     /// the same name. The state then keeps its declared value.
-    /// - Parameter persisted: what the host read out of the store.
-    init?(persisted: PropValue)
+    /// - Parameter persistentValue: what the host read out of the store.
+    init?(persistentValue: PropValue)
 }
 
 extension Bool: PersistentValue {
@@ -58,9 +58,9 @@ extension Bool: PersistentValue {
 
     /// The value back from the host, or nil for anything that is not a
     /// boolean.
-    /// - Parameter persisted: what the host read out of the store.
-    public init?(persisted: PropValue) {
-        guard case .bool(let value) = persisted else { return nil }
+    /// - Parameter persistentValue: what the host read out of the store.
+    public init?(persistentValue: PropValue) {
+        guard case .bool(let value) = persistentValue else { return nil }
 
         self = value
     }
@@ -75,9 +75,9 @@ extension Int: PersistentValue {
     public var persistentValue: PropValue { .number(Double(self)) }
 
     /// The value back from the host, or nil for anything that is not a number an `Int` holds.
-    /// - Parameter persisted: what the host read out of the store.
-    public init?(persisted: PropValue) {
-        guard case .number(let value) = persisted, let whole = Int(nearest: value) else { return nil }
+    /// - Parameter persistentValue: what the host read out of the store.
+    public init?(persistentValue: PropValue) {
+        guard case .number(let value) = persistentValue, let whole = Int(nearest: value) else { return nil }
 
         self = whole
     }
@@ -91,9 +91,9 @@ extension Double: PersistentValue {
     public var persistentValue: PropValue { .number(self) }
 
     /// The value back from the host, or nil for anything that is not a number.
-    /// - Parameter persisted: what the host read out of the store.
-    public init?(persisted: PropValue) {
-        guard case .number(let value) = persisted else { return nil }
+    /// - Parameter persistentValue: what the host read out of the store.
+    public init?(persistentValue: PropValue) {
+        guard case .number(let value) = persistentValue else { return nil }
 
         self = value
     }
@@ -107,9 +107,9 @@ extension String: PersistentValue {
     public var persistentValue: PropValue { .string(self) }
 
     /// The value back from the host, or nil for anything that is not text.
-    /// - Parameter persisted: what the host read out of the store.
-    public init?(persisted: PropValue) {
-        guard case .string(let value) = persisted else { return nil }
+    /// - Parameter persistentValue: what the host read out of the store.
+    public init?(persistentValue: PropValue) {
+        guard case .string(let value) = persistentValue else { return nil }
 
         self = value
     }
@@ -126,9 +126,9 @@ extension PersistentValue where Self: RawRepresentable, Self.RawValue: Persisten
     /// The case the stored raw value names, or nil when it names none - a case
     /// removed since the value was written, which is the ordinary way an
     /// application's vocabulary changes between releases.
-    /// - Parameter persisted: what the host read out of the store.
-    public init?(persisted: PropValue) {
-        guard let raw = RawValue(persisted: persisted) else { return nil }
+    /// - Parameter persistentValue: what the host read out of the store.
+    public init?(persistentValue: PropValue) {
+        guard let raw = RawValue(persistentValue: persistentValue) else { return nil }
 
         self.init(rawValue: raw)
     }

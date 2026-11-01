@@ -186,7 +186,7 @@ extension State where Value: PersistentValue {
             key,
             orAdopt: own,
             landing: { held in
-                if let value = Value(persisted: held) {
+                if let value = Value(persistentValue: held) {
                     own.value = value
                 }
             }) as? Storage {
