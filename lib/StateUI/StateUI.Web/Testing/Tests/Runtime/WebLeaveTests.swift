@@ -222,6 +222,31 @@ final class WebLeaveTests: XCTestCase {
         host.leave()
     }
 
+    /// A page whose bars hold groups, menus, a setting, an overflow and a bar at its foot, pushed and taken off a
+    /// stack again and again, leaves the host holding as many views each time.
+    func testAPageWithAFullBarLeavesNothingAsItGoes() async throws {
+        WebRenderer.shared?.leave()
+        let path = State(wrappedValue: [Int]())
+        let host = WebRenderer.running { FullBarStack(path: path) }
+        func settle() async { for _ in 0..<6 { host.step(); await Task.yield() } }
+        await settle()
+
+        var counts: [Int] = []
+        var kinds: [[String: Int]] = []
+        for _ in 0..<3 {
+            path.wrappedValue = [1]
+            await settle()
+            path.wrappedValue = []
+            await settle()
+            counts.append(WebDOMView.liveCount)
+            kinds.append(WebDriver().liveViewKinds ?? [:])
+        }
+
+        let grown = (kinds.last ?? [:]).filter { $0.value > (kinds.first?[$0.key] ?? 0) }
+        XCTAssertEqual(Set(counts).count, 1, "views left behind each visit: \(counts), grown: \(grown)")
+        host.leave()
+    }
+
     /// A window closed lets go of every view it made, its bar's with the page's.
     func testAClosedWindowLetsGoOfEveryViewItMade() throws {
         WebRenderer.shared?.leave()
@@ -232,6 +257,39 @@ final class WebLeaveTests: XCTestCase {
         host.leave()
 
         XCTAssertEqual(WebDOMView.liveCount, before, "a view of the closed window outlived it")
+    }
+}
+
+/// A stack whose pushed page holds a full bar: groups, a split button's menu, a menu its click opens, a setting, an
+/// item in the overflow, a bar at the foot and a menu bar.
+private struct FullBarStack: View {
+    let path: State<[Int]>
+
+    var body: some View {
+        NavigationStack(path.projectedValue) {
+            Text("Root")
+        } destination: { _ in
+            Text("Bars")
+                .toolbar {
+                    ToolbarGroup {
+                        ToolbarButton("Save").onClicked {}.menu(.split) { MenuItem("Save as").onClicked {} }
+                        ToolbarButton("Add").onClicked {}
+                    }
+                    ToolbarButton("Sort").menu {
+                        MenuItem("A to Z").onClicked {}
+                        MenuItem("Z to A").onClicked {}
+                    }
+                    ToolbarToggle("Favorite", isOn: false)
+                    ToolbarButton("Clear").onClicked {}.placement(at: .overflow)
+                }
+                .toolbar(.bottom) {
+                    ToolbarLabel("No recent files").placement(at: .start)
+                    ToolbarButton("Save").onClicked {}
+                }
+                .menuBar {
+                    Menu("File") { MenuItem("Save").onClicked {} }
+                }
+        }
     }
 }
 

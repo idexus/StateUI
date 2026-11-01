@@ -92,6 +92,14 @@ final class WebBottomBar {
         foot.attribute("data-under", covered && edge != .none ? "" : nil)
     }
 
+    /// Lets go of the bar's own views as its page leaves - the bar at the foot with its buttons, the holder and the
+    /// foot; the view the holder shows is its own element's.
+    func release() {
+        toolbar.release()
+        holder.release()
+        foot.release()
+    }
+
     /// Reads the bar's height again, and tells the page where it changed.
     private func measure() {
         let measured = (shown.map { WebRelay.size(of: $0.node).height } ?? 0)
