@@ -119,8 +119,8 @@ final class WebLeaveTests: XCTestCase {
         host.leave()
     }
 
-    /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window hears no
-    /// destroying, and stands again as the browser shows the page.
+    /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window stands out of
+    /// sight, and stands again as the browser shows the page - a window going away would not.
     func testAPageTheBrowserKeepsIsHiddenNotGone() throws {
         WebRenderer.shared?.leave()
         let host = WebRenderer.running { WindowPhaseText() }
@@ -129,11 +129,11 @@ final class WebLeaveTests: XCTestCase {
 
         try WebBrowser.run("dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }))")
         for _ in 0..<5 { host.step() }
-        XCTAssertNotEqual(phase(), "destroying", "a page kept for coming back heard its end")
+        XCTAssertEqual(phase(), "background", "a page kept for coming back is out of sight")
 
         try WebBrowser.run("dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))")
         for _ in 0..<5 { host.step() }
-        XCTAssertNotEqual(phase(), "destroying")
+        XCTAssertNotEqual(phase(), "background", "and stands again, as one gone would not")
         host.leave()
     }
 

@@ -108,7 +108,7 @@ final class WinUIRendererTests: XCTestCase {
     }
 
     /// A window minimized and restored as the user does it - WinUI telling its activation, its presenter and its
-    /// visibility in whatever order it tells them - stops, then stands again.
+    /// visibility in whatever order it tells them - goes out of sight, then stands again.
     func testAMinimizedWindowIsStoppedWhateverOrderWinUITellsIt() throws {
         try onUIThread {
             let host = WinUIRenderer.running { PhasePage() }
@@ -116,13 +116,12 @@ final class WinUIRendererTests: XCTestCase {
             let said = { host.views(WinUITextView.self).map(\.text).first ?? "" }
 
             stateui_winui_window_show_as_user(window.handle, 6)
-            host.settle(until: { said().hasSuffix("stopped") })
-            XCTAssertEqual(said(), "background stopped")
+            host.settle(until: { said() == "background background" })
+            XCTAssertEqual(said(), "background background", "the application and its window out of sight")
 
             stateui_winui_window_show_as_user(window.handle, 9)
-            host.settle(until: { !said().hasSuffix("stopped") })
+            host.settle(until: { !said().contains("background") })
             XCTAssertFalse(said().contains("background"), said())
-            XCTAssertFalse(said().hasSuffix("stopped"), said())
         }
     }
 

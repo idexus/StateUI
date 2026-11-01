@@ -153,7 +153,7 @@ of its members each meets, and why a cell is empty.
 | [ToolbarToggle](controls/ToolbarToggle.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [VStack](controls/VStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [WebView](controls/WebView.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| [Window](controls/Window.md) | structure | ✅ | ⌛ | ⌛ | ⌛ | ⌛ | ⌛ |
+| [Window](controls/Window.md) | structure | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 | [ZStack](controls/ZStack.md) | native | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 <!-- creation:end -->
 
@@ -550,11 +550,11 @@ Every control, and every part an application, its windows and its pages are made
 | [ToolbarGroup](controls/ToolbarGroup.md) | 16 | 6 ✅ · 10 – | 6 ✅ · 10 – | 5 ✅ · 1 ☑️ · 10 – | 7 ✅ · 9 – | 6 ✅ · 10 – | 15 ✅ · 1 – |
 | [ToolbarLabel](controls/ToolbarLabel.md) | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | 26 | 7 ✅ · 18 – | 8 ✅ · 18 – | 6 ✅ · 1 ☑️ · 18 – | 9 ✅ · 17 – | 8 ✅ · 18 – | 26 ✅ |
-| [Window](controls/Window.md) | 21 | 14 ✅ · 1 ☑️ · 5 ✓ |  |  |  |  |  |
-| ✅ |  | 110 | 113 | 92 | 120 | 94 | 168 |
-| ✓ |  | 26 | 21 | 20 | 9 | 15 | 10 |
-| – |  | 55 | 53 | 60 | 52 | 66 | 2 |
-| **Met** | 213 | **191** | **187** | **172** | **181** | **175** | **180** |
+| [Window](controls/Window.md) | 21 | 14 ✅ · 1 ☑️ · 5 ✓ | 3 ✅ · 1 ☑️ · 3 ✓ · 8 – | 3 ✅ · 1 ☑️ · 3 ✓ · 12 – | 20 ✅ · 1 ☑️ | 8 ✅ · 6 ✓ · 7 – | 3 ✅ · 1 ☑️ · 3 ✓ · 14 – |
+| ✅ |  | 110 | 116 | 95 | 140 | 102 | 171 |
+| ✓ |  | 26 | 24 | 23 | 9 | 21 | 13 |
+| – |  | 55 | 61 | 72 | 52 | 73 | 16 |
+| **Met** | 213 | **191** | **201** | **190** | **201** | **196** | **200** |
 | 🧩 |  | 0 | 0 | 6 | 6 | 6 | 6 |
 <!-- dictionary:end -->
 
@@ -655,7 +655,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 | [ToolbarLabel](controls/ToolbarLabel.md) | `icon`, `text` | 2 | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
 | [ToolbarToggle](controls/ToolbarToggle.md) | `isOn`, `onIcon`, `onToggled` (`toggled`) | 3 | 3 ✅ | 3 ✅ | 2 ✅ · 1 ☑️ | 3 ✅ | 3 ✅ | 3 ✅ |
 | [WebView](controls/WebView.md) | `canGoBackChanged`, `canGoForwardChanged`, `onNavigated` (`navigated`), `onNavigating` (`navigating`), `onProcessTerminated` (`processTerminated`), `source`, `userAgent` | 7 | 6 ✅ · 1 ✓ | 6 ✅ · 1 ✓ | 7 ✅ | 7 ✅ | 7 ✅ | 5 ✅ |
-| [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 21 | 14 ✅ · 1 ☑️ · 5 ✓ |  |  |  |  |  |
+| [Window](controls/Window.md) | `activated`, `background`, `created`, `deactivated`, `destroying`, `floatsOnTop`, `height`, `hidesWhenInactive`, `isMaximizable`, `isMinimizable`, `maximumHeight`, `maximumWidth`, `minimumHeight`, `minimumWidth`, `stopped`, `title`, `width`, `windowType`, `windowValue`, `x`, `y` | 21 | 14 ✅ · 1 ☑️ · 5 ✓ | 3 ✅ · 1 ☑️ · 3 ✓ · 8 – | 3 ✅ · 1 ☑️ · 3 ✓ · 12 – | 20 ✅ · 1 ☑️ | 8 ✅ · 6 ✓ · 7 – | 3 ✅ · 1 ☑️ · 3 ✓ · 14 – |
 <!-- members:end -->
 
 A one-axis `ScrollView` owns input along its enabled axis. When it is nested,

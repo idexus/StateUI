@@ -146,7 +146,7 @@ final class AndroidRendererTests: XCTestCase {
 
     /// An activity Android makes again for a new configuration - a theme the application or the system chose -
     /// pauses and stops on its way, and its window hears nothing of it: the next resumes at once. An activity that
-    /// stops for good leaves its window stopped.
+    /// stops for good leaves its window out of sight.
     func testAnActivityMadeAgainLeavesItsWindowsPhaseAlone() throws {
         onMainActor {
             let first = AndroidRenderer.running { WindowPhasePage() }
@@ -156,18 +156,18 @@ final class AndroidRendererTests: XCTestCase {
                 TestWindow.run(for: 20)
                 return host.views(AndroidTextView.self).map(\.text)
             }
-            XCTAssertEqual(shown(first), ["activated"])
+            XCTAssertEqual(shown(first), ["active"])
 
             first.setPhase(.inactive, beingMadeAgain: true)
             first.setPhase(.background, beingMadeAgain: true)
-            XCTAssertEqual(shown(first), ["activated"], "the window stands as it stood")
+            XCTAssertEqual(shown(first), ["active"], "the window stands as it stood")
             let second = AndroidRenderer.start(context: TestContext.context, root: TestJava.root(), density: 2)
             second.setPhase(.active)
-            XCTAssertEqual(shown(second), ["activated"], "and stands so in the next")
+            XCTAssertEqual(shown(second), ["active"], "and stands so in the next")
 
             second.setPhase(.inactive)
             second.setPhase(.background)
-            XCTAssertEqual(shown(second), ["stopped"], "stopped for good")
+            XCTAssertEqual(shown(second), ["background"], "out of sight for good")
         }
     }
 
