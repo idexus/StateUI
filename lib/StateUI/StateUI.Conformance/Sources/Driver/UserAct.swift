@@ -154,4 +154,13 @@ public enum UserAct: Equatable, Sendable, CustomStringConvertible {
         case .adjust: "adjust"
         }
     }
+
+    /// Whether how fast the act goes is read off the host's clock as its steps are heard: a pan, a pinch, two fingers
+    /// turning.
+    var goesAtTheClocksPace: Bool {
+        switch self {
+        case .pan, .pinch, .rotate: true
+        default: false
+        }
+    }
 }

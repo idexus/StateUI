@@ -171,7 +171,11 @@ holds, at most 150 steps, and sees that nothing happens by one turn of the
 pump alone. A wait that runs out fails the case: what a case waits for
 comes, else the case proved nothing - a shape never drawn would pass "it
 moved away from where it stood". Motion is driven by a test clock and display frames, never by
-the time a machine takes.
+the time a machine takes. So is a gesture's speed: a case that pans,
+pinches or turns two fingers starts on a still `TestClock`, every step
+heard at one time and its speed read over a frame, and the session fails
+one started without it - a driver whose steps cross processes, as the Web's
+do, would hand a busy machine's pace to the speed.
 
 A wait, a session's or a test's own, asks once a step and stops as it holds:
 `for _ in 0..<n { guard waiting else { break }; step() }`. Under a `where`

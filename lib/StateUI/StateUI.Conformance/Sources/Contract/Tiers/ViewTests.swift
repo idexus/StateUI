@@ -494,7 +494,7 @@
             let heard = Received<String>()
             let lifted = Received<Point>()
             let began = Received<Point>()
-            s.start {
+            s.start(clock: TestClock()) {
                 VStack {
                     Opened.pannedAcross(Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
@@ -514,7 +514,7 @@
             s.expect(heard.values.first, "began 0 0", "heard as it begins")
             s.expect(heard.values.contains("changed -60 20"), true, "changed, with how far it went")
             s.expect(heard.values.last, "ended -60 20", "and as it ends, where it reached")
-            // How fast is the driver's pace; which way is the hand's.
+            // How fast is the case's clock's - every step at one time, read over a frame; which way is the hand's.
             s.expect(lifted.values.last.map { $0.x < 0 && $0.y > 0 }, true, "lifted going left and down")
             // Where the press is, less how far it came, is where it began - one place, on the view.
             let start = began.values.first ?? Point(-1, -1)
@@ -530,7 +530,7 @@
     static func pannedDown(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).aPanCarriesItsStateDown", proves: [Covered(ViewContract.panYChannel, on: element)]) { s in
             let y = State(wrappedValue: 5.0)
-            s.start {
+            s.start(clock: TestClock()) {
                 VStack {
                     Opened.pannedDown(Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
@@ -553,7 +553,7 @@
             Covered(ViewContract.swipeThreshold, on: element),
         ]) { s in
             let heard = Received<SwipeDirection>()
-            s.start {
+            s.start(clock: TestClock()) {
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
@@ -582,7 +582,7 @@
             Covered(ViewContract.pinchUpdated, on: element),
         ]) { s in
             let heard = Received<String>()
-            s.start {
+            s.start(clock: TestClock()) {
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
@@ -608,7 +608,7 @@
         ]) { s in
             let heard = Received<String>()
             let lifted = Received<Double>()
-            s.start {
+            s.start(clock: TestClock()) {
                 VStack {
                     Specimens.view(element, [
                         Write(VisualElementContract.width, 100), Write(VisualElementContract.height, 100),
