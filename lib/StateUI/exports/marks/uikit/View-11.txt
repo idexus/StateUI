@@ -1,4 +1,4 @@
-# revision 20.1
+# revision 21.1
 Button.area: ✅
 Button.frameChanged: ✅
 Button.rotationUpdated: ✓ rotate on Button: the view's listening handed the recognizer's states, no touch sent

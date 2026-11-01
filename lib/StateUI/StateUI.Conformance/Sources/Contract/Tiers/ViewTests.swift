@@ -277,11 +277,12 @@
     }
 
     /// A view in a layered stack stands in its area: in points, then in shares of the room as the tree changes it.
+    /// It fills its place across, whatever it does unsaid - a link stands at its words.
     @MainActor
     static func inArea(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsArea", proves: [
             Covered(ViewContract.area, on: element), Covered(ViewContract.frameChanged, on: element),
-        ], needs: [Covered(ButtonContract.clicked)]) { s in
+        ], needs: [Covered(ButtonContract.clicked), Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let shared = State(wrappedValue: false)
             let frames = Received<[Double]>()
             s.start {
@@ -290,6 +291,7 @@
                         reporting(element, frames, [
                             Write(ViewContract.area, shared.wrappedValue
                                   ? Area.proportional(Rect(0.5, 0.5, 0.5, 0.5)) : Area.absolute(Rect(10, 20, 30, 40))),
+                            Write(ViewContract.horizontalAlignment, Alignment.fill),
                         ])
                     }
                     .width(200).height(200)
@@ -307,18 +309,21 @@
         }
     }
 
-    /// A view in a grid stands in the cell its column and row name.
+    /// A view in a grid stands in the cell its column and row name, filling it across whatever it does unsaid.
     @MainActor
     static func inCell(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsInItsCell", proves: [
             Covered(ViewContract.gridColumn, on: element), Covered(ViewContract.gridRow, on: element),
             Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+        ], needs: [Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start {
                 VStack {
                     Grid {
-                        reporting(element, frames, [Write(ViewContract.gridColumn, 1), Write(ViewContract.gridRow, 1)])
+                        reporting(element, frames, [
+                            Write(ViewContract.gridColumn, 1), Write(ViewContract.gridRow, 1),
+                            Write(ViewContract.horizontalAlignment, Alignment.fill),
+                        ])
                     }
                     .columns(.fixed(40), .fixed(60))
                     .rows(.fixed(30), .fixed(50))
@@ -332,18 +337,21 @@
         }
     }
 
-    /// A view in a grid spanning columns and rows stands across them.
+    /// A view in a grid spanning columns and rows stands across them, filling them across whatever it does unsaid.
     @MainActor
     static func acrossCells(_ element: String) -> ConformanceCase {
         ConformanceCase("\(element).standsAcrossTheCellsItSpans", proves: [
             Covered(ViewContract.gridColumnSpan, on: element), Covered(ViewContract.gridRowSpan, on: element),
             Covered(ViewContract.frameChanged, on: element),
-        ]) { s in
+        ], needs: [Covered(ViewContract.horizontalAlignment, on: element)]) { s in
             let frames = Received<[Double]>()
             s.start {
                 VStack {
                     Grid {
-                        reporting(element, frames, [Write(ViewContract.gridColumnSpan, 2), Write(ViewContract.gridRowSpan, 2)])
+                        reporting(element, frames, [
+                            Write(ViewContract.gridColumnSpan, 2), Write(ViewContract.gridRowSpan, 2),
+                            Write(ViewContract.horizontalAlignment, Alignment.fill),
+                        ])
                     }
                     .columns(.fixed(40), .fixed(60))
                     .rows(.fixed(30), .fixed(50))
