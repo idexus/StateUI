@@ -71,8 +71,8 @@ final class ColorTests: XCTestCase {
     func testTwoSpellingsOfOneColorAreOneValue() {
         XCTAssertEqual(Color(hex: 0xFF0000), Color.red)
         XCTAssertEqual(Color(red: 255, green: 0, blue: 0), Color.red)
-        XCTAssertEqual(Color(red: 255, green: 0, blue: 0, alpha: 255), Color.red)
-        XCTAssertNotEqual(Color(red: 255, green: 0, blue: 0, alpha: 128), Color.red)
+        XCTAssertEqual(Color(red: 255, green: 0, blue: 0, opacity: 1), Color.red)
+        XCTAssertNotEqual(Color(red: 255, green: 0, blue: 0, opacity: 0.5), Color.red)
         XCTAssertEqual(Set([Color(hex: 0xFF0000), Color(red: 255, green: 0, blue: 0), Color.red]).count, 1,
                        "and hash alike")
     }

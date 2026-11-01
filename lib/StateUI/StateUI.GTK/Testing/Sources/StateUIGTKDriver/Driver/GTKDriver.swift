@@ -312,7 +312,7 @@ final class GTKDriver: HostDriver {
                 let channel = { (value: Double) in Int((value * 255).rounded()) }
                 let drawn = Color(
                     red: channel(Double(rgba.red)), green: channel(Double(rgba.green)), blue: channel(Double(rgba.blue)),
-                    alpha: channel(Double(rgba.alpha)))
+                    opacity: Double(rgba.alpha))
                 return StandIns.material(painted: drawn).propValue
             }
         case (.isOn, let toggle as GTKToggleView): return toggle.isOn.propValue
@@ -384,7 +384,7 @@ final class GTKDriver: HostDriver {
     /// `rgba` as the tree writes a color.
     static func color(_ rgba: GdkRGBA) -> Color {
         let channel = { (value: Float) in Int((value * 255).rounded()) }
-        return Color(red: channel(rgba.red), green: channel(rgba.green), blue: channel(rgba.blue), alpha: channel(rgba.alpha))
+        return Color(red: channel(rgba.red), green: channel(rgba.green), blue: channel(rgba.blue), opacity: Double(channel(rgba.alpha)) / 255)
     }
 
     /// Where a button's picture stands by its words: across or down the box, first or last.

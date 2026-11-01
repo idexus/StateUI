@@ -25,7 +25,7 @@ extension AndroidDriver {
             guard argb != 0 else { return nil }
             let painted = Color(
                 red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF),
-                alpha: Int(argb >> 24))
+                opacity: Double(argb >> 24) / 255)
             // The bar's color, or the blur it stands in for: Android blurs nothing behind a bar.
             return property == .barBackground ? StandIns.material(painted: painted).propValue : painted.propValue
         default:

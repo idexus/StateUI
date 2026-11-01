@@ -151,7 +151,7 @@ extension GTKDriver {
         guard digits.count == 8 else { return nil }
         let channels = stride(from: 0, to: 8, by: 2).compactMap { Int(String(digits[$0..<$0 + 2]), radix: 16) }
         guard channels.count == 4 else { return nil }
-        return Color(red: channels[0], green: channels[1], blue: channels[2], alpha: channels[3])
+        return Color(red: channels[0], green: channels[1], blue: channels[2], opacity: Double(channels[3]) / 255)
     }
 
     /// The kind and the value the host keeps the window `element` by for the next start.

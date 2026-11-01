@@ -29,12 +29,12 @@ extension Color {
     /// A color a toolkit reports packed in one number: eight bits a channel, alpha highest.
     @_spi(Host) public init(argb: UInt32) {
         self.init(red: Int(argb >> 16 & 255), green: Int(argb >> 8 & 255), blue: Int(argb & 255),
-                  alpha: Int(argb >> 24))
+                  opacity: ColorComponent.fraction(UInt8(argb >> 24)))
     }
 
     /// A color a toolkit reports as four fractions of full, each at its nearest channel.
     @_spi(Host) public init(fractions: (red: Double, green: Double, blue: Double, alpha: Double)) {
         self.init(red: Int(ColorComponent.nearest(fractions.red)), green: Int(ColorComponent.nearest(fractions.green)),
-                  blue: Int(ColorComponent.nearest(fractions.blue)), alpha: Int(ColorComponent.nearest(fractions.alpha)))
+                  blue: Int(ColorComponent.nearest(fractions.blue)), opacity: fractions.alpha)
     }
 }

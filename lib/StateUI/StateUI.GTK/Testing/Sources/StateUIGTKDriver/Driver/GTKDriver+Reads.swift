@@ -520,6 +520,6 @@ private struct PangoRun {
         let channel = { (value: Int) in Int((Double(value) / 65535 * 255).rounded()) }
         return Color(
             red: channel(Int(color.red)), green: channel(Int(color.green)), blue: channel(Int(color.blue)),
-            alpha: channel(alpha))
+            opacity: Double(channel(alpha)) / 255)
     }
 }

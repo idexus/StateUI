@@ -20,6 +20,6 @@ extension GTKDriver {
         guard let pixel = view.pixels(at: [(point.x, point.y)]).first, pixel >> 24 != 0 else { return nil }
         let alpha = Int(pixel >> 24)
         let channel = { (shift: UInt32) in min(255, Int((pixel >> shift) & 0xFF) * 255 / alpha) }
-        return Color(red: channel(16), green: channel(8), blue: channel(0), alpha: alpha)
+        return Color(red: channel(16), green: channel(8), blue: channel(0), opacity: Double(alpha) / 255)
     }
 }

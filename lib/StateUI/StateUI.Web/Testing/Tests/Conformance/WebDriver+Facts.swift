@@ -71,7 +71,7 @@ extension WebDriver {
     private func pixel(_ point: Point) throws -> Color {
         let channels = (WebBrowser.ask([("pixel", .points([point]))]) ?? "").split(separator: ",").compactMap { Int($0) }
         guard channels.count == 4 else { throw DriverCannot("read the window's picture") }
-        return Color(red: channels[0], green: channels[1], blue: channels[2], alpha: channels[3])
+        return Color(red: channels[0], green: channels[1], blue: channels[2], opacity: Double(channels[3]) / 255)
     }
 
     func question(over element: MountedElement) throws -> Question? {

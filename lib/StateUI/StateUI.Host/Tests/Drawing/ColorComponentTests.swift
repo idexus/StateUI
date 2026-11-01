@@ -10,14 +10,14 @@ import XCTest
 final class ColorComponentTests: XCTestCase {
     /// A color packed in one number unpacks to its channels, alpha highest.
     func testAColorPackedInOneNumberUnpacks() {
-        XCTAssertEqual(Color(argb: 0x80FF_4020), Color(red: 255, green: 64, blue: 32, alpha: 128))
-        XCTAssertEqual(Color(argb: 0), Color(red: 0, green: 0, blue: 0, alpha: 0))
+        XCTAssertEqual(Color(argb: 0x80FF_4020), Color(red: 255, green: 64, blue: 32, opacity: 0.5))
+        XCTAssertEqual(Color(argb: 0), Color(red: 0, green: 0, blue: 0, opacity: 0))
         XCTAssertEqual(Color(argb: 0xFFFF_FFFF), Color(red: 255, green: 255, blue: 255))
     }
 
     /// A color in fractions of full stands at its nearest channels, held to the range; what is no number is none.
     func testAColorInFractionsStandsAtItsNearestChannels() {
-        XCTAssertEqual(Color(fractions: (1, 0.5, 0, 0.25)), Color(red: 255, green: 128, blue: 0, alpha: 64))
+        XCTAssertEqual(Color(fractions: (1, 0.5, 0, 0.25)), Color(red: 255, green: 128, blue: 0, opacity: 0.25))
         XCTAssertEqual(Color(fractions: (2, -1, .nan, 1)), Color(red: 255, green: 0, blue: 0))
     }
 

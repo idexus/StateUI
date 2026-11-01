@@ -43,7 +43,7 @@ final class AppKitEnvironmentTests: XCTestCase {
         func channel(_ value: CGFloat) -> Int { Int((value * 255).rounded()) }
         XCTAssertEqual(info.accentColor, Color(
             red: channel(accent.redComponent), green: channel(accent.greenComponent),
-            blue: channel(accent.blueComponent), alpha: channel(accent.alphaComponent)))
+            blue: channel(accent.blueComponent), opacity: Double(accent.alphaComponent)))
     }
 
     /// The accessibility settings reported are the Mac's own: less motion, more contrast and VoiceOver as the

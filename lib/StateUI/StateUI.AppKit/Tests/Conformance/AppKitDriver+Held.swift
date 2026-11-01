@@ -216,7 +216,7 @@ extension AppKitDriver {
         func channel(_ value: CGFloat) -> Int { Int((value * 255).rounded()) }
         return Color(
             red: channel(rgb.redComponent), green: channel(rgb.greenComponent), blue: channel(rgb.blueComponent),
-            alpha: channel(rgb.alphaComponent))
+            opacity: Double(rgb.alphaComponent))
     }
 }
 

@@ -83,7 +83,7 @@ extension WinUIDriver {
             var argb: UInt32 = 0
             let painted = stateui_winui_window_background(window.handle, &argb)
                 ? Color(red: Int(argb >> 16 & 255), green: Int(argb >> 8 & 255), blue: Int(argb & 255),
-                        alpha: Int(argb >> 24 & 255))
+                        opacity: Double(argb >> 24 & 255) / 255)
                 : nil
             if acrylic {
                 guard let thickness = Blur.Thickness.allCases.first(where: {
@@ -737,7 +737,7 @@ extension WinUIDriver {
 
     /// A color held as 0xAARRGGBB.
     static func color(_ argb: UInt32) -> Color {
-        Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), alpha: Int(argb >> 24))
+        Color(red: Int(argb >> 16 & 0xFF), green: Int(argb >> 8 & 0xFF), blue: Int(argb & 0xFF), opacity: Double(argb >> 24) / 255)
     }
 
     /// Four sides the reader writes as numbers apart by commas - left first, the start, which WinUI turns with a

@@ -171,7 +171,7 @@ driven bindings are not style values.
 let surface = Color(light: .white, dark: Color(hex: 0x18181B))
 let accent = Color(hex: 0x5B5BD6)
 let translucent = Color(hex: 0x5B5BD6, opacity: 0.5)
-let sameTranslucent = Color(red: 91, green: 91, blue: 214, alpha: 128)
+let sameTranslucent = Color(red: 91, green: 91, blue: 214, opacity: 0.5)
 ```
 
 A hex number has six digits, `0xRRGGBB`, and `opacity:` says how opaque the
@@ -185,8 +185,8 @@ let brand = Color(parsing: "#5B5BD6") ?? .accent
 ```
 
 Named colors are static members checked by the compiler.
-`Color(red:green:blue:alpha:)` takes whole-number channels from 0 through 255;
-the alpha is 255, opaque, unless it is given. `opacity(_:)` lets a color
+`Color(red:green:blue:opacity:)` takes whole-number channels from 0 through 255
+and the same opacity, 1 unless it is given. `opacity(_:)` lets a color
 through - its alpha scaled, in both halves of a pair:
 
 ```swift

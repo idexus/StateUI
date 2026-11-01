@@ -236,7 +236,7 @@ extension WebDriver {
             guard channels.count == 4 else { return nil }
             let color = Color(
                 red: Int(channels[0]), green: Int(channels[1]), blue: Int(channels[2]),
-                alpha: Int((channels[3] * 255).rounded()))
+                opacity: channels[3])
             return (color, place / 100)
         }
         guard stops.count == parts.count else { return nil }
@@ -599,7 +599,7 @@ extension WebDriver {
     func color(_ script: String, on e: Int32, unlessClear: Bool = false) throws -> Color? {
         let channels = try numbers("stateui.channels(\(script))", on: e, separator: ",")
         guard channels.count == 4, !(unlessClear && channels[3] == 0) else { return nil }
-        return Color(red: Int(channels[0]), green: Int(channels[1]), blue: Int(channels[2]), alpha: Int(channels[3]))
+        return Color(red: Int(channels[0]), green: Int(channels[1]), blue: Int(channels[2]), opacity: Double(Int(channels[3])) / 255)
     }
 
     /// `script`'s list of numbers on `e`.

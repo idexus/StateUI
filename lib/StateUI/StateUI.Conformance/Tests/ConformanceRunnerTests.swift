@@ -294,7 +294,7 @@ final class ConformanceRunnerTests: XCTestCase {
     func testAColorShowsWithinTheStepsSmoothingTakes() {
         let red = Color(red: 255, green: 0, blue: 0)
         XCTAssertTrue(ShownColor(Color(red: 253, green: 0, blue: 0)).shows(red))
-        XCTAssertTrue(ShownColor(Color(red: 251, green: 4, blue: 0, alpha: 251)).shows(red))
+        XCTAssertTrue(ShownColor(Color(red: 251, green: 4, blue: 0, opacity: 251.0 / 255)).shows(red))
         XCTAssertFalse(ShownColor(Color(red: 250, green: 0, blue: 0)).shows(red))
         XCTAssertFalse(ShownColor(Color(red: 255, green: 0, blue: 5)).shows(red))
         XCTAssertFalse(Session.shows(nil, red))

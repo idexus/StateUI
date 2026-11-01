@@ -30,7 +30,7 @@ final class DrawingRulesTests: XCTestCase {
     /// and nothing at all are not.
     func testAColorNothingOfWhichShowsIsClear() {
         XCTAssertTrue(HostBrush(Color.transparent.propValue).isClear)
-        XCTAssertFalse(HostBrush(Color(red: 0, green: 0, blue: 0, alpha: 5).propValue).isClear)
+        XCTAssertFalse(HostBrush(Color(red: 0, green: 0, blue: 0, opacity: 5.0 / 255).propValue).isClear)
         XCTAssertFalse(HostBrush(red).isClear)
         XCTAssertFalse(HostBrush(nil).isClear, "nothing said is the platform's own, not clear")
         let fading = HostBrush(.values([.enumeration(2), .numbers([]), .number(0), Color.transparent.propValue,
@@ -134,7 +134,7 @@ final class DrawingRulesTests: XCTestCase {
 
     /// A color crosses to a relay as one number, alpha highest; what is no color gives none.
     func testAColorIsOneARGBNumber() {
-        XCTAssertEqual(Color(red: 0x12, green: 0x34, blue: 0x56, alpha: 0x78).propValue.argb, 0x7812_3456)
+        XCTAssertEqual(Color(red: 0x12, green: 0x34, blue: 0x56, opacity: 120.0 / 255).propValue.argb, 0x7812_3456)
         XCTAssertNil(PropValue.number(1).argb)
     }
 

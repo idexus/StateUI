@@ -15,7 +15,7 @@ final class WebPickerViewTests: XCTestCase {
         let picker = WebPickerView()
         defer { picker.release() }
 
-        picker.setBackground(Color(red: 255, green: 255, blue: 255, alpha: 20).propValue)
+        picker.setBackground(Color(red: 255, green: 255, blue: 255, opacity: 20.0 / 255).propValue)
 
         XCTAssertEqual(WebPage.style(of: picker.node, "background-color"), "rgb(255 255 255 / 0.078)")
         XCTAssertEqual(WebPage.style(of: picker.node, "background"), "", "the picture under it kept")
