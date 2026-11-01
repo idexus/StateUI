@@ -68,7 +68,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   or a material.
 - **A checked menu entry is a `MenuToggle`**: `MenuItem("Wrap").isOn($wraps)` is `MenuToggle("Wrap", isOn: $wraps)`.
   `.isDestructive(true)` on a menu item or a toolbar button is `.role(.destructive)`. `Button(icon:)` is
-  `Button().icon(_:)`, and `showsMenuArrow` is gone - a button's menu names its kind, `.menu(.split) { … }`.
+  `Button().icon(_:)`, and a button's menu names its kind, `.menu(.split) { … }`. A toolbar button holds a menu as
+  a button does, `.showsMenuArrow(_:)` included.
 - **A sheet is presented by a view.** `ModalStack` is gone: `.sheet(isPresented: $shown) { … }` and
   `.sheet(item: $item) { item in … }` present a page the state asks for, and the user's dismissal writes `false` or
   `nil`.
@@ -105,7 +106,8 @@ over. StateUI is before 1.0: a release may break what the one before it promised
   change by writing a state. `Prop("…")`, `Event("…")` and `Act("…")` are the host's; a member is reached through
   its contract. The motion layout is `MotionLayoutContract`, node type `"MotionLayout"`, its members `parameters`,
   `translationOrientation`, `translationUpdated`, `wheelStepped`, `itemDragUpdated` and `pinchRotationUpdated`;
-  `ViewContract.layoutBody` is new. A registered control's `applies([a, b])` is `applies(a, b)`,
+  `ViewContract.layoutBody` is new. `ButtonContract.showsMenuArrow` is `ButtonMenuElementContract.showsMenuArrow`,
+  which a toolbar button wears too. A registered control's `applies([a, b])` is `applies(a, b)`,
   `children(_:members:)` is `children(_:properties:events:)`, and an element reads a state handed to it when it is
   described. `CoreLink.readsKept { name, kind in … }` replaces `persistentKeys` and `restorePersistent`. The tier
   `TextStyleElement` is `TextColorElement`; `HostDeviceInfo` takes `isVirtual:`. A host's motion laws take and give
