@@ -121,18 +121,26 @@ final class WebLeaveTests: XCTestCase {
 
     /// A page the browser keeps to come back to - its back-forward cache - is hidden, not gone: its window stands out of
     /// sight, and stands again as the browser shows the page - a window going away would not.
-    func testAPageTheBrowserKeepsIsHiddenNotGone() throws {
+    func testAPageTheBrowserKeepsIsHiddenNotGone() async throws {
         WebRenderer.shared?.leave()
         let host = WebRenderer.running { WindowPhaseText() }
         host.step()
         let phase = { (try? WebBrowser.evaluate("e.textContent", on: host.views(WebTextView.self).first?.node ?? 0)) ?? "" }
 
-        try WebBrowser.run("dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }))")
-        for _ in 0..<5 { host.step() }
+        // A browser hides the page before it tells `pagehide`, and shows it before `pageshow`. What the page tells
+        // settles in a task of the UI thread's, which each step leaves its turn.
+        try WebBrowser.run("""
+            Object.defineProperty(document, 'visibilityState', { value: 'hidden', configurable: true });
+            dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true }))
+            """)
+        for _ in 0..<5 { host.step(); await Task.yield() }
         XCTAssertEqual(phase(), "background", "a page kept for coming back is out of sight")
 
-        try WebBrowser.run("dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))")
-        for _ in 0..<5 { host.step() }
+        try WebBrowser.run("""
+            delete document.visibilityState;
+            dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true }))
+            """)
+        for _ in 0..<5 { host.step(); await Task.yield() }
         XCTAssertNotEqual(phase(), "background", "and stands again, as one gone would not")
         host.leave()
     }
