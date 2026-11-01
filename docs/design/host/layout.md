@@ -29,7 +29,10 @@ says how a child travels to the place this arithmetic gives it.
 
 A layout's values are read off the element once, by the host layer
 (`MountedElement.layoutValues`), so every host
-reads the same margin, alignment and stated size. The toolkit supplies only
+reads the same margin, alignment and stated size. An element saying no
+horizontal alignment fills its slot across, but a link, which stands at its
+words' size at the slot's start - read and clicked on its words, as every
+platform's own link is (`NodeType.unsaidHorizontal`). The toolkit supplies only
 what it alone knows: whether the child is shown, and how big its view is for a
 width it is offered - a label wraps, an image keeps its ratio. The arithmetic
 is pure, so a host calls it from its own layout pass - `layout()` on AppKit, a

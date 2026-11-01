@@ -31,7 +31,8 @@ reads back.
 
 UIKit recognizes a pan past its own distance; the host puts its press back
 where it went down, on the window - which the view it moves does not move -
-and hands the host layer the press and every move, which it tells as a
+and in the view's own points, its drag's `from`, and hands the host layer the
+press and every move, which it tells as a
 drag's start, moves and end, and a swipe where the end went far enough. A
 pan UIKit takes away ends the drag as cancelled. A pinch is told step by
 step - its scale since the last and where it is, as shares of the view's

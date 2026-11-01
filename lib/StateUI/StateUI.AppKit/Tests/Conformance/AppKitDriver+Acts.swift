@@ -216,8 +216,6 @@ extension AppKitDriver {
         }
     }
 
-    /// A pointer pressed down or let go: a button held, a slider's thumb taken, a canvas pressed, and a view that
-    /// hears the pointer told.
     /// A quick run of clicks on the view's middle: each a press, then told with its place in the run, as AppKit's
     /// click recognizer tells it.
     private func tap(_ native: AppKitElement?, _ view: NSView, count: Int) {
@@ -229,6 +227,8 @@ extension AppKitDriver {
         }
     }
 
+    /// A pointer pressed down or let go: a view that hears a press or the pointer told, a button held, a slider's
+    /// thumb taken.
     private func press(
         _ view: NSView, _ native: AppKitElement?, down: Bool, at point: Point, _ element: MountedElement
     ) throws {

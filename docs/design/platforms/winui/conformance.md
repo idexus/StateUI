@@ -12,8 +12,8 @@ ExpandCollapse for a picker's list, a
 range's value. A picker's choice, a tab, a day, a time and a stepper's words
 are written straight into the control's own selection or value, outside a
 program's write. Any other act goes through the relay's callback that WinUI's
-own input takes into the host: a button held, a canvas pressed, a view's taps,
-pans, pinches and pointer, the window's phase, the chrome's way back and its
+own input takes into the host: a button held, a view's taps, pans, pinches and
+pointer - a canvas's among them - the window's phase, the chrome's way back and its
 toggle. WinUI raises a text box's KeyDown only from the keyboard, so Enter in
 a field is walked on HelloWorld's field instead.
 

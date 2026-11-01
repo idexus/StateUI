@@ -148,8 +148,6 @@ drawing says otherwise, wrapped in its box, set in it by the two alignments,
 and cut at its edges by a layer, which cuts a turned box exactly where a clip
 takes its bounds.
 
-A press on the canvas is its own: the pointer's primary button, a finger or a
-pen tip going down holds the pointer, and the relay tells where it went down,
-each move while it is held, and where it was lifted - or where it last was
-when the pointer is taken away - in DIPs of the canvas. The canvas's
-background is never empty, so the whole canvas is hit, drawn on or not.
+A press on the canvas is a view's, heard as every view hears one, in DIPs of
+the canvas. The canvas's background is never empty, so the whole canvas is
+hit, drawn on or not.

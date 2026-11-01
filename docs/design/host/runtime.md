@@ -512,8 +512,11 @@ takes a radius of its own - four points for a mouse or a pen, ten for a
 finger ([its input](../platforms/web/input.md#a-press-dragged-and-a-pinch)).
 It starts there, at nothing, and then each move is the drag's, measured from
 where the press went down, until the press lets go and it completes, or the
-platform takes the press away and it is cancelled. A press that never became
-a drag ends with nothing. A platform's distance is taken in DIPs; the toolkit
+platform takes the press away and it is cancelled. Where it went down, the
+drag's `from`, is in the view's own points: a host measuring the moves in a
+window's, which a view the drag moves does not move, hands the view's point
+beside them (`pressed(at:inView:)`). A press that never became a drag ends
+with nothing. A platform's distance is taken in DIPs; the toolkit
 holds the pointer once the press is a drag, which the host asks for as the
 rule says so.
 
@@ -835,9 +838,10 @@ the control it hands an aimed act.
 A question - an alert, a confirmation, a choice of actions, a prompt - is
 read from its act the same way on every host (`HostQuestion`): its title and
 message, the accepting caption, the cancelling one - every question but an
-alert offers one; the core sends the library's own words in the system's
-language where the application names none, so "OK" and "Cancel" here stand
-only for an act that came without them - a choice's actions and the place of
+alert offers one; where the application names none they are the library's
+own words in the system's language - sent by the core with the act, or for an
+act that came without them read by the layer (`HostBoundary.questionWords`) -
+a choice's actions and the place of
 its dangerous one, a prompt's placeholder, bound, purpose and starting words.
 Its buttons are the host layer's too (`HostQuestion.buttons`), each a caption
 and what pressing it answers (`QuestionButton`: accept, cancel, an action's

@@ -93,6 +93,6 @@ screen's density turns - a window moved to another screen, the page zoomed:
 the relay follows one media query of the density standing, asked again after
 each turn. Words
 wrap at their room's width in the system's font, placed across and down it
-as their alignments say. A press, its drag and its release are told where
-they are on the canvas, the pointer captured until it lets go.
+as their alignments say. A press on it is a view's, heard as every view hears
+one, where it is on the canvas.
 

@@ -121,8 +121,11 @@ where the browser says it (Sunday where not), and the writing's direction.
 The browser says nothing of measures: they are metric but in the three
 countries of none - the United States, Liberia and Myanmar. The relay hands
 over the browser's words; Swift decides (`WebEnvironment.locale`), and tells
-the locale again as the user's languages change. So the library's words - a
-chrome's own buttons, a dialog's answers - stand in the user's language.
+the locale again as the user's languages change, and as the page comes back
+to the front, since the browser tells no change of the zone ([facts read again
+at the front](../../host/runtime.md#facts-read-again-at-the-front)). So the
+library's words - a chrome's own buttons, a dialog's answers - stand in the
+user's language.
 
 What the user asked of motion and contrast is the browser's media queries,
 `prefers-reduced-motion` and `prefers-contrast: more`, told again as either

@@ -192,7 +192,10 @@ the screen with it, and renders what it changed. The accessibility settings
 are Windows's - animations off for less motion, high contrast, a screen
 reader running, and the text scale - told again as animations, the contrast
 or the text scale change; Windows tells no change of the screen reader, which
-is read again with any other.
+is read again with any other. Nor does it tell one of the zone or the user's
+languages: both are read again as the application comes back to the front
+([facts read again at the
+front](../../host/runtime.md#facts-read-again-at-the-front)).
 
 ## Acts
 

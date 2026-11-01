@@ -138,13 +138,16 @@ English and the United States' formats.
 ## The library's own words
 
 What StateUI says by itself - the "OK" and "Cancel" a dialog shows when the
-application gives no caption, what a window's chrome says of its own
-controls (`ChromeWords`: back, the sidebar, close, more, the main menu), and
-what a control a host composes where its platform has none says of its own
-parts to a screen reader (`ControlWords`: a stepper's step down and step up
-on the Web and on Android) - is a part of resources like an application's,
-`LibraryWords`, in the languages StateUI writes, each in its language's file.
-It speaks the system's language, matched as `.system` matches: the library
-cannot know which of an application's localizations a dialog belongs to, and
-the platform's own buttons beside it speak the system's language too. An
-application that speaks another passes its own captions.
+application gives no caption, what a window's chrome says of its own controls
+(`ChromeWords`: back, the sidebar, close, more, the main menu), the Edit
+menu's entries a host builds itself (`EditWords`: undo, redo, cut, copy,
+paste, delete, select all - on the Mac, WinUI, GTK and the Web), the Mac's own
+menus (`MenuWords`: File, New Window, Edit, Window, Minimize, Bring All to
+Front, Quit), and what a control a host composes where its platform has none
+says of its own parts to a screen reader (`ControlWords`: a stepper's step
+down and step up on the Web and on Android) - is a part of resources like an
+application's, `LibraryWords`, in the languages StateUI writes, each in its
+language's file. It speaks the system's language, matched as `.system`
+matches: the library cannot know which of an application's localizations a
+dialog belongs to, and the platform's own buttons beside it speak the system's
+language too. An application that speaks another passes its own captions.

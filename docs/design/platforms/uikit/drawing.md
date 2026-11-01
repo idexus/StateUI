@@ -98,7 +98,7 @@ A Canvas replays its drawing in order on Core Graphics within its own
 bounds: the instructions and the pen the host layer reads, a saved state
 saving the context's too, its arcs the host layer's curves, its text in its
 box by the box's two alignments. It asks for no room of its own; a finger on
-it is heard as it goes down, moves and lifts, where it is.
+it is a view's, heard as every view hears one, where it is.
 
 ## A placed child
 

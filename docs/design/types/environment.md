@@ -10,15 +10,17 @@ every view the way an object an ancestor provides is, and read by its name.
 
 ```text
   \.device        Device
-                     info          formFactor, platform, model, manufacturer, name, versionString, isVirtual
+                     info          formFactor, platform, architecture, model, manufacturer, name, versionString,
+                                   isVirtual
                      display       width, height, density, orientation, rotation, refreshRate
                      battery       chargeLevel, state, powerSource, energySaverStatus
                      connectivity  networkAccess, connectionProfiles
                      accessibility reducesMotion, prefersHigherContrast, isScreenReaderOn, textScale
-  \.locale        LocaleInfo      language, region, name, languages, timeZone, uses24HourClock, firstDayOfWeek,
-                                  isMetric, layoutDirection
+  \.locale        LocaleInfo      language (a tag: its region too), languages, timeZone, uses24HourClock,
+                                  firstDayOfWeek, isMetric, layoutDirection
   \.application   ApplicationSession
-                     info          name, packageName, versionString, buildString, colorScheme, accentColor
+                     info          name, packageName, versionString, buildString, libraryVersion, colorScheme,
+                                   accentColor
                      phase, scenes, and what the application writes: color scheme, styles, motion, kept keys
   \.scene, \.window   the sessions a view stands in
 ```
