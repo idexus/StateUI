@@ -52,8 +52,7 @@ final class ReleaseTests: XCTestCase {
     /// stands in the public API's record. A name a later change brought back makes the release's word untrue.
     func testWhatTheNewestReleaseSaysIsGoneIsNotInTheAPI() throws {
         let changes = try String(contentsOf: SourceTree.repository.appendingPathComponent("CHANGELOG.md"), encoding: .utf8)
-        let record = try String(
-            contentsOf: SourceTree.repository.appendingPathComponent("lib/StateUI/exports/api/StateUI.txt"), encoding: .utf8)
+        let record = try APISurfaceTests.recorded()
         let declared = Set(record.split(separator: "\n").compactMap { line -> String? in
             guard let space = line.firstIndex(of: " "), let colon = line.range(of: ": ") else { return nil }
             return String(line[line.index(after: space)..<colon.lowerBound])

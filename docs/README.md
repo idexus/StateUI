@@ -63,6 +63,9 @@ design notes beside them.
 - [Composition and identity](interface/composition-and-identity.md) covers
   composed views, builders, identity, lifetime reactions, frame reports, and
   render diagnostics.
+- [Extending StateUI](interface/extending.md) adds an element, a value and
+  the application's own acts and events: the second public surface, which
+  the library's own controls are written with.
 - [Testing an application](interface/testing.md) shows a page in a test
   window and uses it as its user does: views found by their identifier or
   aim, acts, and reads of contract members.

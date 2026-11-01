@@ -330,7 +330,8 @@ answers for the application beyond the library:
 - the application's own controls, acts and event sources, through the host's
   `StateUIControls`, `StateUIActs` and `StateUIEvents` - each host's page
   shows them under *Controls, acts, and events registered in Swift*
-  ([GTK](hosts/gtk.md#controls-acts-and-events-registered-in-swift));
+  ([GTK](hosts/gtk.md#controls-acts-and-events-registered-in-swift)), and
+  [Extending StateUI](interface/extending.md) writes their Swift half;
 - the backends it shows a library element through. A backend is a package of
   its own, `lib/Backends/<Element>.<Host>`, for an element whose engine is a
   library the platform does not ship: the web view on GTK

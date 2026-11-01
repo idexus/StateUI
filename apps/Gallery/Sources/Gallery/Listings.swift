@@ -13122,6 +13122,47 @@ enum Listings {
                 .source(html: "<meta name='viewport' content='width=device-width'><h2>Written in place</h2><p>No network involved.</p>")
         }
         """#,
+        "extending.md.properties": #"""
+        // Sources/Samples/Interop/RatingBar.swift
+        /// The RatingBar's own properties. The control wears them and so does its
+        /// style, so each setter is written once.
+        public protocol RatingBarProperties: PropertyContainer {}
+
+        extension RatingBarProperties {
+            /// How many stars are filled, 0 through the bar's stars.
+            public func rating(_ value: Double) -> Modified {
+                setValue(RatingBarContract.rating, value)
+            }
+
+            /// How many stars the bar has - five unless said.
+            public func maximum(_ value: Double) -> Modified {
+                setValue(RatingBarContract.maximum, value)
+            }
+        }
+
+        /// A style can target the bar: a style target is a control with an empty
+        /// initializer, and a style resolves by the node type `RatingBar()` makes.
+        extension RatingBar: StyleTarget {}
+
+        /// A style of the bar offers the bar's own setters.
+        extension Styling: RatingBarProperties where Target == RatingBar {}
+        """#,
+        "extending.md.state": #"""
+        // Sources/Samples/Interop/RatingBar.swift
+        /// How many stars are filled, walked by the host from a state.
+        ///
+        ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
+        ///
+        /// `.inOut`, because the host reports where the walk has got to, which is
+        /// what `$stars.journey.value` reads. A tap does not arrive this way;
+        /// `.onRatingChanged(_:)` hears it.
+        ///
+        /// On the control and not on `RatingBarProperties`: a style wears that
+        /// protocol, and a style has no state to follow.
+        public func rating(_ state: Binding<Double>) -> Modified {
+            setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
+        }
+        """#,
     ]
 }
 

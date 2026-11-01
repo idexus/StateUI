@@ -36,6 +36,7 @@ public enum RatingBarContract: ElementContract {
     public static let members: [any ContractMember] = [rating, maximum, ratingChanged, flash]
 }
 
+// listing: extending.md.properties
 /// The RatingBar's own properties. The control wears them and so does its
 /// style, so each setter is written once.
 public protocol RatingBarProperties: PropertyContainer {}
@@ -51,6 +52,7 @@ extension RatingBarProperties {
         setValue(RatingBarContract.maximum, value)
     }
 }
+// listing: end
 
 /// Stars - five unless said - drawn by a control the application registered with its host,
 /// described here like a built-in one.
@@ -81,6 +83,7 @@ public struct RatingBar: ElementView, RatingBarProperties {
             .onRatingChanged { rating.journey.snap(to: $0) }
     }
 
+// listing: extending.md.state
     /// How many stars are filled, walked by the host from a state.
     ///
     ///     try await $stars.journey.move(to: 5, .eased(.milliseconds(1200))).arrived()
@@ -94,6 +97,7 @@ public struct RatingBar: ElementView, RatingBarProperties {
     public func rating(_ state: Binding<Double>) -> Modified {
         setValue(RatingBarContract.rating, on: state, mode: .inOut, kind: .property)
     }
+// listing: end
 
     /// A star was tapped, with the rating it gave. Runs beside a binding's
     /// write-back, never instead of it.
@@ -116,9 +120,11 @@ extension Aim where Target == RatingBar {
 }
 // listing: end
 
+// listing: extending.md.properties
 /// A style can target the bar: a style target is a control with an empty
 /// initializer, and a style resolves by the node type `RatingBar()` makes.
 extension RatingBar: StyleTarget {}
 
 /// A style of the bar offers the bar's own setters.
 extension Styling: RatingBarProperties where Target == RatingBar {}
+// listing: end

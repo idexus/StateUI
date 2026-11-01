@@ -4,17 +4,84 @@
 import Foundation
 import XCTest
 
-/// The public API is recorded: every public declaration of `StateUI`, a line each, in
-/// `lib/StateUI/exports/api/StateUI.txt`, which `STATEUI_UPDATE_EXPORTS=1` writes.
+/// The public API is recorded: every public declaration of `StateUI`, a line each, in two records -
+/// `lib/StateUI/exports/api/StateUI.txt`, what an application writes, and `StateUI.extending.txt`, what an author
+/// adding an element, a value or an application's acts writes - which `STATEUI_UPDATE_EXPORTS=1` writes.
 /// Design: docs/design/architecture.md#the-public-surface
 final class APISurfaceTests: XCTestCase {
-    /// The record of the module's public declarations.
+    /// The record of what an application writes.
     private static let record = SourceTree.repository.appendingPathComponent("lib/StateUI/exports/api/StateUI.txt")
+
+    /// The record of what an author extending StateUI writes.
+    private static let extendingRecord = SourceTree.repository.appendingPathComponent(
+        "lib/StateUI/exports/api/StateUI.extending.txt")
+
+    /// Both records' lines.
+    static func recorded() throws -> String {
+        try String(contentsOf: record, encoding: .utf8) + String(contentsOf: extendingRecord, encoding: .utf8)
+    }
+
+    /// The types an author extending StateUI writes with, every member with them: a contract and its members, a
+    /// node, the values a host is handed, a value of a state's own, and an application's acts and events.
+    /// Design: docs/design/architecture.md#two-surfaces
+    static let extendingTypes: Set<String> = [
+        "Act", "AppliedProperties", "ApplicationTier", "Contract", "ContractMember", "ControlValues", "ElementAct",
+        "ElementContract", "ElementEvent", "ElementLayer", "ElementProperty", "Event", "HostEventSubscription",
+        "HostEvents", "HostRepresentable", "ItemsEntries", "LaneKind", "LaneValue", "Name", "Node", "NodeType",
+        "Prop", "PropValue", "StateCarried", "StateChoice", "StateKind", "StateMode", "StateValue", "Walked",
+    ]
+
+    /// The members an author extending StateUI writes, on whatever type they stand: a view's own node, its values
+    /// and handlers by contract member, and a value's conversions.
+    static let extendingMembers: Set<String> = [
+        "carried", "init(carried:)", "init(propValue:)", "laneKind", "lanes", "modified", "moving",
+        "node", "nodes", "onEvent", "onHostEvent", "propValue", "setValue",
+        "Aim.call", "ApplicationSession.call", "ApplicationSession.tell",
+    ]
+
+    /// Whether a protocol's declaration is the extending surface's: a control's property half, a tier's, or what
+    /// a control and a style wear - whose members, the modifiers, are an application's.
+    static func isExtendingProtocol(_ name: String) -> Bool {
+        name.hasSuffix("Properties") || name.hasSuffix("Element")
+            || ["ElementView", "PropertyContainer", "StyleTarget"].contains(name)
+    }
+
+    /// Splits the surface's lines into what an application writes and what an author extending StateUI does.
+    static func split(_ lines: [String]) -> (application: [String], extending: [String]) {
+        var protocols: Set<String> = []
+        for line in lines where line.hasPrefix("swift.protocol ") {
+            let name = line.dropFirst("swift.protocol ".count).prefix { $0 != ":" }
+            if isExtendingProtocol(String(name)) { protocols.insert(String(name)) }
+        }
+
+        var application: [String] = [], extending: [String] = []
+        for line in lines {
+            let fields = line.split(separator: " ", maxSplits: 2)
+            let kind = fields[0], path = fields[1].hasSuffix(":") ? fields[1].dropLast() : fields[1]
+            let owner = String(path.prefix { $0 != "." }), member = path.dropFirst(owner.count).dropFirst()
+            let named = member.contains("(") ? member : member.split(separator: ".").last ?? ""
+            let bare = String(named.prefix { $0 != "(" })
+            let isExtending: Bool
+            if kind == "swift.conformance" {
+                let target = line.components(separatedBy: ": StateUI.").dropFirst().first?.prefix { $0 != " " }
+                isExtending = extendingTypes.contains(owner) || target.map {
+                    extendingTypes.contains(String($0)) || protocols.contains(String($0))
+                } ?? false
+            } else if member.isEmpty {
+                isExtending = extendingTypes.contains(owner) || protocols.contains(owner)
+            } else {
+                isExtending = extendingTypes.contains(owner) || extendingMembers.contains(String(named))
+                    || extendingMembers.contains(bare) || extendingMembers.contains("\(owner).\(bare)")
+            }
+            if isExtending { extending.append(line) } else { application.append(line) }
+        }
+        return (application, extending)
+    }
 
     /// A contract member's documentation sends the reader to the API that uses it - `See `Clipboard.read()``: every
     /// such name is a declaration the record holds, so a renamed one cannot leave the pointer behind.
     func testEveryContractsSeeNamesARecordedDeclaration() throws {
-        let record = try String(contentsOf: Self.record, encoding: .utf8)
+        let record = try Self.recorded()
         let named = try NSRegularExpression(pattern: #"`([A-Z][A-Za-z]*\.[a-z][A-Za-z]*\([A-Za-z_:]*\))`"#)
         var missing: [String] = []
 
@@ -32,26 +99,29 @@ final class APISurfaceTests: XCTestCase {
         XCTAssertEqual(missing, [], "a See names a declaration the API record holds")
     }
 
-    /// The module this run built says what the record says.
+    /// The module this run built says what the records say, each line in the record of its surface.
     func testThePublicSurfaceIsTheRecordedOne() throws {
         let surface = try Self.surface()
         XCTAssertGreaterThan(surface.count, 1_000, "the symbol graph read almost nothing")
-        let text = surface.joined(separator: "\n") + "\n"
+        let (application, extending) = Self.split(surface)
 
-        if ProcessInfo.processInfo.environment["STATEUI_UPDATE_EXPORTS"] == "1" {
-            try FileManager.default.createDirectory(
-                at: Self.record.deletingLastPathComponent(), withIntermediateDirectories: true)
-            return try text.write(to: Self.record, atomically: true, encoding: .utf8)
+        for (record, lines) in [(Self.record, application), (Self.extendingRecord, extending)] {
+            if ProcessInfo.processInfo.environment["STATEUI_UPDATE_EXPORTS"] == "1" {
+                try FileManager.default.createDirectory(
+                    at: record.deletingLastPathComponent(), withIntermediateDirectories: true)
+                try (lines.joined(separator: "\n") + "\n").write(to: record, atomically: true, encoding: .utf8)
+                continue
+            }
+
+            let recorded = try String(contentsOf: record, encoding: .utf8).replacingOccurrences(of: "\r\n", with: "\n")
+            let (was, now) = (Set(recorded.split(separator: "\n").map(String.init)), Set(lines))
+            let added = now.subtracting(was).sorted(), removed = was.subtracting(now).sorted()
+            XCTAssertTrue(added.isEmpty && removed.isEmpty, """
+                \(record.lastPathComponent) is not the recorded API - \(added.count) added, \(removed.count) taken \
+                away. Read the change, then write it: STATEUI_UPDATE_EXPORTS=1 swift test --filter APISurfaceTests
+                \((added.prefix(20).map { "+ \($0)" } + removed.prefix(20).map { "- \($0)" }).joined(separator: "\n"))
+                """)
         }
-
-        let recorded = try String(contentsOf: Self.record, encoding: .utf8).replacingOccurrences(of: "\r\n", with: "\n")
-        let (was, now) = (Set(recorded.split(separator: "\n").map(String.init)), Set(surface))
-        let added = now.subtracting(was).sorted(), removed = was.subtracting(now).sorted()
-        XCTAssertTrue(added.isEmpty && removed.isEmpty, """
-            The public API is not the recorded one - \(added.count) added, \(removed.count) taken away. Read the change, \
-            then write it: STATEUI_UPDATE_EXPORTS=1 swift test --filter APISurfaceTests
-            \((added.prefix(20).map { "+ \($0)" } + removed.prefix(20).map { "- \($0)" }).joined(separator: "\n"))
-            """)
     }
 
     /// Every public declaration of the module this run built - its kind, its path and its declaration - and every
