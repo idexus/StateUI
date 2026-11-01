@@ -282,7 +282,7 @@ private struct PhasePage: View {
 
 /// An application whose window says when it is going.
 private struct GoingApplication: Application {
-    let gone: Received<String>
+    var gone = Received<String>()
 
     var body: some Scene { GoingScene(gone: gone) }
 }
