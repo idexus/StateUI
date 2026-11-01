@@ -511,7 +511,10 @@ pictures there at that size, and one at its file's size stands far taller. A
 host drawing an SVG draws it at the size it shows at, in the display's pixels
 - a stretched one at its room's own size, sharp both ways - and again only for
 more pixels, so a size in motion does not draw it every frame
-(`PictureArithmetic.vectorPixels`, `drawsAgain`).
+(`PictureArithmetic.vectorPixels`, `drawsAgain`). A host keeping the pictures
+it made for asking again - beyond the ones shown, which stay found while they
+show - keeps them within one budget of pixels, forty million
+(`PictureArithmetic.keptPixels`), the one asked for longest ago going first.
 
 ## An icon
 

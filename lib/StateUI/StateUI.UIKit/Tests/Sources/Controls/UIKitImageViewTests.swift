@@ -5,6 +5,7 @@ import UIKit
 @_spi(Host) import StateUI
 @_spi(Host) import StateUIHost
 @testable import StateUIUIKit
+@_spi(Host) import StateUIApple
 import XCTest
 
 /// A picture is read from the application's images and measured in points.
@@ -121,6 +122,23 @@ final class UIKitImageViewTests: XCTestCase {
             let glyph = try XCTUnwrap(UIKitRenderer.glyph(picture, height: 20))
             XCTAssertTrue(UIKitRenderer.glyph(picture, height: 20) === glyph, "its glyph made again")
         }
+    }
+
+    /// A picture something still shows is the same picture asked for again, even after the cache let it go under
+    /// memory pressure: a view handed it again finds nothing changed.
+    @MainActor
+    func testAPictureStillShownOutlastsTheCache() throws {
+        let dot = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).pngData { context in
+            context.fill(CGRect(x: 0, y: 0, width: 1, height: 1))
+        }
+        let picture = HostPicture.bytes(Array(dot))
+        let shown = try XCTUnwrap(UIKitRenderer.image(picture))
+        let glyph = try XCTUnwrap(UIKitRenderer.glyph(picture, height: 20))
+
+        UIKitRenderer.pictures.letGoOfKept()
+
+        XCTAssertTrue(UIKitRenderer.image(picture) === shown, "made again while shown")
+        XCTAssertTrue(UIKitRenderer.glyph(picture, height: 20) === glyph, "its glyph made again while shown")
     }
 }
 

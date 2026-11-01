@@ -121,7 +121,7 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
     /// each time, or on the main thread, drops frames.
     /// Design: docs/design/platforms/appkit/views.md#a-drawn-picture
     private func showPixels() {
-        guard let image, Self.isDrawing(image) else { return }
+        guard let image, image.isDrawing else { return }
         let scale = window?.backingScaleFactor ?? NSScreen.main?.backingScaleFactor ?? 2
         let room = imageView.frame.size
         let pixels = PictureArithmetic.vectorPixels(
@@ -146,13 +146,6 @@ final class AppKitImageView: AppKitHitTestView, AppKitPictureResolving {
         pixelsComing = nil
         pixelsMade = coming
         imageView.image = made
-    }
-
-    /// Whether a picture is a file's drawing - an SVG's, a PDF's - rather than pixels; an icon - a template - AppKit
-    /// tints, and one drawn by code may draw on the main thread alone: both stand as they are.
-    private static func isDrawing(_ image: NSImage) -> Bool {
-        !image.isTemplate && !image.representations.isEmpty
-            && !image.representations.contains { $0 is NSBitmapImageRep || $0 is NSCustomImageRep }
     }
 
     /// `image` drawn into `pixels` across and down, standing `size` big - on any thread.
