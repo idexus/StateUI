@@ -219,7 +219,7 @@ enum PatchDump {
             return spelled(member, as: ScrollOrientation.self)
         case Prop.horizontalScrollIndicator.name, Prop.verticalScrollIndicator.name:
             return spelled(member, as: ScrollIndicatorVisibility.self)
-        case Prop.edge.name:
+        case Prop.scrollEdge.name:
             return spelled(member, as: ScrollEdge.self)
         case Prop.position.name:
             return spelled(member, as: ToolbarPosition.self)

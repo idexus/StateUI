@@ -609,7 +609,7 @@ its layer are on the element's page in [the control dictionary](controls/README.
 
 | Element | Members | Count | AppKit | UIKit | Android Views | WinUI 3 | GTK 4 | Web |
 | --- | --- | --- | :---: | :---: | :---: | :---: | :---: | :---: |
-| [BottomBar](controls/BottomBar.md) | `edge` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
+| [BottomBar](controls/BottomBar.md) | `scrollEdge` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ☑️ | 1 ✅ |
 | [Button](controls/Button.md) | `onClicked` (`clicked`), `icon`, `iconPosition`, `iconSpacing`, `keyboardShortcut`, `lineBreak`, `onPressed` (`pressed`), `onReleased` (`released`), `role` | 9 | 6 ✅ · 2 ✓ · 1 – | 7 ✅ · 2 ✓ | 4 ✅ · 2 ✓ | 9 ✅ | 8 ✅ · 1 ✓ | 9 ✅ |
 | [Canvas](controls/Canvas.md) | `drawing` | 1 | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ | 1 ✅ |
 | [CheckBox](controls/CheckBox.md) | `isOn`, `onToggled` (`toggled`) | 2 | 2 ✅ | 1 ✅ · 1 ✓ | 2 ✅ | 2 ✅ | 2 ✅ | 2 ✅ |
@@ -692,7 +692,7 @@ realizes the element and each of its members.
 `barBackground`, `barEdge`, `barForegroundColor`, `barScrollEdge`, `canDrag`,
 `choosesOpacity`, `clipsContent`, `color`, `columns`, `columnSpacing`,
 `contentMode`, `cornerRadius`, `cursorPosition`, `dash`, `dashPhase`, `data`,
-`date`, `destination`, `dragText`, `drawing`, `droppedFileTypes`, `edge`,
+`date`, `destination`, `dragText`, `drawing`, `droppedFileTypes`,
 `endReachedWithin`, `fill`, `fillRule`, `floatsOnTop`, `fontAttributes`,
 `fontFamily`, `fontSize`, `fontWeight`, `format`, `frame`, `geometryTransform`,
 `gridColumn`, `gridColumnSpan`, `gridRow`, `gridRowSpan`, `growsWithText`,
@@ -715,7 +715,7 @@ realizes the element and each of its members.
 `pivotX`, `pivotY`, `placeholder`, `placeholderColor`, `points`, `position`,
 `presentation`, `progress`, `region`, `role`, `rotates`, `rotation`,
 `rotationX`, `rotationY`, `rows`, `rowSpacing`, `scale`, `scaleX`, `scaleY`,
-`scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
+`scrollEdge`, `scrollOffset`, `selectedIndex`, `selectedItems`, `selectedTab`,
 `selectionLength`, `selectionMode`, `shape`, `showsBackButton`,
 `showsClearButton`, `showsCloseButton`, `showsMenuArrow`, `showsNavigationBar`,
 `showsSidebar`, `showsSidebarToggle`, `showsText`, `showsTitle`, `showsTraffic`,

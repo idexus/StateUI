@@ -1366,7 +1366,7 @@ enum Listings {
                 .galleryPage("Conversation")
                 // The field grows with its lines, and the bar with it; the rows
                 // pass under the bar, and under the field's glass.
-                .bottomBar(edge: edge) {
+                .bottomBar(scrollEdge: edge) {
                     Grid {
                         ZStack {
                             TextEditor($draft)

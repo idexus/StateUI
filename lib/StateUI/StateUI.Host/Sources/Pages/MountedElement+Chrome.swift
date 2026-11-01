@@ -96,7 +96,7 @@ extension MountedElement {
 
     /// How what scrolls under this page's bottom bar shows at its edge, as the bar declared innermost says.
     public var chromeBottomBarEdge: ScrollEdge {
-        declared(.bottomBar).last?.element.value(.edge).flatMap(ScrollEdge.init(propValue:)) ?? .automatic
+        declared(.bottomBar).last?.element.value(.scrollEdge).flatMap(ScrollEdge.init(propValue:)) ?? .automatic
     }
 
     /// The menus this page's window shows on its menu bar while the page is shown, composed from its path.

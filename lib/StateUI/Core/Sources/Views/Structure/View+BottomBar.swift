@@ -20,20 +20,21 @@ extension View {
     /// there as the bar grows. Declared around the page - on its stack or its
     /// window's page - it stands on every page shown there that declares
     /// none of its own; the innermost declaration wins. While rows pass under
-    /// it, `edge` says how they show there: as the platform draws it, cut off
-    /// on a blur with a line along it, or as they are.
+    /// it, `scrollEdge` says how they show there: as the platform draws it,
+    /// cut off on a blur with a line along it, or as they are - what a bar's
+    /// `.barScrollEdge(_:)` says of its own.
     ///
     /// - Parameters:
-    ///   - edge: how what scrolls under the bar shows at its edge.
+    ///   - scrollEdge: how what scrolls under the bar shows at its edge.
     ///   - content: one view - an `if`/`else` is one; put several controls in
     ///     a layout.
     public func bottomBar<Content: View>(
-        edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content
+        scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content
     ) -> Modified {
         var layer = ZStack().node
         layer.children = [content().node]
         var bar = Node(contract: BottomBarContract.self, children: [layer])
-        bar.write(BottomBarContract.edge, edge)
+        bar.write(BottomBarContract.scrollEdge, scrollEdge)
         return modified {
             // After the element's own children; the host finds it by type. The view stands in a layer of its own,
             // which places it as its values say: no layout arranges what a slot holds.

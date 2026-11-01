@@ -4,7 +4,7 @@
 // A closed vocabulary, numbered by StateUI: append a case, never insert one.
 // Design: docs/design/types/vocabularies.md#written-out-and-appended
 
-/// How what scrolls under a bar shows at the bar's edge - what `.bottomBar(edge:)` takes.
+/// How what scrolls under a bar shows at the bar's edge - what `.bottomBar(scrollEdge:)` and `.barScrollEdge(_:)` take.
 public enum ScrollEdge: Int32, Sendable {
     /// As the platform draws it.
     case automatic = 0

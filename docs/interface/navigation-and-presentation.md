@@ -907,7 +907,7 @@ struct Composer: View {
 let messages = Text("Messages")
 
 ScrollView { messages }
-    .bottomBar(edge: .hard) {
+    .bottomBar(scrollEdge: .hard) {
         Composer(draft: $draft)
     }
 ```

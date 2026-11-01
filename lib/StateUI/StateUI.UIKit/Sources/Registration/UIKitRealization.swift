@@ -26,7 +26,7 @@ enum UIKitRealization {
 
     /// Every record, beside what the registry's export says.
     static let records: [HostRecord] = [
-        .complete(BottomBarContract.edge),
+        .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
         .complete(BarElementContract.barBackground),
         .complete(BarElementContract.barScrollEdge),

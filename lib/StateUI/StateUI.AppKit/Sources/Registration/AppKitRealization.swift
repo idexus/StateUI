@@ -27,7 +27,7 @@ enum AppKitRealization {
         + "menu item, a toolbar button, ⌘R."
 
     static let records: [HostRecord] = [
-        .complete(BottomBarContract.edge),
+        .complete(BottomBarContract.scrollEdge),
         // MARK: Tiers - a member every wearer realizes alike
         .notPlanned(RefreshElementContract.isRefreshEnabled, reason: Self.noPull),
         .notPlanned(RefreshElementContract.isRefreshing, reason: Self.noPull),

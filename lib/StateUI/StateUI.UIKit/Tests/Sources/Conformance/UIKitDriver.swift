@@ -542,7 +542,7 @@ final class UIKitDriver: HostDriver {
             return (pulled.refresh.scroller?.refreshControl != nil).propValue
         case (.isRefreshing, let pulled as any UIKitRefreshing):
             return (pulled.refresh.scroller?.refreshControl?.isRefreshing ?? false).propValue
-        case (.edge, let shown?):
+        case (.scrollEdge, let shown?):
             let bar = sequence(first: shown, next: \.superview).lazy.compactMap { $0 as? UIKitBottomBarView }.first
             return bar?.shownEdge?.propValue
         case (.scrollOffset, let scroll as UIKitScrollView):

@@ -20,7 +20,7 @@ extension WinUIDriver {
         if property == .barScrollEdge {
             return ((element.visiblePage?.native as? WinUIElement)?.view as? WinUISingleChildView)?.topEdge.propValue
         }
-        if property == .edge,
+        if property == .scrollEdge,
            let page = (element.enclosing(type: .page)?.native as? WinUIElement)?.view as? WinUISingleChildView {
             return page.edge.propValue
         }

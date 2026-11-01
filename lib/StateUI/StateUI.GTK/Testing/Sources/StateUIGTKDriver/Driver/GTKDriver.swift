@@ -279,7 +279,7 @@ final class GTKDriver: HostDriver {
     }
 
     func held(_ property: Prop, on element: MountedElement) throws -> HostValue? {
-        if property == .edge,
+        if property == .scrollEdge,
            let page = (element.enclosing(type: .page)?.native as? GTKElement)?.view as? GTKSingleChildView {
             return page.bottomBarEdge?.propValue
         }

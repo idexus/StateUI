@@ -3185,7 +3185,7 @@ swift.method @SwiftNever.background(_:): @MainActor func background(_ state: Bin
 swift.method @SwiftNever.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method @SwiftNever.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method @SwiftNever.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method @SwiftNever.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method @SwiftNever.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method @SwiftNever.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method @SwiftNever.debugInfo(): @MainActor func debugInfo() -> String
 swift.method @SwiftNever.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -3418,7 +3418,7 @@ swift.method AnyView.background(_:): @MainActor func background(_ state: Binding
 swift.method AnyView.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method AnyView.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method AnyView.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method AnyView.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method AnyView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method AnyView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method AnyView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method AnyView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -3667,7 +3667,7 @@ swift.method Button.background(_:): @MainActor func background(_ state: Binding<
 swift.method Button.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Button.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Button.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Button.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Button.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Button.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Button.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Button.debugInfo(): @MainActor func debugInfo() -> String
@@ -3935,7 +3935,7 @@ swift.method Canvas.background(_:): @MainActor func background(_ state: Binding<
 swift.method Canvas.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Canvas.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Canvas.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Canvas.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Canvas.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Canvas.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Canvas.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Canvas.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -4160,7 +4160,7 @@ swift.method Capsule.background(_:): @MainActor func background(_ state: Binding
 swift.method Capsule.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Capsule.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Capsule.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Capsule.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Capsule.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Capsule.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Capsule.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Capsule.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
@@ -4395,7 +4395,7 @@ swift.method CheckBox.background(_:): @MainActor func background(_ state: Bindin
 swift.method CheckBox.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method CheckBox.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method CheckBox.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method CheckBox.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method CheckBox.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method CheckBox.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method CheckBox.debugInfo(): @MainActor func debugInfo() -> String
 swift.method CheckBox.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -4637,7 +4637,7 @@ swift.method ColorPicker.background(_:): @MainActor func background(_ state: Bin
 swift.method ColorPicker.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method ColorPicker.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method ColorPicker.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method ColorPicker.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method ColorPicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ColorPicker.choosesOpacity(_:): @MainActor func choosesOpacity(_ state: Binding<Bool>) -> Self.Modified
 swift.method ColorPicker.choosesOpacity(_:): @MainActor func choosesOpacity(_ value: Bool) -> Self.Modified
 swift.method ColorPicker.color(_:): @MainActor func color(_ state: Binding<Color>) -> ColorPicker.Modified
@@ -4878,7 +4878,7 @@ swift.method DatePicker.background(_:): @MainActor func background(_ state: Bind
 swift.method DatePicker.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method DatePicker.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method DatePicker.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method DatePicker.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method DatePicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DatePicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method DatePicker.date(_:): @MainActor func date(_ state: Binding<CalendarDate>) -> DatePicker.Modified
 swift.method DatePicker.debugInfo(): @MainActor func debugInfo() -> String
@@ -5131,7 +5131,7 @@ swift.method DebugInspector.background(_:): @MainActor func background(_ state: 
 swift.method DebugInspector.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method DebugInspector.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method DebugInspector.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method DebugInspector.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method DebugInspector.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method DebugInspector.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method DebugInspector.debugInfo(): @MainActor func debugInfo() -> String
 swift.method DebugInspector.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -5358,7 +5358,7 @@ swift.method Either.background(_:): @MainActor func background(_ state: Binding<
 swift.method Either.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Either.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Either.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Either.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Either.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Either.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Either.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Either.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -5611,7 +5611,7 @@ swift.method Ellipse.background(_:): @MainActor func background(_ state: Binding
 swift.method Ellipse.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Ellipse.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Ellipse.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Ellipse.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Ellipse.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Ellipse.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Ellipse.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Ellipse.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
@@ -5846,7 +5846,7 @@ swift.method Fill.background(_:): @MainActor func background(_ state: Binding<Ma
 swift.method Fill.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Fill.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Fill.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Fill.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Fill.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Fill.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Fill.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Fill.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -6091,7 +6091,7 @@ swift.method GalleryView.background(_:): @MainActor func background(_ state: Bin
 swift.method GalleryView.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method GalleryView.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method GalleryView.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method GalleryView.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method GalleryView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method GalleryView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method GalleryView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method GalleryView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -6321,7 +6321,7 @@ swift.method GeometryReader.background(_:): @MainActor func background(_ state: 
 swift.method GeometryReader.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method GeometryReader.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method GeometryReader.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method GeometryReader.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method GeometryReader.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method GeometryReader.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method GeometryReader.debugInfo(): @MainActor func debugInfo() -> String
 swift.method GeometryReader.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -6539,7 +6539,7 @@ swift.method Grid.background(_:): @MainActor func background(_ state: Binding<Ma
 swift.method Grid.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Grid.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Grid.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Grid.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Grid.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Grid.clipsContent(_:): @MainActor func clipsContent(_ state: Binding<Bool>) -> Self.Modified
 swift.method Grid.columnSpacing(_:): @MainActor func columnSpacing(_ state: Binding<Double>) -> Grid.Modified
 swift.method Grid.columns(_:): @MainActor func columns(_ runs: GridTracks...) -> Self.Modified
@@ -6783,7 +6783,7 @@ swift.method Group.background(_:): @MainActor func background(_ state: Binding<M
 swift.method Group.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Group.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Group.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Group.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Group.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Group.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Group.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Group.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -6999,7 +6999,7 @@ swift.method HStack.background(_:): @MainActor func background(_ state: Binding<
 swift.method HStack.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method HStack.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method HStack.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method HStack.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method HStack.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method HStack.clipsContent(_:): @MainActor func clipsContent(_ state: Binding<Bool>) -> Self.Modified
 swift.method HStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method HStack.debugInfo(): @MainActor func debugInfo() -> String
@@ -7244,7 +7244,7 @@ swift.method Image.background(_:): @MainActor func background(_ state: Binding<M
 swift.method Image.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Image.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Image.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Image.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Image.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Image.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Image.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Image.debugInfo(): @MainActor func debugInfo() -> String
@@ -7472,7 +7472,7 @@ swift.method InspectorButton.background(_:): @MainActor func background(_ state:
 swift.method InspectorButton.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method InspectorButton.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method InspectorButton.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method InspectorButton.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method InspectorButton.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method InspectorButton.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method InspectorButton.debugInfo(): @MainActor func debugInfo() -> String
 swift.method InspectorButton.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -7688,7 +7688,7 @@ swift.method ItemsView.background(_:): @MainActor func background(_ state: Bindi
 swift.method ItemsView.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method ItemsView.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method ItemsView.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method ItemsView.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method ItemsView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ItemsView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ItemsView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ItemsView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -7947,7 +7947,7 @@ swift.method Line.background(_:): @MainActor func background(_ state: Binding<Ma
 swift.method Line.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Line.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Line.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Line.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Line.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Line.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Line.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Line.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
@@ -8187,7 +8187,7 @@ swift.method Link.background(_:): @MainActor func background(_ state: Binding<Ma
 swift.method Link.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Link.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Link.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Link.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Link.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Link.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Link.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Link.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -8430,7 +8430,7 @@ swift.method Map.background(_:): @MainActor func background(_ state: Binding<Mat
 swift.method Map.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Map.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Map.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Map.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Map.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Map.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Map.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Map.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -8759,7 +8759,7 @@ swift.method ModifiedContent.background(_:): @MainActor func background(_ state:
 swift.method ModifiedContent.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method ModifiedContent.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method ModifiedContent.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method ModifiedContent.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method ModifiedContent.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ModifiedContent.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ModifiedContent.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ModifiedContent.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -8977,7 +8977,7 @@ swift.method MotionLayout.background(_:): @MainActor func background(_ state: Bi
 swift.method MotionLayout.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method MotionLayout.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method MotionLayout.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method MotionLayout.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method MotionLayout.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method MotionLayout.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method MotionLayout.debugInfo(): @MainActor func debugInfo() -> String
 swift.method MotionLayout.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -9225,7 +9225,7 @@ swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ 
 swift.method NavigationStack.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
 swift.method NavigationStack.barForegroundColor(_:): @MainActor func barForegroundColor(_ value: Color) -> Self.Modified
 swift.method NavigationStack.barScrollEdge(_:): @MainActor func barScrollEdge(_ value: ScrollEdge) -> Self.Modified
-swift.method NavigationStack.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method NavigationStack.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method NavigationStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method NavigationStack.debugInfo(): @MainActor func debugInfo() -> String
 swift.method NavigationStack.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -9465,7 +9465,7 @@ swift.method Path.background(_:): @MainActor func background(_ state: Binding<Ma
 swift.method Path.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Path.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Path.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Path.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Path.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Path.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Path.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Path.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
@@ -9704,7 +9704,7 @@ swift.method Picker.background(_:): @MainActor func background(_ state: Binding<
 swift.method Picker.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Picker.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Picker.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Picker.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Picker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Picker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Picker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Picker.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -9955,7 +9955,7 @@ swift.method Polygon.background(_:): @MainActor func background(_ state: Binding
 swift.method Polygon.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Polygon.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Polygon.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Polygon.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Polygon.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Polygon.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Polygon.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Polygon.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
@@ -10196,7 +10196,7 @@ swift.method Polyline.background(_:): @MainActor func background(_ state: Bindin
 swift.method Polyline.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Polyline.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Polyline.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Polyline.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Polyline.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Polyline.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Polyline.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Polyline.dash(_:): @MainActor func dash(_ value: [Double]) -> Self.Modified
@@ -10437,7 +10437,7 @@ swift.method PositionDots.background(_:): @MainActor func background(_ state: Bi
 swift.method PositionDots.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method PositionDots.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method PositionDots.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method PositionDots.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method PositionDots.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method PositionDots.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method PositionDots.count(_:): @MainActor func count(_ state: Binding<Int>) -> PositionDots
 swift.method PositionDots.count(_:): @MainActor func count(_ value: Int) -> PositionDots
@@ -10669,7 +10669,7 @@ swift.method ProgressBar.background(_:): @MainActor func background(_ state: Bin
 swift.method ProgressBar.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method ProgressBar.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method ProgressBar.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method ProgressBar.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method ProgressBar.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ProgressBar.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ProgressBar.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ProgressBar.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -10901,7 +10901,7 @@ swift.method Rectangle.background(_:): @MainActor func background(_ state: Bindi
 swift.method Rectangle.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Rectangle.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Rectangle.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Rectangle.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Rectangle.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Rectangle.contentMode(_:): @MainActor func contentMode(_ state: Binding<ContentMode>) -> Self.Modified
 swift.method Rectangle.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Rectangle.cornerRadius(_:): @MainActor func cornerRadius(_ state: Binding<Double>) -> Rectangle.Modified
@@ -11151,7 +11151,7 @@ swift.method ScrollView.background(_:): @MainActor func background(_ state: Bind
 swift.method ScrollView.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method ScrollView.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method ScrollView.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method ScrollView.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method ScrollView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ScrollView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ScrollView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method ScrollView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -11401,7 +11401,7 @@ swift.method SearchField.background(_:): @MainActor func background(_ state: Bin
 swift.method SearchField.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method SearchField.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method SearchField.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method SearchField.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method SearchField.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method SearchField.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method SearchField.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
 swift.method SearchField.debugInfo(): @MainActor func debugInfo() -> String
@@ -11662,7 +11662,7 @@ swift.method Separator.background(_:): @MainActor func background(_ state: Bindi
 swift.method Separator.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Separator.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Separator.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Separator.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Separator.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Separator.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Separator.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Separator.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -11898,7 +11898,7 @@ swift.method Slider.background(_:): @MainActor func background(_ state: Binding<
 swift.method Slider.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Slider.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Slider.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Slider.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Slider.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Slider.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Slider.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Slider.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -12141,7 +12141,7 @@ swift.method Space.background(_:): @MainActor func background(_ state: Binding<M
 swift.method Space.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Space.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Space.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Space.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Space.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Space.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Space.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Space.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -12368,7 +12368,7 @@ swift.method Spinner.background(_:): @MainActor func background(_ state: Binding
 swift.method Spinner.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Spinner.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Spinner.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Spinner.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Spinner.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Spinner.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Spinner.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Spinner.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -12600,7 +12600,7 @@ swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ value:
 swift.method SplitView.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
 swift.method SplitView.barForegroundColor(_:): @MainActor func barForegroundColor(_ value: Color) -> Self.Modified
 swift.method SplitView.barScrollEdge(_:): @MainActor func barScrollEdge(_ value: ScrollEdge) -> Self.Modified
-swift.method SplitView.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method SplitView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method SplitView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method SplitView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method SplitView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -12832,7 +12832,7 @@ swift.method Stepper.background(_:): @MainActor func background(_ state: Binding
 swift.method Stepper.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Stepper.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Stepper.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Stepper.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Stepper.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Stepper.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Stepper.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Stepper.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -13231,7 +13231,7 @@ swift.method Switch.background(_:): @MainActor func background(_ state: Binding<
 swift.method Switch.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Switch.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Switch.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Switch.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Switch.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Switch.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Switch.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Switch.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -13473,7 +13473,7 @@ swift.method TabView.barBackground(_:): @MainActor func barBackground(_ value: C
 swift.method TabView.barBackground(_:): @MainActor func barBackground(_ value: Material) -> Self.Modified
 swift.method TabView.barForegroundColor(_:): @MainActor func barForegroundColor(_ value: Color) -> Self.Modified
 swift.method TabView.barScrollEdge(_:): @MainActor func barScrollEdge(_ value: ScrollEdge) -> Self.Modified
-swift.method TabView.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method TabView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TabView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TabView.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TabView.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -13693,7 +13693,7 @@ swift.method Text.background(_:): @MainActor func background(_ state: Binding<Ma
 swift.method Text.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method Text.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method Text.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method Text.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method Text.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method Text.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method Text.debugInfo(): @MainActor func debugInfo() -> String
 swift.method Text.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -13943,7 +13943,7 @@ swift.method TextEditor.background(_:): @MainActor func background(_ state: Bind
 swift.method TextEditor.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method TextEditor.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method TextEditor.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method TextEditor.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method TextEditor.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TextEditor.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TextEditor.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
 swift.method TextEditor.debugInfo(): @MainActor func debugInfo() -> String
@@ -14198,7 +14198,7 @@ swift.method TextField.background(_:): @MainActor func background(_ state: Bindi
 swift.method TextField.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method TextField.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method TextField.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method TextField.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method TextField.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TextField.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TextField.cursorPosition(_:): @MainActor func cursorPosition(_ state: Binding<Int>) -> Self.Modified
 swift.method TextField.debugInfo(): @MainActor func debugInfo() -> String
@@ -14545,7 +14545,7 @@ swift.method TimePicker.background(_:): @MainActor func background(_ state: Bind
 swift.method TimePicker.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method TimePicker.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method TimePicker.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method TimePicker.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method TimePicker.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method TimePicker.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method TimePicker.debugInfo(): @MainActor func debugInfo() -> String
 swift.method TimePicker.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
@@ -14913,7 +14913,7 @@ swift.method VStack.background(_:): @MainActor func background(_ state: Binding<
 swift.method VStack.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method VStack.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method VStack.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method VStack.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method VStack.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method VStack.clipsContent(_:): @MainActor func clipsContent(_ state: Binding<Bool>) -> Self.Modified
 swift.method VStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method VStack.debugInfo(): @MainActor func debugInfo() -> String
@@ -15134,7 +15134,7 @@ swift.method VStack.width(_:): @MainActor func width(_ state: Binding<Double>) -
 swift.method VStack.zIndex(_:): @MainActor func zIndex(_ state: Binding<Int>) -> Self.Modified
 swift.method View.backButtonTitle(_:): @MainActor func backButtonTitle(_ state: Binding<String>) -> Self.Modified
 swift.method View.backButtonTitle(_:): @MainActor func backButtonTitle(_ value: String) -> Self.Modified
-swift.method View.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method View.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method View.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method View.draggable(text:canDrag:onDragStarting:): @MainActor func draggable(text: String, canDrag: Bool = true, onDragStarting: (@MainActor @Sendable () throws -> Void)? = nil) -> Self.Modified
 swift.method View.gridColumn(_:): @MainActor func gridColumn(_ state: Binding<Int>) -> Self.Modified
@@ -15373,7 +15373,7 @@ swift.method WebView.background(_:): @MainActor func background(_ state: Binding
 swift.method WebView.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method WebView.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method WebView.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method WebView.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method WebView.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method WebView.canGoBack(_:): @MainActor func canGoBack(_ state: Binding<Bool>) -> WebView.Modified
 swift.method WebView.canGoForward(_:): @MainActor func canGoForward(_ state: Binding<Bool>) -> WebView.Modified
 swift.method WebView.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
@@ -15641,7 +15641,7 @@ swift.method ZStack.background(_:): @MainActor func background(_ state: Binding<
 swift.method ZStack.background(_:): @MainActor func background(_ value: Brush) -> Self.Modified
 swift.method ZStack.background(_:): @MainActor func background(_ value: Color) -> Self.Modified
 swift.method ZStack.background(_:): @MainActor func background(_ value: Material) -> Self.Modified
-swift.method ZStack.bottomBar(edge:_:): @MainActor func bottomBar<Content>(edge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
+swift.method ZStack.bottomBar(scrollEdge:_:): @MainActor func bottomBar<Content>(scrollEdge: ScrollEdge = .automatic, @ViewBuilder _ content: () -> Content) -> Self.Modified where Content : View
 swift.method ZStack.clipsContent(_:): @MainActor func clipsContent(_ state: Binding<Bool>) -> Self.Modified
 swift.method ZStack.contextMenu(_:): @MainActor func contextMenu(@MenuBuilder _ items: () -> MenuEntries) -> Self.Modified
 swift.method ZStack.debugInfo(): @MainActor func debugInfo() -> String
@@ -17091,12 +17091,12 @@ swift.type.property BorderElementContract.name: static let name: String
 swift.type.property BorderElementContract.shape: static let shape: ElementProperty<BorderElementContract, ContainerShape>
 swift.type.property BorderElementContract.stroke: static let stroke: ElementProperty<BorderElementContract, Brush>
 swift.type.property BorderElementContract.tiers: static var tiers: [any Contract.Type] { get }
-swift.type.property BottomBarContract.edge: static let edge: ElementProperty<BottomBarContract, ScrollEdge>
 swift.type.property BottomBarContract.layer: static let layer: ElementLayer
 swift.type.property BottomBarContract.layer: static var layer: ElementLayer { get }
 swift.type.property BottomBarContract.members: static let members: [any ContractMember]
 swift.type.property BottomBarContract.name: static var name: String { get }
 swift.type.property BottomBarContract.nodeType: static let nodeType: NodeType
+swift.type.property BottomBarContract.scrollEdge: static let scrollEdge: ElementProperty<BottomBarContract, ScrollEdge>
 swift.type.property BottomBarContract.tiers: static var tiers: [any Contract.Type] { get }
 swift.type.property ButtonContract.clicked: static let clicked: ElementEvent<ButtonContract, Void>
 swift.type.property ButtonContract.icon: static let icon: ElementProperty<ButtonContract, ImageSource>

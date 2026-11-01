@@ -27,7 +27,7 @@ extension AndroidDriver {
         if property == .barScrollEdge {
             return ((element.visiblePage?.native as? AndroidElement)?.view as? AndroidPageView)?.topEdge.propValue
         }
-        if property == .edge,
+        if property == .scrollEdge,
            let page = (element.enclosing(type: .page)?.native as? AndroidElement)?.view as? AndroidPageView {
             return page.edge.propValue
         }

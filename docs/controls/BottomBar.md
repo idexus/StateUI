@@ -49,6 +49,6 @@ Declared in `lib/StateUI/Core/Sources/Contracts/Elements/Slots/BottomBarContract
 
 <table>
 <thead><tr><th>Member</th><th>Kind</th><th>Value</th><th>Layer</th><th>AppKit</th><th>UIKit</th><th>Android Views</th><th>WinUI 3</th><th>GTK 4</th><th>Web</th></tr></thead>
-<tbody><tr></tr><tr><td rowspan="2"><code>edge</code></td><td>property</td><td><code>ScrollEdge</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
+<tbody><tr></tr><tr><td rowspan="2"><code>scrollEdge</code></td><td>property</td><td><code>ScrollEdge</code></td><td>adaptive</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">✅</td><td align="center">☑️</td><td align="center">✅</td></tr>
 <tr><td colspan="9">GTK 4: No edge: GNOME's flat bottom bar shows its shadow while the content scrolls, whatever the edge says.</td></tr></tbody>
 </table>

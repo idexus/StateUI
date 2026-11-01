@@ -161,7 +161,7 @@
                 try s.settle { try !s.isShown("pushed") && s.place(of: s.element("bar")).height == 40 }
                 s.expect(try s.place(of: s.element("bar")).height, 40, "under the root again")
             },
-            ConformanceCase("aBottomBarsEdgeHoldsWhatItsViewSays", proves: [Covered(BottomBarContract.edge)]) { s in
+            ConformanceCase("aBottomBarsScrollEdgeHoldsWhatItsViewSays", proves: [Covered(BottomBarContract.scrollEdge)]) { s in
                 let edge = State(wrappedValue: ScrollEdge.hard)
                 s.start {
                     Grid {
@@ -173,7 +173,7 @@
                     }
                     .ignoresSafeArea(.all)
                     .title("Foot")
-                    .bottomBar(edge: edge.wrappedValue) {
+                    .bottomBar(scrollEdge: edge.wrappedValue) {
                         Rectangle()
                             .fill(.blue)
                             .height(40)
@@ -181,12 +181,12 @@
                     }
                 }
                 let bar = try s.element("bar")
-                try s.settle { try s.held(BottomBarContract.edge, on: bar) == .hard }
-                s.expect(try s.held(BottomBarContract.edge, on: bar), .hard, "the edge the view gave")
+                try s.settle { try s.held(BottomBarContract.scrollEdge, on: bar) == .hard }
+                s.expect(try s.held(BottomBarContract.scrollEdge, on: bar), .hard, "the edge the view gave")
 
                 edge.wrappedValue = .none
-                try s.settle { try s.held(BottomBarContract.edge, on: bar) == ScrollEdge.none }
-                s.expect(try s.held(BottomBarContract.edge, on: bar), ScrollEdge.none, "the edge it changed to")
+                try s.settle { try s.held(BottomBarContract.scrollEdge, on: bar) == ScrollEdge.none }
+                s.expect(try s.held(BottomBarContract.scrollEdge, on: bar), ScrollEdge.none, "the edge it changed to")
             },
         ]
     }
