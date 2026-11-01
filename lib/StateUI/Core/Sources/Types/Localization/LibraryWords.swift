@@ -19,6 +19,9 @@ struct LibraryWords: LocalizedResources {
     /// What a control a host composes says of its own parts.
     let control: ControlWords
 
+    /// What a menu bar a host keeps says of its own menus and entries.
+    let menu: MenuWords
+
     /// What a question says on its own buttons.
     var question: QuestionWords { QuestionWords(accept: ok, cancel: cancel) }
 
@@ -78,6 +81,31 @@ struct LibraryWords: LocalizedResources {
 
     /// Select All.
     public let selectAll: String
+}
+
+/// What a menu bar a host keeps of its own says of its menus and their entries - File and a new window, Edit, Window
+/// and its two entries, and quitting - in the system's language; Edit's entries are `EditWords`.
+@_spi(Host) public struct MenuWords: Equatable, Sendable {
+    /// File.
+    public let file: String
+
+    /// New Window.
+    public let newWindow: String
+
+    /// Edit.
+    public let edit: String
+
+    /// Window.
+    public let window: String
+
+    /// Minimize.
+    public let minimize: String
+
+    /// Bring All to Front.
+    public let bringAllToFront: String
+
+    /// Quit, before the application's name.
+    public let quit: String
 }
 
 /// What a question for the user says on its own buttons where the application names none - the one accepting it and

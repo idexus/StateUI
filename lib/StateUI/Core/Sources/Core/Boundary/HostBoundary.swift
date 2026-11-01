@@ -92,6 +92,9 @@
     /// What an Edit menu says of the entries a host keeps in it, in the system's language.
     public static var editWords: EditWords { LibraryWords.inSystemLanguage.edit }
 
+    /// What a menu bar a host keeps says of its own menus and entries - File, Edit, Window - in the system's language.
+    public static var menuWords: MenuWords { LibraryWords.inSystemLanguage.menu }
+
     /// What a question says on its own buttons - accepting and cancelling - in the system's language.
     public static var questionWords: QuestionWords { LibraryWords.inSystemLanguage.question }
 
