@@ -835,7 +835,8 @@ final class SceneTests: XCTestCase {
 
     /// A platform window comes in as its kind: the first, with no kind, is the window launch opened; one more with
     /// no kind is another of the unnamed group; a kept one of a kind opens in the scene declaring it, a scene
-    /// opening first where none stands; one of a kind no scene declares, or a value that does not read, is refused.
+    /// opening first where none stands; one of a kind no scene declares, a value that does not read, or none for a
+    /// kind of a value, is refused - so a window for a value never stands without one.
     func testAPlatformWindowComesInAsItsKind() {
         XCTAssertEqual(HostBoundary.connectWindow(), "1")
         XCTAssertEqual(HostBoundary.connectWindow(), "1")
@@ -844,6 +845,7 @@ final class SceneTests: XCTestCase {
         XCTAssertEqual(HostBoundary.connectWindow(kind: "about"), "2")
         XCTAssertNil(HostBoundary.connectWindow(kind: "palette"))
         XCTAssertNil(HostBoundary.connectWindow(kind: "document", value: "not a number"))
+        XCTAssertNil(HostBoundary.connectWindow(kind: "document"))
 
         let patch = Renders().render(tree())
 
