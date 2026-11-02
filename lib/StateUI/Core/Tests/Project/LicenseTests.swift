@@ -7,13 +7,13 @@ import XCTest
 @MainActor
 final class LicenseTests: XCTestCase {
     /// Every Swift, Java, Gradle script, TypeScript, JavaScript (`.js`, `.mjs`),
-    /// C and C++ source under `lib/` starts with the two SPDX lines.
+    /// C and C++ source under `lib/` and `editors/` starts with the two SPDX
+    /// lines.
     ///
     /// Outside the rule: `Package.swift`, whose first line must be the tools
     /// version, and what a build writes - `node_modules` and `out` among it,
-    /// which the editor extension's tools install and compile into.
-    func testEverySourceUnderLibCarriesTheLicenseHeader() throws {
-        let lib = SourceTree.repository.appendingPathComponent("lib")
+    /// which an editor extension's tools install and compile into.
+    func testEverySourceCarriesTheLicenseHeader() throws {
         let generated: Set<String> = ["bin", "obj", "build", "node_modules", "out"]
         let entered = { (path: String) -> Bool in
             let name = String(path.split(separator: "/").last ?? "")
@@ -22,20 +22,26 @@ final class LicenseTests: XCTestCase {
 
         var read = 0
         var missing: [String] = []
-        for path in try SourceTree.files(under: lib, entering: entered) {
-            let name = String(path.split(separator: "/").last ?? "")
-            guard !name.hasPrefix("."),
-                  ["swift", "java", "kts", "ts", "js", "mjs", "c", "h", "cpp"].contains(URL(fileURLWithPath: name).pathExtension),
-                  name != "Package.swift" else { continue }
+        for tree in ["lib", "editors"] {
+            let root = SourceTree.repository.appendingPathComponent(tree)
+            let sources = try SourceTree.files(under: root, entering: entered).filter { path in
+                let name = String(path.split(separator: "/").last ?? "")
+                return !name.hasPrefix(".") && name != "Package.swift"
+                    && ["swift", "java", "kts", "ts", "js", "mjs", "c", "h", "cpp"]
+                        .contains(URL(fileURLWithPath: name).pathExtension)
+            }
+            XCTAssertFalse(sources.isEmpty, "the walk read no source under \(tree)/")
 
-            read += 1
-            let lines = try String(contentsOf: lib.appendingPathComponent(path), encoding: .utf8)
-                .split(separator: "\n", omittingEmptySubsequences: false)
+            for path in sources {
+                read += 1
+                let lines = try String(contentsOf: root.appendingPathComponent(path), encoding: .utf8)
+                    .split(separator: "\n", omittingEmptySubsequences: false)
 
-            if lines.count < 2
-                || lines[0] != "// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors"
-                || lines[1] != "// SPDX-License-Identifier: Apache-2.0" {
-                missing.append("lib/\(path)")
+                if lines.count < 2
+                    || lines[0] != "// SPDX-FileCopyrightText: 2026 Paweł Krzywdziński and Contributors"
+                    || lines[1] != "// SPDX-License-Identifier: Apache-2.0" {
+                    missing.append("\(tree)/\(path)")
+                }
             }
         }
 

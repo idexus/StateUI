@@ -9,7 +9,7 @@ from VS Code: choose a host once, and the editor, **StateUI: Debug** and
 From a StateUI checkout, with Node.js 20 or newer:
 
 ```bash
-cd lib/StateUI.VSCode
+cd editors/VSCode
 npm ci
 npm run package
 code --install-extension ../../artifacts/stateui-*.vsix
@@ -244,7 +244,7 @@ for each not found what to install. It looks where the build scripts look
 ## The extension itself
 
 In a StateUI checkout, **StateUI: Reinstall VS Code Extension** builds the
-extension from `lib/StateUI.VSCode` - compiled and packed into
+extension from `editors/VSCode` - compiled and packed into
 `artifacts/stateui-<version>.vsix` by `npm run package` - and installs it with
 `--force` through the command line of the VS Code that runs it, then offers to
 reload the window, where the new build runs.

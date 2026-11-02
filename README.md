@@ -133,12 +133,12 @@ Public API declarations provide the focused reference beside the code.
 ## Quick start
 
 StateUI is developed and used in VS Code, through the StateUI extension in
-`lib/StateUI.VSCode`. Clone the repository, then build and install the
+`editors/VSCode`. Clone the repository, then build and install the
 extension from the checkout (Node.js 20 or newer):
 
 ```bash
 git clone https://github.com/idexus/StateUI.git
-cd StateUI/lib/StateUI.VSCode
+cd StateUI/editors/VSCode
 npm ci
 npm run package
 code --install-extension ../../artifacts/stateui-*.vsix

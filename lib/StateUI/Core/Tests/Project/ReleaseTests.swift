@@ -14,7 +14,7 @@ final class ReleaseTests: XCTestCase {
     /// any of them gets this release, not the one before.
     func testEveryMentionOfTheReleaseNamesThisOne() throws {
         let manifest = try JSONSerialization.jsonObject(
-            with: Data(contentsOf: SourceTree.repository.appendingPathComponent("lib/StateUI.VSCode/package.json")))
+            with: Data(contentsOf: SourceTree.repository.appendingPathComponent("editors/VSCode/package.json")))
         let release = try XCTUnwrap(
             (manifest as? [String: Any])?["version"] as? String, "package.json states no version.")
 

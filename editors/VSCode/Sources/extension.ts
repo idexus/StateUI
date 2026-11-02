@@ -523,7 +523,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<StateU
         vscode.commands.registerCommand("stateui.reinstallExtension", async () => {
             const folder = (vscode.workspace.workspaceFolders ?? []).find((each) => hasExtensionSources(each.uri.fsPath));
             if (!folder) {
-                void vscode.window.showErrorMessage("StateUI: the extension is built from a StateUI checkout's lib/StateUI.VSCode, which no folder here has.");
+                void vscode.window.showErrorMessage("StateUI: the extension is built from a StateUI checkout's editors/VSCode, which no folder here has.");
                 return;
             }
             for (const step of reinstallSteps(folder.uri.fsPath, editorCommandLine(vscode.env.appRoot))) {

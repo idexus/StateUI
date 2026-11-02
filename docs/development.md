@@ -22,7 +22,6 @@ lib/StateUI/StateUI.Web/           Web host package, Swift for WebAssembly over 
 lib/StateUI/StateUI.Web/Testing/   its tests, and the driver its conformance runs go through
 lib/StateUI.Head/                  the package that brings each application's head its host
 lib/Backends/                      backends: one element on one host, its engine not shipped - WebView.GTK, WebView.WinUI
-lib/StateUI.VSCode/                the editor extension
 .scripts/AppKit/                   AppKit Gallery bundling, the host's tests and deploys
 .scripts/UIKit/                    UIKit bundles, runs on a simulator or a device, tests and deploys
 .scripts/Android/                  Android Views builds, runs, devices, tests and deploys
@@ -49,6 +48,7 @@ apps/HelloWorld/Platforms/Android/ HelloWorld Android head
 apps/HelloWorld/Platforms/WinUI/   HelloWorld WinUI head
 apps/HelloWorld/Platforms/GTK/     HelloWorld GTK head
 apps/HelloWorld/Platforms/Web/     HelloWorld Web head
+editors/VSCode/                    the VS Code extension: new application, build, run, debug and test for every head
 ```
 
 The core and the host layer never import Foundation or a platform UI
@@ -76,7 +76,7 @@ resolves no host package and compiles no line of one host's half, and a
 `Platforms/AppKit/` folder needs no condition inside it.
 
 `.scripts/AppKit/build-gallery-appkit.sh` and the AppKit tasks set the variable
-for a build. The editor gets it from the StateUI extension (`lib/StateUI.VSCode`):
+for a build. The editor gets it from the StateUI extension (`editors/VSCode`):
 choosing AppKit in its status bar sets the variable for the Swift language
 server and restarts it, which then resolves `Platforms/AppKit` and completes the
 code inside `#if APPKIT`, with no window reload. A
@@ -172,7 +172,7 @@ STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
   --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
 ```
 
-In VS Code, the StateUI extension (`lib/StateUI.VSCode`) runs either
+In VS Code, the StateUI extension (`editors/VSCode`) runs either
 application: "StateUI: Debug" and "StateUI: Release" build and start the one
 chosen in its status bar, on the host chosen there; installing it is under
 [Working in VS Code](getting-started.md#working-in-vs-code). The Gallery's
@@ -457,9 +457,10 @@ The core's suite also guards the project itself, in
 - `DocumentLinksTests` - every relative link in every Markdown document of
   the repository names a file or a folder that exists;
 - `ReleaseTests` - every place that names the release names the one
-  `lib/StateUI.VSCode/package.json` states ([Distribution
+  `editors/VSCode/package.json` states ([Distribution
   boundary](#distribution-boundary));
-- `LicenseTests` - every source under `lib/` starts with the two SPDX lines;
+- `LicenseTests` - every source under `lib/` and `editors/` starts with the two
+  SPDX lines;
 - `DocumentationTests` - every public declaration of the library has its
   `///`;
 - `FoundationSurfaceTests` - `StateUIFoundation` offers the platform's C
@@ -536,7 +537,7 @@ library-plus-host installation path is not published yet. Keep Getting Started
 honest about that state until both products have a supported versioned route.
 
 A release has one version, stated in the editor extension's
-`lib/StateUI.VSCode/package.json`. Every other place that names it - the
+`editors/VSCode/package.json`. Every other place that names it - the
 published-package line in the root `Package.swift`, the library's own
 `application.info.libraryVersion`, each application's Android
 head's version and the Android host's test head's, the Gallery's AppKit

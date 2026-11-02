@@ -50,7 +50,7 @@ The name stands in the identifiers a fork renames to be rebranded:
   what `import StateUI` reads;
 - the relays beneath the hosts - the Java package `stateui.android` and the
   WinUI relay's `stateui_winui_…` functions;
-- the editor extension's identity in `lib/StateUI.VSCode/package.json`.
+- the editor extension's identity in `editors/VSCode/package.json`.
 
 ## The logo
 

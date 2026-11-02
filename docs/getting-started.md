@@ -34,7 +34,7 @@ devices StateUI's suites pass on.
 ## Working in VS Code
 
 VS Code is where StateUI applications are built, run, debugged, and tested. The
-StateUI extension in `lib/StateUI.VSCode` chooses the host and the application
+StateUI extension in `editors/VSCode` chooses the host and the application
 once, and everything after that - the editor's completion, the launches, and
 the suites - works as that host.
 
@@ -43,7 +43,7 @@ the suites - works as that host.
 The extension is built from the checkout. From the repository root:
 
 ```bash
-cd lib/StateUI.VSCode
+cd editors/VSCode
 npm ci
 npm run package
 code --install-extension ../../artifacts/stateui-*.vsix
@@ -111,7 +111,7 @@ The Command Palette offers the rest under **StateUI:**
 | Check Toolchain | what this machine has of what its hosts need, and what to install for the rest |
 | Reinstall VS Code Extension | packs the extension from the checkout and installs it again |
 
-The extension's own README, `lib/StateUI.VSCode/README.md`, describes each of
+The extension's own README, `editors/VSCode/README.md`, describes each of
 them in detail.
 
 ### From the command line
@@ -188,7 +188,7 @@ MyApps/
 ```
 
 **StateUI: New Application in apps/** makes the next application there. The
-extension's README, `lib/StateUI.VSCode/README.md`, describes the choices and
+extension's README, `editors/VSCode/README.md`, describes the choices and
 the settings that save them.
 
 ## Application shape
