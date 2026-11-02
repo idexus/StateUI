@@ -454,6 +454,9 @@ The core's suite also guards the project itself, in
   after a turn of the pump, and waits on the clock only for another process;
 - `DocumentLinksTests` - every relative link in every Markdown document of
   the repository names a file or a folder that exists;
+- `DocumentNamesTests` - every page under `docs/` is named in lowercase words
+  joined by `-`, a folder's own page `README.md`, and a page of the control
+  dictionary as its contract's type;
 - `ReleaseTests` - every place that names the release names the one
   `editors/VSCode/package.json` states ([Distribution
   boundary](#distribution-boundary));
