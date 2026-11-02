@@ -65,10 +65,23 @@ extension State {
 
         private var madeMailroom: Mailroom?
 
-        /// This storage given up for `other`'s - a view's state adopted: what a binding made before posts here goes
-        /// to `other`'s mailroom from now on, in one queue with its own posts.
-        func forwardPosts(to other: Storage) {
+        /// The storage this one was given up for - a view's state adopted - while that one stands.
+        private weak var adopted: Storage?
+        private var givenUp = false
+
+        /// Gives this storage up for `other`: a conversion made from it stands for `other` from now on, and what a
+        /// binding made before posts here goes to `other`'s mailroom, in one queue with its own posts.
+        /// Design: docs/design/core/state.md#storage-and-box
+        func giveUp(for other: Storage) {
+            givenUp = true
+            adopted = other
             madeMailroom?.forward(to: other.mailroom)
+        }
+
+        /// The storage this one stands for: itself, or the one it was given up for while that stands - none once
+        /// that is gone.
+        var standsFor: Storage? {
+            givenUp ? adopted?.standsFor : self
         }
 
         /// What the author calls this state (Builds.swift).

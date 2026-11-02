@@ -38,9 +38,13 @@ before the box adopted its predecessor's storage, lends the adopted state - its
 tie to the host on its number, its journey, a control's report. What is made
 from it reaches the state the same way: a part reads and writes the adopted
 whole, keeping the elements it does not write, and a conversion - of one source
-or several - knows each source as its binding reaches it when asked (weakly,
-through the box), so it works out from the adopted state and writes a report
-back into it. The storage given up sends what is posted to it on to the
+or several - holds the storage each source's binding was made from and asks it,
+each time, for the storage it stands for: itself, or the one it was given up
+for at an adoption while that stands. So a conversion works out from the
+adopted state and writes a report back into it, whether made before the
+adoption or kept past the box it was made from - a view's conversion kept
+across its builds follows the state the box built last holds - and does
+nothing once the state is gone. The storage given up sends what is posted to it on to the
 adopted one's queue, what waited there with it: every post has its place in
 the order posted, across queues, and the two queues are merged step by step
 in that order, a value replacing what waited before it for its part - so the

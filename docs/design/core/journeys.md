@@ -246,7 +246,9 @@ nil`, so the derived state stays the same object.
                   takes its own; made with no element being built, the source
                   holds it, worked out at once - its arithmetic reads the
                   source, which would otherwise hold what holds it
-  sources         held WEAKLY by the conversion
+  sources         each the storage its binding was made from, held, asked for
+                  the one it stands for - itself, or the one it was given up for
+                  at an adoption while that stands (state.md, storage and box)
   engines         back (priority -2) first, then forward (-1), both ahead of
                   every author's engine, on the element wearing the result
 ```
@@ -260,13 +262,16 @@ then derives again from what it landed. Otherwise a report arriving in the very
 cycle the engines first run would be derived over by sources it has not
 reached.
 
-The weak references break a ring. The derived state is kept on the first
-source, and its conversion's arithmetic reads the sources; held strongly, the
-source would keep the derived state, the derived state its conversion, and the
-conversion the source, and no state of that view would ever be freed - every
-visit to a page with a converted text leaving them behind, walked every frame.
-What owns a conversion is the engine the differ arms for it, which hands its
-number back when the element goes, and the binding it was made for.
+No ring closes. The derived state is kept on the first source, strongly where
+no element was being built, and its conversion's arithmetic holds the sources;
+were the derived state to hold its conversion too, the source would keep the
+derived state, the derived state its conversion, and the conversion the source,
+and no state of that view would ever be freed - every visit to a page with a
+converted text leaving them behind, walked every frame. So the derived state
+knows its conversion weakly, and the value a source holds is worked out at
+once, its making closure let go. What owns a conversion is the engine the
+differ arms for it, which hands its number back when the element goes, and the
+binding it was made for.
 
 ## A chain of conversions
 

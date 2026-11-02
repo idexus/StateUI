@@ -142,6 +142,71 @@ private struct EarlyConversion: View {
     var body: some View { Slider(derived).maximum(100) }
 }
 
+/// What a view keeps across its builds: the binding of its state as built last, a conversion made once, and the
+/// box the conversion was made from - weakly, to see it leave.
+@MainActor
+private final class Kept {
+    var current: Binding<Double>?
+    var derived: Binding<Double>?
+    weak var box: AnyObject?
+}
+
+/// A view whose body keeps the conversion its first build made, over every rebuild.
+private struct KeepsItsConversion: View {
+    @State var value = 0.2
+    let kept: Kept
+    let revision: Int
+
+    var body: some View {
+        kept.current = $value
+        if kept.derived == nil {
+            kept.box = _value
+            kept.derived = $value.convert({ $0 * 100 }, back: { $0 / 100 })
+        }
+        return Slider(kept.derived!).maximum(100)
+    }
+}
+
+/// A view whose initializer, at `revision` 1, makes a conversion of the fresh state - before that state's box adopts
+/// the one kept - and keeps it for every build after.
+private struct KeepsAnEarlyConversion: View {
+    @State var value: Double
+    let kept: Kept
+    let revision: Int
+
+    init(seed: Double, revision: Int, kept: Kept) {
+        let state = State(seed)
+        _value = state
+        self.kept = kept
+        self.revision = revision
+        if revision == 1 {
+            kept.box = state
+            kept.derived = state.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })
+        }
+    }
+
+    var body: some View {
+        kept.current = $value
+        return Slider(kept.derived ?? $value).maximum(100)
+    }
+}
+
+/// A view that makes its own list in its initializer and keeps its binding there too.
+private struct EarlyList: View {
+    @State var value: [Int]
+    let early: Binding<[Int]>
+    let revision: Int
+
+    init(seed: [Int], revision: Int) {
+        let state = State(seed)
+        _value = state
+        early = state.projectedValue
+        self.revision = revision
+    }
+
+    var body: some View { Text(String(value[0])) }
+}
+
 @MainActor
 final class CarriedStateTests: XCTestCase {
     override func setUp() async throws {
@@ -585,6 +650,71 @@ final class CarriedStateTests: XCTestCase {
 
             XCTAssertEqual(fresh.owner, earlyFirst ? 0.2 : 0.4, earlyFirst ? "the owner's post came last" : "the last post")
         }
+    }
+
+    /// A CONVERSION KEPT ACROSS BUILDS FOLLOWS ITS STATE AFTER THE BOX IT WAS MADE FROM LEAVES: the state lives on
+    /// in the box built last, and the conversion is worked out from it and reports into it - made from the first
+    /// box, or made before the state's box adopted the one kept and kept beyond that box.
+    func testAKeptConversionFollowsItsStateAfterItsBoxLeaves() throws {
+        for early in [false, true] {
+            Renderer.shared.clearStates()
+            let (kept, renders, board) = (Kept(), Renders(), Renderer.shared.board)
+            func tree(_ revision: Int) -> Node {
+                early
+                    ? KeepsAnEarlyConversion(seed: revision == 0 ? 0.2 : 0.9, revision: revision, kept: kept).node
+                    : KeepsItsConversion(kept: kept, revision: revision).node
+            }
+            // A tie that stands crosses as nothing: the number is the first patch's where the second sends none.
+            let first = renders.render(tree(0))
+            let second = renders.render(tree(1))
+            let number = try XCTUnwrap(
+                second.driven?.bindings[.value]?.state ?? first.driven?.bindings[.value]?.state, early ? "early" : "kept")
+            board.cycle(now: 0, reducesMotion: false)
+            XCTAssertEqual(destination(number), 20, early ? "early" : "kept")
+
+            renders.render(tree(2))
+            XCTAssertNil(kept.box, "the box the conversion was made from left")
+            XCTAssertEqual(kept.current?.wrappedValue, 0.2)
+
+            kept.current?.wrappedValue = 0.4
+            board.cycle(now: 16, reducesMotion: false)
+            XCTAssertEqual(destination(number), 40, early ? "early" : "kept")
+
+            _ = board.dirty()
+            dragged(number, to: 60)
+            board.cycle(now: 32, reducesMotion: false)
+            board.cycle(now: 48, reducesMotion: false)
+            XCTAssertEqual(try XCTUnwrap(kept.current?.wrappedValue), 0.6, accuracy: 1e-9, early ? "early" : "kept")
+        }
+    }
+
+    /// POSTS TO THE WHOLE AND TO ITS PARTS, WAITING ACROSS ADOPTION, LAND IN THE ORDER POSTED: a change over what
+    /// the one before left, and a whole posted later replacing the parts posted before it, not a change after it.
+    func testPostsToTheWholeAndItsPartsLandInTheOrderPosted() async {
+        let renders = Renders()
+        let first = EarlyList(seed: [1, 2], revision: 0)
+        renders.render(first.node)
+        var fresh = EarlyList(seed: [8, 9], revision: 1)
+        first.early.post([10, 20])
+        fresh.early[0].post { $0 + 1 }
+        first.early[1].post { $0 * 2 }
+        fresh.early.post { $0.map { $0 + 100 } }
+        renders.render(fresh.node)
+        await settle()
+        XCTAssertEqual(fresh.value, [111, 140])
+
+        Renderer.shared.clearStates()
+        let again = Renders()
+        let before = EarlyList(seed: [1, 2], revision: 0)
+        again.render(before.node)
+        fresh = EarlyList(seed: [8, 9], revision: 1)
+        fresh.early[0].post(90)
+        before.early[1].post { $0 * 10 }
+        again.render(fresh.node)
+        before.early.post([3, 4])
+        fresh.early[1].post { $0 + 1 }
+        await settle()
+        XCTAssertEqual(fresh.value, [3, 5])
     }
 
     /// A BINDING IS BORROWED, AND THE STATE WALK STOPS AT IT: the state behind

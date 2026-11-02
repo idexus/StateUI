@@ -10,8 +10,9 @@
 /// the derived state.
 @MainActor
 final class Conversion {
-    /// The sources, each as its binding reaches it when asked - weakly: held strongly, they would make a ring
-    /// nothing breaks - so a conversion made before its view's adoption reaches the adopted state.
+    /// The sources, each as its binding reaches it when asked: the storage it was made from, held, answering the
+    /// one it stands for - so a conversion made before its view's adoption, or kept past the box it was made from,
+    /// reaches the state as it stands. The derived side knows this conversion weakly, so no ring closes.
     /// Design: docs/design/core/journeys.md#conversions
     private var reaches: [() -> (any AnyStateStorage)?] = []
 

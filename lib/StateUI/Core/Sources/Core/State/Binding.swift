@@ -52,14 +52,12 @@ public struct Binding<Value> {
         }
     }
 
-    /// The storage this lends as it stands when asked - a box's as the box holds it then - known weakly, as a
-    /// conversion knows its sources: what keeps a conversion made before its view's adoption on the adopted state.
+    /// The storage this lends as it stands when asked - what a conversion keeps of its source: the storage the
+    /// binding was made from, held, which answers the one it was given up for at an adoption while that stands,
+    /// whether or not the box the binding was made from still does.
     /// Design: docs/design/core/state.md#storage-and-box
     var reach: () -> State<Value>.Storage? {
-        switch lending {
-        case .box(let box): { [weak box] in box?.storage }
-        case .storage(let storage): { [weak storage] in storage }
-        }
+        { [storage] in storage.standsFor }
     }
 
     /// The same, of no type.
