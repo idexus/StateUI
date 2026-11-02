@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // What this machine needs to build and run the hosts it runs, as the handbook's Requirements say
-// (docs/getting-started.md, docs/hosts/*.md, and this extension's README): each component looked for, and where it is
-// missing, what to install. The scripts under .scripts find the same tools as they build; this only tells the reader
-// what is there before a build fails on it.
+// (docs/getting-started.md, docs/hosts/*.md and docs/editors/VSCode/README.md): each component looked for, and
+// where it is missing, what to install. The scripts under .scripts find the same tools as they build; this only
+// tells the reader what is there before a build fails on it.
 
 import { execFile } from "child_process";
 import * as fs from "fs";

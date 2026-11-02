@@ -10,16 +10,20 @@ host contract may change together when native evidence improves the shared
 model. A declaration that has no checked host in the platform matrix is not a
 usable platform promise.
 
-The handbook stands in folders by topic, in the order below: `concepts/` the
-model, `interface/` building an interface, `internals/` the core and the host
-layer, `hosts/` each native host; the matrix, the control dictionary and the
-design notes beside them.
+The handbook stands in folders by topic, in the order below: `editors/` each
+editor's extension, `concepts/` the model, `interface/` building an interface,
+`internals/` the core and the host layer, `hosts/` each native host; the
+matrix, the control dictionary and the design notes beside them.
 
 ## Start here
 
-- [Getting started](getting-started.md) sets up VS Code and the StateUI
-  extension, builds the smallest application, and explains the application
-  module, native host, resources, and registration boundary.
+- [Getting started](getting-started.md) lists what a machine needs, builds the
+  smallest application, and explains the application module, native host,
+  resources, and registration boundary.
+- [StateUI for VS Code](editors/VSCode/README.md) installs the StateUI
+  extension and covers everything it does: the host and the application chosen
+  once, the launches, the suites, deploying, the conformance marks and project
+  groups.
 - [Glossary](design/glossary.md) maps StateUI's own words - kept, worn,
   honors, journey, aim - to the common term for each; keep it open beside
   the rest.

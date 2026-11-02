@@ -76,10 +76,9 @@ resolves no host package and compiles no line of one host's half, and a
 `Platforms/AppKit/` folder needs no condition inside it.
 
 `.scripts/AppKit/build-gallery-appkit.sh` and the AppKit tasks set the variable
-for a build. The editor gets it from the StateUI extension (`editors/VSCode`):
-choosing AppKit in its status bar sets the variable for the Swift language
-server and restarts it, which then resolves `Platforms/AppKit` and completes the
-code inside `#if APPKIT`, with no window reload. A
+for a build. The editor gets it from the StateUI extension: the host chosen in
+its status bar sets the variable for the Swift language server
+([StateUI for VS Code](editors/VSCode/README.md#the-host)). A
 `swift.swiftEnvironmentVariables` setting naming the variable would override
 that choice, so `.vscode/settings.json` sets none.
 
@@ -172,10 +171,9 @@ STATEUI_HOST=appkit swift build --package-path apps/HelloWorld \
   --scratch-path apps/HelloWorld/.build/appkit --product HelloWorldAppKit
 ```
 
-In VS Code, the StateUI extension (`editors/VSCode`) runs either
-application: "StateUI: Debug" and "StateUI: Release" build and start the one
-chosen in its status bar, on the host chosen there; installing it is under
-[Working in VS Code](getting-started.md#working-in-vs-code). The Gallery's
+In VS Code, **StateUI: Debug** and **StateUI: Release** build and start the
+application chosen in the StateUI extension's status bar, on the host chosen
+there ([StateUI for VS Code](editors/VSCode/README.md)). The Gallery's
 build assembles its resources, icon, runtime libraries, and ad-hoc signature.
 
 The UIKit host builds on macOS with the same Xcode and its iOS 26 or newer
