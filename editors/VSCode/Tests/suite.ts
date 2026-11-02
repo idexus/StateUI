@@ -19,7 +19,7 @@ import { configurations, StateUIDebugConfigurationProvider, uiKitAttach, webLaun
 import { parseDevices } from "../Sources/devices";
 import { isChromium, parseBrowsers } from "../Sources/browsers";
 import { parseDevices as parseUIKitDevices, parseSimulators, simulatorForSuites } from "../Sources/uiKitDevices";
-import { buildingCommand, otherHostsExcluded, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
+import { buildingCommand, otherHostsExcluded, restartServer, serverConfig, serverSettings, swiftRelease, swiftSDKOf } from "../Sources/editorMode";
 import { findSuites, forDevice } from "../Sources/tests";
 import { givesWay } from "../Sources/tasks";
 import { availableHosts, describe, environment, Host, hosts } from "../Sources/hosts";
@@ -94,6 +94,25 @@ export async function run(): Promise<void> {
 
         const api = await vscode.extensions.getExtension<StateUIApi>("idexus.stateui")!.activate();
         say(`activated, host ${api.host()}`);
+
+        // 0. A restart the Swift extension rejects - its server, still loading packages, not stopped in time and left
+        //    stopped - is asked once more, which starts it; a second rejection is the caller's.
+        {
+            let asked = 0;
+            const recovered = await restartServer(async () => {
+                asked += 1;
+                if (asked === 1) {
+                    throw new Error("Stopping the server timed out");
+                }
+            }).then(() => true, () => false);
+            let refused = 0;
+            const failed = await restartServer(async () => {
+                refused += 1;
+                throw new Error("refused");
+            }).then(() => false, () => true);
+            check("a restart the Swift extension rejects, its server left stopped, is asked once more, which starts it",
+                recovered && asked === 2 && failed && refused === 2);
+        }
 
         // 1-3 ask the language server as the hosts only macOS builds.
         if (process.platform === "darwin") {

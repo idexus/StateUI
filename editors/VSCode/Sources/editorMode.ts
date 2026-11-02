@@ -81,8 +81,7 @@ async function apply(host: Host | undefined, roots: readonly string[]): Promise<
 
     if (changed) {
         // A Swift extension still activating starts its server after this; the restart then waits for it, unawaited.
-        const restart = settle(roots.map((root) => path.join(root, settings.scratchPath)))
-            .then(() => vscode.commands.executeCommand("swift.restartLSPServer"));
+        const restart = settle(roots.map((root) => path.join(root, settings.scratchPath))).then(() => restartServer());
         if (vscode.extensions.getExtension(swiftExtension)?.isActive) {
             await restart;
         } else {
@@ -194,7 +193,21 @@ export async function cleanIndex(roots: readonly string[]): Promise<void> {
     for (const directory of directories) {
         fs.rmSync(directory, { recursive: true, force: true });
     }
-    await vscode.commands.executeCommand("swift.restartLSPServer");
+    await restartServer();
+}
+
+/**
+ * Restarts the Swift extension's language server. A server still loading its packages may not stop within the two
+ * seconds that extension gives it: the restart then rejects with the server stopped and not started again, and is
+ * asked once more, which only starts it.
+ */
+export async function restartServer(
+    restart: () => Thenable<unknown> = () => vscode.commands.executeCommand("swift.restartLSPServer")): Promise<void> {
+    try {
+        await restart();
+    } catch {
+        await restart();
+    }
 }
 
 /**
