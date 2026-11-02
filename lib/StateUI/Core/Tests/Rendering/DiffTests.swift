@@ -502,5 +502,8 @@ extension DiffTests {
         let ids = patch.children.map { $0.id }
         XCTAssertEqual(ids.count, 2)
         XCTAssertNotEqual(ids[0], ids[1], "one identity is not given to two controls")
+        for case .manual(let name) in ids {
+            XCTAssertFalse(name.contains("\u{0}"), "\(name) ends early as a C string")
+        }
     }
 }

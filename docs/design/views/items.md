@@ -30,6 +30,11 @@ identity where it was, and the host would move nothing. The same value twice
 is a repeated identity, told apart as two repeated `.id()`s are, and a
 complaint says so: a platform's collection refuses two cells of one identity.
 
+A variant is the words, a group separator (`\u{1D}`) and a number, and no
+identity holds a NUL - an author's own is read as U+FFFD: GTK and WinUI hand
+the identities to their toolkits as C strings, which end at a NUL, and two
+identities that differ only after one would stand as one there.
+
 The entries cross in the patch as any property does, so they are compared,
 sent only when they change, and printed by the inspector. What a host needs
 from one list to the next - removals and insertions, an entry that moved being

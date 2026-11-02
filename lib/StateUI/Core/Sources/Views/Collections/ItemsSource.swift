@@ -57,7 +57,7 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
 
         var names: Set<String> = []
         let titled = sections.enumerated().map { number, section in
-            (number, section, uniqueName(section.name ?? String(number), among: &names))
+            (number, section, uniqueName(Self.words(section.name ?? String(number)), among: &names))
         }
         // What every value standing again stood under, kept for it before any new value is named.
         var kept: [ItemsBook<ID>.Key: String] = [:]
@@ -80,7 +80,8 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
                 if stood[key] == nil, let earlier = kept[key] {
                     identity = earlier
                 } else {
-                    let written = sectioned ? name + "\u{1F}" + String(describing: id) : String(describing: id)
+                    let words = Self.words(String(describing: id))
+                    let written = sectioned ? name + "\u{1F}" + words : words
                     Renderer.shared.texts += 1
                     if stood[key] != nil {
                         complain("an ItemsView holds the same item twice, \"\(written)\"; give each its own identity")
@@ -116,8 +117,8 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         if names.contains(name) {
             complain("two sections of an ItemsView are named \"\(name)\"; give each its own name")
             var variant = 1
-            while names.contains("\(name)\u{0}\(variant)") { variant += 1 }
-            told = "\(name)\u{0}\(variant)"
+            while names.contains("\(name)\u{1D}\(variant)") { variant += 1 }
+            told = "\(name)\u{1D}\(variant)"
         }
         names.insert(told)
         return told
@@ -127,10 +128,17 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
     private func free(_ identity: String, avoiding reserved: Set<String> = []) -> String {
         guard places[identity] != nil || reserved.contains(identity) else { return identity }
         var variant = 1
-        while places["\(identity)\u{0}\(variant)"] != nil || reserved.contains("\(identity)\u{0}\(variant)") {
+        while places["\(identity)\u{1D}\(variant)"] != nil || reserved.contains("\(identity)\u{1D}\(variant)") {
             variant += 1
         }
-        return "\(identity)\u{0}\(variant)"
+        return "\(identity)\u{1D}\(variant)"
+    }
+
+    /// Words as an identity carries them: a NUL, where a C string ends, as U+FFFD.
+    /// Design: docs/design/views/items.md#identities-in-order
+    private static func words(_ text: String) -> String {
+        guard text.unicodeScalars.contains("\u{0}") else { return text }
+        return String(String.UnicodeScalarView(text.unicodeScalars.map { $0 == "\u{0}" ? "\u{FFFD}" : $0 }))
     }
 
     /// `identity` standing at `place`.

@@ -191,5 +191,5 @@ struct RepeatedIdentity: Hashable, CustomStringConvertible {
     let identity: ElementIdentity
     let occurrence: Int
 
-    var description: String { "\(String(describing: identity.value.base))\u{0}\(occurrence)" }
+    var description: String { "\(String(describing: identity.value.base))\u{1D}\(occurrence)" }
 }

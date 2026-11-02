@@ -240,7 +240,7 @@ final class ItemsViewTests: XCTestCase {
         let list = try list(in: renders.render(ItemsView(["a", "b", "a"], id: \.self) { Text($0) }.node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
-        XCTAssertEqual(entries.sections[0].items, ["a", "b", "a\u{0}1"])
+        XCTAssertEqual(entries.sections[0].items, ["a", "b", "a\u{1D}1"])
         XCTAssertTrue(hasComplained("the same item twice, \"a\""))
     }
 
@@ -271,7 +271,26 @@ final class ItemsViewTests: XCTestCase {
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
-        XCTAssertEqual(entries.sections.map(\.identity), ["0", "0\u{0}1", "0\u{0}2"])
+        XCTAssertEqual(entries.sections.map(\.identity), ["0", "0\u{1D}1", "0\u{1D}2"])
+    }
+
+    /// GTK and WinUI hand identities to their toolkits as C strings, which end at a NUL: no identity a list makes
+    /// holds one - a variant of alike words, of the same item twice, of a section's name, nor an author's own NUL -
+    /// so every identity stays its own across that boundary.
+    func testNoIdentityHoldsANul() throws {
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(sections: [
+            Section([Alike(raw: 1), Alike(raw: 2), Alike(raw: 1)]) { Text("\($0.raw)") }.id("shelf"),
+            Section([Alike(raw: 3)]) { Text("\($0.raw)") }.id("shelf").header(Text("Shelf")),
+            Section([Alike(raw: 4)]) { Text("\($0.raw)") }.id("a\u{0}b"),
+            Section([Alike(raw: 5)]) { Text("\($0.raw)") }.id("a\u{0}c"),
+        ]).node))
+
+        let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        for names in [entries.identities, entries.sections.map(\.identity)] {
+            let crossed = names.map { $0.prefix { $0 != "\u{0}" } }
+            XCTAssertEqual(Set(crossed).count, names.count, "\(names) are not each their own as C strings")
+        }
     }
 
     /// With no items the list is its empty view; a header alone is no item.
