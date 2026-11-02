@@ -44,7 +44,11 @@ for at an adoption while that stands. So a conversion works out from the
 adopted state and writes a report back into it, whether made before the
 adoption or kept past the box it was made from - a view's conversion kept
 across its builds follows the state the box built last holds - and does
-nothing once the state is gone. The storage given up sends what is posted to it on to the
+nothing once the state is gone. A storage a later box adopted is one the
+element keeps, and is given up for nothing from then on, itself least of all:
+a view instance rendered again after another adopted its state holds that
+state still, and a box standing in two places keeps each place's own. The
+storage given up sends what is posted to it on to the
 adopted one's queue, what waited there with it: every post has its place in
 the order posted, across queues, and the two queues are merged step by step
 in that order, a value replacing what waited before it for its part - so the

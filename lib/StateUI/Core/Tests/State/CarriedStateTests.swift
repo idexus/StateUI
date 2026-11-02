@@ -191,6 +191,16 @@ private struct KeepsAnEarlyConversion: View {
     }
 }
 
+/// A view with a state of its own and a slider over a conversion of it.
+private struct OwnedSlider: View {
+    @State var value = 0.2
+    let revision: Int
+
+    var body: some View {
+        Slider($value.convert({ $0 * 100 }, back: { $0 / 100 })).maximum(100)
+    }
+}
+
 /// A view that makes its own list in its initializer and keeps its binding there too.
 private struct EarlyList: View {
     @State var value: [Int]
@@ -686,6 +696,31 @@ final class CarriedStateTests: XCTestCase {
             board.cycle(now: 48, reducesMotion: false)
             XCTAssertEqual(try XCTUnwrap(kept.current?.wrappedValue), 0.6, accuracy: 1e-9, early ? "early" : "kept")
         }
+    }
+
+    /// A VIEW RENDERED AGAIN AFTER ANOTHER INSTANCE ADOPTED ITS STATE KEEPS THAT STATE: the two boxes hold one
+    /// storage, which stands for itself - a storage the element keeps is given up for nothing, itself least of all -
+    /// and the conversion follows a write through either instance.
+    func testAViewRenderedAgainAfterAnotherAdoptedItsStateKeepsIt() throws {
+        let renders = Renders()
+        let (first, second) = (OwnedSlider(revision: 0), OwnedSlider(revision: 1))
+        let number = try XCTUnwrap(renders.render(first.node).driven?.bindings[.value]?.state)
+        renders.render(second.node)
+        XCTAssertTrue(first.$value.storage === second.$value.storage, "the second adopted the first's state")
+
+        // Tied as it stands, the state crosses as nothing; one sent again names its number.
+        let again = renders.render(first.node)
+        let tied = again.driven?.bindings[.value]?.state ?? number
+        XCTAssertTrue(first.$value.storage.standsFor === first.$value.storage, "the state stands for itself")
+        XCTAssertTrue(first.$value.storage === second.$value.storage, "both hold it still")
+
+        first.value = 0.4
+        Renderer.shared.board.cycle(now: 0, reducesMotion: false)
+        XCTAssertEqual(destination(tied), 40)
+
+        second.value = 0.5
+        Renderer.shared.board.cycle(now: 16, reducesMotion: false)
+        XCTAssertEqual(destination(tied), 50, "a write through the other instance")
     }
 
     /// POSTS TO THE WHOLE AND TO ITS PARTS, WAITING ACROSS ADOPTION, LAND IN THE ORDER POSTED: a change over what

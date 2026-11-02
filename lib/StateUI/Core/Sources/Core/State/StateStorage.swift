@@ -69,10 +69,18 @@ extension State {
         private weak var adopted: Storage?
         private var givenUp = false
 
-        /// Gives this storage up for `other`: a conversion made from it stands for `other` from now on, and what a
-        /// binding made before posts here goes to `other`'s mailroom, in one queue with its own posts.
+        /// Whether a box built later adopted this storage: the element keeps it from then on.
+        private var kept = false
+
+        /// Gives this storage up for `other`, which a box built later adopts: a conversion made from it stands for
+        /// `other` from now on, and what a binding made before posts here goes to `other`'s mailroom, in one queue
+        /// with its own posts. A storage the element keeps is given up for nothing - itself least of all: a view
+        /// rendered again after another instance adopted its state holds that state still.
         /// Design: docs/design/core/state.md#storage-and-box
         func giveUp(for other: Storage) {
+            other.kept = true
+            guard other !== self, !kept else { return }
+
             givenUp = true
             adopted = other
             madeMailroom?.forward(to: other.mailroom)
