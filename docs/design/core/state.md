@@ -32,6 +32,14 @@ two boxes sharing a storage must share them: posts through either land in one
 order. The storage is internal so tests can hold its invariants directly; no
 public signature names it.
 
+A binding made from a box lends the box's state as the box holds it, not the
+storage it held when the binding was made: one made in a view's initializer,
+before the box adopted its predecessor's storage, lends the adopted state - its
+tie to the host on its number, its journey, a control's report. The storage
+given up sends what is posted to it on to the adopted one's queue, so posts
+through the early binding and through the owner's land in one order, the last
+standing; a storage whose queue nobody made has nothing to send.
+
 A read and a write of a value the host does not carry are `@inlinable`, down
 to the storage's fields: the application's module, which knows `Value`,
 compiles them for its own type. Called unspecialized across the module

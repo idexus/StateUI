@@ -33,10 +33,24 @@ public struct Binding<Value> {
     private let read: () -> Value
     private let write: (Value) -> Void
 
+    /// What the binding lends: a box's state as the box holds it now - so a binding made before the box adopted
+    /// the state it had lends that one - or a storage no box holds.
+    private enum Lending {
+        case box(State<Value>)
+        case storage(State<Value>.Storage)
+    }
+
+    private let lending: Lending
+
     /// The borrowed state's storage - how two spellings of one state recognize
     /// each other, and what the host's image, the journey and an engine hang off.
     /// Design: docs/design/core/state.md#bindings
-    let storage: State<Value>.Storage
+    var storage: State<Value>.Storage {
+        switch lending {
+        case .box(let box): box.storage
+        case .storage(let storage): storage
+        }
+    }
 
     /// Where a post to this waits for its job - the borrowed state's, shared by every
     /// binding to it.
@@ -48,7 +62,7 @@ public struct Binding<Value> {
     public init(_ state: State<Value>) {
         read = { state.wrappedValue }
         write = { state.wrappedValue = $0 }
-        storage = state.storage
+        lending = .box(state)
         mailroom = state.storage.mailroom
     }
 
@@ -78,7 +92,7 @@ public struct Binding<Value> {
             storage.write($0)
             storage.askForRender()
         }
-        self.storage = storage
+        lending = .storage(storage)
         mailroom = storage.mailroom
     }
 

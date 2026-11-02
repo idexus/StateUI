@@ -55,7 +55,21 @@ extension State {
 
         /// Where posts to this state wait for their job, made at the first binding.
         /// Design: docs/design/core/state.md#posting
-        private(set) lazy var mailroom = Mailroom()
+        var mailroom: Mailroom {
+            if let made = madeMailroom { return made }
+
+            let made = Mailroom()
+            madeMailroom = made
+            return made
+        }
+
+        private var madeMailroom: Mailroom?
+
+        /// This storage given up for `other`'s - a view's state adopted: what a binding made before posts here goes
+        /// to `other`'s mailroom from now on, in one queue with its own posts.
+        func forwardPosts(to other: Storage) {
+            madeMailroom?.forward(to: other.mailroom)
+        }
 
         /// What the author calls this state (Builds.swift).
         var origin: String?

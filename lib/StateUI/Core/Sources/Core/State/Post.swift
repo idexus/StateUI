@@ -101,8 +101,20 @@ final class Mailroom: Sendable {
 
     private let waiting = Mutex(Waiting())
 
+    /// The mailroom of the state this one's was given up for, where posts go from now on.
+    private let forwarded = Mutex<Mailroom?>(nil)
+
+    /// Sends every post from now on to `other`: this mailroom's state was given up for `other`'s.
+    func forward(to other: Mailroom) {
+        guard other !== self else { return }
+
+        forwarded.withLock { $0 = other }
+    }
+
     /// Replaces whatever waits for this part, and for every part of it, with a value - posted last, it lands last.
     func post<Target: PostTarget>(_ value: Target.Value, through target: Target) where Target.Value: Sendable {
+        if let next = forwarded.withLock({ $0 }) { return next.post(value, through: target) }
+
         book { entries in
             entries.removeAll { PartPath.covers(target.lent, $0.part) }
             entries.append(PartPost(target: target, value: value))
@@ -114,6 +126,8 @@ final class Mailroom: Sendable {
     func post<Target: PostTarget>(
         _ transform: @escaping @Sendable (Target.Value) -> Target.Value, through target: Target
     ) where Target.Value: Sendable {
+        if let next = forwarded.withLock({ $0 }) { return next.post(transform, through: target) }
+
         book { entries in
             if var last = entries.last as? PartPost<Target>, last.part == target.lent {
                 last.transforms.append(transform)

@@ -311,6 +311,7 @@ extension State: StateBox {
     func adopt(from other: AnyObject) {
         guard let other = other as? State<Value>, other !== self else { return }
 
+        storage.forwardPosts(to: other.storage)
         storage = other.storage
     }
 }

@@ -85,6 +85,27 @@ private final class Builds {
     var count = 0
 }
 
+/// A view that makes its own state in its initializer and keeps the state's binding there too.
+private struct EarlyBinding: View {
+    @State var owner: Double
+    let borrowed: Binding<Double>
+    let revision: Int
+
+    init(seed: Double, revision: Int) {
+        let state = State(seed)
+        _owner = state
+        borrowed = state.projectedValue
+        self.revision = revision
+    }
+
+    var body: some View {
+        VStack {
+            Slider(borrowed).id("slider")
+            Text(String(owner)).id("readout")
+        }
+    }
+}
+
 @MainActor
 final class CarriedStateTests: XCTestCase {
     override func setUp() async throws {
@@ -432,6 +453,34 @@ final class CarriedStateTests: XCTestCase {
         renders.render(Holder(seen: seen, tag: 2).node)
 
         XCTAssertEqual(seen.values, [false, true])
+    }
+
+    /// A BINDING MADE BEFORE ITS STATE WAS ADOPTED LENDS THE ADOPTED STATE: the view built again takes the state
+    /// it had, and the binding its initializer made with the fresh one carries that state on the same number - its
+    /// value, a report from the control and a post landing on the one owner, a post through it waiting in the same
+    /// queue as one through the owner's binding now.
+    func testABindingMadeBeforeAdoptionLendsTheAdoptedState() async throws {
+        let renders = Renders()
+        let first = renders.render(EarlyBinding(seed: 0.2, revision: 0).node)
+        let original = try XCTUnwrap(first.child("slider")?.driven?.bindings[.value]?.state)
+
+        let fresh = EarlyBinding(seed: 0.9, revision: 1)
+        let next = renders.render(fresh.node)
+        // A tie that stands crosses as nothing; one sent again names its state.
+        let carried = next.child("slider")?.driven?.bindings[.value]?.state ?? original
+
+        XCTAssertEqual(fresh.owner, 0.2, "the state adopted")
+        XCTAssertEqual(carried, original, "the binding carries the adopted state, on its number")
+        XCTAssertEqual(fresh.borrowed.journey.destination, 0.2)
+
+        dragged(carried, to: 0.4)
+        XCTAssertEqual(fresh.owner, 0.4, "the control's report reached the owner")
+
+        fresh.borrowed.post(0.6)
+        fresh.$owner.post(0.7)
+        fresh.borrowed.post(0.8)
+        await settle()
+        XCTAssertEqual(fresh.owner, 0.8, "the last post stands, whichever binding posted it")
     }
 
     /// A BINDING IS BORROWED, AND THE STATE WALK STOPS AT IT: the state behind
