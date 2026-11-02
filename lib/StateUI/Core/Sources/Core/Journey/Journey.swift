@@ -29,6 +29,9 @@ public struct Journey<Value: Walked> {
     /// The storage behind the state.
     var storage: State<Value>.Storage { state.storage }
 
+    /// The storage as the state's binding reaches it when asked - what a conversion of the journey follows.
+    var anyReach: () -> (any AnyStateStorage)? { state.anyReach }
+
     /// The journey of a state, reached as `$fade.journey`.
     init(of state: Binding<Value>) { self.state = state }
 

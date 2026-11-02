@@ -52,6 +52,22 @@ public struct Binding<Value> {
         }
     }
 
+    /// The storage this lends as it stands when asked - a box's as the box holds it then - known weakly, as a
+    /// conversion knows its sources: what keeps a conversion made before its view's adoption on the adopted state.
+    /// Design: docs/design/core/state.md#storage-and-box
+    var reach: () -> State<Value>.Storage? {
+        switch lending {
+        case .box(let box): { [weak box] in box?.storage }
+        case .storage(let storage): { [weak storage] in storage }
+        }
+    }
+
+    /// The same, of no type.
+    var anyReach: () -> (any AnyStateStorage)? {
+        let reach = reach
+        return { reach() }
+    }
+
     /// Where a post to this waits for its job - the borrowed state's, shared by every
     /// binding to it.
     /// Design: docs/design/core/state.md#posting
@@ -118,8 +134,9 @@ public struct Binding<Value> {
 
     /// The whole state as the root its parts are reached from.
     private var whole: StatePart<Value> {
-        StatePart(read: read, write: write, standing: { [storage] in storage.value }, reaches: { true },
-                  lender: storage, lent: nil, mailroom: mailroom)
+        // Read through the binding as it stands, so a part made before adoption reaches the adopted whole.
+        StatePart(read: read, write: write, standing: { [self] in storage.value }, reaches: { true },
+                  lender: { [self] in storage }, lent: nil, mailroom: mailroom)
     }
 
     /// One property of the state - `$profile.name` - read and written through

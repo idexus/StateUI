@@ -106,6 +106,42 @@ private struct EarlyBinding: View {
     }
 }
 
+/// A view that makes its own list in its initializer and keeps a part of it there too.
+private struct EarlyPart: View {
+    @State var owner: [Int]
+    let part: StatePart<Int>
+    let revision: Int
+
+    init(seed: [Int], revision: Int) {
+        let state = State(seed)
+        _owner = state
+        part = state.projectedValue[0]
+        self.revision = revision
+    }
+
+    var body: some View { Text(String(owner[0])) }
+}
+
+/// A view that makes its own state in its initializer and keeps a conversion of it - of it alone, or with a second
+/// state of its own - there too.
+private struct EarlyConversion: View {
+    @State var owner: Double
+    @State var other: Double
+    let derived: Binding<Double>
+    let revision: Int
+
+    init(seed: Double, revision: Int, multi: Bool = false) {
+        let (state, second) = (State(seed), State(0.0))
+        (_owner, _other) = (state, second)
+        derived = multi
+            ? Binding<Double>.multi(state.projectedValue, second.projectedValue).convert({ ($0 + $1) * 100 }) { ($0 / 100, 0) }
+            : state.projectedValue.convert({ $0 * 100 }, back: { $0 / 100 })
+        self.revision = revision
+    }
+
+    var body: some View { Slider(derived).maximum(100) }
+}
+
 @MainActor
 final class CarriedStateTests: XCTestCase {
     override func setUp() async throws {
@@ -481,6 +517,74 @@ final class CarriedStateTests: XCTestCase {
         fresh.borrowed.post(0.8)
         await settle()
         XCTAssertEqual(fresh.owner, 0.8, "the last post stands, whichever binding posted it")
+    }
+
+    /// Where the journey of the state carried under `number` is headed.
+    private func destination(_ number: Int32) -> Double? {
+        guard let image = Renderer.shared.storage(of: number) else { return nil }
+
+        return JourneyLanes<Double>(carried: Renderer.shared.board.read(image, lanes: JourneyLanes<Double>.lanes))?.destination
+    }
+
+    /// A PART MADE BEFORE ADOPTION WRITES INTO THE ADOPTED WHOLE: its write keeps the other elements the owner
+    /// holds now, not the ones the fresh state began with.
+    func testAPartMadeBeforeAdoptionWritesIntoTheAdoptedWhole() {
+        let renders = Renders()
+        renders.render(EarlyPart(seed: [1, 2], revision: 0).node)
+        let fresh = EarlyPart(seed: [8, 9], revision: 1)
+        renders.render(fresh.node)
+
+        XCTAssertEqual(fresh.part.wrappedValue, 1)
+        fresh.part.wrappedValue = 3
+        XCTAssertEqual(fresh.owner, [3, 2], "the second element the owner holds stands")
+    }
+
+    /// A CONVERSION MADE BEFORE ADOPTION FOLLOWS THE ADOPTED STATE - of one source or of several: worked out from
+    /// it, and a report worked back into it.
+    func testAConversionMadeBeforeAdoptionFollowsTheAdoptedState() throws {
+        for multi in [false, true] {
+            Renderer.shared.clearStates()
+            let renders = Renders()
+            renders.render(EarlyConversion(seed: 0.2, revision: 0, multi: multi).node)
+            let fresh = EarlyConversion(seed: 0.9, revision: 1, multi: multi)
+            let patch = renders.render(fresh.node)
+            let number = try XCTUnwrap(patch.driven?.bindings[.value]?.state, "the fresh view's derived state is tied")
+            let board = Renderer.shared.board
+            board.cycle(now: 0, reducesMotion: false)
+
+            XCTAssertEqual(fresh.owner, 0.2)
+            XCTAssertEqual(destination(number), 20, multi ? "several sources" : "one source")
+
+            _ = board.dirty()
+            dragged(number, to: 40)
+            board.cycle(now: 16, reducesMotion: false)
+            board.cycle(now: 32, reducesMotion: false)
+            XCTAssertEqual(fresh.owner, 0.4, accuracy: 1e-9, multi ? "several sources" : "one source")
+        }
+    }
+
+    /// POSTS WAITING SINCE BEFORE ADOPTION LAND IN THE ORDER POSTED, with those through the owner: the last stands,
+    /// whichever queue it waited in.
+    func testPostsWaitingSinceBeforeAdoptionLandInTheOrderPosted() async {
+        for earlyFirst in [false, true] {
+            Renderer.shared.clearStates()
+            let renders = Renders()
+            let first = EarlyBinding(seed: 1, revision: 0)
+            renders.render(first.node)
+            let fresh = EarlyBinding(seed: 9, revision: 1)
+            if earlyFirst {
+                fresh.borrowed.post(0.3)
+                first.borrowed.post(0.2)
+            } else {
+                first.borrowed.post(0.2)
+                fresh.borrowed.post(0.3)
+            }
+            renders.render(fresh.node)
+            if !earlyFirst { fresh.borrowed.post(0.4) }
+            await settle()
+
+            XCTAssertEqual(fresh.owner, earlyFirst ? 0.2 : 0.4, earlyFirst ? "the owner's post came last" : "the last post")
+        }
     }
 
     /// A BINDING IS BORROWED, AND THE STATE WALK STOPS AT IT: the state behind

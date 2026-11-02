@@ -17,16 +17,19 @@ public struct MultiBinding<Out: StateValue, Sources> {
     let values: () -> Sources
 
     /// The sources' storages in the order named.
-    let parts: [any AnyStateStorage]
+    /// Each source as its binding reaches it, as it stands when asked.
+    let reaches: [() -> (any AnyStateStorage)?]
 
     /// The derived state: one object per line that wrote a conversion, kept on the
     /// first source, with the engine that keeps it up to date.
     func made(at key: PathNumber, _ read: @escaping () -> Out) -> Binding<Out> {
+        // Every source stands while the bindings `values` reads hold it.
+        let parts = reaches.compactMap { $0() }
         let derived = parts[0].derived(Out.self, at: key, make: read)
         let conversion = derived.conversion ?? Conversion()
 
         conversion.declareAgain()
-        conversion.sources = parts
+        conversion.reach(reaches)
         conversion.upstream = parts.compactMap(\.conversion)
         conversion.forward = { [weak derived] asking in
             guard let derived else { return }
@@ -55,7 +58,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B)> {
         MultiBinding(
             values: { (a.standing, b.standing) },
-            parts: [a.storage, b.storage])
+            reaches: [a.anyReach, b.anyReach])
     }
 
     /// 2 journeys read as one on their way to a control - the words for a
@@ -75,7 +78,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (Journey<A>, Journey<B>)> {
         _ = a.storage.walkedImage()
         _ = b.storage.walkedImage()
-        return MultiBinding(values: { (a, b) }, parts: [a.storage, b.storage])
+        return MultiBinding(values: { (a, b) }, reaches: [a.anyReach, b.anyReach])
     }
 
     /// 3 states read as one on their way to a control, in the order they
@@ -93,7 +96,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C)> {
         MultiBinding(
             values: { (a.standing, b.standing, c.standing) },
-            parts: [a.storage, b.storage, c.storage])
+            reaches: [a.anyReach, b.anyReach, c.anyReach])
     }
 
     /// 4 states read as one on their way to a control, in the order they
@@ -112,7 +115,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D)> {
         MultiBinding(
             values: { (a.standing, b.standing, c.standing, d.standing) },
-            parts: [a.storage, b.storage, c.storage, d.storage])
+            reaches: [a.anyReach, b.anyReach, c.anyReach, d.anyReach])
     }
 
     /// 5 states read as one on their way to a control, in the order they
@@ -132,7 +135,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E)> {
         MultiBinding(
             values: { (a.standing, b.standing, c.standing, d.standing, e.standing) },
-            parts: [a.storage, b.storage, c.storage, d.storage, e.storage])
+            reaches: [a.anyReach, b.anyReach, c.anyReach, d.anyReach, e.anyReach])
     }
 
     /// 6 states read as one on their way to a control, in the order they
@@ -153,7 +156,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F)> {
         MultiBinding(
             values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing) },
-            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage])
+            reaches: [a.anyReach, b.anyReach, c.anyReach, d.anyReach, e.anyReach, f.anyReach])
     }
 
     /// 7 states read as one on their way to a control, in the order they
@@ -175,7 +178,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G)> {
         MultiBinding(
             values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing, g.standing) },
-            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage, g.storage])
+            reaches: [a.anyReach, b.anyReach, c.anyReach, d.anyReach, e.anyReach, f.anyReach, g.anyReach])
     }
 
     /// 8 states read as one on their way to a control, in the order they
@@ -198,7 +201,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G, H)> {
         MultiBinding(
             values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing, g.standing, h.standing) },
-            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage, g.storage, h.storage])
+            reaches: [a.anyReach, b.anyReach, c.anyReach, d.anyReach, e.anyReach, f.anyReach, g.anyReach, h.anyReach])
     }
 
     /// 9 states read as one on their way to a control, in the order they
@@ -222,7 +225,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I)> {
         MultiBinding(
             values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing, g.standing, h.standing, i.standing) },
-            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage, g.storage, h.storage, i.storage])
+            reaches: [a.anyReach, b.anyReach, c.anyReach, d.anyReach, e.anyReach, f.anyReach, g.anyReach, h.anyReach, i.anyReach])
     }
 
     /// 10 states read as one on their way to a control, in the order they
@@ -247,7 +250,7 @@ extension Binding where Value: StateValue {
     ) -> MultiBinding<Value, (A, B, C, D, E, F, G, H, I, J)> {
         MultiBinding(
             values: { (a.standing, b.standing, c.standing, d.standing, e.standing, f.standing, g.standing, h.standing, i.standing, j.standing) },
-            parts: [a.storage, b.storage, c.storage, d.storage, e.storage, f.storage, g.storage, h.storage, i.storage, j.storage])
+            reaches: [a.anyReach, b.anyReach, c.anyReach, d.anyReach, e.anyReach, f.anyReach, g.anyReach, h.anyReach, i.anyReach, j.anyReach])
     }
 }
 
@@ -301,13 +304,13 @@ extension MultiBinding {
     ) -> Binding<Out> where Sources == (A, B) {
         let converted = convert(transform, file: file, line: line, column: column)
         // The two states `multi` was handed, in their own types.
-        guard let conversion = converted.conversion,
-              let first = parts[0] as? State<A>.Storage, let second = parts[1] as? State<B>.Storage
-        else { return converted }
+        guard let conversion = converted.conversion else { return converted }
 
-        let derived = converted.storage
-        conversion.declareBack { [weak first, weak second, weak derived] in
-            guard let first, let second, let derived else { return }
+        let (derived, reaches) = (converted.storage, reaches)
+        conversion.declareBack { [weak derived] in
+            guard let first = reaches[0]() as? State<A>.Storage, let second = reaches[1]() as? State<B>.Storage,
+                  let derived
+            else { return }
 
             let (one, two) = back(derived.value)
             first.settle(one, asking: true)

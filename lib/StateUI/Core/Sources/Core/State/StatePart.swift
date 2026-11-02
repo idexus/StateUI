@@ -32,8 +32,11 @@ public struct StatePart<Value> {
     // Who this borrows from - the storage and which part of it: a view's
     // inputs compare by it (`lends`), and a post waits under its part.
     // Design: docs/design/core/state.md#parts-of-a-state
-    let lender: AnyObject
+    private let lending: () -> AnyObject
     nonisolated let lent: PartPath?
+
+    /// The storage borrowed from, as it stands now.
+    var lender: AnyObject { lending() }
 
     /// Where a post to this waits for its job - the borrowed state's, or its own.
     /// Design: docs/design/core/state.md#posting
@@ -45,7 +48,7 @@ public struct StatePart<Value> {
         write: @escaping (Value) -> Void,
         standing: @escaping () -> Value,
         reaches: @escaping () -> Bool,
-        lender: AnyObject,
+        lender: @escaping () -> AnyObject,
         lent: PartPath?,
         mailroom: Mailroom
     ) {
@@ -53,7 +56,7 @@ public struct StatePart<Value> {
         self.write = write
         stand = standing
         reach = reaches
-        self.lender = lender
+        lending = lender
         self.lent = lent
         self.mailroom = mailroom
     }
@@ -88,7 +91,7 @@ public struct StatePart<Value> {
             },
             standing: { stand()[keyPath: keyPath] },
             reaches: reach,
-            lender: lender,
+            lender: lending,
             lent: .step(keyPath, from: lent),
             mailroom: mailroom)
     }
@@ -104,7 +107,7 @@ public struct StatePart<Value> {
             write: { wrappedValue[keyPath: keyPath] = $0 },
             standing: { stand()[keyPath: keyPath] },
             reaches: reach,
-            lender: lender,
+            lender: lending,
             lent: .step(keyPath, from: lent),
             mailroom: mailroom)
     }
@@ -134,7 +137,7 @@ extension StatePart where Value: MutableCollection, Value.Index: Hashable & Send
             },
             standing: { reaches() ? stand()[index] : last.answered() },
             reaches: reaches,
-            lender: lender,
+            lender: lending,
             lent: .step(index, from: lent),
             mailroom: mailroom)
     }

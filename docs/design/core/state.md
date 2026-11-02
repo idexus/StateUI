@@ -35,10 +35,17 @@ public signature names it.
 A binding made from a box lends the box's state as the box holds it, not the
 storage it held when the binding was made: one made in a view's initializer,
 before the box adopted its predecessor's storage, lends the adopted state - its
-tie to the host on its number, its journey, a control's report. The storage
-given up sends what is posted to it on to the adopted one's queue, so posts
-through the early binding and through the owner's land in one order, the last
-standing; a storage whose queue nobody made has nothing to send.
+tie to the host on its number, its journey, a control's report. What is made
+from it reaches the state the same way: a part reads and writes the adopted
+whole, keeping the elements it does not write, and a conversion - of one source
+or several - knows each source as its binding reaches it when asked (weakly,
+through the box), so it works out from the adopted state and writes a report
+back into it. The storage given up sends what is posted to it on to the
+adopted one's queue, what waited there with it: every post has its place in
+the order posted, across queues, and the two queues are merged step by step
+in that order, a value replacing what waited before it for its part - so the
+last post stands whichever queue it waited in; a storage whose queue nobody
+made has nothing to send.
 
 A read and a write of a value the host does not carry are `@inlinable`, down
 to the storage's fields: the application's module, which knows `Value`,
