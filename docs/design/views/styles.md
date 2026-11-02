@@ -137,8 +137,11 @@ that value's reader: the user turning a switch describes that switch again,
 and no body - a bound enablement of the branch the same, each control in it
 that declares Disabled its reader. A fact is read only where a declared state
 follows it: a control with no Disabled reads nothing of a bound `isEnabled`,
-which stays the host's alone. A branch stated disabled with no state bound
-describes the views in it again as it turns, a view carried whole included.
+which stays the host's alone. A branch stated disabled with no state bound,
+or bound to another state than before, describes the views in it again, a
+view carried whole included: a carry compares what the branch says of its
+enablement by key (`Enablement.Key` - stated off, or the state bound), so a
+view inside reads the state bound now.
 
 ## What the user does
 

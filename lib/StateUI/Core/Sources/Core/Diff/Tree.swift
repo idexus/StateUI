@@ -104,6 +104,10 @@ final class RenderedNode {
     /// walk, as what it provided is.
     var enablement: Enablement?
 
+    /// What the elements holding it said of their enablement, by key, where its composed view was built - which a
+    /// carry compares.
+    var branch: [Enablement.Key] = []
+
     /// The nearest provided object per type when the composed view here was built,
     /// which a carry compares.
     var seen: [ObjectIdentifier: ObjectIdentifier]

@@ -76,8 +76,19 @@ struct Enablement {
         bound?.current.flatMap { Bool(carried: $0()) } ?? stated ?? true
     }
 
-    /// Whether it says, with no state bound, that it is disabled - what a view carried whole is described again for.
-    var isStatedOff: Bool { bound == nil && stated == false }
+    /// What a view carried whole compares of it: disabled by a stated value, or the state it is bound to - a branch
+    /// turned so, or bound to another state, describes the views in it again; a bound state's writes reach its
+    /// readers by their reads.
+    enum Key: Hashable {
+        case statedOff
+        case bound(ObjectIdentifier)
+    }
+
+    /// Its key; nil where it says it is enabled with no state bound, which changes nothing in it.
+    var key: Key? {
+        if let bound { return .bound(ObjectIdentifier(bound.state)) }
+        return stated == false ? .statedOff : nil
+    }
 
     /// `property` of `node` as the host shows it: the bound state's value while it is carried both ways, else the
     /// stated one.

@@ -186,11 +186,13 @@ extension Differ {
                 // Design: docs/design/core/identity-and-diffing.md#carrying-a-view
                 if step == 0 {
                     pass.seen = snapshot()
+                    pass.branch = enablements.compactMap(\.key)
 
                     if let rendered = rendered, !forced, !describeAll, !stylesMoved, !buildsEveryView,
                         let kept = rendered.views.first,
                         kept.type == stateful.viewType,
                         rendered.seen == pass.seen,
+                        rendered.branch == pass.branch,
                         let wrote = rendered.placeholder,
                         sameWriting(node, as: wrote),
                         Input.same(stateful.inputs, kept.inputs) {
@@ -702,6 +704,7 @@ extension Differ {
         result.identity = pass.identity
         result.expanded = pass.expanded
         result.enablement = pass.enablement
+        result.branch = pass.branch
         result.ownReads = pass.ownReads
         result.sizesArrive = pass.sizesArrive
         result.atPagePosition = pass.atPagePosition
@@ -880,17 +883,12 @@ extension Differ {
         return revisit(rendered, walking: false)
     }
 
-    /// The nearest provided object per type, by identity - what a carry compares - and whether a holding element
-    /// says it is disabled with no state bound: a branch turned so describes the views in it again, a bound one
-    /// reaching its readers by their reads.
+    /// The nearest provided object per type, by identity - what a carry compares.
     private func snapshot() -> [ObjectIdentifier: ObjectIdentifier] {
         var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
 
         for entry in scope {
             seen[entry.key] = ObjectIdentifier(entry.object)
-        }
-        if enablements.contains(where: \.isStatedOff) {
-            seen[ObjectIdentifier(Enablement.self)] = ObjectIdentifier(Enablement.self)
         }
 
         return seen
@@ -937,6 +935,10 @@ final class ElementPass {
 
     /// What the element says of its enablement, put on the walk's for what it holds.
     var enablement: Enablement?
+
+    /// What the elements holding it say of their enablement, by key, where its composed view was built: a branch
+    /// turned off by a stated value, or bound to another state, describes the views in it again.
+    var branch: [Enablement.Key] = []
 
     /// The composed views unwrapped, outermost first, and the environments visible at the outermost, which a carry
     /// compares.

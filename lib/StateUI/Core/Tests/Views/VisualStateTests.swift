@@ -341,6 +341,27 @@ final class VisualStateTests: XCTestCase {
         XCTAssertEqual(patch.subtree.first { $0.type == .button }?.props["background"], gray)
     }
 
+    /// A branch bound to another state is described again with it: its controls follow the state bound now - in
+    /// the render that changed it, and as it is written after - a view carried whole inside included.
+    func testABranchBoundToAnotherStateFollowsThatState() {
+        let button = { (patch: HostPatch) in patch.subtree.first { $0.type == .button } }
+        let branch = { (enabled: State<Bool>) in VStack { LockedRow().id("row") }.isEnabled(enabled.projectedValue).node }
+
+        let (a, off) = (State(wrappedValue: true), State(wrappedValue: false))
+        let renders = Renders()
+        renders.render(branch(a))
+        XCTAssertEqual(button(renders.render(branch(off)))?.props["background"], gray, "the state bound now says off")
+
+        let (b, c) = (State(wrappedValue: true), State(wrappedValue: true))
+        let again = Renders()
+        again.render(branch(b))
+        again.render(branch(c))
+        Renderer.shared.clearInvalidation()
+        c.wrappedValue = false
+        XCTAssertEqual(button(again.revisit(changed: Renderer.shared.pendingChanges))?.props["background"], gray,
+                       "a write to the state bound now")
+    }
+
     /// A control with no state that follows its enablement reads nothing of a bound one: a write to it is the
     /// host's alone, and nothing is described again.
     func testABoundEnablementNoStateFollowsIsReadByNobody() {
