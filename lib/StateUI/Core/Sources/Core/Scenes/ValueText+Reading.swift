@@ -183,15 +183,21 @@ extension ValueText {
             return value
         }
 
+        /// A number the type holds: one past it, which `write` would refuse, is none.
         func decode(_ type: Double.Type) throws -> Double {
-            guard case .number(let text) = tree, let value = Double(text) else {
+            guard case .number(let text) = tree, let value = Double(text), value.isFinite else {
                 throw mismatch(type, codingPath)
             }
 
             return value
         }
 
-        func decode(_ type: Float.Type) throws -> Float { Float(try decode(Double.self)) }
+        func decode(_ type: Float.Type) throws -> Float {
+            let value = Float(try decode(Double.self))
+            guard value.isFinite else { throw mismatch(type, codingPath) }
+
+            return value
+        }
         func decode(_ type: Int.Type) throws -> Int { try whole(type) }
         func decode(_ type: Int8.Type) throws -> Int8 { try whole(type) }
         func decode(_ type: Int16.Type) throws -> Int16 { try whole(type) }

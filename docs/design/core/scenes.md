@@ -109,6 +109,9 @@ on every run: a dictionary hands its members over in its hash's order. A set,
 and a dictionary keyed by other than words or whole numbers - which writes its
 pairs as a list - hand theirs over in that order too; each element is written
 apart and the list is sorted by the elements' text (the key's, for a pair).
+It reads only what JSON writes - a number in JSON's grammar, words with no raw
+control - and a number its type cannot hold, which `write` refuses, reads as
+nothing, so a value read back can always be written again.
 
 ## A window for a value
 
