@@ -44,6 +44,9 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
     /// The runs of what `onPositionChanged` asked for, each handler's its own, ended with the gallery.
     @State private var positionRuns = EventRegistration([])
 
+    /// The runs of what `onItemActivated` asked for, each handler's its own, ended with the gallery.
+    @State private var activationRuns = EventRegistration([])
+
     /// The items and their card face, behind a class so the state walk stops.
     private let source: Source
 
@@ -348,6 +351,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         let count = items.count
         // A handler no longer written ends its runs now, as an element's does.
         positionRuns.keep(moved.count)
+        activationRuns.keep(activated.count)
 
         // The empty view is held as `any View`, so every answer goes as a node.
         if count == 0, let empty {
@@ -412,10 +416,11 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         // The shade sits beside the press: the card that dips wears none.
         if let mask { layout = layout.shade(mask) }
 
-        // The activation, answered on the card in front: the press shows, and the card is back at its size, before
-        // the activation's own work, which usually builds a page.
-        for activated in activated {
-            let tapped: ValueEventHandler<ID> = { id in
+        // The activation, answered on the card in front: the press shows once, and the card is back at its size,
+        // before the activation's own work - each handler's, in the order written, through its own gate.
+        if !activated.isEmpty {
+            let (activated, activationRuns) = (activated, activationRuns)
+            layout = layout.onItemActivated(.runConcurrently) { id in
                 let front = items[items.index(items.startIndex, offsetBy: asked())]
 
                 guard id == front[keyPath: path] else { return }
@@ -426,11 +431,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
 
                 dips.wrappedValue = nil
 
-                try await activated.run(id)
-            }
-            switch activated.gate {
-            case .own(let policy): layout = layout.onItemActivated(policy, tapped)
-            case .shared(let gate): layout = layout.onItemActivated(gate: gate, tapped)
+                activationRuns.starting(activated.map { $0.given(id) })()
             }
         }
 
@@ -447,8 +448,11 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
         }
         // The run starts where the position stands, with no journey to it.
         .onCreated { turns.projectedValue.journey.snap(to: Double(asked())) }
-        // What the position asked for ends with the gallery.
-        .onDestroying { positionRuns.orphan() }
+        // What the position and the activation asked for ends with the gallery.
+        .onDestroying {
+            positionRuns.orphan()
+            activationRuns.orphan()
+        }
 
         return AnyView(deck)
     }

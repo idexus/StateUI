@@ -20,7 +20,8 @@ slot for its turn, or is let go - so a run that never starts still ends and
 nothing keeps its handler.
 
 A composed view's own event - a motion layout's rest and dismissal, a
-gallery's position - keeps an `EventRegistration` of its own in a state, so
+gallery's position and activation - keeps an `EventRegistration` of its own in
+a state, so
 each of its handlers given a policy alone has a gate of its own too, as an
 element's do: one held under `.ignoreWhileRunning` keeps no other from
 running. A dismissal starts only the handlers whose way the view passed, each
@@ -30,7 +31,9 @@ and the view leaving ends them all, however many it wrote last. An event told
 after the frame - a rest, a dismissal - starts through the owners kept when it
 came (`starting`), each handler with that event's own values, and starts
 nothing for an owner no longer kept by then: a render that dropped the handler,
-or the view gone, between the frame and the start.
+or the view gone, between the frame and the start. A gallery's tap presses the
+card once and then starts every activation handler, in the order written: a
+press each, each waiting its own, would let them resume in any order.
 
 ## A gate
 
