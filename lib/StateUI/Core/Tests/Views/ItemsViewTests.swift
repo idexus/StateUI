@@ -304,6 +304,38 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertEqual(patch.subtree.first { $0.type == .text }?.props[.text], .string("Nothing yet"))
     }
 
+    /// A list kept as a value and given its header in the parent's body shows the header of the parent's last build.
+    func testAKeptListShowsTheHeaderItWasLastGiven() throws {
+        let title = State(wrappedValue: "First")
+        let renders = Renders()
+        let list = try list(in: renders.render(TitledList(title: title).node))
+        XCTAssertEqual(try texts(in: hold(["\u{1E}header"], in: renders, list: list)), ["First"])
+
+        title.wrappedValue = "Second"
+        let patch = renders.revisit(changed: Renderer.shared.pendingChanges)
+        XCTAssertEqual(texts(in: patch), ["Second"], "the header says the title the parent gave it last")
+    }
+
+    /// Two copies of one list, each given a header of its own, show each its own.
+    func testCopiesOfAListShowTheirOwnHeaders() throws {
+        let base = ItemsView(["a"]) { Text($0) }
+        let renders = Renders()
+        let tree = renders.render(VStack {
+            base.header(Text("First"))
+            base.header(Text("Second"))
+        }.node)
+
+        for list in tree.subtree.filter({ $0.type == .itemsView }) {
+            renders.fire(try XCTUnwrap(list.events?[.realizedChanged]), with: [.strings(["\u{1E}header"])])
+        }
+        XCTAssertEqual(texts(in: renders.revisit(changed: Renderer.shared.pendingChanges)), ["First", "Second"])
+    }
+
+    /// The words of every text in a patch, in order.
+    private func texts(in patch: HostPatch) -> [String] {
+        patch.subtree.filter { $0.type == .text }.compactMap { $0.props[.text]?.string }
+    }
+
     /// The entries round-trip through what crosses.
     func testTheEntriesCrossAndComeBackWhole() {
         let entries = ItemsEntries(header: "h", footer: nil, sections: [
@@ -326,6 +358,16 @@ final class ItemsViewTests: XCTestCase {
 private struct Alike: Hashable, CustomStringConvertible {
     let raw: Int
     var description: String { "item" }
+}
+
+/// A list kept as a value, given a header from `title` as the parent builds.
+private struct TitledList: View {
+    let title: State<String>
+    let list = ItemsView(["a"]) { Text($0) }
+
+    var body: some View {
+        list.header(Text(title.wrappedValue))
+    }
 }
 
 /// A list of `order`, built again as the order changes.

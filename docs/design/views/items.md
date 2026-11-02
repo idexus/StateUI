@@ -68,7 +68,10 @@ reaches the host as any child's does.
 What one build of the ItemsView holds - its sections, the identities worked
 out from them, and how each entry is made - is one object, `ItemsSource`, made
 by the view's initializer and so new each time the parent builds the list
-again. An entry's inputs are its identity and that object: while only the
+again. `.header` and `.footer` make the copy they return a source of its own,
+since the source holds them: two copies of one list each show their own, and
+a list kept as a value, given its header in the parent's body, shows the one
+the parent's last build gave it. An entry's inputs are its identity and that object: while only the
 host's cells change, the ItemsView is built again from the same value, the
 entries already built are carried whole, and only the one asked for is
 built. When the parent builds the list again, every entry held is built again

@@ -21,7 +21,7 @@
 /// of it; each value stands once in a list.
 public struct ItemsView<ID: Hashable>: View, FocusElement {
     /// The items, their identities and their views - one source a build.
-    private let source: ItemsSource<ID>
+    private var source: ItemsSource<ID>
 
     /// The entries within reach of the host's cells, as it last said.
     @State private var reach = ItemsReach()
@@ -269,6 +269,7 @@ extension ItemsView {
     public func header(_ view: some View) -> Self {
         var copy = self
         copy.headerView = view
+        copy.source = source.again()
         return copy
     }
 
@@ -276,6 +277,7 @@ extension ItemsView {
     public func footer(_ view: some View) -> Self {
         var copy = self
         copy.footerView = view
+        copy.source = source.again()
         return copy
     }
 

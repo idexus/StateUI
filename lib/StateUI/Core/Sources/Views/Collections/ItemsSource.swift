@@ -44,6 +44,12 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         self.sectioned = sectioned
     }
 
+    /// A source of the same sections, not yet finished: a list given a header or a footer builds from its own.
+    /// Design: docs/design/views/items.md#a-source-a-build
+    func again() -> ItemsSource {
+        ItemsSource(sections: sections, sectioned: sectioned)
+    }
+
     /// Takes the list's own header and footer and names every entry - once for
     /// the source, however often the view is built from it: an item by its
     /// value, under the identity `book` says it stood under while it stays on
