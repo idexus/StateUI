@@ -26,7 +26,11 @@ element's do: one held under `.ignoreWhileRunning` keeps no other from
 running. A dismissal starts only the handlers whose way the view passed, each
 through its own. Every render keeps the registration to the handlers written
 (`keep`), so one no longer written ends its runs then, with no event to come,
-and the view leaving ends them all, however many it wrote last.
+and the view leaving ends them all, however many it wrote last. An event told
+after the frame - a rest, a dismissal - starts through the owners kept when it
+came (`starting`), each handler with that event's own values, and starts
+nothing for an owner no longer kept by then: a render that dropped the handler,
+or the view gone, between the frame and the start.
 
 ## A gate
 

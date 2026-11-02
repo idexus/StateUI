@@ -252,6 +252,37 @@ final class LayoutItemDragTests: XCTestCase {
         await gate.endEveryRun()
     }
 
+    /// A DISMISSAL TOLD AFTER ITS LAYOUT LEFT STARTS NOTHING: the layout gone before the told dismissal runs.
+    func testADismissalToldAfterItsLayoutLeftStartsNothing() async {
+        let renders = Renders()
+        let gate = Gate(.ignoreWhileRunning)
+        var heard = 0
+        func tree() -> Node {
+            MotionLayout(["A", "B"], parameters: State(wrappedValue: 0.0).projectedValue) { Text($0) } placements: { _, _ in
+                [Placement(Rect(0, 0, 100, 100)), Placement(Rect(50, 0, 100, 100), zIndex: 1)]
+            }
+            .itemDrag(begins: .longPress)
+            .onItemDismissed(.up, beyond: 50, gate: gate) { _ in
+                heard += 1
+                try await Task.sleep(for: .seconds(60))
+            }
+            .node
+        }
+        _ = bench.laid(renders, tree)
+
+        bench.item(renders, tree, .began, at: Point(75, 50))
+        bench.item(renders, tree, .changed, at: Point(75, -10))
+        bench.item(renders, tree, .ended, at: Point(75, -10))
+        for _ in 0..<40 { bench.cycle() }
+        // The dismissal is told after the frame; the layout leaves before it is.
+        _ = renders.render(VStack {}.node)
+        _ = await settle()
+
+        XCTAssertEqual(heard, 0, "the layout left before the dismissal was told")
+        XCTAssertFalse(gate.isBusy)
+        await gate.endEveryRun()
+    }
+
     /// A DISMISSAL THAT AWAITS GOES THROUGH ITS GATE: while the first runs, a second view dismissed under
     /// `.ignoreWhileRunning` flies out and its item is not told.
     func testADismissalThatAwaitsGoesThroughItsGate() async {

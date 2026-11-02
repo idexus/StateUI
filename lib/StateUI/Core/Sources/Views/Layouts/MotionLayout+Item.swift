@@ -190,10 +190,8 @@ extension MotionLayout.Run {
         let passed = passed(by: hand)
         guard !passed.isEmpty, let slot = slots.first(where: { $0.identity == hand.identity }) else { return }
 
-        let (runs, handlers) = (states.dismissals, dismissals.map { $0.handler.given(slot.item[keyPath: path]) })
-        libraryTask {
-            runs.replace(handlers)
-            runs.start(payload: nil) { passed.contains($0) }
-        }
+        let id = slot.item[keyPath: path]
+        let start = states.dismissals.starting(dismissals.map { $0.handler.given(id) }) { passed.contains($0) }
+        libraryTask { start() }
     }
 }

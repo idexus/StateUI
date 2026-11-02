@@ -274,11 +274,8 @@ extension MotionLayout {
             states.shown.wrappedValue.resting = rests
             guard rests, !settled.isEmpty else { return }
 
-            let (runs, handlers) = (states.settles, settled.map { $0.given(parameters) })
-            libraryTask {
-                runs.replace(handlers)
-                runs.start(payload: nil)
-            }
+            let start = states.settles.starting(settled.map { $0.given(parameters) })
+            libraryTask { start() }
         }
 
         /// Where the run's motion set out, the run standing at `parameters`: there, where nothing moves it - no hand,

@@ -29,18 +29,32 @@ final class EventRegistration {
         handlers = Array(handlers.prefix(count))
     }
 
-    /// Starts every handler for an event carrying `payload`, each through its gate - or those `chosen` picks by
-    /// their place alone, each still through its own.
-    func start(payload: [PropValue]?, chosen: (Int) -> Bool = { _ in true }) {
-        for (place, (handler, owner)) in zip(handlers, owners).enumerated() {
-            guard chosen(place) else { continue }
-
+    /// Starts every handler for an event carrying `payload`, each through its gate.
+    func start(payload: [PropValue]?) {
+        for (handler, owner) in zip(handlers, owners) {
             handler.gate.runs(for: owner).start(handler.run, handler.gate.policy, payload: payload, owner: owner)
         }
     }
 
-    /// The element no longer handles the event: every run of it is superseded.
+    /// What starts `written` - a composed view's handlers, given the values of an event that came now - each
+    /// through the owner kept at its place now, those `chosen` picks. Called after the frame, it starts nothing for a
+    /// handler whose owner the registration no longer keeps by then: no longer written, or the view gone.
+    /// Design: docs/design/core/runs.md#the-runs-of-a-handler
+    func starting(_ written: [Handler], chosen: @escaping (Int) -> Bool = { _ in true }) -> @MainActor () -> Void {
+        let kept = Array(zip(written, owners).enumerated().filter { chosen($0.offset) }.map(\.element))
+        return { [weak self] in
+            for (handler, owner) in kept {
+                guard let self, self.owners.contains(where: { $0 === owner }) else { continue }
+
+                handler.gate.runs(for: owner).start(handler.run, handler.gate.policy, payload: nil, owner: owner)
+            }
+        }
+    }
+
+    /// The element no longer handles the event: every run of it is superseded, and nothing it was told starts.
     func orphan() {
         for owner in owners { owner.orphan() }
+        owners = []
+        handlers = []
     }
 }

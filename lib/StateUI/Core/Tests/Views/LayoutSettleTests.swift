@@ -98,6 +98,42 @@ final class LayoutSettleTests: XCTestCase {
         await gate.endEveryRun()
     }
 
+    /// A REST TOLD AFTER THE FRAME STARTS NO HANDLER THAT WENT MEANWHILE: the layout built without it before the told
+    /// rest runs, nothing of it starts.
+    func testARestToldAfterItsHandlerWentStartsNothing() async {
+        let (phase, hears, renders) = (State(wrappedValue: 0.0), State(true), Renders())
+        let gate = Gate(.ignoreWhileRunning)
+        var heard = 0
+        func built() -> Node {
+            let layout = MotionLayout([0, 1, 2, 3], parameters: phase.projectedValue) { Text("\($0)") } placements: { _, at in
+                (0..<4).map { Placement(Rect((Double($0) - at) * 100, 0, 10, 10)) }
+            }
+            .axis(\.self, input: .scroll(.horizontal, pointsPerUnit: 100), range: 0...3, snaps: .every(1))
+            .motion(.eased(.milliseconds(160)))
+            return (hears.wrappedValue
+                ? layout.onSettled(gate: gate) { _ in
+                    heard += 1
+                    try await Task.sleep(for: .seconds(60))
+                }
+                : layout).node
+        }
+        _ = bench.laid(renders, built)
+
+        bench.hand(renders, built, .began)
+        bench.hand(renders, built, .changed, moved: Point(-100, 0))
+        bench.hand(renders, built, .ended)
+        for _ in 0..<80 { bench.cycle() }
+        // The rest is told after the frame; the layout is built without the handler before it is.
+        hears.wrappedValue = false
+        _ = renders.render(built())
+        _ = await settle()
+
+        XCTAssertEqual(heard, 0, "the handler went before the rest was told")
+        XCTAssertFalse(gate.isBusy)
+        _ = renders.render(VStack {}.node)
+        await gate.endEveryRun()
+    }
+
     /// EVERY HANDLER OF THE REST RUNS, in the order written.
     func testEveryHandlerOfTheRestRunsInWritingOrder() async {
         let (phase, told, renders) = (State(wrappedValue: 0.0), Told(), Renders())

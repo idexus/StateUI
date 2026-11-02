@@ -442,8 +442,7 @@ public struct GalleryView<Items: RandomAccessCollection, ID: Hashable>: View {
             Watcher(at: asked) { position in
                 if turns.wrappedValue != Double(position) { turns.wrappedValue = Double(position) }
 
-                positionRuns.replace(moved.map { $0.given(position) })
-                positionRuns.start(payload: nil)
+                positionRuns.starting(moved.map { $0.given(position) })()
             }
         }
         // The run starts where the position stands, with no journey to it.
