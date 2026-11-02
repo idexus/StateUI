@@ -222,20 +222,15 @@ final class ActCallShapeTests: XCTestCase {
         }
     }
 
-    /// A list scrolls to an identity - a section's name before an item's where the
-    /// list has sections - and says where it stands, after the view.
+    /// A list scrolls to an item's identity and says where it stands, after the view.
     func testScrollingAListCrossesWithItsArgumentsInPlace() async throws {
         try await check("scrollTo", [.string("list"), .string("500"), .enumeration(ScrollAnchor.start.rawValue)]) {
             try await named("list", ItemsView<Int>.self).scrollTo(500, anchor: .start)
         }
-        try await check("scrollTo", [.string("list"), .string("Fruit\u{1F}Pear"), .enumeration(ScrollAnchor.nearest.rawValue)]) {
-            try await named("list", ItemsView<String>.self).scrollTo("Pear", inSection: "Fruit")
-        }
     }
 
-    /// A list of sections scrolls to an item by the identity its own source wrote for it - its section's name before
-    /// it - without being told the section.
-    func testScrollingASectionedListFindsTheItemsSection() async throws {
+    /// A list of sections scrolls to an item by the identity its own source wrote for it, whatever section holds it.
+    func testScrollingASectionedListFindsItsItem() async throws {
         let list = Aim(ItemsView<String>.self)
         let fruit = Section(["Apple", "Pear"]) { Text($0) }.id("Fruit")
         Renders().render(stack([ItemsView(sections: [fruit]).aim(list).node], id: "root"))
@@ -244,7 +239,7 @@ final class ActCallShapeTests: XCTestCase {
         let task = Self.begin { try await list.scrollTo("Pear") }
         let batch = drain()
 
-        XCTAssertEqual(batch.first?.arguments.dropFirst().first, .string("Fruit\u{1F}Pear"))
+        XCTAssertEqual(batch.first?.arguments.dropFirst().first, .string("Pear"))
 
         await finish(batch)
         _ = try? await task.value

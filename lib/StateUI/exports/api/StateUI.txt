@@ -1814,7 +1814,6 @@ swift.method Aim.goForward(): @MainActor func goForward() async throws
 swift.method Aim.moveToRegion(_:): @MainActor func moveToRegion(_ region: MapRegion) async throws
 swift.method Aim.reload(): @MainActor func reload() async throws
 swift.method Aim.scrollTo(_:anchor:): @MainActor func scrollTo<ID>(_ item: ID, anchor: ScrollAnchor = .nearest) async throws where Target == ItemsView<ID>, ID : Hashable
-swift.method Aim.scrollTo(_:inSection:anchor:): @MainActor func scrollTo<ID>(_ item: ID, inSection section: some Hashable, anchor: ScrollAnchor = .nearest) async throws where Target == ItemsView<ID>, ID : Hashable
 swift.method Aim.unfocus(): @MainActor func unfocus() async throws
 swift.method AnyView.accessibilityAction(_:_:): @MainActor func accessibilityAction(_ name: String, _ handler: @escaping @MainActor @Sendable () throws -> Void) -> Self.Modified
 swift.method AnyView.accessibilityAction(_:gate:_:): @MainActor func accessibilityAction(_ name: String, gate: Gate, _ handler: @escaping EventHandler) -> Self.Modified

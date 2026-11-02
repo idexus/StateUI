@@ -4651,7 +4651,7 @@ enum Listings {
                 SwitchRow("Counts", $counts)
                     .gridRow(0)
 
-                // A section per shelf, named so two shelves may hold the same item.
+                // A section per shelf, known by its name.
                 ItemsView(sections: Self.shelves.map { (shelf: Shelf) -> Section<String> in
                     let section = Section(shelf.items) { item in
                         Text(item)

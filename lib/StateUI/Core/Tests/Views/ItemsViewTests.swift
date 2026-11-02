@@ -236,26 +236,84 @@ final class ItemsViewTests: XCTestCase {
         ])
     }
 
-    /// Sections name their items apart - two sections may hold equal items - and
-    /// each header and footer is an entry of its own.
-    func testSectionsNameTheirItemsApart() throws {
+    /// An item is known by its value in the whole list, whatever section holds it; each header and footer is an
+    /// entry of its own, named after its section.
+    func testSectionsHoldTheirItemsUnderTheirValues() throws {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(sections: [
             Section(["Apple", "Pear"]) { Text($0) }.id("Fruit").header(Text("Fruit")),
-            Section(["Apple"]) { Text($0) }.id("Cider").footer(Text("1 item")),
+            Section(["Plum"]) { Text($0) }.id("Stone").footer(Text("1 item")),
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
-        XCTAssertEqual(entries.sections.map(\.identity), ["Fruit", "Cider"], "each section by its name")
+        XCTAssertEqual(entries.sections.map(\.identity), ["Fruit", "Stone"], "each section by its id")
         XCTAssertEqual(entries.sections.map(\.header), ["Fruit\u{1E}header", nil])
-        XCTAssertEqual(entries.sections.map(\.footer), [nil, "Cider\u{1E}footer"])
-        XCTAssertEqual(entries.sections.map(\.items), [
-            ["Fruit\u{1F}Apple", "Fruit\u{1F}Pear"], ["Cider\u{1F}Apple"],
-        ])
+        XCTAssertEqual(entries.sections.map(\.footer), [nil, "Stone\u{1E}footer"])
+        XCTAssertEqual(entries.sections.map(\.items), [["Apple", "Pear"], ["Plum"]])
 
-        let held = try self.list(in: hold(["Fruit\u{1E}header", "Cider\u{1F}Apple"], in: renders, list: list))
+        let held = try self.list(in: hold(["Fruit\u{1E}header", "Plum"], in: renders, list: list))
         XCTAssertEqual(held.child("Fruit\u{1E}header")?.props[.text], .string("Fruit"))
-        XCTAssertEqual(held.child("Cider\u{1F}Apple")?.props[.text], .string("Apple"))
+        XCTAssertEqual(held.child("Plum")?.props[.text], .string("Plum"))
+    }
+
+    /// An item moved to another section keeps its identity, so a host moves its cell.
+    func testAnItemMovedToAnotherSectionKeepsItsIdentity() throws {
+        let shelves = State(wrappedValue: [["Apple", "Pear"], ["Plum"]])
+        let renders = Renders()
+        let before = try XCTUnwrap(try list(in: renders.render(ShelvesList(shelves: shelves).node))
+            .props[.items].flatMap(ItemsEntries.init(propValue:)))
+
+        shelves.wrappedValue = [["Apple"], ["Pear", "Plum"]]
+        let after = try XCTUnwrap(try list(in: renders.revisit(changed: Renderer.shared.pendingChanges))
+            .props[.items].flatMap(ItemsEntries.init(propValue:)))
+
+        XCTAssertEqual(before.sections.map(\.items), [["Apple", "Pear"], ["Plum"]])
+        XCTAssertEqual(after.sections.map(\.items), [["Apple"], ["Pear", "Plum"]])
+    }
+
+    /// The same item in two sections is the same item twice, said; one chosen names one row, the first.
+    func testTheSameItemInTwoSectionsIsChosenOnce() throws {
+        let chosen = State<String?>(wrappedValue: "Quince")
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(sections: [
+            Section(["Quince"]) { Text($0) }.id("Fruit"),
+            Section(["Quince"]) { Text($0) }.id("Jam"),
+        ]).selection(chosen.projectedValue).node))
+
+        let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertEqual(entries.sections.map(\.items), [["Quince"], ["Quince\u{1D}1"]])
+        XCTAssertTrue(hasComplained("the same item twice, \"Quince\""))
+        XCTAssertEqual(list.props[.selectedItems], .strings(["Quince"]), "one row for one item chosen")
+    }
+
+    /// A section is known by its id's value: two ids that describe alike keep their names across a reorder, as two
+    /// such items do, and nothing is said of them.
+    func testASectionIsKnownByItsIdsValue() throws {
+        let order = State(wrappedValue: [Alike(raw: 1), Alike(raw: 2)])
+        let renders = Renders()
+        let first = try XCTUnwrap(try list(in: renders.render(AlikeSections(order: order).node))
+            .props[.items].flatMap(ItemsEntries.init(propValue:))).sections.map(\.identity)
+
+        order.wrappedValue = [Alike(raw: 2), Alike(raw: 1)]
+        let second = try XCTUnwrap(try list(in: renders.revisit(changed: Renderer.shared.pendingChanges))
+            .props[.items].flatMap(ItemsEntries.init(propValue:))).sections.map(\.identity)
+
+        XCTAssertEqual(Set(first).count, 2, "two ids, two names")
+        XCTAssertEqual(second, [first[1], first[0]], "each section kept its name as the order changed")
+        XCTAssertFalse(hasComplained("share the id \"item\""), "two values are no repeated id")
+    }
+
+    /// A section with no id is named by its place, told apart from a section whose id reads the same - which is no
+    /// repeat, and nothing is said of it.
+    func testAPlaceReadingAsAnIdIsNoRepeat() throws {
+        let renders = Renders()
+        let list = try list(in: renders.render(ItemsView(sections: [
+            Section(["a"]) { Text($0) }, Section(["b"]) { Text($0) }, Section(["c"]) { Text($0) }.id("1"),
+        ]).node))
+
+        let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
+        XCTAssertEqual(entries.sections.map(\.identity), ["0", "1", "1\u{1D}1"])
+        XCTAssertFalse(hasComplained("share the id \"1\""))
     }
 
     /// The same item twice is told apart, as two repeated `.id()`s are, and said.
@@ -286,16 +344,16 @@ final class ItemsViewTests: XCTestCase {
         XCTAssertFalse(hasComplained("the same item twice, \"item\""), "two values are no repeated item")
     }
 
-    /// Two sections of one name are told apart - a section named as another's place too - so a host knowing each section
-    /// by its name finds two.
-    func testTwoSectionsOfOneNameAreToldApart() throws {
+    /// Two sections given one id are told apart, as the same item twice is, and said.
+    func testTwoSectionsOfOneIdAreToldApartAndSaid() throws {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(sections: [
-            Section(["a"]) { Text($0) }, Section(["b"]) { Text($0) }.id("0"), Section(["c"]) { Text($0) }.id("0"),
+            Section(["a"]) { Text($0) }.id("Shelf"), Section(["b"]) { Text($0) }.id("Shelf"),
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
-        XCTAssertEqual(entries.sections.map(\.identity), ["0", "0\u{1D}1", "0\u{1D}2"])
+        XCTAssertEqual(entries.sections.map(\.identity), ["Shelf", "Shelf\u{1D}1"])
+        XCTAssertTrue(hasComplained("two sections of an ItemsView share the id \"Shelf\""))
     }
 
     /// GTK and WinUI hand identities to their toolkits as C strings, which end at a NUL: no identity a list makes
@@ -304,10 +362,10 @@ final class ItemsViewTests: XCTestCase {
     func testNoIdentityHoldsANul() throws {
         let renders = Renders()
         let list = try list(in: renders.render(ItemsView(sections: [
-            Section([Alike(raw: 1), Alike(raw: 2), Alike(raw: 1)]) { Text("\($0.raw)") }.id("shelf"),
-            Section([Alike(raw: 3)]) { Text("\($0.raw)") }.id("shelf").header(Text("Shelf")),
-            Section([Alike(raw: 4)]) { Text("\($0.raw)") }.id("a\u{0}b"),
-            Section([Alike(raw: 5)]) { Text("\($0.raw)") }.id("a\u{0}c"),
+            Section([Twin(raw: 1), Twin(raw: 2), Twin(raw: 1)]) { Text("\($0.raw)") }.id("shelf"),
+            Section([Twin(raw: 3)]) { Text("\($0.raw)") }.id("shelf").header(Text("Shelf")),
+            Section([Twin(raw: 4)]) { Text("\($0.raw)") }.id("a\u{0}b"),
+            Section([Twin(raw: 5)]) { Text("\($0.raw)") }.id("a\u{0}c"),
         ]).node))
 
         let entries = try XCTUnwrap(list.props[.items].flatMap(ItemsEntries.init(propValue:)))
@@ -392,6 +450,32 @@ private struct TitledList: View {
     var body: some View {
         list.header(Text(title.wrappedValue))
     }
+}
+
+/// Sections of the items each shelf holds, each known by its place on the shelves.
+private struct ShelvesList: View {
+    let shelves: State<[[String]]>
+
+    var body: some View {
+        ItemsView(sections: shelves.wrappedValue.enumerated().map { number, items in
+            Section(items) { Text($0) }.id(number)
+        })
+    }
+}
+
+/// A section for each of `order`, known by it, built again as the order changes.
+private struct AlikeSections: View {
+    let order: State<[Alike]>
+
+    var body: some View {
+        ItemsView(sections: order.wrappedValue.map { alike in Section(["\(alike.raw)"]) { Text($0) }.id(alike) })
+    }
+}
+
+/// Another value whose words are the same for every value, so what one test says of it no other test says.
+private struct Twin: Hashable, CustomStringConvertible {
+    let raw: Int
+    var description: String { "twin" }
 }
 
 /// A list of `order`, built again as the order changes.

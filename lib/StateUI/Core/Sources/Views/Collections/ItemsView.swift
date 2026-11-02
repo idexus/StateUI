@@ -46,7 +46,7 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     public init<Items: RandomAccessCollection, Content: View>(
         _ items: Items, @ViewBuilder content: @escaping (Items.Element) -> Content
     ) where Items.Element == ID {
-        source = ItemsSource(sections: [Section(items, content: content)], sectioned: false)
+        source = ItemsSource(sections: [Section(items, content: content)])
     }
 
     /// A list of `items`, each named by the property `id`, each looking as
@@ -54,12 +54,12 @@ public struct ItemsView<ID: Hashable>: View, FocusElement {
     public init<Items: RandomAccessCollection, Content: View>(
         _ items: Items, id: KeyPath<Items.Element, ID>, @ViewBuilder content: @escaping (Items.Element) -> Content
     ) {
-        source = ItemsSource(sections: [Section(items, id: id, content: content)], sectioned: false)
+        source = ItemsSource(sections: [Section(items, id: id, content: content)])
     }
 
     /// A list of sections, each under its header and over its footer.
     public init(sections: [Section<ID>]) {
-        source = ItemsSource(sections: sections, sectioned: true)
+        source = ItemsSource(sections: sections)
     }
 
     /// The platform's collection - or, while there are no items, the empty

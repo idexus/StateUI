@@ -10,8 +10,9 @@
 ///             .header(Text(shelf.name).fontWeight(.bold))
 ///     })
 ///
-/// Each section names itself with `.id`, so two sections may hold equal items;
-/// a section given none is named by its place.
+/// A section is known by the value `.id` gives it, as an item is by its own;
+/// one given none, by its place. An item's value stands once in the whole
+/// list, whatever section holds it.
 public struct Section<ID: Hashable> {
     /// How many items it holds.
     let count: Int
@@ -22,8 +23,8 @@ public struct Section<ID: Hashable> {
     /// The view of the item at a place.
     let content: (Int) -> any View
 
-    /// What the section names itself, where it was given a name.
-    private(set) var name: String?
+    /// What the section is known by, where `.id` gave it one.
+    private(set) var identity: AnyHashable?
 
     /// Its header, where it has one.
     private(set) var header: (any View)?
@@ -56,10 +57,11 @@ public struct Section<ID: Hashable> {
         self.content = { content(item($0)) }
     }
 
-    /// The section's name, which sets its items apart from another section's.
+    /// What the section is known by: as the sections change, the one of this id is
+    /// the same section, wherever it stands.
     public func id(_ value: some Hashable) -> Self {
         var copy = self
-        copy.name = String(describing: value)
+        copy.identity = AnyHashable(value)
         return copy
     }
 

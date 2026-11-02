@@ -25,7 +25,6 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
     }
 
     private let sections: [Section<ID>]
-    private let sectioned: Bool
     private var header: (any View)?
     private var footer: (any View)?
     private var finished = false
@@ -36,24 +35,24 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
     private var places: [String: Place] = [:]
     private var order: [String: Int] = [:]
     private var ordered: [String] = []
-    private var identities: [ID: [String]] = [:]
+    private var identities: [ID: String] = [:]
 
     /// The source of `sections`; a list with no sections is one section standing for none.
-    init(sections: [Section<ID>], sectioned: Bool) {
+    init(sections: [Section<ID>]) {
         self.sections = sections
-        self.sectioned = sectioned
     }
 
     /// A source of the same sections, not yet finished: a list given a header or a footer builds from its own.
     /// Design: docs/design/views/items.md#a-source-a-build
     func again() -> ItemsSource {
-        ItemsSource(sections: sections, sectioned: sectioned)
+        ItemsSource(sections: sections)
     }
 
     /// Takes the list's own header and footer and names every entry - once for
-    /// the source, however often the view is built from it: an item by its
-    /// value, under the identity `book` says it stood under while it stays on
-    /// the list, a new one under its words, told apart from any other's.
+    /// the source, however often the view is built from it: a section by its
+    /// id, an item by its value, once in the whole list - each under the name
+    /// `book` says it stood under while it stays on the list, a new one under
+    /// its words, told apart from any other's.
     /// Design: docs/design/views/items.md#identities-in-order
     func finish(header: (any View)?, footer: (any View)?, book: ItemsBook<ID>) {
         guard !finished else { return }
@@ -61,44 +60,37 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         self.header = header
         self.footer = footer
 
-        var names: Set<String> = []
-        let titled = sections.enumerated().map { number, section in
-            (number, section, uniqueName(Self.words(section.name ?? String(number)), among: &names))
-        }
+        let names = sectionNames(book: book)
         // What every value standing again stood under, kept for it before any new value is named.
-        var kept: [ItemsBook<ID>.Key: String] = [:]
-        for (_, section, name) in titled {
+        var kept: [ID: String] = [:]
+        for section in sections {
             for place in 0..<section.count {
-                let key = ItemsBook<ID>.Key(section: name, id: section.identify(place))
-                if kept[key] == nil, let earlier = book.identities[key] { kept[key] = earlier }
+                let id = section.identify(place)
+                if kept[id] == nil, let earlier = book.identities[id] { kept[id] = earlier }
             }
         }
         let reserved = Set(kept.values)
 
         var built: [ItemsEntries.Section] = []
-        var stood: [ItemsBook<ID>.Key: String] = [:]
-        for (number, section, name) in titled {
+        for (number, section) in sections.enumerated() {
             var items: [String] = []
             for place in 0..<section.count {
                 let id = section.identify(place)
-                let key = ItemsBook<ID>.Key(section: name, id: id)
                 let identity: String
-                if stood[key] == nil, let earlier = kept[key] {
+                if identities[id] == nil, let earlier = kept[id] {
                     identity = earlier
                 } else {
-                    let words = Self.words(String(describing: id))
-                    let written = sectioned ? name + "\u{1F}" + words : words
-                    Renderer.shared.texts += 1
-                    if stood[key] != nil {
-                        complain("an ItemsView holds the same item twice, \"\(written)\"; give each its own identity")
+                    let words = Self.words(of: id)
+                    if identities[id] != nil {
+                        complain("an ItemsView holds the same item twice, \"\(words)\"; give each its own identity")
                     }
-                    identity = free(written, avoiding: reserved)
+                    identity = free(words, avoiding: reserved)
                 }
-                stood[key] = stood[key] ?? identity
+                identities[id] = identities[id] ?? identity
                 places[identity] = .item(number, place)
-                identities[id, default: []].append(identity)
                 items.append(identity)
             }
+            let name = names[number]
             built.append(ItemsEntries.Section(
                 name,
                 header: section.header.map { _ in named(name + "\u{1E}header", .sectionHeader(number)) },
@@ -114,35 +106,55 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         for (position, identity) in ordered.enumerated() {
             order[identity] = position
         }
-        book.identities = stood
+        book.identities = identities
     }
 
-    /// A section's `name`, told apart from one `names` holds already, and held.
-    private func uniqueName(_ name: String, among names: inout Set<String>) -> String {
-        var told = name
-        if names.contains(name) {
-            complain("two sections of an ItemsView are named \"\(name)\"; give each its own name")
-            var variant = 1
-            while names.contains("\(name)\u{1D}\(variant)") { variant += 1 }
-            told = "\(name)\u{1D}\(variant)"
+    /// Each section's name, in order: the one `book` says it stood under while its id stays on the list, else the
+    /// words of its id - of its place, where it has none - told apart from every other name. Two sections of one id
+    /// are said.
+    private func sectionNames(book: ItemsBook<ID>) -> [String] {
+        let keys = sections.enumerated().map { number, section in
+            section.identity ?? AnyHashable(SectionPlace(number))
         }
-        names.insert(told)
-        return told
+        let reserved = Set(keys.compactMap { book.sections[$0] })
+        var stood: [AnyHashable: String] = [:]
+        var names: [String] = []
+        for (number, key) in keys.enumerated() {
+            let name: String
+            if stood[key] == nil, let earlier = book.sections[key] {
+                name = earlier
+            } else {
+                let words = sections[number].identity.map { Self.words(of: $0.base) } ?? String(number)
+                if stood[key] != nil {
+                    complain("two sections of an ItemsView share the id \"\(words)\"; give each its own")
+                }
+                name = Self.variant(of: words) { names.contains($0) || reserved.contains($0) }
+            }
+            stood[key] = stood[key] ?? name
+            names.append(name)
+        }
+        book.sections = stood
+        return names
     }
 
     /// `identity`, or the first of its variants no entry stands under and no value standing again keeps.
     private func free(_ identity: String, avoiding reserved: Set<String> = []) -> String {
-        guard places[identity] != nil || reserved.contains(identity) else { return identity }
-        var variant = 1
-        while places["\(identity)\u{1D}\(variant)"] != nil || reserved.contains("\(identity)\u{1D}\(variant)") {
-            variant += 1
-        }
-        return "\(identity)\u{1D}\(variant)"
+        Self.variant(of: identity) { places[$0] != nil || reserved.contains($0) }
     }
 
-    /// Words as an identity carries them: a NUL, where a C string ends, as U+FFFD.
+    /// `words`, or the first of its variants - the words, a group separator and a number - that `taken` lets stand.
+    private static func variant(of words: String, taken: (String) -> Bool) -> String {
+        guard taken(words) else { return words }
+        var variant = 1
+        while taken("\(words)\u{1D}\(variant)") { variant += 1 }
+        return "\(words)\u{1D}\(variant)"
+    }
+
+    /// A value's words as an identity carries them: a NUL, where a C string ends, as U+FFFD.
     /// Design: docs/design/views/items.md#identities-in-order
-    private static func words(_ text: String) -> String {
+    private static func words(of value: Any) -> String {
+        Renderer.shared.texts += 1
+        let text = String(describing: value)
         guard text.unicodeScalars.contains("\u{0}") else { return text }
         return String(String.UnicodeScalarView(text.unicodeScalars.map { $0 == "\u{0}" ? "\u{FFFD}" : $0 }))
     }
@@ -172,9 +184,9 @@ final class ItemsSource<ID: Hashable>: ItemsViews {
         return sections[section].identify(place)
     }
 
-    /// Every identity holding one of `ids`, in the order they show.
+    /// The identity of each of `ids` the list holds, in the order they show: one a value, where it stands first.
     func identities(of ids: some Sequence<ID>) -> [String] {
-        ids.flatMap { identities[$0] ?? [] }.sorted { (order[$0] ?? 0) < (order[$1] ?? 0) }
+        ids.compactMap { identities[$0] }.sorted { (order[$0] ?? 0) < (order[$1] ?? 0) }
     }
 
     /// The positions `identities` stand at in this build.
@@ -220,12 +232,16 @@ struct ItemsEntry: View, @MainActor Equatable {
 /// on the list - so a value keeps its identity as the order changes, whatever its words.
 /// Design: docs/design/views/items.md#identities-in-order
 final class ItemsBook<ID: Hashable> {
-    /// A value in the section it stands in.
-    struct Key: Hashable {
-        let section: String
-        let id: ID
-    }
-
     /// The identity each value stood under in the last build.
-    var identities: [Key: String] = [:]
+    var identities: [ID: String] = [:]
+
+    /// The name each section stood under in the last build: by its id, by its place where it has none.
+    var sections: [AnyHashable: String] = [:]
+}
+
+/// What a section given no id is known by: its place, which no author's id equals.
+private struct SectionPlace: Hashable {
+    let number: Int
+
+    init(_ number: Int) { self.number = number }
 }

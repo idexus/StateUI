@@ -11,13 +11,20 @@ virtualization stands inside the platform's.
 Every entry the list shows has an identity, and the element carries all of
 them in order as one property, `ItemsViewContract.items` (`ItemsEntries`):
 the list's header and footer, and each section by its name with its header,
-items and footer - the name `.id` gave it, else its place, two sections of one
-name told apart as two items are, since a host knows a section by its name. A
-list with no sections is one section with neither. An item's identity is
-`String(describing:)` of its id, and in a list of sections the section's name,
-a unit separator, and that - so two sections may hold equal items. A header or
-a footer is named after its section with a record separator (`\u{1E}header`),
-which no author writes.
+items and footer. A list with no sections is one section with neither. An
+item's identity is `String(describing:)` of its id, whatever section holds it:
+an item's value stands once in the whole list, so a choice, an activation and
+a scroll name one row by the value alone, and an item moved to another section
+keeps its identity - the host moves its cell. A header or a footer is named
+after its section with a record separator (`\u{1E}header`), which no author
+writes.
+
+A section is known by the value `.id` gives it, as an item is by its own, and
+one given none by its place; its name is that value's words - the place's
+number - and the list keeps the name each section stood under across builds
+(`ItemsBook`), so a section keeps its name wherever it moves. Two sections
+given one id are a repeat, told apart and said; a place whose number reads as
+an author's id is no repeat, only told apart.
 
 An item is known by its value, as `ForEach` and `MotionLayout` know theirs,
 and its words only name it. The list keeps, from one build to the next, the
@@ -29,6 +36,7 @@ handed out by words in order, two such items swapping places would leave every
 identity where it was, and the host would move nothing. The same value twice
 is a repeated identity, told apart as two repeated `.id()`s are, and a
 complaint says so: a platform's collection refuses two cells of one identity.
+The value names its first row; the repeat is reached by no choice nor scroll.
 
 A variant is the words, a group separator (`\u{1D}`) and a number, and no
 identity holds a NUL - an author's own is read as U+FFFD: GTK and WinUI hand
