@@ -100,6 +100,10 @@ final class RenderedNode {
     /// What this element provided to its subtree, pushed again by the clean walk.
     var provided: [(key: ObjectIdentifier, object: AnyObject)]
 
+    /// What this element says of its enablement, holding for its subtree - put on the walk's again by the clean
+    /// walk, as what it provided is.
+    var enablement: Enablement?
+
     /// The nearest provided object per type when the composed view here was built,
     /// which a carry compares.
     var seen: [ObjectIdentifier: ObjectIdentifier]

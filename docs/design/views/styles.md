@@ -110,10 +110,18 @@ Focused, On, Off. The control is in the first of
 its declared states that holds, and in Normal, written or not, where none
 does; that is the state `.onVisualStateChanged` hears. What each follows:
 
-- Disabled: `isEnabled` false.
+- Disabled: `isEnabled` false - the control's own, or any element's holding
+  it, since a disabled branch disables everything in it.
 - Pressed: a button held down; PointerOver: a pointer over the control;
   Focused: the keyboard in it ([what the user does](#what-the-user-does)).
-- On, Off: `isOn`, written or bound.
+- On, Off: `isOn`.
+
+A fact is read as the host shows it: a bound state's value while the state is
+carried, the value stated beside it - on the control or by a style - only where
+no state is bound ([a stated value beside a driven one](bindings.md#a-stated-value-beside-a-driven-one)).
+The walk carries down what each element says of its enablement (`Enablement`),
+and the clean walk carries it again from the elements it passes, so a control
+deep in a branch hears the branch.
 
 What the control shows lays the values of every state that holds over its
 own, the first in that order winning a value two set: a disabled switch that
@@ -126,7 +134,11 @@ changes them at once.
 
 A bound value is read as the element is described, which makes the element
 that value's reader: the user turning a switch describes that switch again,
-and no body.
+and no body - a bound enablement of the branch the same, each control in it
+that declares Disabled its reader. A fact is read only where a declared state
+follows it: a control with no Disabled reads nothing of a bound `isEnabled`,
+which stays the host's alone. A branch stated disabled with no state bound
+describes the views in it again as it turns, a view carried whole included.
 
 ## What the user does
 

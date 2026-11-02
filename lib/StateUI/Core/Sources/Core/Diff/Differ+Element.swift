@@ -70,12 +70,17 @@ extension Differ {
             sceneRecord = pass.outerScene
             bodies.removeLast(pass.entered)
             scope.removeLast(pass.pushed)
+            if pass.enablement != nil { enablements.removeLast() }
             if pass.inspected { Inspection.leave() }
         }
 
         if let carried = expand(pass) { return carried }
         if pass.node.type == .page { describePage(pass) }
         prepare(pass)
+
+        // What it says of its enablement holds for everything in it.
+        pass.enablement = Enablement(pass.node)
+        if let enablement = pass.enablement { enablements.append(enablement) }
 
         let children: [RenderedNode]
         if let described = pass.described {
@@ -696,6 +701,7 @@ extension Differ {
         )
         result.identity = pass.identity
         result.expanded = pass.expanded
+        result.enablement = pass.enablement
         result.ownReads = pass.ownReads
         result.sizesArrive = pass.sizesArrive
         result.atPagePosition = pass.atPagePosition
@@ -874,12 +880,17 @@ extension Differ {
         return revisit(rendered, walking: false)
     }
 
-    /// The nearest provided object per type, by identity - what a carry compares.
+    /// The nearest provided object per type, by identity - what a carry compares - and whether a holding element
+    /// says it is disabled with no state bound: a branch turned so describes the views in it again, a bound one
+    /// reaching its readers by their reads.
     private func snapshot() -> [ObjectIdentifier: ObjectIdentifier] {
         var seen: [ObjectIdentifier: ObjectIdentifier] = [:]
 
         for entry in scope {
             seen[entry.key] = ObjectIdentifier(entry.object)
+        }
+        if enablements.contains(where: \.isStatedOff) {
+            seen[ObjectIdentifier(Enablement.self)] = ObjectIdentifier(Enablement.self)
         }
 
         return seen
@@ -923,6 +934,9 @@ final class ElementPass {
     var pushed = 0
     var entered = 0
     var inspected = false
+
+    /// What the element says of its enablement, put on the walk's for what it holds.
+    var enablement: Enablement?
 
     /// The composed views unwrapped, outermost first, and the environments visible at the outermost, which a carry
     /// compares.

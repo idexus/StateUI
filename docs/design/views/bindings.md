@@ -170,9 +170,10 @@ a modifier of the same name, the way every other property is written:
 chosen one together, in its initializer alone:
 `Picker(sizes, selection: $size)`. The initializer
 delegates to the modifier, so there is one body and neither is the real one. A
-value modifier written beside the initializer's binding wins for the value,
-while the binding goes on being written back to, which is how the two can then
-disagree.
+value modifier written beside the initializer's binding is a value beside a
+driven one: while the state is carried the control shows the state's value,
+the stated one standing only where the state has none - `Switch($wifi)
+.isOn(false)` shows `wifi` - and a visual state follows the same value.
 
 ## A report lands before its handler
 

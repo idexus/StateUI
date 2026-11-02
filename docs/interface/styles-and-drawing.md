@@ -326,6 +326,12 @@ Switch($isOn)
 
 Normal's values show only while no other state the control declares holds.
 
+A state follows what the control shows. A control is disabled while its own
+`isEnabled` says so, or that of any view holding it - a form disabled while it
+saves puts every control in it in its disabled look - and on or off as its
+bound state says, a value written beside the binding standing only where no
+state is bound.
+
 Leaving a state gives the control its own values back. A state's values are
 ordinary property changes: they move under the control's `.motion(_:)` like
 any other value, and `.motion(.none)` makes them change at once.

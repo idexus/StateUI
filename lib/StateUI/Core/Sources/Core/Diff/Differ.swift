@@ -70,6 +70,10 @@ final class Differ {
     /// The composed views whose bodies the walk is inside, outermost first.
     var bodies: [String] = []
 
+    /// What each element holding the one walked says of its enablement, outermost first - those that say any.
+    /// Design: docs/design/views/styles.md#which-state-a-control-is-in
+    var enablements: [Enablement] = []
+
     /// What every live element's events run, and their runs, kept between renders.
     /// Design: docs/design/core/identity-and-diffing.md#handlers-and-their-ids
     var handlers: [Int: EventRegistration] = [:]
@@ -198,9 +202,12 @@ final class Differ {
 
         var patch = HostPatch(id: rendered.id, type: rendered.type)
 
-        // What this element provided stays in scope while its children are walked.
+        // What this element provided stays in scope while its children are walked, and what it says of its
+        // enablement holds for them.
         scope.append(contentsOf: rendered.provided)
         defer { scope.removeLast(rendered.provided.count) }
+        if let enablement = rendered.enablement { enablements.append(enablement) }
+        defer { if rendered.enablement != nil { enablements.removeLast() } }
 
         var changedChildren: [HostPatch] = []
 
